@@ -84,13 +84,13 @@ const estado = p => p.evaluate(() => { const ol = document.querySelector('#gv .c
   await p.click('.cb-card'); await p.waitForTimeout(60);
   let s = await estado(p);
   conf(s && s.esp === '2,3' && s.acesas === 1 && s.h <= 2, 'nunca vista: começa só com "Solicitada" acesa e o fluido no início (' + JSON.stringify(s) + ')');
-  await p.waitForTimeout(950); s = await estado(p);
+  await p.waitForTimeout(1250); s = await estado(p);
   conf(s.nivel === 2 && s.esp === '3' && s.acesas === 2, 'sobe até a 2ª etapa (Cotação) e acende');
   const h2 = s.h;
   await p.waitForTimeout(250); s = await estado(p);
   conf(s.nivel === 2 && s.esp === '3', 'espera 0,4 s antes de subir para a próxima');
   conf(await p.evaluate(() => document.querySelector('#gv .cb-tl li:nth-child(2)').classList.contains('acende')), 'a etapa que acende ganha o "pulo" (acende)');
-  await p.waitForTimeout(950); s = await estado(p);
+  await p.waitForTimeout(1250); s = await estado(p);
   conf(s.nivel === 3 && s.esp === '' && s.acesas === 3 && s.h > h2, 'sobe até a 3ª (Agendada): fluido mais alto (' + h2 + ' → ' + s.h + ' px)');
   conf(await p.evaluate(() => Number(Store.get('cw-cbvisto-' + S.user.id + '-c1')) === 3), 'guarda até onde esta pessoa viu (por pessoa e por solicitação)');
   conf(await p.evaluate(() => { const a = getComputedStyle(document.querySelector('#gv .cb-fluido'), '::after'); return a.animationName === 'cbBrilho'; }), 'brilho correndo no fluido (cbBrilho)');
@@ -102,7 +102,7 @@ const estado = p => p.evaluate(() => { const ol = document.querySelector('#gv .c
   await p.evaluate(async () => { const c = S.almCal.find(x => x.id === 'c1'); await Data.col('sv2_alm_cal').update('c1', { itens: c.itens.map(i => Object.assign({}, i, { aplicado: true, data: hojeISO(), tecnico: 'Carlos', certificado: 'RBC-1', resultado: 'aprovado' })) }); });
   await p.waitForTimeout(60); s = await estado(p);
   conf(s.esp === '4' && s.nivel === 3, 'calibrada com a gaveta aberta: a 4ª etapa aparece apagada…');
-  await p.waitForTimeout(700); s = await estado(p);
+  await p.waitForTimeout(1100); s = await estado(p);
   conf(s.nivel === 4 && s.esp === '' && s.acesas === 4, '…e o fluido sobe na hora até ela');
   await esc(p); await p.waitForTimeout(300);
   console.log('— Duas novidades antes de abrir (outra pessoa)');
@@ -113,7 +113,7 @@ const estado = p => p.evaluate(() => { const ol = document.querySelector('#gv .c
   conf(s.esp === '2,3' && s.nivel === 1, 'viu na etapa 1; agora tem cotação e agenda: começa da 1, não do zero');
   const t0 = Date.now(); let t2 = 0, t3 = 0;
   while (Date.now() - t0 < 3000 && !t3) { const n = await p.evaluate(() => S._cbNivel.c2); if (n >= 2 && !t2) t2 = Date.now() - t0; if (n >= 3) t3 = Date.now() - t0; await p.waitForTimeout(25); }
-  conf(t2 > 300 && t2 < 1100 && t3 - t2 >= 900 && t3 - t2 < 1300, 'sobe uma etapa, espera 0,4 s e sobe a próxima (2ª em ' + t2 + ' ms, 3ª ' + (t3 - t2) + ' ms depois)');
+  conf(t2 > 300 && t2 < 1400 && t3 - t2 >= 1200 && t3 - t2 < 1600, 'sobe uma etapa (0,6 s + gota 0,3 s), espera 0,4 s e sobe a próxima (2ª em ' + t2 + ' ms, 3ª ' + (t3 - t2) + ' ms depois)');
   await esc(p); await p.waitForTimeout(300);
   conf(erros.length === 0, 'nenhum erro de JavaScript (gaveta e fluido)' + (erros.length ? ': ' + erros.slice(0, 3).join(' | ') : ''));
 

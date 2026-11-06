@@ -19,6 +19,13 @@ const cgAberta = () => S.almInv.find(x => x.situacao === 'aberto') || null;
 const cgDe = id => S.almInv.find(x => x.id === id) || null;
 const cgChave = k => k.replace(':', '_');
 function cgContagens(inv) { const o = {}, c = (inv && inv.contagens) || {}; Object.keys(c).forEach(k => { o[k.replace('_', ':')] = c[k]; }); return o; }
+/* recontagem e decisão SEM depender de quem conta apagar marcas (v0.3.6: a regra do Firestore só deixa quem conta gravar `contagens`).
+   recontar[k] = nº de contagens anteriores + 1 na hora do pedido → continua pedida enquanto o item não for contado de novo;
+   resolucoes[k].nCont = nº de contagens anteriores na hora da decisão → a decisão perde a validade se o item for contado de novo.
+   (true = formato antigo: recontagem pedida.) */
+const cgNAnt = c => ((c && c.ant) || []).length;
+function cgRc(inv, k) { const v = (inv.recontar || {})[cgChave(k)]; if (!v) return false; if (v === true) return true; return cgNAnt(cgContagens(inv)[k]) < Number(v); }
+function cgRs(inv, k) { const r = (inv.resolucoes || {})[cgChave(k)]; if (!r) return null; if (r.nCont == null) return r; return cgNAnt(cgContagens(inv)[k]) === r.nCont ? r : null; }
 const cgDif = c => c ? alR((Number(c.cont) || 0) - (Number((c.esp || {}).total) || 0)) : 0;
 /* ordem do lugar: portas em sequência, depois gavetas, depois o resto (pedido do Elias) */
 function cgOrdemLocal(loc) {
@@ -51,7 +58,7 @@ const cgPartesTxt = p => CG_PARTES.filter(x => p && (x[0] === 'mat' ? p.mat !== 
 function cgProgresso(inv) {
   const al = cgAlvos(inv), ct = cgContagens(inv), rc = inv.recontar || {};
   const feitos = al.filter(a => ct[a.k]), difs = feitos.filter(a => cgDif(ct[a.k]) !== 0);
-  return { al: al, ct: ct, total: al.length, feitos: feitos.length, difs: difs, bateram: feitos.length - difs.length, recontar: al.filter(a => rc[cgChave(a.k)]), faltam: al.filter(a => !ct[a.k]) };
+  return { al: al, ct: ct, total: al.length, feitos: feitos.length, difs: difs, bateram: feitos.length - difs.length, recontar: al.filter(a => cgRc(inv, a.k)), faltam: al.filter(a => !ct[a.k]) };
 }
 const cgPodeAbrir = () => alSup();
 const cgSouContador = inv => !!inv && (inv.contadorId === S.user.id || (!inv.contadorId && alPode()));
@@ -62,9 +69,9 @@ function cgLocais() { const u = (S.empresa && S.empresa.unidades) || []; return 
 
 /* ---------- situação de cada material na conferência ---------- */
 function cgSitItem(inv, a, ct) {
-  const c = ct[a.k], rc = inv.recontar || {}, rs = (inv.resolucoes || {})[cgChave(a.k)];
+  const c = ct[a.k], rs = cgRs(inv, a.k);
   if (!c) return { id: 'falta', txt: 'Falta contar', cor: '' };
-  if (rc[cgChave(a.k)]) return { id: 'recontar', txt: 'Recontagem pedida', cor: 'wa' };
+  if (cgRc(inv, a.k)) return { id: 'recontar', txt: 'Recontagem pedida', cor: 'wa' };
   const d = cgDif(c);
   if (!d) return c.ant && c.ant.length ? { id: 'bateu2', txt: 'Bateu na recontagem', cor: 'ok' } : { id: 'bateu', txt: 'Bateu', cor: 'ok' };
   if (rs) return { id: 'resolvido', txt: rs.tipo === 'saida_retro' ? 'Saída esquecida' : rs.tipo, cor: rs.tipo === 'saida_retro' ? 'cr' : '' };
@@ -119,7 +126,7 @@ function cgContar(inv, pr) {
   const rec = pr.recontar.filter(vis);
   if (rec.length) h += '<section class="pn cg-grp cg-rec"><div class="hd"><span class="ico ini-wa">' + ic('recontar') + '</span><h3>Recontar</h3><em>' + rec.length + '</em><span class="sp"></span><small>O Líder pediu para contar de novo</small></div>' + rec.map(a => cgItemHTML(inv, a, null, true)).join('') + '</section>';
   locais.forEach(l => {
-    const g = pr.al.filter(a => a.local === l && vis(a) && !rc[cgChave(a.k)]); if (!g.length) return;
+    const g = pr.al.filter(a => a.local === l && vis(a) && !cgRc(inv, a.k)); if (!g.length) return;
     const tot = pr.al.filter(a => a.local === l), f = tot.filter(a => pr.ct[a.k]).length;
     h += '<section class="pn cg-grp"><div class="hd"><span class="ico">' + ic('caixa') + '</span><h3>' + esc(l) + '</h3><em>' + f + '/' + tot.length + '</em><span class="sp"></span>' + (f === tot.length ? alPill('Pronto', 'ok') : '') + '</div>' + g.map(a => cgItemHTML(inv, a, pr.ct[a.k], false)).join('') + '</section>';
   });
@@ -148,8 +155,7 @@ async function cgSalvar(k, achou) {
   for (const l of lotes) { const t = String(rz[l.id] == null ? '' : rz[l.id]).trim(); if (t === '') { aviso('Conte todos os lotes de ' + a.i.nome + ' (0 se não achou).', 'erro'); const e = $('[data-cgk="' + k + '"][data-cgl="' + l.id + '"]'); if (e) e.focus(); return; } const n = alNum(t); if (!(n >= 0)) { aviso('Quantidade inválida em ' + a.i.nome + '.', 'erro'); return; } tot += n; if (l.id) lt[l.id] = alR(n); }
   const ant = cgContagens(inv)[k], reg = { porId: S.user.id, porNome: S.user.nome, ts: nowISO(), obs: '', esp: cgEsperado(a), lotes: lt, cont: alR(tot) };
   if (ant) reg.ant = (ant.ant || []).concat([{ cont: ant.cont, lotes: ant.lotes || {}, porNome: ant.porNome, ts: ant.ts, esp: ant.esp }]);
-  const patch = { ['contagens.' + cgChave(k)]: reg }; if ((inv.recontar || {})[cgChave(k)]) patch['recontar.' + cgChave(k)] = false;
-  if ((inv.resolucoes || {})[cgChave(k)]) patch['resolucoes.' + cgChave(k)] = null;
+  const patch = { ['contagens.' + cgChave(k)]: reg }; /* só `contagens`: a recontagem pedida e a decisão antiga deixam de valer sozinhas (cgRc, cgRs) */
   delete S.cgRasc[k]; if (S.cgEdit === k) S.cgEdit = '';
   try { await Data.col('sv2_alm_inv').update(inv.id, patch); } catch (e) { aviso(svErro(e), 'erro'); return; }
   /* foco no próximo que falta */
@@ -158,13 +164,13 @@ async function cgSalvar(k, achou) {
 
 /* ---------- conferência (Líder/Administrador) ---------- */
 function cgConferencia(inv, pr) {
-  const rs = inv.resolucoes || {}, pend = pr.difs.filter(a => !(inv.recontar || {})[cgChave(a.k)] && !rs[cgChave(a.k)]), recPedida = pr.recontar.length;
+  const rs = inv.resolucoes || {}, pend = pr.difs.filter(a => !cgRc(inv, a.k) && !cgRs(inv, a.k)), recPedida = pr.recontar.length;
   const jaRecontados = pr.difs.filter(a => (pr.ct[a.k].ant || []).length), naoRecontados = pend.filter(a => !(pr.ct[a.k].ant || []).length);
   const eu = Object.keys(pr.ct).some(k => pr.ct[k] && pr.ct[k].porId === S.user.id);
   let h = '<div class="kps cg-kps"><div class="kp"><b class="num">' + pr.feitos + '</b><span>contados de ' + pr.total + '</span></div><div class="kp' + (pr.bateram ? ' ok' : '') + '"><b class="num">' + pr.bateram + '</b><span>bateram</span></div><div class="kp' + (pr.difs.length ? ' cr' : '') + '"><b class="num">' + pr.difs.length + '</b><span>não bateram</span></div><div class="kp' + (recPedida ? ' wa' : '') + '"><b class="num">' + recPedida + '</b><span>em recontagem</span></div></div>';
   if (eu) h += '<p class="al-aviso">' + ic('info') + 'Você também contou. O recomendado é que quem conta não seja quem confere.</p>';
   if (naoRecontados.length) h += '<section class="pn cg-sug"><div class="cg-sgt"><span class="ico ini-wa">' + ic('recontar') + '</span><div><b>Sugestão: recontar os ' + naoRecontados.length + ' que não bateram</b><span>Antes de ajustar, peça para ' + esc(inv.contadorNome || 'quem contou') + ' contar de novo, às cegas. Se bater na recontagem, foi erro de contagem e nada muda no estoque.</span></div><button type="button" class="bt pr" data-act="cg-recontar">' + ic('recontar') + 'Pedir recontagem (' + naoRecontados.length + ')</button></div></section>';
-  const linhas = pr.al.filter(a => pr.ct[a.k] && (cgDif(pr.ct[a.k]) !== 0 || (pr.ct[a.k].ant || []).length || (inv.recontar || {})[cgChave(a.k)]));
+  const linhas = pr.al.filter(a => pr.ct[a.k] && (cgDif(pr.ct[a.k]) !== 0 || (pr.ct[a.k].ant || []).length || cgRc(inv, a.k)));
   h += tbHTML({ id: 'cg-conf', titulo: 'Conferência ' + inv.numero, unidade: 'materiais', linhas: linhas.map(a => Object.assign({ id: a.k }, a)), aoClicar: k => cgAbreItem(k), selecionado: S._cgSel, buscaDica: 'Buscar material ou lugar',
     vazio: pr.feitos ? 'Tudo o que foi contado bateu com o sistema.' : 'Nada contado ainda.',
     busca: a => [a.i.nome, a.i.codigo, a.local].join(' '),
@@ -178,15 +184,15 @@ function cgConferencia(inv, pr) {
       { k: 'c2', rot: 'Recontagem', tipo: 'num', v: a => { const c = pr.ct[a.k]; return c.ant && c.ant.length ? c.cont : ''; } },
       { k: 'dif', rot: 'Diferença', tipo: 'num', v: a => cgDif(pr.ct[a.k]), html: a => { const d = cgDif(pr.ct[a.k]); return d ? '<b class="cg-d ' + (d < 0 ? 'neg' : 'pos') + '">' + (d > 0 ? '+' : '') + alQ(d) + '</b>' : '<span class="tb-nada">0</span>'; } },
       { k: 'sit', rot: 'Situação', v: a => cgSitItem(inv, a, pr.ct).txt, html: a => { const s = cgSitItem(inv, a, pr.ct); return alPill(s.txt, s.cor); } }] });
-  const falta = pr.difs.filter(a => !(inv.recontar || {})[cgChave(a.k)] && !rs[cgChave(a.k)]).length;
+  const falta = pr.difs.filter(a => !cgRc(inv, a.k) && !cgRs(inv, a.k)).length;
   h += '<section class="pn cg-conc"><div class="cg-cc"><div><b>' + (falta ? 'Falta decidir ' + falta + (falta === 1 ? ' material' : ' materiais') : recPedida ? 'Esperando a recontagem de ' + recPedida : 'Pronto para concluir') + '</b><span>' + (pr.faltam.length ? pr.faltam.length + ' material(is) sem contagem ficam como estão no sistema. ' : '') + 'Ao concluir, as decisões viram lançamentos (ajuste lote a lote ou saída com a data certa) e a contagem fica no histórico.</span></div>' +
     '<button type="button" class="bt pr" data-act="cg-concluir"' + (falta || recPedida || !pr.feitos ? ' disabled' : '') + '>' + ic('ok') + 'Concluir contagem</button></div></section>';
   return h;
 }
 async function cgPedirRecontagem() {
   const inv = cgAberta(); if (!inv || !alSup()) return; const pr = cgProgresso(inv), rs = inv.resolucoes || {};
-  const alvo = pr.difs.filter(a => !(inv.recontar || {})[cgChave(a.k)] && !rs[cgChave(a.k)] && !(pr.ct[a.k].ant || []).length); if (!alvo.length) return;
-  const patch = {}; alvo.forEach(a => { patch['recontar.' + cgChave(a.k)] = true; });
+  const alvo = pr.difs.filter(a => !cgRc(inv, a.k) && !cgRs(inv, a.k) && !(pr.ct[a.k].ant || []).length); if (!alvo.length) return;
+  const patch = {}; alvo.forEach(a => { patch['recontar.' + cgChave(a.k)] = cgNAnt(pr.ct[a.k]) + 1; });
   try { await Data.col('sv2_alm_inv').update(inv.id, patch); } catch (e) { aviso(svErro(e), 'erro'); return; }
   if (inv.contadorId && inv.contadorId !== S.user.id) Notif.send({ nivel: 'aviso', titulo: 'Recontar ' + alvo.length + ' material(is) · ' + inv.numero, texto: S.user.nome + ' pediu para contar de novo: ' + alvo.slice(0, 6).map(a => a.i.nome).join(', ') + (alvo.length > 6 ? '…' : '') + '.', para: [inv.contadorId], refTipo: 'inventario', refId: inv.id }).catch(() => {});
   Audit.log({ acao: 'inventario_recontar', entidade: 'almox_inv', entidadeId: inv.id, resumo: 'Pediu recontagem no ' + inv.numero + ': ' + alvo.map(a => a.i.nome).join(', ') });
@@ -197,14 +203,14 @@ async function cgPedirRecontagem() {
 function cgAbreItem(k) {
   S._cgSel = k; gvAbrir(() => {
     const inv = cgAberta(); if (!inv) return null; const a = cgAlvos(inv).find(x => x.k === k), c = cgContagens(inv)[k]; if (!a || !c) return null;
-    const s = cgSitItem(inv, a, cgContagens(inv)), d = cgDif(c), rs = (inv.resolucoes || {})[cgChave(k)], i = a.i;
+    const s = cgSitItem(inv, a, cgContagens(inv)), d = cgDif(c), rs = cgRs(inv, k), i = a.i;
     const lts = Object.keys(Object.assign({}, (c.esp || {}).lotes, c.lotes)).map(lid => { const l = alIdx().lots[lid] || { lote: '?' }, e = Number(((c.esp || {}).lotes || {})[lid]) || 0, n = Number((c.lotes || {})[lid]) || 0; return [l.lote || 'sem lote', e, n, alR(n - e)]; });
     return { ico: 'caixa', sub: 'Conferência ' + inv.numero + ' · ' + a.local, titulo: i.nome, pill: alPill(s.txt, s.cor),
       corpo: gvNums([[alQ((c.esp || {}).total || 0), 'sistema (' + (i.un || 'un') + ')'], [alQ(c.cont), (c.ant && c.ant.length ? 'recontagem' : 'contado')], [(d > 0 ? '+' : '') + alQ(d), 'diferença', d < 0 ? 'cr' : d > 0 ? 'wa' : '']]) +
         (lts.length > 1 ? '<p class="gv-h">Lote a lote</p><div class="gv-lotes">' + lts.map(x => '<div class="gv-lote"><span>' + esc(x[0]) + '</span><span class="num">sistema ' + alQ(x[1]) + ' · contado ' + alQ(x[2]) + (x[3] ? ' · <b class="cg-d ' + (x[3] < 0 ? 'neg' : 'pos') + '">' + (x[3] > 0 ? '+' : '') + alQ(x[3]) + '</b>' : '') + '</span></div>').join('') + '</div>' : '') +
         '<p class="gv-h">Contagens</p>' + gvLinha((c.ant || []).map((x, n) => [(n ? (n + 1) + 'ª' : '1ª') + ' contagem: ' + alQ(x.cont), (x.porNome || '') + ' · ' + fmtDT(x.ts)]).concat([[((c.ant || []).length ? 'Recontagem' : 'Contagem') + ': ' + alQ(c.cont), (c.porNome || '') + ' · ' + fmtDT(c.ts)]])) +
         (rs ? '<p class="gv-h">Decisão</p>' + gvCampos([['O que aconteceu', rs.tipo === 'saida_retro' ? 'Saída esquecida (erro de lançamento)' : rs.tipo], ['Data da saída', rs.data ? fmtD(rs.data) : ''], ['Motivo', rs.motivo], ['Quem esqueceu', rs.respNome], ['Reclamação', rs.reclamacao], ['Decidido por', (rs.porNome || '') + ' · ' + fmtDT(rs.ts)]]) : ''),
-      rodape: d && !(inv.recontar || {})[cgChave(k)] ? (!(c.ant || []).length ? '<button type="button" class="bt" data-act="cg-recontar1" data-k="' + esc(k) + '">' + ic('recontar') + 'Pedir recontagem</button>' : '') + '<button type="button" class="bt pr" data-act="cg-decidir" data-k="' + esc(k) + '">' + ic(rs ? 'lapis' : 'ok') + (rs ? 'Mudar a decisão' : 'Decidir') + '</button>' : '' };
+      rodape: d && !cgRc(inv, k) ? (!(c.ant || []).length ? '<button type="button" class="bt" data-act="cg-recontar1" data-k="' + esc(k) + '">' + ic('recontar') + 'Pedir recontagem</button>' : '') + '<button type="button" class="bt pr" data-act="cg-decidir" data-k="' + esc(k) + '">' + ic(rs ? 'lapis' : 'ok') + (rs ? 'Mudar a decisão' : 'Decidir') + '</button>' : '' };
   });
   render();
 }
@@ -223,7 +229,7 @@ DD_AO.lc = (function (ant) { return (k, v) => { const f = S.fm; if (f && (k === 
 async function cgResOk() {
   const f = S.fm, inv = cgAberta(); if (!f || !inv) return;
   if (!f.tipo) return lcErro('Escolha o que aconteceu.');
-  const r = { tipo: f.tipo, porId: S.user.id, porNome: S.user.nome, ts: nowISO(), obs: String(f.obs || '').trim() };
+  const r = { tipo: f.tipo, porId: S.user.id, porNome: S.user.nome, ts: nowISO(), obs: String(f.obs || '').trim(), nCont: cgNAnt(cgContagens(inv)[f.kItem]) };
   if (f.tipo === 'saida_retro') {
     const er = validaData(f.data); if (er) return lcErro(er);
     if (String(inv.abertoEm || '').slice(0, 10) < f.data) return lcErro('A saída esquecida tem de ser antes da contagem (' + fmtD(String(inv.abertoEm).slice(0, 10)) + ').');
@@ -241,12 +247,12 @@ const cgEqCopia = id => { if (!CG_EQ_COP[id]) { const e = S.almEq.find(x => x.id
 async function cgConcluir() { CG_EQ_COP = {};
   const inv = cgAberta(); if (!inv || !alSup()) return; const pr = cgProgresso(inv), rs = inv.resolucoes || {};
   if (pr.recontar.length) { aviso('Ainda há recontagem pedida.', 'erro'); return; }
-  const semDec = pr.difs.filter(a => !rs[cgChave(a.k)]); if (semDec.length) { aviso('Falta decidir: ' + semDec.slice(0, 3).map(a => a.i.nome).join(', ') + (semDec.length > 3 ? '…' : '') + '.', 'erro'); return; }
+  const semDec = pr.difs.filter(a => !cgRs(inv, a.k)); if (semDec.length) { aviso('Falta decidir: ' + semDec.slice(0, 3).map(a => a.i.nome).join(', ') + (semDec.length > 3 ? '…' : '') + '.', 'erro'); return; }
   if (S._cgConc) return; S._cgConc = true;
   const res = { contados: pr.feitos, total: pr.total, difs: pr.difs.length, bateramNaRecontagem: pr.al.filter(a => pr.ct[a.k] && !cgDif(pr.ct[a.k]) && (pr.ct[a.k].ant || []).length).length, erros: 0, ajustes: [] };
   try {
     for (const a of pr.difs) {
-      const c = pr.ct[a.k], r = rs[cgChave(a.k)];
+      const c = pr.ct[a.k], r = cgRs(inv, a.k);
       if (a.parte !== 'mat') {
         const e = cgEqCopia(a.e.id); if (!e) continue; const mot = 'Contagem ' + inv.numero + ': ' + (r.tipo === 'nao_achado' ? 'não encontrado' : r.tipo) + (r.obs ? ' — ' + r.obs : '');
         let patch = {}, ev;
@@ -372,8 +378,8 @@ document.addEventListener('click', e => {
   else if (a === 'cg-cancelar') { if (alSup()) lcAbrir({ k: 'cgcanc', motivoG: '' }); }
   else if (a === 'cg-canc-ok') cgCancOk();
   else if (a === 'cg-recontar') cgPedirRecontagem();
-  else if (a === 'cg-recontar1') { const inv = cgAberta(); if (inv && alSup()) Data.col('sv2_alm_inv').update(inv.id, { ['recontar.' + cgChave(k)]: true }).then(() => { aviso('Recontagem pedida.'); if (inv.contadorId && inv.contadorId !== S.user.id) Notif.send({ nivel: 'aviso', titulo: 'Recontar 1 material · ' + inv.numero, texto: S.user.nome + ' pediu para contar de novo: ' + ((alItem(k.slice(2)) || {}).nome || '') + '.', para: [inv.contadorId], refTipo: 'inventario', refId: inv.id }).catch(() => {}); }).catch(er => aviso(svErro(er), 'erro')); }
-  else if (a === 'cg-decidir') { const inv = cgAberta(), rs = inv && (inv.resolucoes || {})[cgChave(k)], vol = S.gv; lcAbrir(Object.assign({ k: 'cgres', kItem: k, tipo: '', data: hojeISO(), respId: '', motivo: '', motivoTxt: '', guardar: '0', reclamacao: '', obs: '' }, rs ? { tipo: rs.tipo, data: rs.data || hojeISO(), respId: rs.respId || '', motivo: rs.motivo || '', reclamacao: rs.reclamacao || '', obs: rs.obs || '' } : {}), vol ? () => gvAbrir(vol) : null); }
+  else if (a === 'cg-recontar1') { const inv = cgAberta(); if (inv && alSup()) Data.col('sv2_alm_inv').update(inv.id, { ['recontar.' + cgChave(k)]: cgNAnt(cgContagens(inv)[k]) + 1 }).then(() => { aviso('Recontagem pedida.'); if (inv.contadorId && inv.contadorId !== S.user.id) Notif.send({ nivel: 'aviso', titulo: 'Recontar 1 material · ' + inv.numero, texto: S.user.nome + ' pediu para contar de novo: ' + ((alItem(k.slice(2)) || {}).nome || '') + '.', para: [inv.contadorId], refTipo: 'inventario', refId: inv.id }).catch(() => {}); }).catch(er => aviso(svErro(er), 'erro')); }
+  else if (a === 'cg-decidir') { const inv = cgAberta(), rs = inv && cgRs(inv, k), vol = S.gv; lcAbrir(Object.assign({ k: 'cgres', kItem: k, tipo: '', data: hojeISO(), respId: '', motivo: '', motivoTxt: '', guardar: '0', reclamacao: '', obs: '' }, rs ? { tipo: rs.tipo, data: rs.data || hojeISO(), respId: rs.respId || '', motivo: rs.motivo || '', reclamacao: rs.reclamacao || '', obs: rs.obs || '' } : {}), vol ? () => gvAbrir(vol) : null); }
   else if (a === 'cg-res-ok') cgResOk();
   else if (a === 'cg-concluir') cgConcluir();
   else if (a === 'cg-ver-conf') { S.cgVista = 'conf'; render(); }

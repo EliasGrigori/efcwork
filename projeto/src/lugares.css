@@ -22,3 +22,9 @@
 .lg-dr .fm-i.num{grid-column:2;grid-row:1;text-align:center}
 .lg-dr>.bt{grid-column:3;grid-row:1}
 .lg-add{align-self:flex-start}
+.lg-pend{display:flex;flex-direction:column;gap:10px;padding:12px 14px;border:1px solid var(--wa);border-radius:var(--r);background:var(--waS);margin-bottom:6px}
+.lg-pend>div:first-child{display:flex;gap:10px;align-items:flex-start}
+.lg-pend>div:first-child>.ic{width:18px;height:18px;flex:none;color:var(--wa);margin-top:2px}
+.lg-pend span{display:flex;flex-direction:column;gap:2px;min-width:0}
+.lg-pend b{font-size:14px}.lg-pend small{font-size:13px;color:var(--tx2);overflow-wrap:anywhere}
+.lg-pb{display:flex;gap:8px;justify-content:flex-end}

@@ -86,7 +86,7 @@ const eq = (p, id) => p.evaluate(i => JSON.parse(JSON.stringify(S.almEq.find(x =
   conf(opUso.indexOf('Bancada 1') >= 0 && !opUso.some(v => /^(Gaveta|Porta)/.test(v)), 'a lista de lugares de uso não mostra gavetas nem portas (' + opUso.join(', ') + ')');
   await p.click('[data-act="lg-usar-ok"]'); await p.waitForTimeout(80);
   conf(/Diga onde/.test(await msg(p)), 'sem lugar: "Diga onde ele vai ficar em uso"');
-  await dd(p, 'lc:lg~lugar', 'Bancada 1'); await p.fill('#gv [data-fm="obs"]', 'substitui a MP-01, que deu problema');
+  await dd(p, 'lc:lg~lugar', 'Bancada 1'); await p.fill('#gv [data-fm="motivo"]', 'substitui a MP-01, que deu problema');
   await p.click('[data-act="lg-usar-ok"]'); await p.waitForTimeout(350);
   let m2 = await eq(p, 'mp2');
   conf(m2.situacao === 'ativo' && m2.posicao === 'Bancada 1' && m2.posUso === 'Bancada 1' && m2.posGuarda === 'Gaveta 02' && !m2.guardadoEm, 'em uso na Bancada 1; o lugar de guarda (Gaveta 02) fica lembrado');

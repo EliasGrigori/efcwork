@@ -490,7 +490,15 @@ a.cg-av span{flex:1}
 .cb-tl li:last-child{padding-bottom:0}
 .cb-n{width:28px;height:28px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:13px;font-weight:700;background:var(--bg1);color:var(--tx3);border:1px solid var(--bd2);position:relative;z-index:1;transition:background .3s,border-color .3s,color .3s}
 .cb-n .ic{width:15px;height:15px;display:none}
-.cb-tl li.ok:not(.esp) .cb-n{background:var(--ouro);color:var(--onOuro);border-color:transparent;box-shadow:0 0 0 3px color-mix(in srgb,var(--a) 22%,transparent)}
+.cb-ib{position:absolute;inset:0;border-radius:50%;overflow:hidden;z-index:0}
+.cb-in{position:absolute;left:0;right:0;bottom:0;height:0;background:var(--ouro);transition:height .5s cubic-bezier(.4,0,.2,1)}
+.cb-nn,.cb-n>.ic{position:relative;z-index:1}
+.cb-tl li.ok:not(.esp) .cb-n{color:var(--onOuro);border-color:var(--a);box-shadow:0 0 0 3px color-mix(in srgb,var(--a) 22%,transparent)}
+.cb-tl li.ok:not(.esp) .cb-in{height:100%}
+.cb-gota{position:absolute;left:11px;width:6px;height:9px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:var(--a);z-index:2;animation:cbCai .3s cubic-bezier(.5,0,1,1) forwards;pointer-events:none}
+@keyframes cbCai{to{transform:translateY(16px);opacity:.2}}
+.cb-onda{position:absolute;inset:-6px;border-radius:50%;border:2px solid var(--a);animation:cbOnda .6s ease-out forwards;pointer-events:none}
+@keyframes cbOnda{from{transform:scale(.6);opacity:1}to{transform:scale(1.4);opacity:0}}
 .cb-tl li.ok:not(.esp) .cb-n .ic{display:block}.cb-tl li.ok:not(.esp) .cb-nn{display:none}
 .cb-tl li.acende .cb-n{animation:cbAcende .45s cubic-bezier(.2,.8,.2,1)}
 @keyframes cbAcende{0%{transform:scale(.7)}60%{transform:scale(1.18)}100%{transform:scale(1)}}
@@ -507,7 +515,7 @@ a.cg-av span{flex:1}
 .cb-mini li.ok i{position:relative;overflow:hidden}
 .cb-mini li.ok i::after{content:"";position:absolute;top:0;bottom:0;width:40%;left:-40%;background:linear-gradient(90deg,transparent,rgba(255,250,230,.8),transparent);animation:cbBrilhoH 2.4s linear infinite}
 @keyframes cbBrilhoH{to{left:100%}}
-@media(prefers-reduced-motion:reduce){.cb-fluido::after,.cb-mini li.ok i::after{animation:none;display:none}.cb-tl li.acende .cb-n{animation:none}.cb-n{transition:none}}
+@media(prefers-reduced-motion:reduce){.cb-in{transition:none}.cb-fluido::after,.cb-mini li.ok i::after{animation:none;display:none}.cb-tl li.acende .cb-n{animation:none}.cb-n{transition:none}}
 .cb-obs{margin:0;font-size:14px;color:var(--tx2)}
 .cb-its{display:flex;flex-direction:column;border:1px solid var(--bd);border-radius:var(--rs);overflow:hidden}
 .cb-it{display:flex;justify-content:space-between;gap:10px;padding:9px 12px;border:0;border-bottom:1px solid var(--bd);background:var(--bg1);text-align:left;cursor:pointer;color:var(--tx);font:inherit}
@@ -561,6 +569,12 @@ div.cb-hc{cursor:default}
 .lg-dr .fm-i.num{grid-column:2;grid-row:1;text-align:center}
 .lg-dr>.bt{grid-column:3;grid-row:1}
 .lg-add{align-self:flex-start}
+.lg-pend{display:flex;flex-direction:column;gap:10px;padding:12px 14px;border:1px solid var(--wa);border-radius:var(--r);background:var(--waS);margin-bottom:6px}
+.lg-pend>div:first-child{display:flex;gap:10px;align-items:flex-start}
+.lg-pend>div:first-child>.ic{width:18px;height:18px;flex:none;color:var(--wa);margin-top:2px}
+.lg-pend span{display:flex;flex-direction:column;gap:2px;min-width:0}
+.lg-pend b{font-size:14px}.lg-pend small{font-size:13px;color:var(--tx2);overflow-wrap:anywhere}
+.lg-pb{display:flex;gap:8px;justify-content:flex-end}
 
 /* ===== sino.css ===== */
 /* EFCwork · sino.css — avisos e pedidos na gaveta. Prefixo: sn- (e o número no sino: cs-bdg) */
@@ -684,7 +698,7 @@ div.cb-hc{cursor:default}
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.3.5';
+const VERSAO = '0.3.6';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -747,6 +761,9 @@ const $ = (s, r) => (r || document).querySelector(s);
 const $$ = (s, r) => Array.prototype.slice.call((r || document).querySelectorAll(s));
 const esc = v => v == null ? '' : String(v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const imgSrc = u => { const s = String(u == null ? '' : u).trim(); return /^(data:image\/[a-z0-9.+-]+[;,]|blob:|https:\/\/)/i.test(s) ? esc(s) : ''; };
+/* modo demonstração: as mesmas listas das regras do Firestore (06/11) para quem não é líder ★/Administrador, para os testes pegarem permissão negada */
+const DEMO_REGRAS = { sv2_alm_inv: ['contagens', 'folhas'], sv2_alm_equip: ['situacao', 'local', 'posicao', 'guardadoEm', 'sitAntes', 'posAntes', 'restricaoCal', 'qtdLocal', 'qtdGuard', 'trfQtd', 'transito', 'hist', 'atualizadoEm'], sv2_alm_cal: [] };
+function demoRegraNega(col, chaves) { const l = DEMO_REGRAS[col], u = S.user; if (!l || !u || typeof isSup !== 'function' || isSup(u)) return ''; return chaves.map(k => k.split('.')[0]).find(k => l.indexOf(k) < 0) || ''; }
 const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
 const pad = n => String(n).padStart(2, '0');
 const nowISO = () => new Date().toISOString();
@@ -850,7 +867,7 @@ const Data = (function () {
         },
         add(obj) { const a = dLoad(name); const id = uid(); a.push(Object.assign({ id: id }, clean(obj))); dSave(name, a); dNotify(name); return Promise.resolve(id); },
         set(id, obj) { const a = dLoad(name).filter(x => x.id !== id); a.push(Object.assign({ id: id }, clean(obj))); dSave(name, a); dNotify(name); return Promise.resolve(id); },
-        update(id, patch) { const ruim = Object.keys(patch).find(k => /[~*\/\[\]]/.test(k)); if (ruim) return Promise.reject(new Error('Invalid field path (' + ruim + '): o Firestore não aceita ~ * / [ ]')); const a = dLoad(name); const it = a.find(x => x.id === id); if (!it) return Promise.reject(new Error('nf')); Object.keys(patch).forEach(k => setPath(it, k, clean({ v: patch[k] }).v)); dSave(name, a); dNotify(name); return Promise.resolve(); },
+        update(id, patch) { const ruim = Object.keys(patch).find(k => /[~*\/\[\]]/.test(k)); if (ruim) return Promise.reject(new Error('Invalid field path (' + ruim + '): o Firestore não aceita ~ * / [ ]')); const nega = demoRegraNega(name, Object.keys(patch)); if (nega) return Promise.reject(Object.assign(new Error('Missing or insufficient permissions (' + nega + ')'), { code: 'permission-denied' })); const a = dLoad(name); const it = a.find(x => x.id === id); if (!it) return Promise.reject(new Error('nf')); Object.keys(patch).forEach(k => setPath(it, k, clean({ v: patch[k] }).v)); dSave(name, a); dNotify(name); return Promise.resolve(); },
         /* v2.84.0: acrescenta um item numa lista do registro sem regravar a lista inteira (ninguém apaga o passo do outro) */
         push(id, campo, item, extra) { const a = dLoad(name); const it = a.find(x => x.id === id); if (!it) return Promise.reject(new Error('nf')); it[campo] = (Array.isArray(it[campo]) ? it[campo] : []).concat([clean({ v: item }).v]); Object.keys(extra || {}).forEach(k => setPath(it, k, clean({ v: extra[k] }).v)); dSave(name, a); dNotify(name); return Promise.resolve(); },
         get(id) { return Promise.resolve(dLoad(name).find(x => x.id === id) || null); },
@@ -2549,6 +2566,13 @@ const cgAberta = () => S.almInv.find(x => x.situacao === 'aberto') || null;
 const cgDe = id => S.almInv.find(x => x.id === id) || null;
 const cgChave = k => k.replace(':', '_');
 function cgContagens(inv) { const o = {}, c = (inv && inv.contagens) || {}; Object.keys(c).forEach(k => { o[k.replace('_', ':')] = c[k]; }); return o; }
+/* recontagem e decisão SEM depender de quem conta apagar marcas (v0.3.6: a regra do Firestore só deixa quem conta gravar `contagens`).
+   recontar[k] = nº de contagens anteriores + 1 na hora do pedido → continua pedida enquanto o item não for contado de novo;
+   resolucoes[k].nCont = nº de contagens anteriores na hora da decisão → a decisão perde a validade se o item for contado de novo.
+   (true = formato antigo: recontagem pedida.) */
+const cgNAnt = c => ((c && c.ant) || []).length;
+function cgRc(inv, k) { const v = (inv.recontar || {})[cgChave(k)]; if (!v) return false; if (v === true) return true; return cgNAnt(cgContagens(inv)[k]) < Number(v); }
+function cgRs(inv, k) { const r = (inv.resolucoes || {})[cgChave(k)]; if (!r) return null; if (r.nCont == null) return r; return cgNAnt(cgContagens(inv)[k]) === r.nCont ? r : null; }
 const cgDif = c => c ? alR((Number(c.cont) || 0) - (Number((c.esp || {}).total) || 0)) : 0;
 /* ordem do lugar: portas em sequência, depois gavetas, depois o resto (pedido do Elias) */
 function cgOrdemLocal(loc) {
@@ -2581,7 +2605,7 @@ const cgPartesTxt = p => CG_PARTES.filter(x => p && (x[0] === 'mat' ? p.mat !== 
 function cgProgresso(inv) {
   const al = cgAlvos(inv), ct = cgContagens(inv), rc = inv.recontar || {};
   const feitos = al.filter(a => ct[a.k]), difs = feitos.filter(a => cgDif(ct[a.k]) !== 0);
-  return { al: al, ct: ct, total: al.length, feitos: feitos.length, difs: difs, bateram: feitos.length - difs.length, recontar: al.filter(a => rc[cgChave(a.k)]), faltam: al.filter(a => !ct[a.k]) };
+  return { al: al, ct: ct, total: al.length, feitos: feitos.length, difs: difs, bateram: feitos.length - difs.length, recontar: al.filter(a => cgRc(inv, a.k)), faltam: al.filter(a => !ct[a.k]) };
 }
 const cgPodeAbrir = () => alSup();
 const cgSouContador = inv => !!inv && (inv.contadorId === S.user.id || (!inv.contadorId && alPode()));
@@ -2592,9 +2616,9 @@ function cgLocais() { const u = (S.empresa && S.empresa.unidades) || []; return 
 
 /* ---------- situação de cada material na conferência ---------- */
 function cgSitItem(inv, a, ct) {
-  const c = ct[a.k], rc = inv.recontar || {}, rs = (inv.resolucoes || {})[cgChave(a.k)];
+  const c = ct[a.k], rs = cgRs(inv, a.k);
   if (!c) return { id: 'falta', txt: 'Falta contar', cor: '' };
-  if (rc[cgChave(a.k)]) return { id: 'recontar', txt: 'Recontagem pedida', cor: 'wa' };
+  if (cgRc(inv, a.k)) return { id: 'recontar', txt: 'Recontagem pedida', cor: 'wa' };
   const d = cgDif(c);
   if (!d) return c.ant && c.ant.length ? { id: 'bateu2', txt: 'Bateu na recontagem', cor: 'ok' } : { id: 'bateu', txt: 'Bateu', cor: 'ok' };
   if (rs) return { id: 'resolvido', txt: rs.tipo === 'saida_retro' ? 'Saída esquecida' : rs.tipo, cor: rs.tipo === 'saida_retro' ? 'cr' : '' };
@@ -2649,7 +2673,7 @@ function cgContar(inv, pr) {
   const rec = pr.recontar.filter(vis);
   if (rec.length) h += '<section class="pn cg-grp cg-rec"><div class="hd"><span class="ico ini-wa">' + ic('recontar') + '</span><h3>Recontar</h3><em>' + rec.length + '</em><span class="sp"></span><small>O Líder pediu para contar de novo</small></div>' + rec.map(a => cgItemHTML(inv, a, null, true)).join('') + '</section>';
   locais.forEach(l => {
-    const g = pr.al.filter(a => a.local === l && vis(a) && !rc[cgChave(a.k)]); if (!g.length) return;
+    const g = pr.al.filter(a => a.local === l && vis(a) && !cgRc(inv, a.k)); if (!g.length) return;
     const tot = pr.al.filter(a => a.local === l), f = tot.filter(a => pr.ct[a.k]).length;
     h += '<section class="pn cg-grp"><div class="hd"><span class="ico">' + ic('caixa') + '</span><h3>' + esc(l) + '</h3><em>' + f + '/' + tot.length + '</em><span class="sp"></span>' + (f === tot.length ? alPill('Pronto', 'ok') : '') + '</div>' + g.map(a => cgItemHTML(inv, a, pr.ct[a.k], false)).join('') + '</section>';
   });
@@ -2678,8 +2702,7 @@ async function cgSalvar(k, achou) {
   for (const l of lotes) { const t = String(rz[l.id] == null ? '' : rz[l.id]).trim(); if (t === '') { aviso('Conte todos os lotes de ' + a.i.nome + ' (0 se não achou).', 'erro'); const e = $('[data-cgk="' + k + '"][data-cgl="' + l.id + '"]'); if (e) e.focus(); return; } const n = alNum(t); if (!(n >= 0)) { aviso('Quantidade inválida em ' + a.i.nome + '.', 'erro'); return; } tot += n; if (l.id) lt[l.id] = alR(n); }
   const ant = cgContagens(inv)[k], reg = { porId: S.user.id, porNome: S.user.nome, ts: nowISO(), obs: '', esp: cgEsperado(a), lotes: lt, cont: alR(tot) };
   if (ant) reg.ant = (ant.ant || []).concat([{ cont: ant.cont, lotes: ant.lotes || {}, porNome: ant.porNome, ts: ant.ts, esp: ant.esp }]);
-  const patch = { ['contagens.' + cgChave(k)]: reg }; if ((inv.recontar || {})[cgChave(k)]) patch['recontar.' + cgChave(k)] = false;
-  if ((inv.resolucoes || {})[cgChave(k)]) patch['resolucoes.' + cgChave(k)] = null;
+  const patch = { ['contagens.' + cgChave(k)]: reg }; /* só `contagens`: a recontagem pedida e a decisão antiga deixam de valer sozinhas (cgRc, cgRs) */
   delete S.cgRasc[k]; if (S.cgEdit === k) S.cgEdit = '';
   try { await Data.col('sv2_alm_inv').update(inv.id, patch); } catch (e) { aviso(svErro(e), 'erro'); return; }
   /* foco no próximo que falta */
@@ -2688,13 +2711,13 @@ async function cgSalvar(k, achou) {
 
 /* ---------- conferência (Líder/Administrador) ---------- */
 function cgConferencia(inv, pr) {
-  const rs = inv.resolucoes || {}, pend = pr.difs.filter(a => !(inv.recontar || {})[cgChave(a.k)] && !rs[cgChave(a.k)]), recPedida = pr.recontar.length;
+  const rs = inv.resolucoes || {}, pend = pr.difs.filter(a => !cgRc(inv, a.k) && !cgRs(inv, a.k)), recPedida = pr.recontar.length;
   const jaRecontados = pr.difs.filter(a => (pr.ct[a.k].ant || []).length), naoRecontados = pend.filter(a => !(pr.ct[a.k].ant || []).length);
   const eu = Object.keys(pr.ct).some(k => pr.ct[k] && pr.ct[k].porId === S.user.id);
   let h = '<div class="kps cg-kps"><div class="kp"><b class="num">' + pr.feitos + '</b><span>contados de ' + pr.total + '</span></div><div class="kp' + (pr.bateram ? ' ok' : '') + '"><b class="num">' + pr.bateram + '</b><span>bateram</span></div><div class="kp' + (pr.difs.length ? ' cr' : '') + '"><b class="num">' + pr.difs.length + '</b><span>não bateram</span></div><div class="kp' + (recPedida ? ' wa' : '') + '"><b class="num">' + recPedida + '</b><span>em recontagem</span></div></div>';
   if (eu) h += '<p class="al-aviso">' + ic('info') + 'Você também contou. O recomendado é que quem conta não seja quem confere.</p>';
   if (naoRecontados.length) h += '<section class="pn cg-sug"><div class="cg-sgt"><span class="ico ini-wa">' + ic('recontar') + '</span><div><b>Sugestão: recontar os ' + naoRecontados.length + ' que não bateram</b><span>Antes de ajustar, peça para ' + esc(inv.contadorNome || 'quem contou') + ' contar de novo, às cegas. Se bater na recontagem, foi erro de contagem e nada muda no estoque.</span></div><button type="button" class="bt pr" data-act="cg-recontar">' + ic('recontar') + 'Pedir recontagem (' + naoRecontados.length + ')</button></div></section>';
-  const linhas = pr.al.filter(a => pr.ct[a.k] && (cgDif(pr.ct[a.k]) !== 0 || (pr.ct[a.k].ant || []).length || (inv.recontar || {})[cgChave(a.k)]));
+  const linhas = pr.al.filter(a => pr.ct[a.k] && (cgDif(pr.ct[a.k]) !== 0 || (pr.ct[a.k].ant || []).length || cgRc(inv, a.k)));
   h += tbHTML({ id: 'cg-conf', titulo: 'Conferência ' + inv.numero, unidade: 'materiais', linhas: linhas.map(a => Object.assign({ id: a.k }, a)), aoClicar: k => cgAbreItem(k), selecionado: S._cgSel, buscaDica: 'Buscar material ou lugar',
     vazio: pr.feitos ? 'Tudo o que foi contado bateu com o sistema.' : 'Nada contado ainda.',
     busca: a => [a.i.nome, a.i.codigo, a.local].join(' '),
@@ -2708,15 +2731,15 @@ function cgConferencia(inv, pr) {
       { k: 'c2', rot: 'Recontagem', tipo: 'num', v: a => { const c = pr.ct[a.k]; return c.ant && c.ant.length ? c.cont : ''; } },
       { k: 'dif', rot: 'Diferença', tipo: 'num', v: a => cgDif(pr.ct[a.k]), html: a => { const d = cgDif(pr.ct[a.k]); return d ? '<b class="cg-d ' + (d < 0 ? 'neg' : 'pos') + '">' + (d > 0 ? '+' : '') + alQ(d) + '</b>' : '<span class="tb-nada">0</span>'; } },
       { k: 'sit', rot: 'Situação', v: a => cgSitItem(inv, a, pr.ct).txt, html: a => { const s = cgSitItem(inv, a, pr.ct); return alPill(s.txt, s.cor); } }] });
-  const falta = pr.difs.filter(a => !(inv.recontar || {})[cgChave(a.k)] && !rs[cgChave(a.k)]).length;
+  const falta = pr.difs.filter(a => !cgRc(inv, a.k) && !cgRs(inv, a.k)).length;
   h += '<section class="pn cg-conc"><div class="cg-cc"><div><b>' + (falta ? 'Falta decidir ' + falta + (falta === 1 ? ' material' : ' materiais') : recPedida ? 'Esperando a recontagem de ' + recPedida : 'Pronto para concluir') + '</b><span>' + (pr.faltam.length ? pr.faltam.length + ' material(is) sem contagem ficam como estão no sistema. ' : '') + 'Ao concluir, as decisões viram lançamentos (ajuste lote a lote ou saída com a data certa) e a contagem fica no histórico.</span></div>' +
     '<button type="button" class="bt pr" data-act="cg-concluir"' + (falta || recPedida || !pr.feitos ? ' disabled' : '') + '>' + ic('ok') + 'Concluir contagem</button></div></section>';
   return h;
 }
 async function cgPedirRecontagem() {
   const inv = cgAberta(); if (!inv || !alSup()) return; const pr = cgProgresso(inv), rs = inv.resolucoes || {};
-  const alvo = pr.difs.filter(a => !(inv.recontar || {})[cgChave(a.k)] && !rs[cgChave(a.k)] && !(pr.ct[a.k].ant || []).length); if (!alvo.length) return;
-  const patch = {}; alvo.forEach(a => { patch['recontar.' + cgChave(a.k)] = true; });
+  const alvo = pr.difs.filter(a => !cgRc(inv, a.k) && !cgRs(inv, a.k) && !(pr.ct[a.k].ant || []).length); if (!alvo.length) return;
+  const patch = {}; alvo.forEach(a => { patch['recontar.' + cgChave(a.k)] = cgNAnt(pr.ct[a.k]) + 1; });
   try { await Data.col('sv2_alm_inv').update(inv.id, patch); } catch (e) { aviso(svErro(e), 'erro'); return; }
   if (inv.contadorId && inv.contadorId !== S.user.id) Notif.send({ nivel: 'aviso', titulo: 'Recontar ' + alvo.length + ' material(is) · ' + inv.numero, texto: S.user.nome + ' pediu para contar de novo: ' + alvo.slice(0, 6).map(a => a.i.nome).join(', ') + (alvo.length > 6 ? '…' : '') + '.', para: [inv.contadorId], refTipo: 'inventario', refId: inv.id }).catch(() => {});
   Audit.log({ acao: 'inventario_recontar', entidade: 'almox_inv', entidadeId: inv.id, resumo: 'Pediu recontagem no ' + inv.numero + ': ' + alvo.map(a => a.i.nome).join(', ') });
@@ -2727,14 +2750,14 @@ async function cgPedirRecontagem() {
 function cgAbreItem(k) {
   S._cgSel = k; gvAbrir(() => {
     const inv = cgAberta(); if (!inv) return null; const a = cgAlvos(inv).find(x => x.k === k), c = cgContagens(inv)[k]; if (!a || !c) return null;
-    const s = cgSitItem(inv, a, cgContagens(inv)), d = cgDif(c), rs = (inv.resolucoes || {})[cgChave(k)], i = a.i;
+    const s = cgSitItem(inv, a, cgContagens(inv)), d = cgDif(c), rs = cgRs(inv, k), i = a.i;
     const lts = Object.keys(Object.assign({}, (c.esp || {}).lotes, c.lotes)).map(lid => { const l = alIdx().lots[lid] || { lote: '?' }, e = Number(((c.esp || {}).lotes || {})[lid]) || 0, n = Number((c.lotes || {})[lid]) || 0; return [l.lote || 'sem lote', e, n, alR(n - e)]; });
     return { ico: 'caixa', sub: 'Conferência ' + inv.numero + ' · ' + a.local, titulo: i.nome, pill: alPill(s.txt, s.cor),
       corpo: gvNums([[alQ((c.esp || {}).total || 0), 'sistema (' + (i.un || 'un') + ')'], [alQ(c.cont), (c.ant && c.ant.length ? 'recontagem' : 'contado')], [(d > 0 ? '+' : '') + alQ(d), 'diferença', d < 0 ? 'cr' : d > 0 ? 'wa' : '']]) +
         (lts.length > 1 ? '<p class="gv-h">Lote a lote</p><div class="gv-lotes">' + lts.map(x => '<div class="gv-lote"><span>' + esc(x[0]) + '</span><span class="num">sistema ' + alQ(x[1]) + ' · contado ' + alQ(x[2]) + (x[3] ? ' · <b class="cg-d ' + (x[3] < 0 ? 'neg' : 'pos') + '">' + (x[3] > 0 ? '+' : '') + alQ(x[3]) + '</b>' : '') + '</span></div>').join('') + '</div>' : '') +
         '<p class="gv-h">Contagens</p>' + gvLinha((c.ant || []).map((x, n) => [(n ? (n + 1) + 'ª' : '1ª') + ' contagem: ' + alQ(x.cont), (x.porNome || '') + ' · ' + fmtDT(x.ts)]).concat([[((c.ant || []).length ? 'Recontagem' : 'Contagem') + ': ' + alQ(c.cont), (c.porNome || '') + ' · ' + fmtDT(c.ts)]])) +
         (rs ? '<p class="gv-h">Decisão</p>' + gvCampos([['O que aconteceu', rs.tipo === 'saida_retro' ? 'Saída esquecida (erro de lançamento)' : rs.tipo], ['Data da saída', rs.data ? fmtD(rs.data) : ''], ['Motivo', rs.motivo], ['Quem esqueceu', rs.respNome], ['Reclamação', rs.reclamacao], ['Decidido por', (rs.porNome || '') + ' · ' + fmtDT(rs.ts)]]) : ''),
-      rodape: d && !(inv.recontar || {})[cgChave(k)] ? (!(c.ant || []).length ? '<button type="button" class="bt" data-act="cg-recontar1" data-k="' + esc(k) + '">' + ic('recontar') + 'Pedir recontagem</button>' : '') + '<button type="button" class="bt pr" data-act="cg-decidir" data-k="' + esc(k) + '">' + ic(rs ? 'lapis' : 'ok') + (rs ? 'Mudar a decisão' : 'Decidir') + '</button>' : '' };
+      rodape: d && !cgRc(inv, k) ? (!(c.ant || []).length ? '<button type="button" class="bt" data-act="cg-recontar1" data-k="' + esc(k) + '">' + ic('recontar') + 'Pedir recontagem</button>' : '') + '<button type="button" class="bt pr" data-act="cg-decidir" data-k="' + esc(k) + '">' + ic(rs ? 'lapis' : 'ok') + (rs ? 'Mudar a decisão' : 'Decidir') + '</button>' : '' };
   });
   render();
 }
@@ -2753,7 +2776,7 @@ DD_AO.lc = (function (ant) { return (k, v) => { const f = S.fm; if (f && (k === 
 async function cgResOk() {
   const f = S.fm, inv = cgAberta(); if (!f || !inv) return;
   if (!f.tipo) return lcErro('Escolha o que aconteceu.');
-  const r = { tipo: f.tipo, porId: S.user.id, porNome: S.user.nome, ts: nowISO(), obs: String(f.obs || '').trim() };
+  const r = { tipo: f.tipo, porId: S.user.id, porNome: S.user.nome, ts: nowISO(), obs: String(f.obs || '').trim(), nCont: cgNAnt(cgContagens(inv)[f.kItem]) };
   if (f.tipo === 'saida_retro') {
     const er = validaData(f.data); if (er) return lcErro(er);
     if (String(inv.abertoEm || '').slice(0, 10) < f.data) return lcErro('A saída esquecida tem de ser antes da contagem (' + fmtD(String(inv.abertoEm).slice(0, 10)) + ').');
@@ -2771,12 +2794,12 @@ const cgEqCopia = id => { if (!CG_EQ_COP[id]) { const e = S.almEq.find(x => x.id
 async function cgConcluir() { CG_EQ_COP = {};
   const inv = cgAberta(); if (!inv || !alSup()) return; const pr = cgProgresso(inv), rs = inv.resolucoes || {};
   if (pr.recontar.length) { aviso('Ainda há recontagem pedida.', 'erro'); return; }
-  const semDec = pr.difs.filter(a => !rs[cgChave(a.k)]); if (semDec.length) { aviso('Falta decidir: ' + semDec.slice(0, 3).map(a => a.i.nome).join(', ') + (semDec.length > 3 ? '…' : '') + '.', 'erro'); return; }
+  const semDec = pr.difs.filter(a => !cgRs(inv, a.k)); if (semDec.length) { aviso('Falta decidir: ' + semDec.slice(0, 3).map(a => a.i.nome).join(', ') + (semDec.length > 3 ? '…' : '') + '.', 'erro'); return; }
   if (S._cgConc) return; S._cgConc = true;
   const res = { contados: pr.feitos, total: pr.total, difs: pr.difs.length, bateramNaRecontagem: pr.al.filter(a => pr.ct[a.k] && !cgDif(pr.ct[a.k]) && (pr.ct[a.k].ant || []).length).length, erros: 0, ajustes: [] };
   try {
     for (const a of pr.difs) {
-      const c = pr.ct[a.k], r = rs[cgChave(a.k)];
+      const c = pr.ct[a.k], r = cgRs(inv, a.k);
       if (a.parte !== 'mat') {
         const e = cgEqCopia(a.e.id); if (!e) continue; const mot = 'Contagem ' + inv.numero + ': ' + (r.tipo === 'nao_achado' ? 'não encontrado' : r.tipo) + (r.obs ? ' — ' + r.obs : '');
         let patch = {}, ev;
@@ -2902,8 +2925,8 @@ document.addEventListener('click', e => {
   else if (a === 'cg-cancelar') { if (alSup()) lcAbrir({ k: 'cgcanc', motivoG: '' }); }
   else if (a === 'cg-canc-ok') cgCancOk();
   else if (a === 'cg-recontar') cgPedirRecontagem();
-  else if (a === 'cg-recontar1') { const inv = cgAberta(); if (inv && alSup()) Data.col('sv2_alm_inv').update(inv.id, { ['recontar.' + cgChave(k)]: true }).then(() => { aviso('Recontagem pedida.'); if (inv.contadorId && inv.contadorId !== S.user.id) Notif.send({ nivel: 'aviso', titulo: 'Recontar 1 material · ' + inv.numero, texto: S.user.nome + ' pediu para contar de novo: ' + ((alItem(k.slice(2)) || {}).nome || '') + '.', para: [inv.contadorId], refTipo: 'inventario', refId: inv.id }).catch(() => {}); }).catch(er => aviso(svErro(er), 'erro')); }
-  else if (a === 'cg-decidir') { const inv = cgAberta(), rs = inv && (inv.resolucoes || {})[cgChave(k)], vol = S.gv; lcAbrir(Object.assign({ k: 'cgres', kItem: k, tipo: '', data: hojeISO(), respId: '', motivo: '', motivoTxt: '', guardar: '0', reclamacao: '', obs: '' }, rs ? { tipo: rs.tipo, data: rs.data || hojeISO(), respId: rs.respId || '', motivo: rs.motivo || '', reclamacao: rs.reclamacao || '', obs: rs.obs || '' } : {}), vol ? () => gvAbrir(vol) : null); }
+  else if (a === 'cg-recontar1') { const inv = cgAberta(); if (inv && alSup()) Data.col('sv2_alm_inv').update(inv.id, { ['recontar.' + cgChave(k)]: cgNAnt(cgContagens(inv)[k]) + 1 }).then(() => { aviso('Recontagem pedida.'); if (inv.contadorId && inv.contadorId !== S.user.id) Notif.send({ nivel: 'aviso', titulo: 'Recontar 1 material · ' + inv.numero, texto: S.user.nome + ' pediu para contar de novo: ' + ((alItem(k.slice(2)) || {}).nome || '') + '.', para: [inv.contadorId], refTipo: 'inventario', refId: inv.id }).catch(() => {}); }).catch(er => aviso(svErro(er), 'erro')); }
+  else if (a === 'cg-decidir') { const inv = cgAberta(), rs = inv && cgRs(inv, k), vol = S.gv; lcAbrir(Object.assign({ k: 'cgres', kItem: k, tipo: '', data: hojeISO(), respId: '', motivo: '', motivoTxt: '', guardar: '0', reclamacao: '', obs: '' }, rs ? { tipo: rs.tipo, data: rs.data || hojeISO(), respId: rs.respId || '', motivo: rs.motivo || '', reclamacao: rs.reclamacao || '', obs: rs.obs || '' } : {}), vol ? () => gvAbrir(vol) : null); }
   else if (a === 'cg-res-ok') cgResOk();
   else if (a === 'cg-concluir') cgConcluir();
   else if (a === 'cg-ver-conf') { S.cgVista = 'conf'; render(); }
@@ -2967,7 +2990,7 @@ function cbPassos(c, mini) {
   /* linha do tempo com FLUIDO (v0.3.4): as etapas já feitas que esta pessoa ainda não viu começam apagadas e o fluido sobe até elas */
   const feitas = es.findIndex(x => !x.feito) < 0 ? es.length : es.findIndex(x => !x.feito), visto = cbNivelVisto(c.id, feitas);
   return '<div class="cb-tlw" data-cbtl="' + esc(c.id) + '" data-feitas="' + feitas + '"><span class="cb-tubo" aria-hidden="true"><i class="cb-fluido"></i></span><ol class="cb-tl">' + es.map((x, n) => { const apagada = x.feito && n >= visto;
-    return '<li class="' + (x.feito ? 'ok' : x.atual ? 'at' : '') + (apagada ? ' esp' : '') + (x.parcial ? ' pc' : '') + '"><span class="cb-n"><span class="cb-nn">' + (n + 1) + '</span>' + ic('ok') + '</span><div><b>' + esc(x.nome) + (x.data ? ' <em>' + fmtD(x.data) + '</em>' : '') + '</b>' + (x.txt ? '<span>' + esc(x.txt) + '</span>' : '') + (x.quem ? '<small>' + esc(x.quem) + '</small>' : '') + (x.atual ? '<small class="cb-agora">próxima etapa</small>' : '') + '</div></li>'; }).join('') + '</ol></div>';}
+    return '<li class="' + (x.feito ? 'ok' : x.atual ? 'at' : '') + (apagada ? ' esp' : '') + (x.parcial ? ' pc' : '') + '"><span class="cb-n"><span class="cb-ib"><i class="cb-in"></i></span><span class="cb-nn">' + (n + 1) + '</span>' + ic('ok') + '</span><div><b>' + esc(x.nome) + (x.data ? ' <em>' + fmtD(x.data) + '</em>' : '') + '</b>' + (x.txt ? '<span>' + esc(x.txt) + '</span>' : '') + (x.quem ? '<small>' + esc(x.quem) + '</small>' : '') + (x.atual ? '<small class="cb-agora">próxima etapa</small>' : '') + '</div></li>'; }).join('') + '</ol></div>';}
 
 /* ======================= tela (Equipamentos › Calibração) ======================= */
 function cbTela() {
@@ -3224,7 +3247,7 @@ document.addEventListener('input', e => { const t = e.target; if (t && t.getAttr
    Cada pessoa tem guardado até onde já VIU cada solicitação (cw-cbvisto-<pessoa>-<id>). Ao abrir a gaveta, o fluido sobe da última
    etapa vista até a atual; com 2 ou mais etapas novas, sobe uma, espera 0,4 s, sobe a próxima. Com a gaveta aberta, uma mudança sobe na hora.
    "Reduzir movimento" no aparelho: aparece pronto, sem animação. */
-const CB_SOBE = 600, CB_PAUSA = 400;
+const CB_SOBE = 600, CB_PAUSA = 400, CB_GOTA = 300, CB_GOTA_PARA = 16; /* opção 3 · Gota, escolhida pelo Elias em 06/11 09:07 */
 S._cbNivel = S._cbNivel || {}; S._cbTok = S._cbTok || {};
 const cbChaveVisto = id => 'cw-cbvisto-' + ((S.user && S.user.id) || '') + '-' + id;
 function cbNivelVisto(id, feitas) {
@@ -3238,7 +3261,7 @@ function cbFluir(g, abriuAgora) {
   const tubo = ol.querySelector('.cb-tubo'), fl = ol.querySelector('.cb-fluido'); if (!lis.length || !tubo) return;
   const centro = n => lis[n].offsetTop + 14, topo = centro(0);
   tubo.style.top = topo + 'px'; tubo.style.height = (centro(lis.length - 1) - topo) + 'px';
-  const alto = n => n <= 1 ? 0 : centro(n - 1) - topo; /* n = quantas etapas acesas */
+  const alto = n => n <= 1 ? 0 : Math.max(0, centro(n - 1) - topo - CB_GOTA_PARA); /* n = quantas etapas acesas; o fluido para na borda da bolinha (opção 3 · Gota) */
   let nivel = cbNivelVisto(id, feitas); const tok = (S._cbTok[id] || 0) + 1; S._cbTok[id] = tok;
   fl.style.transition = 'none'; fl.style.height = alto(nivel) + 'px'; void fl.offsetHeight;
   const grava = n => { S._cbNivel[id] = n; Store.set(cbChaveVisto(id), n); };
@@ -3249,10 +3272,15 @@ function cbFluir(g, abriuAgora) {
     nivel++; fl.style.transition = 'height ' + CB_SOBE + 'ms cubic-bezier(.45,.05,.3,1)'; fl.style.height = alto(nivel) + 'px';
     setTimeout(() => {
       if (S._cbTok[id] !== tok || !ol.isConnected) return;
-      const li = lis[nivel - 1]; if (li) { li.classList.remove('esp'); li.classList.add('acende'); }
-      grava(nivel);
-      if (nivel < feitas) setTimeout(passo, CB_PAUSA); else ol.classList.remove('cb-correndo');
-    }, nivel === 1 ? 0 : CB_SOBE);
+      /* cai uma gota na bolinha; ela enche de baixo para cima, solta uma onda e aparece o certo */
+      const g = document.createElement('i'); g.className = 'cb-gota'; g.style.top = (topo + alto(nivel) - 3) + 'px'; ol.appendChild(g);
+      setTimeout(() => {
+        g.remove(); if (S._cbTok[id] !== tok || !ol.isConnected) return;
+        const li = lis[nivel - 1]; if (li) { li.classList.remove('esp'); li.classList.add('acende'); const n = li.querySelector('.cb-n'), r = document.createElement('i'); r.className = 'cb-onda'; n.appendChild(r); setTimeout(() => r.remove(), 650); }
+        grava(nivel);
+        if (nivel < feitas) setTimeout(passo, CB_PAUSA); else ol.classList.remove('cb-correndo');
+      }, CB_GOTA);
+    }, CB_SOBE);
   };
   setTimeout(passo, abriuAgora ? 220 : 0);
 }
@@ -3304,7 +3332,8 @@ function lgCurto(e) {
 }
 /* outros iguais a este (mesmo nome): onde estão — para achar a reserva */
 const lgIguais = e => S.almEq.filter(x => x.id !== e.id && x.situacao !== 'baixa' && x.tipo !== 'qtd' && tbNorm(x.nome).trim() === tbNorm(e.nome).trim());
-function lgOndeHTML(e) {
+function lgOndeHTML(e) { return lgPendHTML(e) + lgOndeHTML0(e); }
+function lgOndeHTML0(e) {
   if (e.tipo === 'qtd') {
     const labs = lgLabs(e); if (!labs.length) return '';
     return '<p class="gv-h">Onde ficam</p>' + labs.map(lab => '<div class="lg-lab">' + (labs.length > 1 || lab ? '<small>' + esc(lab || 'Sem laboratório') + ' · ' + alQ((e.qtdLocal || {})[lab] || 0) + '</small>' : '') + '<div class="gv-lotes">' + lgDist(e, lab).map(x => '<div class="gv-lote lg-l"><span>' + ic(x.tipo === 'guarda' ? 'guarda' : x.tipo === 'uso' ? 'bancada' : 'alerta') + '<b>' + esc(x.lugar || 'Sem lugar definido') + '</b>' + (x.tipo ? '<em class="lg-tp ' + x.tipo + '">' + (x.tipo === 'guarda' ? 'guardadas' : 'em uso') + '</em>' : '') + '</span><b class="num">' + alQ(x.qtd) + '</b></div>').join('') + '</div></div>').join('');
@@ -3332,54 +3361,75 @@ function lgCalProblema(e) {
 const lgEq = f => S.almEq.find(x => x.id === f.eqId) || null;
 LC_FORM.lgguardar = f => { const e = lgEq(f); if (!e) return null; return { ico: 'guarda', sub: 'Guardar · ' + (e.local || ''), titulo: eqNomeC(e), corpo: lcMsg() +
   lcAv('Fica guardado' + (e.precisaCal ? ' e a calibração fica pausada enquanto estiver guardado' : '') + '. Quem procurar vê onde ele está.') +
-  lcBl('Onde vai ficar guardado', lgCampo('lugar', f, 'guarda', 'Ex.: Gaveta 02, Porta 05')) + lcBl('Observação', lcIn('obs', f.obs, ' placeholder="opcional (ex.: reserva da Bancada 1)"')), rodape: lcPe('lg-guardar-ok', 'Guardar') }; };
+  lcBl('Onde vai ficar guardado', lgCampo('lugar', f, 'guarda', 'Ex.: Gaveta 02, Porta 05')) + lgPorque(f, 'Ex.: reserva da Bancada 1; voltou da manutenção'), rodape: lcPe('lg-guardar-ok', lgPrecisaPedir() ? 'Pedir para guardar' : 'Guardar') }; };
 LC_FORM.lgusar = f => { const e = lgEq(f); if (!e) return null; const pb = lgCalProblema(e); return { ico: 'bancada', sub: 'Pôr em uso · ' + (e.local || ''), titulo: eqNomeC(e), corpo: lcMsg() +
   (pb ? lcAv('Atenção: ' + esc(pb) + '. Ele entra como <b>Uso com restrição</b> e os seus superiores são avisados.', 'cr') : '') +
-  lcBl('Onde vai ficar em uso', lgCampo('lugar', f, 'uso', 'Ex.: Bancada 1, Suporte de vidrarias')) + lcBl('Observação', lcIn('obs', f.obs, ' placeholder="opcional (ex.: substitui a MP-02, que deu problema)"')), rodape: lcPe('lg-usar-ok', 'Pôr em uso') }; };
+  lcBl('Onde vai ficar em uso', lgCampo('lugar', f, 'uso', 'Ex.: Bancada 1, Suporte de vidrarias')) + lgPorque(f, 'Ex.: substitui a MP-01, que deu problema'), rodape: lcPe('lg-usar-ok', lgPrecisaPedir() ? 'Pedir para pôr em uso' : 'Pôr em uso') }; };
 LC_FORM.lgref = f => { const e = lgEq(f); if (!e) return null; return { ico: 'pino', sub: 'Lugares · ' + (e.local || ''), titulo: eqNomeC(e), corpo: lcMsg() +
   lcAv('Os dois lugares de referência: onde ele fica quando está guardado e onde fica quando está em uso. Guardar e Pôr em uso já vêm com eles.') +
-  lcBl('Quando guardado', lgCampo('pg', f, 'guarda')) + lcBl('Quando em uso', lgCampo('pu', f, 'uso')), rodape: lcPe('lg-ref-ok', 'Guardar lugares') }; };
+  lcBl('Quando guardado', lgCampo('pg', f, 'guarda')) + lcBl('Quando em uso', lgCampo('pu', f, 'uso')) + lgPorque(f, 'Ex.: mudou de armário'), rodape: lcPe('lg-ref-ok', lgPrecisaPedir() ? 'Pedir a mudança' : 'Guardar lugares') }; };
 LC_FORM.lgdist = f => { const e = lgEq(f); if (!e) return null; const labs = lgLabs(e), tot = Number((e.qtdLocal || {})[f.lab]) || 0, soma = f.d.reduce((s, x) => s + (alNum(x.q) || 0), 0), sobra = alR(tot - soma);
   return { ico: 'pino', sub: 'Onde ficam · vidraria', titulo: e.nome, corpo: lcMsg() +
     (labs.length > 1 ? lcBl('Laboratório', ddHTML('lc:lgLab', f.lab, labs.map(l => [l, l + ' · ' + alQ(e.qtdLocal[l])]))) : '') +
     gvNums([[alQ(tot), 'no ' + (f.lab || 'laboratório')], [alQ(soma), 'com lugar'], [alQ(Math.abs(sobra)), sobra < 0 ? 'passou do total' : 'sem lugar', sobra < 0 ? 'cr' : sobra > 0 ? 'wa' : '']]) +
     '<div class="lg-dl">' + f.d.map((x, n) => '<div class="lg-dr">' + lgCampo('d.' + n + '.l', x.__f || (x.__f = { ['d.' + n + '.l']: x.l }), '') + '<input class="fm-i num" data-fm="d.' + n + '.q" inputmode="decimal" autocomplete="off" value="' + esc(x.q) + '" aria-label="Quantidade"><button type="button" class="bt ic-so" data-act="lg-dist-rm" data-n="' + n + '" title="Tirar este lugar" aria-label="Tirar este lugar">' + ic('lixo') + '</button></div>').join('') + '</div>' +
     '<button type="button" class="bt lg-add" data-act="lg-dist-add">' + ic('mais') + 'Mais um lugar</button>' +
-    '<p class="cg-ob">Para mudar o total, use o Inventário. Aqui só se diz onde cada uma está.</p>', rodape: lcPe('lg-dist-ok', 'Guardar') }; };
+    '<p class="cg-ob">Para mudar o total, use o Inventário. Aqui só se diz onde cada uma está.</p>' + lgPorque(f, 'Ex.: separei 4 para o suporte da bancada'), rodape: lcPe('lg-dist-ok', lgPrecisaPedir() ? 'Pedir a mudança' : 'Guardar') }; };
 DD_AO.lc = (function (ant) { return (k, v) => { const f = S.fm; if (f && k === 'lgLab') { f.lab = v; f.d = lgDistForm(lgEq(f), v); f.sujo = true; f.msg = ''; gvDesenha(true); return; } ant(k, v); }; })(DD_AO.lc);
 const lgDistForm = (e, lab) => { const l = lgDist(e, lab).filter(x => x.lugar).map(x => ({ l: x.lugar, q: String(x.qtd) })); return l.length ? l : [{ l: '', q: '' }]; };
 
-/* ---------- gravar ---------- */
-async function lgGrava(e, patch, ev, resumo) {
-  if (!lcTravar()) return false;
-  try {
-    await Data.col('sv2_alm_equip').update(e.id, Object.assign({}, patch, { hist: (e.hist || []).concat([Object.assign({ ts: nowISO(), porId: S.user.id, porNome: S.user.nome, data: hojeISO() }, ev)]), atualizadoEm: nowISO() }));
-    Audit.log({ acao: 'equip_' + ev.tipo, entidade: 'almox_equip', entidadeId: e.id, resumo: eqNomeC(e) + ': ' + resumo, depois: patch });
-    return true;
-  } catch (er) { lcErro(svErro(er)); return false; }
+/* ---------- gravar ----------
+   v0.3.6 (decisão do Elias de 06/11 09:07): o Colaborador pode guardar, pôr em uso e mudar os lugares, mas cada operação fica
+   AGUARDANDO CONFIRMAÇÃO (pedido em sv2_aprov, com o porquê) até o Elias ou um líder ★ confirmar; ele pode usar o equipamento
+   normalmente, só o registro espera. Quem grava no equipamento é quem confirma (as regras do Firestore só deixam o líder ★/Principal
+   gravar posGuarda, posUso e qtdPos). O líder ★/Administrador aplica na hora. */
+const LG_ACAO = { lg_guardar: 'Guardar', lg_usar: 'Pôr em uso', lg_ref: 'Lugares de guarda e de uso', lg_dist: 'Mudar os lugares' };
+const lgPendentes = e => S.aprov.filter(a => a.status === 'pendente' && a.tipo === 'almox' && a.payload && a.payload.refId === e.id && LG_ACAO[a.payload.acao]);
+const lgPrecisaPedir = () => !alSup();
+/* monta a mudança a partir do pedido e do equipamento como ele está AGORA (na hora de aplicar) */
+function lgMontar(p, e) {
+  const quem = p.porNome ? ' (pedido de ' + p.porNome + ')' : '', por = p.motivo ? ' — ' + p.motivo : '';
+  if (p.acao === 'lg_guardar') { const patch = { situacao: 'armazenado', guardadoEm: hojeISO(), posicao: p.lugar, posGuarda: p.lugar }; if (!e.posUso && e.posicao && !lgGuardado(e)) patch.posUso = lgNome(e.posicao);
+    return { patch: patch, ev: { tipo: 'guardar', texto: 'Guardado em ' + p.lugar + por + quem, antes: { situacao: e.situacao || 'ativo', posicao: e.posicao || '' } }, resumo: 'guardado em ' + p.lugar + quem, ok: eqNomeC(e) + ' guardado em ' + p.lugar + '.' }; }
+  if (p.acao === 'lg_usar') { const pb = lgCalProblema(e), patch = { situacao: pb ? 'restricao' : 'ativo', guardadoEm: '', posicao: p.lugar, posUso: p.lugar }; if (!e.posGuarda && e.posicao && lgGuardado(e)) patch.posGuarda = lgNome(e.posicao);
+    return { patch: patch, pb: pb, ev: { tipo: 'usar', texto: 'Posto em uso em ' + p.lugar + (pb ? ' (' + pb + ': uso com restrição)' : '') + por + quem, antes: { situacao: e.situacao || '', posicao: e.posicao || '' } }, resumo: 'posto em uso em ' + p.lugar + quem, ok: eqNomeC(e) + ' em uso na ' + p.lugar + (pb ? ' (com restrição)' : '') + '.' }; }
+  if (p.acao === 'lg_ref') { const patch = { posGuarda: p.pg, posUso: p.pu }, cur = lgGuardado(e) ? p.pg : p.pu; if (cur && tbNorm(cur) !== tbNorm(e.posicao || '')) patch.posicao = cur;
+    return { patch: patch, ev: { tipo: 'lugares', texto: 'Lugares: guardado em ' + (p.pg || '—') + ' · em uso em ' + (p.pu || '—') + por + quem, antes: { posGuarda: e.posGuarda || '', posUso: e.posUso || '', posicao: e.posicao || '' } }, resumo: 'lugares de guarda e de uso' + quem, ok: 'Lugares guardados.' }; }
+  if (p.acao === 'lg_dist') { const m = p.m, tot = Number((e.qtdLocal || {})[p.lab]) || 0, soma = Object.keys(m).reduce((s, k) => s + m[k], 0);
+    if (soma > tot) throw new Error('A soma (' + alQ(soma) + ') passou do total do ' + p.lab + ' (' + alQ(tot) + '); o total mudou depois do pedido.');
+    const pos = Object.assign({}, e.qtdPos || {}); pos[p.lab] = m; const gd = Object.assign({}, e.qtdGuard || {}); gd[p.lab] = Object.keys(m).filter(k => lgTipo(k) === 'guarda').reduce((s, k) => s + m[k], 0); if (!gd[p.lab]) delete gd[p.lab];
+    const txt = Object.keys(m).map(k => k + ' ' + alQ(m[k])).join(' · ') + (tot - soma > 0 ? ' · sem lugar ' + alQ(tot - soma) : '');
+    return { patch: { qtdPos: pos, qtdGuard: gd }, ev: { tipo: 'lugares', texto: p.lab + ': ' + txt + por + quem, antes: { qtdPos: e.qtdPos || {} } }, resumo: 'lugares no ' + p.lab + ': ' + txt + quem, ok: 'Lugares guardados.' }; }
+  throw new Error('Operação desconhecida.');
 }
-async function lgGuardarOk() {
-  const f = S.fm, e = lgEq(f); if (!e || !alPode()) return; const l = lgValor(f, 'lugar'); if (!l) return lcErro('Diga onde ele vai ficar guardado.');
-  const obs = String(f.obs || '').trim(), patch = { situacao: 'armazenado', guardadoEm: hojeISO(), posicao: l, posGuarda: l };
-  if (!e.posUso && e.posicao && !lgGuardado(e)) patch.posUso = lgNome(e.posicao);
-  if (await lgGrava(e, patch, { tipo: 'guardar', texto: 'Guardado em ' + l + (obs ? ' — ' + obs : ''), antes: { situacao: e.situacao || 'ativo', posicao: e.posicao || '' } }, 'guardado em ' + l)) { lcFim(); aviso(eqNomeC(e) + ' guardado em ' + l + '.'); }
+async function lgAplicar(p, aprov) {
+  const e = S.almEq.find(x => x.id === p.refId); if (!e) throw new Error('Equipamento não encontrado.');
+  const r = lgMontar(Object.assign({}, p, aprov ? { porNome: aprov.solicitanteNome } : {}), e);
+  const ev = Object.assign({ ts: nowISO(), porId: aprov ? aprov.solicitanteId : S.user.id, porNome: aprov ? aprov.solicitanteNome : S.user.nome, data: hojeISO() }, r.ev, aprov ? { confirmadoPor: S.user.nome, aprovId: aprov.id } : {});
+  await Data.col('sv2_alm_equip').update(e.id, Object.assign({}, r.patch, { hist: (e.hist || []).concat([ev]), atualizadoEm: nowISO() }));
+  Audit.log({ acao: 'equip_' + r.ev.tipo, entidade: 'almox_equip', entidadeId: e.id, resumo: eqNomeC(e) + ': ' + r.resumo + (aprov ? ' · confirmado por ' + S.user.nome : '') + (p.motivo ? ' — ' + p.motivo : ''), depois: r.patch, autorizadoPor: aprov ? S.user.nome : null });
+  if (r.pb && !aprov) { const sp = supsOf(S.user).filter(id => id !== S.user.id); if (sp.length) Notif.send({ nivel: 'aviso', titulo: 'Em uso com restrição: ' + eqNomeC(e), texto: S.user.nome + ' pôs em uso um equipamento guardado: ' + r.pb + '. Lugar: ' + p.lugar + '.', para: sp, refTipo: 'equip', refId: e.id }).catch(() => {}); }
+  return r.ok;
 }
-async function lgUsarOk() {
-  const f = S.fm, e = lgEq(f); if (!e || !alPode()) return; const l = lgValor(f, 'lugar'); if (!l) return lcErro('Diga onde ele vai ficar em uso.');
-  const obs = String(f.obs || '').trim(), pb = lgCalProblema(e), patch = { situacao: pb ? 'restricao' : 'ativo', guardadoEm: '', posicao: l, posUso: l };
-  if (!e.posGuarda && e.posicao && lgGuardado(e)) patch.posGuarda = lgNome(e.posicao);
-  if (await lgGrava(e, patch, { tipo: 'usar', texto: 'Posto em uso em ' + l + (pb ? ' (' + pb + ': uso com restrição)' : '') + (obs ? ' — ' + obs : ''), antes: { situacao: e.situacao || '', posicao: e.posicao || '' } }, 'posto em uso em ' + l)) {
-    if (pb) { const sp = supsOf(S.user).map(u => u.id).filter(id => id !== S.user.id); if (sp.length) Notif.send({ nivel: 'aviso', titulo: 'Em uso com restrição: ' + eqNomeC(e), texto: S.user.nome + ' pôs em uso um equipamento guardado: ' + pb + '. Lugar: ' + l + '.', para: sp, refTipo: 'equip', refId: e.id }).catch(() => {}); }
-    lcFim(); aviso(eqNomeC(e) + ' em uso na ' + l + (pb ? ' (com restrição)' : '') + '.');
+APROV_APLICA.almox = (function (ant) { return (p, a) => p && LG_ACAO[p.acao] ? lgAplicar(p, a) : ant(p, a); })(APROV_APLICA.almox);
+/* líder ★/Administrador aplica; Colaborador pede (com o porquê) */
+async function lgFazer(p, titulo) {
+  const f = S.fm, e = lgEq(f); if (!e) return; p.refId = e.id; p.motivo = String(f.motivo || '').trim();
+  if (lgPrecisaPedir()) {
+    if (p.motivo.length < 3) return lcErro('Diga o porquê: quem confirma precisa saber.');
+    if (lgPendentes(e).length) return lcErro('Já tem um pedido deste equipamento esperando confirmação.');
+    if (!lcTravar()) return;
+    const aid = await Aprov.pedir({ tipo: 'almox', titulo: titulo + ' · ' + eqNomeC(e), descricao: (p.lugar ? 'Lugar: ' + p.lugar + '. ' : '') + 'Por quê: ' + p.motivo, refTipo: 'almox', refId: p.acao + ':' + e.id, payload: p });
+    if (aid) { lcFim(); aviso('Pedido enviado. Fica aguardando a confirmação; pode usar normalmente.'); } else lcErro('Não foi possível enviar o pedido.');
+    return;
   }
+  if (!lcTravar()) return;
+  try { const ok = await lgAplicar(p, null); lcFim(); aviso(ok); } catch (er) { lcErro(er.message && !/permission/i.test(er.message) ? er.message : svErro(er)); }
 }
-async function lgRefOk() {
-  const f = S.fm, e = lgEq(f); if (!e || !alPode()) return; const pg = lgValor(f, 'pg'), pu = lgValor(f, 'pu');
-  if (!pg && !pu) return lcErro('Diga pelo menos um dos lugares.');
-  const patch = { posGuarda: pg, posUso: pu }, cur = lgGuardado(e) ? pg : pu; if (cur && tbNorm(cur) !== tbNorm(e.posicao || '')) patch.posicao = cur;
-  if (await lgGrava(e, patch, { tipo: 'lugares', texto: 'Lugares: guardado em ' + (pg || '—') + ' · em uso em ' + (pu || '—'), antes: { posGuarda: e.posGuarda || '', posUso: e.posUso || '', posicao: e.posicao || '' } }, 'lugares de guarda e de uso')) { lcFim(); aviso('Lugares guardados.'); }
-}
-async function lgDistOk() {
+function lgGuardarOk() { const f = S.fm; if (!lgEq(f) || !alPode()) return; const l = lgValor(f, 'lugar'); if (!l) return lcErro('Diga onde ele vai ficar guardado.'); lgFazer({ acao: 'lg_guardar', lugar: l }, 'Guardar em ' + l); }
+function lgUsarOk() { const f = S.fm; if (!lgEq(f) || !alPode()) return; const l = lgValor(f, 'lugar'); if (!l) return lcErro('Diga onde ele vai ficar em uso.'); lgFazer({ acao: 'lg_usar', lugar: l }, 'Pôr em uso na ' + l); }
+function lgRefOk() { const f = S.fm; if (!lgEq(f) || !alPode()) return; const pg = lgValor(f, 'pg'), pu = lgValor(f, 'pu'); if (!pg && !pu) return lcErro('Diga pelo menos um dos lugares.'); lgFazer({ acao: 'lg_ref', pg: pg, pu: pu }, 'Lugares de referência'); }
+function lgDistOk() {
   const f = S.fm, e = lgEq(f); if (!e || !alPode()) return; const tot = Number((e.qtdLocal || {})[f.lab]) || 0, m = {};
   for (let n = 0; n < f.d.length; n++) {
     const x = f.d[n], l = lgValor(x.__f || {}, 'd.' + n + '.l') || lgNome(x.l), q = String(x.q || '').trim();
@@ -3388,10 +3438,21 @@ async function lgDistOk() {
     const k = Object.keys(m).find(y => tbNorm(y) === tbNorm(l)) || l; m[k] = alR((m[k] || 0) + v);
   }
   const soma = Object.keys(m).reduce((s, k) => s + m[k], 0); if (soma > tot) return lcErro('Passou do total do ' + f.lab + ' (' + alQ(tot) + '). Para mudar o total, use o Inventário.');
-  const pos = Object.assign({}, e.qtdPos || {}); pos[f.lab] = m;
-  const gd = Object.assign({}, e.qtdGuard || {}); gd[f.lab] = Object.keys(m).filter(k => lgTipo(k) === 'guarda').reduce((s, k) => s + m[k], 0); if (!gd[f.lab]) delete gd[f.lab];
-  const txt = Object.keys(m).map(k => k + ' ' + alQ(m[k])).join(' · ') + (tot - soma > 0 ? ' · sem lugar ' + alQ(tot - soma) : '');
-  if (await lgGrava(e, { qtdPos: pos, qtdGuard: gd }, { tipo: 'lugares', texto: f.lab + ': ' + txt, antes: { qtdPos: e.qtdPos || {} } }, 'lugares no ' + f.lab + ': ' + txt)) { lcFim(); aviso('Lugares guardados.'); }
+  lgFazer({ acao: 'lg_dist', lab: f.lab, m: m }, 'Mudar os lugares no ' + f.lab);
+}
+/* bloco do porquê nos formulários (obrigatório para quem pede) */
+function lgPorque(f, ex) {
+  const e = lgEq(f), pede = lgPrecisaPedir(), sups = pede ? supsOf(S.user).map(nomeDe) : [];
+  return (pede ? lcAv('Fica <b>aguardando a confirmação</b> de ' + esc(sups.join(', ') || 'um líder') + '. Pode usar normalmente: só o registro espera.', 'wa') : '') +
+    (e && lgPendentes(e).length ? lcAv('Já tem um pedido deste equipamento esperando confirmação.', 'cr') : '') +
+    lcBl(pede ? 'Por quê?' : 'Por quê', lcIn('motivo', f.motivo, ' placeholder="' + esc(ex) + '"'), pede ? 'obrigatório' : 'opcional');
+}
+/* pedidos esperando confirmação, na gaveta do equipamento */
+function lgPendHTML(e) {
+  const l = lgPendentes(e); if (!l.length) return '';
+  return l.map(a => { const p = a.payload, pode = Aprov.podeDecidir(a);
+    return '<div class="lg-pend"><div>' + ic('relogio') + '<span><b>Aguardando confirmação: ' + esc(LG_ACAO[p.acao]) + (p.lugar ? ' · ' + esc(p.lugar) : '') + '</b><small>' + esc(a.solicitanteNome) + ' · ' + fmtDT(a.ts) + (p.motivo ? ' · "' + esc(p.motivo) + '"' : '') + (pode ? '' : ' · com ' + esc((a.paraNomes || []).join(', '))) + '</small></span></div>' +
+      (pode ? '<div class="lg-pb"><button type="button" class="bt" data-act="lg-rep" data-id="' + esc(a.id) + '">' + ic('x') + 'Recusar</button><button type="button" class="bt pr" data-act="lg-apr" data-id="' + esc(a.id) + '">' + ic('ok') + 'Confirmar</button></div>' : '') + '</div>'; }).join('');
 }
 /* o lugar escolhido em cada linha da distribuição fica no rascunho da própria linha */
 DD_AO.lc = (function (ant) { return (k, v) => { const f = S.fm; const m = /^lg~d\.(\d+)\.l$/.exec(k); if (f && m && f.d) { const x = f.d[Number(m[1])]; x.__f = x.__f || {}; x.__f['d.' + m[1] + '.l'] = v; x.__f['d.' + m[1] + '.lTxt'] = undefined; if (v !== '__outro') x.l = v; f.sujo = true; f.msg = ''; gvDesenha(true); if (v === '__outro') { const i = $('#gv [data-fm="d.' + m[1] + '.lTxt"]'); if (i) i.focus(); } return; } ant(k, v); }; })(DD_AO.lc);
@@ -3400,8 +3461,10 @@ document.addEventListener('input', e => { const t = e.target, c = t && t.getAttr
 document.addEventListener('click', ev => {
   const t = ev.target.closest && ev.target.closest('[data-act^="lg-"]'); if (!t) return;
   const a = t.getAttribute('data-act'), id = t.getAttribute('data-id'), vol = S.gv && !S.gvForm ? S.gv : null, volta = vol ? () => gvAbrir(vol) : null, e = id && S.almEq.find(x => x.id === id);
-  if (a === 'lg-guardar' && e) lcAbrir({ k: 'lgguardar', eqId: id, lugar: lgNome(e.posGuarda), obs: '' }, volta);
-  else if (a === 'lg-usar' && e) lcAbrir({ k: 'lgusar', eqId: id, lugar: lgNome(e.posUso), obs: '' }, volta);
+  if (a === 'lg-guardar' && e) lcAbrir({ k: 'lgguardar', eqId: id, lugar: lgNome(e.posGuarda), motivo: '' }, volta);
+  else if (a === 'lg-usar' && e) lcAbrir({ k: 'lgusar', eqId: id, lugar: lgNome(e.posUso), motivo: '' }, volta);
+  else if (a === 'lg-apr') { t.disabled = true; Aprov.decidir(id, true).then(() => render()); }
+  else if (a === 'lg-rep') lgRecusar(id);
   else if (a === 'lg-ref' && e) lcAbrir({ k: 'lgref', eqId: id, pg: lgNome(e.posGuarda) || (lgGuardado(e) ? lgNome(e.posicao) : ''), pu: lgNome(e.posUso) || (!lgGuardado(e) ? lgNome(e.posicao) : '') }, volta);
   else if (a === 'lg-dist' && e) { const lab = lgLabs(e)[0]; lcAbrir({ k: 'lgdist', eqId: id, lab: lab, d: lgDistForm(e, lab) }, volta); }
   else if (a === 'lg-dist-add' && S.fm) { S.fm.d.push({ l: '', q: '' }); S.fm.sujo = true; gvDesenha(true); }
@@ -3414,6 +3477,10 @@ document.addEventListener('input', e => {
   const f = S.fm, eq = lgEq(f); if (!eq) return; const tot = Number((eq.qtdLocal || {})[f.lab]) || 0, soma = alR(f.d.reduce((s, x) => s + (alNum(x.q) || 0), 0)), sobra = alR(tot - soma), bx = $$('#gv .gv-kv > div'); if (bx.length < 3) return;
   bx[1].querySelector('b').textContent = alQ(soma); bx[2].querySelector('b').textContent = alQ(Math.abs(sobra)); bx[2].querySelector('small').textContent = sobra < 0 ? 'passou do total' : 'sem lugar'; bx[2].className = sobra < 0 ? 'cr' : sobra > 0 ? 'wa' : '';
 });
+/* recusar pela gaveta: pede o motivo numa linha (camada de formulário) */
+LC_FORM.lgrep = f => { const a = S.aprov.find(x => x.id === f.aid); if (!a) return null; return { ico: 'x', icoCls: 'ini-cr', sub: 'Recusar pedido de ' + a.solicitanteNome, titulo: a.titulo, corpo: lcMsg() + lcAv(esc(a.descricao || '')) + lcBl('Por que recusa?', lcIn('motivoR', f.motivoR, ' placeholder="A pessoa recebe no sino"')), rodape: lcPe('lg-rep-ok', 'Recusar') }; };
+function lgRecusar(aid) { const vol = S.gv && !S.gvForm ? S.gv : null; lcAbrir({ k: 'lgrep', aid: aid, motivoR: '' }, vol ? () => gvAbrir(vol) : null); }
+document.addEventListener('click', ev => { const t = ev.target.closest && ev.target.closest('[data-act="lg-rep-ok"]'); if (!t || !S.fm) return; const m = String(S.fm.motivoR || '').trim(); if (m.length < 3) { lcErro('Escreva o motivo.'); return; } if (!lcTravar()) return; Aprov.decidir(S.fm.aid, false, m).then(ok => { if (ok) lcFim(); else lcErro('Não foi possível recusar.'); }); });
 
 /* ===== sino.js ===== */
 /* EFCwork · sino.js — o SINO do topo (v0.3). Abre na gaveta: pedidos para você decidir (os do Almoxarifado decidem aqui; os das
