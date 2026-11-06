@@ -303,6 +303,12 @@ body.dd-arrastando{cursor:grabbing;-webkit-user-select:none;user-select:none}
 }
 .gv-corpo p.tb-nada{margin:0}
 @media(min-width:1200px){body.gv-aberta .cs-ct{padding-right:440px}} /* v0.3.1, pedido do Elias 06/11: a tabela recua quando a gaveta abre, com a margem curta (20 px) */
+/* gaveta deslizando (v0.3.4) */
+.gv.gv-entra{animation:gvEntra .28s cubic-bezier(.2,.8,.2,1)}
+.gv.gv-sai{animation:gvSai .2s cubic-bezier(.4,0,1,1) forwards;pointer-events:none}
+@keyframes gvEntra{from{transform:translateX(100%);opacity:.4}to{transform:none;opacity:1}}
+@keyframes gvSai{from{transform:none;opacity:1}to{transform:translateX(100%);opacity:.3}}
+@media(prefers-reduced-motion:reduce){.gv.gv-entra,.gv.gv-sai{animation:none}}
 
 /* ===== almox.css ===== */
 /* EFCwork · almox.css — Prefixo: al- */
@@ -453,6 +459,9 @@ a.cg-av span{flex:1}
   .ini-cgb{display:none}
   .cg-acts .dd{flex:1 1 100%}
 }
+.cg-eqb .bt{min-width:120px}
+.cg-ach{font-family:var(--f)!important;font-size:15px!important;color:var(--ok)}
+.cg-ach.nao{color:var(--cr)!important}
 
 /* ===== calibracao.css ===== */
 /* EFCwork · calibracao.css — ciclo da calibração. Prefixo: cb- */
@@ -469,24 +478,36 @@ a.cg-av span{flex:1}
 .cb-mini li span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cb-mini li.ok i{background:var(--ouro)}.cb-mini li.ok{color:var(--tx2)}
 .cb-mini li.at i{background:var(--wa)}.cb-mini li.at{color:var(--tx);font-weight:600}
-/* linha do tempo na gaveta */
+/* linha do tempo na gaveta: tubo com fluido dourado e brilho correndo (v0.3.4) */
+.cb-tlw{position:relative}
 .cb-tl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.cb-tubo{position:absolute;left:12px;width:4px;border-radius:3px;background:var(--bg2);box-shadow:inset 0 1px 2px rgba(0,0,0,.12);overflow:hidden}
+.cb-fluido{position:absolute;left:0;right:0;top:0;height:0;border-radius:3px;background:linear-gradient(180deg,#f7df9e,#d9b46a 45%,#b4862f);overflow:hidden}
+.cb-fluido::after{content:"";position:absolute;left:0;right:0;height:46px;top:-46px;background:linear-gradient(180deg,transparent,rgba(255,250,230,.95),transparent);animation:cbBrilho 1.8s linear infinite}
+.cb-correndo .cb-fluido::after{animation-duration:.9s}
+@keyframes cbBrilho{to{top:100%}}
 .cb-tl li{display:flex;gap:12px;position:relative;padding-bottom:14px}
 .cb-tl li:last-child{padding-bottom:0}
-.cb-tl li::before{content:"";position:absolute;left:13px;top:28px;bottom:2px;width:2px;background:var(--bd)}
-.cb-tl li:last-child::before{display:none}
-.cb-tl li.ok::before{background:var(--a)}
-.cb-n{width:28px;height:28px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:13px;font-weight:700;background:var(--bg2);color:var(--tx3);border:1px solid var(--bd2);position:relative;z-index:1}
-.cb-n .ic{width:15px;height:15px}
-.cb-tl li.ok .cb-n{background:var(--ouro);color:var(--onOuro);border-color:transparent}
+.cb-n{width:28px;height:28px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:13px;font-weight:700;background:var(--bg1);color:var(--tx3);border:1px solid var(--bd2);position:relative;z-index:1;transition:background .3s,border-color .3s,color .3s}
+.cb-n .ic{width:15px;height:15px;display:none}
+.cb-tl li.ok:not(.esp) .cb-n{background:var(--ouro);color:var(--onOuro);border-color:transparent;box-shadow:0 0 0 3px color-mix(in srgb,var(--a) 22%,transparent)}
+.cb-tl li.ok:not(.esp) .cb-n .ic{display:block}.cb-tl li.ok:not(.esp) .cb-nn{display:none}
+.cb-tl li.acende .cb-n{animation:cbAcende .45s cubic-bezier(.2,.8,.2,1)}
+@keyframes cbAcende{0%{transform:scale(.7)}60%{transform:scale(1.18)}100%{transform:scale(1)}}
 .cb-tl li.at .cb-n{background:var(--waS);color:var(--wa);border-color:var(--wa)}
-.cb-tl li>div{display:flex;flex-direction:column;gap:1px;min-width:0;padding-top:3px}
+.cb-tl li>div{display:flex;flex-direction:column;gap:1px;min-width:0;padding-top:3px;transition:opacity .3s}
+.cb-tl li.esp>div{opacity:.55}
 .cb-tl b{font-weight:600;font-size:15px}
 .cb-tl b em{font-style:normal;font-weight:500;color:var(--tx2);font-size:13px;margin-left:4px}
 .cb-tl span{font-size:14px;color:var(--tx2)}
 .cb-tl small{font-size:12px;color:var(--tx3)}
 .cb-tl li:not(.ok):not(.at) b{color:var(--tx3);font-weight:500}
 .cb-agora{color:var(--wa)!important;font-weight:600}
+/* barrinhas do cartão também com brilho */
+.cb-mini li.ok i{position:relative;overflow:hidden}
+.cb-mini li.ok i::after{content:"";position:absolute;top:0;bottom:0;width:40%;left:-40%;background:linear-gradient(90deg,transparent,rgba(255,250,230,.8),transparent);animation:cbBrilhoH 2.4s linear infinite}
+@keyframes cbBrilhoH{to{left:100%}}
+@media(prefers-reduced-motion:reduce){.cb-fluido::after,.cb-mini li.ok i::after{animation:none;display:none}.cb-tl li.acende .cb-n{animation:none}.cb-n{transition:none}}
 .cb-obs{margin:0;font-size:14px;color:var(--tx2)}
 .cb-its{display:flex;flex-direction:column;border:1px solid var(--bd);border-radius:var(--rs);overflow:hidden}
 .cb-it{display:flex;justify-content:space-between;gap:10px;padding:9px 12px;border:0;border-bottom:1px solid var(--bd);background:var(--bg1);text-align:left;cursor:pointer;color:var(--tx);font:inherit}
@@ -637,7 +658,7 @@ div.cb-hc{cursor:default}
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.3.3';
+const VERSAO = '0.3.4';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -981,7 +1002,7 @@ const AREAS = [
   { id: 'rateios', nome: 'Rateios', ic: 'pizza', versao: 'v0.7', abas: [] },
   { id: 'inspecoes', nome: 'Inspeções', ic: 'lista', versao: 'v0.6', abas: [{ id: 'cloro', nome: 'Cloro' }, { id: 'apontamentos', nome: 'Apontamentos' }, { id: 'auditoria', nome: 'Auditoria interna' }] },
   { id: 'documentos', nome: 'Documentos', ic: 'doc', versao: 'v0.5', abas: [{ id: 'documentos', nome: 'Documentos' }, { id: 'caixas', nome: 'Caixas d’água' }, { id: 'historico', nome: 'Histórico' }] },
-  { id: 'almox', nome: 'Almoxarifado', ic: 'caixa', versao: 'v0.3', parcial: 'consultar e lançar prontos aqui; cadastro de material, kits, fotos e inventário seguem no EFClaudian', abas: [{ id: 'painel', nome: 'Painel' }, { id: 'materiais', nome: 'Materiais' }, { id: 'movimentacoes', nome: 'Movimentações' }, { id: 'solicitacoes', nome: 'Solicitações' }, { id: 'equipamentos', nome: 'Equipamentos' }, { id: 'contagem', nome: 'Contagem', oculta: true, pai: 'materiais' }, { id: 'calibracao', nome: 'Calibração', oculta: true, pai: 'equipamentos' }] },
+  { id: 'almox', nome: 'Almoxarifado', ic: 'caixa', versao: 'v0.3', parcial: 'consultar e lançar prontos aqui; cadastro de material, kits, fotos e inventário seguem no EFClaudian', abas: [{ id: 'painel', nome: 'Painel' }, { id: 'materiais', nome: 'Materiais' }, { id: 'movimentacoes', nome: 'Movimentações' }, { id: 'solicitacoes', nome: 'Solicitações' }, { id: 'equipamentos', nome: 'Equipamentos' }, { id: 'contagem', nome: 'Contagem', oculta: true, pai: () => typeof cgDoEq === 'function' && cgDoEq() ? 'equipamentos' : 'materiais' }, { id: 'calibracao', nome: 'Calibração', oculta: true, pai: 'equipamentos' }] },
   { id: 'qualidade', nome: 'Qualidade', ic: 'escudo', versao: 'v0.7', abas: [{ id: 'nc', nome: 'Não conformidades' }, { id: 'analise', nome: 'Análise de problemas' }, { id: 'bugs', nome: 'Bugs e sugestões' }] },
   { id: 'relatorios', nome: 'Relatórios', ic: 'graf', versao: 'v0.8', grupo: 'Análise', abas: [] },
   { id: 'adm', nome: 'Administração', ic: 'eng', rodape: true, abas: [{ id: 'empresa', nome: 'Empresa' }, { id: 'aparencia', nome: 'Aparência' }, { id: 'sobre', nome: 'Sobre' }] }
@@ -1088,7 +1109,7 @@ function cabecalho(o) {
   const ar = csArea(S.rota.area);
   const cam = (o.caminho || [ar.nome].concat(o.abaNome ? [o.abaNome] : [])).map((x, k, l) => k < l.length - 1 ? '<b>' + esc(x) + '</b>' : esc(x)).join(' / ');
   let h = '<div class="cs-ph"><div class="cs-bc">' + cam + '</div><div class="cs-phr"><div class="cs-pht"><h1>' + esc(o.titulo) + '</h1>' + (o.meta && o.meta.length ? '<div class="cs-meta">' + o.meta.join('') + '</div>' : '') + '</div>' + (o.acoes ? '<div class="cs-acts">' + o.acoes + '</div>' : '') + '</div></div>';
-  const atual = ar.abas.find(t => t.id === S.rota.aba), marca = atual && atual.oculta ? atual.pai : S.rota.aba;
+  const atual = ar.abas.find(t => t.id === S.rota.aba), marca = atual && atual.oculta ? (typeof atual.pai === 'function' ? atual.pai() : atual.pai) : S.rota.aba;
   if (ar.abas.length > 1 && !o.semAbas) h += '<nav class="cs-abas" aria-label="Abas de ' + esc(ar.nome) + '">' + ar.abas.filter(t => !t.oculta).map(t => '<a href="#/' + ar.id + '/' + t.id + '"' + (t.id === marca ? ' class="on"' + (t.id === S.rota.aba ? ' aria-current="page"' : '') : '') + '>' + esc(t.nome) + '</a>').join('') + '</nav>';
   return h;
 }
@@ -1468,19 +1489,29 @@ S.gv = null; S.gvForm = false;
 function gvAbrir(fn, form) { if (!S.camadas.length) csCamadaAbre('gv', gvFecharSo); S.gv = fn; S.gvForm = !!form; gvDesenha(true); }
 /* fechar como a pessoa fecha (X, Esc): volta uma camada */
 function gvFechar() { if (S.camadas.length) csVolta(); else gvFecharSo(); }
-function gvFecharSo() { S.gv = null; S.gvForm = false; S.fm = null; S._alSel = null; const g = $('#gv'); if (g) g.remove(); document.body.classList.remove('gv-aberta'); try { render(); } catch {} }
+function gvFecharSo() {
+  S.gv = null; S.gvForm = false; S.fm = null; S._alSel = null; const g = $('#gv');
+  if (g) { if (csMovimento()) { g.id = ''; g.classList.add('gv-sai'); g.setAttribute('aria-hidden', 'true'); setTimeout(() => g.remove(), 220); } else g.remove(); } /* fecha deslizando de volta */
+  document.body.classList.remove('gv-aberta'); try { render(); } catch {}
+}
+const csMovimento = () => !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
 function gvDesenha(forca) {
   let g = $('#gv'); if (!S.gv) { if (g) g.remove(); return; }
   if (S.gvForm && g && !forca) return;
   let o; try { o = S.gv(); } catch (e) { console.error(e); o = null; }
   if (!o) { S.gv = null; if (g) g.remove(); return; }
-  if (!g) { g = document.createElement('aside'); g.id = 'gv'; g.className = 'gv'; g.setAttribute('role', 'dialog'); g.setAttribute('aria-modal', 'false'); document.body.appendChild(g); }
+  const nova = !g, rol = g && g.querySelector('.gv-corpo') ? g.querySelector('.gv-corpo').scrollTop : 0, mesma = g && g._gvFn === S.gv;
+  if (!g) { g = document.createElement('aside'); g.id = 'gv'; g.className = 'gv gv-entra'; g.setAttribute('role', 'dialog'); g.setAttribute('aria-modal', 'false'); document.body.appendChild(g); setTimeout(() => g.classList.remove('gv-entra'), 320); } /* abre deslizando da lateral (pedido de 06/11) */
+  g._gvFn = S.gv;
   document.body.classList.add('gv-aberta');
   g.setAttribute('aria-label', o.titulo || 'Detalhe');
   g.innerHTML = '<div class="gv-cab">' + (o.ico ? '<span class="ico' + (o.icoCls ? ' ' + o.icoCls : '') + '">' + ic(o.ico) + '</span>' : '') + '<div class="gv-tx"><small>' + esc(o.sub || '') + '</small><h2>' + esc(o.titulo || '') + '</h2>' + (o.pill || '') + '</div>' +
     (o.cabAcoes || '') + (o.lixeira ? (function (x) { x = typeof x === 'string' ? { act: x } : x; return '<button type="button" class="bt ic-so gv-lx" data-act="' + esc(x.act) + '"' + (x.id ? ' data-id="' + esc(x.id) + '"' : '') + ' title="' + esc(x.titulo || 'Excluir') + '" aria-label="' + esc(x.titulo || 'Excluir') + '">' + ic('lixo') + '</button>'; })(o.lixeira) : '') +
     '<button type="button" class="bt ic-so" data-act="gv-fecha" title="Fechar" aria-label="Fechar">' + ic('x') + '</button></div><div class="gv-corpo">' + (o.corpo || '') + '</div>' + (o.rodape ? '<div class="gv-pe">' + o.rodape + '</div>' : '');
+  if (mesma && rol) { const c = g.querySelector('.gv-corpo'); if (c) c.scrollTop = rol; } /* redesenho da mesma gaveta não volta a rolagem para o topo */
+  GV_DEPOIS.forEach(f => { try { f(g, nova || !mesma); } catch (e) { console.error(e); } });
 }
+const GV_DEPOIS = []; /* funções chamadas depois de desenhar a gaveta: (elemento, abriuAgora) */
 const gvNums = l => '<div class="gv-kv">' + l.map(x => '<div' + (x[2] ? ' class="' + x[2] + '"' : '') + '><b class="num">' + esc(x[0]) + '</b><small>' + esc(x[1]) + '</small></div>').join('') + '</div>';
 const gvCampos = l => '<dl class="gv-fl">' + l.filter(x => x[1] != null && x[1] !== '').map(x => '<dt>' + esc(x[0]) + '</dt><dd>' + esc(x[1]) + '</dd>').join('') + '</dl>';
 const gvLinha = l => l.length ? '<ol class="gv-tl">' + l.map(x => '<li><span>' + esc(x[0]) + '</span><small>' + esc(x[1]) + '</small></li>').join('') + '</ol>' : '<p class="tb-nada">Sem registros.</p>';
@@ -1756,9 +1787,10 @@ TELAS.almox = function (aba) {
   const ext = '<a class="bt ic-so" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener" title="No EFClaudian: cadastro de material, kits, fotos e inventário" aria-label="Abrir o EFClaudian (cadastro de material, kits, fotos e inventário)">' + ic('externo') + '</a>';
   const cgA = typeof cgAberta === 'function' ? cgAberta() : null, cgBt = alPode() && (aba === 'materiais' || aba === 'painel') ? '<a class="bt" href="#/almox/contagem">' + ic('lista') + 'Contagem' + (cgA ? '<em class="cg-em">em andamento</em>' : '') + '</a>' : '';
   if (aba === 'calibracao') return cabecalho({ caminho: ['Almoxarifado', 'Equipamentos', 'Calibração'], titulo: 'Calibração', abaNome: 'Calibração', meta: ['<span>Solicitada → cotação → agendada → calibrada → compra</span>'], acoes: '<a class="bt" href="#/almox/equipamentos">' + ic('volta') + 'Equipamentos</a>' + (alSup() ? '<button type="button" class="bt pr" data-act="cb-nova">' + ic('mais') + 'Nova solicitação</button>' : '') }) + cbTela();
-  if (aba === 'contagem') return cabecalho({ caminho: ['Almoxarifado', 'Materiais', 'Contagem'], titulo: cgA ? 'Contagem ' + cgA.numero : 'Contagem', abaNome: 'Contagem', meta: ['<span>Às cegas: quem conta não vê o saldo do sistema</span>'], acoes: '<a class="bt" href="#/almox/materiais">' + ic('volta') + 'Materiais</a>' }) + cgTela();
+  if (aba === 'contagem') { const eq = cgDoEq(), nm = eq ? 'Inventário' : 'Contagem', pai = eq ? ['Equipamentos', 'equipamentos'] : ['Materiais', 'materiais']; /* inventário só de equipamentos/vidrarias fica debaixo de Equipamentos */
+    return cabecalho({ caminho: ['Almoxarifado', pai[0], nm], titulo: cgA ? nm + ' ' + cgA.numero : nm, abaNome: nm, meta: ['<span>Às cegas: quem conta não vê o saldo do sistema</span>'], acoes: '<a class="bt" href="#/almox/' + pai[1] + '">' + ic('volta') + pai[0] + '</a>' }) + cgTela(); }
   const acoes = !alPode() ? ext : aba === 'solicitacoes' ? '<button type="button" class="bt pr" data-act="lc-sol">' + ic('mais') + 'Nova solicitação</button>' + ext
-    : aba === 'equipamentos' ? '<a class="bt" href="#/almox/calibracao">' + ic('eng') + 'Calibração' + (typeof cbAbertas === 'function' && cbAbertas().length ? '<em class="cg-em">' + cbAbertas().length + ' em andamento</em>' : '') + '</a>' + ext : cgBt + '<button type="button" class="bt" data-act="lc-ent">' + ic('entra') + 'Entrada</button><button type="button" class="bt pr" data-act="lc-sai">' + ic('sai') + 'Saída</button>' + ext;
+    : aba === 'equipamentos' ? (alPode() ? '<a class="bt" href="#/almox/contagem" data-inv="1">' + ic('lista') + 'Inventário' + (cgA ? '<em class="cg-em">em andamento</em>' : '') + '</a>' : '') + '<a class="bt" href="#/almox/calibracao">' + ic('eng') + 'Calibração' + (typeof cbAbertas === 'function' && cbAbertas().length ? '<em class="cg-em">' + cbAbertas().length + ' em andamento</em>' : '') + '</a>' + ext : cgBt + '<button type="button" class="bt" data-act="lc-ent">' + ic('entra') + 'Entrada</button><button type="button" class="bt pr" data-act="lc-sai">' + ic('sai') + 'Saída</button>' + ext;
   let h = cabecalho({ titulo: t.nome, abaNome: t.nome, meta: meta.filter(Boolean), acoes: acoes });
   if (!S.almCarregado && !DEMO) return h + '<section class="pn"><div class="vazio">' + ic('relogio') + '<b>Carregando o estoque…</b></div></section>';
   h += aba === 'materiais' ? alTabMateriais() : aba === 'movimentacoes' ? alTabMov() : aba === 'solicitacoes' ? alTabSol() : aba === 'equipamentos' ? alTabEq() : alPainel();
@@ -1813,7 +1845,7 @@ function alAbreEq(id) {
   S._alSel = id; gvAbrir(() => {
     const e = S.almEq.find(y => y.id === id); if (!e) return null; const st = EQ_SIT[e.situacao] || EQ_SIT.ativo, c = eqCalSit(e), cal = e.cal || {};
     return { ico: 'eng', sub: 'Equipamento' + (e.tag ? ' · ' + e.tag : ''), titulo: e.nome, pill: alPill(st[0], st[1]) + (c ? ' ' + alPill(EQ_CAL[c][0], EQ_CAL[c][1]) : ''),
-      corpo: (e.precisaCal ? gvNums([[cal.ultima ? fmtD(cal.ultima) : '—', 'última calibração'], [eqProxima(e) ? fmtD(eqProxima(e)) : '—', 'próxima', c === 'vencida' || c === 'sem' ? 'cr' : c === 'avencer' ? 'wa' : ''], [(cal.freqMeses || 12) + ' meses', 'frequência']]) : '') +
+      corpo: (e.naoAchado ? lcAv('<b>Não encontrado</b> na contagem ' + esc(e.naoAchado) + '. Some a marca quando ele for achado numa próxima contagem.', 'cr') : '') + (e.precisaCal ? gvNums([[cal.ultima ? fmtD(cal.ultima) : '—', 'última calibração'], [eqProxima(e) ? fmtD(eqProxima(e)) : '—', 'próxima', c === 'vencida' || c === 'sem' ? 'cr' : c === 'avencer' ? 'wa' : ''], [(cal.freqMeses || 12) + ' meses', 'frequência']]) : '') +
         gvCampos([['Local', eqLocal(e)], ['Marca', e.marca], ['Modelo', e.modelo], ['Nº de série', e.serie], ['Quantidade', e.tipo === 'qtd' ? String(eqQtd(e)) : ''], ['Resultado', cal.resultado === 'aprovado' ? 'Aprovado para uso' : cal.resultado === 'reprovado' ? 'Reprovado' : ''], ['Certificado', cal.certificado || cal.cert || ''], ['Válido até', cal.validade ? fmtD(cal.validade) : ''], ['Quem calibrou', [cal.tecnico, cal.prestador].filter(Boolean).join(' · ')], ['Observação', e.obs]]) + (typeof cbHistEquip === 'function' && e.precisaCal ? cbHistEquip(e) : ''),
       rodape: typeof alSup === 'function' && alSup() && e.precisaCal && e.situacao !== 'baixa' && !(typeof cbAbertas === 'function' && cbAbertas().some(c => (c.itens || []).some(i => i.equipId === e.id && !i.aplicado))) ? '<button type="button" class="bt pr" data-act="cb-pedir" data-id="' + esc(e.id) + '">' + ic('eng') + 'Pedir calibração</button>' : '' };
   });
@@ -2475,6 +2507,8 @@ document.addEventListener('click', e => {
    Formato compatível com o EFClaudian (sv2_alm_inv: numero CNT-AAAA-NN, tipo 'contagem', partes.mat, contagens.m_<id> {cont, lotes, esp, …}).
    Campos novos (o EFClaudian ignora): contadorId/contadorNome, recontar{}, resolucoes{}. Prefixo: cg. */
 Object.assign(S, { almInv: [], cgRasc: {}, cgVista: '' });
+const CG_RES_EQ = { falta: [['nao_achado', 'Não encontrado (marcar no equipamento)'], ['Em outro lugar', 'Está em outro lugar'], ['Outro', 'Outro']], sobra: [['Outro', 'Outro']] };
+const CG_RES_VID = { falta: [['Quebra', 'Quebra'], ['Perda', 'Perda'], ['Erro de lançamento', 'Erro de lançamento'], ['Outro', 'Outro']], sobra: [['Achado', 'Achado'], ['Entrada não lançada', 'Entrada não lançada'], ['Erro de lançamento', 'Erro de lançamento'], ['Outro', 'Outro']] };
 const CG_RES = {
   falta: [['saida_retro', 'Saída esquecida (lançar com a data certa)'], ['Perda', 'Perda'], ['Quebra', 'Quebra'], ['Erro de lançamento', 'Erro de lançamento (sem saída)'], ['Outro', 'Outro']],
   sobra: [['Entrada não lançada', 'Entrada não lançada'], ['Achado', 'Achado'], ['Erro de lançamento', 'Erro de lançamento'], ['Outro', 'Outro']]
@@ -2495,11 +2529,25 @@ function cgOrdemLocal(loc) {
 const cgCmpLocal = (a, b) => { const x = cgOrdemLocal(a), y = cgOrdemLocal(b); return x[0] - y[0] || x[1] - y[1] || String(x[2]).localeCompare(String(y[2]), 'pt-BR'); };
 const cgNomeLocal = l => { const s = String(l || '').trim(); if (!s) return 'Sem local'; return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase(); };
 /* materiais da contagem, na ordem do lugar; lotes com saldo (sem mostrar o saldo) */
+/* o que entra na contagem: materiais (por lote), equipamentos (achei / não achei) e vidrarias (quantidade em cada lugar) — pedido de 06/11 */
+const cgSlug = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^A-Za-z0-9]+/g, '-').replace(/^-|-$/g, '').toLowerCase() || 'x';
 function cgAlvos(inv) {
-  return alAtivos().slice().sort((a, b) => cgCmpLocal(a.local, b.local) || String(a.nome).localeCompare(b.nome, 'pt-BR'))
-    .map(i => ({ k: 'm:' + i.id, i: i, local: cgNomeLocal(i.local), lotes: alLotes(i.id, true).filter(l => l.saldo > 0) }));
+  const p = (inv && inv.partes) || { mat: true }, out = [];
+  if (p.mat !== false) alAtivos().forEach(i => out.push({ k: 'm:' + i.id, parte: 'mat', i: i, local: cgNomeLocal(i.local), lotes: alLotes(i.id, true).filter(l => l.saldo > 0) }));
+  if (p.equip || p.vid) S.almEq.filter(e => e.situacao !== 'baixa' && !e.transito).forEach(e => {
+    if (e.tipo === 'qtd') { if (!p.vid) return; const ls = Object.keys(e.qtdLocal || {}); (ls.length ? ls : [e.local || '']).forEach(l => out.push({ k: 'v:' + e.id + (ls.length > 1 ? '~' + cgSlug(l) : ''), parte: 'vid', e: e, vloc: l, i: { id: e.id, nome: e.nome, codigo: [e.marca, ls.length > 1 ? l : ''].filter(Boolean).join(' · '), un: 'un' }, local: cgNomeLocal(l || e.local), lotes: [] })); }
+    else if (p.equip) out.push({ k: 'e:' + e.id, parte: 'equip', e: e, i: { id: e.id, nome: eqNomeC(e), codigo: [e.marca, e.serie ? 'série ' + e.serie : ''].filter(Boolean).join(' · '), un: '' }, local: cgNomeLocal([e.local, e.posicao].filter(Boolean).join(' · ')), lotes: [] });
+  });
+  const ord = { mat: 0, vid: 1, equip: 2 };
+  return out.sort((a, b) => cgCmpLocal(a.local, b.local) || ord[a.parte] - ord[b.parte] || String(a.i.nome).localeCompare(b.i.nome, 'pt-BR'));
 }
-function cgEsperado(i) { const l = {}; alLotes(i.id).forEach(x => { l[x.id] = x.saldo; }); return { total: alSaldo(i.id), lotes: l }; }
+function cgEsperado(a) {
+  if (a.parte === 'vid') return { total: Number((a.e.qtdLocal || {})[a.vloc]) || 0 };
+  if (a.parte === 'equip') return { total: 1 };
+  const l = {}; alLotes(a.i.id).forEach(x => { l[x.id] = x.saldo; }); return { total: alSaldo(a.i.id), lotes: l };
+}
+const CG_PARTES = [['mat', 'Materiais', 'por lote, quantidade'], ['equip', 'Equipamentos', 'achei / não achei'], ['vid', 'Vidrarias', 'quantidade em cada lugar']];
+const cgPartesTxt = p => CG_PARTES.filter(x => p && (x[0] === 'mat' ? p.mat !== false : p[x[0]])).map(x => x[1].toLowerCase()).join(', ');
 function cgProgresso(inv) {
   const al = cgAlvos(inv), ct = cgContagens(inv), rc = inv.recontar || {};
   const feitos = al.filter(a => ct[a.k]), difs = feitos.filter(a => cgDif(ct[a.k]) !== 0);
@@ -2535,7 +2583,7 @@ function cgTela() {
   }
   const pr = cgProgresso(inv), pct = pr.total ? Math.round(pr.feitos / pr.total * 100) : 0, rcN = pr.recontar.length;
   const vista = sup && S.cgVista === 'conf' ? 'conf' : 'contar';
-  let h = '<section class="pn cg-topo"><div class="cg-tp"><div class="cg-tpt"><span class="pill wa">Em andamento</span><small>' + esc(inv.local || '') + ' · aberta por ' + esc(inv.porNome || '') + ' em ' + fmtD(String(inv.abertoEm || '').slice(0, 10)) + '</small><small>Quem conta: <b>' + esc(inv.contadorNome || 'qualquer pessoa do Almoxarifado') + '</b></small></div>' +
+  let h = '<section class="pn cg-topo"><div class="cg-tp"><div class="cg-tpt"><span class="pill wa">Em andamento</span><small>' + esc(inv.local || '') + ' · aberta por ' + esc(inv.porNome || '') + ' em ' + fmtD(String(inv.abertoEm || '').slice(0, 10)) + '</small><small>Quem conta: <b>' + esc(inv.contadorNome || 'qualquer pessoa do Almoxarifado') + '</b> · ' + esc(cgPartesTxt(inv.partes) || 'materiais') + '</small></div>' +
     '<div class="cg-pct"><b class="num">' + pct + '%</b><small>' + pr.feitos + ' de ' + pr.total + ' contados</small></div></div>' +
     '<div class="cg-bar" role="progressbar" aria-valuenow="' + pct + '" aria-valuemin="0" aria-valuemax="100"><i style="width:' + pct + '%"></i></div>' +
     (sup ? '<div class="cg-acts">' + ddHTML('cg:vista', vista, [['contar', 'Mostrar: contagem'], ['conf', 'Mostrar: conferência' + (pr.difs.length ? ' (' + pr.difs.length + ' não bateram)' : '')]]) + '<span class="sp"></span><button type="button" class="bt ic-so" data-act="cg-folha" title="Imprimir a folha de contagem (sem o saldo)" aria-label="Imprimir a folha de contagem">' + ic('impressora') + '</button><button type="button" class="bt ic-so" data-act="cg-cancelar" title="Cancelar a contagem" aria-label="Cancelar a contagem">' + ic('lixo') + '</button></div>' : '') + '</section>';
@@ -2565,7 +2613,7 @@ function cgContar(inv, pr) {
   const rc = inv.recontar || {}, busca = tbNorm(S.cgBusca || '').trim(), loc = S.cgLocal || '';
   const vis = a => (!loc || a.local === loc) && (!busca || busca.split(/\s+/).every(w => tbNorm([a.i.nome, a.i.codigo, a.local].join(' ')).indexOf(w) >= 0));
   const locais = Array.from(new Set(pr.al.map(a => a.local)));
-  let h = '<div class="cg-bar2"><label class="tb-busca">' + ic('lupa') + '<input type="search" data-cgbusca value="' + esc(S.cgBusca || '') + '" placeholder="Buscar material" aria-label="Buscar material" data-foco="cg-busca"></label>' +
+  let h = '<div class="cg-bar2"><label class="tb-busca">' + ic('lupa') + '<input type="search" data-cgbusca value="' + esc(S.cgBusca || '') + '" placeholder="' + (cgSoMat(inv) ? 'Buscar material' : 'Buscar item') + '" aria-label="Buscar material" data-foco="cg-busca"></label>' +
     ddHTML('cg:local', loc, [['', 'Todos os lugares']].concat(locais.map(l => { const g = pr.al.filter(a => a.local === l); return [l, l + ' · ' + g.filter(a => pr.ct[a.k]).length + '/' + g.length]; }))) +
     '<span class="cg-dica">' + ic('olho') + 'Às cegas: o saldo do sistema não aparece</span></div>';
   const rec = pr.recontar.filter(vis);
@@ -2583,27 +2631,29 @@ function cgItemHTML(inv, a, c, recontar) {
   const i = a.i, k = a.k, rz = S.cgRasc[k] || {}, feito = !!c && !recontar, edit = S.cgEdit === k;
   const lotes = a.lotes.length ? a.lotes : [{ id: '', lote: '', validade: '' }];
   const head = '<div class="cg-ith"><span class="cg-nm"><b>' + esc(i.nome) + '</b><small>' + esc([i.codigo, i.un].filter(Boolean).join(' · ')) + '</small></span>';
-  if (feito && !edit) return '<div class="cg-it ok" data-k="' + esc(k) + '">' + head + '<span class="cg-res"><b class="num">' + alQ(c.cont) + '</b> ' + esc(i.un || '') + '<small>' + esc(c.porNome || '') + '</small></span><button type="button" class="bt ic-so" data-act="cg-edit" data-k="' + esc(k) + '" title="Contar de novo" aria-label="Contar de novo">' + ic('lapis') + '</button></div></div>';
+  if (feito && !edit) return '<div class="cg-it ok" data-k="' + esc(k) + '">' + head + '<span class="cg-res">' + (a.parte === 'equip' ? '<b class="cg-ach' + (c.cont ? '' : ' nao') + '">' + (c.cont ? 'Achei' : 'Não achei') + '</b>' : '<b class="num">' + alQ(c.cont) + '</b> ' + esc(i.un || '')) + '<small>' + esc(c.porNome || '') + '</small></span><button type="button" class="bt ic-so" data-act="cg-edit" data-k="' + esc(k) + '" title="Contar de novo" aria-label="Contar de novo">' + ic('lapis') + '</button></div></div>';
+  if (a.parte === 'equip') return '<div class="cg-it' + (recontar ? ' rc' : '') + '" data-k="' + esc(k) + '">' + head + '</div><div class="cg-lts cg-eqb"><button type="button" class="bt" data-act="cg-achei" data-k="' + esc(k) + '" data-v="0">' + ic('x') + 'Não achei</button><button type="button" class="bt pr" data-act="cg-achei" data-k="' + esc(k) + '" data-v="1">' + ic('ok') + 'Achei</button></div></div>';
   return '<div class="cg-it' + (recontar ? ' rc' : '') + '" data-k="' + esc(k) + '">' + head + '</div><div class="cg-lts">' + lotes.map((l, n) => {
     const v = rz[l.id] != null ? rz[l.id] : (edit && c && c.lotes && c.lotes[l.id] != null ? alQin(c.lotes[l.id]) : '');
     return '<label class="cg-lt"><span>' + (l.id ? esc(l.lote || 'sem lote') + (l.validade ? ' · vence ' + fmtD(l.validade) : '') : 'Quantidade') + '</span><input class="fm-i num" inputmode="decimal" autocomplete="off" data-cgk="' + esc(k) + '" data-cgl="' + esc(l.id) + '" data-foco="cg:' + esc(k) + ':' + esc(l.id) + '" value="' + esc(v) + '" placeholder="' + esc(i.un || 'qtd') + '" aria-label="Contado' + (l.id ? ' no lote ' + esc(l.lote || 'sem lote') : '') + '"></label>';
   }).join('') + '<button type="button" class="bt pr cg-ok" data-act="cg-salva" data-k="' + esc(k) + '">' + ic('ok') + 'Contado</button></div>' + (a.lotes.length > 1 ? '<p class="cg-ob">Conte cada lote (0 se não achou).</p>' : '') + '</div>';
 }
-async function cgSalvar(k) {
+async function cgSalvar(k, achou) {
   const inv = cgAberta(); if (!cgPodeContar(inv)) return;
   const a = cgAlvos(inv).find(x => x.k === k); if (!a) return;
+  if (a.parte === 'equip') { S.cgRasc[k] = { '': achou ? '1' : '0' }; }
   const lotes = a.lotes.length ? a.lotes : [{ id: '' }], rz = S.cgRasc[k] || {};
-  $$('[data-cgk="' + k + '"]').forEach(x => { rz[x.getAttribute('data-cgl')] = x.value; }); S.cgRasc[k] = rz;
+  if (a.parte !== 'equip') $$('[data-cgk="' + k + '"]').forEach(x => { rz[x.getAttribute('data-cgl')] = x.value; }); S.cgRasc[k] = rz;
   let tot = 0; const lt = {};
   for (const l of lotes) { const t = String(rz[l.id] == null ? '' : rz[l.id]).trim(); if (t === '') { aviso('Conte todos os lotes de ' + a.i.nome + ' (0 se não achou).', 'erro'); const e = $('[data-cgk="' + k + '"][data-cgl="' + l.id + '"]'); if (e) e.focus(); return; } const n = alNum(t); if (!(n >= 0)) { aviso('Quantidade inválida em ' + a.i.nome + '.', 'erro'); return; } tot += n; if (l.id) lt[l.id] = alR(n); }
-  const ant = cgContagens(inv)[k], reg = { porId: S.user.id, porNome: S.user.nome, ts: nowISO(), obs: '', esp: cgEsperado(a.i), lotes: lt, cont: alR(tot) };
+  const ant = cgContagens(inv)[k], reg = { porId: S.user.id, porNome: S.user.nome, ts: nowISO(), obs: '', esp: cgEsperado(a), lotes: lt, cont: alR(tot) };
   if (ant) reg.ant = (ant.ant || []).concat([{ cont: ant.cont, lotes: ant.lotes || {}, porNome: ant.porNome, ts: ant.ts, esp: ant.esp }]);
   const patch = { ['contagens.' + cgChave(k)]: reg }; if ((inv.recontar || {})[cgChave(k)]) patch['recontar.' + cgChave(k)] = false;
   if ((inv.resolucoes || {})[cgChave(k)]) patch['resolucoes.' + cgChave(k)] = null;
   delete S.cgRasc[k]; if (S.cgEdit === k) S.cgEdit = '';
   try { await Data.col('sv2_alm_inv').update(inv.id, patch); } catch (e) { aviso(svErro(e), 'erro'); return; }
   /* foco no próximo que falta */
-  setTimeout(() => { const prox = $$('.cg-it:not(.ok) input[data-cgk]').find(x => x.getAttribute('data-cgk') !== k); if (prox) { prox.focus(); try { prox.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch {} } }, 60);
+  setTimeout(() => { const prox = $$('.cg-it:not(.ok) input[data-cgk], .cg-it:not(.ok) [data-act="cg-achei"][data-v="1"]').find(x => (x.getAttribute('data-cgk') || x.getAttribute('data-k')) !== k); if (prox) { prox.focus(); try { prox.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch {} } }, 60);
 }
 
 /* ---------- conferência (Líder/Administrador) ---------- */
@@ -2621,7 +2671,8 @@ function cgConferencia(inv, pr) {
     filtros: [{ k: 'sit', rot: 'Situação', opcoes: [['difere', 'Não bateu (decidir)'], ['recontar', 'Recontagem pedida'], ['bateu2', 'Bateu na recontagem'], ['resolvido', 'Já decidido']], teste: (a, v) => { const s = cgSitItem(inv, a, pr.ct).id; return v === 'difere' ? s === 'difere' : s === v; } }],
     cols: [
       { k: 'loc', rot: 'Lugar', v: a => a.local },
-      { k: 'nome', rot: 'Material', fixa: true, v: a => a.i.nome, cls: 'forte' },
+      { k: 'nome', rot: 'Item', fixa: true, v: a => a.i.nome, cls: 'forte' },
+      { k: 'tp', rot: 'Tipo', v: a => a.parte === 'equip' ? 'Equipamento' : a.parte === 'vid' ? 'Vidraria' : 'Material' },
       { k: 'sis', rot: 'Sistema', tipo: 'num', v: a => Number((pr.ct[a.k].esp || {}).total) || 0 },
       { k: 'c1', rot: '1ª contagem', tipo: 'num', v: a => { const c = pr.ct[a.k]; return (c.ant && c.ant.length ? c.ant[0].cont : c.cont); } },
       { k: 'c2', rot: 'Recontagem', tipo: 'num', v: a => { const c = pr.ct[a.k]; return c.ant && c.ant.length ? c.cont : ''; } },
@@ -2659,8 +2710,8 @@ function cgAbreItem(k) {
 }
 LC_FORM.cgres = f => {
   const inv = cgAberta(); if (!inv) return null; const a = cgAlvos(inv).find(x => x.k === f.kItem), c = cgContagens(inv)[f.kItem]; if (!a || !c) return null;
-  const d = cgDif(c), falta = d < 0, ops = falta ? CG_RES.falta : CG_RES.sobra, retro = f.tipo === 'saida_retro', pes = cgPessoas();
-  let corpo = lcMsg() + gvNums([[alQ((c.esp || {}).total || 0), 'sistema'], [alQ(c.cont), 'contado'], [(d > 0 ? '+' : '') + alQ(d), falta ? 'falta' : 'sobra', falta ? 'cr' : 'wa']]) +
+  const R = a.parte === 'equip' ? CG_RES_EQ : a.parte === 'vid' ? CG_RES_VID : CG_RES, d = cgDif(c), falta = d < 0, ops = falta ? R.falta : R.sobra, retro = f.tipo === 'saida_retro', pes = cgPessoas();
+  let corpo = lcMsg() + (a.parte === 'equip' ? lcAv('<b>Não achado</b> na contagem (' + esc(a.local) + ').', 'cr') : gvNums([[alQ((c.esp || {}).total || 0), 'sistema'], [alQ(c.cont), 'contado'], [(d > 0 ? '+' : '') + alQ(d), falta ? 'falta' : 'sobra', falta ? 'cr' : 'wa']])) +
     lcBl('O que aconteceu?', ddHTML('lc:cgtipo', f.tipo || '', [['', 'Escolha']].concat(ops)));
   if (retro) corpo += lcAv('A saída entra com a data em que aconteceu e fica marcada como <b>erro de lançamento</b>, com quem esqueceu e a sua reclamação. A pessoa é avisada no sino.', 'wa') +
     '<div class="fm-g">' + lcBl('Data da saída', lcData('data', f.data)) + lcBl('Quem esqueceu de lançar', ddHTML('lc:cgresp', f.respId || '', [['', 'Não sei']].concat(pes.map(u => [u.id, u.nome])))) + '</div>' +
@@ -2692,7 +2743,17 @@ async function cgConcluir() {
   const res = { contados: pr.feitos, total: pr.total, difs: pr.difs.length, bateramNaRecontagem: pr.al.filter(a => pr.ct[a.k] && !cgDif(pr.ct[a.k]) && (pr.ct[a.k].ant || []).length).length, erros: 0, ajustes: [] };
   try {
     for (const a of pr.difs) {
-      const c = pr.ct[a.k], r = rs[cgChave(a.k)], i = alItem(a.i.id); if (!i) continue;
+      const c = pr.ct[a.k], r = rs[cgChave(a.k)];
+      if (a.parte !== 'mat') {
+        const e = S.almEq.find(x => x.id === a.e.id); if (!e) continue; const mot = 'Contagem ' + inv.numero + ': ' + (r.tipo === 'nao_achado' ? 'não encontrado' : r.tipo) + (r.obs ? ' — ' + r.obs : '');
+        let patch = {}, ev;
+        if (a.parte === 'vid') { const qn = Object.assign({}, e.qtdLocal || {}); qn[a.vloc] = c.cont; patch = { qtdLocal: qn }; ev = { tipo: 'quantidade', data: hojeISO(), texto: mot + ' · ' + a.vloc + ' ' + (Number((e.qtdLocal || {})[a.vloc]) || 0) + ' → ' + c.cont, antes: { qtdLocal: e.qtdLocal || {} }, depois: { qtdLocal: qn } }; res.ajustes.push(e.nome + ' (' + a.vloc + ') → ' + c.cont + ' (' + r.tipo + ')'); }
+        else { if (r.tipo === 'nao_achado') patch = { naoAchado: inv.numero }; ev = { tipo: 'inventario', data: hojeISO(), texto: mot }; res.ajustes.push(eqNomeC(e) + ': ' + (r.tipo === 'nao_achado' ? 'não encontrado' : r.tipo)); }
+        await Data.col('sv2_alm_equip').update(e.id, Object.assign({}, patch, { hist: (e.hist || []).concat([Object.assign({ ts: nowISO(), porId: S.user.id, porNome: S.user.nome }, ev)]), atualizadoEm: nowISO() }));
+        Audit.log({ acao: 'equip_inventario', entidade: 'almox_equip', entidadeId: e.id, resumo: eqNomeC(e) + ': ' + mot, depois: patch });
+        continue;
+      }
+      const i = alItem(a.i.id); if (!i) continue;
       const linhas = Object.keys(Object.assign({}, (c.esp || {}).lotes, c.lotes)).map(lid => { const l = alIdx().lots[lid]; const e = Number(((c.esp || {}).lotes || {})[lid]) || 0, n = Number((c.lotes || {})[lid]) || 0, d = alR(n - e); return l && d ? { l: l, d: d } : null; }).filter(Boolean);
       if (r.tipo === 'saida_retro') {
         const grupo = linhas.filter(x => x.d < 0).length > 1 ? uid() : '';
@@ -2710,6 +2771,8 @@ async function cgConcluir() {
         if (ls.length) { await lcAplicar({ acao: 'ajuste', refId: i.id, linhas: ls, motivo: 'Contagem ' + inv.numero + ': ' + r.tipo + (r.obs ? ' — ' + r.obs : ''), data: hojeISO() }, null); res.ajustes.push(i.nome + ' ' + ls.map(l => (l.qtd > 0 ? '+' : '') + alQ(l.qtd)).join(' ') + ' (' + r.tipo + ')'); }
       }
     }
+    /* equipamento que estava marcado "não encontrado" e foi achado: tira a marca */
+    for (const a of pr.al.filter(x => x.parte === 'equip' && pr.ct[x.k] && pr.ct[x.k].cont && x.e.naoAchado)) { const e = S.almEq.find(x => x.id === a.e.id); if (e) { await Data.col('sv2_alm_equip').update(e.id, { naoAchado: '', hist: (e.hist || []).concat([{ ts: nowISO(), porId: S.user.id, porNome: S.user.nome, tipo: 'inventario', data: hojeISO(), texto: 'Encontrado na ' + inv.numero }]), atualizadoEm: nowISO() }); res.ajustes.push(eqNomeC(e) + ': encontrado de novo'); } }
     await Data.col('sv2_alm_inv').update(inv.id, { situacao: 'concluido', concluidoEm: nowISO(), concluidoPor: S.user.nome, resumo: res });
     Audit.log({ acao: 'inventario_concluir', entidade: 'almox_inv', entidadeId: inv.id, resumo: 'Concluiu a ' + inv.numero + ': ' + res.contados + ' de ' + res.total + ' contados, ' + res.difs + ' diferença(s), ' + res.erros + ' erro(s) de lançamento' + (res.ajustes.length ? ' · ' + res.ajustes.join('; ') : ''), depois: res });
     S.cgVista = ''; aviso(inv.numero + ' concluída.' + (res.erros ? ' ' + res.erros + ' erro(s) de lançamento registrado(s).' : ''));
@@ -2719,10 +2782,12 @@ async function cgConcluir() {
 
 /* ---------- abrir, cancelar, resumo, folha ---------- */
 LC_FORM.cgnova = f => {
-  const pes = cgPessoas(), n = alAtivos().length;
+  const pes = cgPessoas(), al = cgAlvos({ partes: f.partes });
+  const conta = { mat: alAtivos().length, equip: S.almEq.filter(e => e.situacao !== 'baixa' && !e.transito && e.tipo !== 'qtd').length, vid: S.almEq.filter(e => e.situacao !== 'baixa' && !e.transito && e.tipo === 'qtd').length };
   return { ico: 'lista', sub: cgNumero() + ' · contagem às cegas', titulo: 'Nova contagem', corpo: lcMsg() +
-    lcAv('Quem conta não vê o saldo do sistema. Os materiais vêm na ordem do lugar: portas em sequência, depois gavetas.') +
-    gvNums([[String(n), 'materiais ativos'], [String(Array.from(new Set(alAtivos().map(i => cgNomeLocal(i.local)))).length), 'lugares']]) +
+    lcAv('Quem conta não vê o sistema. Tudo vem na ordem do lugar: portas em sequência, depois gavetas, depois o resto.') +
+    '<p class="gv-h">O que contar</p><div class="fm-pkl">' + CG_PARTES.map(x => { const on = x[0] === 'mat' ? f.partes.mat !== false : !!f.partes[x[0]]; return '<button type="button" class="fm-pki cb-ck' + (on ? ' on' : '') + '" data-act="cg-parte" data-id="' + x[0] + '" aria-pressed="' + on + '"><span class="cb-box">' + (on ? ic('ok') : '') + '</span><span><b>' + x[1] + '</b><small>' + x[2] + '</small></span><span class="num">' + conta[x[0]] + '</span></button>'; }).join('') + '</div>' +
+    gvNums([[String(al.length), 'itens para contar'], [String(Array.from(new Set(al.map(a => a.local))).length), 'lugares']]) +
     lcBl('Quem vai contar', ddHTML('lc:cgcont', f.contadorId || '', [['', 'Escolha a pessoa']].concat(pes.map(u => [u.id, u.nome + (u.id === S.user.id ? ' (você)' : '')]))), 'só aparece quem tem o Almoxarifado') +
     lcBl('Local', ddHTML('lc:cglocal', f.local, cgLocais().map(l => [l, l]))),
     rodape: lcPe('cg-nova-ok', 'Abrir contagem') };
@@ -2732,13 +2797,15 @@ async function cgNovaOk() {
   const f = S.fm; if (!f || !alSup()) return;
   if (cgAberta()) return lcErro('Já existe uma contagem em andamento.');
   const u = userById(f.contadorId); if (!u) return lcErro('Escolha quem vai contar.');
-  if (!alAtivos().length) return lcErro('Nenhum material ativo para contar.');
+  const p = { mat: f.partes.mat !== false, equip: !!f.partes.equip, vid: !!f.partes.vid };
+  if (!p.mat && !p.equip && !p.vid) return lcErro('Marque o que vai ser contado.');
+  const n = cgAlvos({ partes: p }).length; if (!n) return lcErro('Nada para contar no que foi marcado.');
   if (!lcTravar()) return;
-  const o = { numero: cgNumero(), tipo: 'contagem', local: f.local, partes: { mat: true, vid: false, equip: false }, situacao: 'aberto', contagens: {}, recontar: {}, resolucoes: {}, abertoEm: nowISO(), porId: S.user.id, porNome: S.user.nome, contadorId: u.id, contadorNome: u.nome, origem: APP_NOME };
+  const o = { numero: cgNumero(), tipo: 'contagem', local: f.local, partes: p, tipo2: p.equip || p.vid ? 'inventario' : 'contagem', situacao: 'aberto', contagens: {}, recontar: {}, resolucoes: {}, abertoEm: nowISO(), porId: S.user.id, porNome: S.user.nome, contadorId: u.id, contadorNome: u.nome, origem: APP_NOME };
   try {
     const id = await Data.col('sv2_alm_inv').add(o);
-    Audit.log({ acao: 'inventario_abrir', entidade: 'almox_inv', entidadeId: id, resumo: 'Abriu a contagem ' + o.numero + ' (' + o.local + ') · quem conta: ' + u.nome });
-    if (u.id !== S.user.id) Notif.send({ nivel: 'aviso', titulo: 'Contagem para você: ' + o.numero, texto: S.user.nome + ' abriu a contagem ' + o.numero + ' e escolheu você para contar (' + alAtivos().length + ' materiais, às cegas). Abra Almoxarifado › Materiais › Contagem.', para: [u.id], refTipo: 'inventario', refId: id }).catch(() => {});
+    Audit.log({ acao: 'inventario_abrir', entidade: 'almox_inv', entidadeId: id, resumo: 'Abriu a contagem ' + o.numero + ' (' + o.local + ': ' + cgPartesTxt(p) + ') · quem conta: ' + u.nome });
+    if (u.id !== S.user.id) Notif.send({ nivel: 'aviso', titulo: 'Contagem para você: ' + o.numero, texto: S.user.nome + ' abriu a contagem ' + o.numero + ' e escolheu você para contar (' + n + ' itens: ' + cgPartesTxt(p) + ', às cegas). Abra Almoxarifado › Materiais › Contagem.', para: [u.id], refTipo: 'inventario', refId: id }).catch(() => {});
     lcFim(); aviso(o.numero + ' aberta. ' + (u.id === S.user.id ? 'Pode começar a contar.' : u.nome + ' foi avisado(a) no sino.'));
   } catch (e) { lcErro(svErro(e)); }
 }
@@ -2768,7 +2835,7 @@ function cgFolha() {
   p.innerHTML = '<div class="imp-cab"><b>Folha de contagem · ' + esc(inv.numero) + '</b><span>' + esc(e.nome || '') + ' · ' + esc(inv.local || '') + ' · ' + al.length + ' materiais</span></div>' +
     '<p style="margin:0 0 6pt">Contagem às cegas: a folha não traz o saldo do sistema. Contado por: ______________________ · Data: ___/___/______</p>' +
     '<table><thead><tr><th>Lugar</th><th>Material</th><th>Código</th><th>Lote</th><th>Validade</th><th>Un</th><th>Contado</th></tr></thead><tbody>' +
-    locais.map(l => al.filter(a => a.local === l).map(a => (a.lotes.length ? a.lotes : [{ lote: '', validade: '' }]).map((t, n) => '<tr><td>' + (n ? '' : esc(l)) + '</td><td>' + (n ? '' : esc(a.i.nome)) + '</td><td>' + (n ? '' : esc(a.i.codigo || '')) + '</td><td>' + esc(t.lote || (a.lotes.length ? 'sem lote' : '')) + '</td><td>' + (t.validade ? fmtD(t.validade) : '') + '</td><td>' + esc(a.i.un || '') + '</td><td style="width:60pt"></td></tr>').join('')).join('')).join('') + '</tbody></table><div class="imp-pe">' + APP_APELIDO + '</div>';
+    locais.map(l => al.filter(a => a.local === l).map(a => (a.lotes.length ? a.lotes : [{ lote: '', validade: '' }]).map((t, n) => '<tr><td>' + (n ? '' : esc(l)) + '</td><td>' + (n ? '' : esc(a.i.nome)) + '</td><td>' + (n ? '' : esc(a.i.codigo || '')) + '</td><td>' + esc(t.lote || (a.lotes.length ? 'sem lote' : '')) + '</td><td>' + (t.validade ? fmtD(t.validade) : '') + '</td><td>' + esc(a.i.un || '') + '</td><td style="width:60pt">' + (a.parte === 'equip' ? '□ achei  □ não' : '') + '</td></tr>').join('')).join('')).join('') + '</tbody></table><div class="imp-pe">' + APP_APELIDO + '</div>';
   document.body.classList.add('imprimindo'); setTimeout(() => { try { window.print(); } catch {} document.body.classList.remove('imprimindo'); }, 50);
   Data.col('sv2_alm_inv').update(inv.id, { folhas: (inv.folhas || []).concat([{ ts: nowISO(), porId: S.user.id, porNome: S.user.nome }]) }).catch(() => {});
 }
@@ -2789,8 +2856,10 @@ document.addEventListener('click', e => {
   const t = e.target.closest && e.target.closest('[data-act^="cg-"]'); if (!t) return;
   const a = t.getAttribute('data-act'), k = t.getAttribute('data-k');
   if (a === 'cg-salva') cgSalvar(k);
+  else if (a === 'cg-achei') cgSalvar(k, t.getAttribute('data-v') === '1');
+  else if (a === 'cg-parte') { const f = S.fm; if (!f) return; const id = t.getAttribute('data-id'); f.partes[id] = id === 'mat' ? f.partes.mat === false : !f.partes[id]; f.sujo = true; f.msg = ''; gvDesenha(true); }
   else if (a === 'cg-edit') { S.cgEdit = k; render(); setTimeout(() => { const i = $('[data-cgk="' + k + '"]'); if (i) i.focus(); }, 30); }
-  else if (a === 'cg-nova') { if (cgPodeAbrir()) lcAbrir({ k: 'cgnova', contadorId: '', local: Store.get('cw-unidade') && cgLocais().indexOf(Store.get('cw-unidade')) >= 0 ? Store.get('cw-unidade') : cgLocais()[0] }); }
+  else if (a === 'cg-nova') { if (cgPodeAbrir()) lcAbrir({ k: 'cgnova', partes: S._cgDeEq ? { mat: false, equip: true, vid: true } : { mat: true, equip: false, vid: false }, contadorId: '', local: Store.get('cw-unidade') && cgLocais().indexOf(Store.get('cw-unidade')) >= 0 ? Store.get('cw-unidade') : cgLocais()[0] }); }
   else if (a === 'cg-nova-ok') cgNovaOk();
   else if (a === 'cg-cancelar') { if (alSup()) lcAbrir({ k: 'cgcanc', motivoG: '' }); }
   else if (a === 'cg-canc-ok') cgCancOk();
@@ -2802,6 +2871,12 @@ document.addEventListener('click', e => {
   else if (a === 'cg-ver-conf') { S.cgVista = 'conf'; render(); }
   else if (a === 'cg-folha') cgFolha();
 });
+
+/* quem chega pelo botão Inventário de Equipamentos já começa com equipamentos e vidrarias marcados */
+document.addEventListener('click', e => { const l = e.target.closest && e.target.closest('a[href="#/almox/contagem"]'); if (l) S._cgDeEq = l.hasAttribute('data-inv'); }, true);
+const cgSoMat = inv => { const p = (inv && inv.partes) || { mat: true }; return !p.equip && !p.vid; };
+/* inventário sem materiais (aberto pelo botão Inventário de Equipamentos) */
+const cgDoEq = () => { const inv = cgAberta(); if (inv) { const p = inv.partes || { mat: true }; return p.mat === false && !!(p.equip || p.vid); } return !!S._cgDeEq; };
 
 /* ===== calibracao.js ===== */
 /* EFCwork · calibracao.js — CALIBRAÇÃO COM HISTÓRICO (v0.3.3, pedido do Elias de 05/11).
@@ -2851,8 +2926,10 @@ function cbEtapas(c) {
 function cbPassos(c, mini) {
   const es = cbEtapas(c);
   if (mini) return '<ol class="cb-mini" aria-label="Etapas">' + es.map(x => '<li class="' + (x.feito ? 'ok' : x.atual ? 'at' : '') + '" title="' + esc(x.nome + (x.data ? ' · ' + fmtD(x.data) : '')) + '"><i></i><span>' + esc(x.nome) + '</span></li>').join('') + '</ol>';
-  return '<ol class="cb-tl">' + es.map((x, n) => '<li class="' + (x.feito ? 'ok' : x.atual ? 'at' : '') + (x.parcial ? ' pc' : '') + '"><span class="cb-n">' + (x.feito ? ic('ok') : n + 1) + '</span><div><b>' + esc(x.nome) + (x.data ? ' <em>' + fmtD(x.data) + '</em>' : '') + '</b>' + (x.txt ? '<span>' + esc(x.txt) + '</span>' : '') + (x.quem ? '<small>' + esc(x.quem) + '</small>' : '') + (x.atual ? '<small class="cb-agora">próxima etapa</small>' : '') + '</div></li>').join('') + '</ol>';
-}
+  /* linha do tempo com FLUIDO (v0.3.4): as etapas já feitas que esta pessoa ainda não viu começam apagadas e o fluido sobe até elas */
+  const feitas = es.findIndex(x => !x.feito) < 0 ? es.length : es.findIndex(x => !x.feito), visto = cbNivelVisto(c.id, feitas);
+  return '<div class="cb-tlw" data-cbtl="' + esc(c.id) + '" data-feitas="' + feitas + '"><span class="cb-tubo" aria-hidden="true"><i class="cb-fluido"></i></span><ol class="cb-tl">' + es.map((x, n) => { const apagada = x.feito && n >= visto;
+    return '<li class="' + (x.feito ? 'ok' : x.atual ? 'at' : '') + (apagada ? ' esp' : '') + (x.parcial ? ' pc' : '') + '"><span class="cb-n"><span class="cb-nn">' + (n + 1) + '</span>' + ic('ok') + '</span><div><b>' + esc(x.nome) + (x.data ? ' <em>' + fmtD(x.data) + '</em>' : '') + '</b>' + (x.txt ? '<span>' + esc(x.txt) + '</span>' : '') + (x.quem ? '<small>' + esc(x.quem) + '</small>' : '') + (x.atual ? '<small class="cb-agora">próxima etapa</small>' : '') + '</div></li>'; }).join('') + '</ol></div>';}
 
 /* ======================= tela (Equipamentos › Calibração) ======================= */
 function cbTela() {
@@ -3104,6 +3181,44 @@ document.addEventListener('change', e => {
   gvDesenha(true);
 });
 document.addEventListener('input', e => { const t = e.target; if (t && t.getAttribute && S.fm && S.fm.k === 'cbreal' && /^it\.\d+\.validade$/.test(t.getAttribute('data-fm') || '')) { const n = Number(t.getAttribute('data-fm').split('.')[1]); (S.fm.it[n] = S.fm.it[n] || {}).validadeMexida = true; } });
+
+/* ---------- fluido da linha do tempo (pedido de 06/11) ----------
+   Cada pessoa tem guardado até onde já VIU cada solicitação (cw-cbvisto-<pessoa>-<id>). Ao abrir a gaveta, o fluido sobe da última
+   etapa vista até a atual; com 2 ou mais etapas novas, sobe uma, espera 0,4 s, sobe a próxima. Com a gaveta aberta, uma mudança sobe na hora.
+   "Reduzir movimento" no aparelho: aparece pronto, sem animação. */
+const CB_SOBE = 600, CB_PAUSA = 400;
+S._cbNivel = S._cbNivel || {}; S._cbTok = S._cbTok || {};
+const cbChaveVisto = id => 'cw-cbvisto-' + ((S.user && S.user.id) || '') + '-' + id;
+function cbNivelVisto(id, feitas) {
+  if (S._cbNivel[id] != null) return Math.min(S._cbNivel[id], feitas);
+  if (!csMovimento()) return feitas;
+  const v = Number(Store.get(cbChaveVisto(id)) || 0); return Math.max(1, Math.min(v || 1, feitas));
+}
+function cbFluir(g, abriuAgora) {
+  const ol = g.querySelector('[data-cbtl]'); if (!ol) return;
+  const id = ol.getAttribute('data-cbtl'), feitas = Number(ol.getAttribute('data-feitas')) || 0, lis = Array.from(ol.querySelectorAll('.cb-tl > li'));
+  const tubo = ol.querySelector('.cb-tubo'), fl = ol.querySelector('.cb-fluido'); if (!lis.length || !tubo) return;
+  const centro = n => lis[n].offsetTop + 14, topo = centro(0);
+  tubo.style.top = topo + 'px'; tubo.style.height = (centro(lis.length - 1) - topo) + 'px';
+  const alto = n => n <= 1 ? 0 : centro(n - 1) - topo; /* n = quantas etapas acesas */
+  let nivel = cbNivelVisto(id, feitas); const tok = (S._cbTok[id] || 0) + 1; S._cbTok[id] = tok;
+  fl.style.transition = 'none'; fl.style.height = alto(nivel) + 'px'; void fl.offsetHeight;
+  const grava = n => { S._cbNivel[id] = n; Store.set(cbChaveVisto(id), n); };
+  if (nivel >= feitas) { grava(feitas); return; }
+  ol.classList.add('cb-correndo');
+  const passo = () => {
+    if (S._cbTok[id] !== tok || !ol.isConnected) return;
+    nivel++; fl.style.transition = 'height ' + CB_SOBE + 'ms cubic-bezier(.45,.05,.3,1)'; fl.style.height = alto(nivel) + 'px';
+    setTimeout(() => {
+      if (S._cbTok[id] !== tok || !ol.isConnected) return;
+      const li = lis[nivel - 1]; if (li) { li.classList.remove('esp'); li.classList.add('acende'); }
+      grava(nivel);
+      if (nivel < feitas) setTimeout(passo, CB_PAUSA); else ol.classList.remove('cb-correndo');
+    }, nivel === 1 ? 0 : CB_SOBE);
+  };
+  setTimeout(passo, abriuAgora ? 220 : 0);
+}
+GV_DEPOIS.push(cbFluir);
 
 /* ===== sino.js ===== */
 /* EFCwork · sino.js — o SINO do topo (v0.3). Abre na gaveta: pedidos para você decidir (os do Almoxarifado decidem aqui; os das

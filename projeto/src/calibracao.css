@@ -12,24 +12,36 @@
 .cb-mini li span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cb-mini li.ok i{background:var(--ouro)}.cb-mini li.ok{color:var(--tx2)}
 .cb-mini li.at i{background:var(--wa)}.cb-mini li.at{color:var(--tx);font-weight:600}
-/* linha do tempo na gaveta */
+/* linha do tempo na gaveta: tubo com fluido dourado e brilho correndo (v0.3.4) */
+.cb-tlw{position:relative}
 .cb-tl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.cb-tubo{position:absolute;left:12px;width:4px;border-radius:3px;background:var(--bg2);box-shadow:inset 0 1px 2px rgba(0,0,0,.12);overflow:hidden}
+.cb-fluido{position:absolute;left:0;right:0;top:0;height:0;border-radius:3px;background:linear-gradient(180deg,#f7df9e,#d9b46a 45%,#b4862f);overflow:hidden}
+.cb-fluido::after{content:"";position:absolute;left:0;right:0;height:46px;top:-46px;background:linear-gradient(180deg,transparent,rgba(255,250,230,.95),transparent);animation:cbBrilho 1.8s linear infinite}
+.cb-correndo .cb-fluido::after{animation-duration:.9s}
+@keyframes cbBrilho{to{top:100%}}
 .cb-tl li{display:flex;gap:12px;position:relative;padding-bottom:14px}
 .cb-tl li:last-child{padding-bottom:0}
-.cb-tl li::before{content:"";position:absolute;left:13px;top:28px;bottom:2px;width:2px;background:var(--bd)}
-.cb-tl li:last-child::before{display:none}
-.cb-tl li.ok::before{background:var(--a)}
-.cb-n{width:28px;height:28px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:13px;font-weight:700;background:var(--bg2);color:var(--tx3);border:1px solid var(--bd2);position:relative;z-index:1}
-.cb-n .ic{width:15px;height:15px}
-.cb-tl li.ok .cb-n{background:var(--ouro);color:var(--onOuro);border-color:transparent}
+.cb-n{width:28px;height:28px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:13px;font-weight:700;background:var(--bg1);color:var(--tx3);border:1px solid var(--bd2);position:relative;z-index:1;transition:background .3s,border-color .3s,color .3s}
+.cb-n .ic{width:15px;height:15px;display:none}
+.cb-tl li.ok:not(.esp) .cb-n{background:var(--ouro);color:var(--onOuro);border-color:transparent;box-shadow:0 0 0 3px color-mix(in srgb,var(--a) 22%,transparent)}
+.cb-tl li.ok:not(.esp) .cb-n .ic{display:block}.cb-tl li.ok:not(.esp) .cb-nn{display:none}
+.cb-tl li.acende .cb-n{animation:cbAcende .45s cubic-bezier(.2,.8,.2,1)}
+@keyframes cbAcende{0%{transform:scale(.7)}60%{transform:scale(1.18)}100%{transform:scale(1)}}
 .cb-tl li.at .cb-n{background:var(--waS);color:var(--wa);border-color:var(--wa)}
-.cb-tl li>div{display:flex;flex-direction:column;gap:1px;min-width:0;padding-top:3px}
+.cb-tl li>div{display:flex;flex-direction:column;gap:1px;min-width:0;padding-top:3px;transition:opacity .3s}
+.cb-tl li.esp>div{opacity:.55}
 .cb-tl b{font-weight:600;font-size:15px}
 .cb-tl b em{font-style:normal;font-weight:500;color:var(--tx2);font-size:13px;margin-left:4px}
 .cb-tl span{font-size:14px;color:var(--tx2)}
 .cb-tl small{font-size:12px;color:var(--tx3)}
 .cb-tl li:not(.ok):not(.at) b{color:var(--tx3);font-weight:500}
 .cb-agora{color:var(--wa)!important;font-weight:600}
+/* barrinhas do cartão também com brilho */
+.cb-mini li.ok i{position:relative;overflow:hidden}
+.cb-mini li.ok i::after{content:"";position:absolute;top:0;bottom:0;width:40%;left:-40%;background:linear-gradient(90deg,transparent,rgba(255,250,230,.8),transparent);animation:cbBrilhoH 2.4s linear infinite}
+@keyframes cbBrilhoH{to{left:100%}}
+@media(prefers-reduced-motion:reduce){.cb-fluido::after,.cb-mini li.ok i::after{animation:none;display:none}.cb-tl li.acende .cb-n{animation:none}.cb-n{transition:none}}
 .cb-obs{margin:0;font-size:14px;color:var(--tx2)}
 .cb-its{display:flex;flex-direction:column;border:1px solid var(--bd);border-radius:var(--rs);overflow:hidden}
 .cb-it{display:flex;justify-content:space-between;gap:10px;padding:9px 12px;border:0;border-bottom:1px solid var(--bd);background:var(--bg1);text-align:left;cursor:pointer;color:var(--tx);font:inherit}

@@ -65,7 +65,7 @@ async function entra(p, login) { await p.click('[data-act="cs-sair"]'); await p.
   await p.evaluate(() => { location.hash = '#/almox/materiais'; }); await p.waitForTimeout(200);
   const w0 = await p.$eval('.tb-w', e => Math.round(e.getBoundingClientRect().width));
   conf(w0 >= 1366 - 240 - 44, 'tabela usa a largura toda (' + w0 + ' px de ' + (1366 - 240) + ' disponíveis)');
-  await p.click('.tb-t tbody tr:has-text("Luva")'); await p.waitForTimeout(150);
+  await p.click('.tb-t tbody tr:has-text("Luva")'); await p.waitForTimeout(400);
   { const r = await p.evaluate(() => { const t = document.querySelector('.tb-w').getBoundingClientRect(), g = document.getElementById('gv').getBoundingClientRect(); return { fim: Math.round(t.right), gv: Math.round(g.left) }; });
     conf(r.gv - r.fim === 20, 'com a gaveta aberta a tabela recua e fica a 20 px dela, a mesma margem da esquerda (pedido de 06/11) (' + (r.gv - r.fim) + ' px)'); }
   await p.setViewportSize({ width: 1920, height: 900 }); await p.waitForTimeout(150);

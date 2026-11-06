@@ -72,3 +72,6 @@ a.cg-av span{flex:1}
   .ini-cgb{display:none}
   .cg-acts .dd{flex:1 1 100%}
 }
+.cg-eqb .bt{min-width:120px}
+.cg-ach{font-family:var(--f)!important;font-size:15px!important;color:var(--ok)}
+.cg-ach.nao{color:var(--cr)!important}

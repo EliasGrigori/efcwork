@@ -99,3 +99,9 @@ body.dd-arrastando{cursor:grabbing;-webkit-user-select:none;user-select:none}
 }
 .gv-corpo p.tb-nada{margin:0}
 @media(min-width:1200px){body.gv-aberta .cs-ct{padding-right:440px}} /* v0.3.1, pedido do Elias 06/11: a tabela recua quando a gaveta abre, com a margem curta (20 px) */
+/* gaveta deslizando (v0.3.4) */
+.gv.gv-entra{animation:gvEntra .28s cubic-bezier(.2,.8,.2,1)}
+.gv.gv-sai{animation:gvSai .2s cubic-bezier(.4,0,1,1) forwards;pointer-events:none}
+@keyframes gvEntra{from{transform:translateX(100%);opacity:.4}to{transform:none;opacity:1}}
+@keyframes gvSai{from{transform:none;opacity:1}to{transform:translateX(100%);opacity:.3}}
+@media(prefers-reduced-motion:reduce){.gv.gv-entra,.gv.gv-sai{animation:none}}

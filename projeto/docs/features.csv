@@ -273,3 +273,8 @@ Fichas/etiquetas/cadeia de custódia preenchidas no EFCdocs,Integração,could,s
 Tela de entrar animada (bichos),Visual,skip,sim,nao,,
 Conquistas (medalhas e níveis),Geral,skip,sim,nao,,
 16 temas + 5 fundos de campo,Visual,skip,sim,nao,,
+Gaveta deslizando da lateral (abrir/fechar),Visual,should,sim,sim,v0.3.4,
+Fluido na linha do tempo da calibração (sobe da última etapa vista; 0,4 s entre etapas),Visual,should,nao,sim,v0.3.4,
+Inventário de equipamentos (achei/não achei) na contagem às cegas,Almoxarifado,must,sim,sim,v0.3.4,
+Inventário de vidrarias por lugar na contagem às cegas,Almoxarifado,must,sim,sim,v0.3.4,
+Equipamento marcado 'não encontrado' pela contagem,Almoxarifado,should,sim,sim,v0.3.4,

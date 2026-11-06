@@ -112,19 +112,29 @@ S.gv = null; S.gvForm = false;
 function gvAbrir(fn, form) { if (!S.camadas.length) csCamadaAbre('gv', gvFecharSo); S.gv = fn; S.gvForm = !!form; gvDesenha(true); }
 /* fechar como a pessoa fecha (X, Esc): volta uma camada */
 function gvFechar() { if (S.camadas.length) csVolta(); else gvFecharSo(); }
-function gvFecharSo() { S.gv = null; S.gvForm = false; S.fm = null; S._alSel = null; const g = $('#gv'); if (g) g.remove(); document.body.classList.remove('gv-aberta'); try { render(); } catch {} }
+function gvFecharSo() {
+  S.gv = null; S.gvForm = false; S.fm = null; S._alSel = null; const g = $('#gv');
+  if (g) { if (csMovimento()) { g.id = ''; g.classList.add('gv-sai'); g.setAttribute('aria-hidden', 'true'); setTimeout(() => g.remove(), 220); } else g.remove(); } /* fecha deslizando de volta */
+  document.body.classList.remove('gv-aberta'); try { render(); } catch {}
+}
+const csMovimento = () => !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
 function gvDesenha(forca) {
   let g = $('#gv'); if (!S.gv) { if (g) g.remove(); return; }
   if (S.gvForm && g && !forca) return;
   let o; try { o = S.gv(); } catch (e) { console.error(e); o = null; }
   if (!o) { S.gv = null; if (g) g.remove(); return; }
-  if (!g) { g = document.createElement('aside'); g.id = 'gv'; g.className = 'gv'; g.setAttribute('role', 'dialog'); g.setAttribute('aria-modal', 'false'); document.body.appendChild(g); }
+  const nova = !g, rol = g && g.querySelector('.gv-corpo') ? g.querySelector('.gv-corpo').scrollTop : 0, mesma = g && g._gvFn === S.gv;
+  if (!g) { g = document.createElement('aside'); g.id = 'gv'; g.className = 'gv gv-entra'; g.setAttribute('role', 'dialog'); g.setAttribute('aria-modal', 'false'); document.body.appendChild(g); setTimeout(() => g.classList.remove('gv-entra'), 320); } /* abre deslizando da lateral (pedido de 06/11) */
+  g._gvFn = S.gv;
   document.body.classList.add('gv-aberta');
   g.setAttribute('aria-label', o.titulo || 'Detalhe');
   g.innerHTML = '<div class="gv-cab">' + (o.ico ? '<span class="ico' + (o.icoCls ? ' ' + o.icoCls : '') + '">' + ic(o.ico) + '</span>' : '') + '<div class="gv-tx"><small>' + esc(o.sub || '') + '</small><h2>' + esc(o.titulo || '') + '</h2>' + (o.pill || '') + '</div>' +
     (o.cabAcoes || '') + (o.lixeira ? (function (x) { x = typeof x === 'string' ? { act: x } : x; return '<button type="button" class="bt ic-so gv-lx" data-act="' + esc(x.act) + '"' + (x.id ? ' data-id="' + esc(x.id) + '"' : '') + ' title="' + esc(x.titulo || 'Excluir') + '" aria-label="' + esc(x.titulo || 'Excluir') + '">' + ic('lixo') + '</button>'; })(o.lixeira) : '') +
     '<button type="button" class="bt ic-so" data-act="gv-fecha" title="Fechar" aria-label="Fechar">' + ic('x') + '</button></div><div class="gv-corpo">' + (o.corpo || '') + '</div>' + (o.rodape ? '<div class="gv-pe">' + o.rodape + '</div>' : '');
+  if (mesma && rol) { const c = g.querySelector('.gv-corpo'); if (c) c.scrollTop = rol; } /* redesenho da mesma gaveta não volta a rolagem para o topo */
+  GV_DEPOIS.forEach(f => { try { f(g, nova || !mesma); } catch (e) { console.error(e); } });
 }
+const GV_DEPOIS = []; /* funções chamadas depois de desenhar a gaveta: (elemento, abriuAgora) */
 const gvNums = l => '<div class="gv-kv">' + l.map(x => '<div' + (x[2] ? ' class="' + x[2] + '"' : '') + '><b class="num">' + esc(x[0]) + '</b><small>' + esc(x[1]) + '</small></div>').join('') + '</div>';
 const gvCampos = l => '<dl class="gv-fl">' + l.filter(x => x[1] != null && x[1] !== '').map(x => '<dt>' + esc(x[0]) + '</dt><dd>' + esc(x[1]) + '</dd>').join('') + '</dl>';
 const gvLinha = l => l.length ? '<ol class="gv-tl">' + l.map(x => '<li><span>' + esc(x[0]) + '</span><small>' + esc(x[1]) + '</small></li>').join('') + '</ol>' : '<p class="tb-nada">Sem registros.</p>';

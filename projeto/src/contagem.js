@@ -6,6 +6,8 @@
    Formato compatível com o EFClaudian (sv2_alm_inv: numero CNT-AAAA-NN, tipo 'contagem', partes.mat, contagens.m_<id> {cont, lotes, esp, …}).
    Campos novos (o EFClaudian ignora): contadorId/contadorNome, recontar{}, resolucoes{}. Prefixo: cg. */
 Object.assign(S, { almInv: [], cgRasc: {}, cgVista: '' });
+const CG_RES_EQ = { falta: [['nao_achado', 'Não encontrado (marcar no equipamento)'], ['Em outro lugar', 'Está em outro lugar'], ['Outro', 'Outro']], sobra: [['Outro', 'Outro']] };
+const CG_RES_VID = { falta: [['Quebra', 'Quebra'], ['Perda', 'Perda'], ['Erro de lançamento', 'Erro de lançamento'], ['Outro', 'Outro']], sobra: [['Achado', 'Achado'], ['Entrada não lançada', 'Entrada não lançada'], ['Erro de lançamento', 'Erro de lançamento'], ['Outro', 'Outro']] };
 const CG_RES = {
   falta: [['saida_retro', 'Saída esquecida (lançar com a data certa)'], ['Perda', 'Perda'], ['Quebra', 'Quebra'], ['Erro de lançamento', 'Erro de lançamento (sem saída)'], ['Outro', 'Outro']],
   sobra: [['Entrada não lançada', 'Entrada não lançada'], ['Achado', 'Achado'], ['Erro de lançamento', 'Erro de lançamento'], ['Outro', 'Outro']]
@@ -26,11 +28,25 @@ function cgOrdemLocal(loc) {
 const cgCmpLocal = (a, b) => { const x = cgOrdemLocal(a), y = cgOrdemLocal(b); return x[0] - y[0] || x[1] - y[1] || String(x[2]).localeCompare(String(y[2]), 'pt-BR'); };
 const cgNomeLocal = l => { const s = String(l || '').trim(); if (!s) return 'Sem local'; return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase(); };
 /* materiais da contagem, na ordem do lugar; lotes com saldo (sem mostrar o saldo) */
+/* o que entra na contagem: materiais (por lote), equipamentos (achei / não achei) e vidrarias (quantidade em cada lugar) — pedido de 06/11 */
+const cgSlug = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^A-Za-z0-9]+/g, '-').replace(/^-|-$/g, '').toLowerCase() || 'x';
 function cgAlvos(inv) {
-  return alAtivos().slice().sort((a, b) => cgCmpLocal(a.local, b.local) || String(a.nome).localeCompare(b.nome, 'pt-BR'))
-    .map(i => ({ k: 'm:' + i.id, i: i, local: cgNomeLocal(i.local), lotes: alLotes(i.id, true).filter(l => l.saldo > 0) }));
+  const p = (inv && inv.partes) || { mat: true }, out = [];
+  if (p.mat !== false) alAtivos().forEach(i => out.push({ k: 'm:' + i.id, parte: 'mat', i: i, local: cgNomeLocal(i.local), lotes: alLotes(i.id, true).filter(l => l.saldo > 0) }));
+  if (p.equip || p.vid) S.almEq.filter(e => e.situacao !== 'baixa' && !e.transito).forEach(e => {
+    if (e.tipo === 'qtd') { if (!p.vid) return; const ls = Object.keys(e.qtdLocal || {}); (ls.length ? ls : [e.local || '']).forEach(l => out.push({ k: 'v:' + e.id + (ls.length > 1 ? '~' + cgSlug(l) : ''), parte: 'vid', e: e, vloc: l, i: { id: e.id, nome: e.nome, codigo: [e.marca, ls.length > 1 ? l : ''].filter(Boolean).join(' · '), un: 'un' }, local: cgNomeLocal(l || e.local), lotes: [] })); }
+    else if (p.equip) out.push({ k: 'e:' + e.id, parte: 'equip', e: e, i: { id: e.id, nome: eqNomeC(e), codigo: [e.marca, e.serie ? 'série ' + e.serie : ''].filter(Boolean).join(' · '), un: '' }, local: cgNomeLocal([e.local, e.posicao].filter(Boolean).join(' · ')), lotes: [] });
+  });
+  const ord = { mat: 0, vid: 1, equip: 2 };
+  return out.sort((a, b) => cgCmpLocal(a.local, b.local) || ord[a.parte] - ord[b.parte] || String(a.i.nome).localeCompare(b.i.nome, 'pt-BR'));
 }
-function cgEsperado(i) { const l = {}; alLotes(i.id).forEach(x => { l[x.id] = x.saldo; }); return { total: alSaldo(i.id), lotes: l }; }
+function cgEsperado(a) {
+  if (a.parte === 'vid') return { total: Number((a.e.qtdLocal || {})[a.vloc]) || 0 };
+  if (a.parte === 'equip') return { total: 1 };
+  const l = {}; alLotes(a.i.id).forEach(x => { l[x.id] = x.saldo; }); return { total: alSaldo(a.i.id), lotes: l };
+}
+const CG_PARTES = [['mat', 'Materiais', 'por lote, quantidade'], ['equip', 'Equipamentos', 'achei / não achei'], ['vid', 'Vidrarias', 'quantidade em cada lugar']];
+const cgPartesTxt = p => CG_PARTES.filter(x => p && (x[0] === 'mat' ? p.mat !== false : p[x[0]])).map(x => x[1].toLowerCase()).join(', ');
 function cgProgresso(inv) {
   const al = cgAlvos(inv), ct = cgContagens(inv), rc = inv.recontar || {};
   const feitos = al.filter(a => ct[a.k]), difs = feitos.filter(a => cgDif(ct[a.k]) !== 0);
@@ -66,7 +82,7 @@ function cgTela() {
   }
   const pr = cgProgresso(inv), pct = pr.total ? Math.round(pr.feitos / pr.total * 100) : 0, rcN = pr.recontar.length;
   const vista = sup && S.cgVista === 'conf' ? 'conf' : 'contar';
-  let h = '<section class="pn cg-topo"><div class="cg-tp"><div class="cg-tpt"><span class="pill wa">Em andamento</span><small>' + esc(inv.local || '') + ' · aberta por ' + esc(inv.porNome || '') + ' em ' + fmtD(String(inv.abertoEm || '').slice(0, 10)) + '</small><small>Quem conta: <b>' + esc(inv.contadorNome || 'qualquer pessoa do Almoxarifado') + '</b></small></div>' +
+  let h = '<section class="pn cg-topo"><div class="cg-tp"><div class="cg-tpt"><span class="pill wa">Em andamento</span><small>' + esc(inv.local || '') + ' · aberta por ' + esc(inv.porNome || '') + ' em ' + fmtD(String(inv.abertoEm || '').slice(0, 10)) + '</small><small>Quem conta: <b>' + esc(inv.contadorNome || 'qualquer pessoa do Almoxarifado') + '</b> · ' + esc(cgPartesTxt(inv.partes) || 'materiais') + '</small></div>' +
     '<div class="cg-pct"><b class="num">' + pct + '%</b><small>' + pr.feitos + ' de ' + pr.total + ' contados</small></div></div>' +
     '<div class="cg-bar" role="progressbar" aria-valuenow="' + pct + '" aria-valuemin="0" aria-valuemax="100"><i style="width:' + pct + '%"></i></div>' +
     (sup ? '<div class="cg-acts">' + ddHTML('cg:vista', vista, [['contar', 'Mostrar: contagem'], ['conf', 'Mostrar: conferência' + (pr.difs.length ? ' (' + pr.difs.length + ' não bateram)' : '')]]) + '<span class="sp"></span><button type="button" class="bt ic-so" data-act="cg-folha" title="Imprimir a folha de contagem (sem o saldo)" aria-label="Imprimir a folha de contagem">' + ic('impressora') + '</button><button type="button" class="bt ic-so" data-act="cg-cancelar" title="Cancelar a contagem" aria-label="Cancelar a contagem">' + ic('lixo') + '</button></div>' : '') + '</section>';
@@ -96,7 +112,7 @@ function cgContar(inv, pr) {
   const rc = inv.recontar || {}, busca = tbNorm(S.cgBusca || '').trim(), loc = S.cgLocal || '';
   const vis = a => (!loc || a.local === loc) && (!busca || busca.split(/\s+/).every(w => tbNorm([a.i.nome, a.i.codigo, a.local].join(' ')).indexOf(w) >= 0));
   const locais = Array.from(new Set(pr.al.map(a => a.local)));
-  let h = '<div class="cg-bar2"><label class="tb-busca">' + ic('lupa') + '<input type="search" data-cgbusca value="' + esc(S.cgBusca || '') + '" placeholder="Buscar material" aria-label="Buscar material" data-foco="cg-busca"></label>' +
+  let h = '<div class="cg-bar2"><label class="tb-busca">' + ic('lupa') + '<input type="search" data-cgbusca value="' + esc(S.cgBusca || '') + '" placeholder="' + (cgSoMat(inv) ? 'Buscar material' : 'Buscar item') + '" aria-label="Buscar material" data-foco="cg-busca"></label>' +
     ddHTML('cg:local', loc, [['', 'Todos os lugares']].concat(locais.map(l => { const g = pr.al.filter(a => a.local === l); return [l, l + ' · ' + g.filter(a => pr.ct[a.k]).length + '/' + g.length]; }))) +
     '<span class="cg-dica">' + ic('olho') + 'Às cegas: o saldo do sistema não aparece</span></div>';
   const rec = pr.recontar.filter(vis);
@@ -114,27 +130,29 @@ function cgItemHTML(inv, a, c, recontar) {
   const i = a.i, k = a.k, rz = S.cgRasc[k] || {}, feito = !!c && !recontar, edit = S.cgEdit === k;
   const lotes = a.lotes.length ? a.lotes : [{ id: '', lote: '', validade: '' }];
   const head = '<div class="cg-ith"><span class="cg-nm"><b>' + esc(i.nome) + '</b><small>' + esc([i.codigo, i.un].filter(Boolean).join(' · ')) + '</small></span>';
-  if (feito && !edit) return '<div class="cg-it ok" data-k="' + esc(k) + '">' + head + '<span class="cg-res"><b class="num">' + alQ(c.cont) + '</b> ' + esc(i.un || '') + '<small>' + esc(c.porNome || '') + '</small></span><button type="button" class="bt ic-so" data-act="cg-edit" data-k="' + esc(k) + '" title="Contar de novo" aria-label="Contar de novo">' + ic('lapis') + '</button></div></div>';
+  if (feito && !edit) return '<div class="cg-it ok" data-k="' + esc(k) + '">' + head + '<span class="cg-res">' + (a.parte === 'equip' ? '<b class="cg-ach' + (c.cont ? '' : ' nao') + '">' + (c.cont ? 'Achei' : 'Não achei') + '</b>' : '<b class="num">' + alQ(c.cont) + '</b> ' + esc(i.un || '')) + '<small>' + esc(c.porNome || '') + '</small></span><button type="button" class="bt ic-so" data-act="cg-edit" data-k="' + esc(k) + '" title="Contar de novo" aria-label="Contar de novo">' + ic('lapis') + '</button></div></div>';
+  if (a.parte === 'equip') return '<div class="cg-it' + (recontar ? ' rc' : '') + '" data-k="' + esc(k) + '">' + head + '</div><div class="cg-lts cg-eqb"><button type="button" class="bt" data-act="cg-achei" data-k="' + esc(k) + '" data-v="0">' + ic('x') + 'Não achei</button><button type="button" class="bt pr" data-act="cg-achei" data-k="' + esc(k) + '" data-v="1">' + ic('ok') + 'Achei</button></div></div>';
   return '<div class="cg-it' + (recontar ? ' rc' : '') + '" data-k="' + esc(k) + '">' + head + '</div><div class="cg-lts">' + lotes.map((l, n) => {
     const v = rz[l.id] != null ? rz[l.id] : (edit && c && c.lotes && c.lotes[l.id] != null ? alQin(c.lotes[l.id]) : '');
     return '<label class="cg-lt"><span>' + (l.id ? esc(l.lote || 'sem lote') + (l.validade ? ' · vence ' + fmtD(l.validade) : '') : 'Quantidade') + '</span><input class="fm-i num" inputmode="decimal" autocomplete="off" data-cgk="' + esc(k) + '" data-cgl="' + esc(l.id) + '" data-foco="cg:' + esc(k) + ':' + esc(l.id) + '" value="' + esc(v) + '" placeholder="' + esc(i.un || 'qtd') + '" aria-label="Contado' + (l.id ? ' no lote ' + esc(l.lote || 'sem lote') : '') + '"></label>';
   }).join('') + '<button type="button" class="bt pr cg-ok" data-act="cg-salva" data-k="' + esc(k) + '">' + ic('ok') + 'Contado</button></div>' + (a.lotes.length > 1 ? '<p class="cg-ob">Conte cada lote (0 se não achou).</p>' : '') + '</div>';
 }
-async function cgSalvar(k) {
+async function cgSalvar(k, achou) {
   const inv = cgAberta(); if (!cgPodeContar(inv)) return;
   const a = cgAlvos(inv).find(x => x.k === k); if (!a) return;
+  if (a.parte === 'equip') { S.cgRasc[k] = { '': achou ? '1' : '0' }; }
   const lotes = a.lotes.length ? a.lotes : [{ id: '' }], rz = S.cgRasc[k] || {};
-  $$('[data-cgk="' + k + '"]').forEach(x => { rz[x.getAttribute('data-cgl')] = x.value; }); S.cgRasc[k] = rz;
+  if (a.parte !== 'equip') $$('[data-cgk="' + k + '"]').forEach(x => { rz[x.getAttribute('data-cgl')] = x.value; }); S.cgRasc[k] = rz;
   let tot = 0; const lt = {};
   for (const l of lotes) { const t = String(rz[l.id] == null ? '' : rz[l.id]).trim(); if (t === '') { aviso('Conte todos os lotes de ' + a.i.nome + ' (0 se não achou).', 'erro'); const e = $('[data-cgk="' + k + '"][data-cgl="' + l.id + '"]'); if (e) e.focus(); return; } const n = alNum(t); if (!(n >= 0)) { aviso('Quantidade inválida em ' + a.i.nome + '.', 'erro'); return; } tot += n; if (l.id) lt[l.id] = alR(n); }
-  const ant = cgContagens(inv)[k], reg = { porId: S.user.id, porNome: S.user.nome, ts: nowISO(), obs: '', esp: cgEsperado(a.i), lotes: lt, cont: alR(tot) };
+  const ant = cgContagens(inv)[k], reg = { porId: S.user.id, porNome: S.user.nome, ts: nowISO(), obs: '', esp: cgEsperado(a), lotes: lt, cont: alR(tot) };
   if (ant) reg.ant = (ant.ant || []).concat([{ cont: ant.cont, lotes: ant.lotes || {}, porNome: ant.porNome, ts: ant.ts, esp: ant.esp }]);
   const patch = { ['contagens.' + cgChave(k)]: reg }; if ((inv.recontar || {})[cgChave(k)]) patch['recontar.' + cgChave(k)] = false;
   if ((inv.resolucoes || {})[cgChave(k)]) patch['resolucoes.' + cgChave(k)] = null;
   delete S.cgRasc[k]; if (S.cgEdit === k) S.cgEdit = '';
   try { await Data.col('sv2_alm_inv').update(inv.id, patch); } catch (e) { aviso(svErro(e), 'erro'); return; }
   /* foco no próximo que falta */
-  setTimeout(() => { const prox = $$('.cg-it:not(.ok) input[data-cgk]').find(x => x.getAttribute('data-cgk') !== k); if (prox) { prox.focus(); try { prox.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch {} } }, 60);
+  setTimeout(() => { const prox = $$('.cg-it:not(.ok) input[data-cgk], .cg-it:not(.ok) [data-act="cg-achei"][data-v="1"]').find(x => (x.getAttribute('data-cgk') || x.getAttribute('data-k')) !== k); if (prox) { prox.focus(); try { prox.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch {} } }, 60);
 }
 
 /* ---------- conferência (Líder/Administrador) ---------- */
@@ -152,7 +170,8 @@ function cgConferencia(inv, pr) {
     filtros: [{ k: 'sit', rot: 'Situação', opcoes: [['difere', 'Não bateu (decidir)'], ['recontar', 'Recontagem pedida'], ['bateu2', 'Bateu na recontagem'], ['resolvido', 'Já decidido']], teste: (a, v) => { const s = cgSitItem(inv, a, pr.ct).id; return v === 'difere' ? s === 'difere' : s === v; } }],
     cols: [
       { k: 'loc', rot: 'Lugar', v: a => a.local },
-      { k: 'nome', rot: 'Material', fixa: true, v: a => a.i.nome, cls: 'forte' },
+      { k: 'nome', rot: 'Item', fixa: true, v: a => a.i.nome, cls: 'forte' },
+      { k: 'tp', rot: 'Tipo', v: a => a.parte === 'equip' ? 'Equipamento' : a.parte === 'vid' ? 'Vidraria' : 'Material' },
       { k: 'sis', rot: 'Sistema', tipo: 'num', v: a => Number((pr.ct[a.k].esp || {}).total) || 0 },
       { k: 'c1', rot: '1ª contagem', tipo: 'num', v: a => { const c = pr.ct[a.k]; return (c.ant && c.ant.length ? c.ant[0].cont : c.cont); } },
       { k: 'c2', rot: 'Recontagem', tipo: 'num', v: a => { const c = pr.ct[a.k]; return c.ant && c.ant.length ? c.cont : ''; } },
@@ -190,8 +209,8 @@ function cgAbreItem(k) {
 }
 LC_FORM.cgres = f => {
   const inv = cgAberta(); if (!inv) return null; const a = cgAlvos(inv).find(x => x.k === f.kItem), c = cgContagens(inv)[f.kItem]; if (!a || !c) return null;
-  const d = cgDif(c), falta = d < 0, ops = falta ? CG_RES.falta : CG_RES.sobra, retro = f.tipo === 'saida_retro', pes = cgPessoas();
-  let corpo = lcMsg() + gvNums([[alQ((c.esp || {}).total || 0), 'sistema'], [alQ(c.cont), 'contado'], [(d > 0 ? '+' : '') + alQ(d), falta ? 'falta' : 'sobra', falta ? 'cr' : 'wa']]) +
+  const R = a.parte === 'equip' ? CG_RES_EQ : a.parte === 'vid' ? CG_RES_VID : CG_RES, d = cgDif(c), falta = d < 0, ops = falta ? R.falta : R.sobra, retro = f.tipo === 'saida_retro', pes = cgPessoas();
+  let corpo = lcMsg() + (a.parte === 'equip' ? lcAv('<b>Não achado</b> na contagem (' + esc(a.local) + ').', 'cr') : gvNums([[alQ((c.esp || {}).total || 0), 'sistema'], [alQ(c.cont), 'contado'], [(d > 0 ? '+' : '') + alQ(d), falta ? 'falta' : 'sobra', falta ? 'cr' : 'wa']])) +
     lcBl('O que aconteceu?', ddHTML('lc:cgtipo', f.tipo || '', [['', 'Escolha']].concat(ops)));
   if (retro) corpo += lcAv('A saída entra com a data em que aconteceu e fica marcada como <b>erro de lançamento</b>, com quem esqueceu e a sua reclamação. A pessoa é avisada no sino.', 'wa') +
     '<div class="fm-g">' + lcBl('Data da saída', lcData('data', f.data)) + lcBl('Quem esqueceu de lançar', ddHTML('lc:cgresp', f.respId || '', [['', 'Não sei']].concat(pes.map(u => [u.id, u.nome])))) + '</div>' +
@@ -223,7 +242,17 @@ async function cgConcluir() {
   const res = { contados: pr.feitos, total: pr.total, difs: pr.difs.length, bateramNaRecontagem: pr.al.filter(a => pr.ct[a.k] && !cgDif(pr.ct[a.k]) && (pr.ct[a.k].ant || []).length).length, erros: 0, ajustes: [] };
   try {
     for (const a of pr.difs) {
-      const c = pr.ct[a.k], r = rs[cgChave(a.k)], i = alItem(a.i.id); if (!i) continue;
+      const c = pr.ct[a.k], r = rs[cgChave(a.k)];
+      if (a.parte !== 'mat') {
+        const e = S.almEq.find(x => x.id === a.e.id); if (!e) continue; const mot = 'Contagem ' + inv.numero + ': ' + (r.tipo === 'nao_achado' ? 'não encontrado' : r.tipo) + (r.obs ? ' — ' + r.obs : '');
+        let patch = {}, ev;
+        if (a.parte === 'vid') { const qn = Object.assign({}, e.qtdLocal || {}); qn[a.vloc] = c.cont; patch = { qtdLocal: qn }; ev = { tipo: 'quantidade', data: hojeISO(), texto: mot + ' · ' + a.vloc + ' ' + (Number((e.qtdLocal || {})[a.vloc]) || 0) + ' → ' + c.cont, antes: { qtdLocal: e.qtdLocal || {} }, depois: { qtdLocal: qn } }; res.ajustes.push(e.nome + ' (' + a.vloc + ') → ' + c.cont + ' (' + r.tipo + ')'); }
+        else { if (r.tipo === 'nao_achado') patch = { naoAchado: inv.numero }; ev = { tipo: 'inventario', data: hojeISO(), texto: mot }; res.ajustes.push(eqNomeC(e) + ': ' + (r.tipo === 'nao_achado' ? 'não encontrado' : r.tipo)); }
+        await Data.col('sv2_alm_equip').update(e.id, Object.assign({}, patch, { hist: (e.hist || []).concat([Object.assign({ ts: nowISO(), porId: S.user.id, porNome: S.user.nome }, ev)]), atualizadoEm: nowISO() }));
+        Audit.log({ acao: 'equip_inventario', entidade: 'almox_equip', entidadeId: e.id, resumo: eqNomeC(e) + ': ' + mot, depois: patch });
+        continue;
+      }
+      const i = alItem(a.i.id); if (!i) continue;
       const linhas = Object.keys(Object.assign({}, (c.esp || {}).lotes, c.lotes)).map(lid => { const l = alIdx().lots[lid]; const e = Number(((c.esp || {}).lotes || {})[lid]) || 0, n = Number((c.lotes || {})[lid]) || 0, d = alR(n - e); return l && d ? { l: l, d: d } : null; }).filter(Boolean);
       if (r.tipo === 'saida_retro') {
         const grupo = linhas.filter(x => x.d < 0).length > 1 ? uid() : '';
@@ -241,6 +270,8 @@ async function cgConcluir() {
         if (ls.length) { await lcAplicar({ acao: 'ajuste', refId: i.id, linhas: ls, motivo: 'Contagem ' + inv.numero + ': ' + r.tipo + (r.obs ? ' — ' + r.obs : ''), data: hojeISO() }, null); res.ajustes.push(i.nome + ' ' + ls.map(l => (l.qtd > 0 ? '+' : '') + alQ(l.qtd)).join(' ') + ' (' + r.tipo + ')'); }
       }
     }
+    /* equipamento que estava marcado "não encontrado" e foi achado: tira a marca */
+    for (const a of pr.al.filter(x => x.parte === 'equip' && pr.ct[x.k] && pr.ct[x.k].cont && x.e.naoAchado)) { const e = S.almEq.find(x => x.id === a.e.id); if (e) { await Data.col('sv2_alm_equip').update(e.id, { naoAchado: '', hist: (e.hist || []).concat([{ ts: nowISO(), porId: S.user.id, porNome: S.user.nome, tipo: 'inventario', data: hojeISO(), texto: 'Encontrado na ' + inv.numero }]), atualizadoEm: nowISO() }); res.ajustes.push(eqNomeC(e) + ': encontrado de novo'); } }
     await Data.col('sv2_alm_inv').update(inv.id, { situacao: 'concluido', concluidoEm: nowISO(), concluidoPor: S.user.nome, resumo: res });
     Audit.log({ acao: 'inventario_concluir', entidade: 'almox_inv', entidadeId: inv.id, resumo: 'Concluiu a ' + inv.numero + ': ' + res.contados + ' de ' + res.total + ' contados, ' + res.difs + ' diferença(s), ' + res.erros + ' erro(s) de lançamento' + (res.ajustes.length ? ' · ' + res.ajustes.join('; ') : ''), depois: res });
     S.cgVista = ''; aviso(inv.numero + ' concluída.' + (res.erros ? ' ' + res.erros + ' erro(s) de lançamento registrado(s).' : ''));
@@ -250,10 +281,12 @@ async function cgConcluir() {
 
 /* ---------- abrir, cancelar, resumo, folha ---------- */
 LC_FORM.cgnova = f => {
-  const pes = cgPessoas(), n = alAtivos().length;
+  const pes = cgPessoas(), al = cgAlvos({ partes: f.partes });
+  const conta = { mat: alAtivos().length, equip: S.almEq.filter(e => e.situacao !== 'baixa' && !e.transito && e.tipo !== 'qtd').length, vid: S.almEq.filter(e => e.situacao !== 'baixa' && !e.transito && e.tipo === 'qtd').length };
   return { ico: 'lista', sub: cgNumero() + ' · contagem às cegas', titulo: 'Nova contagem', corpo: lcMsg() +
-    lcAv('Quem conta não vê o saldo do sistema. Os materiais vêm na ordem do lugar: portas em sequência, depois gavetas.') +
-    gvNums([[String(n), 'materiais ativos'], [String(Array.from(new Set(alAtivos().map(i => cgNomeLocal(i.local)))).length), 'lugares']]) +
+    lcAv('Quem conta não vê o sistema. Tudo vem na ordem do lugar: portas em sequência, depois gavetas, depois o resto.') +
+    '<p class="gv-h">O que contar</p><div class="fm-pkl">' + CG_PARTES.map(x => { const on = x[0] === 'mat' ? f.partes.mat !== false : !!f.partes[x[0]]; return '<button type="button" class="fm-pki cb-ck' + (on ? ' on' : '') + '" data-act="cg-parte" data-id="' + x[0] + '" aria-pressed="' + on + '"><span class="cb-box">' + (on ? ic('ok') : '') + '</span><span><b>' + x[1] + '</b><small>' + x[2] + '</small></span><span class="num">' + conta[x[0]] + '</span></button>'; }).join('') + '</div>' +
+    gvNums([[String(al.length), 'itens para contar'], [String(Array.from(new Set(al.map(a => a.local))).length), 'lugares']]) +
     lcBl('Quem vai contar', ddHTML('lc:cgcont', f.contadorId || '', [['', 'Escolha a pessoa']].concat(pes.map(u => [u.id, u.nome + (u.id === S.user.id ? ' (você)' : '')]))), 'só aparece quem tem o Almoxarifado') +
     lcBl('Local', ddHTML('lc:cglocal', f.local, cgLocais().map(l => [l, l]))),
     rodape: lcPe('cg-nova-ok', 'Abrir contagem') };
@@ -263,13 +296,15 @@ async function cgNovaOk() {
   const f = S.fm; if (!f || !alSup()) return;
   if (cgAberta()) return lcErro('Já existe uma contagem em andamento.');
   const u = userById(f.contadorId); if (!u) return lcErro('Escolha quem vai contar.');
-  if (!alAtivos().length) return lcErro('Nenhum material ativo para contar.');
+  const p = { mat: f.partes.mat !== false, equip: !!f.partes.equip, vid: !!f.partes.vid };
+  if (!p.mat && !p.equip && !p.vid) return lcErro('Marque o que vai ser contado.');
+  const n = cgAlvos({ partes: p }).length; if (!n) return lcErro('Nada para contar no que foi marcado.');
   if (!lcTravar()) return;
-  const o = { numero: cgNumero(), tipo: 'contagem', local: f.local, partes: { mat: true, vid: false, equip: false }, situacao: 'aberto', contagens: {}, recontar: {}, resolucoes: {}, abertoEm: nowISO(), porId: S.user.id, porNome: S.user.nome, contadorId: u.id, contadorNome: u.nome, origem: APP_NOME };
+  const o = { numero: cgNumero(), tipo: 'contagem', local: f.local, partes: p, tipo2: p.equip || p.vid ? 'inventario' : 'contagem', situacao: 'aberto', contagens: {}, recontar: {}, resolucoes: {}, abertoEm: nowISO(), porId: S.user.id, porNome: S.user.nome, contadorId: u.id, contadorNome: u.nome, origem: APP_NOME };
   try {
     const id = await Data.col('sv2_alm_inv').add(o);
-    Audit.log({ acao: 'inventario_abrir', entidade: 'almox_inv', entidadeId: id, resumo: 'Abriu a contagem ' + o.numero + ' (' + o.local + ') · quem conta: ' + u.nome });
-    if (u.id !== S.user.id) Notif.send({ nivel: 'aviso', titulo: 'Contagem para você: ' + o.numero, texto: S.user.nome + ' abriu a contagem ' + o.numero + ' e escolheu você para contar (' + alAtivos().length + ' materiais, às cegas). Abra Almoxarifado › Materiais › Contagem.', para: [u.id], refTipo: 'inventario', refId: id }).catch(() => {});
+    Audit.log({ acao: 'inventario_abrir', entidade: 'almox_inv', entidadeId: id, resumo: 'Abriu a contagem ' + o.numero + ' (' + o.local + ': ' + cgPartesTxt(p) + ') · quem conta: ' + u.nome });
+    if (u.id !== S.user.id) Notif.send({ nivel: 'aviso', titulo: 'Contagem para você: ' + o.numero, texto: S.user.nome + ' abriu a contagem ' + o.numero + ' e escolheu você para contar (' + n + ' itens: ' + cgPartesTxt(p) + ', às cegas). Abra Almoxarifado › Materiais › Contagem.', para: [u.id], refTipo: 'inventario', refId: id }).catch(() => {});
     lcFim(); aviso(o.numero + ' aberta. ' + (u.id === S.user.id ? 'Pode começar a contar.' : u.nome + ' foi avisado(a) no sino.'));
   } catch (e) { lcErro(svErro(e)); }
 }
@@ -299,7 +334,7 @@ function cgFolha() {
   p.innerHTML = '<div class="imp-cab"><b>Folha de contagem · ' + esc(inv.numero) + '</b><span>' + esc(e.nome || '') + ' · ' + esc(inv.local || '') + ' · ' + al.length + ' materiais</span></div>' +
     '<p style="margin:0 0 6pt">Contagem às cegas: a folha não traz o saldo do sistema. Contado por: ______________________ · Data: ___/___/______</p>' +
     '<table><thead><tr><th>Lugar</th><th>Material</th><th>Código</th><th>Lote</th><th>Validade</th><th>Un</th><th>Contado</th></tr></thead><tbody>' +
-    locais.map(l => al.filter(a => a.local === l).map(a => (a.lotes.length ? a.lotes : [{ lote: '', validade: '' }]).map((t, n) => '<tr><td>' + (n ? '' : esc(l)) + '</td><td>' + (n ? '' : esc(a.i.nome)) + '</td><td>' + (n ? '' : esc(a.i.codigo || '')) + '</td><td>' + esc(t.lote || (a.lotes.length ? 'sem lote' : '')) + '</td><td>' + (t.validade ? fmtD(t.validade) : '') + '</td><td>' + esc(a.i.un || '') + '</td><td style="width:60pt"></td></tr>').join('')).join('')).join('') + '</tbody></table><div class="imp-pe">' + APP_APELIDO + '</div>';
+    locais.map(l => al.filter(a => a.local === l).map(a => (a.lotes.length ? a.lotes : [{ lote: '', validade: '' }]).map((t, n) => '<tr><td>' + (n ? '' : esc(l)) + '</td><td>' + (n ? '' : esc(a.i.nome)) + '</td><td>' + (n ? '' : esc(a.i.codigo || '')) + '</td><td>' + esc(t.lote || (a.lotes.length ? 'sem lote' : '')) + '</td><td>' + (t.validade ? fmtD(t.validade) : '') + '</td><td>' + esc(a.i.un || '') + '</td><td style="width:60pt">' + (a.parte === 'equip' ? '□ achei  □ não' : '') + '</td></tr>').join('')).join('')).join('') + '</tbody></table><div class="imp-pe">' + APP_APELIDO + '</div>';
   document.body.classList.add('imprimindo'); setTimeout(() => { try { window.print(); } catch {} document.body.classList.remove('imprimindo'); }, 50);
   Data.col('sv2_alm_inv').update(inv.id, { folhas: (inv.folhas || []).concat([{ ts: nowISO(), porId: S.user.id, porNome: S.user.nome }]) }).catch(() => {});
 }
@@ -320,8 +355,10 @@ document.addEventListener('click', e => {
   const t = e.target.closest && e.target.closest('[data-act^="cg-"]'); if (!t) return;
   const a = t.getAttribute('data-act'), k = t.getAttribute('data-k');
   if (a === 'cg-salva') cgSalvar(k);
+  else if (a === 'cg-achei') cgSalvar(k, t.getAttribute('data-v') === '1');
+  else if (a === 'cg-parte') { const f = S.fm; if (!f) return; const id = t.getAttribute('data-id'); f.partes[id] = id === 'mat' ? f.partes.mat === false : !f.partes[id]; f.sujo = true; f.msg = ''; gvDesenha(true); }
   else if (a === 'cg-edit') { S.cgEdit = k; render(); setTimeout(() => { const i = $('[data-cgk="' + k + '"]'); if (i) i.focus(); }, 30); }
-  else if (a === 'cg-nova') { if (cgPodeAbrir()) lcAbrir({ k: 'cgnova', contadorId: '', local: Store.get('cw-unidade') && cgLocais().indexOf(Store.get('cw-unidade')) >= 0 ? Store.get('cw-unidade') : cgLocais()[0] }); }
+  else if (a === 'cg-nova') { if (cgPodeAbrir()) lcAbrir({ k: 'cgnova', partes: S._cgDeEq ? { mat: false, equip: true, vid: true } : { mat: true, equip: false, vid: false }, contadorId: '', local: Store.get('cw-unidade') && cgLocais().indexOf(Store.get('cw-unidade')) >= 0 ? Store.get('cw-unidade') : cgLocais()[0] }); }
   else if (a === 'cg-nova-ok') cgNovaOk();
   else if (a === 'cg-cancelar') { if (alSup()) lcAbrir({ k: 'cgcanc', motivoG: '' }); }
   else if (a === 'cg-canc-ok') cgCancOk();
@@ -333,3 +370,9 @@ document.addEventListener('click', e => {
   else if (a === 'cg-ver-conf') { S.cgVista = 'conf'; render(); }
   else if (a === 'cg-folha') cgFolha();
 });
+
+/* quem chega pelo botão Inventário de Equipamentos já começa com equipamentos e vidrarias marcados */
+document.addEventListener('click', e => { const l = e.target.closest && e.target.closest('a[href="#/almox/contagem"]'); if (l) S._cgDeEq = l.hasAttribute('data-inv'); }, true);
+const cgSoMat = inv => { const p = (inv && inv.partes) || { mat: true }; return !p.equip && !p.vid; };
+/* inventário sem materiais (aberto pelo botão Inventário de Equipamentos) */
+const cgDoEq = () => { const inv = cgAberta(); if (inv) { const p = inv.partes || { mat: true }; return p.mat === false && !!(p.equip || p.vid); } return !!S._cgDeEq; };

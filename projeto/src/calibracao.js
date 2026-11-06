@@ -45,8 +45,10 @@ function cbEtapas(c) {
 function cbPassos(c, mini) {
   const es = cbEtapas(c);
   if (mini) return '<ol class="cb-mini" aria-label="Etapas">' + es.map(x => '<li class="' + (x.feito ? 'ok' : x.atual ? 'at' : '') + '" title="' + esc(x.nome + (x.data ? ' · ' + fmtD(x.data) : '')) + '"><i></i><span>' + esc(x.nome) + '</span></li>').join('') + '</ol>';
-  return '<ol class="cb-tl">' + es.map((x, n) => '<li class="' + (x.feito ? 'ok' : x.atual ? 'at' : '') + (x.parcial ? ' pc' : '') + '"><span class="cb-n">' + (x.feito ? ic('ok') : n + 1) + '</span><div><b>' + esc(x.nome) + (x.data ? ' <em>' + fmtD(x.data) + '</em>' : '') + '</b>' + (x.txt ? '<span>' + esc(x.txt) + '</span>' : '') + (x.quem ? '<small>' + esc(x.quem) + '</small>' : '') + (x.atual ? '<small class="cb-agora">próxima etapa</small>' : '') + '</div></li>').join('') + '</ol>';
-}
+  /* linha do tempo com FLUIDO (v0.3.4): as etapas já feitas que esta pessoa ainda não viu começam apagadas e o fluido sobe até elas */
+  const feitas = es.findIndex(x => !x.feito) < 0 ? es.length : es.findIndex(x => !x.feito), visto = cbNivelVisto(c.id, feitas);
+  return '<div class="cb-tlw" data-cbtl="' + esc(c.id) + '" data-feitas="' + feitas + '"><span class="cb-tubo" aria-hidden="true"><i class="cb-fluido"></i></span><ol class="cb-tl">' + es.map((x, n) => { const apagada = x.feito && n >= visto;
+    return '<li class="' + (x.feito ? 'ok' : x.atual ? 'at' : '') + (apagada ? ' esp' : '') + (x.parcial ? ' pc' : '') + '"><span class="cb-n"><span class="cb-nn">' + (n + 1) + '</span>' + ic('ok') + '</span><div><b>' + esc(x.nome) + (x.data ? ' <em>' + fmtD(x.data) + '</em>' : '') + '</b>' + (x.txt ? '<span>' + esc(x.txt) + '</span>' : '') + (x.quem ? '<small>' + esc(x.quem) + '</small>' : '') + (x.atual ? '<small class="cb-agora">próxima etapa</small>' : '') + '</div></li>'; }).join('') + '</ol></div>';}
 
 /* ======================= tela (Equipamentos › Calibração) ======================= */
 function cbTela() {
@@ -298,3 +300,41 @@ document.addEventListener('change', e => {
   gvDesenha(true);
 });
 document.addEventListener('input', e => { const t = e.target; if (t && t.getAttribute && S.fm && S.fm.k === 'cbreal' && /^it\.\d+\.validade$/.test(t.getAttribute('data-fm') || '')) { const n = Number(t.getAttribute('data-fm').split('.')[1]); (S.fm.it[n] = S.fm.it[n] || {}).validadeMexida = true; } });
+
+/* ---------- fluido da linha do tempo (pedido de 06/11) ----------
+   Cada pessoa tem guardado até onde já VIU cada solicitação (cw-cbvisto-<pessoa>-<id>). Ao abrir a gaveta, o fluido sobe da última
+   etapa vista até a atual; com 2 ou mais etapas novas, sobe uma, espera 0,4 s, sobe a próxima. Com a gaveta aberta, uma mudança sobe na hora.
+   "Reduzir movimento" no aparelho: aparece pronto, sem animação. */
+const CB_SOBE = 600, CB_PAUSA = 400;
+S._cbNivel = S._cbNivel || {}; S._cbTok = S._cbTok || {};
+const cbChaveVisto = id => 'cw-cbvisto-' + ((S.user && S.user.id) || '') + '-' + id;
+function cbNivelVisto(id, feitas) {
+  if (S._cbNivel[id] != null) return Math.min(S._cbNivel[id], feitas);
+  if (!csMovimento()) return feitas;
+  const v = Number(Store.get(cbChaveVisto(id)) || 0); return Math.max(1, Math.min(v || 1, feitas));
+}
+function cbFluir(g, abriuAgora) {
+  const ol = g.querySelector('[data-cbtl]'); if (!ol) return;
+  const id = ol.getAttribute('data-cbtl'), feitas = Number(ol.getAttribute('data-feitas')) || 0, lis = Array.from(ol.querySelectorAll('.cb-tl > li'));
+  const tubo = ol.querySelector('.cb-tubo'), fl = ol.querySelector('.cb-fluido'); if (!lis.length || !tubo) return;
+  const centro = n => lis[n].offsetTop + 14, topo = centro(0);
+  tubo.style.top = topo + 'px'; tubo.style.height = (centro(lis.length - 1) - topo) + 'px';
+  const alto = n => n <= 1 ? 0 : centro(n - 1) - topo; /* n = quantas etapas acesas */
+  let nivel = cbNivelVisto(id, feitas); const tok = (S._cbTok[id] || 0) + 1; S._cbTok[id] = tok;
+  fl.style.transition = 'none'; fl.style.height = alto(nivel) + 'px'; void fl.offsetHeight;
+  const grava = n => { S._cbNivel[id] = n; Store.set(cbChaveVisto(id), n); };
+  if (nivel >= feitas) { grava(feitas); return; }
+  ol.classList.add('cb-correndo');
+  const passo = () => {
+    if (S._cbTok[id] !== tok || !ol.isConnected) return;
+    nivel++; fl.style.transition = 'height ' + CB_SOBE + 'ms cubic-bezier(.45,.05,.3,1)'; fl.style.height = alto(nivel) + 'px';
+    setTimeout(() => {
+      if (S._cbTok[id] !== tok || !ol.isConnected) return;
+      const li = lis[nivel - 1]; if (li) { li.classList.remove('esp'); li.classList.add('acende'); }
+      grava(nivel);
+      if (nivel < feitas) setTimeout(passo, CB_PAUSA); else ol.classList.remove('cb-correndo');
+    }, nivel === 1 ? 0 : CB_SOBE);
+  };
+  setTimeout(passo, abriuAgora ? 220 : 0);
+}
+GV_DEPOIS.push(cbFluir);
