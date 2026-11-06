@@ -24,7 +24,7 @@
 .cs-us{display:flex;gap:8px;align-items:center;padding:0 4px}
 .cs-av{width:32px;height:32px;border-radius:50%;background:var(--aS);color:var(--aTx);display:grid;place-items:center;font-size:13px;font-weight:700;flex:none}
 .cs-ust{min-width:0;flex:1}.cs-ust b{font-size:14px;display:block;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cs-ust small{font-size:12px;opacity:.7}
-.cs-cw{font-size:12px;opacity:.6;display:flex;justify-content:space-between;padding:0 6px}
+.cs-cw{font-size:12px;opacity:.6;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:0 6px}
 .cs-main{display:flex;flex-direction:column;min-width:0;min-height:100vh}
 .cs-topo{position:sticky;top:0;z-index:15;height:56px;display:flex;align-items:center;gap:10px;padding:0 24px;border-bottom:1px solid var(--bd);background:color-mix(in srgb,var(--bg0) 88%,transparent);backdrop-filter:saturate(1.2) blur(6px)}
 :root[data-tema="escuro"] .cs-topo{background:rgba(11,13,22,.72)}

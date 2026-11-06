@@ -70,18 +70,20 @@ const DD_AO = {}; /* DD_AO['prefixo'] = (resto do id, valor) => ... */
 function ddFecha() { $$('.dd-l').forEach(l => { l.hidden = true; const b = l.previousElementSibling; if (b) b.setAttribute('aria-expanded', 'false'); }); }
 
 /* ---------- gaveta de detalhe (PC: à direita; celular: tela cheia) ---------- */
-S.gv = null;
-function gvAbrir(fn) { S.gv = fn; gvDesenha(); }
-function gvFechar() { S.gv = null; const g = $('#gv'); if (g) g.remove(); document.body.classList.remove('gv-aberta'); try { render(); } catch {} }
-function gvDesenha() {
+S.gv = null; S.gvForm = false;
+/* gaveta de formulário (S.gvForm): não é redesenhada quando os dados mudam, para não perder o que a pessoa digita; só com gvDesenha(true) */
+function gvAbrir(fn, form) { S.gv = fn; S.gvForm = !!form; gvDesenha(true); }
+function gvFechar() { S.gv = null; S.gvForm = false; S.fm = null; const g = $('#gv'); if (g) g.remove(); document.body.classList.remove('gv-aberta'); try { render(); } catch {} }
+function gvDesenha(forca) {
   let g = $('#gv'); if (!S.gv) { if (g) g.remove(); return; }
+  if (S.gvForm && g && !forca) return;
   let o; try { o = S.gv(); } catch (e) { console.error(e); o = null; }
   if (!o) { S.gv = null; if (g) g.remove(); return; }
   if (!g) { g = document.createElement('aside'); g.id = 'gv'; g.className = 'gv'; g.setAttribute('role', 'dialog'); g.setAttribute('aria-modal', 'false'); document.body.appendChild(g); }
   document.body.classList.add('gv-aberta');
   g.setAttribute('aria-label', o.titulo || 'Detalhe');
   g.innerHTML = '<div class="gv-cab">' + (o.ico ? '<span class="ico' + (o.icoCls ? ' ' + o.icoCls : '') + '">' + ic(o.ico) + '</span>' : '') + '<div class="gv-tx"><small>' + esc(o.sub || '') + '</small><h2>' + esc(o.titulo || '') + '</h2>' + (o.pill || '') + '</div>' +
-    (o.lixeira ? '<button type="button" class="bt ic-so" data-act="' + esc(o.lixeira) + '" title="Excluir" aria-label="Excluir">' + ic('lixo') + '</button>' : '') +
+    (o.lixeira ? (function (x) { x = typeof x === 'string' ? { act: x } : x; return '<button type="button" class="bt ic-so gv-lx" data-act="' + esc(x.act) + '"' + (x.id ? ' data-id="' + esc(x.id) + '"' : '') + ' title="' + esc(x.titulo || 'Excluir') + '" aria-label="' + esc(x.titulo || 'Excluir') + '">' + ic('lixo') + '</button>'; })(o.lixeira) : '') +
     '<button type="button" class="bt ic-so" data-act="gv-fecha" title="Fechar" aria-label="Fechar">' + ic('x') + '</button></div><div class="gv-corpo">' + (o.corpo || '') + '</div>' + (o.rodape ? '<div class="gv-pe">' + o.rodape + '</div>' : '');
 }
 const gvNums = l => '<div class="gv-kv">' + l.map(x => '<div' + (x[2] ? ' class="' + x[2] + '"' : '') + '><b class="num">' + esc(x[0]) + '</b><small>' + esc(x[1]) + '</small></div>').join('') + '</div>';
@@ -130,7 +132,7 @@ document.addEventListener('click', e => {
     if (nome.indexOf('tbf:') === 0) { const p = nome.split(':'), st = tbEstado(p[1]); st.filtros[p[2]] = v; st.limite = 100; render(); return; }
     const pf = nome.split(':')[0]; if (DD_AO[pf]) DD_AO[pf](nome.slice(pf.length + 1), v); return;
   }
-  if (a === 'gv-fecha') { gvFechar(); return; }
+  if (a === 'gv-fecha') { if (S.fm && S.fm.volta) { const v = S.fm.volta; S.fm = null; S.gvForm = false; v(); } else gvFechar(); return; }
   const st = id ? tbEstado(id) : null;
   if (a === 'tb-ord') { const k = t.getAttribute('data-k'); st.ordem = st.ordem && st.ordem.k === k ? (st.ordem.dir === 'asc' ? { k: k, dir: 'desc' } : null) : { k: k, dir: 'asc' }; render(); }
   else if (a === 'tb-painel') { st.painel = !st.painel; st.colsAberto = false; render(); }
@@ -142,6 +144,6 @@ document.addEventListener('click', e => {
   else if (a === 'tb-lin') { const cfg = TB[id]; if (cfg && cfg.aoClicar) cfg.aoClicar(t.getAttribute('data-id')); }
 });
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { if ($$('.dd-l:not([hidden])').length) { ddFecha(); return; } if (S.gv && !(e.target.closest && e.target.closest('input,textarea'))) gvFechar(); }
+  if (e.key === 'Escape') { if ($$('.dd-l:not([hidden])').length) { ddFecha(); return; } if (S.gv && !(e.target.closest && e.target.closest('input,textarea'))) { const x = $('[data-act="gv-fecha"]'); if (x) x.click(); else gvFechar(); } }
   if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('[data-act="dd-v"], tr[data-act="tb-lin"]')) { e.preventDefault(); e.target.click(); }
 });

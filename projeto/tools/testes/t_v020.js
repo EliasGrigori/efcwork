@@ -59,7 +59,7 @@ async function semear(p) {
   conf(pk[0] === '5' && pk[1] === '4' && /R\$/.test(pk[2]), 'Painel: 5 itens ativos, 4 pedem atenção, valor em estoque (' + pk.join(' | ') + ')');
   conf(await p.evaluate(() => { const v = alAtivos().reduce((s, i) => s + alValorEst(i.id), 0); return Math.abs(v - (29 + 20 + 34 * 2.13 + 22 * 8.29)) < 0.01; }), 'valor em estoque = soma de saldo × preço de cada lote');
   conf(/lote vencendo/.test(await p.textContent('.al-aviso')) && /1 solicitação pendente/.test(await p.textContent('.al-aviso')), 'aviso numa linha só (lote vencendo + solicitação pendente)');
-  conf((await p.$$('.cs-acts .bt.pr')).length === 0 && /Consulta/.test(await p.textContent('.cs-acts')), 'consulta: nenhum botão de lançar nesta versão; aviso de que lançar continua no EFClaudian');
+  conf((await p.$$('.cs-acts .bt.pr')).length === 1 && /Saída/.test(await p.textContent('.cs-acts')), 'cabeçalho com o botão Saída (ajustado na v0.3: antes era só consulta)');
   await p.screenshot({ path: path.join(SHOTS, 'v020-pc-claro-painel.png') });
   /* Materiais: tabela padrão */
   await p.evaluate(() => { location.hash = '#/almox/materiais'; }); await p.waitForTimeout(200);

@@ -1,0 +1,55 @@
+/* EFCwork · lanca.css — formulários na gaveta (saída, entrada, ajuste, corrigir, anular, solicitação). Prefixo: fm- */
+.fm-c{display:flex;flex-direction:column;gap:6px;min-width:0}
+.fm-r{font-size:13px;font-weight:600;color:var(--tx2)}
+.fm-r small{font-weight:400;font-size:12px;color:var(--tx3)}
+.fm-i{height:40px;border:1px solid var(--bd2);border-radius:var(--rs);background:var(--bg0);padding:0 12px;color:var(--tx);font-size:15px;width:100%;min-width:0}
+textarea.fm-i{height:auto;min-height:64px;padding:9px 12px;resize:vertical}
+.fm-i:focus{outline:2px solid var(--aS);border-color:var(--a)}
+.fm-i.num{text-align:center;font-weight:600}
+.fm-g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.fm-passo{display:flex;align-items:center;gap:6px}
+.fm-passo .fm-i{width:96px;flex:none}
+.fm-un{font-size:14px;color:var(--tx3);white-space:nowrap}
+.fm-qr{display:flex;gap:8px;align-items:center;min-width:0}
+.fm-qr .fm-i{flex:1 1 70px;min-width:0}
+.fm-qr .dd{flex:1 1 120px;min-width:0}
+.fm-c .dd{min-width:0}
+.fm-c .dd-b span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.fm-fixo{margin:0;min-height:40px;display:flex;align-items:center;padding:0 12px;border:1px dashed var(--bd2);border-radius:var(--rs);font-size:14px;color:var(--tx2)}
+.fm-ck{display:flex;gap:8px;align-items:center;font-size:14px;color:var(--tx2);cursor:pointer}
+.fm-ck input{width:17px;height:17px;accent-color:var(--a)}
+.fm-av{display:flex;gap:9px;align-items:flex-start;padding:9px 12px;border-radius:var(--rs);background:var(--bg2);font-size:14px;color:var(--tx2);border:1px solid var(--bd)}
+.fm-av .ic{width:17px;height:17px;margin-top:1px;flex:none}
+.fm-av.wa{background:var(--waS);border-color:transparent;color:var(--tx)}.fm-av.wa .ic{color:var(--wa)}
+.fm-av.cr{background:var(--crS);border-color:transparent;color:var(--tx)}.fm-av.cr .ic{color:var(--cr)}
+.fm-av.ok{background:var(--okS);border-color:transparent;color:var(--tx)}.fm-av.ok .ic{color:var(--ok)}
+.fm-msg{margin:0;display:flex;gap:8px;align-items:center;padding:9px 12px;border-radius:var(--rs);background:var(--crS);color:var(--cr);font-size:14px;font-weight:600}
+.fm-msg .ic{width:17px;height:17px}
+.fm-esc{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;padding:9px 12px;border:1px solid var(--bd2);border-radius:var(--rs);background:var(--bg0);cursor:pointer;color:var(--tx)}
+.fm-esc b{display:block;font-weight:600}.fm-esc small{color:var(--tx3);font-size:13px}
+.fm-tr{color:var(--aTx);font-size:13px;font-weight:600}
+.fm-pk{display:flex;flex-direction:column;gap:8px;min-height:0}
+.fm-pk .tb-busca{width:100%}
+.fm-pkl{display:flex;flex-direction:column;border:1px solid var(--bd);border-radius:var(--rs);overflow:hidden}
+.fm-pki{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 12px;min-height:44px;background:var(--bg1);border:0;border-bottom:1px solid var(--bd);text-align:left;cursor:pointer;color:var(--tx)}
+.fm-pki:last-of-type{border-bottom:0}
+.fm-pki:hover,.fm-pki:focus-visible{background:var(--aS)}
+.fm-pki span:first-child{min-width:0}
+.fm-pki b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fm-pki small{color:var(--tx3);font-size:13px}
+.fm-pki .num{font-size:14px;color:var(--tx2);white-space:nowrap}
+.fm-pki .fm-zero{color:var(--cr)}
+.fm-pkv{padding:10px 12px;margin:0}
+.fm-ln{border:1px solid var(--bd);border-radius:var(--r);padding:10px 12px 12px;display:flex;flex-direction:column;gap:10px;background:var(--bg0)}
+.fm-lnh{display:flex;align-items:center;gap:8px}
+.fm-lnh b{font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fm-lnh small{color:var(--tx3);font-size:13px;white-space:nowrap;margin-right:auto}
+.fm-add{align-self:flex-start}
+.fm-lotes{display:flex;flex-direction:column;gap:6px}
+.fm-lt{display:flex;align-items:center;gap:10px;padding:7px 10px;border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg0)}
+.fm-lt span{flex:1;min-width:0}
+.fm-lt b{display:block;font-weight:600;font-size:14px}.fm-lt small{color:var(--tx3);font-size:13px}
+.fm-lt .fm-i{width:96px;flex:none}
+.gv-pe .bt.pr{margin-left:auto}
+.gv-pe .bt.pr~.bt.pr{margin-left:0}
+@media(max-width:899px){.fm-g{grid-template-columns:1fr}}

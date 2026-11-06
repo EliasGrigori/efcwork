@@ -21,17 +21,19 @@
 - **Fim do rework:** EFCdocs reduzido — só receber planilhas comuns com máxima compatibilidade (SheetJS: .xlsx/.xls/.ods/.csv), página por fora sem instalador, aberta só pelo Cwork e pelo Sabiá; fichas de envio, etiquetas do isopor e cadeias de custódia preenchidas automaticamente.
 
 ## Estrutura do código
-- `src/index.html` com dois pontos de encaixe (`/*__CSS__*/`, `/*__JS__*/`); `tools/montar.py` junta os módulos (ordem: base, casca, entrar, inicio, areas, adm) e grava `dist/index.html`, `dist/sw.js` (cache `efcwork-<versão>`), manifest e ícones.
-- Prefixos por módulo: base (nenhum), `cs` casca, `pl` planilha, `tb`/`dd`/`gv` tabela padrão + janela retrátil + gaveta, `al`/`eq` almoxarifado, `bg` busca geral, `en` entrar, `ini` início, `ar` áreas, `adm` administração. Nome repetido quebra o app: cada módulo novo ganha prefixo próprio.
+- `src/index.html` com dois pontos de encaixe (`/*__CSS__*/`, `/*__JS__*/`); `tools/montar.py` junta os módulos (ordem: base, casca, servicos, planilha, tabela, almox, lanca, sino, busca, entrar, inicio, areas, adm) e grava `dist/index.html`, `dist/sw.js` (cache `efcwork-<versão>`), manifest e ícones.
+- Prefixos por módulo: base (nenhum), `cs` casca, `sv` serviços (mais os objetos `Audit`, `Notif`, `Aprov`), `lc` lançamentos do almoxarifado (formulários `fm-`), `sn` sino, `pl` planilha, `tb`/`dd`/`gv` tabela padrão + janela retrátil + gaveta, `al`/`eq` almoxarifado, `bg` busca geral, `en` entrar, `ini` início, `ar` áreas, `adm` administração. Nome repetido quebra o app: cada módulo novo ganha prefixo próprio.
 - Rotas por endereço: `#/area/aba`. Telas se registram em `TELAS[area]`; `TELAS[area + ':depois']` roda depois de desenhar. Cada área registra em `CS_CARGAS` a função que começa a ouvir os dados dela depois do login, e em `BG_FONTES` o que a busca geral acha.
-- Tabela padrão (`tbHTML(cfg)`): busca, um filtro recolhível com janelas retráteis, ordenar pelo cabeçalho, colunas lembradas no aparelho (`cw-tbcol-<id>`), planilha .xlsx (`plXlsx`, sem biblioteca), impressão A4 deitada, total no rodapé, 100 linhas e "Mostrar mais". Gaveta: `gvAbrir(fn)` (redesenha sozinha quando os dados mudam).
+- Tabela padrão (`tbHTML(cfg)`): busca, um filtro recolhível com janelas retráteis, ordenar pelo cabeçalho, colunas lembradas no aparelho (`cw-tbcol-<id>`), planilha .xlsx (`plXlsx`, sem biblioteca), impressão A4 deitada, total no rodapé, 100 linhas e "Mostrar mais". Gaveta: `gvAbrir(fn)` (redesenha sozinha quando os dados mudam); `gvAbrir(fn, true)` = gaveta de formulário (não redesenha sozinha, para não perder o que se digita; só com `gvDesenha(true)`). Formulário: estado em `S.fm`, campos com `data-fm="campo"` (o que se digita vai direto para o estado), `lcAbrir(estado, volta)` — o X volta para o detalhe de onde saiu. Lixeira da gaveta: `lixeira: {act, id, titulo}`.
+- Serviços compartilhados com o EFClaudian (mesmo formato): `Audit.log` → `sv2_audit`; `Notif` → `sv2_notifs` (com `dest`, escuta por chave; sem índice cai no modo antigo); `Aprov` → `sv2_aprov` (o secundário pede, o superior decide). `APROV_APLICA[tipo]` diz quais pedidos já decidem no EFCwork (v0.3: `almox`).
 - Dados: `Store` e `Data` vieram do EFClaudian v2.102.59 (mesmo projeto Firebase `docseliasflorencio`, mesmas coleções `sv2_*`, mesmo login `usuario@efclaudian.app` / sv2_login). Modo demonstração: `?demo=1` (tudo no navegador).
 - Empresa: `sv2_cfg/empresa` `{nome, unidades[], logo (data URL ≤256 px), atualizadoEm, atualizadoPor}`. Só o Principal grava.
 
 ## Versões
 | Versão | O que entrou | Situação |
 |---|---|---|
-| v0.2.0 | Almoxarifado para CONSULTA (Painel, Materiais, Movimentações, Solicitações, Equipamentos) com tabela padrão, gaveta, planilha e impressão; busca geral (/, Ctrl+K, lupa); números do Almoxarifado no Início. Cálculos de saldo por lote iguais aos do EFClaudian. Nada grava. Auditoria visual: letras 5–7 tamanhos por tela; "Valor em estoque" leva para Materiais por valor. Suíte 89 ok. | aprovada 05/11 22:59 (8 de 8) |
+| v0.3.0 | Almoxarifado LANÇA: Saída (lote automático por validade, lote vencido com motivo, produto crítico aguardando confirmação, aviso no sino ao passar do mínimo), Entrada de vários materiais (lote, validade, valor, embalagem de compra), Abrir frasco / Acabou, Ajustar saldo, Corrigir e Anular (lixeira), Solicitação nova / Atender (vira entrada) / Cancelar, confirmar produto crítico. Motivos: os da configuração, senão os que a equipe usou em 90 dias + lista simples, e os guardados pela pessoa (nada fixo de empresa). Secundário pede ao superior (ajuste, correção que não é dele, lote vencido de crítico). **Sino** com avisos (lidos por pessoa, confirmar ciência) e pedidos para decidir (Almoxarifado decide aqui; os outros, no EFClaudian). Fica no EFClaudian: cadastro de material, kits, fotos e inventário. Suíte 151 ok. | aprovada 05/11 23:44 (10 de 10) · publicada |
+| v0.2.0 | Almoxarifado para CONSULTA (Painel, Materiais, Movimentações, Solicitações, Equipamentos) com tabela padrão, gaveta, planilha e impressão; busca geral (/, Ctrl+K, lupa); números do Almoxarifado no Início. Cálculos de saldo por lote iguais aos do EFClaudian. Nada grava. Auditoria visual: letras 5–7 tamanhos por tela; "Valor em estoque" leva para Materiais por valor. Suíte 89 ok. | aprovada 05/11 22:59 (8 de 8) · publicada commit 1af4784 |
 | v0.1.0 | Casca: tela de entrar agrícola, primeiro acesso, menu lateral, cabeçalho, abas, temas Claro/Escuro, empresa configurável, unidade do aparelho, Início (tarefas reais, atalhos, plano das áreas), celular com barra de baixo, sw.js e manifest | 05/11 22:22: aprovados 2, 3, 4, 5 e 7; **reprovados 1 (tela de entrar) e 6 (celular)** — o Elias vai trazer modelos. Publicar aprovado; falta o repositório `efcwork` existir |
 
 ## Pendências de visual
@@ -39,9 +41,14 @@
 - Relevo do fundo (trama + brilho) também no tema Claro.
 
 ## Próximas versões (plano)
-v0.2 Almoxarifado consulta + tabela padrão + busca · v0.3 Almoxarifado lançamentos (entrada, saída, kit, contagem, solicitações, equipamentos; Nº 47 e 51) + sino · v0.4 Coletas (Amostras com ciclo, Envio com NF/cupom/rastreio) · v0.5 Documentos · v0.6 Inspeções · v0.7 Rateios e Qualidade · v0.8 Relatórios · v0.9 Perfis por área, Administração completa e Saúde dos dados · v1.0 virada · depois: EFCdocs e fichas preenchidas.
+v0.2 Almoxarifado consulta + tabela padrão + busca · v0.3 Almoxarifado lançamentos + sino · v0.3.1 ajustes pedidos em 05/11 23:44 (tabelas mais largas e gaveta por cima, voltar uma camada com aviso de perda, nomes dos perfis, favoritos com materiais, segurar 1,5 s e arrastar para a lixeira) · v0.3.2 contagem às cegas (Nº 51, pedido de 05/11) com saída retroativa marcada como erro · v0.3.3 calibração com histórico (pedido de 05/11; base: `sv2_alm_cal` do EFClaudian) · depois: cadastro de material, kits e fotos · v0.4 Coletas (Amostras com ciclo, Envio com NF/cupom/rastreio) · v0.5 Documentos · v0.6 Inspeções · v0.7 Rateios e Qualidade · v0.8 Relatórios · v0.9 Perfis por área, Administração completa e Saúde dos dados · v1.0 virada · depois: EFCdocs e fichas preenchidas.
 
 ## Limites conhecidos (v0.1.0)
 - Não testado no Firebase real: login real, leitura de `sv2_users`/`sv2_tarefas` e gravação de `sv2_cfg/empresa` (depende das regras atuais — conferir no console).
 - "Esqueci a senha" leva ao EFClaudian (a recuperação própria entra depois).
-- Busca, sino e as áreas ainda mostram "chega na vX" e levam ao EFClaudian.
+- As áreas ainda não refeitas mostram "chega na vX" e levam ao EFClaudian.
+
+## Limites conhecidos (v0.3.0)
+- Não testado no Firebase real: gravar movimentações, solicitações, pedidos e avisos (mesmas coleções e mesmo formato do EFClaudian, então as regras atuais devem aceitar — conferir no primeiro lançamento real).
+- Com a gaveta aberta no PC, ela cobre o sino e o tema no topo (feche a gaveta para usar).
+- Diferença do EFClaudian (melhoria): na entrada por embalagem de compra, o valor sugerido já vem por embalagem (último valor × fator) e o rótulo diz "Valor por Fardo"/"Valor por Lt".

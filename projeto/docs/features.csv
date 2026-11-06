@@ -24,22 +24,22 @@ Aba Documentos › Lançamentos,Documentos,must,sim,nao,Documentos › Históric
 Aba Documentos › Correções,Documentos,must,sim,nao,Documentos › Histórico,
 Aba Gestão da Qualidade › Meu dia,Qualidade,must,sim,nao,Início,
 Aba Gestão da Qualidade › Atividade,Qualidade,must,sim,nao,Qualidade › Atividade,
-Aba Gestão da Qualidade › Notificações,Qualidade,must,sim,nao,Sino,
+Aba Gestão da Qualidade › Notificações,Qualidade,must,sim,sim,Sino,v0.3.0: sino do topo (gaveta Avisos)
 Aba Gestão da Qualidade › Conversas,Qualidade,must,sim,nao,Dentro de cada registro + sino,
 Aba Gestão da Qualidade › Equipe,Qualidade,must,sim,nao,Administração › Pessoas,
-Aba Gestão da Qualidade › Aprovações,Qualidade,must,sim,nao,Início › Esperando você,
+Aba Gestão da Qualidade › Aprovações,Qualidade,must,sim,parcial,Início › Esperando você,"v0.3.0: pedidos para decidir no sino; os do Almoxarifado decidem aqui, os outros no EFClaudian"
 Aba Gestão da Qualidade › Semana,Qualidade,must,sim,nao,Relatórios › Semana,
 Aba Gestão da Qualidade › Não conformidades,Qualidade,must,sim,nao,Qualidade › Não conformidades,
 Aba Gestão da Qualidade › Análise de problemas,Qualidade,must,sim,nao,Qualidade › Análise de problemas,
 Aba Gestão da Qualidade › Bugs e sugestões,Qualidade,must,sim,nao,Qualidade › Bugs e sugestões,
 Aba Gestão da Qualidade › Relatórios,Qualidade,must,sim,nao,Relatórios,
-Aba Almoxarifado › Painel,Almoxarifado,must,sim,parcial,Almoxarifado › Painel,v0.2.0: consulta; lançamentos na v0.3
+Aba Almoxarifado › Painel,Almoxarifado,must,sim,sim,Almoxarifado › Painel,v0.3.0: consulta + lançar (Saída/Entrada no cabeçalho) + saídas de produto crítico para confirmar
 Aba Almoxarifado › Apresentação,Almoxarifado,must,sim,parcial,Relatórios › Almoxarifado do mês,v0.2.0: consulta; lançamentos na v0.3
-Aba Almoxarifado › Materiais,Almoxarifado,must,sim,parcial,Almoxarifado › Materiais,v0.2.0: consulta; lançamentos na v0.3
-Aba Almoxarifado › Movimentações,Almoxarifado,must,sim,parcial,Almoxarifado › Movimentações,v0.2.0: consulta; lançamentos na v0.3
-Aba Almoxarifado › Solicitações,Almoxarifado,must,sim,parcial,Almoxarifado › Solicitações,v0.2.0: consulta; lançamentos na v0.3
-Aba Almoxarifado › Equipamentos,Almoxarifado,must,sim,parcial,Almoxarifado › Equipamentos,v0.2.0: consulta; lançamentos na v0.3
-Aba Almoxarifado › Inventário,Almoxarifado,must,sim,parcial,Almoxarifado › Materiais (ação Contagem),v0.2.0: consulta; lançamentos na v0.3
+Aba Almoxarifado › Materiais,Almoxarifado,must,sim,sim,Almoxarifado › Materiais,"v0.3.0: Saída, Entrada, Abrir frasco, Acabou e Ajustar na gaveta do material"
+Aba Almoxarifado › Movimentações,Almoxarifado,must,sim,sim,Almoxarifado › Movimentações,"v0.3.0: Corrigir, Anular (lixeira), confirmar produto crítico"
+Aba Almoxarifado › Solicitações,Almoxarifado,must,sim,sim,Almoxarifado › Solicitações,"v0.3.0: Nova, Atender (vira entrada), Cancelar (lixeira)"
+Aba Almoxarifado › Equipamentos,Almoxarifado,must,sim,parcial,Almoxarifado › Equipamentos,v0.3.0: consulta; calibração com histórico na v0.3.2
+Aba Almoxarifado › Inventário,Almoxarifado,must,sim,parcial,Almoxarifado › Materiais (ação Contagem),contagem às cegas nova na v0.3.1 (pedido do Elias 05/11)
 Janela Meu perfil (openMeuPerfil),Administração,should,sim,nao,,rascunho automático; prioridade a revisar
 Janela Sheet (openSheet),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
 Janela Colunas (openColunas),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
@@ -131,22 +131,22 @@ Janela Fechar a NC (openApNCFechar),Inspeções,should,sim,nao,,rascunho automá
 Janela Rn Filtro (openRnFiltro),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
 Janela Relatórios da semana (openRelSemana),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
 Janela Setores dos apontamentos (openApSetores),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Al Saida (openAlSaida),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Al Kit (openAlKit),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Entrada (openAlEntrada),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Al Item (openAlItem),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Al Item Form (openAlItemForm),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Al Motivo Sheet (openAlMotivoSheet),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Ajustar saldo (openAlAjuste),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Corrigir (openAlMovCorr),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Al Saida (openAlSaida),Almoxarifado,should,sim,sim,,v0.3.0 lcNovaSaida (sem foto)
+Janela Al Kit (openAlKit),Almoxarifado,should,sim,nao,,próxima: kits
+Janela Entrada (openAlEntrada),Almoxarifado,should,sim,sim,,v0.3.0 lcNovaEntrada
+Janela Al Item (openAlItem),Almoxarifado,should,sim,sim,,v0.2/0.3 gaveta do material
+Janela Al Item Form (openAlItemForm),Almoxarifado,should,sim,nao,,próxima: cadastro de material
+Janela Al Motivo Sheet (openAlMotivoSheet),Almoxarifado,should,sim,sim,,v0.3.0 motivo dentro de cada formulário
+Janela Ajustar saldo (openAlAjuste),Almoxarifado,should,sim,sim,,v0.3.0
+Janela Corrigir (openAlMovCorr),Almoxarifado,should,sim,sim,,v0.3.0
 Janela Conferência inicial (openAlConfLista),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
 Janela Al Conf (openAlConf),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Nova solicitação (openAlSolNova),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Solicitação Nº (openAlSol),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Nova solicitação (openAlSolNova),Almoxarifado,should,sim,sim,,v0.3.0
+Janela Solicitação Nº (openAlSol),Almoxarifado,should,sim,sim,,v0.2/0.3 gaveta
 Janela Motivos e kits (openAlCfg),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Al Abrir (openAlAbrir),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela O frasco acabou (openAlFim),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Tirar este motivo? (openAlMotivoRm),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Al Abrir (openAlAbrir),Almoxarifado,should,sim,sim,,v0.3.0
+Janela O frasco acabou (openAlFim),Almoxarifado,should,sim,sim,,v0.3.0
+Janela Tirar este motivo? (openAlMotivoRm),Almoxarifado,should,sim,nao,,próxima: tirar motivo da lista pessoal
 Janela Conferência · (openEqConf),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
 Janela Eq (openEq),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
 Janela Eq Form (openEqForm),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar

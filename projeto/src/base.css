@@ -11,7 +11,7 @@
   --sh:0 1px 2px rgba(40,30,10,.06),0 4px 14px rgba(40,30,10,.05);
   --sb:#fffdf8;--sbTx:#2a2519;--sbBd:#e6dfcf;
   --ouro:linear-gradient(135deg,#f7df9e 0%,#d9b46a 42%,#b4862f 100%);
-  --r:10px;--rs:7px;--btn:36px;--row:40px;
+  --r:10px;--rs:7px;--btn:36px;--row:40px;--onCr:#fff;
   color-scheme:light
 }
 :root[data-tema="escuro"]{

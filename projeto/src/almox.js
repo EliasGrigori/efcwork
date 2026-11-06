@@ -1,6 +1,6 @@
-/* EFCwork · almox.js — Almoxarifado (v0.2: CONSULTA). Painel, Materiais, Movimentações, Solicitações e Equipamentos com a tabela padrão e a gaveta.
+/* EFCwork · almox.js — Almoxarifado (v0.2: consulta; v0.3: os botões de lançar chamam lanca.js). Painel, Materiais, Movimentações, Solicitações e Equipamentos com a tabela padrão e a gaveta.
    Prefixo: al (materiais) e eq (equipamentos). Os cálculos de saldo por lote vieram do EFClaudian v2.102.59 sem mudança (alIdx, alSit…),
-   para os números baterem com os do EFClaudian. Lê sv2_alm_itens, sv2_alm_mov, sv2_alm_sol, sv2_alm_equip. Nada é gravado nesta versão. */
+   para os números baterem com os do EFClaudian. Lê sv2_alm_itens, sv2_alm_mov, sv2_alm_sol, sv2_alm_equip. Os lançamentos ficam em lanca.js. */
 const ALM_VENCE_DIAS = 30, EQ_AVENCER = 40, ALM_MOV_LIM = 10000;
 const AL_TIPO = { inicial: 'Conferência inicial', entrada: 'Entrada', saida: 'Saída', ajuste: 'Ajuste', abrir: 'Frasco aberto', fim: 'Frasco terminou' };
 const AL_SOL_ST = { pendente: ['Pendente', 'wa'], atendida: ['Atendida', 'ok'], cancelada: ['Cancelada', ''] };
@@ -112,6 +112,8 @@ function alPainel() {
     '<a class="kp' + (r.calV ? ' cr' : r.calA ? ' wa' : '') + '" href="#/almox/equipamentos"><b class="num">' + (r.calV + r.calA) + '</b><span>Calibrações vencidas ou a vencer</span></a></div>';
   if (S.almErro) h += '<p class="al-aviso cr">' + ic('alerta') + esc(S.almErro) + '</p>';
   else if (avencer || r.solP) h += '<p class="al-aviso">' + ic('info') + [avencer ? avencer + (avencer === 1 ? ' item tem' : ' itens têm') + ' lote vencendo em até ' + ALM_VENCE_DIAS + ' dias' : '', r.solP ? r.solP + (r.solP === 1 ? ' solicitação pendente' : ' solicitações pendentes') : ''].filter(Boolean).join(' · ') + '</p>';
+  const crit = typeof alCtrl === 'function' && alCtrl(S.user) ? alCritPend() : [];
+  if (crit.length) h += '<section class="pn"><div class="hd"><h3>Produto crítico: confirmar saída</h3><em>' + crit.length + '</em></div>' + crit.slice(0, 6).map(m => '<button type="button" class="li al-li" data-act="al-mov" data-id="' + esc(m.id) + '"><span class="tx"><b>' + esc(m.itemNome) + '</b><small>' + alQ(m.qtd) + ' · ' + esc(AL_TIPO[m.tipo] || '') + ' · ' + fmtD(m.data) + ' · ' + esc(m.porNome || '') + (m.motivo ? ' · ' + esc(m.motivo) : '') + '</small></span>' + alPill('Aguardando', 'wa') + '</button>').join('') + '</section>';
   const aten = r.aten.slice().sort((a, b) => ['vencido', 'zero', 'min', 'avencer'].indexOf(alSit(a).id) - ['vencido', 'zero', 'min', 'avencer'].indexOf(alSit(b).id)).slice(0, 8);
   h += '<div class="al-gr"><section class="pn"><div class="hd"><h3>Pedem atenção</h3><em>' + r.aten.length + '</em><span class="sp"></span>' + (r.aten.length > 8 ? '<a class="bt lk" href="#/almox/materiais" data-act="al-ir" data-f="atencao">Ver todos</a>' : '') + '</div>' +
     (aten.length ? aten.map(i => { const s = alSit(i); return '<button type="button" class="li al-li" data-act="al-item" data-id="' + esc(i.id) + '"><span class="tx"><b>' + esc(i.nome) + '</b><small>' + esc([i.codigo, i.local].filter(Boolean).join(' · ')) + ' · utilizável ' + alQ(alDisp(i.id)) + ' ' + esc(i.un || '') + (Number(i.min) ? ' (mín. ' + alQ(i.min) + ')' : '') + '</small></span>' + alPill(s.txt, s.cor) + '</button>'; }).join('') : '<div class="vazio">' + ic('ok') + '<b>Tudo em dia.</b></div>') + '</section>' +
@@ -199,8 +201,10 @@ TELAS.almox = function (aba) {
   const meta = aba === 'materiais' ? [ '<span>' + r.at.length + ' itens ativos</span>', metaPl(brl(r.val) + ' em estoque'), r.aten.length ? metaPl(r.aten.length + ' pedem atenção', 'wa', 'alerta') : '' ]
     : aba === 'equipamentos' ? ['<span>' + r.eqs.length + ' equipamentos</span>', r.calV ? metaPl(r.calV + ' calibração vencida ou sem data', 'cr', 'alerta') : '', r.calA ? metaPl(r.calA + ' a vencer', 'wa') : '']
     : aba === 'solicitacoes' ? [r.solP ? metaPl(r.solP + ' pendentes', 'wa') : '<span>Nenhuma pendente</span>'] : aba === 'painel' ? ['<span>' + dataLonga() + '</span>'] : [];
-  let h = cabecalho({ titulo: t.nome, abaNome: t.nome, meta: meta.filter(Boolean),
-    acoes: '<span class="pill al-so">' + ic('info') + 'Consulta · lançar continua no EFClaudian até a v0.3</span><a class="bt" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener">' + ic('externo') + 'Lançar no EFClaudian</a>' });
+  const ext = '<a class="bt ic-so" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener" title="No EFClaudian: cadastro de material, kits, fotos e inventário" aria-label="Abrir o EFClaudian (cadastro de material, kits, fotos e inventário)">' + ic('externo') + '</a>';
+  const acoes = !alPode() ? ext : aba === 'solicitacoes' ? '<button type="button" class="bt pr" data-act="lc-sol">' + ic('mais') + 'Nova solicitação</button>' + ext
+    : aba === 'equipamentos' ? ext : '<button type="button" class="bt" data-act="lc-ent">' + ic('entra') + 'Entrada</button><button type="button" class="bt pr" data-act="lc-sai">' + ic('sai') + 'Saída</button>' + ext;
+  let h = cabecalho({ titulo: t.nome, abaNome: t.nome, meta: meta.filter(Boolean), acoes: acoes });
   if (!S.almCarregado && !DEMO) return h + '<section class="pn"><div class="vazio">' + ic('relogio') + '<b>Carregando o estoque…</b></div></section>';
   h += aba === 'materiais' ? alTabMateriais() : aba === 'movimentacoes' ? alTabMov() : aba === 'solicitacoes' ? alTabSol() : aba === 'equipamentos' ? alTabEq() : alPainel();
   return h;
@@ -217,26 +221,35 @@ function alAbreItem(id) {
       corpo: gvNums([[alQ(d), 'utilizável (' + (i.un || 'un') + ')', d <= 0 ? 'cr' : min && d < min ? 'wa' : ''], [min ? alQ(min) : '—', 'mínimo'], [brl(alValorEst(i.id)), 'em estoque']]) +
         gvCampos([['Local', i.local], ['Unidade', i.un], ['Embalagem', alFator(i) > 1 ? '1 ' + (i.unCompra || 'emb.') + ' = ' + alFator(i) + ' ' + (i.un || '') : ''], ['Consumo', consumo ? consumo + ' (média de 90 dias)' : 'sem saídas em 90 dias'], ['Por frasco', i.porFrasco ? 'sim (abre e termina frasco)' : '']]) +
         '<p class="gv-h">Lotes com saldo</p>' + (ls.length ? '<div class="gv-lotes">' + ls.map(l => '<div class="gv-lote"><span>' + esc(l.lote || 'sem lote') + (l.validade ? ' · vence ' + fmtD(l.validade) : '') + '</span><span class="num">' + alQ(l.saldo) + ' ' + esc(i.un || '') + (alVencido(l) ? ' ' + alPill('vencido', 'cr') : alAVencer(l) ? ' ' + alPill('vence logo', 'wa') : '') + '</span></div>').join('') + '</div>' : '<p class="tb-nada">Sem saldo.</p>') +
+        (alPorFrasco(i) ? alAbertosHTML(i) : '') +
         '<p class="gv-h">Últimas movimentações</p>' + gvLinha(movs.map(m => [(AL_TIPO[m.tipo] || m.tipo) + ' de ' + alQ(m.qtd) + ' ' + (i.un || '') + (m.motivo ? ' · ' + m.motivo : m.doc ? ' · Doc. ' + m.doc : '') + (m.anulada ? ' (anulada)' : ''), (m.porNome || '') + ' · ' + fmtD(m.data)])),
-      rodape: '<a class="bt" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener">' + ic('externo') + 'Saída ou entrada no EFClaudian</a>' };
+      rodape: alItemPe(i) };
   });
   render();
 }
 function alAbreMov(id) {
   S._alSel = id; gvAbrir(() => {
     const m = S.almMov.find(x => x.id === id); if (!m) return null; const s = alSitMov(m), i = alItem(m.itemId);
-    return { ico: 'caixa', sub: (AL_TIPO[m.tipo] || m.tipo) + ' · ' + fmtD(m.data), titulo: m.itemNome || '(item removido)', pill: s[0] ? alPill(s[0], s[1]) : alPill(AL_TIPO[m.tipo] || m.tipo, m.tipo === 'saida' ? 'wa' : 'ok'),
-      corpo: gvNums([[alQ(m.qtd), 'quantidade (' + ((i && i.un) || 'un') + ')'], [brl(Number(m.preco) || 0), 'valor unitário'], [brl((Number(m.qtd) || 0) * (Number(m.preco) || 0)), 'valor total']]) +
-        gvCampos([['Lote', m.lote], ['Validade', m.validade ? fmtD(m.validade) : ''], ['Motivo', m.motivo], ['Documento', m.doc], ['Kit', m.kit], ['Quem', m.porNome], ['Registrado em', m.criadoEm ? fmtD(m.criadoEm) + ' ' + String(m.criadoEm).slice(11, 16) : ''], ['Motivo da anulação', m.anulada ? m.motivoAnulacao || m.anuladaMotivo || '' : '']]) +
-        (m.historico && m.historico.length ? '<p class="gv-h">Correções</p>' + gvLinha(m.historico.map(x => [x.motivo || 'Correção', (x.porNome || '') + (x.em ? ' · ' + fmtD(x.em) : '')])) : '') };
+    const pode = typeof alPodeCorrigir === 'function' && alPodeCorrigir(m), pend = typeof alCorrPend === 'function' ? alCorrPend(m) : null, decide = typeof alCritPendMov === 'function' && alCritPendMov(m) && alCtrl(S.user);
+    const anula = pode && !pend && !alTemRef(m), corrige = pode && !pend && ['saida', 'entrada', 'inicial'].indexOf(m.tipo) >= 0;
+    return { ico: 'caixa', sub: (AL_TIPO[m.tipo] || m.tipo) + ' · ' + fmtD(m.data), titulo: m.itemNome || '(item removido)', pill: (s[0] ? alPill(s[0], s[1]) : alPill(AL_TIPO[m.tipo] || m.tipo, m.tipo === 'saida' ? 'wa' : 'ok')) + (pend ? ' ' + alPill('Correção pendente', 'wa') : ''),
+      lixeira: anula ? { act: 'lc-anular', id: m.id, titulo: 'Anular (lançado por engano)' } : null,
+      corpo: (m.critico ? '<div class="fm-av ' + (m.critico.st === 'pendente' ? 'wa' : m.critico.st === 'confirmada' ? 'ok' : 'cr') + '">' + ic('alerta') + '<span><b>Produto crítico.</b> ' + esc(alCritTxt(m.critico)) + '</span></div>' : '') +
+        gvNums([[alQ(m.qtd), 'quantidade (' + ((i && i.un) || 'un') + ')'], [brl(Number(m.preco) || 0), 'valor unitário'], [brl((Number(m.qtd) || 0) * (Number(m.preco) || 0)), 'valor total']]) +
+        gvCampos([['Lote', m.lote], ['Validade', m.validade ? fmtD(m.validade) : ''], ['Motivo', m.motivo], ['Documento', m.doc], ['Kit', m.kit], ['Observação', m.obs], ['Lote vencido usado porque', m.vencidoMotivo], ['Quem', m.porNome], ['Registrado em', m.criadoEm ? fmtDT(m.criadoEm) : ''], ['Aprovado por', m.aprovadoPor ? m.aprovadoPor + (m.pedidoPor ? ' (pedido de ' + m.pedidoPor + ')' : '') : ''], ['Anulada por', m.anulada ? (m.anuladaPor || '') + ' — ' + (m.anuladaMotivo || m.motivoAnulacao || '') : ''], ['Correção pedida', pend ? 'aguardando ' + ((pend.paraIds || []).map(nomeDe).join(', ') || 'o superior') : '']]) +
+        (m.historico && m.historico.length ? '<p class="gv-h">Correções</p>' + gvLinha(m.historico.map(x => [Object.keys(x.depois || {}).map(k => k + ': ' + ((x.antes || {})[k] === '' || (x.antes || {})[k] == null ? '—' : x.antes[k]) + ' → ' + (x.depois[k] === '' || x.depois[k] == null ? '—' : x.depois[k])).join(' · ') + (x.motivo ? ' — ' + x.motivo : ''), (x.por || x.porNome || '') + (x.ts ? ' · ' + fmtDT(x.ts) : '') + (x.aprovadoPor ? ' · aprovado por ' + x.aprovadoPor : '')])) : ''),
+      rodape: (decide ? '<button type="button" class="bt" data-act="lc-crit-nao" data-id="' + esc(m.id) + '">Não confere</button><button type="button" class="bt pr" data-act="lc-crit-ok" data-id="' + esc(m.id) + '">' + ic('ok') + 'Confirmar saída</button>' : '') +
+        (corrige ? '<button type="button" class="bt" data-act="lc-corr" data-id="' + esc(m.id) + '">' + ic('lapis') + 'Corrigir</button>' : '') + (i ? '<button type="button" class="bt lk" data-act="al-item" data-id="' + esc(i.id) + '">Ver o material</button>' : '') };
   });
   render();
 }
 function alAbreSol(id) {
   S._alSel = id; gvAbrir(() => {
     const x = S.almSol.find(y => y.id === id); if (!x) return null; const s = AL_SOL_ST[x.situacao] || AL_SOL_ST.pendente;
-    return { ico: 'doc', sub: 'Solicitação · ' + fmtD(x.data), titulo: 'Nº ' + (x.numero || '—'), pill: alPill(s[0], s[1]),
-      corpo: gvCampos([['Solicitante', x.solicitante], ['Liberador', x.liberador], ['Previsão', x.previsao ? fmtD(x.previsao) : ''], ['Observação', x.obs], ['Atendida em', x.atendidaEm ? fmtD(x.atendidaEm) : '']]) +
+    const pend = (x.situacao || 'pendente') === 'pendente' && typeof alPode === 'function' && alPode();
+    return { ico: 'doc', sub: 'Solicitação · ' + fmtD(x.data), titulo: 'Nº ' + (x.numero || '—'), pill: alPill(s[0], s[1]), lixeira: pend ? { act: 'lc-sol-canc', id: x.id, titulo: 'Cancelar solicitação' } : null,
+      rodape: pend ? '<button type="button" class="bt pr" data-act="lc-sol-atender" data-id="' + esc(x.id) + '">' + ic('entra') + 'Chegou: marcar Atendida</button>' : '',
+      corpo: gvCampos([['Solicitante', x.solicitante], ['Liberador', x.liberador], ['Previsão', x.previsao ? fmtD(x.previsao) : ''], ['Observação', x.obs], ['Atendida em', x.atendidaEm ? fmtD(x.atendidaEm) + (x.atendidaPor ? ' · ' + x.atendidaPor : '') : ''], ['Cancelada', x.situacao === 'cancelada' ? (x.canceladaPor || '') + ' — ' + (x.canceladaMotivo || '') : '']]) +
         '<p class="gv-h">Itens</p><div class="gv-lotes">' + (x.linhas || []).map(l => '<div class="gv-lote"><span>' + esc(l.nome) + (!l.itemId || !alItem(l.itemId) ? ' ' + alPill('ainda não cadastrado', '') : '') + '</span><span class="num">' + alQ(l.qtd) + '</span></div>').join('') + '</div>' };
   });
   render();
@@ -250,11 +263,23 @@ function alAbreEq(id) {
   });
   render();
 }
+function alItemPe(i) {
+  if (typeof alPode !== 'function' || !alPode() || i.ativo === false) return '';
+  const temLote = alLotes(i.id).length > 0;
+  return (alPorFrasco(i) ? '<button type="button" class="bt pr" data-act="lc-abrir" data-id="' + esc(i.id) + '">' + ic('frasco') + 'Abrir frasco</button><button type="button" class="bt" data-act="lc-sai" data-id="' + esc(i.id) + '" title="Transferência, perda ou descarte">' + ic('sai') + 'Saída</button>'
+    : '<button type="button" class="bt pr" data-act="lc-sai" data-id="' + esc(i.id) + '">' + ic('sai') + 'Saída</button>') +
+    '<button type="button" class="bt" data-act="lc-ent" data-id="' + esc(i.id) + '">' + ic('entra') + 'Entrada</button>' + (temLote ? '<button type="button" class="bt" data-act="lc-aj" data-id="' + esc(i.id) + '">' + ic('ajuste') + 'Ajustar</button>' : '');
+}
+function alAbertosHTML(i) {
+  const abs = alAbertos(i.id), pode = typeof alPode === 'function' && alPode();
+  return '<p class="gv-h">Em uso agora · ' + abs.length + ' frasco(s) aberto(s)</p>' + (abs.length ? '<div class="gv-lotes">' + abs.map(m => { const p = alPrazoAberto(m); return '<div class="gv-lote"><span>' + esc(m.lote || 'sem lote') + ' · aberto em ' + fmtD(m.data) + (p ? ' · ' + (p.vencido ? 'passou do prazo em ' + fmtD(p.venc) : 'vale até ' + fmtD(p.venc)) : '') + '</span>' + (pode ? '<button type="button" class="bt" data-act="lc-fim" data-id="' + esc(m.id) + '">Acabou</button>' : '') + '</div>'; }).join('') + '</div>' : '<p class="tb-nada">Nenhum frasco aberto.</p>');
+}
 document.addEventListener('click', e => {
   const t = e.target.closest && e.target.closest('[data-act^="al-"]'); if (!t) return;
   const a = t.getAttribute('data-act');
   if (a === 'al-ir') { e.preventDefault(); alIrMateriais(t.getAttribute('data-f')); }
   else if (a === 'al-ir-valor') { e.preventDefault(); const st = tbEstado('al-mat'); st.filtros = {}; st.busca = ''; st.ordem = { k: 'val', dir: 'desc' }; ir('almox', 'materiais'); }
   else if (a === 'al-item') { if (S.rota.aba !== 'materiais') { S._gvNav = true; ir('almox', 'materiais'); } alAbreItem(t.getAttribute('data-id')); }
+  else if (a === 'al-mov') { if (S.rota.aba !== 'movimentacoes') { S._gvNav = true; ir('almox', 'movimentacoes'); } alAbreMov(t.getAttribute('data-id')); }
   else if (a === 'al-eq') { if (S.rota.aba !== 'equipamentos') { S._gvNav = true; ir('almox', 'equipamentos'); } alAbreEq(t.getAttribute('data-id')); }
 });

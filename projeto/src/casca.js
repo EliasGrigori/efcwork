@@ -11,7 +11,7 @@ const AREAS = [
   { id: 'rateios', nome: 'Rateios', ic: 'pizza', versao: 'v0.7', abas: [] },
   { id: 'inspecoes', nome: 'Inspeções', ic: 'lista', versao: 'v0.6', abas: [{ id: 'cloro', nome: 'Cloro' }, { id: 'apontamentos', nome: 'Apontamentos' }, { id: 'auditoria', nome: 'Auditoria interna' }] },
   { id: 'documentos', nome: 'Documentos', ic: 'doc', versao: 'v0.5', abas: [{ id: 'documentos', nome: 'Documentos' }, { id: 'caixas', nome: 'Caixas d’água' }, { id: 'historico', nome: 'Histórico' }] },
-  { id: 'almox', nome: 'Almoxarifado', ic: 'caixa', versao: 'v0.3', parcial: 'consulta pronta aqui; lançamentos chegam na v0.3', abas: [{ id: 'painel', nome: 'Painel' }, { id: 'materiais', nome: 'Materiais' }, { id: 'movimentacoes', nome: 'Movimentações' }, { id: 'solicitacoes', nome: 'Solicitações' }, { id: 'equipamentos', nome: 'Equipamentos' }] },
+  { id: 'almox', nome: 'Almoxarifado', ic: 'caixa', versao: 'v0.3', parcial: 'consultar e lançar prontos aqui; cadastro de material, kits, fotos e inventário seguem no EFClaudian', abas: [{ id: 'painel', nome: 'Painel' }, { id: 'materiais', nome: 'Materiais' }, { id: 'movimentacoes', nome: 'Movimentações' }, { id: 'solicitacoes', nome: 'Solicitações' }, { id: 'equipamentos', nome: 'Equipamentos' }] },
   { id: 'qualidade', nome: 'Qualidade', ic: 'escudo', versao: 'v0.7', abas: [{ id: 'nc', nome: 'Não conformidades' }, { id: 'analise', nome: 'Análise de problemas' }, { id: 'bugs', nome: 'Bugs e sugestões' }] },
   { id: 'relatorios', nome: 'Relatórios', ic: 'graf', versao: 'v0.8', grupo: 'Análise', abas: [] },
   { id: 'adm', nome: 'Administração', ic: 'eng', rodape: true, abas: [{ id: 'empresa', nome: 'Empresa' }, { id: 'aparencia', nome: 'Aparência' }, { id: 'sobre', nome: 'Sobre' }] }
@@ -36,7 +36,7 @@ function csLeRota() {
   return { area: a, aba: aba };
 }
 function ir(area, aba) { const h = '#/' + area + (aba ? '/' + aba : ''); if (location.hash !== h) location.hash = h; else render(); }
-window.addEventListener('hashchange', () => { S.rota = csLeRota(); csUso(); csFechaMenu(); if (S._gvNav) S._gvNav = false; else { S.gv = null; S._alSel = null; const g = $('#gv'); if (g) g.remove(); document.body.classList.remove('gv-aberta'); } render(); try { window.scrollTo(0, 0); } catch {} });
+window.addEventListener('hashchange', () => { S.rota = csLeRota(); csUso(); csFechaMenu(); if (S._gvNav) S._gvNav = false; else { S.gv = null; S.gvForm = false; S.fm = null; S._alSel = null; const g = $('#gv'); if (g) g.remove(); document.body.classList.remove('gv-aberta'); } render(); try { window.scrollTo(0, 0); } catch {} });
 
 /* ---------- "onde você estava" e "mais usadas" (como no EFClaudian v2.102.59; só neste aparelho, por pessoa) ---------- */
 function csUsoLer() { try { const o = JSON.parse(Store.get('cw-uso-' + ((S.user && S.user.id) || '')) || '{}'); return { n: o.n || {}, r: Array.isArray(o.r) ? o.r : [] }; } catch { return { n: {}, r: [] }; } }
@@ -75,7 +75,7 @@ function csTopo() {
   return '<header class="cs-topo"><button type="button" class="bt ic-so cs-so-cel" data-act="cs-menu" aria-label="Abrir menu">' + ic('menu') + '</button>' +
     '<button type="button" class="cs-busca" data-act="cs-busca" aria-label="Buscar (tecla /)">' + ic('lupa') + '<span>Buscar documento, material, coleta…</span><kbd>/</kbd></button><span class="cs-sp"></span>' + con +
     '<button type="button" class="bt ic-so" data-act="cs-tema" aria-label="' + (t === 'escuro' ? 'Usar tema claro' : 'Usar tema escuro') + '" title="' + (t === 'escuro' ? 'Tema claro' : 'Tema escuro') + '">' + ic(t === 'escuro' ? 'sol' : 'lua') + '</button>' +
-    '<button type="button" class="bt ic-so" data-act="cs-sino" aria-label="Avisos" title="Avisos">' + ic('sino') + '</button></header>';
+    '<button type="button" class="bt ic-so cs-sino" data-act="cs-sino" aria-label="Avisos" title="Avisos">' + ic('sino') + (function () { const n = typeof snConta === 'function' ? snConta() : 0; return '<span class="cs-bdg" id="sn-n"' + (n ? '' : ' hidden') + '>' + (n > 99 ? '99+' : n) + '</span>'; })() + '</button></header>';
 }
 /* cabeçalho de página padrão: caminho, título com traço, situação (meta) e ações; abas sublinhadas embaixo */
 function cabecalho(o) {
@@ -115,14 +115,14 @@ document.addEventListener('click', e => {
   else if (a === 'cs-fecha') csFechaMenu();
   else if (a === 'cs-sair') csSair();
   else if (a === 'cs-emp') ir('adm', 'empresa');
-  else if (a === 'cs-sino') aviso('Os avisos do sino chegam na v0.3.');
+  else if (a === 'cs-sino') snAbrir();
 });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') csFechaMenu(); });
 
 /* ---------- sessão ---------- */
 async function csSair() {
   try { await Data.auth.signOut(); } catch (e) { try { await Data.auth.forcarSaida(); } catch {} }
-  S.user = null; S.gv = null; { const g = $('#gv'); if (g) g.remove(); } S._desl.forEach(f => { try { f(); } catch {} }); S._desl = []; location.hash = '#/inicio'; render();
+  S.user = null; S.gv = null; S.gvForm = false; S.fm = null; S.users = []; S.notifs = []; S.aprov = []; { const g = $('#gv'); if (g) g.remove(); } S._desl.forEach(f => { try { f(); } catch {} }); S._desl = []; location.hash = '#/inicio'; render();
 }
 function csOuve(col, cb, o) { const off = Data.col(col).watch(cb, o); S._desl.push(off); return off; }
 async function csCarregaUsuario(uidAtual) {
@@ -134,7 +134,7 @@ async function csCarregaUsuario(uidAtual) {
     S.user = null; S.pronto = true; S._erroEntrar = !u ? 'Este acesso não tem perfil cadastrado. Peça ao administrador.' : 'Este acesso está bloqueado. Fale com o administrador.'; render(); return;
   }
   S.user = Object.assign({ id: uidAtual }, u); S.pronto = true; S._erroEntrar = '';
-  csOuve('sv2_cfg', l => { const e = l.find(x => x.id === 'empresa'); S.empresa = e || null; render(); });
+  csOuve('sv2_cfg', l => { const e = l.find(x => x.id === 'empresa'); S.empresa = e || null; S.cfgAlm = l.find(x => x.id === 'almox') || null; render(); });
   csOuve('sv2_tarefas', l => { S.tarefas = l; if (S.rota.area === 'inicio') render(); });
   CS_CARGAS.forEach(f => { try { f(); } catch (e) { console.error(e); } });
   csUso(); render();
