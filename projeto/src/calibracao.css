@@ -44,6 +44,7 @@
 .cb-tl span{font-size:14px;color:var(--tx2)}
 .cb-tl small{font-size:12px;color:var(--tx3)}
 .cb-tl li:not(.ok):not(.at) b{color:var(--tx3);font-weight:500}
+.cb-alerta{color:var(--cr)!important;font-weight:600}
 .cb-agora{color:var(--wa)!important;font-weight:600}
 /* barrinhas do cartão também com brilho */
 .cb-mini li.ok i{position:relative;overflow:hidden}

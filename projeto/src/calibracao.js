@@ -42,13 +42,18 @@ function cbEtapas(c) {
   if (c.situacao !== 'cancelada') { const at = e.find(x => !x.feito); if (at) at.atual = true; }
   return e;
 }
+
+/* linha do tempo com FLUIDO (v0.3.4, Gota na v0.3.6) — genérica: calibração, amostras (v0.4) e o que vier.
+   es = [{nome, feito, atual?, parcial?, data?, txt?, quem?, cor?}]; id = chave de "até onde cada um viu". */
+function tlFluido(id, es) {
+  const feitas = es.findIndex(x => !x.feito) < 0 ? es.length : es.findIndex(x => !x.feito), visto = cbNivelVisto(id, feitas);
+  return '<div class="cb-tlw" data-cbtl="' + esc(id) + '" data-feitas="' + feitas + '"><span class="cb-tubo" aria-hidden="true"><i class="cb-fluido"></i></span><ol class="cb-tl">' + es.map((x, n) => { const apagada = x.feito && n >= visto;
+    return '<li class="' + (x.feito ? 'ok' : x.atual ? 'at' : '') + (apagada ? ' esp' : '') + (x.parcial ? ' pc' : '') + '"><span class="cb-n"><span class="cb-ib"><i class="cb-in"></i></span><span class="cb-nn">' + (n + 1) + '</span>' + ic('ok') + '</span><div><b>' + esc(x.nome) + (x.data ? ' <em>' + fmtD(x.data) + '</em>' : '') + '</b>' + (x.txt ? '<span>' + esc(x.txt) + '</span>' : '') + (x.quem ? '<small>' + esc(x.quem) + '</small>' : '') + (x.atual ? '<small class="cb-agora">próxima etapa</small>' : '') + (x.alerta ? '<small class="cb-alerta">' + esc(x.alerta) + '</small>' : '') + '</div></li>'; }).join('') + '</ol></div>';
+}
 function cbPassos(c, mini) {
   const es = cbEtapas(c);
   if (mini) return '<ol class="cb-mini" aria-label="Etapas">' + es.map(x => '<li class="' + (x.feito ? 'ok' : x.atual ? 'at' : '') + '" title="' + esc(x.nome + (x.data ? ' · ' + fmtD(x.data) : '')) + '"><i></i><span>' + esc(x.nome) + '</span></li>').join('') + '</ol>';
-  /* linha do tempo com FLUIDO (v0.3.4): as etapas já feitas que esta pessoa ainda não viu começam apagadas e o fluido sobe até elas */
-  const feitas = es.findIndex(x => !x.feito) < 0 ? es.length : es.findIndex(x => !x.feito), visto = cbNivelVisto(c.id, feitas);
-  return '<div class="cb-tlw" data-cbtl="' + esc(c.id) + '" data-feitas="' + feitas + '"><span class="cb-tubo" aria-hidden="true"><i class="cb-fluido"></i></span><ol class="cb-tl">' + es.map((x, n) => { const apagada = x.feito && n >= visto;
-    return '<li class="' + (x.feito ? 'ok' : x.atual ? 'at' : '') + (apagada ? ' esp' : '') + (x.parcial ? ' pc' : '') + '"><span class="cb-n"><span class="cb-ib"><i class="cb-in"></i></span><span class="cb-nn">' + (n + 1) + '</span>' + ic('ok') + '</span><div><b>' + esc(x.nome) + (x.data ? ' <em>' + fmtD(x.data) + '</em>' : '') + '</b>' + (x.txt ? '<span>' + esc(x.txt) + '</span>' : '') + (x.quem ? '<small>' + esc(x.quem) + '</small>' : '') + (x.atual ? '<small class="cb-agora">próxima etapa</small>' : '') + '</div></li>'; }).join('') + '</ol></div>';}
+  return tlFluido(c.id, es);}
 
 /* ======================= tela (Equipamentos › Calibração) ======================= */
 function cbTela() {

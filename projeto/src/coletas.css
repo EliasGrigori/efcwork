@@ -1,0 +1,24 @@
+/* EFCwork · coletas.css — Coletas (v0.4.0) */
+.co-anx{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.co-ax{display:flex;flex-direction:column;gap:3px;padding:10px 12px;border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg0);min-width:0}
+.co-ax small{font-size:12px;color:var(--tx3)}
+.co-ax b{font-weight:600;font-size:14px;overflow-wrap:anywhere}
+.co-ax .bt.lk{align-self:flex-start;height:auto;padding:2px 0;font-size:13px}
+.co-cup{padding:0;border:1px solid var(--bd2);border-radius:var(--rs);background:var(--bg1);width:72px;height:72px;overflow:hidden;cursor:zoom-in}
+.co-cup img{width:100%;height:100%;object-fit:cover;display:block}
+.co-vl{margin-top:6px;align-self:flex-start}
+.co-am{width:100%;font:inherit;color:inherit;text-align:left;cursor:pointer}
+.co-am:hover{border-color:var(--a)}
+.co-am span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.co-selb{display:flex;gap:14px;margin:-4px 0 6px}
+.co-pkl{max-height:min(38vh,320px);overflow:auto}
+.co-pkl .cb-ck .pill{margin-left:auto}
+.co-cupf{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.co-cupf img{width:88px;height:88px;object-fit:cover;border-radius:var(--rs);border:1px solid var(--bd2)}
+.co-cupf small{color:var(--tx3);font-size:12px}
+.co-file{position:relative;cursor:pointer;align-self:flex-start}
+.co-fv{position:fixed;inset:0;z-index:80;background:rgba(10,8,4,.82);display:grid;place-items:center;padding:24px}
+.co-fv img{max-width:100%;max-height:100%;border-radius:var(--rs);box-shadow:var(--sh)}
+.co-fv .bt{position:absolute;top:16px;right:16px}
+@media(max-width:899px){.co-anx{grid-template-columns:1fr 1fr}}
+.co-nada{margin:0;font-size:14px;color:var(--tx3)}
