@@ -37,5 +37,8 @@ TELAS.inicio = function () {
       '<a class="kp' + (r.solP ? ' wa' : '') + '" href="#/almox/solicitacoes"><b class="num">' + r.solP + '</b><span>Solicitações pendentes</span></a>' +
       '<a class="kp' + (venc ? ' cr' : '') + '" href="#/inicio"><b class="num">' + venc + '</b><span>Tarefas vencidas</span></a></div>';
   }
-  return h + nums + '<div class="ini-gr"><div class="ini-col">' + tarefas + plano + '</div><div class="ini-col">' + atalhos + '</div></div>';
+  let cg = '';
+  if (typeof cgAberta === 'function' && alVe()) { const c = cgAberta(); if (c && (c.contadorId === u.id || (alSup() && (c.recontar && Object.keys(c.recontar).some(k => c.recontar[k]) || cgProgresso(c).faltam.length === 0)))) { const pr = cgProgresso(c), pct = pr.total ? Math.round(pr.feitos / pr.total * 100) : 0, minha = c.contadorId === u.id;
+    cg = '<a class="pn ini-cg" href="#/almox/contagem"><span class="ico ini-wa">' + ic('lista') + '</span><span class="tx"><b>' + (minha ? (pr.recontar.length ? 'Recontar ' + pr.recontar.length + ' material(is) · ' : 'Contagem para você · ') : 'Contagem para conferir · ') + esc(c.numero) + '</b><small>' + pr.feitos + ' de ' + pr.total + ' contados · ' + pct + '%</small></span><span class="ini-cgb"><i style="width:' + pct + '%"></i></span>' + ic('seta') + '</a>'; } }
+  return h + cg + nums + '<div class="ini-gr"><div class="ini-col">' + tarefas + plano + '</div><div class="ini-col">' + atalhos + '</div></div>';
 };

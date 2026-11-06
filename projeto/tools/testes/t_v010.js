@@ -32,7 +32,7 @@ const conf = (c, msg) => { if (c) { ok++; console.log('  ok  ' + msg); } else { 
   conf(/Sua empresa/.test(await p.textContent('.cs-emp')), 'sem empresa configurada: "Sua empresa"');
   await p.screenshot({ path: path.join(SHOTS, 'pc-claro-inicio.png') });
   /* áreas e abas */
-  const rotas = await p.evaluate(() => AREAS.map(a => ({ id: a.id, abas: a.abas.map(x => x.id) })));
+  const rotas = await p.evaluate(() => AREAS.map(a => ({ id: a.id, abas: a.abas.filter(x => !x.oculta).map(x => x.id) }))); /* v0.3.2: telas de ação (oculta) não contam como aba */
   for (const r of rotas) {
     for (const aba of (r.abas.length ? r.abas : [''])) {
       await p.evaluate(h => { location.hash = h; }, '#/' + r.id + (aba ? '/' + aba : '')); await p.waitForTimeout(120);
@@ -42,7 +42,7 @@ const conf = (c, msg) => { if (c) { ok++; console.log('  ok  ' + msg); } else { 
     const nAbas = (await p.$$('.cs-abas a')).length;
     conf(nAbas === (r.abas.length > 1 ? r.abas.length : 0), r.id + ': ' + nAbas + ' abas (esperado ' + (r.abas.length > 1 ? r.abas.length : 0) + ')');
   }
-  conf(await p.evaluate(() => [4, 1, 3, 3, 5, 3].join() === ['coletas', 'rateios', 'inspecoes', 'documentos', 'almox', 'qualidade'].map(i => Math.max(1, csArea(i).abas.length)).join()), 'estrutura aprovada: Coletas 4, Rateios 1, Inspeções 3, Documentos 3, Almoxarifado 5, Qualidade 3 ');
+  conf(await p.evaluate(() => [4, 1, 3, 3, 5, 3].join() === ['coletas', 'rateios', 'inspecoes', 'documentos', 'almox', 'qualidade'].map(i => Math.max(1, csArea(i).abas.filter(x => !x.oculta).length)).join()), 'estrutura aprovada: Coletas 4, Rateios 1, Inspeções 3, Documentos 3, Almoxarifado 5, Qualidade 3 ');
   await p.evaluate(() => { location.hash = '#/coletas/envio'; }); await p.waitForTimeout(150);
   conf(await p.isVisible('.cs-it.on[href="#/coletas"]') && await p.isVisible('.cs-abas a.on[href="#/coletas/envio"]'), 'área e aba atuais marcadas no menu e nas abas');
   conf(/EFClaudian/.test(await p.textContent('.cs-ct')) && await p.isVisible('.cs-acts a[href*="efclaudian"]'), 'área ainda não refeita leva ao EFClaudian');

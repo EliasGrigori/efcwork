@@ -38,8 +38,8 @@ Aba Almoxarifado › Apresentação,Almoxarifado,must,sim,parcial,Relatórios �
 Aba Almoxarifado › Materiais,Almoxarifado,must,sim,sim,Almoxarifado › Materiais,"v0.3.0: Saída, Entrada, Abrir frasco, Acabou e Ajustar na gaveta do material"
 Aba Almoxarifado › Movimentações,Almoxarifado,must,sim,sim,Almoxarifado › Movimentações,"v0.3.0: Corrigir, Anular (lixeira), confirmar produto crítico"
 Aba Almoxarifado › Solicitações,Almoxarifado,must,sim,sim,Almoxarifado › Solicitações,"v0.3.0: Nova, Atender (vira entrada), Cancelar (lixeira)"
-Aba Almoxarifado › Equipamentos,Almoxarifado,must,sim,parcial,Almoxarifado › Equipamentos,v0.3.0: consulta; calibração com histórico na v0.3.2
-Aba Almoxarifado › Inventário,Almoxarifado,must,sim,parcial,Almoxarifado › Materiais (ação Contagem),contagem às cegas nova na v0.3.1 (pedido do Elias 05/11)
+Aba Almoxarifado › Equipamentos,Almoxarifado,must,sim,parcial,Almoxarifado › Equipamentos,"v0.3.3: calibração com histórico (solicitar, cotação, agendar, calibrado com quem calibrou/código/validade, compra); cadastro, transferência, dano e manutenção seguem no EFClaudian"
+Aba Almoxarifado › Inventário,Almoxarifado,must,sim,parcial,Almoxarifado › Materiais (ação Contagem),"v0.3.2: contagem às cegas de materiais (abrir com quem conta, por lugar, recontagem sugerida, decisão, saída esquecida = erro de lançamento); vidrarias e equipamentos no inventário geral ficam no EFClaudian"
 Janela Meu perfil (openMeuPerfil),Administração,should,sim,nao,,rascunho automático; prioridade a revisar
 Janela Sheet (openSheet),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
 Janela Colunas (openColunas),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
@@ -151,17 +151,17 @@ Janela Conferência · (openEqConf),Almoxarifado,should,sim,nao,,rascunho autom�
 Janela Eq (openEq),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
 Janela Eq Form (openEqForm),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
 Janela Eq Ev (openEqEv),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Calibração · (openEqCal),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Solicitação de calibração (openCalNova),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Calibração · (openEqCal),Almoxarifado,should,sim,sim,,v0.3.3 calibracao.js
+Janela Solicitação de calibração (openCalNova),Almoxarifado,should,sim,sim,,v0.3.3 calibracao.js
 Janela Cal (openCal),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Cotação · (openCalCot),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Calibrado · (openCalReal),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Solicitações de calibração (openCalLista),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Cotação · (openCalCot),Almoxarifado,should,sim,sim,,v0.3.3 calibracao.js
+Janela Calibrado · (openCalReal),Almoxarifado,should,sim,sim,,v0.3.3 calibracao.js
+Janela Solicitações de calibração (openCalLista),Almoxarifado,should,sim,sim,,v0.3.3 calibracao.js
 Janela Emitir solicitação de compra (openRcEmitir),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Contar · (openInvContar),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Inv Item (openInvItem),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Conferir · (openInvConf),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Inv Res (openInvRes),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Contar · (openInvContar),Almoxarifado,should,sim,sim,,v0.3.2 contagem.js
+Janela Inv Item (openInvItem),Almoxarifado,should,sim,sim,,v0.3.2 contagem.js
+Janela Conferir · (openInvConf),Almoxarifado,should,sim,sim,,v0.3.2 contagem.js
+Janela Inv Res (openInvRes),Almoxarifado,should,sim,sim,,v0.3.2 contagem.js
 Janela Quantidade · (openEqQtd),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
 Janela Frequência da contagem e do inventário (openInvFreq),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
 Janela Inv Novo (openInvNovo),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar

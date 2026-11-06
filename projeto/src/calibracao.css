@@ -1,0 +1,59 @@
+/* EFCwork · calibracao.css — ciclo da calibração. Prefixo: cb- */
+.cb-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(340px,100%),1fr));gap:12px}
+.cb-card{display:flex;flex-direction:column;gap:6px;padding:14px 16px;text-align:left;cursor:pointer;color:var(--tx);font:inherit}
+.cb-card:hover{border-color:var(--a)}
+.cb-ch{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.cb-ch b{font-family:var(--fh);font-size:18px;font-weight:600;white-space:nowrap}
+.cb-card>small{color:var(--tx2);font-size:13px}
+/* etapas pequenas (cartão e histórico) */
+.cb-mini{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+.cb-mini li{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--tx3);min-width:0}
+.cb-mini li i{height:5px;border-radius:3px;background:var(--bg2)}
+.cb-mini li span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cb-mini li.ok i{background:var(--ouro)}.cb-mini li.ok{color:var(--tx2)}
+.cb-mini li.at i{background:var(--wa)}.cb-mini li.at{color:var(--tx);font-weight:600}
+/* linha do tempo na gaveta */
+.cb-tl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.cb-tl li{display:flex;gap:12px;position:relative;padding-bottom:14px}
+.cb-tl li:last-child{padding-bottom:0}
+.cb-tl li::before{content:"";position:absolute;left:13px;top:28px;bottom:2px;width:2px;background:var(--bd)}
+.cb-tl li:last-child::before{display:none}
+.cb-tl li.ok::before{background:var(--a)}
+.cb-n{width:28px;height:28px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:13px;font-weight:700;background:var(--bg2);color:var(--tx3);border:1px solid var(--bd2);position:relative;z-index:1}
+.cb-n .ic{width:15px;height:15px}
+.cb-tl li.ok .cb-n{background:var(--ouro);color:var(--onOuro);border-color:transparent}
+.cb-tl li.at .cb-n{background:var(--waS);color:var(--wa);border-color:var(--wa)}
+.cb-tl li>div{display:flex;flex-direction:column;gap:1px;min-width:0;padding-top:3px}
+.cb-tl b{font-weight:600;font-size:15px}
+.cb-tl b em{font-style:normal;font-weight:500;color:var(--tx2);font-size:13px;margin-left:4px}
+.cb-tl span{font-size:14px;color:var(--tx2)}
+.cb-tl small{font-size:12px;color:var(--tx3)}
+.cb-tl li:not(.ok):not(.at) b{color:var(--tx3);font-weight:500}
+.cb-agora{color:var(--wa)!important;font-weight:600}
+.cb-obs{margin:0;font-size:14px;color:var(--tx2)}
+.cb-its{display:flex;flex-direction:column;border:1px solid var(--bd);border-radius:var(--rs);overflow:hidden}
+.cb-it{display:flex;justify-content:space-between;gap:10px;padding:9px 12px;border:0;border-bottom:1px solid var(--bd);background:var(--bg1);text-align:left;cursor:pointer;color:var(--tx);font:inherit}
+.cb-it:last-child{border-bottom:0}
+.cb-it:hover{background:var(--bg2)}
+.cb-it.ok{box-shadow:inset 3px 0 0 var(--ok)}
+.cb-itn,.cb-itd{display:flex;flex-direction:column;min-width:0}
+.cb-itd{align-items:flex-end;text-align:right}
+.cb-it b{font-weight:600;font-size:14px}
+.cb-it small{font-size:12px;color:var(--tx3)}
+/* nova solicitação */
+.cb-selh{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.cb-ck{gap:10px}
+.cb-ck>span:nth-child(2){flex:1;min-width:0}
+.cb-ck[disabled]{opacity:.55;cursor:not-allowed}
+.cb-box{width:20px;height:20px;border-radius:5px;border:1.5px solid var(--bd2);display:grid;place-items:center;flex:none;background:var(--bg0)}
+.cb-box .ic{width:14px;height:14px}
+.cb-ck.on .cb-box{background:var(--ouro);border-color:transparent;color:var(--onOuro)}
+/* histórico no equipamento */
+.cb-hq{display:flex;flex-direction:column;gap:8px}
+.cb-hc{display:flex;flex-direction:column;gap:8px;padding:10px 12px;border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg0);text-align:left;color:var(--tx);font:inherit;cursor:pointer}
+div.cb-hc{cursor:default}
+.cb-hc.at{border-color:var(--wa)}
+.cb-hh{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.cb-hh b{font-weight:600}
+.cb-hc .gv-fl{font-size:13px;grid-template-columns:130px minmax(0,1fr)}
+.cb-hc .cb-mini{margin:0}
