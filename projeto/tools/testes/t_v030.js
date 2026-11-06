@@ -222,7 +222,7 @@ const movs = (p, f) => p.evaluate(f => S.almMov.filter(new Function('m', 'return
   await p.click('.tb-t tbody tr:has-text("Luva")'); await p.waitForTimeout(120); await p.click('#gv .gv-pe [data-act="lc-sai"]'); await p.waitForTimeout(120);
   await dd(p, 'lc:motivo', 'Escrever outro motivo').catch(() => {});
   await p.screenshot({ path: path.join(SHOTS, 'v030-pc-claro-saida.png') });
-  await p.click('[data-act="gv-fecha"]'); await p.click('[data-act="gv-fecha"]').catch(() => {});
+  await p.click('[data-act="gv-fecha"]'); await p.click('[data-act="cf-sim"]'); await p.waitForTimeout(150); await p.click('[data-act="gv-fecha"]').catch(() => {}); await p.waitForTimeout(150); /* v0.3.1: formulário preenchido pergunta antes de descartar */
   await p.click('.cs-acts [data-act="lc-ent"]'); await p.waitForTimeout(100); await p.click('#gv .fm-pki:has-text("Luva")'); await p.click('[data-act="lc-ent-add"]'); await p.click('#gv .fm-pki:has-text("Água")'); await p.waitForTimeout(100);
   await p.screenshot({ path: path.join(SHOTS, 'v030-pc-claro-entrada.png') });
   await p.click('[data-act="gv-fecha"]');

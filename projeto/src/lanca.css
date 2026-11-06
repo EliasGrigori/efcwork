@@ -53,3 +53,5 @@ textarea.fm-i{height:auto;min-height:64px;padding:9px 12px;resize:vertical}
 .gv-pe .bt.pr{margin-left:auto}
 .gv-pe .bt.pr~.bt.pr{margin-left:0}
 @media(max-width:899px){.fm-g{grid-template-columns:1fr}}
+.fm-fav{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
+.fm-fav .fm-c{flex:1 1 220px}

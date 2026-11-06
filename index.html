@@ -103,7 +103,7 @@ h1,h2,h3{font-family:var(--fh);font-weight:600;letter-spacing:-.01em;margin:0}
 .vazio b{color:var(--tx);font-weight:600}
 
 /* avisos */
-.av-pilha{position:fixed;left:50%;transform:translateX(-50%);bottom:max(16px,env(safe-area-inset-bottom,0px));z-index:60;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+.av-pilha{position:fixed;left:50%;transform:translateX(-50%);width:max-content;max-width:calc(100vw - 32px);bottom:max(16px,env(safe-area-inset-bottom,0px));z-index:60;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
 .av{pointer-events:auto;background:var(--tx);color:var(--bg1);padding:10px 14px;border-radius:8px;font-size:14px;display:flex;gap:12px;align-items:center;box-shadow:0 8px 24px rgba(0,0,0,.25);transition:opacity .3s}
 .av.erro{background:var(--cr);color:#fff}
 .av.sai{opacity:0}
@@ -147,8 +147,8 @@ h1,h2,h3{font-family:var(--fh);font-weight:600;letter-spacing:-.01em;margin:0}
 .cs-sync{font-size:13px;color:var(--ok);display:flex;align-items:center;gap:6px;white-space:nowrap}
 .cs-sync i{width:7px;height:7px;border-radius:50%;background:var(--ok);display:inline-block}
 .cs-sync.off{color:var(--wa)}.cs-sync.off i{background:var(--wa)}
-.cs-ct{flex:1;padding:20px 28px 28px;display:flex;flex-direction:column;gap:16px;max-width:1440px;width:100%}
-.cs-rod{padding:14px 28px 90px;font-size:12px;color:var(--tx3)}
+.cs-ct{flex:1;padding:20px 20px 28px;display:flex;flex-direction:column;gap:16px;width:100%}
+.cs-rod{padding:14px 20px 90px;font-size:12px;color:var(--tx3)}
 @media(min-width:900px){.cs-rod{padding-bottom:18px}}
 /* cabeçalho de página */
 .cs-ph{display:flex;flex-direction:column;gap:6px}
@@ -193,6 +193,13 @@ h1,h2,h3{font-family:var(--fh);font-weight:600;letter-spacing:-.01em;margin:0}
   .cs-baixo .on{color:var(--aTx);font-weight:600}
 }
 @media(prefers-reduced-motion:reduce){.cs-lado{transition:none}}
+/* aviso antes de descartar (camadas) */
+.cf-fundo{position:fixed;inset:0;z-index:90;background:rgba(10,10,20,.42);display:grid;place-items:center;padding:16px}
+.cf-caixa{width:min(400px,100%);background:var(--bg1);border:1px solid var(--bd2);border-radius:12px;box-shadow:0 24px 60px rgba(0,0,0,.3);padding:20px;display:flex;flex-direction:column;gap:8px}
+.cf-ic{width:36px;height:36px;border-radius:9px;display:grid;place-items:center;background:var(--waS);color:var(--wa)}
+.cf-caixa h2{font-size:20px}
+.cf-caixa p{margin:0;color:var(--tx2)}
+.cf-bts{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:8px}
 
 /* ===== tabela.css ===== */
 /* EFCwork · tabela.css — tabela padrão, janela retrátil, gaveta e impressão. Prefixos: tb-, dd-, gv- */
@@ -245,9 +252,18 @@ h1,h2,h3{font-family:var(--fh);font-weight:600;letter-spacing:-.01em;margin:0}
 .dd-l li:hover,.dd-l li:focus{background:var(--bg2);outline:none}
 .dd-l li[aria-selected="true"]{color:var(--aTx);font-weight:600}
 .dd-l li .ic{width:15px;height:15px}
+.dd-l li[data-rm]{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.dd-l li.dd-pega{opacity:.45}
+.dd-l li.dd-dica{cursor:default;min-height:0;padding:6px 10px 4px;font-size:12px;color:var(--tx3);white-space:normal;border-top:1px solid var(--bd);margin-top:4px}
+.dd-l li.dd-dica:hover{background:transparent}
+body.dd-arrastando{cursor:grabbing;-webkit-user-select:none;user-select:none}
+.dd-lixo{position:fixed;z-index:95;width:96px;height:64px;border-radius:10px;border:2px dashed var(--cr);background:var(--bg1);color:var(--cr);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.2)}
+.dd-lixo .ic{width:22px;height:22px}
+.dd-lixo.on{background:var(--cr);color:var(--onCr);border-style:solid;transform:scale(1.06)}
+.dd-fant{position:fixed;z-index:96;pointer-events:none;max-width:240px;padding:6px 10px;border-radius:6px;background:var(--bg1);border:1px solid var(--bd2);box-shadow:0 8px 24px rgba(0,0,0,.25);font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 /* gaveta */
 .gv{position:fixed;top:0;right:0;bottom:0;width:min(420px,100vw);background:var(--bg1);border-left:1px solid var(--bd);box-shadow:-14px 0 34px rgba(0,0,0,.14);display:flex;flex-direction:column;z-index:30;padding-top:env(safe-area-inset-top,0px)}
-:root[data-tema="escuro"] .gv{background:rgba(18,21,36,.98);border-left-color:rgba(217,180,106,.16)}
+:root[data-tema="escuro"] .gv{background:var(--bg1);border-left-color:rgba(217,180,106,.16)}
 .gv-cab{display:flex;gap:10px;align-items:flex-start;padding:16px 18px 12px;border-bottom:1px solid var(--bd)}
 .gv-tx{flex:1;min-width:0}
 .gv-tx small{color:var(--tx3);font-size:13px}
@@ -269,7 +285,7 @@ h1,h2,h3{font-family:var(--fh);font-weight:600;letter-spacing:-.01em;margin:0}
 .gv-tl small{display:block;color:var(--tx3);font-size:13px}
 .gv-lotes{display:flex;flex-direction:column;gap:6px}
 .gv-lote{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:7px 10px;border:1px solid var(--bd);border-radius:var(--rs);font-size:14px;background:var(--bg0)}
-@media(min-width:1200px){body.gv-aberta .cs-ct{padding-right:448px}}
+@media(min-width:900px){.gv{top:56px}}
 @media(max-width:899px){.gv{width:100vw;border-left:0}.tb-busca{width:100%}.tb-pf{min-width:0;flex:1 1 160px}}
 /* impressão */
 #tb-imp{display:none}
@@ -285,6 +301,8 @@ h1,h2,h3{font-family:var(--fh);font-weight:600;letter-spacing:-.01em;margin:0}
   #tb-imp .imp-pe{margin-top:8pt;font-size:8pt;color:#555}
   @page{size:A4 landscape;margin:12mm}
 }
+.gv-corpo p.tb-nada{margin:0}
+@media(min-width:1200px){body.gv-aberta .cs-ct{padding-right:440px}} /* v0.3.1, pedido do Elias 06/11: a tabela recua quando a gaveta abre, com a margem curta (20 px) */
 
 /* ===== almox.css ===== */
 /* EFCwork · almox.css — Prefixo: al- */
@@ -357,6 +375,8 @@ textarea.fm-i{height:auto;min-height:64px;padding:9px 12px;resize:vertical}
 .gv-pe .bt.pr{margin-left:auto}
 .gv-pe .bt.pr~.bt.pr{margin-left:0}
 @media(max-width:899px){.fm-g{grid-template-columns:1fr}}
+.fm-fav{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
+.fm-fav .fm-c{flex:1 1 220px}
 
 /* ===== sino.css ===== */
 /* EFCwork · sino.css — avisos e pedidos na gaveta. Prefixo: sn- (e o número no sino: cs-bdg) */
@@ -480,7 +500,7 @@ textarea.fm-i{height:auto;min-height:64px;padding:9px 12px;resize:vertical}
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.3.0';
+const VERSAO = '0.3.1';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -533,7 +553,10 @@ const Store = (function () {
 })();
 
 let DEMO = /[?&]demo=1/.test(location.search) || /(^|#|&)demo(=1)?($|&)/.test(location.hash) || Store.get('sv2-demo') === '1';
-const PERFIS = { principal: 'Principal', principal_temp: 'Principal temporário', secundario: 'Secundário', visitante: 'Visitante' };
+/* nomes dos perfis na tela (pedido do Elias 05/11: trocar "Secundário"). O valor gravado no Firebase não muda (principal, principal_temp,
+   secundario + estrela, visitante): o EFClaudian continua lendo igual. Proposta A em aprovação: Administrador · Líder · Colaborador · Consulta. */
+const PERFIL_NOMES = { principal: 'Administrador', principal_temp: 'Administrador temporário', lider: 'Líder', secundario: 'Colaborador', visitante: 'Consulta' };
+const PERFIS = { principal: PERFIL_NOMES.principal, principal_temp: PERFIL_NOMES.principal_temp, secundario: PERFIL_NOMES.secundario, visitante: PERFIL_NOMES.visitante };
 
 /* ============ AJUDANTES ============ */
 const $ = (s, r) => (r || document).querySelector(s);
@@ -547,7 +570,7 @@ const hojeISO = () => { const d = new Date(); return d.getFullYear() + '-' + pad
 const clean = o => JSON.parse(JSON.stringify(o));
 function slugLogin(s) { return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim().replace(/\s+/g, '.').replace(/[^a-z0-9._-]/g, ''); }
 const emailOf = login => slugLogin(login) + '@efclaudian.app';
-const perfilLabel = u => !u ? '' : (PERFIS[u.perfil] || u.perfil) + (u.perfil === 'secundario' && u.estrela ? ' ★' : '');
+const perfilLabel = u => !u ? '' : u.perfil === 'secundario' && u.estrela ? PERFIL_NOMES.lider : (PERFIL_NOMES[u.perfil] || u.perfil);
 const isPrincipal = u => !!u && (u.perfil === 'principal' || u.perfil === 'principal_temp');
 const DIAS = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'];
 const MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
@@ -846,7 +869,43 @@ function csLeRota() {
   return { area: a, aba: aba };
 }
 function ir(area, aba) { const h = '#/' + area + (aba ? '/' + aba : ''); if (location.hash !== h) location.hash = h; else render(); }
-window.addEventListener('hashchange', () => { S.rota = csLeRota(); csUso(); csFechaMenu(); if (S._gvNav) S._gvNav = false; else { S.gv = null; S.gvForm = false; S.fm = null; S._alSel = null; const g = $('#gv'); if (g) g.remove(); document.body.classList.remove('gv-aberta'); } render(); try { window.scrollTo(0, 0); } catch {} });
+window.addEventListener('hashchange', () => { S.rota = csLeRota(); csUso(); csFechaMenu(); S.camadas = S.camadas.filter(c => c.nome !== 'menu'); if (S._gvNav) S._gvNav = false; else { S.gv = null; S.gvForm = false; S.fm = null; S._alSel = null; S.camadas = []; const g = $('#gv'); if (g) g.remove(); document.body.classList.remove('gv-aberta'); } render(); try { window.scrollTo(0, 0); } catch {} });
+
+/* ---------- camadas (pedido do Elias, 05/11): cada coisa aberta por cima — gaveta, formulário, lista de escolher, busca, menu do celular —
+   é uma camada. Esc, o X e o voltar do celular fecham SÓ a de cima. Formulário com algo preenchido pergunta antes de descartar. ---------- */
+S.camadas = []; S._ignPop = 0;
+function csCamadaAbre(nome, fechar) { S.camadas.push({ nome: nome, fechar: fechar }); S._camHash = location.hash; try { history.pushState({ cw: S.camadas.length }, ''); } catch {} }
+const csTemCamada = nome => S.camadas.some(c => c.nome === nome);
+/* a tela fechou a camada sozinha (gravou, escolheu): tira da pilha e devolve o histórico; "depois" roda quando o navegador terminar de voltar */
+function csCamadaSaiu(nome, depois) {
+  const k = S.camadas.map(c => c.nome).lastIndexOf(nome); if (k < 0) { if (depois) depois(); return; }
+  const n = S.camadas.length - k; S.camadas.splice(k); S._ignPop++; S._aposPop = depois || null;
+  clearTimeout(S._popT); S._popT = setTimeout(() => { if (S._ignPop > 0) { S._ignPop = 0; const f = S._aposPop; S._aposPop = null; if (f) f(); } }, 400);
+  try { history.go(-n); } catch { S._ignPop = 0; const f = S._aposPop; S._aposPop = null; if (f) f(); }
+}
+function csVolta() { if (csConfirmaAberto()) { csConfirmaFecha(false); return; } if (S.camadas.length) { try { history.back(); } catch { csPop(); } } }
+function csPop() {
+  const c = S.camadas.pop(); if (!c) return; let ok = true;
+  try { ok = c.fechar() !== false; } catch (e) { console.error(e); }
+  if (!ok) { S.camadas.push(c); try { history.pushState({ cw: S.camadas.length }, ''); } catch {} }
+}
+window.addEventListener('popstate', () => {
+  if (S._ignPop > 0) { S._ignPop--; clearTimeout(S._popT); const f = S._aposPop; S._aposPop = null; if (f) f(); return; }
+  if (location.hash !== S._camHash) return; /* foi troca de tela: quem cuida é o hashchange */
+  if (csConfirmaAberto()) { csConfirmaFecha(false); try { history.pushState({ cw: S.camadas.length }, ''); } catch {} return; }
+  csPop();
+});
+/* aviso antes de perder o que foi preenchido */
+const csConfirmaAberto = () => !!$('#cf');
+function csConfirma(o, aoSim) {
+  if ($('#cf')) return; S._cfSim = aoSim;
+  const d = document.createElement('div'); d.id = 'cf'; d.className = 'cf-fundo';
+  d.innerHTML = '<div class="cf-caixa" role="alertdialog" aria-modal="true" aria-labelledby="cf-t" aria-describedby="cf-x"><span class="cf-ic">' + ic('alerta') + '</span><h2 id="cf-t">' + esc(o.titulo) + '</h2><p id="cf-x">' + esc(o.texto) + '</p><div class="cf-bts"><button type="button" class="bt" data-act="cf-sim">' + esc(o.sim) + '</button><button type="button" class="bt pr" data-act="cf-nao">' + esc(o.nao) + '</button></div></div>';
+  document.body.appendChild(d); setTimeout(() => { const b = $('#cf [data-act="cf-nao"]'); if (b) b.focus(); }, 0);
+}
+function csConfirmaFecha(sim) { const d = $('#cf'); if (d) d.remove(); const f = S._cfSim; S._cfSim = null; if (sim && f) f(); }
+document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('[data-act^="cf-"]'); if (t) csConfirmaFecha(t.getAttribute('data-act') === 'cf-sim'); else if (e.target && e.target.id === 'cf') csConfirmaFecha(false); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && csConfirmaAberto()) { e.preventDefault(); e.stopImmediatePropagation(); csConfirmaFecha(false); } }, true);
 
 /* ---------- "onde você estava" e "mais usadas" (como no EFClaudian v2.102.59; só neste aparelho, por pessoa) ---------- */
 function csUsoLer() { try { const o = JSON.parse(Store.get('cw-uso-' + ((S.user && S.user.id) || '')) || '{}'); return { n: o.n || {}, r: Array.isArray(o.r) ? o.r : [] }; } catch { return { n: {}, r: [] }; } }
@@ -921,18 +980,17 @@ document.addEventListener('click', e => {
   const t = e.target.closest && e.target.closest('[data-act]'); if (!t) return;
   const a = t.getAttribute('data-act');
   if (a === 'cs-tema') csTrocaTema(csTema() === 'escuro' ? 'claro' : 'escuro');
-  else if (a === 'cs-menu') { const x = $('.cs-app'); if (x) x.classList.toggle('menu-aberto'); }
-  else if (a === 'cs-fecha') csFechaMenu();
+  else if (a === 'cs-menu') { const x = $('.cs-app'); if (!x) return; if (x.classList.contains('menu-aberto')) csVolta(); else { x.classList.add('menu-aberto'); csCamadaAbre('menu', csFechaMenu); } }
+  else if (a === 'cs-fecha') csVolta();
   else if (a === 'cs-sair') csSair();
   else if (a === 'cs-emp') ir('adm', 'empresa');
   else if (a === 'cs-sino') snAbrir();
 });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') csFechaMenu(); });
 
 /* ---------- sessão ---------- */
 async function csSair() {
   try { await Data.auth.signOut(); } catch (e) { try { await Data.auth.forcarSaida(); } catch {} }
-  S.user = null; S.gv = null; S.gvForm = false; S.fm = null; S.users = []; S.notifs = []; S.aprov = []; { const g = $('#gv'); if (g) g.remove(); } S._desl.forEach(f => { try { f(); } catch {} }); S._desl = []; location.hash = '#/inicio'; render();
+  S.user = null; S.gv = null; S.gvForm = false; S.fm = null; S.camadas = []; S.users = []; S.notifs = []; S.aprov = []; { const g = $('#gv'); if (g) g.remove(); } S._desl.forEach(f => { try { f(); } catch {} }); S._desl = []; location.hash = '#/inicio'; render();
 }
 function csOuve(col, cb, o) { const off = Data.col(col).watch(cb, o); S._desl.push(off); return off; }
 async function csCarregaUsuario(uidAtual) {
@@ -1059,7 +1117,7 @@ const Aprov = {
   async pedir(p) {
     const u = S.user; if (!u) return null;
     const para = semAusentes((Array.isArray(p.para) && p.para.length) ? p.para : supsOf(u));
-    if (!para.length) { aviso('Você ainda não tem superior cadastrado. Fale com o Principal.', 'erro'); return null; }
+    if (!para.length) { aviso('Você ainda não tem superior cadastrado. Fale com o Administrador.', 'erro'); return null; }
     const o = { ts: nowISO(), tipo: p.tipo || 'geral', titulo: p.titulo, descricao: p.descricao || '', solicitanteId: u.id, solicitanteNome: u.nome, solicitantePerfil: u.perfil,
       paraIds: para, paraNomes: para.map(nomeDe), status: 'pendente', decisao: null, refTipo: p.refTipo || '', refId: p.refId || '', payload: p.payload || null };
     const id = await Data.col('sv2_aprov').add(o);
@@ -1080,7 +1138,7 @@ const Aprov = {
   async decidir(id, ok, motivo) {
     const a = S.aprov.find(x => x.id === id); if (!a) return false;
     if (a.status !== 'pendente') { aviso('Esse pedido já foi decidido por ' + ((a.decisao && a.decisao.nome) || 'outra pessoa') + '.'); return false; }
-    if (!Aprov.podeDecidir(a)) { aviso('Só quem foi indicado como superior (ou o Principal) pode decidir.', 'erro'); return false; }
+    if (!Aprov.podeDecidir(a)) { aviso('Só quem foi indicado como superior (ou o Administrador) pode decidir.', 'erro'); return false; }
     if (!APROV_APLICA[a.tipo]) { aviso('Este pedido ainda é decidido no EFClaudian.', 'erro'); return false; }
     if (!ok && !motivo) { aviso('Escreva o motivo da reprovação.', 'erro'); return false; }
     const dec = { por: S.user.id, nome: S.user.nome, perfil: S.user.perfil, ts: nowISO(), motivo: motivo || '' };
@@ -1219,19 +1277,58 @@ function tbHTML(cfg) {
 }
 
 /* ---------- janela retrátil (escolha de opção) ---------- */
-function ddHTML(id, valor, opcoes) {
-  const at = opcoes.find(o => o[0] === valor) || opcoes[0];
+/* o = { remover: true } → as opções podem sair da lista: segurar 1,5 s e arrastar até a lixeira que aparece ao lado (DD_RM[prefixo]) */
+function ddHTML(id, valor, opcoes, o) {
+  const at = opcoes.find(x => x[0] === valor) || opcoes[0], rm = o && o.remover;
   return '<div class="dd" data-dd="' + esc(id) + '"><button type="button" class="dd-b" data-act="dd-abre" aria-haspopup="listbox" aria-expanded="false"><span>' + esc(at[1]) + '</span>' + ic('seta', 'dd-s') + '</button>' +
-    '<ul class="dd-l" role="listbox" hidden>' + opcoes.map(o => '<li role="option" data-act="dd-v" data-v="' + esc(o[0]) + '" aria-selected="' + (o[0] === at[0]) + '" tabindex="0">' + esc(o[1]) + (o[0] === at[0] ? ic('ok') : '') + '</li>').join('') + '</ul></div>';
+    '<ul class="dd-l" role="listbox" hidden>' + opcoes.map(x => '<li role="option" data-act="dd-v" data-v="' + esc(x[0]) + '"' + (rm && x[0] && x[0].indexOf('__') !== 0 ? ' data-rm="1"' : '') + ' aria-selected="' + (x[0] === at[0]) + '" tabindex="0">' + esc(x[1]) + (x[0] === at[0] ? ic('ok') : '') + '</li>').join('') +
+    (rm && opcoes.some(x => x[0] && x[0].indexOf('__') !== 0) ? '<li class="dd-dica" aria-hidden="true">Para tirar da lista: segure 1,5 s e arraste até a lixeira</li>' : '') + '</ul></div>';
 }
 const DD_AO = {}; /* DD_AO['prefixo'] = (resto do id, valor) => ... */
+const DD_RM = {}; /* DD_RM['prefixo'] = (resto do id, valor) => ... (tirou da lista) */
+/* segurar e arrastar para a lixeira (mouse e dedo) */
+const DD_SEGURA = 1500;
+let ddPr = null;
+function ddPrLimpa() { if (!ddPr) return; clearTimeout(ddPr.t); if (ddPr.fant) ddPr.fant.remove(); if (ddPr.lixo) ddPr.lixo.remove(); if (ddPr.li) ddPr.li.classList.remove('dd-pega'); document.body.classList.remove('dd-arrastando'); ddPr = null; }
+function ddPrComeca() {
+  const p = ddPr; if (!p) return; p.drag = true;
+  try { if (navigator.vibrate) navigator.vibrate(30); } catch {}
+  p.li.classList.add('dd-pega'); document.body.classList.add('dd-arrastando');
+  const r = p.li.closest('.dd-l').getBoundingClientRect(), lx = document.createElement('div'); lx.className = 'dd-lixo'; lx.innerHTML = ic('lixo') + '<span>Solte aqui</span>';
+  document.body.appendChild(lx); const lw = lx.offsetWidth || 96, lh = lx.offsetHeight || 64;
+  let x = r.right + 12, y = r.top + Math.min(r.height, 220) / 2 - lh / 2;
+  if (x + lw > innerWidth - 8) { x = Math.max(8, Math.min(innerWidth - lw - 8, r.left + r.width / 2 - lw / 2)); y = r.bottom + 12; if (y + lh > innerHeight - 8) y = Math.max(8, r.top - lh - 12); }
+  lx.style.left = x + 'px'; lx.style.top = y + 'px'; p.lixo = lx;
+  const f = document.createElement('div'); f.className = 'dd-fant'; f.textContent = p.li.textContent; document.body.appendChild(f); p.fant = f; ddPrMove(p.x, p.y);
+}
+function ddPrMove(x, y) {
+  const p = ddPr; if (!p || !p.drag) return; p.x = x; p.y = y;
+  p.fant.style.left = (x + 10) + 'px'; p.fant.style.top = (y - 18) + 'px';
+  const r = p.lixo.getBoundingClientRect(); p.sobre = x >= r.left - 6 && x <= r.right + 6 && y >= r.top - 6 && y <= r.bottom + 6; p.lixo.classList.toggle('on', p.sobre);
+}
+document.addEventListener('pointerdown', e => {
+  const li = e.target.closest && e.target.closest('.dd-l li[data-rm]'); if (!li || (e.pointerType === 'mouse' && e.button !== 0)) return;
+  ddPrLimpa(); ddPr = { li: li, x: e.clientX, y: e.clientY, x0: e.clientX, y0: e.clientY, drag: false }; ddPr.t = setTimeout(ddPrComeca, DD_SEGURA);
+});
+document.addEventListener('pointermove', e => { if (!ddPr) return; if (ddPr.drag) { e.preventDefault(); ddPrMove(e.clientX, e.clientY); } else if (Math.abs(e.clientX - ddPr.x0) > 8 || Math.abs(e.clientY - ddPr.y0) > 8) ddPrLimpa(); });
+document.addEventListener('touchmove', e => { if (ddPr && ddPr.drag) { e.preventDefault(); const t = e.touches[0]; if (t) ddPrMove(t.clientX, t.clientY); } }, { passive: false });
+document.addEventListener('pointerup', () => {
+  if (!ddPr) return; const p = ddPr;
+  if (p.drag) { S._ddEngole = true; setTimeout(() => { S._ddEngole = false; }, 0); } /* o clique que vem junto com o soltar não escolhe a opção */
+  if (p.drag && p.sobre) { const dd = p.li.closest('.dd'), nome = dd.getAttribute('data-dd'), v = p.li.getAttribute('data-v'), pf = nome.split(':')[0]; ddPrLimpa(); ddFecha(); if (DD_RM[pf]) DD_RM[pf](nome.slice(pf.length + 1), v); return; }
+  ddPrLimpa();
+});
+document.addEventListener('pointercancel', () => { if (ddPr && !ddPr.drag) ddPrLimpa(); });
+document.addEventListener('contextmenu', e => { if (e.target.closest && e.target.closest('.dd-l li[data-rm]')) e.preventDefault(); });
 function ddFecha() { $$('.dd-l').forEach(l => { l.hidden = true; const b = l.previousElementSibling; if (b) b.setAttribute('aria-expanded', 'false'); }); }
 
 /* ---------- gaveta de detalhe (PC: à direita; celular: tela cheia) ---------- */
 S.gv = null; S.gvForm = false;
 /* gaveta de formulário (S.gvForm): não é redesenhada quando os dados mudam, para não perder o que a pessoa digita; só com gvDesenha(true) */
-function gvAbrir(fn, form) { S.gv = fn; S.gvForm = !!form; gvDesenha(true); }
-function gvFechar() { S.gv = null; S.gvForm = false; S.fm = null; const g = $('#gv'); if (g) g.remove(); document.body.classList.remove('gv-aberta'); try { render(); } catch {} }
+function gvAbrir(fn, form) { if (!S.camadas.length) csCamadaAbre('gv', gvFecharSo); S.gv = fn; S.gvForm = !!form; gvDesenha(true); }
+/* fechar como a pessoa fecha (X, Esc): volta uma camada */
+function gvFechar() { if (S.camadas.length) csVolta(); else gvFecharSo(); }
+function gvFecharSo() { S.gv = null; S.gvForm = false; S.fm = null; S._alSel = null; const g = $('#gv'); if (g) g.remove(); document.body.classList.remove('gv-aberta'); try { render(); } catch {} }
 function gvDesenha(forca) {
   let g = $('#gv'); if (!S.gv) { if (g) g.remove(); return; }
   if (S.gvForm && g && !forca) return;
@@ -1286,11 +1383,12 @@ document.addEventListener('click', e => {
   const a = t.getAttribute('data-act'), id = t.getAttribute('data-tb');
   if (a === 'dd-abre') { const l = t.nextElementSibling, ab = l.hidden; ddFecha(); l.hidden = !ab; t.setAttribute('aria-expanded', String(ab)); if (ab) { const s = l.querySelector('[aria-selected="true"]') || l.querySelector('li'); if (s) s.focus(); } return; }
   if (a === 'dd-v') {
+    if (S._ddEngole) return; /* foi segurar e arrastar, não escolher */
     const dd = t.closest('.dd'), nome = dd.getAttribute('data-dd'), v = t.getAttribute('data-v'); ddFecha();
     if (nome.indexOf('tbf:') === 0) { const p = nome.split(':'), st = tbEstado(p[1]); st.filtros[p[2]] = v; st.limite = 100; render(); return; }
     const pf = nome.split(':')[0]; if (DD_AO[pf]) DD_AO[pf](nome.slice(pf.length + 1), v); return;
   }
-  if (a === 'gv-fecha') { if (S.fm && S.fm.volta) { const v = S.fm.volta; S.fm = null; S.gvForm = false; v(); } else gvFechar(); return; }
+  if (a === 'gv-fecha') { gvFechar(); return; }
   const st = id ? tbEstado(id) : null;
   if (a === 'tb-ord') { const k = t.getAttribute('data-k'); st.ordem = st.ordem && st.ordem.k === k ? (st.ordem.dir === 'asc' ? { k: k, dir: 'desc' } : null) : { k: k, dir: 'asc' }; render(); }
   else if (a === 'tb-painel') { st.painel = !st.painel; st.colsAberto = false; render(); }
@@ -1302,7 +1400,7 @@ document.addEventListener('click', e => {
   else if (a === 'tb-lin') { const cfg = TB[id]; if (cfg && cfg.aoClicar) cfg.aoClicar(t.getAttribute('data-id')); }
 });
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { if ($$('.dd-l:not([hidden])').length) { ddFecha(); return; } if (S.gv && !(e.target.closest && e.target.closest('input,textarea'))) { const x = $('[data-act="gv-fecha"]'); if (x) x.click(); else gvFechar(); } }
+  if (e.key === 'Escape') { if ($$('.dd-l:not([hidden])').length) { ddFecha(); return; } if (S.camadas.length) { e.preventDefault(); csVolta(); } }
   if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('[data-act="dd-v"], tr[data-act="tb-lin"]')) { e.preventDefault(); e.target.click(); }
 });
 
@@ -1663,21 +1761,21 @@ function alCritAvisar(itens, movId) {
 const alCritNovo = vencConfirmado => vencConfirmado ? { st: 'confirmada', porId: S.user.id, porNome: S.user.nome, ts: nowISO(), vencido: true, proprio: true } : { st: 'pendente' };
 function alCritTxt(c) {
   if (!c) return '';
-  if (c.st === 'pendente') return 'Aguardando a confirmação do líder ★ (ou de quem tem Controle do almoxarifado)';
+  if (c.st === 'pendente') return 'Aguardando a confirmação do Líder (ou de quem tem Controle do almoxarifado)';
   if (c.st === 'confirmada') return 'Confirmada por ' + (c.porNome || '') + ' em ' + fmtDT(c.ts) + (c.proprio ? ' (quem lançou)' : '') + (c.vencido ? ' · lote vencido liberado pelo líder' : '');
   return 'Não confere: ' + (c.motivo || '') + ' · ' + (c.porNome || '') + ' em ' + fmtDT(c.ts);
 }
 
 /* ---------- motivos: os da configuração (ou uma lista simples), os que a equipe mais usou em 90 dias e os guardados pela pessoa ---------- */
 function alPref() { const p = S.almPref || {}; return { motivos: Array.isArray(p.motivos) ? p.motivos : [], ocultos: Array.isArray(p.ocultos) ? p.ocultos : [], uso: p.uso && typeof p.uso === 'object' ? p.uso : {} }; }
-function alPrefGravar(patch) { const p = Object.assign({}, alPref(), patch, { userId: S.user.id, userNome: S.user.nome, atualizadoEm: nowISO() }); S.almPref = Object.assign({ id: S.user.id }, p); return Data.col('sv2_alm_pref').set(S.user.id, p).catch(() => {}); }
+function alPrefGravar(patch) { const p = Object.assign({}, S.almPref || {}, alPref(), patch, { userId: S.user.id, userNome: S.user.nome, atualizadoEm: nowISO() }); delete p.id; S.almPref = Object.assign({ id: S.user.id }, p); return Data.col('sv2_alm_pref').set(S.user.id, p).catch(() => {}); }
 function alMotivos(ctx) {
   const pr = alPref(), cfg = S.cfgAlm && Array.isArray(S.cfgAlm.motivos) && S.cfgAlm.motivos.length ? S.cfgAlm.motivos : null;
   const lim = addDias(hojeISO(), -90), c = {};
   if (!cfg) S.almMov.forEach(m => { if (m.tipo === 'saida' && !m.anulada && m.motivo && String(m.data || '') >= lim) c[m.motivo] = (c[m.motivo] || 0) + 1; });
   const daEquipe = Object.keys(c).sort((a, b) => c[b] - c[a]).slice(0, 12);
   const base = (cfg || daEquipe.concat(ALM_MOTIVOS_BASE)).filter((m, n, l) => l.indexOf(m) === n && pr.ocultos.indexOf(m) < 0);
-  const lista = base.concat(pr.motivos.filter(m => base.indexOf(m) < 0));
+  const lista = base.concat(pr.motivos.filter(m => base.indexOf(m) < 0 && pr.ocultos.indexOf(m) < 0));
   const aqui = pr.uso[ctx || '*'] || {}, geral = pr.uso['*'] || {};
   return lista.map((m, n) => ({ m: m, n: n, a: aqui[m] || 0, g: geral[m] || 0 })).sort((x, y) => y.a - x.a || y.g - x.g || x.n - y.n).map(x => x.m);
 }
@@ -1708,7 +1806,7 @@ function lcPicker(acao, dica) {
 const lcItemEsc = (i, acao) => '<button type="button" class="fm-esc" data-act="' + acao + '"><span><b>' + esc(i.nome) + '</b><small>utilizável ' + alQ(alDisp(i.id)) + ' ' + esc(i.un || '') + (alSaldo(i.id) > alDisp(i.id) ? ' · ' + alQ(alSaldo(i.id) - alDisp(i.id)) + ' vencido' : '') + (alPorFrasco(i) && alAbertos(i.id).length ? ' · ' + alAbertos(i.id).length + ' em uso' : '') + '</small></span><span class="fm-tr">trocar</span></button>';
 function lcMotivoBl(ctx) {
   const f = S.fm, ms = alMotivos(ctx), outro = f.motivo === '__outro';
-  return lcBl('Motivo', ddHTML('lc:motivo', f.motivo || '', [['', 'Escolha o motivo']].concat(ms.map(m => [m, m])).concat([['__outro', 'Escrever outro motivo']])) +
+  return lcBl('Motivo', ddHTML('lc:motivo', f.motivo || '', [['', 'Escolha o motivo']].concat(ms.map(m => [m, m])).concat([['__outro', 'Escrever outro motivo']]), { remover: true }) +
     (outro ? lcIn('motivoTxt', f.motivoTxt, ' placeholder="Qual o motivo?"') + '<label class="fm-ck"><input type="checkbox" data-fm="guardar"' + (f.guardar !== '0' ? ' checked' : '') + '> Guardar esse motivo na minha lista</label>' : ''));
 }
 const lcDin = v => Number(v) ? Number(v).toFixed(2).replace('.', ',') : '';
@@ -1716,12 +1814,23 @@ const lcMotFinal = f => f.motivo === '__outro' ? String(f.motivoTxt || '').trim(
 /* evita gravar duas vezes com toque duplo: vale para o MESMO formulário aberto */
 function lcTravar() { const f = S.fm, a = Date.now(); if (!f) return false; if (f._trava && a - f._trava < 1200) return false; f._trava = a; return true; }
 /* abre o formulário na gaveta; "volta" é o detalhe de onde ele saiu (o X volta para ele) */
-function lcAbrir(estado, volta) { S.fm = Object.assign({ msg: '', volta: volta || null }, estado); gvAbrir(lcGaveta, true); }
-function lcFim() { const v = S.fm && S.fm.volta; S.fm = null; S.gvForm = false; if (v) v(); else gvFechar(); }
-function lcGrava(ps, okMsg) {
-  lcFim(); aviso(okMsg);
+function lcAbrir(estado, volta) { S.fm = Object.assign({ msg: '', volta: volta || null, sujo: false }, estado); csCamadaAbre('fm', lcVoltaCamada); gvAbrir(lcGaveta, true); }
+/* voltar (Esc, X, voltar do celular): com algo preenchido, pergunta antes de descartar */
+function lcVoltaCamada() {
+  const f = S.fm; if (!f) return true;
+  if (f.sujo) { csConfirma({ titulo: 'Descartar o que você preencheu?', texto: 'Se voltar agora, o que foi preenchido neste formulário será perdido.', sim: 'Descartar', nao: 'Continuar preenchendo' }, () => { if (S.fm) S.fm.sujo = false; csVolta(); }); return false; }
+  lcFimSo(); return true;
+}
+function lcFimSo() { const v = S.fm && S.fm.volta; S.fm = null; S.gvForm = false; if (v) v(); else gvFecharSo(); }
+/* depois de gravar: fecha o formulário (volta para o detalhe de onde saiu) e devolve o histórico */
+function lcFim(depois) { lcFimSo(); csCamadaSaiu('fm', depois); }
+function lcGrava(ps, okMsg, depois) {
+  lcFim(depois); aviso(okMsg);
   Promise.all(ps).catch(e => { console.error(e); aviso(svErro(e), 'erro'); });
 }
+/* lista de escolher por cima de um formulário que já tem linhas: é uma camada */
+function lcPkAbre() { const f = S.fm; f.pk = true; csCamadaAbre('pk', () => { if (S.fm) { S.fm.pk = false; gvDesenha(true); } }); gvDesenha(true); }
+function lcPkSai() { const f = S.fm; f.pk = false; if (csTemCamada('pk')) csCamadaSaiu('pk'); gvDesenha(true); }
 /* superior aplica na hora; secundário vira pedido (como no EFClaudian) */
 async function lcPedirOuFazer(acao, refId, payload, titulo, descricao, okMsg) {
   const p = Object.assign({ acao: acao, refId: refId }, payload);
@@ -1768,6 +1877,43 @@ async function lcAplicar(p, aprov) {
 }
 APROV_APLICA.almox = lcAplicar;
 
+
+/* ---------- favoritos (pedido do Elias, 05/11): um favorito já traz os materiais e as quantidades, que podem ser mudados antes de lançar.
+   Vêm dos kits da configuração (sv2_cfg/almox.kits, os mesmos do EFClaudian) e dos favoritos da própria pessoa (sv2_alm_pref.favs). ---------- */
+const alItemK = k => S.almItens.find(i => i.seedK === k) || null;
+function lcFavs() {
+  const pr = S.almPref || {}, ocul = Array.isArray(pr.kitsOcultos) ? pr.kitsOcultos : [];
+  const lin = l => (l || []).map(x => { const i = x.itemId ? alItem(x.itemId) : alItemK(x.k); return i && i.ativo !== false ? { itemId: i.id, qtd: Number(x.qtd) || 0 } : null; }).filter(Boolean);
+  const kits = (S.cfgAlm && Array.isArray(S.cfgAlm.kits) ? S.cfgAlm.kits : []).filter(k => ocul.indexOf(k.id) < 0).map(k => ({ id: 'k:' + k.id, nome: k.nome, motivo: k.motivo || '', lab: k.lab || '', linhas: lin(k.itens), meu: false }));
+  const meus = (Array.isArray(pr.favs) ? pr.favs : []).map(k => ({ id: 'p:' + k.id, nome: k.nome, motivo: k.motivo || '', linhas: lin(k.itens), meu: true }));
+  return kits.concat(meus).filter(k => k.linhas.length);
+}
+function lcFavUsar(id) {
+  const f = S.fm, k = lcFavs().find(x => x.id === id); if (!f || !k) return;
+  const ms = alMotivos('kit:' + id), naLista = !k.motivo || ms.indexOf(k.motivo) >= 0;
+  Object.assign(f, { k: 'multi', favId: k.id, favNome: k.nome, favMeu: k.meu, lab: k.lab || '', linhas: k.linhas.map(l => ({ itemId: l.itemId, qtd: alQin(l.qtd) })), motivo: naLista ? k.motivo : '__outro', motivoTxt: naLista ? '' : k.motivo, pk: false, msg: '', sujo: true });
+  gvDesenha(true);
+}
+function lcFavTirar(id) {
+  const pr = alPref(), raw = S.almPref || {}, antes = { favs: (raw.favs || []).slice(), kitsOcultos: (raw.kitsOcultos || []).slice() }, k = lcFavs().find(x => x.id === id);
+  if (id.indexOf('p:') === 0) alPrefGravar({ favs: antes.favs.filter(x => 'p:' + x.id !== id), kitsOcultos: antes.kitsOcultos });
+  else alPrefGravar({ kitsOcultos: antes.kitsOcultos.concat([id.slice(2)]), favs: antes.favs });
+  void pr; gvDesenha(true);
+  aviso('"' + (k ? k.nome : 'Favorito') + '" saiu da sua lista.', 'ok', () => { alPrefGravar(antes); gvDesenha(true); });
+}
+function lcMotivoTirar(m) {
+  const pr = alPref(), antes = { motivos: pr.motivos.slice(), ocultos: pr.ocultos.slice() };
+  alPrefGravar({ motivos: pr.motivos.filter(x => x !== m), ocultos: pr.ocultos.indexOf(m) < 0 ? pr.ocultos.concat([m]) : pr.ocultos });
+  if (S.fm && S.fm.motivo === m) S.fm.motivo = '';
+  gvDesenha(true);
+  aviso('"' + m + '" saiu da sua lista de motivos.', 'ok', () => { alPrefGravar(antes); gvDesenha(true); });
+}
+DD_RM.lc = (k, v) => { if (k === 'motivo') lcMotivoTirar(v); else if (k === 'fav') lcFavTirar(v); };
+function lcFavBloco() {
+  const fs = lcFavs();
+  return '<div class="fm-fav">' + (fs.length ? lcBl('Favoritos', ddHTML('lc:fav', '', [['', 'Escolha um favorito (' + fs.length + ')']].concat(fs.map(k => [k.id, k.nome + ' · ' + k.linhas.length + ' material(is)'])), { remover: true }), 'já traz os materiais') : '') +
+    '<button type="button" class="bt" data-act="lc-multi">' + ic('lista') + 'Saída de vários materiais</button></div>';
+}
 /* ======================= formulários ======================= */
 function lcGaveta() {
   const f = S.fm; if (!f) return null;
@@ -1778,19 +1924,19 @@ const lcPe = (okAct, okTxt, extra) => (extra || '') + '<button type="button" cla
 
 /* ---------- saída ---------- */
 LC_FORM.saida = f => {
-  if (!f.itemId) return { ico: 'sai', sub: 'Almoxarifado · ' + S.user.nome, titulo: 'Saída', corpo: lcMsg() + '<p class="gv-h">Escolha o material que vai sair</p>' + lcPicker('lc-sai-item') };
+  if (!f.itemId) return { ico: 'sai', sub: 'Almoxarifado · ' + S.user.nome, titulo: 'Saída', corpo: lcMsg() + lcFavBloco() + '<p class="gv-h">Ou escolha o material que vai sair</p>' + lcPicker('lc-sai-item') };
   const i = alItem(f.itemId); if (!i) { f.itemId = ''; return LC_FORM.saida(f); }
   const ls = alLotes(i.id), auto = ls.find(l => !alVencido(l)), lotSel = f.lotId ? alIdx().lots[f.lotId] : null, venc = !!(lotSel && alVencido(lotSel)), crit = !!i.critico;
   const lt = l => (l.lote || 'sem lote') + (l.validade ? ' · vence ' + fmtD(l.validade) : '') + ' · ' + alQ(l.saldo) + (alVencido(l) ? ' · VENCIDO' : '');
   let c = lcMsg() + lcBl('Material', lcItemEsc(i, 'lc-sai-trocar'));
-  if (crit) c += lcAv('<b>Produto crítico.</b> A saída fica aguardando a confirmação do líder ★ (ou de quem tem Controle do almoxarifado).', 'wa');
+  if (crit) c += lcAv('<b>Produto crítico.</b> A saída fica aguardando a confirmação do Líder (ou de quem tem Controle do almoxarifado).', 'wa');
   if (alPorFrasco(i)) c += lcAv('Este item sai por <b>frasco aberto</b>: para começar a usar um frasco, use Abrir frasco no material. A saída aqui é para transferência, perda ou descarte.');
   c += '<div class="fm-g">' + lcBl('Quantidade', lcPasso('qtd', f.qtd, i.un)) +
     (ls.length > 1 || (ls.length === 1 && alVencido(ls[0])) ? lcBl('Lote', ddHTML('lc:lotId', f.lotId || '', [['', 'Automático' + (auto ? ' · ' + (auto.lote || 'sem lote') : '')]].concat(ls.map(l => [l.id, lt(l)]))), f.lotId ? 'escolhido' : 'vence primeiro, sai primeiro') : lcBl('Lote', '<p class="fm-fixo">' + esc(ls[0] ? lt(ls[0]) : 'sem saldo') + '</p>')) + '</div>';
-  if (venc && crit && !alSup()) c += lcAv('<b>Lote vencido de produto crítico.</b> Não sai, nem com motivo: só o líder ★ libera. Escreva por que precisa e toque em Pedir ao líder ★.', 'cr') + lcBl('Por que precisa usar o lote vencido', lcIn('vencMot', f.vencMot));
-  else if (venc) c += lcAv('Este lote venceu em ' + fmtD(lotSel.validade) + '. Para usar mesmo assim, diga o motivo.', 'cr') + lcBl('Motivo para usar o lote vencido', lcIn('vencMot', f.vencMot)) + (crit ? '<label class="fm-ck"><input type="checkbox" data-fm="critVenc"' + (f.critVenc === '1' ? ' checked' : '') + '> Confirmo, como líder ★, a saída do lote vencido deste produto crítico</label>' : '');
+  if (venc && crit && !alSup()) c += lcAv('<b>Lote vencido de produto crítico.</b> Não sai, nem com motivo: só o Líder libera. Escreva por que precisa e toque em Pedir ao Líder.', 'cr') + lcBl('Por que precisa usar o lote vencido', lcIn('vencMot', f.vencMot));
+  else if (venc) c += lcAv('Este lote venceu em ' + fmtD(lotSel.validade) + '. Para usar mesmo assim, diga o motivo.', 'cr') + lcBl('Motivo para usar o lote vencido', lcIn('vencMot', f.vencMot)) + (crit ? '<label class="fm-ck"><input type="checkbox" data-fm="critVenc"' + (f.critVenc === '1' ? ' checked' : '') + '> Confirmo, como Líder, a saída do lote vencido deste produto crítico</label>' : '');
   c += lcMotivoBl('item:' + i.id) + '<div class="fm-g">' + lcBl('Data da saída', lcData('data', f.data)) + lcBl('Observação', lcIn('obs', f.obs, ' placeholder="opcional"')) + '</div>';
-  return { ico: 'sai', sub: 'Saída · ' + S.user.nome, titulo: i.nome, corpo: c, rodape: venc && crit && !alSup() ? '<button type="button" class="bt" data-act="gv-fecha">Cancelar</button><button type="button" class="bt pr" data-act="lc-crit-pedir">Pedir ao líder ★</button>' : lcPe('lc-sai-ok', 'Registrar saída') };
+  return { ico: 'sai', sub: 'Saída · ' + S.user.nome, titulo: i.nome, corpo: c, rodape: venc && crit && !alSup() ? '<button type="button" class="bt" data-act="gv-fecha">Cancelar</button><button type="button" class="bt pr" data-act="lc-crit-pedir">Pedir ao Líder</button>' : lcPe('lc-sai-ok', 'Registrar saída') };
 };
 function lcSaidaOk() {
   const f = S.fm, i = alItem(f.itemId); if (!i) return;
@@ -1800,9 +1946,9 @@ function lcSaidaOk() {
   const er = validaData(f.data); if (er) return lcErro(er);
   const a = alAlocar(i.id, q, f.lotId); if (a.erro) return lcErro(a.erro);
   const venc = a.partes.some(p => alVencido(p.l)), crit = !!i.critico;
-  if (venc && crit && !alSup()) return lcErro('Lote vencido de produto crítico não sai, nem com motivo. Toque em Pedir ao líder ★.');
+  if (venc && crit && !alSup()) return lcErro('Lote vencido de produto crítico não sai, nem com motivo. Toque em Pedir ao Líder.');
   if (venc && String(f.vencMot || '').trim().length < 3) return lcErro('Escreva o motivo para usar o lote vencido.');
-  if (venc && crit && f.critVenc !== '1') return lcErro('Marque a confirmação do líder ★ para sair o lote vencido deste produto crítico.');
+  if (venc && crit && f.critVenc !== '1') return lcErro('Marque a confirmação do Líder para sair o lote vencido deste produto crítico.');
   if (!lcTravar()) return;
   const guardar = f.motivo === '__outro' && f.guardar !== '0' && alMotivos('item:' + i.id).indexOf(mot) < 0; /* antes de gravar: a saída nova entraria nos "da equipe" */
   alMinAvisa([{ i: i, q: q }]); /* antes de gravar: o saldo ainda é o de antes */
@@ -1816,6 +1962,51 @@ function lcSaidaOk() {
   alMotivoUsado('item:' + i.id, mot, guardar);
   if (critObj && critObj.st === 'pendente') alCritAvisar([{ i: i, q: q, mot: mot }], ids[0]);
   lcGrava(ps, 'Saída registrada: ' + alQ(q) + ' ' + (i.un || '') + ' de ' + i.nome + '.' + (critObj && critObj.st === 'pendente' ? ' Produto crítico: aguardando confirmação.' : ''));
+}
+
+/* ---------- saída de vários materiais (favorito ou montada na hora) — regras do alKitOk do EFClaudian ---------- */
+LC_FORM.multi = f => {
+  if (f.pk || !f.linhas.length) return { ico: 'sai', sub: 'Saída de vários materiais' + (f.linhas.length ? ' · ' + f.linhas.length + ' já na lista' : ''), titulo: 'Qual material?', corpo: lcMsg() + lcPicker('lc-multi-item'), rodape: f.linhas.length ? '<button type="button" class="bt" data-act="lc-multi-volta">' + ic('volta') + 'Voltar para a saída</button>' : '' };
+  let c = lcMsg() + '<div class="fm-lotes">' + f.linhas.map((l, n) => { const i = alItem(l.itemId); if (!i) return ''; return '<div class="fm-lt"><span><b>' + esc(i.nome) + '</b><small>utilizável ' + alQ(alDisp(i.id)) + ' ' + esc(i.un || '') + (i.critico ? ' · produto crítico' : '') + '</small></span>' + lcIn('linhas.' + n + '.qtd', l.qtd, ' inputmode="decimal" class="fm-i num" aria-label="Quantidade de ' + esc(i.nome) + '"') + '<button type="button" class="bt ic-so" data-act="lc-multi-rm" data-id="' + n + '" title="Tirar" aria-label="Tirar">' + ic('lixo') + '</button></div>'; }).join('') + '</div>' +
+    '<button type="button" class="bt fm-add" data-act="lc-multi-add">' + ic('mais') + 'Adicionar material</button>' +
+    (f.linhas.some(l => { const i = alItem(l.itemId); return i && i.critico; }) ? lcAv('Tem <b>produto crítico</b>: a saída dele fica aguardando a confirmação do Líder.', 'wa') : '') +
+    lcMotivoBl(f.favId ? 'kit:' + f.favId : 'combo') + '<div class="fm-g">' + lcBl('Data da saída', lcData('data', f.data)) + lcBl('Observação', lcIn('obs', f.obs, ' placeholder="opcional"')) + '</div>' +
+    (f.favId ? (f.favMeu ? '<label class="fm-ck"><input type="checkbox" data-fm="atualizaFav"' + (f.atualizaFav === '1' ? ' checked' : '') + '> Atualizar o favorito com estes materiais e quantidades</label>' : '')
+      : '<label class="fm-ck"><input type="checkbox" data-fm="salvarFav"' + (f.salvarFav === '1' ? ' checked' : '') + '> Guardar como favorito</label>' + (f.salvarFav === '1' ? lcBl('Nome do favorito', lcIn('nomeFav', f.nomeFav, ' placeholder="Ex.: Envio de água"')) : ''));
+  return { ico: 'sai', sub: f.favNome ? 'Favorito · ' + f.favNome : 'Saída de vários materiais', titulo: f.favNome || 'Vários materiais', corpo: c, rodape: lcPe('lc-multi-ok', 'Registrar saída') };
+};
+function lcMultiOk() {
+  const f = S.fm, mot = lcMotFinal(f), fav = f.favId ? lcFavs().find(x => x.id === f.favId) : null;
+  const salvar = !f.favId && f.salvarFav === '1', nomeFav = String(f.nomeFav || '').trim();
+  if (salvar && nomeFav.length < 3) return lcErro('Dê um nome ao favorito (ou desmarque "Guardar como favorito").');
+  if (!mot) return lcErro(f.motivo === '__outro' ? 'Escreva qual é o motivo.' : 'Escolha o motivo.');
+  const er = validaData(f.data); if (er) return lcErro(er);
+  const usar = [];
+  for (const l of f.linhas) {
+    const i = alItem(l.itemId); if (!i) continue; const q = alR(alNum(l.qtd || '0'));
+    if (isNaN(q) || q < 0) return lcErro('Quantidade inválida em ' + i.nome + '.');
+    if (q === 0) continue;
+    const a = alAlocar(i.id, q, ''); if (a.erro) return lcErro(i.nome + ': ' + a.erro);
+    usar.push({ i: i, q: q, a: a });
+  }
+  if (!usar.length) return lcErro('Todas as quantidades estão zeradas.');
+  if (!lcTravar()) return;
+  const ctx = f.favId ? 'kit:' + f.favId : 'combo', guardarMot = f.motivo === '__outro' && f.guardar !== '0' && alMotivos(ctx).indexOf(mot) < 0;
+  alMinAvisa(usar.map(u => ({ i: u.i, q: u.q })));
+  const grupo = uid(), ps = [], crits = [], nome = fav ? fav.nome : salvar ? nomeFav : ''; let critId = '';
+  usar.forEach(u => u.a.partes.forEach(p => {
+    const o = { tipo: 'saida', itemId: u.i.id, itemNome: u.i.nome, lotRef: p.l.id, lote: p.l.lote, validade: p.l.validade, qtd: p.q, preco: p.l.preco, criadoEm: nowISO(), por: S.user.id, porNome: S.user.nome, motivo: mot, obs: String(f.obs || '').trim(), data: f.data, grupo: grupo, kit: nome };
+    if (f.lab) o.lab = f.lab; if (u.i.critico) o.critico = { st: 'pendente' };
+    const mid = uid(); if (u.i.critico && !critId) critId = mid; ps.push(Data.col('sv2_alm_mov').set(mid, o));
+  }));
+  usar.filter(u => u.i.critico).forEach(u => crits.push({ i: u.i, q: u.q, mot: mot }));
+  const pr = S.almPref || {}, favs = Array.isArray(pr.favs) ? pr.favs.slice() : [], itens = usar.map(u => ({ itemId: u.i.id, qtd: u.q }));
+  if (salvar) alPrefGravar({ favs: favs.concat([{ id: uid().slice(0, 8), nome: nomeFav, motivo: mot, itens: itens }]) });
+  else if (f.favMeu && f.atualizaFav === '1') alPrefGravar({ favs: favs.map(x => 'p:' + x.id === f.favId ? Object.assign({}, x, { motivo: mot, itens: itens }) : x) });
+  Audit.log({ acao: 'saida_almox', entidade: 'almox_kit', entidadeId: f.favId || grupo, resumo: 'Saída ' + (nome ? 'do favorito ' + nome : 'de vários itens') + ': ' + usar.map(u => alQ(u.q) + ' ' + u.i.nome).join(', ') + ' — ' + mot + (f.obs ? ' · ' + String(f.obs).trim() : '') + (crits.length ? ' · PRODUTO CRÍTICO aguardando confirmação: ' + crits.map(x => x.i.nome).join(', ') : ''), depois: { itens: usar.map(u => ({ item: u.i.nome, qtd: u.q })), motivo: mot, obs: String(f.obs || '').trim() } });
+  alMotivoUsado(ctx, mot, guardarMot);
+  if (crits.length) alCritAvisar(crits, critId);
+  lcGrava(ps, (nome ? 'Saída do favorito ' + nome + ' registrada.' : 'Saída de ' + usar.length + ' materiais registrada.') + (salvar ? ' Favorito guardado.' : '') + (crits.length ? ' Produto crítico: aguardando confirmação.' : ''));
 }
 /* lote vencido de produto crítico, por quem não é líder: vira pedido */
 async function lcCritPedir() {
@@ -1837,13 +2028,13 @@ LC_FORM.abrir = f => {
   const i = alItem(f.itemId); if (!i) return null;
   const ls = alLotes(i.id), auto = ls.find(l => !alVencido(l)) || ls[0], sel = f.lotId ? alIdx().lots[f.lotId] : auto, venc = !!(sel && alVencido(sel)), crit = !!i.critico, d = Number(i.prazoAberto) || 0;
   let c = lcMsg() + gvNums([[alQ(alSaldo(i.id)), 'lacrados'], [String(alAbertos(i.id).length), 'em uso']]);
-  if (crit) c += lcAv('<b>Produto crítico.</b> Abrir o frasco fica aguardando a confirmação do líder ★ (ou de quem tem Controle do almoxarifado).', 'wa');
+  if (crit) c += lcAv('<b>Produto crítico.</b> Abrir o frasco fica aguardando a confirmação do Líder (ou de quem tem Controle do almoxarifado).', 'wa');
   c += lcBl('Qual frasco', ls.length > 1 ? ddHTML('lc:lotId', f.lotId || (auto ? auto.id : ''), ls.map(l => [l.id, (l.lote || 'sem lote') + (l.validade ? ' · vence ' + fmtD(l.validade) : '') + (alVencido(l) ? ' · VENCIDO' : '')])) : '<p class="fm-fixo">' + esc(sel ? (sel.lote || 'sem lote') + (sel.validade ? ' · vence ' + fmtD(sel.validade) : '') : '—') + '</p>', ls.length > 1 ? 'o que vence primeiro vem marcado' : '');
-  if (venc && crit && !alSup()) c += lcAv('<b>Lote vencido de produto crítico.</b> Não abre, nem com motivo: só o líder ★ libera.', 'cr') + lcBl('Por que precisa usar o lote vencido', lcIn('vencMot', f.vencMot));
-  else if (venc && crit) c += lcAv('Este lote venceu em ' + fmtD(sel.validade) + '.', 'cr') + lcBl('Motivo para usar o lote vencido', lcIn('vencMot', f.vencMot)) + '<label class="fm-ck"><input type="checkbox" data-fm="critVenc"' + (f.critVenc === '1' ? ' checked' : '') + '> Confirmo, como líder ★, abrir o frasco vencido deste produto crítico</label>';
+  if (venc && crit && !alSup()) c += lcAv('<b>Lote vencido de produto crítico.</b> Não abre, nem com motivo: só o Líder libera.', 'cr') + lcBl('Por que precisa usar o lote vencido', lcIn('vencMot', f.vencMot));
+  else if (venc && crit) c += lcAv('Este lote venceu em ' + fmtD(sel.validade) + '.', 'cr') + lcBl('Motivo para usar o lote vencido', lcIn('vencMot', f.vencMot)) + '<label class="fm-ck"><input type="checkbox" data-fm="critVenc"' + (f.critVenc === '1' ? ' checked' : '') + '> Confirmo, como Líder, abrir o frasco vencido deste produto crítico</label>';
   if (d) c += lcAv('Depois de aberto, este item vale ' + d + ' dia(s): o aviso aparece em ' + fmtD(addDias(f.data || hojeISO(), d)) + '.');
   c += '<div class="fm-g">' + lcBl('Data da abertura', lcData('data', f.data)) + lcBl('Para que foi aberto', lcIn('obs', f.obs, ' placeholder="opcional"')) + '</div>';
-  return { ico: 'frasco', sub: 'Abrir frasco', titulo: i.nome, corpo: c, rodape: venc && crit && !alSup() ? '<button type="button" class="bt" data-act="gv-fecha">Cancelar</button><button type="button" class="bt pr" data-act="lc-crit-pedir">Pedir ao líder ★</button>' : lcPe('lc-abrir-ok', 'Abrir frasco') };
+  return { ico: 'frasco', sub: 'Abrir frasco', titulo: i.nome, corpo: c, rodape: venc && crit && !alSup() ? '<button type="button" class="bt" data-act="gv-fecha">Cancelar</button><button type="button" class="bt pr" data-act="lc-crit-pedir">Pedir ao Líder</button>' : lcPe('lc-abrir-ok', 'Abrir frasco') };
 };
 function lcAbrirOk() {
   const f = S.fm, i = alItem(f.itemId); if (!i) return;
@@ -1852,9 +2043,9 @@ function lcAbrirOk() {
   const a = alAlocar(i.id, 1, f.lotId || (auto ? auto.id : '')); if (a.erro) return lcErro(a.erro);
   const p = a.partes[0], venc = alVencido(p.l), crit = !!i.critico;
   if (crit && venc) {
-    if (!alSup()) return lcErro('Lote vencido de produto crítico não abre, nem com motivo. Toque em Pedir ao líder ★.');
+    if (!alSup()) return lcErro('Lote vencido de produto crítico não abre, nem com motivo. Toque em Pedir ao Líder.');
     if (String(f.vencMot || '').trim().length < 3) return lcErro('Escreva o motivo para usar o lote vencido.');
-    if (f.critVenc !== '1') return lcErro('Marque a confirmação do líder ★ para abrir o frasco vencido deste produto crítico.');
+    if (f.critVenc !== '1') return lcErro('Marque a confirmação do Líder para abrir o frasco vencido deste produto crítico.');
   }
   if (!lcTravar()) return;
   const id = uid(), o = { tipo: 'abrir', itemId: i.id, itemNome: i.nome, lotRef: p.l.id, lote: p.l.lote, validade: p.l.validade, qtd: 1, preco: p.l.preco, motivo: 'Frasco aberto para uso', obs: String(f.obs || '').trim(), data: f.data, criadoEm: nowISO(), por: S.user.id, porNome: S.user.nome };
@@ -1874,8 +2065,7 @@ function lcFimOk(abrirOutro) {
   const o = { tipo: 'fim', itemId: m.itemId, itemNome: m.itemNome, abertoRef: m.id, lote: m.lote || '', validade: m.validade || '', qtd: 0, preco: 0, motivo: 'Frasco terminou', obs: String(f.obs || '').trim(), data: hojeISO(), criadoEm: nowISO(), por: S.user.id, porNome: S.user.nome };
   Audit.log({ acao: 'fim_frasco_almox', entidade: 'almox_item', entidadeId: m.itemId, resumo: 'Frasco de ' + m.itemNome + ' terminou (aberto em ' + fmtD(m.data) + ')', depois: { abertoEm: m.data } });
   const volta = f.volta, itemId = m.itemId;
-  lcGrava([Data.col('sv2_alm_mov').set(uid(), o)], 'Anotado: o frasco acabou.');
-  if (abrirOutro) setTimeout(() => lcAbrir({ k: 'abrir', itemId: itemId, lotId: '', obs: '', data: hojeISO() }, volta), 120);
+  lcGrava([Data.col('sv2_alm_mov').set(uid(), o)], 'Anotado: o frasco acabou.', abrirOutro ? () => lcAbrir({ k: 'abrir', itemId: itemId, lotId: '', obs: '', data: hojeISO(), vencMot: '', critVenc: '' }, volta) : null);
 }
 
 /* ---------- entrada (várias linhas) ---------- */
@@ -1926,7 +2116,7 @@ function lcEntradaOk() {
 /* ---------- ajuste pela contagem ---------- */
 LC_FORM.ajuste = f => {
   const i = alItem(f.itemId); if (!i) return null; const ls = alLotes(i.id);
-  return { ico: 'ajuste', sub: 'Ajustar saldo · digite o que foi contado em cada lote', titulo: i.nome, corpo: lcMsg() + (alSup() ? '' : lcAv('Como secundário, o ajuste vai como pedido ao seu superior.')) +
+  return { ico: 'ajuste', sub: 'Ajustar saldo · digite o que foi contado em cada lote', titulo: i.nome, corpo: lcMsg() + (alSup() ? '' : lcAv('Como Colaborador, o ajuste vai como pedido ao seu superior.')) +
     '<div class="fm-lotes">' + ls.map(l => '<div class="fm-lt"><span><b>' + esc(l.lote || 'sem lote') + '</b><small>' + (l.validade ? 'vence ' + fmtD(l.validade) + ' · ' : '') + 'sistema: ' + alQ(l.saldo) + ' ' + esc(i.un || '') + '</small></span>' + lcIn('aj.' + l.id, f.aj[l.id] != null ? f.aj[l.id] : alQin(l.saldo), ' inputmode="decimal" class="fm-i num" aria-label="Contado no lote ' + esc(l.lote || 'sem lote') + '"') + '</div>').join('') + '</div>' +
     lcBl('Motivo do ajuste', lcTx('motivoG', f.motivoG, 'Ex.: contagem de hoje, quebra, perda')),
     rodape: lcPe('lc-aj-ok', alSup() ? 'Ajustar' : 'Pedir ajuste') };
@@ -2001,7 +2191,7 @@ LC_FORM.naoconf = f => {
 function lcCritDecidir(id, ok, motivo) {
   const m = S.almMov.find(x => x.id === id);
   if (!m || !alCritPendMov(m)) { aviso('Esta saída já foi decidida.', 'erro'); return false; }
-  if (!alCtrl(S.user)) { aviso('Só o líder ★, o Principal ou quem tem Controle do almoxarifado confirma.', 'erro'); return false; }
+  if (!alCtrl(S.user)) { aviso('Só o Líder, o Administrador ou quem tem Controle do almoxarifado confirma.', 'erro'); return false; }
   const mot = ok ? '' : String(motivo || '').trim(); if (!ok && mot.length < 3) return lcErro('Escreva o que não confere.');
   const alvo = S.almMov.filter(x => alCritPendMov(x) && x.itemId === m.itemId && (x.id === m.id || (m.grupo && x.grupo === m.grupo)));
   const c = { st: ok ? 'confirmada' : 'nao_confere', porId: S.user.id, porNome: S.user.nome, ts: nowISO(), proprio: m.por === S.user.id }; if (!ok) c.motivo = mot;
@@ -2016,7 +2206,7 @@ function lcCritDecidir(id, ok, motivo) {
 
 /* ---------- solicitação ao almoxarifado central ---------- */
 LC_FORM.sol = f => {
-  if (f.pk) return { ico: 'doc', sub: 'Nova solicitação', titulo: 'Qual material pedir?', corpo: lcPicker('lc-sol-item'), rodape: '<button type="button" class="bt" data-act="lc-sol-volta">' + ic('volta') + 'Voltar para a solicitação</button>' };
+  if (f.pk || !f.linhas.length) return { ico: 'doc', sub: 'Nova solicitação', titulo: 'Qual material pedir?', corpo: lcPicker('lc-sol-item'), rodape: f.linhas.length ? '<button type="button" class="bt" data-act="lc-sol-volta">' + ic('volta') + 'Voltar para a solicitação</button>' : '' };
   let c = lcMsg() + lcAv('Pedido ao almoxarifado central. Quando chegar, marque Atendida e a entrada já vem preenchida.') +
     '<p class="gv-h">Materiais</p>' + (f.linhas.length ? '<div class="fm-lotes">' + f.linhas.map((l, n) => { const i = alItem(l.itemId); return '<div class="fm-lt"><span><b>' + esc(i ? i.nome : '(item removido)') + '</b><small>tem ' + (i ? alQ(alSaldo(i.id)) + ' ' + esc(i.un || '') : '—') + '</small></span>' + lcIn('linhas.' + n + '.qtd', l.qtd, ' inputmode="decimal" class="fm-i num" aria-label="Quantidade"') + '<button type="button" class="bt ic-so" data-act="lc-sol-rm" data-id="' + n + '" title="Tirar" aria-label="Tirar">' + ic('lixo') + '</button></div>'; }).join('') + '</div>' : '<p class="tb-nada">Nenhum material ainda.</p>') +
     '<button type="button" class="bt fm-add" data-act="lc-sol-add">' + ic('mais') + 'Adicionar material</button>' +
@@ -2068,14 +2258,15 @@ document.addEventListener('input', e => {
   const t = e.target; if (!t || !t.getAttribute) return;
   if (t.hasAttribute('data-pk')) { const q = tbNorm(t.value).trim(), box = t.closest('.fm-pk'); let n = 0; $$('[data-busca]', box).forEach(b => { const on = !q || q.split(/\s+/).every(w => b.getAttribute('data-busca').indexOf(w) >= 0); b.hidden = !on; if (on) n++; }); const v = $('.fm-pkv', box); if (v) v.hidden = n > 0; return; }
   const c = t.getAttribute('data-fm'); if (!c || !S.fm) return;
-  lcSet(c, t.type === 'checkbox' ? (t.checked ? '1' : '0') : t.value);
+  lcSet(c, t.type === 'checkbox' ? (t.checked ? '1' : '0') : t.value); S.fm.sujo = true;
   if (S.fm.msg) { S.fm.msg = ''; const m = $('#gv .fm-msg'); if (m) m.remove(); }
 });
-document.addEventListener('change', e => { const t = e.target; if (t && t.getAttribute && t.getAttribute('data-fm') && S.fm) lcSet(t.getAttribute('data-fm'), t.type === 'checkbox' ? (t.checked ? '1' : '0') : t.value); });
+document.addEventListener('change', e => { const t = e.target; if (!(t && t.getAttribute && t.getAttribute('data-fm') && S.fm)) return; const c = t.getAttribute('data-fm'); lcSet(c, t.type === 'checkbox' ? (t.checked ? '1' : '0') : t.value); if (c === 'salvarFav') { gvDesenha(true); const n = $('#gv [data-fm="nomeFav"]'); if (n) n.focus(); } });
 DD_AO.lc = (k, v) => {
-  const f = S.fm; if (!f) return;
+  const f = S.fm; if (!f) return; f.sujo = true;
   if (k === 'motivo') { f.motivo = v; f.msg = ''; gvDesenha(true); if (v === '__outro') { const i = $('#gv [data-fm="motivoTxt"]'); if (i) i.focus(); } return; }
   if (k === 'lotId') { f.lotId = v; f.msg = ''; gvDesenha(true); return; }
+  if (k === 'fav') { if (v) lcFavUsar(v); return; }
   if (k.indexOf('emb:') === 0) { const l = f.linhas[Number(k.slice(4))]; if (!l) return; const i = alItem(l.itemId); if (l.preco === lcPrecoSug(i, l.emb || 'compra')) l.preco = lcPrecoSug(i, v); l.emb = v; gvDesenha(true); }
 };
 document.addEventListener('click', e => {
@@ -2097,25 +2288,31 @@ document.addEventListener('click', e => {
   else if (a === 'lc-sol-atender') lcSolAtender(id);
   else if (a === 'lc-sol-canc') { if (!alPode()) return; lcAbrir({ k: 'solcanc', solId: id, motivoG: '' }, vol ? voltaDe(vol) : null); }
   else if (!f) return;
-  else if (a === 'lc-q') { const c = t.getAttribute('data-c'), inp = $('#gv [data-fm="' + c + '"]'), n = alNum(inp ? inp.value : f[c]), v = alQin(Math.max(0, (isNaN(n) ? 0 : n) + Number(t.getAttribute('data-d')))); lcSet(c, v); if (inp) inp.value = v; }
-  else if (a === 'lc-sai-item') { f.itemId = id; f.lotId = ''; f.msg = ''; gvDesenha(true); }
+  else if (a === 'lc-q') { const c = t.getAttribute('data-c'), inp = $('#gv [data-fm="' + c + '"]'), n = alNum(inp ? inp.value : f[c]), v = alQin(Math.max(0, (isNaN(n) ? 0 : n) + Number(t.getAttribute('data-d')))); lcSet(c, v); f.sujo = true; if (inp) inp.value = v; }
+  else if (a === 'lc-sai-item') { f.itemId = id; f.lotId = ''; f.msg = ''; f.sujo = true; gvDesenha(true); }
   else if (a === 'lc-sai-trocar') { f.itemId = ''; f.lotId = ''; gvDesenha(true); }
   else if (a === 'lc-sai-ok') lcSaidaOk();
+  else if (a === 'lc-multi') { Object.assign(f, { k: 'multi', linhas: [], favId: '', favNome: '', favMeu: false, pk: false, salvarFav: '', nomeFav: '', sujo: true }); gvDesenha(true); }
+  else if (a === 'lc-multi-item') { if (!f.linhas.some(l => l.itemId === id)) f.linhas.push({ itemId: id, qtd: '1' }); f.sujo = true; f.msg = ''; lcPkSai(); }
+  else if (a === 'lc-multi-add') lcPkAbre();
+  else if (a === 'lc-multi-volta') csVolta();
+  else if (a === 'lc-multi-rm') { f.linhas.splice(Number(id), 1); f.sujo = true; gvDesenha(true); }
+  else if (a === 'lc-multi-ok') lcMultiOk();
   else if (a === 'lc-crit-pedir') lcCritPedir();
   else if (a === 'lc-abrir-ok') lcAbrirOk();
   else if (a === 'lc-fim-ok') lcFimOk(id === '1');
-  else if (a === 'lc-ent-item') { if (!f.linhas.some(l => l.itemId === id)) f.linhas.push(lcEntLinha(id)); f.pk = false; f.msg = ''; gvDesenha(true); }
-  else if (a === 'lc-ent-add') { f.pk = true; gvDesenha(true); }
-  else if (a === 'lc-ent-volta') { f.pk = false; gvDesenha(true); }
-  else if (a === 'lc-ent-rm') { f.linhas.splice(Number(id), 1); gvDesenha(true); }
+  else if (a === 'lc-ent-item') { if (!f.linhas.some(l => l.itemId === id)) f.linhas.push(lcEntLinha(id)); f.msg = ''; f.sujo = true; lcPkSai(); }
+  else if (a === 'lc-ent-add') lcPkAbre();
+  else if (a === 'lc-ent-volta') csVolta();
+  else if (a === 'lc-ent-rm') { f.linhas.splice(Number(id), 1); f.sujo = true; gvDesenha(true); }
   else if (a === 'lc-ent-ok') lcEntradaOk();
   else if (a === 'lc-aj-ok') lcAjusteOk();
   else if (a === 'lc-corr-ok') lcCorrOk();
   else if (a === 'lc-anular-ok') lcAnularOk();
-  else if (a === 'lc-sol-item') { if (!f.linhas.some(l => l.itemId === id)) f.linhas.push({ itemId: id, qtd: '1' }); f.pk = false; gvDesenha(true); }
-  else if (a === 'lc-sol-add') { f.pk = true; gvDesenha(true); }
-  else if (a === 'lc-sol-volta') { f.pk = false; gvDesenha(true); }
-  else if (a === 'lc-sol-rm') { f.linhas.splice(Number(id), 1); gvDesenha(true); }
+  else if (a === 'lc-sol-item') { if (!f.linhas.some(l => l.itemId === id)) f.linhas.push({ itemId: id, qtd: '1' }); f.sujo = true; lcPkSai(); }
+  else if (a === 'lc-sol-add') lcPkAbre();
+  else if (a === 'lc-sol-volta') csVolta();
+  else if (a === 'lc-sol-rm') { f.linhas.splice(Number(id), 1); f.sujo = true; gvDesenha(true); }
   else if (a === 'lc-sol-ok') lcSolOk();
   else if (a === 'lc-solcanc-ok') lcSolCancOk();
 });
@@ -2210,20 +2407,21 @@ function bgAbrir() {
   if (!S.user || $('#bg')) return;
   const d = document.createElement('div'); d.id = 'bg'; d.className = 'bg-fundo';
   d.innerHTML = '<div class="bg-caixa" role="dialog" aria-modal="true" aria-label="Buscar"><label class="bg-campo">' + ic('lupa') + '<input id="bg-q" type="search" autocomplete="off" placeholder="Buscar material, equipamento, solicitação ou tela" aria-label="Buscar"><kbd>Esc</kbd></label><div id="bg-res" class="bg-res" role="listbox"></div><p class="bg-dica">Setas para escolher · Enter abre · Esc fecha</p></div>';
-  document.body.appendChild(d); bgDesenha(); setTimeout(() => { const i = $('#bg-q'); if (i) i.focus(); }, 0);
+  document.body.appendChild(d); csCamadaAbre('bg', bgFecharSo); bgDesenha(); setTimeout(() => { const i = $('#bg-q'); if (i) i.focus(); }, 0);
 }
-function bgFechar() { const d = $('#bg'); if (d) d.remove(); }
+function bgFecharSo() { const d = $('#bg'); if (d) d.remove(); }
+function bgFechar() { if (csTemCamada('bg')) csVolta(); else bgFecharSo(); }
 function bgMove(n) { const l = $$('.bg-it'); if (!l.length) return; let k = l.findIndex(x => x.classList.contains('on')); l.forEach(x => { x.classList.remove('on'); x.setAttribute('aria-selected', 'false'); }); k = (k + n + l.length) % l.length; l[k].classList.add('on'); l[k].setAttribute('aria-selected', 'true'); l[k].scrollIntoView({ block: 'nearest' }); }
 document.addEventListener('input', e => { if (e.target && e.target.id === 'bg-q') bgDesenha(); });
 document.addEventListener('click', e => {
   if (e.target && e.target.id === 'bg') { bgFechar(); return; }
   const t = e.target.closest && e.target.closest('[data-act="bg-ir"], [data-act="cs-busca"]'); if (!t) return;
   if (t.getAttribute('data-act') === 'cs-busca') { bgAbrir(); return; }
-  const r = BG_RES[+t.getAttribute('data-k')]; bgFechar(); if (r) r.abrir();
+  const r = BG_RES[+t.getAttribute('data-k')]; bgFecharSo(); csCamadaSaiu('bg', () => { if (r) r.abrir(); });
 });
 document.addEventListener('keydown', e => {
   if ($('#bg')) {
-    if (e.key === 'Escape') { e.preventDefault(); bgFechar(); }
+    if (e.key === 'Escape') { e.preventDefault(); /* quem fecha é o voltar das camadas (tabela.js) */ }
     else if (e.key === 'ArrowDown') { e.preventDefault(); bgMove(1); } else if (e.key === 'ArrowUp') { e.preventDefault(); bgMove(-1); }
     else if (e.key === 'Enter') { const o = $('.bg-it.on'); if (o) { e.preventDefault(); o.click(); } }
     return;
@@ -2263,7 +2461,7 @@ function enCena() {
 function enTela() {
   const e = S.empresa || {}, primeiro = S._setup === false;
   const form = primeiro ?
-    '<h2>Primeiro acesso</h2><p>Crie a conta do administrador (Principal). Depois ele cadastra as outras pessoas.</p>' +
+    '<h2>Primeiro acesso</h2><p>Crie a conta do Administrador. Depois ele cadastra as outras pessoas.</p>' +
     '<form class="en-form" data-form="en-primeiro" novalidate>' +
     '<label class="cp">Nome completo<input id="en-nome" autocomplete="name" required></label>' +
     '<label class="cp">Usuário<input id="en-login" autocomplete="username" autocapitalize="none" required><small>Só letras, números e ponto. Ex.: joana.silva</small></label>' +
@@ -2389,7 +2587,7 @@ function arEmBreve(ar) {
 function admEmpresa() {
   const e = S.empresa || {}, pode = isPrincipal(S.user), un = e.unidades || [], logo = imgSrc(e.logo);
   const minha = Store.get('cw-unidade') || un[0] || '';
-  return '<div class="adm-gr"><section class="pn"><div class="hd"><h3>Dados da empresa</h3><span class="sp"></span>' + (pode ? '' : '<span class="pill">só o Principal altera</span>') + '</div>' +
+  return '<div class="adm-gr"><section class="pn"><div class="hd"><h3>Dados da empresa</h3><span class="sp"></span>' + (pode ? '' : '<span class="pill">só o Administrador altera</span>') + '</div>' +
     '<form class="cpo" data-form="adm-empresa">' +
     '<div class="adm-logo"><span class="adm-lg">' + (logo ? '<img src="' + logo + '" alt="Logo atual">' : ic('imagem')) + '</span><div><b>Logo</b><small>PNG ou JPG; o app reduz para 256 px.</small>' +
     (pode ? '<div class="adm-lgb"><label class="bt">' + ic('imagem') + 'Escolher<input type="file" id="adm-logo" accept="image/png,image/jpeg,image/webp" hidden></label>' + (logo ? '<button type="button" class="bt ic-so" data-act="adm-tira-logo" title="Tirar a logo" aria-label="Tirar a logo">' + ic('lixo') + '</button>' : '') + '</div>' : '') + '</div></div>' +
@@ -2428,7 +2626,7 @@ async function admGrava(patch, msgOk) {
   const e = Object.assign({ nome: '', unidades: [], logo: '' }, S.empresa || {}, patch);
   delete e.id; delete e.srv; e.atualizadoEm = nowISO(); e.atualizadoPor = S.user.id;
   try { await Data.col('sv2_cfg').set('empresa', e); S.empresa = Object.assign({ id: 'empresa' }, e); aviso(msgOk || 'Empresa salva.'); render(); }
-  catch (er) { console.error(er); const m = $('#adm-msg'); const t = /permission/i.test(er && (er.code || er.message) || '') ? 'O Firebase não deixou salvar (permissão). As regras precisam liberar sv2_cfg/empresa para o Principal.' : 'Não foi possível salvar agora.'; if (m) m.textContent = t; else aviso(t, 'erro'); }
+  catch (er) { console.error(er); const m = $('#adm-msg'); const t = /permission/i.test(er && (er.code || er.message) || '') ? 'O Firebase não deixou salvar (permissão). As regras precisam liberar sv2_cfg/empresa para o Administrador.' : 'Não foi possível salvar agora.'; if (m) m.textContent = t; else aviso(t, 'erro'); }
 }
 document.addEventListener('submit', e => {
   const f = e.target.closest && e.target.closest('[data-form="adm-empresa"]'); if (!f) return;

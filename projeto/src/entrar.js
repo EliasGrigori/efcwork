@@ -28,7 +28,7 @@ function enCena() {
 function enTela() {
   const e = S.empresa || {}, primeiro = S._setup === false;
   const form = primeiro ?
-    '<h2>Primeiro acesso</h2><p>Crie a conta do administrador (Principal). Depois ele cadastra as outras pessoas.</p>' +
+    '<h2>Primeiro acesso</h2><p>Crie a conta do Administrador. Depois ele cadastra as outras pessoas.</p>' +
     '<form class="en-form" data-form="en-primeiro" novalidate>' +
     '<label class="cp">Nome completo<input id="en-nome" autocomplete="name" required></label>' +
     '<label class="cp">Usuário<input id="en-login" autocomplete="username" autocapitalize="none" required><small>Só letras, números e ponto. Ex.: joana.silva</small></label>' +

@@ -48,9 +48,18 @@
 .dd-l li:hover,.dd-l li:focus{background:var(--bg2);outline:none}
 .dd-l li[aria-selected="true"]{color:var(--aTx);font-weight:600}
 .dd-l li .ic{width:15px;height:15px}
+.dd-l li[data-rm]{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.dd-l li.dd-pega{opacity:.45}
+.dd-l li.dd-dica{cursor:default;min-height:0;padding:6px 10px 4px;font-size:12px;color:var(--tx3);white-space:normal;border-top:1px solid var(--bd);margin-top:4px}
+.dd-l li.dd-dica:hover{background:transparent}
+body.dd-arrastando{cursor:grabbing;-webkit-user-select:none;user-select:none}
+.dd-lixo{position:fixed;z-index:95;width:96px;height:64px;border-radius:10px;border:2px dashed var(--cr);background:var(--bg1);color:var(--cr);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.2)}
+.dd-lixo .ic{width:22px;height:22px}
+.dd-lixo.on{background:var(--cr);color:var(--onCr);border-style:solid;transform:scale(1.06)}
+.dd-fant{position:fixed;z-index:96;pointer-events:none;max-width:240px;padding:6px 10px;border-radius:6px;background:var(--bg1);border:1px solid var(--bd2);box-shadow:0 8px 24px rgba(0,0,0,.25);font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 /* gaveta */
 .gv{position:fixed;top:0;right:0;bottom:0;width:min(420px,100vw);background:var(--bg1);border-left:1px solid var(--bd);box-shadow:-14px 0 34px rgba(0,0,0,.14);display:flex;flex-direction:column;z-index:30;padding-top:env(safe-area-inset-top,0px)}
-:root[data-tema="escuro"] .gv{background:rgba(18,21,36,.98);border-left-color:rgba(217,180,106,.16)}
+:root[data-tema="escuro"] .gv{background:var(--bg1);border-left-color:rgba(217,180,106,.16)}
 .gv-cab{display:flex;gap:10px;align-items:flex-start;padding:16px 18px 12px;border-bottom:1px solid var(--bd)}
 .gv-tx{flex:1;min-width:0}
 .gv-tx small{color:var(--tx3);font-size:13px}
@@ -72,7 +81,7 @@
 .gv-tl small{display:block;color:var(--tx3);font-size:13px}
 .gv-lotes{display:flex;flex-direction:column;gap:6px}
 .gv-lote{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:7px 10px;border:1px solid var(--bd);border-radius:var(--rs);font-size:14px;background:var(--bg0)}
-@media(min-width:1200px){body.gv-aberta .cs-ct{padding-right:448px}}
+@media(min-width:900px){.gv{top:56px}}
 @media(max-width:899px){.gv{width:100vw;border-left:0}.tb-busca{width:100%}.tb-pf{min-width:0;flex:1 1 160px}}
 /* impressão */
 #tb-imp{display:none}
@@ -88,3 +97,5 @@
   #tb-imp .imp-pe{margin-top:8pt;font-size:8pt;color:#555}
   @page{size:A4 landscape;margin:12mm}
 }
+.gv-corpo p.tb-nada{margin:0}
+@media(min-width:1200px){body.gv-aberta .cs-ct{padding-right:440px}} /* v0.3.1, pedido do Elias 06/11: a tabela recua quando a gaveta abre, com a margem curta (20 px) */

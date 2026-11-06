@@ -36,7 +36,43 @@ function csLeRota() {
   return { area: a, aba: aba };
 }
 function ir(area, aba) { const h = '#/' + area + (aba ? '/' + aba : ''); if (location.hash !== h) location.hash = h; else render(); }
-window.addEventListener('hashchange', () => { S.rota = csLeRota(); csUso(); csFechaMenu(); if (S._gvNav) S._gvNav = false; else { S.gv = null; S.gvForm = false; S.fm = null; S._alSel = null; const g = $('#gv'); if (g) g.remove(); document.body.classList.remove('gv-aberta'); } render(); try { window.scrollTo(0, 0); } catch {} });
+window.addEventListener('hashchange', () => { S.rota = csLeRota(); csUso(); csFechaMenu(); S.camadas = S.camadas.filter(c => c.nome !== 'menu'); if (S._gvNav) S._gvNav = false; else { S.gv = null; S.gvForm = false; S.fm = null; S._alSel = null; S.camadas = []; const g = $('#gv'); if (g) g.remove(); document.body.classList.remove('gv-aberta'); } render(); try { window.scrollTo(0, 0); } catch {} });
+
+/* ---------- camadas (pedido do Elias, 05/11): cada coisa aberta por cima — gaveta, formulário, lista de escolher, busca, menu do celular —
+   é uma camada. Esc, o X e o voltar do celular fecham SÓ a de cima. Formulário com algo preenchido pergunta antes de descartar. ---------- */
+S.camadas = []; S._ignPop = 0;
+function csCamadaAbre(nome, fechar) { S.camadas.push({ nome: nome, fechar: fechar }); S._camHash = location.hash; try { history.pushState({ cw: S.camadas.length }, ''); } catch {} }
+const csTemCamada = nome => S.camadas.some(c => c.nome === nome);
+/* a tela fechou a camada sozinha (gravou, escolheu): tira da pilha e devolve o histórico; "depois" roda quando o navegador terminar de voltar */
+function csCamadaSaiu(nome, depois) {
+  const k = S.camadas.map(c => c.nome).lastIndexOf(nome); if (k < 0) { if (depois) depois(); return; }
+  const n = S.camadas.length - k; S.camadas.splice(k); S._ignPop++; S._aposPop = depois || null;
+  clearTimeout(S._popT); S._popT = setTimeout(() => { if (S._ignPop > 0) { S._ignPop = 0; const f = S._aposPop; S._aposPop = null; if (f) f(); } }, 400);
+  try { history.go(-n); } catch { S._ignPop = 0; const f = S._aposPop; S._aposPop = null; if (f) f(); }
+}
+function csVolta() { if (csConfirmaAberto()) { csConfirmaFecha(false); return; } if (S.camadas.length) { try { history.back(); } catch { csPop(); } } }
+function csPop() {
+  const c = S.camadas.pop(); if (!c) return; let ok = true;
+  try { ok = c.fechar() !== false; } catch (e) { console.error(e); }
+  if (!ok) { S.camadas.push(c); try { history.pushState({ cw: S.camadas.length }, ''); } catch {} }
+}
+window.addEventListener('popstate', () => {
+  if (S._ignPop > 0) { S._ignPop--; clearTimeout(S._popT); const f = S._aposPop; S._aposPop = null; if (f) f(); return; }
+  if (location.hash !== S._camHash) return; /* foi troca de tela: quem cuida é o hashchange */
+  if (csConfirmaAberto()) { csConfirmaFecha(false); try { history.pushState({ cw: S.camadas.length }, ''); } catch {} return; }
+  csPop();
+});
+/* aviso antes de perder o que foi preenchido */
+const csConfirmaAberto = () => !!$('#cf');
+function csConfirma(o, aoSim) {
+  if ($('#cf')) return; S._cfSim = aoSim;
+  const d = document.createElement('div'); d.id = 'cf'; d.className = 'cf-fundo';
+  d.innerHTML = '<div class="cf-caixa" role="alertdialog" aria-modal="true" aria-labelledby="cf-t" aria-describedby="cf-x"><span class="cf-ic">' + ic('alerta') + '</span><h2 id="cf-t">' + esc(o.titulo) + '</h2><p id="cf-x">' + esc(o.texto) + '</p><div class="cf-bts"><button type="button" class="bt" data-act="cf-sim">' + esc(o.sim) + '</button><button type="button" class="bt pr" data-act="cf-nao">' + esc(o.nao) + '</button></div></div>';
+  document.body.appendChild(d); setTimeout(() => { const b = $('#cf [data-act="cf-nao"]'); if (b) b.focus(); }, 0);
+}
+function csConfirmaFecha(sim) { const d = $('#cf'); if (d) d.remove(); const f = S._cfSim; S._cfSim = null; if (sim && f) f(); }
+document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('[data-act^="cf-"]'); if (t) csConfirmaFecha(t.getAttribute('data-act') === 'cf-sim'); else if (e.target && e.target.id === 'cf') csConfirmaFecha(false); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && csConfirmaAberto()) { e.preventDefault(); e.stopImmediatePropagation(); csConfirmaFecha(false); } }, true);
 
 /* ---------- "onde você estava" e "mais usadas" (como no EFClaudian v2.102.59; só neste aparelho, por pessoa) ---------- */
 function csUsoLer() { try { const o = JSON.parse(Store.get('cw-uso-' + ((S.user && S.user.id) || '')) || '{}'); return { n: o.n || {}, r: Array.isArray(o.r) ? o.r : [] }; } catch { return { n: {}, r: [] }; } }
@@ -111,18 +147,17 @@ document.addEventListener('click', e => {
   const t = e.target.closest && e.target.closest('[data-act]'); if (!t) return;
   const a = t.getAttribute('data-act');
   if (a === 'cs-tema') csTrocaTema(csTema() === 'escuro' ? 'claro' : 'escuro');
-  else if (a === 'cs-menu') { const x = $('.cs-app'); if (x) x.classList.toggle('menu-aberto'); }
-  else if (a === 'cs-fecha') csFechaMenu();
+  else if (a === 'cs-menu') { const x = $('.cs-app'); if (!x) return; if (x.classList.contains('menu-aberto')) csVolta(); else { x.classList.add('menu-aberto'); csCamadaAbre('menu', csFechaMenu); } }
+  else if (a === 'cs-fecha') csVolta();
   else if (a === 'cs-sair') csSair();
   else if (a === 'cs-emp') ir('adm', 'empresa');
   else if (a === 'cs-sino') snAbrir();
 });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') csFechaMenu(); });
 
 /* ---------- sessão ---------- */
 async function csSair() {
   try { await Data.auth.signOut(); } catch (e) { try { await Data.auth.forcarSaida(); } catch {} }
-  S.user = null; S.gv = null; S.gvForm = false; S.fm = null; S.users = []; S.notifs = []; S.aprov = []; { const g = $('#gv'); if (g) g.remove(); } S._desl.forEach(f => { try { f(); } catch {} }); S._desl = []; location.hash = '#/inicio'; render();
+  S.user = null; S.gv = null; S.gvForm = false; S.fm = null; S.camadas = []; S.users = []; S.notifs = []; S.aprov = []; { const g = $('#gv'); if (g) g.remove(); } S._desl.forEach(f => { try { f(); } catch {} }); S._desl = []; location.hash = '#/inicio'; render();
 }
 function csOuve(col, cb, o) { const off = Data.col(col).watch(cb, o); S._desl.push(off); return off; }
 async function csCarregaUsuario(uidAtual) {

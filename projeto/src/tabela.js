@@ -61,19 +61,58 @@ function tbHTML(cfg) {
 }
 
 /* ---------- janela retrátil (escolha de opção) ---------- */
-function ddHTML(id, valor, opcoes) {
-  const at = opcoes.find(o => o[0] === valor) || opcoes[0];
+/* o = { remover: true } → as opções podem sair da lista: segurar 1,5 s e arrastar até a lixeira que aparece ao lado (DD_RM[prefixo]) */
+function ddHTML(id, valor, opcoes, o) {
+  const at = opcoes.find(x => x[0] === valor) || opcoes[0], rm = o && o.remover;
   return '<div class="dd" data-dd="' + esc(id) + '"><button type="button" class="dd-b" data-act="dd-abre" aria-haspopup="listbox" aria-expanded="false"><span>' + esc(at[1]) + '</span>' + ic('seta', 'dd-s') + '</button>' +
-    '<ul class="dd-l" role="listbox" hidden>' + opcoes.map(o => '<li role="option" data-act="dd-v" data-v="' + esc(o[0]) + '" aria-selected="' + (o[0] === at[0]) + '" tabindex="0">' + esc(o[1]) + (o[0] === at[0] ? ic('ok') : '') + '</li>').join('') + '</ul></div>';
+    '<ul class="dd-l" role="listbox" hidden>' + opcoes.map(x => '<li role="option" data-act="dd-v" data-v="' + esc(x[0]) + '"' + (rm && x[0] && x[0].indexOf('__') !== 0 ? ' data-rm="1"' : '') + ' aria-selected="' + (x[0] === at[0]) + '" tabindex="0">' + esc(x[1]) + (x[0] === at[0] ? ic('ok') : '') + '</li>').join('') +
+    (rm && opcoes.some(x => x[0] && x[0].indexOf('__') !== 0) ? '<li class="dd-dica" aria-hidden="true">Para tirar da lista: segure 1,5 s e arraste até a lixeira</li>' : '') + '</ul></div>';
 }
 const DD_AO = {}; /* DD_AO['prefixo'] = (resto do id, valor) => ... */
+const DD_RM = {}; /* DD_RM['prefixo'] = (resto do id, valor) => ... (tirou da lista) */
+/* segurar e arrastar para a lixeira (mouse e dedo) */
+const DD_SEGURA = 1500;
+let ddPr = null;
+function ddPrLimpa() { if (!ddPr) return; clearTimeout(ddPr.t); if (ddPr.fant) ddPr.fant.remove(); if (ddPr.lixo) ddPr.lixo.remove(); if (ddPr.li) ddPr.li.classList.remove('dd-pega'); document.body.classList.remove('dd-arrastando'); ddPr = null; }
+function ddPrComeca() {
+  const p = ddPr; if (!p) return; p.drag = true;
+  try { if (navigator.vibrate) navigator.vibrate(30); } catch {}
+  p.li.classList.add('dd-pega'); document.body.classList.add('dd-arrastando');
+  const r = p.li.closest('.dd-l').getBoundingClientRect(), lx = document.createElement('div'); lx.className = 'dd-lixo'; lx.innerHTML = ic('lixo') + '<span>Solte aqui</span>';
+  document.body.appendChild(lx); const lw = lx.offsetWidth || 96, lh = lx.offsetHeight || 64;
+  let x = r.right + 12, y = r.top + Math.min(r.height, 220) / 2 - lh / 2;
+  if (x + lw > innerWidth - 8) { x = Math.max(8, Math.min(innerWidth - lw - 8, r.left + r.width / 2 - lw / 2)); y = r.bottom + 12; if (y + lh > innerHeight - 8) y = Math.max(8, r.top - lh - 12); }
+  lx.style.left = x + 'px'; lx.style.top = y + 'px'; p.lixo = lx;
+  const f = document.createElement('div'); f.className = 'dd-fant'; f.textContent = p.li.textContent; document.body.appendChild(f); p.fant = f; ddPrMove(p.x, p.y);
+}
+function ddPrMove(x, y) {
+  const p = ddPr; if (!p || !p.drag) return; p.x = x; p.y = y;
+  p.fant.style.left = (x + 10) + 'px'; p.fant.style.top = (y - 18) + 'px';
+  const r = p.lixo.getBoundingClientRect(); p.sobre = x >= r.left - 6 && x <= r.right + 6 && y >= r.top - 6 && y <= r.bottom + 6; p.lixo.classList.toggle('on', p.sobre);
+}
+document.addEventListener('pointerdown', e => {
+  const li = e.target.closest && e.target.closest('.dd-l li[data-rm]'); if (!li || (e.pointerType === 'mouse' && e.button !== 0)) return;
+  ddPrLimpa(); ddPr = { li: li, x: e.clientX, y: e.clientY, x0: e.clientX, y0: e.clientY, drag: false }; ddPr.t = setTimeout(ddPrComeca, DD_SEGURA);
+});
+document.addEventListener('pointermove', e => { if (!ddPr) return; if (ddPr.drag) { e.preventDefault(); ddPrMove(e.clientX, e.clientY); } else if (Math.abs(e.clientX - ddPr.x0) > 8 || Math.abs(e.clientY - ddPr.y0) > 8) ddPrLimpa(); });
+document.addEventListener('touchmove', e => { if (ddPr && ddPr.drag) { e.preventDefault(); const t = e.touches[0]; if (t) ddPrMove(t.clientX, t.clientY); } }, { passive: false });
+document.addEventListener('pointerup', () => {
+  if (!ddPr) return; const p = ddPr;
+  if (p.drag) { S._ddEngole = true; setTimeout(() => { S._ddEngole = false; }, 0); } /* o clique que vem junto com o soltar não escolhe a opção */
+  if (p.drag && p.sobre) { const dd = p.li.closest('.dd'), nome = dd.getAttribute('data-dd'), v = p.li.getAttribute('data-v'), pf = nome.split(':')[0]; ddPrLimpa(); ddFecha(); if (DD_RM[pf]) DD_RM[pf](nome.slice(pf.length + 1), v); return; }
+  ddPrLimpa();
+});
+document.addEventListener('pointercancel', () => { if (ddPr && !ddPr.drag) ddPrLimpa(); });
+document.addEventListener('contextmenu', e => { if (e.target.closest && e.target.closest('.dd-l li[data-rm]')) e.preventDefault(); });
 function ddFecha() { $$('.dd-l').forEach(l => { l.hidden = true; const b = l.previousElementSibling; if (b) b.setAttribute('aria-expanded', 'false'); }); }
 
 /* ---------- gaveta de detalhe (PC: à direita; celular: tela cheia) ---------- */
 S.gv = null; S.gvForm = false;
 /* gaveta de formulário (S.gvForm): não é redesenhada quando os dados mudam, para não perder o que a pessoa digita; só com gvDesenha(true) */
-function gvAbrir(fn, form) { S.gv = fn; S.gvForm = !!form; gvDesenha(true); }
-function gvFechar() { S.gv = null; S.gvForm = false; S.fm = null; const g = $('#gv'); if (g) g.remove(); document.body.classList.remove('gv-aberta'); try { render(); } catch {} }
+function gvAbrir(fn, form) { if (!S.camadas.length) csCamadaAbre('gv', gvFecharSo); S.gv = fn; S.gvForm = !!form; gvDesenha(true); }
+/* fechar como a pessoa fecha (X, Esc): volta uma camada */
+function gvFechar() { if (S.camadas.length) csVolta(); else gvFecharSo(); }
+function gvFecharSo() { S.gv = null; S.gvForm = false; S.fm = null; S._alSel = null; const g = $('#gv'); if (g) g.remove(); document.body.classList.remove('gv-aberta'); try { render(); } catch {} }
 function gvDesenha(forca) {
   let g = $('#gv'); if (!S.gv) { if (g) g.remove(); return; }
   if (S.gvForm && g && !forca) return;
@@ -128,11 +167,12 @@ document.addEventListener('click', e => {
   const a = t.getAttribute('data-act'), id = t.getAttribute('data-tb');
   if (a === 'dd-abre') { const l = t.nextElementSibling, ab = l.hidden; ddFecha(); l.hidden = !ab; t.setAttribute('aria-expanded', String(ab)); if (ab) { const s = l.querySelector('[aria-selected="true"]') || l.querySelector('li'); if (s) s.focus(); } return; }
   if (a === 'dd-v') {
+    if (S._ddEngole) return; /* foi segurar e arrastar, não escolher */
     const dd = t.closest('.dd'), nome = dd.getAttribute('data-dd'), v = t.getAttribute('data-v'); ddFecha();
     if (nome.indexOf('tbf:') === 0) { const p = nome.split(':'), st = tbEstado(p[1]); st.filtros[p[2]] = v; st.limite = 100; render(); return; }
     const pf = nome.split(':')[0]; if (DD_AO[pf]) DD_AO[pf](nome.slice(pf.length + 1), v); return;
   }
-  if (a === 'gv-fecha') { if (S.fm && S.fm.volta) { const v = S.fm.volta; S.fm = null; S.gvForm = false; v(); } else gvFechar(); return; }
+  if (a === 'gv-fecha') { gvFechar(); return; }
   const st = id ? tbEstado(id) : null;
   if (a === 'tb-ord') { const k = t.getAttribute('data-k'); st.ordem = st.ordem && st.ordem.k === k ? (st.ordem.dir === 'asc' ? { k: k, dir: 'desc' } : null) : { k: k, dir: 'asc' }; render(); }
   else if (a === 'tb-painel') { st.painel = !st.painel; st.colsAberto = false; render(); }
@@ -144,6 +184,6 @@ document.addEventListener('click', e => {
   else if (a === 'tb-lin') { const cfg = TB[id]; if (cfg && cfg.aoClicar) cfg.aoClicar(t.getAttribute('data-id')); }
 });
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { if ($$('.dd-l:not([hidden])').length) { ddFecha(); return; } if (S.gv && !(e.target.closest && e.target.closest('input,textarea'))) { const x = $('[data-act="gv-fecha"]'); if (x) x.click(); else gvFechar(); } }
+  if (e.key === 'Escape') { if ($$('.dd-l:not([hidden])').length) { ddFecha(); return; } if (S.camadas.length) { e.preventDefault(); csVolta(); } }
   if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('[data-act="dd-v"], tr[data-act="tb-lin"]')) { e.preventDefault(); e.target.click(); }
 });

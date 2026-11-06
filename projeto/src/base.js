@@ -1,7 +1,7 @@
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.3.0';
+const VERSAO = '0.3.1';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -54,7 +54,10 @@ const Store = (function () {
 })();
 
 let DEMO = /[?&]demo=1/.test(location.search) || /(^|#|&)demo(=1)?($|&)/.test(location.hash) || Store.get('sv2-demo') === '1';
-const PERFIS = { principal: 'Principal', principal_temp: 'Principal temporário', secundario: 'Secundário', visitante: 'Visitante' };
+/* nomes dos perfis na tela (pedido do Elias 05/11: trocar "Secundário"). O valor gravado no Firebase não muda (principal, principal_temp,
+   secundario + estrela, visitante): o EFClaudian continua lendo igual. Proposta A em aprovação: Administrador · Líder · Colaborador · Consulta. */
+const PERFIL_NOMES = { principal: 'Administrador', principal_temp: 'Administrador temporário', lider: 'Líder', secundario: 'Colaborador', visitante: 'Consulta' };
+const PERFIS = { principal: PERFIL_NOMES.principal, principal_temp: PERFIL_NOMES.principal_temp, secundario: PERFIL_NOMES.secundario, visitante: PERFIL_NOMES.visitante };
 
 /* ============ AJUDANTES ============ */
 const $ = (s, r) => (r || document).querySelector(s);
@@ -68,7 +71,7 @@ const hojeISO = () => { const d = new Date(); return d.getFullYear() + '-' + pad
 const clean = o => JSON.parse(JSON.stringify(o));
 function slugLogin(s) { return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim().replace(/\s+/g, '.').replace(/[^a-z0-9._-]/g, ''); }
 const emailOf = login => slugLogin(login) + '@efclaudian.app';
-const perfilLabel = u => !u ? '' : (PERFIS[u.perfil] || u.perfil) + (u.perfil === 'secundario' && u.estrela ? ' ★' : '');
+const perfilLabel = u => !u ? '' : u.perfil === 'secundario' && u.estrela ? PERFIL_NOMES.lider : (PERFIL_NOMES[u.perfil] || u.perfil);
 const isPrincipal = u => !!u && (u.perfil === 'principal' || u.perfil === 'principal_temp');
 const DIAS = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'];
 const MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];

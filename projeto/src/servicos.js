@@ -96,7 +96,7 @@ const Aprov = {
   async pedir(p) {
     const u = S.user; if (!u) return null;
     const para = semAusentes((Array.isArray(p.para) && p.para.length) ? p.para : supsOf(u));
-    if (!para.length) { aviso('Você ainda não tem superior cadastrado. Fale com o Principal.', 'erro'); return null; }
+    if (!para.length) { aviso('Você ainda não tem superior cadastrado. Fale com o Administrador.', 'erro'); return null; }
     const o = { ts: nowISO(), tipo: p.tipo || 'geral', titulo: p.titulo, descricao: p.descricao || '', solicitanteId: u.id, solicitanteNome: u.nome, solicitantePerfil: u.perfil,
       paraIds: para, paraNomes: para.map(nomeDe), status: 'pendente', decisao: null, refTipo: p.refTipo || '', refId: p.refId || '', payload: p.payload || null };
     const id = await Data.col('sv2_aprov').add(o);
@@ -117,7 +117,7 @@ const Aprov = {
   async decidir(id, ok, motivo) {
     const a = S.aprov.find(x => x.id === id); if (!a) return false;
     if (a.status !== 'pendente') { aviso('Esse pedido já foi decidido por ' + ((a.decisao && a.decisao.nome) || 'outra pessoa') + '.'); return false; }
-    if (!Aprov.podeDecidir(a)) { aviso('Só quem foi indicado como superior (ou o Principal) pode decidir.', 'erro'); return false; }
+    if (!Aprov.podeDecidir(a)) { aviso('Só quem foi indicado como superior (ou o Administrador) pode decidir.', 'erro'); return false; }
     if (!APROV_APLICA[a.tipo]) { aviso('Este pedido ainda é decidido no EFClaudian.', 'erro'); return false; }
     if (!ok && !motivo) { aviso('Escreva o motivo da reprovação.', 'erro'); return false; }
     const dec = { por: S.user.id, nome: S.user.nome, perfil: S.user.perfil, ts: nowISO(), motivo: motivo || '' };

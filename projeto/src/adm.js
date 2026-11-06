@@ -3,7 +3,7 @@
 function admEmpresa() {
   const e = S.empresa || {}, pode = isPrincipal(S.user), un = e.unidades || [], logo = imgSrc(e.logo);
   const minha = Store.get('cw-unidade') || un[0] || '';
-  return '<div class="adm-gr"><section class="pn"><div class="hd"><h3>Dados da empresa</h3><span class="sp"></span>' + (pode ? '' : '<span class="pill">só o Principal altera</span>') + '</div>' +
+  return '<div class="adm-gr"><section class="pn"><div class="hd"><h3>Dados da empresa</h3><span class="sp"></span>' + (pode ? '' : '<span class="pill">só o Administrador altera</span>') + '</div>' +
     '<form class="cpo" data-form="adm-empresa">' +
     '<div class="adm-logo"><span class="adm-lg">' + (logo ? '<img src="' + logo + '" alt="Logo atual">' : ic('imagem')) + '</span><div><b>Logo</b><small>PNG ou JPG; o app reduz para 256 px.</small>' +
     (pode ? '<div class="adm-lgb"><label class="bt">' + ic('imagem') + 'Escolher<input type="file" id="adm-logo" accept="image/png,image/jpeg,image/webp" hidden></label>' + (logo ? '<button type="button" class="bt ic-so" data-act="adm-tira-logo" title="Tirar a logo" aria-label="Tirar a logo">' + ic('lixo') + '</button>' : '') + '</div>' : '') + '</div></div>' +
@@ -42,7 +42,7 @@ async function admGrava(patch, msgOk) {
   const e = Object.assign({ nome: '', unidades: [], logo: '' }, S.empresa || {}, patch);
   delete e.id; delete e.srv; e.atualizadoEm = nowISO(); e.atualizadoPor = S.user.id;
   try { await Data.col('sv2_cfg').set('empresa', e); S.empresa = Object.assign({ id: 'empresa' }, e); aviso(msgOk || 'Empresa salva.'); render(); }
-  catch (er) { console.error(er); const m = $('#adm-msg'); const t = /permission/i.test(er && (er.code || er.message) || '') ? 'O Firebase não deixou salvar (permissão). As regras precisam liberar sv2_cfg/empresa para o Principal.' : 'Não foi possível salvar agora.'; if (m) m.textContent = t; else aviso(t, 'erro'); }
+  catch (er) { console.error(er); const m = $('#adm-msg'); const t = /permission/i.test(er && (er.code || er.message) || '') ? 'O Firebase não deixou salvar (permissão). As regras precisam liberar sv2_cfg/empresa para o Administrador.' : 'Não foi possível salvar agora.'; if (m) m.textContent = t; else aviso(t, 'erro'); }
 }
 document.addEventListener('submit', e => {
   const f = e.target.closest && e.target.closest('[data-form="adm-empresa"]'); if (!f) return;

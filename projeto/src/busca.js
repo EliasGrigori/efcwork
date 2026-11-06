@@ -37,20 +37,21 @@ function bgAbrir() {
   if (!S.user || $('#bg')) return;
   const d = document.createElement('div'); d.id = 'bg'; d.className = 'bg-fundo';
   d.innerHTML = '<div class="bg-caixa" role="dialog" aria-modal="true" aria-label="Buscar"><label class="bg-campo">' + ic('lupa') + '<input id="bg-q" type="search" autocomplete="off" placeholder="Buscar material, equipamento, solicitação ou tela" aria-label="Buscar"><kbd>Esc</kbd></label><div id="bg-res" class="bg-res" role="listbox"></div><p class="bg-dica">Setas para escolher · Enter abre · Esc fecha</p></div>';
-  document.body.appendChild(d); bgDesenha(); setTimeout(() => { const i = $('#bg-q'); if (i) i.focus(); }, 0);
+  document.body.appendChild(d); csCamadaAbre('bg', bgFecharSo); bgDesenha(); setTimeout(() => { const i = $('#bg-q'); if (i) i.focus(); }, 0);
 }
-function bgFechar() { const d = $('#bg'); if (d) d.remove(); }
+function bgFecharSo() { const d = $('#bg'); if (d) d.remove(); }
+function bgFechar() { if (csTemCamada('bg')) csVolta(); else bgFecharSo(); }
 function bgMove(n) { const l = $$('.bg-it'); if (!l.length) return; let k = l.findIndex(x => x.classList.contains('on')); l.forEach(x => { x.classList.remove('on'); x.setAttribute('aria-selected', 'false'); }); k = (k + n + l.length) % l.length; l[k].classList.add('on'); l[k].setAttribute('aria-selected', 'true'); l[k].scrollIntoView({ block: 'nearest' }); }
 document.addEventListener('input', e => { if (e.target && e.target.id === 'bg-q') bgDesenha(); });
 document.addEventListener('click', e => {
   if (e.target && e.target.id === 'bg') { bgFechar(); return; }
   const t = e.target.closest && e.target.closest('[data-act="bg-ir"], [data-act="cs-busca"]'); if (!t) return;
   if (t.getAttribute('data-act') === 'cs-busca') { bgAbrir(); return; }
-  const r = BG_RES[+t.getAttribute('data-k')]; bgFechar(); if (r) r.abrir();
+  const r = BG_RES[+t.getAttribute('data-k')]; bgFecharSo(); csCamadaSaiu('bg', () => { if (r) r.abrir(); });
 });
 document.addEventListener('keydown', e => {
   if ($('#bg')) {
-    if (e.key === 'Escape') { e.preventDefault(); bgFechar(); }
+    if (e.key === 'Escape') { e.preventDefault(); /* quem fecha é o voltar das camadas (tabela.js) */ }
     else if (e.key === 'ArrowDown') { e.preventDefault(); bgMove(1); } else if (e.key === 'ArrowUp') { e.preventDefault(); bgMove(-1); }
     else if (e.key === 'Enter') { const o = $('.bg-it.on'); if (o) { e.preventDefault(); o.click(); } }
     return;

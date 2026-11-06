@@ -67,21 +67,21 @@ function alCritAvisar(itens, movId) {
 const alCritNovo = vencConfirmado => vencConfirmado ? { st: 'confirmada', porId: S.user.id, porNome: S.user.nome, ts: nowISO(), vencido: true, proprio: true } : { st: 'pendente' };
 function alCritTxt(c) {
   if (!c) return '';
-  if (c.st === 'pendente') return 'Aguardando a confirmação do líder ★ (ou de quem tem Controle do almoxarifado)';
+  if (c.st === 'pendente') return 'Aguardando a confirmação do Líder (ou de quem tem Controle do almoxarifado)';
   if (c.st === 'confirmada') return 'Confirmada por ' + (c.porNome || '') + ' em ' + fmtDT(c.ts) + (c.proprio ? ' (quem lançou)' : '') + (c.vencido ? ' · lote vencido liberado pelo líder' : '');
   return 'Não confere: ' + (c.motivo || '') + ' · ' + (c.porNome || '') + ' em ' + fmtDT(c.ts);
 }
 
 /* ---------- motivos: os da configuração (ou uma lista simples), os que a equipe mais usou em 90 dias e os guardados pela pessoa ---------- */
 function alPref() { const p = S.almPref || {}; return { motivos: Array.isArray(p.motivos) ? p.motivos : [], ocultos: Array.isArray(p.ocultos) ? p.ocultos : [], uso: p.uso && typeof p.uso === 'object' ? p.uso : {} }; }
-function alPrefGravar(patch) { const p = Object.assign({}, alPref(), patch, { userId: S.user.id, userNome: S.user.nome, atualizadoEm: nowISO() }); S.almPref = Object.assign({ id: S.user.id }, p); return Data.col('sv2_alm_pref').set(S.user.id, p).catch(() => {}); }
+function alPrefGravar(patch) { const p = Object.assign({}, S.almPref || {}, alPref(), patch, { userId: S.user.id, userNome: S.user.nome, atualizadoEm: nowISO() }); delete p.id; S.almPref = Object.assign({ id: S.user.id }, p); return Data.col('sv2_alm_pref').set(S.user.id, p).catch(() => {}); }
 function alMotivos(ctx) {
   const pr = alPref(), cfg = S.cfgAlm && Array.isArray(S.cfgAlm.motivos) && S.cfgAlm.motivos.length ? S.cfgAlm.motivos : null;
   const lim = addDias(hojeISO(), -90), c = {};
   if (!cfg) S.almMov.forEach(m => { if (m.tipo === 'saida' && !m.anulada && m.motivo && String(m.data || '') >= lim) c[m.motivo] = (c[m.motivo] || 0) + 1; });
   const daEquipe = Object.keys(c).sort((a, b) => c[b] - c[a]).slice(0, 12);
   const base = (cfg || daEquipe.concat(ALM_MOTIVOS_BASE)).filter((m, n, l) => l.indexOf(m) === n && pr.ocultos.indexOf(m) < 0);
-  const lista = base.concat(pr.motivos.filter(m => base.indexOf(m) < 0));
+  const lista = base.concat(pr.motivos.filter(m => base.indexOf(m) < 0 && pr.ocultos.indexOf(m) < 0));
   const aqui = pr.uso[ctx || '*'] || {}, geral = pr.uso['*'] || {};
   return lista.map((m, n) => ({ m: m, n: n, a: aqui[m] || 0, g: geral[m] || 0 })).sort((x, y) => y.a - x.a || y.g - x.g || x.n - y.n).map(x => x.m);
 }
@@ -112,7 +112,7 @@ function lcPicker(acao, dica) {
 const lcItemEsc = (i, acao) => '<button type="button" class="fm-esc" data-act="' + acao + '"><span><b>' + esc(i.nome) + '</b><small>utilizável ' + alQ(alDisp(i.id)) + ' ' + esc(i.un || '') + (alSaldo(i.id) > alDisp(i.id) ? ' · ' + alQ(alSaldo(i.id) - alDisp(i.id)) + ' vencido' : '') + (alPorFrasco(i) && alAbertos(i.id).length ? ' · ' + alAbertos(i.id).length + ' em uso' : '') + '</small></span><span class="fm-tr">trocar</span></button>';
 function lcMotivoBl(ctx) {
   const f = S.fm, ms = alMotivos(ctx), outro = f.motivo === '__outro';
-  return lcBl('Motivo', ddHTML('lc:motivo', f.motivo || '', [['', 'Escolha o motivo']].concat(ms.map(m => [m, m])).concat([['__outro', 'Escrever outro motivo']])) +
+  return lcBl('Motivo', ddHTML('lc:motivo', f.motivo || '', [['', 'Escolha o motivo']].concat(ms.map(m => [m, m])).concat([['__outro', 'Escrever outro motivo']]), { remover: true }) +
     (outro ? lcIn('motivoTxt', f.motivoTxt, ' placeholder="Qual o motivo?"') + '<label class="fm-ck"><input type="checkbox" data-fm="guardar"' + (f.guardar !== '0' ? ' checked' : '') + '> Guardar esse motivo na minha lista</label>' : ''));
 }
 const lcDin = v => Number(v) ? Number(v).toFixed(2).replace('.', ',') : '';
@@ -120,12 +120,23 @@ const lcMotFinal = f => f.motivo === '__outro' ? String(f.motivoTxt || '').trim(
 /* evita gravar duas vezes com toque duplo: vale para o MESMO formulário aberto */
 function lcTravar() { const f = S.fm, a = Date.now(); if (!f) return false; if (f._trava && a - f._trava < 1200) return false; f._trava = a; return true; }
 /* abre o formulário na gaveta; "volta" é o detalhe de onde ele saiu (o X volta para ele) */
-function lcAbrir(estado, volta) { S.fm = Object.assign({ msg: '', volta: volta || null }, estado); gvAbrir(lcGaveta, true); }
-function lcFim() { const v = S.fm && S.fm.volta; S.fm = null; S.gvForm = false; if (v) v(); else gvFechar(); }
-function lcGrava(ps, okMsg) {
-  lcFim(); aviso(okMsg);
+function lcAbrir(estado, volta) { S.fm = Object.assign({ msg: '', volta: volta || null, sujo: false }, estado); csCamadaAbre('fm', lcVoltaCamada); gvAbrir(lcGaveta, true); }
+/* voltar (Esc, X, voltar do celular): com algo preenchido, pergunta antes de descartar */
+function lcVoltaCamada() {
+  const f = S.fm; if (!f) return true;
+  if (f.sujo) { csConfirma({ titulo: 'Descartar o que você preencheu?', texto: 'Se voltar agora, o que foi preenchido neste formulário será perdido.', sim: 'Descartar', nao: 'Continuar preenchendo' }, () => { if (S.fm) S.fm.sujo = false; csVolta(); }); return false; }
+  lcFimSo(); return true;
+}
+function lcFimSo() { const v = S.fm && S.fm.volta; S.fm = null; S.gvForm = false; if (v) v(); else gvFecharSo(); }
+/* depois de gravar: fecha o formulário (volta para o detalhe de onde saiu) e devolve o histórico */
+function lcFim(depois) { lcFimSo(); csCamadaSaiu('fm', depois); }
+function lcGrava(ps, okMsg, depois) {
+  lcFim(depois); aviso(okMsg);
   Promise.all(ps).catch(e => { console.error(e); aviso(svErro(e), 'erro'); });
 }
+/* lista de escolher por cima de um formulário que já tem linhas: é uma camada */
+function lcPkAbre() { const f = S.fm; f.pk = true; csCamadaAbre('pk', () => { if (S.fm) { S.fm.pk = false; gvDesenha(true); } }); gvDesenha(true); }
+function lcPkSai() { const f = S.fm; f.pk = false; if (csTemCamada('pk')) csCamadaSaiu('pk'); gvDesenha(true); }
 /* superior aplica na hora; secundário vira pedido (como no EFClaudian) */
 async function lcPedirOuFazer(acao, refId, payload, titulo, descricao, okMsg) {
   const p = Object.assign({ acao: acao, refId: refId }, payload);
@@ -172,6 +183,43 @@ async function lcAplicar(p, aprov) {
 }
 APROV_APLICA.almox = lcAplicar;
 
+
+/* ---------- favoritos (pedido do Elias, 05/11): um favorito já traz os materiais e as quantidades, que podem ser mudados antes de lançar.
+   Vêm dos kits da configuração (sv2_cfg/almox.kits, os mesmos do EFClaudian) e dos favoritos da própria pessoa (sv2_alm_pref.favs). ---------- */
+const alItemK = k => S.almItens.find(i => i.seedK === k) || null;
+function lcFavs() {
+  const pr = S.almPref || {}, ocul = Array.isArray(pr.kitsOcultos) ? pr.kitsOcultos : [];
+  const lin = l => (l || []).map(x => { const i = x.itemId ? alItem(x.itemId) : alItemK(x.k); return i && i.ativo !== false ? { itemId: i.id, qtd: Number(x.qtd) || 0 } : null; }).filter(Boolean);
+  const kits = (S.cfgAlm && Array.isArray(S.cfgAlm.kits) ? S.cfgAlm.kits : []).filter(k => ocul.indexOf(k.id) < 0).map(k => ({ id: 'k:' + k.id, nome: k.nome, motivo: k.motivo || '', lab: k.lab || '', linhas: lin(k.itens), meu: false }));
+  const meus = (Array.isArray(pr.favs) ? pr.favs : []).map(k => ({ id: 'p:' + k.id, nome: k.nome, motivo: k.motivo || '', linhas: lin(k.itens), meu: true }));
+  return kits.concat(meus).filter(k => k.linhas.length);
+}
+function lcFavUsar(id) {
+  const f = S.fm, k = lcFavs().find(x => x.id === id); if (!f || !k) return;
+  const ms = alMotivos('kit:' + id), naLista = !k.motivo || ms.indexOf(k.motivo) >= 0;
+  Object.assign(f, { k: 'multi', favId: k.id, favNome: k.nome, favMeu: k.meu, lab: k.lab || '', linhas: k.linhas.map(l => ({ itemId: l.itemId, qtd: alQin(l.qtd) })), motivo: naLista ? k.motivo : '__outro', motivoTxt: naLista ? '' : k.motivo, pk: false, msg: '', sujo: true });
+  gvDesenha(true);
+}
+function lcFavTirar(id) {
+  const pr = alPref(), raw = S.almPref || {}, antes = { favs: (raw.favs || []).slice(), kitsOcultos: (raw.kitsOcultos || []).slice() }, k = lcFavs().find(x => x.id === id);
+  if (id.indexOf('p:') === 0) alPrefGravar({ favs: antes.favs.filter(x => 'p:' + x.id !== id), kitsOcultos: antes.kitsOcultos });
+  else alPrefGravar({ kitsOcultos: antes.kitsOcultos.concat([id.slice(2)]), favs: antes.favs });
+  void pr; gvDesenha(true);
+  aviso('"' + (k ? k.nome : 'Favorito') + '" saiu da sua lista.', 'ok', () => { alPrefGravar(antes); gvDesenha(true); });
+}
+function lcMotivoTirar(m) {
+  const pr = alPref(), antes = { motivos: pr.motivos.slice(), ocultos: pr.ocultos.slice() };
+  alPrefGravar({ motivos: pr.motivos.filter(x => x !== m), ocultos: pr.ocultos.indexOf(m) < 0 ? pr.ocultos.concat([m]) : pr.ocultos });
+  if (S.fm && S.fm.motivo === m) S.fm.motivo = '';
+  gvDesenha(true);
+  aviso('"' + m + '" saiu da sua lista de motivos.', 'ok', () => { alPrefGravar(antes); gvDesenha(true); });
+}
+DD_RM.lc = (k, v) => { if (k === 'motivo') lcMotivoTirar(v); else if (k === 'fav') lcFavTirar(v); };
+function lcFavBloco() {
+  const fs = lcFavs();
+  return '<div class="fm-fav">' + (fs.length ? lcBl('Favoritos', ddHTML('lc:fav', '', [['', 'Escolha um favorito (' + fs.length + ')']].concat(fs.map(k => [k.id, k.nome + ' · ' + k.linhas.length + ' material(is)'])), { remover: true }), 'já traz os materiais') : '') +
+    '<button type="button" class="bt" data-act="lc-multi">' + ic('lista') + 'Saída de vários materiais</button></div>';
+}
 /* ======================= formulários ======================= */
 function lcGaveta() {
   const f = S.fm; if (!f) return null;
@@ -182,19 +230,19 @@ const lcPe = (okAct, okTxt, extra) => (extra || '') + '<button type="button" cla
 
 /* ---------- saída ---------- */
 LC_FORM.saida = f => {
-  if (!f.itemId) return { ico: 'sai', sub: 'Almoxarifado · ' + S.user.nome, titulo: 'Saída', corpo: lcMsg() + '<p class="gv-h">Escolha o material que vai sair</p>' + lcPicker('lc-sai-item') };
+  if (!f.itemId) return { ico: 'sai', sub: 'Almoxarifado · ' + S.user.nome, titulo: 'Saída', corpo: lcMsg() + lcFavBloco() + '<p class="gv-h">Ou escolha o material que vai sair</p>' + lcPicker('lc-sai-item') };
   const i = alItem(f.itemId); if (!i) { f.itemId = ''; return LC_FORM.saida(f); }
   const ls = alLotes(i.id), auto = ls.find(l => !alVencido(l)), lotSel = f.lotId ? alIdx().lots[f.lotId] : null, venc = !!(lotSel && alVencido(lotSel)), crit = !!i.critico;
   const lt = l => (l.lote || 'sem lote') + (l.validade ? ' · vence ' + fmtD(l.validade) : '') + ' · ' + alQ(l.saldo) + (alVencido(l) ? ' · VENCIDO' : '');
   let c = lcMsg() + lcBl('Material', lcItemEsc(i, 'lc-sai-trocar'));
-  if (crit) c += lcAv('<b>Produto crítico.</b> A saída fica aguardando a confirmação do líder ★ (ou de quem tem Controle do almoxarifado).', 'wa');
+  if (crit) c += lcAv('<b>Produto crítico.</b> A saída fica aguardando a confirmação do Líder (ou de quem tem Controle do almoxarifado).', 'wa');
   if (alPorFrasco(i)) c += lcAv('Este item sai por <b>frasco aberto</b>: para começar a usar um frasco, use Abrir frasco no material. A saída aqui é para transferência, perda ou descarte.');
   c += '<div class="fm-g">' + lcBl('Quantidade', lcPasso('qtd', f.qtd, i.un)) +
     (ls.length > 1 || (ls.length === 1 && alVencido(ls[0])) ? lcBl('Lote', ddHTML('lc:lotId', f.lotId || '', [['', 'Automático' + (auto ? ' · ' + (auto.lote || 'sem lote') : '')]].concat(ls.map(l => [l.id, lt(l)]))), f.lotId ? 'escolhido' : 'vence primeiro, sai primeiro') : lcBl('Lote', '<p class="fm-fixo">' + esc(ls[0] ? lt(ls[0]) : 'sem saldo') + '</p>')) + '</div>';
-  if (venc && crit && !alSup()) c += lcAv('<b>Lote vencido de produto crítico.</b> Não sai, nem com motivo: só o líder ★ libera. Escreva por que precisa e toque em Pedir ao líder ★.', 'cr') + lcBl('Por que precisa usar o lote vencido', lcIn('vencMot', f.vencMot));
-  else if (venc) c += lcAv('Este lote venceu em ' + fmtD(lotSel.validade) + '. Para usar mesmo assim, diga o motivo.', 'cr') + lcBl('Motivo para usar o lote vencido', lcIn('vencMot', f.vencMot)) + (crit ? '<label class="fm-ck"><input type="checkbox" data-fm="critVenc"' + (f.critVenc === '1' ? ' checked' : '') + '> Confirmo, como líder ★, a saída do lote vencido deste produto crítico</label>' : '');
+  if (venc && crit && !alSup()) c += lcAv('<b>Lote vencido de produto crítico.</b> Não sai, nem com motivo: só o Líder libera. Escreva por que precisa e toque em Pedir ao Líder.', 'cr') + lcBl('Por que precisa usar o lote vencido', lcIn('vencMot', f.vencMot));
+  else if (venc) c += lcAv('Este lote venceu em ' + fmtD(lotSel.validade) + '. Para usar mesmo assim, diga o motivo.', 'cr') + lcBl('Motivo para usar o lote vencido', lcIn('vencMot', f.vencMot)) + (crit ? '<label class="fm-ck"><input type="checkbox" data-fm="critVenc"' + (f.critVenc === '1' ? ' checked' : '') + '> Confirmo, como Líder, a saída do lote vencido deste produto crítico</label>' : '');
   c += lcMotivoBl('item:' + i.id) + '<div class="fm-g">' + lcBl('Data da saída', lcData('data', f.data)) + lcBl('Observação', lcIn('obs', f.obs, ' placeholder="opcional"')) + '</div>';
-  return { ico: 'sai', sub: 'Saída · ' + S.user.nome, titulo: i.nome, corpo: c, rodape: venc && crit && !alSup() ? '<button type="button" class="bt" data-act="gv-fecha">Cancelar</button><button type="button" class="bt pr" data-act="lc-crit-pedir">Pedir ao líder ★</button>' : lcPe('lc-sai-ok', 'Registrar saída') };
+  return { ico: 'sai', sub: 'Saída · ' + S.user.nome, titulo: i.nome, corpo: c, rodape: venc && crit && !alSup() ? '<button type="button" class="bt" data-act="gv-fecha">Cancelar</button><button type="button" class="bt pr" data-act="lc-crit-pedir">Pedir ao Líder</button>' : lcPe('lc-sai-ok', 'Registrar saída') };
 };
 function lcSaidaOk() {
   const f = S.fm, i = alItem(f.itemId); if (!i) return;
@@ -204,9 +252,9 @@ function lcSaidaOk() {
   const er = validaData(f.data); if (er) return lcErro(er);
   const a = alAlocar(i.id, q, f.lotId); if (a.erro) return lcErro(a.erro);
   const venc = a.partes.some(p => alVencido(p.l)), crit = !!i.critico;
-  if (venc && crit && !alSup()) return lcErro('Lote vencido de produto crítico não sai, nem com motivo. Toque em Pedir ao líder ★.');
+  if (venc && crit && !alSup()) return lcErro('Lote vencido de produto crítico não sai, nem com motivo. Toque em Pedir ao Líder.');
   if (venc && String(f.vencMot || '').trim().length < 3) return lcErro('Escreva o motivo para usar o lote vencido.');
-  if (venc && crit && f.critVenc !== '1') return lcErro('Marque a confirmação do líder ★ para sair o lote vencido deste produto crítico.');
+  if (venc && crit && f.critVenc !== '1') return lcErro('Marque a confirmação do Líder para sair o lote vencido deste produto crítico.');
   if (!lcTravar()) return;
   const guardar = f.motivo === '__outro' && f.guardar !== '0' && alMotivos('item:' + i.id).indexOf(mot) < 0; /* antes de gravar: a saída nova entraria nos "da equipe" */
   alMinAvisa([{ i: i, q: q }]); /* antes de gravar: o saldo ainda é o de antes */
@@ -220,6 +268,51 @@ function lcSaidaOk() {
   alMotivoUsado('item:' + i.id, mot, guardar);
   if (critObj && critObj.st === 'pendente') alCritAvisar([{ i: i, q: q, mot: mot }], ids[0]);
   lcGrava(ps, 'Saída registrada: ' + alQ(q) + ' ' + (i.un || '') + ' de ' + i.nome + '.' + (critObj && critObj.st === 'pendente' ? ' Produto crítico: aguardando confirmação.' : ''));
+}
+
+/* ---------- saída de vários materiais (favorito ou montada na hora) — regras do alKitOk do EFClaudian ---------- */
+LC_FORM.multi = f => {
+  if (f.pk || !f.linhas.length) return { ico: 'sai', sub: 'Saída de vários materiais' + (f.linhas.length ? ' · ' + f.linhas.length + ' já na lista' : ''), titulo: 'Qual material?', corpo: lcMsg() + lcPicker('lc-multi-item'), rodape: f.linhas.length ? '<button type="button" class="bt" data-act="lc-multi-volta">' + ic('volta') + 'Voltar para a saída</button>' : '' };
+  let c = lcMsg() + '<div class="fm-lotes">' + f.linhas.map((l, n) => { const i = alItem(l.itemId); if (!i) return ''; return '<div class="fm-lt"><span><b>' + esc(i.nome) + '</b><small>utilizável ' + alQ(alDisp(i.id)) + ' ' + esc(i.un || '') + (i.critico ? ' · produto crítico' : '') + '</small></span>' + lcIn('linhas.' + n + '.qtd', l.qtd, ' inputmode="decimal" class="fm-i num" aria-label="Quantidade de ' + esc(i.nome) + '"') + '<button type="button" class="bt ic-so" data-act="lc-multi-rm" data-id="' + n + '" title="Tirar" aria-label="Tirar">' + ic('lixo') + '</button></div>'; }).join('') + '</div>' +
+    '<button type="button" class="bt fm-add" data-act="lc-multi-add">' + ic('mais') + 'Adicionar material</button>' +
+    (f.linhas.some(l => { const i = alItem(l.itemId); return i && i.critico; }) ? lcAv('Tem <b>produto crítico</b>: a saída dele fica aguardando a confirmação do Líder.', 'wa') : '') +
+    lcMotivoBl(f.favId ? 'kit:' + f.favId : 'combo') + '<div class="fm-g">' + lcBl('Data da saída', lcData('data', f.data)) + lcBl('Observação', lcIn('obs', f.obs, ' placeholder="opcional"')) + '</div>' +
+    (f.favId ? (f.favMeu ? '<label class="fm-ck"><input type="checkbox" data-fm="atualizaFav"' + (f.atualizaFav === '1' ? ' checked' : '') + '> Atualizar o favorito com estes materiais e quantidades</label>' : '')
+      : '<label class="fm-ck"><input type="checkbox" data-fm="salvarFav"' + (f.salvarFav === '1' ? ' checked' : '') + '> Guardar como favorito</label>' + (f.salvarFav === '1' ? lcBl('Nome do favorito', lcIn('nomeFav', f.nomeFav, ' placeholder="Ex.: Envio de água"')) : ''));
+  return { ico: 'sai', sub: f.favNome ? 'Favorito · ' + f.favNome : 'Saída de vários materiais', titulo: f.favNome || 'Vários materiais', corpo: c, rodape: lcPe('lc-multi-ok', 'Registrar saída') };
+};
+function lcMultiOk() {
+  const f = S.fm, mot = lcMotFinal(f), fav = f.favId ? lcFavs().find(x => x.id === f.favId) : null;
+  const salvar = !f.favId && f.salvarFav === '1', nomeFav = String(f.nomeFav || '').trim();
+  if (salvar && nomeFav.length < 3) return lcErro('Dê um nome ao favorito (ou desmarque "Guardar como favorito").');
+  if (!mot) return lcErro(f.motivo === '__outro' ? 'Escreva qual é o motivo.' : 'Escolha o motivo.');
+  const er = validaData(f.data); if (er) return lcErro(er);
+  const usar = [];
+  for (const l of f.linhas) {
+    const i = alItem(l.itemId); if (!i) continue; const q = alR(alNum(l.qtd || '0'));
+    if (isNaN(q) || q < 0) return lcErro('Quantidade inválida em ' + i.nome + '.');
+    if (q === 0) continue;
+    const a = alAlocar(i.id, q, ''); if (a.erro) return lcErro(i.nome + ': ' + a.erro);
+    usar.push({ i: i, q: q, a: a });
+  }
+  if (!usar.length) return lcErro('Todas as quantidades estão zeradas.');
+  if (!lcTravar()) return;
+  const ctx = f.favId ? 'kit:' + f.favId : 'combo', guardarMot = f.motivo === '__outro' && f.guardar !== '0' && alMotivos(ctx).indexOf(mot) < 0;
+  alMinAvisa(usar.map(u => ({ i: u.i, q: u.q })));
+  const grupo = uid(), ps = [], crits = [], nome = fav ? fav.nome : salvar ? nomeFav : ''; let critId = '';
+  usar.forEach(u => u.a.partes.forEach(p => {
+    const o = { tipo: 'saida', itemId: u.i.id, itemNome: u.i.nome, lotRef: p.l.id, lote: p.l.lote, validade: p.l.validade, qtd: p.q, preco: p.l.preco, criadoEm: nowISO(), por: S.user.id, porNome: S.user.nome, motivo: mot, obs: String(f.obs || '').trim(), data: f.data, grupo: grupo, kit: nome };
+    if (f.lab) o.lab = f.lab; if (u.i.critico) o.critico = { st: 'pendente' };
+    const mid = uid(); if (u.i.critico && !critId) critId = mid; ps.push(Data.col('sv2_alm_mov').set(mid, o));
+  }));
+  usar.filter(u => u.i.critico).forEach(u => crits.push({ i: u.i, q: u.q, mot: mot }));
+  const pr = S.almPref || {}, favs = Array.isArray(pr.favs) ? pr.favs.slice() : [], itens = usar.map(u => ({ itemId: u.i.id, qtd: u.q }));
+  if (salvar) alPrefGravar({ favs: favs.concat([{ id: uid().slice(0, 8), nome: nomeFav, motivo: mot, itens: itens }]) });
+  else if (f.favMeu && f.atualizaFav === '1') alPrefGravar({ favs: favs.map(x => 'p:' + x.id === f.favId ? Object.assign({}, x, { motivo: mot, itens: itens }) : x) });
+  Audit.log({ acao: 'saida_almox', entidade: 'almox_kit', entidadeId: f.favId || grupo, resumo: 'Saída ' + (nome ? 'do favorito ' + nome : 'de vários itens') + ': ' + usar.map(u => alQ(u.q) + ' ' + u.i.nome).join(', ') + ' — ' + mot + (f.obs ? ' · ' + String(f.obs).trim() : '') + (crits.length ? ' · PRODUTO CRÍTICO aguardando confirmação: ' + crits.map(x => x.i.nome).join(', ') : ''), depois: { itens: usar.map(u => ({ item: u.i.nome, qtd: u.q })), motivo: mot, obs: String(f.obs || '').trim() } });
+  alMotivoUsado(ctx, mot, guardarMot);
+  if (crits.length) alCritAvisar(crits, critId);
+  lcGrava(ps, (nome ? 'Saída do favorito ' + nome + ' registrada.' : 'Saída de ' + usar.length + ' materiais registrada.') + (salvar ? ' Favorito guardado.' : '') + (crits.length ? ' Produto crítico: aguardando confirmação.' : ''));
 }
 /* lote vencido de produto crítico, por quem não é líder: vira pedido */
 async function lcCritPedir() {
@@ -241,13 +334,13 @@ LC_FORM.abrir = f => {
   const i = alItem(f.itemId); if (!i) return null;
   const ls = alLotes(i.id), auto = ls.find(l => !alVencido(l)) || ls[0], sel = f.lotId ? alIdx().lots[f.lotId] : auto, venc = !!(sel && alVencido(sel)), crit = !!i.critico, d = Number(i.prazoAberto) || 0;
   let c = lcMsg() + gvNums([[alQ(alSaldo(i.id)), 'lacrados'], [String(alAbertos(i.id).length), 'em uso']]);
-  if (crit) c += lcAv('<b>Produto crítico.</b> Abrir o frasco fica aguardando a confirmação do líder ★ (ou de quem tem Controle do almoxarifado).', 'wa');
+  if (crit) c += lcAv('<b>Produto crítico.</b> Abrir o frasco fica aguardando a confirmação do Líder (ou de quem tem Controle do almoxarifado).', 'wa');
   c += lcBl('Qual frasco', ls.length > 1 ? ddHTML('lc:lotId', f.lotId || (auto ? auto.id : ''), ls.map(l => [l.id, (l.lote || 'sem lote') + (l.validade ? ' · vence ' + fmtD(l.validade) : '') + (alVencido(l) ? ' · VENCIDO' : '')])) : '<p class="fm-fixo">' + esc(sel ? (sel.lote || 'sem lote') + (sel.validade ? ' · vence ' + fmtD(sel.validade) : '') : '—') + '</p>', ls.length > 1 ? 'o que vence primeiro vem marcado' : '');
-  if (venc && crit && !alSup()) c += lcAv('<b>Lote vencido de produto crítico.</b> Não abre, nem com motivo: só o líder ★ libera.', 'cr') + lcBl('Por que precisa usar o lote vencido', lcIn('vencMot', f.vencMot));
-  else if (venc && crit) c += lcAv('Este lote venceu em ' + fmtD(sel.validade) + '.', 'cr') + lcBl('Motivo para usar o lote vencido', lcIn('vencMot', f.vencMot)) + '<label class="fm-ck"><input type="checkbox" data-fm="critVenc"' + (f.critVenc === '1' ? ' checked' : '') + '> Confirmo, como líder ★, abrir o frasco vencido deste produto crítico</label>';
+  if (venc && crit && !alSup()) c += lcAv('<b>Lote vencido de produto crítico.</b> Não abre, nem com motivo: só o Líder libera.', 'cr') + lcBl('Por que precisa usar o lote vencido', lcIn('vencMot', f.vencMot));
+  else if (venc && crit) c += lcAv('Este lote venceu em ' + fmtD(sel.validade) + '.', 'cr') + lcBl('Motivo para usar o lote vencido', lcIn('vencMot', f.vencMot)) + '<label class="fm-ck"><input type="checkbox" data-fm="critVenc"' + (f.critVenc === '1' ? ' checked' : '') + '> Confirmo, como Líder, abrir o frasco vencido deste produto crítico</label>';
   if (d) c += lcAv('Depois de aberto, este item vale ' + d + ' dia(s): o aviso aparece em ' + fmtD(addDias(f.data || hojeISO(), d)) + '.');
   c += '<div class="fm-g">' + lcBl('Data da abertura', lcData('data', f.data)) + lcBl('Para que foi aberto', lcIn('obs', f.obs, ' placeholder="opcional"')) + '</div>';
-  return { ico: 'frasco', sub: 'Abrir frasco', titulo: i.nome, corpo: c, rodape: venc && crit && !alSup() ? '<button type="button" class="bt" data-act="gv-fecha">Cancelar</button><button type="button" class="bt pr" data-act="lc-crit-pedir">Pedir ao líder ★</button>' : lcPe('lc-abrir-ok', 'Abrir frasco') };
+  return { ico: 'frasco', sub: 'Abrir frasco', titulo: i.nome, corpo: c, rodape: venc && crit && !alSup() ? '<button type="button" class="bt" data-act="gv-fecha">Cancelar</button><button type="button" class="bt pr" data-act="lc-crit-pedir">Pedir ao Líder</button>' : lcPe('lc-abrir-ok', 'Abrir frasco') };
 };
 function lcAbrirOk() {
   const f = S.fm, i = alItem(f.itemId); if (!i) return;
@@ -256,9 +349,9 @@ function lcAbrirOk() {
   const a = alAlocar(i.id, 1, f.lotId || (auto ? auto.id : '')); if (a.erro) return lcErro(a.erro);
   const p = a.partes[0], venc = alVencido(p.l), crit = !!i.critico;
   if (crit && venc) {
-    if (!alSup()) return lcErro('Lote vencido de produto crítico não abre, nem com motivo. Toque em Pedir ao líder ★.');
+    if (!alSup()) return lcErro('Lote vencido de produto crítico não abre, nem com motivo. Toque em Pedir ao Líder.');
     if (String(f.vencMot || '').trim().length < 3) return lcErro('Escreva o motivo para usar o lote vencido.');
-    if (f.critVenc !== '1') return lcErro('Marque a confirmação do líder ★ para abrir o frasco vencido deste produto crítico.');
+    if (f.critVenc !== '1') return lcErro('Marque a confirmação do Líder para abrir o frasco vencido deste produto crítico.');
   }
   if (!lcTravar()) return;
   const id = uid(), o = { tipo: 'abrir', itemId: i.id, itemNome: i.nome, lotRef: p.l.id, lote: p.l.lote, validade: p.l.validade, qtd: 1, preco: p.l.preco, motivo: 'Frasco aberto para uso', obs: String(f.obs || '').trim(), data: f.data, criadoEm: nowISO(), por: S.user.id, porNome: S.user.nome };
@@ -278,8 +371,7 @@ function lcFimOk(abrirOutro) {
   const o = { tipo: 'fim', itemId: m.itemId, itemNome: m.itemNome, abertoRef: m.id, lote: m.lote || '', validade: m.validade || '', qtd: 0, preco: 0, motivo: 'Frasco terminou', obs: String(f.obs || '').trim(), data: hojeISO(), criadoEm: nowISO(), por: S.user.id, porNome: S.user.nome };
   Audit.log({ acao: 'fim_frasco_almox', entidade: 'almox_item', entidadeId: m.itemId, resumo: 'Frasco de ' + m.itemNome + ' terminou (aberto em ' + fmtD(m.data) + ')', depois: { abertoEm: m.data } });
   const volta = f.volta, itemId = m.itemId;
-  lcGrava([Data.col('sv2_alm_mov').set(uid(), o)], 'Anotado: o frasco acabou.');
-  if (abrirOutro) setTimeout(() => lcAbrir({ k: 'abrir', itemId: itemId, lotId: '', obs: '', data: hojeISO() }, volta), 120);
+  lcGrava([Data.col('sv2_alm_mov').set(uid(), o)], 'Anotado: o frasco acabou.', abrirOutro ? () => lcAbrir({ k: 'abrir', itemId: itemId, lotId: '', obs: '', data: hojeISO(), vencMot: '', critVenc: '' }, volta) : null);
 }
 
 /* ---------- entrada (várias linhas) ---------- */
@@ -330,7 +422,7 @@ function lcEntradaOk() {
 /* ---------- ajuste pela contagem ---------- */
 LC_FORM.ajuste = f => {
   const i = alItem(f.itemId); if (!i) return null; const ls = alLotes(i.id);
-  return { ico: 'ajuste', sub: 'Ajustar saldo · digite o que foi contado em cada lote', titulo: i.nome, corpo: lcMsg() + (alSup() ? '' : lcAv('Como secundário, o ajuste vai como pedido ao seu superior.')) +
+  return { ico: 'ajuste', sub: 'Ajustar saldo · digite o que foi contado em cada lote', titulo: i.nome, corpo: lcMsg() + (alSup() ? '' : lcAv('Como Colaborador, o ajuste vai como pedido ao seu superior.')) +
     '<div class="fm-lotes">' + ls.map(l => '<div class="fm-lt"><span><b>' + esc(l.lote || 'sem lote') + '</b><small>' + (l.validade ? 'vence ' + fmtD(l.validade) + ' · ' : '') + 'sistema: ' + alQ(l.saldo) + ' ' + esc(i.un || '') + '</small></span>' + lcIn('aj.' + l.id, f.aj[l.id] != null ? f.aj[l.id] : alQin(l.saldo), ' inputmode="decimal" class="fm-i num" aria-label="Contado no lote ' + esc(l.lote || 'sem lote') + '"') + '</div>').join('') + '</div>' +
     lcBl('Motivo do ajuste', lcTx('motivoG', f.motivoG, 'Ex.: contagem de hoje, quebra, perda')),
     rodape: lcPe('lc-aj-ok', alSup() ? 'Ajustar' : 'Pedir ajuste') };
@@ -405,7 +497,7 @@ LC_FORM.naoconf = f => {
 function lcCritDecidir(id, ok, motivo) {
   const m = S.almMov.find(x => x.id === id);
   if (!m || !alCritPendMov(m)) { aviso('Esta saída já foi decidida.', 'erro'); return false; }
-  if (!alCtrl(S.user)) { aviso('Só o líder ★, o Principal ou quem tem Controle do almoxarifado confirma.', 'erro'); return false; }
+  if (!alCtrl(S.user)) { aviso('Só o Líder, o Administrador ou quem tem Controle do almoxarifado confirma.', 'erro'); return false; }
   const mot = ok ? '' : String(motivo || '').trim(); if (!ok && mot.length < 3) return lcErro('Escreva o que não confere.');
   const alvo = S.almMov.filter(x => alCritPendMov(x) && x.itemId === m.itemId && (x.id === m.id || (m.grupo && x.grupo === m.grupo)));
   const c = { st: ok ? 'confirmada' : 'nao_confere', porId: S.user.id, porNome: S.user.nome, ts: nowISO(), proprio: m.por === S.user.id }; if (!ok) c.motivo = mot;
@@ -420,7 +512,7 @@ function lcCritDecidir(id, ok, motivo) {
 
 /* ---------- solicitação ao almoxarifado central ---------- */
 LC_FORM.sol = f => {
-  if (f.pk) return { ico: 'doc', sub: 'Nova solicitação', titulo: 'Qual material pedir?', corpo: lcPicker('lc-sol-item'), rodape: '<button type="button" class="bt" data-act="lc-sol-volta">' + ic('volta') + 'Voltar para a solicitação</button>' };
+  if (f.pk || !f.linhas.length) return { ico: 'doc', sub: 'Nova solicitação', titulo: 'Qual material pedir?', corpo: lcPicker('lc-sol-item'), rodape: f.linhas.length ? '<button type="button" class="bt" data-act="lc-sol-volta">' + ic('volta') + 'Voltar para a solicitação</button>' : '' };
   let c = lcMsg() + lcAv('Pedido ao almoxarifado central. Quando chegar, marque Atendida e a entrada já vem preenchida.') +
     '<p class="gv-h">Materiais</p>' + (f.linhas.length ? '<div class="fm-lotes">' + f.linhas.map((l, n) => { const i = alItem(l.itemId); return '<div class="fm-lt"><span><b>' + esc(i ? i.nome : '(item removido)') + '</b><small>tem ' + (i ? alQ(alSaldo(i.id)) + ' ' + esc(i.un || '') : '—') + '</small></span>' + lcIn('linhas.' + n + '.qtd', l.qtd, ' inputmode="decimal" class="fm-i num" aria-label="Quantidade"') + '<button type="button" class="bt ic-so" data-act="lc-sol-rm" data-id="' + n + '" title="Tirar" aria-label="Tirar">' + ic('lixo') + '</button></div>'; }).join('') + '</div>' : '<p class="tb-nada">Nenhum material ainda.</p>') +
     '<button type="button" class="bt fm-add" data-act="lc-sol-add">' + ic('mais') + 'Adicionar material</button>' +
@@ -472,14 +564,15 @@ document.addEventListener('input', e => {
   const t = e.target; if (!t || !t.getAttribute) return;
   if (t.hasAttribute('data-pk')) { const q = tbNorm(t.value).trim(), box = t.closest('.fm-pk'); let n = 0; $$('[data-busca]', box).forEach(b => { const on = !q || q.split(/\s+/).every(w => b.getAttribute('data-busca').indexOf(w) >= 0); b.hidden = !on; if (on) n++; }); const v = $('.fm-pkv', box); if (v) v.hidden = n > 0; return; }
   const c = t.getAttribute('data-fm'); if (!c || !S.fm) return;
-  lcSet(c, t.type === 'checkbox' ? (t.checked ? '1' : '0') : t.value);
+  lcSet(c, t.type === 'checkbox' ? (t.checked ? '1' : '0') : t.value); S.fm.sujo = true;
   if (S.fm.msg) { S.fm.msg = ''; const m = $('#gv .fm-msg'); if (m) m.remove(); }
 });
-document.addEventListener('change', e => { const t = e.target; if (t && t.getAttribute && t.getAttribute('data-fm') && S.fm) lcSet(t.getAttribute('data-fm'), t.type === 'checkbox' ? (t.checked ? '1' : '0') : t.value); });
+document.addEventListener('change', e => { const t = e.target; if (!(t && t.getAttribute && t.getAttribute('data-fm') && S.fm)) return; const c = t.getAttribute('data-fm'); lcSet(c, t.type === 'checkbox' ? (t.checked ? '1' : '0') : t.value); if (c === 'salvarFav') { gvDesenha(true); const n = $('#gv [data-fm="nomeFav"]'); if (n) n.focus(); } });
 DD_AO.lc = (k, v) => {
-  const f = S.fm; if (!f) return;
+  const f = S.fm; if (!f) return; f.sujo = true;
   if (k === 'motivo') { f.motivo = v; f.msg = ''; gvDesenha(true); if (v === '__outro') { const i = $('#gv [data-fm="motivoTxt"]'); if (i) i.focus(); } return; }
   if (k === 'lotId') { f.lotId = v; f.msg = ''; gvDesenha(true); return; }
+  if (k === 'fav') { if (v) lcFavUsar(v); return; }
   if (k.indexOf('emb:') === 0) { const l = f.linhas[Number(k.slice(4))]; if (!l) return; const i = alItem(l.itemId); if (l.preco === lcPrecoSug(i, l.emb || 'compra')) l.preco = lcPrecoSug(i, v); l.emb = v; gvDesenha(true); }
 };
 document.addEventListener('click', e => {
@@ -501,25 +594,31 @@ document.addEventListener('click', e => {
   else if (a === 'lc-sol-atender') lcSolAtender(id);
   else if (a === 'lc-sol-canc') { if (!alPode()) return; lcAbrir({ k: 'solcanc', solId: id, motivoG: '' }, vol ? voltaDe(vol) : null); }
   else if (!f) return;
-  else if (a === 'lc-q') { const c = t.getAttribute('data-c'), inp = $('#gv [data-fm="' + c + '"]'), n = alNum(inp ? inp.value : f[c]), v = alQin(Math.max(0, (isNaN(n) ? 0 : n) + Number(t.getAttribute('data-d')))); lcSet(c, v); if (inp) inp.value = v; }
-  else if (a === 'lc-sai-item') { f.itemId = id; f.lotId = ''; f.msg = ''; gvDesenha(true); }
+  else if (a === 'lc-q') { const c = t.getAttribute('data-c'), inp = $('#gv [data-fm="' + c + '"]'), n = alNum(inp ? inp.value : f[c]), v = alQin(Math.max(0, (isNaN(n) ? 0 : n) + Number(t.getAttribute('data-d')))); lcSet(c, v); f.sujo = true; if (inp) inp.value = v; }
+  else if (a === 'lc-sai-item') { f.itemId = id; f.lotId = ''; f.msg = ''; f.sujo = true; gvDesenha(true); }
   else if (a === 'lc-sai-trocar') { f.itemId = ''; f.lotId = ''; gvDesenha(true); }
   else if (a === 'lc-sai-ok') lcSaidaOk();
+  else if (a === 'lc-multi') { Object.assign(f, { k: 'multi', linhas: [], favId: '', favNome: '', favMeu: false, pk: false, salvarFav: '', nomeFav: '', sujo: true }); gvDesenha(true); }
+  else if (a === 'lc-multi-item') { if (!f.linhas.some(l => l.itemId === id)) f.linhas.push({ itemId: id, qtd: '1' }); f.sujo = true; f.msg = ''; lcPkSai(); }
+  else if (a === 'lc-multi-add') lcPkAbre();
+  else if (a === 'lc-multi-volta') csVolta();
+  else if (a === 'lc-multi-rm') { f.linhas.splice(Number(id), 1); f.sujo = true; gvDesenha(true); }
+  else if (a === 'lc-multi-ok') lcMultiOk();
   else if (a === 'lc-crit-pedir') lcCritPedir();
   else if (a === 'lc-abrir-ok') lcAbrirOk();
   else if (a === 'lc-fim-ok') lcFimOk(id === '1');
-  else if (a === 'lc-ent-item') { if (!f.linhas.some(l => l.itemId === id)) f.linhas.push(lcEntLinha(id)); f.pk = false; f.msg = ''; gvDesenha(true); }
-  else if (a === 'lc-ent-add') { f.pk = true; gvDesenha(true); }
-  else if (a === 'lc-ent-volta') { f.pk = false; gvDesenha(true); }
-  else if (a === 'lc-ent-rm') { f.linhas.splice(Number(id), 1); gvDesenha(true); }
+  else if (a === 'lc-ent-item') { if (!f.linhas.some(l => l.itemId === id)) f.linhas.push(lcEntLinha(id)); f.msg = ''; f.sujo = true; lcPkSai(); }
+  else if (a === 'lc-ent-add') lcPkAbre();
+  else if (a === 'lc-ent-volta') csVolta();
+  else if (a === 'lc-ent-rm') { f.linhas.splice(Number(id), 1); f.sujo = true; gvDesenha(true); }
   else if (a === 'lc-ent-ok') lcEntradaOk();
   else if (a === 'lc-aj-ok') lcAjusteOk();
   else if (a === 'lc-corr-ok') lcCorrOk();
   else if (a === 'lc-anular-ok') lcAnularOk();
-  else if (a === 'lc-sol-item') { if (!f.linhas.some(l => l.itemId === id)) f.linhas.push({ itemId: id, qtd: '1' }); f.pk = false; gvDesenha(true); }
-  else if (a === 'lc-sol-add') { f.pk = true; gvDesenha(true); }
-  else if (a === 'lc-sol-volta') { f.pk = false; gvDesenha(true); }
-  else if (a === 'lc-sol-rm') { f.linhas.splice(Number(id), 1); gvDesenha(true); }
+  else if (a === 'lc-sol-item') { if (!f.linhas.some(l => l.itemId === id)) f.linhas.push({ itemId: id, qtd: '1' }); f.sujo = true; lcPkSai(); }
+  else if (a === 'lc-sol-add') lcPkAbre();
+  else if (a === 'lc-sol-volta') csVolta();
+  else if (a === 'lc-sol-rm') { f.linhas.splice(Number(id), 1); f.sujo = true; gvDesenha(true); }
   else if (a === 'lc-sol-ok') lcSolOk();
   else if (a === 'lc-solcanc-ok') lcSolCancOk();
 });
