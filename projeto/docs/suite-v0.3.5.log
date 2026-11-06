@@ -1,0 +1,438 @@
+  ok  nenhum nome da Meri Pobo fixo no código
+  ok  apelido Cwork Quality e versão no arquivo
+  ok  sem Principal: aparece o primeiro acesso
+  ok  tela de entrar tem a ilustração agrícola
+  ok  nome sem sobrenome é recusado
+  ok  senhas diferentes são recusadas
+  ok  depois do primeiro acesso entra no app
+  ok  Início saúda pelo primeiro nome: "Bom dia, Joana"
+  ok  menu lateral: Início + 6 áreas + Relatórios, e Administração no pé
+  ok  "Cwork Quality" no pé do menu e da página
+  ok  sem empresa configurada: "Sua empresa"
+  ok  inicio: 0 abas (esperado 0)
+  ok  coletas: 4 abas (esperado 4)
+  ok  rateios: 0 abas (esperado 0)
+  ok  inspecoes: 3 abas (esperado 3)
+  ok  documentos: 3 abas (esperado 3)
+  ok  almox: 5 abas (esperado 5)
+  ok  qualidade: 3 abas (esperado 3)
+  ok  relatorios: 0 abas (esperado 0)
+  ok  adm: 3 abas (esperado 3)
+  ok  estrutura aprovada: Coletas 4, Rateios 1, Inspeções 3, Documentos 3, Almoxarifado 5, Qualidade 3 
+  ok  área e aba atuais marcadas no menu e nas abas
+  ok  área ainda não refeita leva ao EFClaudian
+  ok  botão do tema troca para o Escuro (Dourado)
+  ok  Escuro usa o fundo azul-tinta do Dourado original (rgb(11, 13, 22))
+  ok  empresa salva aparece no menu (nome e unidade)
+  ok  unidades repetidas são juntadas
+  ok  escolha da unidade é uma janela retrátil
+  ok  unidade deste aparelho trocada
+  ok  ao recarregar: continua logado, tema e empresa guardados
+  ok  Início mostra "Voltar para" e "Mais usadas"
+  ok  Sair volta para a tela de entrar
+  ok  lembra o usuário
+  ok  senha errada: "Login ou senha incorretos."
+  ok  entra com a senha certa
+  ok  nenhum erro de JavaScript no PC
+  ok  celular 390 px: nenhuma tela rola para o lado
+  ok  celular: barra de baixo visível e menu lateral escondido
+  ok  celular: alvos de toque com 36 px ou mais
+  ok  celular: "Mais" abre o menu lateral
+  ok  nenhum erro de JavaScript no celular
+
+t_v010: 41 ok · 0 falha(s)
+t_v010 exit 0
+  ok  saldo por lote: luva 5−4 = 1; saída anulada não conta (água 34); gelo 22
+  ok  lote vencido não é utilizável (fenolftaleína: saldo 2, utilizável 0)
+  ok  situações: abaixo do mínimo, sem saldo, lote vencido, em dia, vence em 30 dias, inativo (min,zero,vencido,ok,avencer,inativo)
+  ok  Início: 4 materiais pedem atenção, 2 calibrações vencidas/a vencer, 1 solicitação pendente (4,2,1,0)
+  ok  número do Início abre Materiais já filtrado (4 linhas)
+  ok  Painel: 5 itens ativos, 4 pedem atenção, valor em estoque (5 | 4 | R$ 303,80 | 2)
+  ok  valor em estoque = soma de saldo × preço de cada lote
+  ok  aviso numa linha só (lote vencendo + solicitação pendente)
+  ok  cabeçalho com o botão Saída (ajustado na v0.3: antes era só consulta)
+  ok  Materiais lista os 6 itens (inclui o inativo)
+  ok  colunas: Código, Item, Local, Un, Utilizável, Mínimo, Valor, Situação
+  ok  números alinhados à direita
+  ok  linha de total no rodapé
+  ok  um único filtro recolhível com Situação e Local em janelas retráteis
+  ok  filtro "Pedem atenção": 4 linhas e o resumo aparece no botão
+  ok  dois filtros juntos (Pedem atenção + Geladeira): 2 linhas
+  ok  busca sem acento acha "Água desmineralizada"
+  ok  ordenar por Utilizável (maior primeiro) pelo cabeçalho
+  ok  esconder a coluna Código (lembrado no aparelho)
+  ok  planilha .xlsx: aba Materiais, cabeçalho + 6 linhas (EFCwork-materiais-2026-11-06.xlsx)
+  ok  na planilha o número sai como número (Utilizável 34)
+  ok  impressora: monta a folha com título e as 6 linhas
+  ok  clicar na linha abre a gaveta do item
+  ok  gaveta: situação, lote L1 e a última saída com motivo
+  ok  linha aberta fica marcada na tabela
+  ok  Esc fecha a gaveta
+  ok  Movimentações: 6 lançamentos
+  ok  saída anulada aparece com a situação "Anulada"
+  ok  filtro Tipo = Saídas: 2 linhas; rodapé com entradas e saídas em R$
+  ok  Solicitações: 2 linhas e "1 pendentes" no cabeçalho
+  ok  gaveta da solicitação: itens, inclusive o ainda não cadastrado
+  ok  calibração: vencida (400 dias), a vencer (340 dias), em dia (30 dias), não calibra (vencida,avencer,ok,)
+  ok  gaveta do equipamento: calibração e local
+  ok  tecla / abre a busca geral
+  ok  busca vazia mostra "Voltar para"
+  ok  busca acha o material
+  ok  Enter vai para Materiais com a gaveta do item aberta
+  ok  Ctrl+K abre; acha equipamento pela TAG
+  ok  acha telas pelo nome
+  ok  Esc fecha a busca
+  ok  entra como Secundário sem a atribuição do Almoxarifado
+  ok  Início sem os números do Almoxarifado para quem não tem acesso
+  ok  Almoxarifado: mensagem "Você não tem acesso", sem tabela
+  ok  busca geral não mostra materiais para quem não tem acesso
+  ok  nenhum erro de JavaScript no PC
+  ok  celular: nenhuma aba do Almoxarifado rola a página para o lado (a tabela rola dentro dela)
+  ok  celular: a gaveta abre em tela cheia
+  ok  nenhum erro de JavaScript no celular
+
+t_v020: 48 ok · 0 falha(s)
+t_v020 exit 0
+— Cabeçalho
+  ok  Materiais: botões Saída (principal) e Entrada no cabeçalho
+  ok  atalho só com ícone para o EFClaudian (cadastro, kits, fotos, inventário)
+— Saída
+  ok  Saída abre na gaveta com a lista dos 5 materiais ativos
+  ok  busca na lista (sem acento, por palavras): 1 material
+  ok  material escolhido vira o título do formulário
+  ok  sem motivo: "Escolha o motivo"
+  ok  motivos: os usados pela equipe em 90 dias (saída anulada não conta) e a lista simples; nada fixo de empresa
+  ok  saldo não fica negativo: "Só há 34 disponível"
+  ok  o que foi digitado continua no campo depois do erro
+  ok  botão − diminui a quantidade
+  ok  saída gravada como no EFClaudian (lotRef, preço do lote, motivo, quem)
+  ok  saldo utilizável da água: 34 − 20 = 14
+  ok  ao registrar, a gaveta fecha (saiu do cabeçalho)
+  ok  passou do mínimo (15) para baixo: aviso no sino de quem cuida do almoxarifado
+  ok  motivo usado fica na ordem da pessoa (sv2_alm_pref)
+  ok  auditoria registrada (sv2_audit, como no EFClaudian)
+  ok  só lote vencido: avisa e pede para escolher o lote vencido
+  ok  lote vencido escolhido: pede o motivo para usar
+  ok  saída do lote vencido grava o motivo (vencidoMotivo)
+  ok  saiu do material: depois de registrar, volta para o detalhe dele
+  ok  outro motivo escrito fica guardado na lista da pessoa e vem primeiro naquele material
+  ok  produto crítico: aviso no formulário
+  ok  saída de produto crítico fica "aguardando confirmação"
+  ok  Painel mostra a saída crítica para quem confirma
+  ok  líder confirma; fica marcado que foi quem lançou
+— Frasco
+  ok  item por frasco: botão principal é Abrir frasco
+  ok  abrir frasco: 1 em uso, 2 lacrados
+  ok  o detalhe mostra o frasco em uso com o botão Acabou
+  ok  frasco que acabou: registro "Frasco terminou"
+— Entrada
+  ok  entrada com 2 materiais (linhas)
+  ok  item que controla validade: pede lote e validade
+  ok  dados digitados continuam depois de os dados mudarem no Firebase
+  ok  entrada grava uma movimentação por material, no mesmo grupo, com o documento
+  ok  luva: 10 disponíveis; último valor do item atualizado para 31,50
+  ok  embalagem: 2 fardos de 12 = 24 Lt a R$ 2,00 cada
+  ok  valor sugerido na unidade escolhida: Fardo R$ 24,00 · Lt R$ 2,00
+— Ajuste, corrigir e anular
+  ok  ajuste sem mudança: "Nada mudou"
+  ok  Principal ajusta na hora: 20 → 18 (ajuste −2 com motivo)
+  ok  corrigir pede o porquê
+  ok  correção guarda o antes no histórico (20 → 18)
+  ok  o detalhe mostra a correção (20 → 18)
+  ok  anular pela lixeira do canto: fica anulada com o motivo, nada se apaga
+  ok  entrada com saída depois dela não mostra a lixeira (corrigir em vez de anular)
+— Solicitação
+  ok  Solicitações: botão Nova solicitação
+  ok  solicitação sem número: pede o Nº do documento
+  ok  solicitação gravada pendente
+  ok  Atender: entrada já preenchida com o que estava cadastrado (10 luvas, doc 1042)
+  ok  solicitação Atendida e entrada lançada (luva 20)
+  ok  cancelar pela lixeira: Cancelada com o motivo
+— Secundário pede, superior decide no sino
+  ok  secundário: o ajuste avisa que vai como pedido
+  ok  secundário: saldo não muda; vira pedido pendente ao superior
+  ok  secundário lança saída normalmente
+  ok  superior: número no sino (3)
+  ok  sino: pedido do almoxarifado para decidir
+  ok  aprovar aplica o ajuste (18 → 17) e grava a decisão
+  ok  o ajuste fica no nome de quem pediu, com quem aprovou
+  ok  avisos listados no sino
+  ok  marcar todas como lidas
+  ok  nenhum erro de JavaScript no PC
+— Celular
+  ok  celular: formulário em tela cheia, sem rolar para o lado
+  ok  celular: botões do formulário com 44 px (44,44)
+  ok  nenhum erro de JavaScript no celular
+
+t_v030: 62 ok · 0 falha(s)
+t_v030 exit 0
+— Tabelas mais largas; a tabela recua quando a gaveta abre
+  ok  tabela usa a largura toda (1086 px de 1126 disponíveis)
+  ok  com a gaveta aberta a tabela recua e fica a 20 px dela, a mesma margem da esquerda (pedido de 06/11) (20 px)
+  ok  tela larga (1920), com a gaveta: tabela sem limite de largura, só recua o espaço da gaveta (1220 px)
+— Voltar uma camada
+  ok  detail aberto = 1 camada
+  ok  saída por cima do detalhe = 2 camadas
+  ok  Esc volta só uma camada: do formulário para o detalhe
+  ok  Esc de novo fecha o detalhe
+  ok  voltar do navegador/celular: também uma camada (formulário → detalhe)
+  ok  voltar de novo fecha o detalhe
+  ok  continua na mesma tela (não voltou de tela)
+  ok  formulário recém-aberto não conta como preenchido
+  ok  preenchido: Esc pergunta "Descartar o que você preencheu?"
+  ok  "Continuar preenchendo": o que foi digitado continua
+  ok  voltar do celular com algo preenchido também pergunta
+  ok  voltar com a pergunta aberta = continuar preenchendo
+  ok  "Descartar": volta para o detalhe
+  ok  entrada: "Adicionar outro material" abre a lista como camada
+  ok  Esc na lista volta para as linhas da entrada
+  ok  entrada com material escolhido: pergunta antes de descartar
+  ok  descartou: gaveta fechada (abriu pelo cabeçalho, não havia detalhe)
+  ok  depois de gravar: volta ao detalhe com 1 camada
+  ok  e um voltar fecha o detalhe (o histórico ficou certo)
+  ok  busca geral é uma camada
+  ok  voltar fecha a busca
+— Nomes dos perfis
+  ok  Principal aparece como "Administrador"
+  ok  Secundário = Colaborador · Secundário ★ = Líder · Visitante = Consulta
+  ok  Colaborador vê o próprio perfil com o nome novo
+  ok  textos usam o nome novo ("Como Colaborador…")
+  ok  no cadastro continua gravado "secundario" (o EFClaudian lê igual)
+— Favoritos
+  ok  Saída: lista suspensa de favoritos (vem da configuração do almoxarifado)
+  ok  escolher o favorito já traz os materiais, as quantidades e o motivo
+  ok  saída do favorito: 2 movimentações no mesmo grupo, com o nome do favorito; quantidade mudada respeitada (gelo 1)
+  ok  "Guardar como favorito" pede o nome
+  ok  favorito guardado na lista da pessoa (2 materiais)
+  ok  a lista mostra os 2 favoritos
+— Tirar da lista segurando 1,5 s e arrastando
+  ok  segurando 1,5 s aparece a lixeira ao lado da lista
+  ok  soltou na lixeira: o favorito saiu da lista
+  ok  aviso com "Desfazer"
+  ok  Desfazer devolve o favorito
+  ok  favorito da configuração: some só da lista da pessoa (a configuração continua)
+  ok  motivo também sai da lista segurando e arrastando
+  ok  soltar fora da lixeira: nada sai e nada é escolhido
+  ok  toque normal na opção continua escolhendo
+  ok  nenhum erro de JavaScript no PC
+— Celular
+  ok  celular: menu aberto é uma camada
+  ok  voltar do celular fecha o menu e fica na tela
+  ok  celular: a lixeira aparece dentro da tela, perto da lista
+  ok  celular: voltar com algo preenchido pergunta antes
+  ok  nenhum erro de JavaScript no celular
+
+t_v031: 49 ok · 0 falha(s)
+t_v031 exit 0
+— Abrir
+  ok  Materiais: botão Contagem no cabeçalho
+  ok  Contagem vazia; a aba Materiais fica marcada (a contagem é uma ação dela)
+  ok  quem vai contar: só aparece quem tem o Almoxarifado (Ana e você; Vera não)
+  ok  sem escolher: "Escolha quem vai contar"
+  ok  contagem aberta (CNT-2026-01), formato do EFClaudian (tipo contagem, materiais), quem conta: Ana
+— Contar às cegas (Ana)
+  ok  Início da Ana: "Contagem para você" com o progresso
+  ok  Ana recebeu o aviso no sino
+  ok  ordem do lugar: portas em sequência, depois gavetas, depois o resto (Porta 02, Porta 11, Porta 12, Gaveta 07, Geladeira)
+  ok  às cegas: nenhum saldo na tela, só os campos para digitar
+  ok  material com 2 lotes: um campo por lote
+  ok  lote sem número: não salva e o que foi digitado continua
+  ok  Enter no último lote salva: contado 4 (1 + 3), com o que o sistema esperava guardado junto (às escondidas)
+  ok  depois de salvar, o cursor vai para o próximo que falta
+  ok  chegou dado novo enquanto digitava: o campo continua com o foco e o número
+  ok  todos os 6 materiais contados (100%)
+  ok  mensagem "Tudo contado"
+— Conferir e recontar (Joana)
+  ok  conferência: 6 contados, 3 bateram, 3 não bateram, 0 em recontagem (6,3,3,0)
+  ok  o app sugere recontar os que não bateram
+  ok  Concluir fica travado enquanto falta decidir
+  ok  recontagem pedida para os 3
+  ok  Ana avisada: "Recontar 3 material(is)"
+  ok  Ana vê a seção "Recontar" no topo com os 3, campos vazios (às cegas de novo)
+  ok  depois da recontagem: água bateu (foi erro de contagem); fita e pano não bateram de novo (agua:bateu2,fita:difere,pano:difere)
+  ok  não sugere recontar de novo o que já foi recontado
+— Decidir e concluir
+  ok  gaveta mostra a 1ª contagem e a recontagem
+  ok  falta: opções Saída esquecida, Perda, Quebra, Erro de lançamento, Outro
+  ok  saída esquecida: data, quem esqueceu, motivo e reclamação
+  ok  formulário com algo escolhido: voltar pergunta antes de descartar
+  ok  decisão guardada (ainda não lançada)
+  ok  sobra: opções Entrada não lançada, Achado… (sem saída esquecida)
+  ok  tudo decidido: Concluir liberado
+  ok  contagem concluída: 2 diferenças, 1 erro de lançamento, 1 bateu na recontagem
+  ok  saída esquecida lançada com a data certa (ontem), 3 Un, marcada como erro da Ana, com a reclamação
+  ok  sobra virou ajuste +1 com o motivo da contagem
+  ok  estoque igual ao contado (pano 7, fita 4); água sem mudança (foi erro de contagem)
+  ok  quem esqueceu é avisado no sino ("Saída não lançada", com a reclamação)
+— Depois: painel, movimentações e histórico
+  ok  Painel: "Erros de lançamento" (últimos 90 dias) para o Líder/Administrador
+  ok  Movimentações: filtro "Erros de lançamento" acha a saída
+  ok  detalhe da saída: "Lançada depois" e a reclamação
+  ok  histórico: a contagem aparece concluída
+  ok  resumo da contagem com o erro de lançamento e quem esqueceu
+  ok  segunda contagem do ano: número seguinte (-02)
+  ok  folha impressa: por lugar, às cegas (sem saldo)
+  ok  cancelar pela lixeira: fica no histórico como cancelada
+  ok  nenhum erro de JavaScript no PC
+— Celular
+  ok  celular: a contagem não rola para o lado
+  ok  celular: botão "Contado" com 44 px
+  ok  nenhum erro de JavaScript no celular
+
+t_v032: 48 ok · 0 falha(s)
+t_v032 exit 0
+— Abrir a solicitação
+  ok  Equipamentos: botão Calibração no cabeçalho
+  ok  números: 1 vencida, 1 a vencer, 0 em andamento, 2 precisam e não estão em solicitação (1,1,0,2)
+  ok  a aba Equipamentos fica marcada (calibração é uma ação dela)
+  ok  lista: vencidas primeiro, depois a vencer; vidraria fora do plano não aparece (3)
+  ok  sem marcar: "Marque pelo menos um equipamento"
+  ok  "Marcar vencidos e a vencer" marca PHM-02 e BAL-01
+  ok  solicitação CAL-2026-01 aberta no formato do EFClaudian (prestador, itens, aguardando cotação)
+  ok  depois de abrir, mostra o detalhe da solicitação
+  ok  as 5 etapas: Solicitada (feita) → Cotação recebida (próxima) → Agendada → Calibrada → Compra
+  ok  Solicitada mostra a data, o número e quem pediu
+— Cotação e agenda
+  ok  cotação: data, referência e valor de cada um (R$ 430,00) → "Cotada · falta agendar"
+  ok  a etapa mostra o valor total e volta para o detalhe
+  ok  agendada (data futura permitida) → "Agendada para …"
+  ok  reagendar guarda a data antiga no histórico
+— Calibrado
+  ok  pede quem calibrou
+  ok  sem nenhum certificado: pede o código
+  ok  validade sugerida = data da calibração + 12 meses (2027-11-05)
+  ok  só o pHmetro com certificado: "Calibração em andamento"; a balança fica para depois
+  ok  o equipamento recebe a calibração (data, código, quem calibrou, validade, número da solicitação) e fica "Em dia"
+  ok  segunda vez: só a balança aparece para calibrar
+  ok  balança reprovada: fica "Uso com restrição"; solicitação "Calibrada · falta a compra"
+  ok  reprovação avisa no sino dos superiores
+— Compra e encerramento
+  ok  pede o Nº da solicitação de compras
+  ok  pede a NF
+  ok  compra com data de hoje e NF: "Encerrada" (igual ao EFClaudian)
+  ok  as 5 etapas feitas; sem lixeira depois de calibrado
+— Histórico só do equipamento
+  ok  detalhe do pHmetro: solicitada, cotação, agendada, calibrada por quem, código do certificado, validade e compra
+  ok  mostra só as calibrações dele (não a da balança)
+  ok  equipamento fora de solicitação: botão "Pedir calibração"
+  ok  Pedir calibração já vem com ele marcado
+  ok  formulário mexido: voltar pergunta antes de descartar
+  ok  segunda solicitação do ano (-02) com o prestador já escolhido
+  ok  cancelar pela lixeira (antes de calibrar), com motivo
+  ok  histórico com as 2 solicitações
+  ok  Colaborador vê a calibração mas não abre solicitação
+  ok  nenhum erro de JavaScript no PC
+— Celular
+  ok  celular: a calibração não rola para o lado
+  ok  celular: detalhe em tela cheia
+  ok  nenhum erro de JavaScript no celular
+
+t_v033: 39 ok · 0 falha(s)
+t_v033 exit 0
+— Gaveta deslizando
+  ok  ao abrir, a gaveta entra deslizando da lateral (gv-entra)
+  ok  animação gvEntra ativa (gvEntra)
+  ok  depois de 0,3 s a classe sai (a gaveta fica parada)
+  ok  trocar de equipamento com a gaveta aberta não repete a entrada
+  ok  Esc fecha (o #gv some na hora para o app)
+  ok  a gaveta sai deslizando e é removida depois
+  ok  abrir outra enquanto a anterior ainda sai: sem duas gavetas com o mesmo id
+— Fluido da linha do tempo
+  ok  nunca vista: começa só com "Solicitada" acesa e o fluido no início ({"esp":"2,3","acesas":1,"h":1})
+  ok  sobe até a 2ª etapa (Cotação) e acende
+  ok  espera 0,4 s antes de subir para a próxima
+  ok  a etapa que acende ganha o "pulo" (acende)
+  ok  sobe até a 3ª (Agendada): fluido mais alto (78 → 138 px)
+  ok  guarda até onde esta pessoa viu (por pessoa e por solicitação)
+  ok  brilho correndo no fluido (cbBrilho)
+  ok  abrir de novo sem novidade: já aparece cheio, sem animar
+— Mudou com a gaveta aberta
+  ok  calibrada com a gaveta aberta: a 4ª etapa aparece apagada…
+  ok  …e o fluido sobe na hora até ela
+— Duas novidades antes de abrir (outra pessoa)
+  ok  viu na etapa 1; agora tem cotação e agenda: começa da 1, não do zero
+  ok  sobe uma etapa, espera 0,4 s e sobe a próxima (2ª em 545 ms, 3ª 1000 ms depois)
+  ok  nenhum erro de JavaScript (gaveta e fluido)
+— Reduzir movimento
+  ok  com "reduzir movimento" no aparelho: aparece pronto, sem subir
+  ok  e a gaveta abre sem deslizar
+  ok  e fecha na hora
+  ok  nenhum erro de JavaScript com movimento reduzido
+— Inventário de equipamentos e vidrarias
+  ok  Equipamentos: botão Inventário no cabeçalho
+  ok  vindo de Equipamentos: já marca Equipamentos e Vidrarias (mat:false,equip:true,vid:true)
+  ok  mostra quantos tem em cada parte: 5 materiais ativos, 3 equipamentos, 2 vidrarias (5,3,2)
+  ok  itens para contar: 3 equipamentos + béquer + pipeta em 2 lugares = 6
+  ok  nada marcado: "Marque o que vai ser contado"
+  ok  inventário aberto com equipamentos e vidrarias (sem materiais)
+  ok  na lista: os 3 equipamentos, o béquer e a pipeta em cada lugar (v:e5__gaveta-03,e:e1,v:e4,v:e5__laboratorio,e:e2,e:e3)
+  ok  às cegas também para vidraria (o 12 do béquer não aparece)
+  ok  cada equipamento tem "Não achei" e "Achei"
+  ok  o título vira "Inventário CNT-…", debaixo de Equipamentos (aba marcada e botão de voltar)
+  ok  Achei = 1, Não achei = 0 (o sistema espera 1)
+  ok  o contado mostra "Não achei" em vermelho
+  ok  conferência: só o que não bateu (balança e béquer) (v:e4,e:e2)
+  ok  conferência com a coluna Tipo
+  ok  equipamento: opções próprias (Não encontrado, Em outro lugar…), sem "saída esquecida"
+  ok  concluir: a balança fica marcada "não encontrado" (CNT-2026-01) com o registro no histórico
+  ok  o béquer passa a 10 no Laboratório, com "Quebra 12 → 10" no histórico
+  ok  a gaveta do equipamento avisa "Não encontrado na contagem CNT-…"
+— Achado numa próxima contagem
+  ok  achou a balança na contagem seguinte: a marca "não encontrado" sai sozinha
+  ok  nenhum erro de JavaScript no PC
+— Celular
+  ok  celular: o inventário não rola para o lado
+  ok  celular: botões Achei / Não achei com altura de toque (44 px)
+  ok  celular: o fluido também sobe na tela cheia
+  ok  nenhum erro de JavaScript no celular
+
+t_v034: 48 ok · 0 falha(s)
+t_v034 exit 0
+— Coluna Local curta
+  ok  tabela mostra só o lugar ("Bancada 1"); o completo fica no passar o mouse e na gaveta (Bancada 1 | Laboratório · Bancada 1)
+— Onde está o equipamento
+  ok  gaveta: "Onde está" = Em uso · Laboratório · Bancada 1, em destaque
+  ok  "Iguais a este": as outras micropipetas, com a reserva guardada e onde está (MP-02reserva guardadaGaveta 02 / MP-03reserva guardadaPorta 05)
+  ok  tocar na reserva abre ela (Guardado · Gaveta 02)
+  ok  guardado: botão "Pôr em uso" (e não "Guardar")
+— Pôr em uso a reserva
+  ok  a lista de lugares de uso não mostra gavetas nem portas (, Bancada 1, Geladeira, Suporte de vidrarias, __outro)
+  ok  sem lugar: "Diga onde ele vai ficar em uso"
+  ok  em uso na Bancada 1; o lugar de guarda (Gaveta 02) fica lembrado
+  ok  histórico: "Posto em uso em Bancada 1 — substitui a MP-01…"
+  ok  volta para a gaveta do equipamento, já atualizada
+— Guardar
+  ok  a lista de guarda mostra gavetas e portas, sem bancada (, Porta 02, Porta 05, Porta 11, Porta 12, Gaveta 02, __outro)
+  ok  guardado na "Porta 07" (nome arrumado); o lugar de uso (Bancada 1) fica lembrado; calibração pausa como no EFClaudian
+  ok  calibração "Pausada (guardado)"
+  ok  Pôr em uso de novo já vem com a Bancada 1
+— Calibração vencida ao pôr em uso
+  ok  avisa: calibração vencida → vai entrar como "Uso com restrição"
+  ok  entrou como "Uso com restrição"
+— Lugares de referência (pino)
+  ok  o pino abre os dois lugares (a guarda ficou lembrada ao pôr em uso)
+  ok  lugar de guarda trocado para a Gaveta 02
+— Vidraria por lugar
+  ok  béquer sem lugares: "Sem lugar definido 12"
+  ok  passou do total (13 de 12): não deixa e manda usar o Inventário
+  ok  grava 4 no suporte (em uso) e 8 na Gaveta 03 (guardadas = 8, compatível com o EFClaudian)
+  ok  gaveta do béquer: "Onde ficam" com cada lugar, guardadas / em uso (Gaveta 03guardadas8 | Suporte de vidrariasem uso4)
+  ok  na tabela: "2 lugares" (2 lugares)
+— Tirar um lugar da lista (segurar e arrastar)
+  ok  segurar 1,5 s e arrastar para a lixeira tira o lugar da lista
+— Inventário por lugar
+  ok  o béquer é contado em cada lugar; a micropipeta guardada aparece na Porta 07 (e:mp1=Porta 07 v:e4__laboratorio__gaveta-03=Gaveta 03 e:mp2=Bancada 1 e:mp3=Bancada 1 v:e4__laboratorio__suporte-de-vidrarias=Suporte de vidrarias)
+  ok  chaves sem ~ * / [ ] (o Firestore recusa esses no caminho)
+  ok  o esperado de cada lugar é o daquele lugar (4 e 8), às cegas
+  ok  conferência: coluna Lugar curta, só o que não bateu (Suporte de vidrarias)
+  ok  concluir: total 12 → 11, suporte 4 → 3, gaveta continua 8
+  ok  histórico: "Laboratório › Suporte de vidrarias 4 → 3"
+  ok  demonstração recusa "~" no caminho, como o Firestore (o erro da v0.3.4 não volta)
+  ok  nenhum erro de JavaScript no PC
+— Colaborador e celular
+  ok  Colaborador também guarda e põe em uso (é quem usa a bancada)
+  ok  celular: gaveta em tela cheia, sem rolar para o lado
+  ok  nenhum erro de JavaScript no celular
+
+t_v035: 35 ok · 0 falha(s)
+t_v035 exit 0

@@ -34,14 +34,15 @@ function cgAlvos(inv) {
   const p = (inv && inv.partes) || { mat: true }, out = [];
   if (p.mat !== false) alAtivos().forEach(i => out.push({ k: 'm:' + i.id, parte: 'mat', i: i, local: cgNomeLocal(i.local), lotes: alLotes(i.id, true).filter(l => l.saldo > 0) }));
   if (p.equip || p.vid) S.almEq.filter(e => e.situacao !== 'baixa' && !e.transito).forEach(e => {
-    if (e.tipo === 'qtd') { if (!p.vid) return; const ls = Object.keys(e.qtdLocal || {}); (ls.length ? ls : [e.local || '']).forEach(l => out.push({ k: 'v:' + e.id + (ls.length > 1 ? '~' + cgSlug(l) : ''), parte: 'vid', e: e, vloc: l, i: { id: e.id, nome: e.nome, codigo: [e.marca, ls.length > 1 ? l : ''].filter(Boolean).join(' · '), un: 'un' }, local: cgNomeLocal(l || e.local), lotes: [] })); }
-    else if (p.equip) out.push({ k: 'e:' + e.id, parte: 'equip', e: e, i: { id: e.id, nome: eqNomeC(e), codigo: [e.marca, e.serie ? 'série ' + e.serie : ''].filter(Boolean).join(' · '), un: '' }, local: cgNomeLocal([e.local, e.posicao].filter(Boolean).join(' · ')), lotes: [] });
+    /* vidraria: uma linha por laboratório e por lugar dentro dele (gaveta, porta, bancada, suporte… — v0.3.5); chaves só com letras, números, '-' e '__' (o Firestore não aceita '~' no caminho) */
+    if (e.tipo === 'qtd') { if (!p.vid) return; const ls = lgLabs(e).length ? lgLabs(e) : [e.local || '']; ls.forEach(l => { const dist = lgDist(e, l), varios = dist.length > 1 || (dist[0] && dist[0].lugar); (dist.length ? dist : [{ lugar: '', qtd: 0 }]).forEach(x => out.push({ k: 'v:' + e.id + (ls.length > 1 || varios ? '__' + cgSlug(l) : '') + (x.lugar ? '__' + cgSlug(x.lugar) : ''), parte: 'vid', e: e, vloc: l, vpos: x.lugar, i: { id: e.id, nome: e.nome, codigo: [ls.length > 1 || varios ? l : '', e.marca].filter(Boolean).join(' · '), un: 'un' }, local: x.lugar || (varios ? 'Sem lugar definido' : cgNomeLocal(l || e.local)), lotes: [] })); }); }
+    else if (p.equip) out.push({ k: 'e:' + e.id, parte: 'equip', e: e, i: { id: e.id, nome: eqNomeC(e), codigo: [e.local, lgGuardado(e) ? 'guardado' : '', e.marca].filter(Boolean).join(' · '), un: '' }, local: lgNome(e.posicao) || cgNomeLocal(e.local), lotes: [] });
   });
   const ord = { mat: 0, vid: 1, equip: 2 };
   return out.sort((a, b) => cgCmpLocal(a.local, b.local) || ord[a.parte] - ord[b.parte] || String(a.i.nome).localeCompare(b.i.nome, 'pt-BR'));
 }
 function cgEsperado(a) {
-  if (a.parte === 'vid') return { total: Number((a.e.qtdLocal || {})[a.vloc]) || 0 };
+  if (a.parte === 'vid') { const x = lgDist(a.e, a.vloc).find(y => y.lugar === (a.vpos || '')); return { total: x ? x.qtd : 0 }; }
   if (a.parte === 'equip') return { total: 1 };
   const l = {}; alLotes(a.i.id).forEach(x => { l[x.id] = x.saldo; }); return { total: alSaldo(a.i.id), lotes: l };
 }
@@ -234,7 +235,10 @@ async function cgResOk() {
   const k = f.kItem; try { await Data.col('sv2_alm_inv').update(inv.id, { ['resolucoes.' + cgChave(k)]: r }); } catch (e) { return lcErro(svErro(e)); }
   lcFim(); aviso('Decisão guardada. Ela vira lançamento quando você concluir a contagem.');
 }
-async function cgConcluir() {
+/* cópia de trabalho do equipamento durante o concluir: duas diferenças no mesmo equipamento (ex.: pipeta na gaveta e no suporte) não se apagam */
+let CG_EQ_COP = {};
+const cgEqCopia = id => { if (!CG_EQ_COP[id]) { const e = S.almEq.find(x => x.id === id); if (!e) return null; CG_EQ_COP[id] = JSON.parse(JSON.stringify(e)); } return CG_EQ_COP[id]; };
+async function cgConcluir() { CG_EQ_COP = {};
   const inv = cgAberta(); if (!inv || !alSup()) return; const pr = cgProgresso(inv), rs = inv.resolucoes || {};
   if (pr.recontar.length) { aviso('Ainda há recontagem pedida.', 'erro'); return; }
   const semDec = pr.difs.filter(a => !rs[cgChave(a.k)]); if (semDec.length) { aviso('Falta decidir: ' + semDec.slice(0, 3).map(a => a.i.nome).join(', ') + (semDec.length > 3 ? '…' : '') + '.', 'erro'); return; }
@@ -244,11 +248,16 @@ async function cgConcluir() {
     for (const a of pr.difs) {
       const c = pr.ct[a.k], r = rs[cgChave(a.k)];
       if (a.parte !== 'mat') {
-        const e = S.almEq.find(x => x.id === a.e.id); if (!e) continue; const mot = 'Contagem ' + inv.numero + ': ' + (r.tipo === 'nao_achado' ? 'não encontrado' : r.tipo) + (r.obs ? ' — ' + r.obs : '');
+        const e = cgEqCopia(a.e.id); if (!e) continue; const mot = 'Contagem ' + inv.numero + ': ' + (r.tipo === 'nao_achado' ? 'não encontrado' : r.tipo) + (r.obs ? ' — ' + r.obs : '');
         let patch = {}, ev;
-        if (a.parte === 'vid') { const qn = Object.assign({}, e.qtdLocal || {}); qn[a.vloc] = c.cont; patch = { qtdLocal: qn }; ev = { tipo: 'quantidade', data: hojeISO(), texto: mot + ' · ' + a.vloc + ' ' + (Number((e.qtdLocal || {})[a.vloc]) || 0) + ' → ' + c.cont, antes: { qtdLocal: e.qtdLocal || {} }, depois: { qtdLocal: qn } }; res.ajustes.push(e.nome + ' (' + a.vloc + ') → ' + c.cont + ' (' + r.tipo + ')'); }
+        if (a.parte === 'vid') { /* o total do laboratório muda pela diferença; o lugar contado fica com o que foi contado */
+          const qn = Object.assign({}, e.qtdLocal || {}), d = cgDif(c), esp = Number((c.esp || {}).total) || 0; qn[a.vloc] = Math.max(0, alR((Number(qn[a.vloc]) || 0) + d)); patch = { qtdLocal: qn };
+          if (a.vpos) { const pos = JSON.parse(JSON.stringify(e.qtdPos || {})); pos[a.vloc] = pos[a.vloc] || {}; if (c.cont > 0) pos[a.vloc][a.vpos] = c.cont; else delete pos[a.vloc][a.vpos]; patch.qtdPos = pos; const gd = Object.assign({}, e.qtdGuard || {}); gd[a.vloc] = Object.keys(pos[a.vloc]).filter(k => lgTipo(k) === 'guarda').reduce((s, k) => s + Number(pos[a.vloc][k]), 0); if (!gd[a.vloc]) delete gd[a.vloc]; patch.qtdGuard = gd; }
+          const onde = a.vloc + (a.vpos ? ' › ' + a.vpos : a.local === 'Sem lugar definido' ? ' › sem lugar' : '');
+          ev = { tipo: 'quantidade', data: hojeISO(), texto: mot + ' · ' + onde + ' ' + esp + ' → ' + c.cont, antes: { qtdLocal: e.qtdLocal || {}, qtdPos: e.qtdPos || {} }, depois: patch }; res.ajustes.push(e.nome + ' (' + onde + ') → ' + c.cont + ' (' + r.tipo + ')'); }
         else { if (r.tipo === 'nao_achado') patch = { naoAchado: inv.numero }; ev = { tipo: 'inventario', data: hojeISO(), texto: mot }; res.ajustes.push(eqNomeC(e) + ': ' + (r.tipo === 'nao_achado' ? 'não encontrado' : r.tipo)); }
-        await Data.col('sv2_alm_equip').update(e.id, Object.assign({}, patch, { hist: (e.hist || []).concat([Object.assign({ ts: nowISO(), porId: S.user.id, porNome: S.user.nome }, ev)]), atualizadoEm: nowISO() }));
+        const hist = (e.hist || []).concat([Object.assign({ ts: nowISO(), porId: S.user.id, porNome: S.user.nome }, ev)]); Object.assign(e, patch, { hist: hist });
+        await Data.col('sv2_alm_equip').update(e.id, Object.assign({}, patch, { hist: hist, atualizadoEm: nowISO() }));
         Audit.log({ acao: 'equip_inventario', entidade: 'almox_equip', entidadeId: e.id, resumo: eqNomeC(e) + ': ' + mot, depois: patch });
         continue;
       }
@@ -271,7 +280,7 @@ async function cgConcluir() {
       }
     }
     /* equipamento que estava marcado "não encontrado" e foi achado: tira a marca */
-    for (const a of pr.al.filter(x => x.parte === 'equip' && pr.ct[x.k] && pr.ct[x.k].cont && x.e.naoAchado)) { const e = S.almEq.find(x => x.id === a.e.id); if (e) { await Data.col('sv2_alm_equip').update(e.id, { naoAchado: '', hist: (e.hist || []).concat([{ ts: nowISO(), porId: S.user.id, porNome: S.user.nome, tipo: 'inventario', data: hojeISO(), texto: 'Encontrado na ' + inv.numero }]), atualizadoEm: nowISO() }); res.ajustes.push(eqNomeC(e) + ': encontrado de novo'); } }
+    for (const a of pr.al.filter(x => x.parte === 'equip' && pr.ct[x.k] && pr.ct[x.k].cont && x.e.naoAchado)) { const e = cgEqCopia(a.e.id); if (e) { await Data.col('sv2_alm_equip').update(e.id, { naoAchado: '', hist: (e.hist || []).concat([{ ts: nowISO(), porId: S.user.id, porNome: S.user.nome, tipo: 'inventario', data: hojeISO(), texto: 'Encontrado na ' + inv.numero }]), atualizadoEm: nowISO() }); res.ajustes.push(eqNomeC(e) + ': encontrado de novo'); } }
     await Data.col('sv2_alm_inv').update(inv.id, { situacao: 'concluido', concluidoEm: nowISO(), concluidoPor: S.user.nome, resumo: res });
     Audit.log({ acao: 'inventario_concluir', entidade: 'almox_inv', entidadeId: inv.id, resumo: 'Concluiu a ' + inv.numero + ': ' + res.contados + ' de ' + res.total + ' contados, ' + res.difs + ' diferença(s), ' + res.erros + ' erro(s) de lançamento' + (res.ajustes.length ? ' · ' + res.ajustes.join('; ') : ''), depois: res });
     S.cgVista = ''; aviso(inv.numero + ' concluída.' + (res.erros ? ' ' + res.erros + ' erro(s) de lançamento registrado(s).' : ''));

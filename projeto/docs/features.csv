@@ -278,3 +278,8 @@ Fluido na linha do tempo da calibração (sobe da última etapa vista; 0,4 s ent
 Inventário de equipamentos (achei/não achei) na contagem às cegas,Almoxarifado,must,sim,sim,v0.3.4,
 Inventário de vidrarias por lugar na contagem às cegas,Almoxarifado,must,sim,sim,v0.3.4,
 Equipamento marcado 'não encontrado' pela contagem,Almoxarifado,should,sim,sim,v0.3.4,
+Lugar de guarda e de uso do equipamento (Guardar / Pôr em uso),Almoxarifado,must,sim,sim,v0.3.5,
+Reservas iguais a este (onde está cada uma),Almoxarifado,should,nao,sim,v0.3.5,
+Vidraria: quantidade por lugar dentro do laboratório,Almoxarifado,must,parcial,sim,v0.3.5,
+Inventário por lugar (vidraria e equipamento),Almoxarifado,should,parcial,sim,v0.3.5,
+Coluna Local curta nas tabelas,Visual,should,nao,sim,v0.3.5,

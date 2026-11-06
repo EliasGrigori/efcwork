@@ -147,7 +147,7 @@ const estado = p => p.evaluate(() => { const ol = document.querySelector('#gv .c
   await p.click('[data-act="cg-nova-ok"]'); await p.waitForTimeout(400);
   const inv = await p.evaluate(() => { const i = cgAberta(); return i && { p: i.partes, t: i.tipo2, k: cgAlvos(i).map(a => a.k).join() }; });
   conf(inv && inv.p.mat === false && inv.p.equip && inv.p.vid && inv.t === 'inventario', 'inventário aberto com equipamentos e vidrarias (sem materiais)');
-  conf(inv && /e:e1/.test(inv.k) && /e:e2/.test(inv.k) && /e:e3/.test(inv.k) && /v:e4(,|$)/.test(inv.k) && /v:e5~laboratorio/.test(inv.k) && /v:e5~gaveta-03/.test(inv.k), 'na lista: os 3 equipamentos, o béquer e a pipeta em cada lugar (' + (inv && inv.k) + ')');
+  conf(inv && /e:e1/.test(inv.k) && /e:e2/.test(inv.k) && /e:e3/.test(inv.k) && /v:e4(,|$)/.test(inv.k) && /v:e5__laboratorio/.test(inv.k) && /v:e5__gaveta-03/.test(inv.k), 'na lista: os 3 equipamentos, o béquer e a pipeta em cada lugar (' + (inv && inv.k) + ')');
   conf(!/\b12\b/.test(await p.textContent('.cg-it[data-k="v:e4"]')), 'às cegas também para vidraria (o 12 do béquer não aparece)');
   conf((await p.$$('.cg-it [data-act="cg-achei"]')).length === 6, 'cada equipamento tem "Não achei" e "Achei"');
   conf(/^Inventário CNT-/.test(await p.textContent('.cs-ph h1')) && /Equipamentos/.test(await p.textContent('.cs-abas .on')) && /Equipamentos/.test(await p.textContent('.cs-acts')), 'o título vira "Inventário CNT-…", debaixo de Equipamentos (aba marcada e botão de voltar)');
@@ -158,7 +158,7 @@ const estado = p => p.evaluate(() => { const ol = document.querySelector('#gv .c
   conf(await p.evaluate(() => { const c = cgContagens(cgAberta()); return c['e:e1'].cont === 1 && c['e:e2'].cont === 0 && c['e:e2'].esp.total === 1; }), 'Achei = 1, Não achei = 0 (o sistema espera 1)');
   conf(/Não achei/.test(await p.textContent('.cg-it[data-k="e:e2"]')) && (await p.$$('.cg-it[data-k="e:e2"] .cg-ach.nao')).length === 1, 'o contado mostra "Não achei" em vermelho');
   const vid = async (k, v) => { await p.fill('[data-cgk="' + k + '"]', v); await p.click('.cg-it[data-k="' + k + '"] [data-act="cg-salva"]'); await p.waitForTimeout(220); };
-  await vid('v:e4', '10'); await vid('v:e5~laboratorio', '6'); await vid('v:e5~gaveta-03', '4');
+  await vid('v:e4', '10'); await vid('v:e5__laboratorio', '6'); await vid('v:e5__gaveta-03', '4');
   await dd(p, 'cg:vista', 'conferência'); await p.waitForTimeout(200);
   const tipos = await p.$$eval('.tb-t tbody tr[data-id]', l => l.map(x => x.getAttribute('data-id')).join());
   conf(tipos.split(',').length === 2 && /e:e2/.test(tipos) && /v:e4/.test(tipos), 'conferência: só o que não bateu (balança e béquer) (' + tipos + ')');

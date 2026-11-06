@@ -1,0 +1,24 @@
+/* EFCwork · lugares.css — onde cada coisa fica (v0.3.5) */
+.lg-onde{display:flex;flex-direction:column;gap:10px}
+.lg-agora{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--bd);border-radius:var(--r);background:var(--bg0)}
+.lg-agora>.ic{width:26px;height:26px;flex:none;color:var(--a)}
+.lg-agora.guarda>.ic{color:var(--tx2)}
+.lg-agora div{display:flex;flex-direction:column;gap:1px;min-width:0}
+.lg-agora small{font-size:12px;color:var(--tx3)}
+.lg-agora b{font-size:18px;font-weight:600}
+.lg-ref{grid-template-columns:130px minmax(0,1fr)}
+.lg-l span,.lg-ig span{display:flex;align-items:center;gap:8px;min-width:0}
+.lg-l .ic,.lg-ig .ic{width:16px;height:16px;flex:none;color:var(--tx3)}
+.lg-tp{font-style:normal;font-size:12px;padding:1px 7px;border-radius:999px;background:var(--bg2);color:var(--tx2);white-space:nowrap}
+.lg-tp.uso{background:color-mix(in srgb,var(--a) 16%,transparent);color:var(--tx)}
+.lg-ig{width:100%;cursor:pointer;font:inherit;color:inherit;text-align:left}
+.lg-ig:hover{border-color:var(--a)}
+.lg-ig small{color:var(--tx3);font-size:13px;white-space:nowrap}
+.lg-lab{display:flex;flex-direction:column;gap:6px;margin-bottom:8px}
+.lg-lab>small{font-size:12px;color:var(--tx3)}
+.lg-dl{display:flex;flex-direction:column;gap:8px}
+.lg-dr{display:grid;grid-template-columns:minmax(0,1fr) 84px 36px;gap:8px;align-items:start}
+.lg-dr .dd{min-width:0}.lg-dr>.fm-i{grid-column:1}
+.lg-dr .fm-i.num{grid-column:2;grid-row:1;text-align:center}
+.lg-dr>.bt{grid-column:3;grid-row:1}
+.lg-add{align-self:flex-start}

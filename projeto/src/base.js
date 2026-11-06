@@ -1,7 +1,7 @@
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.3.4';
+const VERSAO = '0.3.5';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -95,6 +95,9 @@ const ICS = {
   pizza: '<path d="M21 12A9 9 0 1 1 12 3v9z"/><path d="M15 3.5A9 9 0 0 1 20.5 9H15z"/>',
   lista: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 13l2 2 4-4"/>',
   doc: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>',
+  pino: '<path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.4"/>',
+  guarda: '<rect x="3.5" y="4" width="17" height="16" rx="2"/><path d="M3.5 12h17M10 8h4M10 16h4"/>',
+  bancada: '<path d="M3 9h18M5 9v11M19 9v11M8 9V5h3v4M14 9V6h2v3"/>',
   caixa: '<path d="M3.5 7.5 12 3l8.5 4.5v9L12 21l-8.5-4.5z"/><path d="M3.5 7.5 12 12l8.5-4.5M12 12v9"/>',
   escudo: '<path d="M12 3l8 3v6c0 4.5-3.2 8-8 9-4.8-1-8-4.5-8-9V6z"/><path d="M9 12l2.2 2.2L15.5 10"/>',
   graf: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
@@ -164,7 +167,7 @@ const Data = (function () {
         },
         add(obj) { const a = dLoad(name); const id = uid(); a.push(Object.assign({ id: id }, clean(obj))); dSave(name, a); dNotify(name); return Promise.resolve(id); },
         set(id, obj) { const a = dLoad(name).filter(x => x.id !== id); a.push(Object.assign({ id: id }, clean(obj))); dSave(name, a); dNotify(name); return Promise.resolve(id); },
-        update(id, patch) { const a = dLoad(name); const it = a.find(x => x.id === id); if (!it) return Promise.reject(new Error('nf')); Object.keys(patch).forEach(k => setPath(it, k, clean({ v: patch[k] }).v)); dSave(name, a); dNotify(name); return Promise.resolve(); },
+        update(id, patch) { const ruim = Object.keys(patch).find(k => /[~*\/\[\]]/.test(k)); if (ruim) return Promise.reject(new Error('Invalid field path (' + ruim + '): o Firestore não aceita ~ * / [ ]')); const a = dLoad(name); const it = a.find(x => x.id === id); if (!it) return Promise.reject(new Error('nf')); Object.keys(patch).forEach(k => setPath(it, k, clean({ v: patch[k] }).v)); dSave(name, a); dNotify(name); return Promise.resolve(); },
         /* v2.84.0: acrescenta um item numa lista do registro sem regravar a lista inteira (ninguém apaga o passo do outro) */
         push(id, campo, item, extra) { const a = dLoad(name); const it = a.find(x => x.id === id); if (!it) return Promise.reject(new Error('nf')); it[campo] = (Array.isArray(it[campo]) ? it[campo] : []).concat([clean({ v: item }).v]); Object.keys(extra || {}).forEach(k => setPath(it, k, clean({ v: extra[k] }).v)); dSave(name, a); dNotify(name); return Promise.resolve(); },
         get(id) { return Promise.resolve(dLoad(name).find(x => x.id === id) || null); },

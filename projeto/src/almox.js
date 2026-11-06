@@ -194,7 +194,7 @@ function alTabEq() {
       { k: 'tag', rot: 'TAG', v: e => e.tag || '' },
       { k: 'nome', rot: 'Equipamento', fixa: true, v: e => e.nome || '', cls: 'forte' },
       { k: 'marca', rot: 'Marca', v: e => e.marca || '' },
-      { k: 'loc', rot: 'Local', v: e => eqLocal(e) },
+      { k: 'loc', rot: 'Local', v: e => lgCurto(e), titulo: e => eqLocal(e) }, /* só o lugar (pedido de 06/11); o laboratório e o resto ficam na gaveta */
       { k: 'qtd', rot: 'Qtd', tipo: 'num', v: eqQtd },
       { k: 'sit', rot: 'Situação', v: e => (EQ_SIT[e.situacao] || EQ_SIT.ativo)[0], html: e => { const s = EQ_SIT[e.situacao] || EQ_SIT.ativo; return alPill(s[0], s[1]); } },
       { k: 'prox', rot: 'Próxima calibração', tipo: 'data', v: e => e.precisaCal ? eqProxima(e) : '' },
@@ -266,10 +266,10 @@ function alAbreSol(id) {
 function alAbreEq(id) {
   S._alSel = id; gvAbrir(() => {
     const e = S.almEq.find(y => y.id === id); if (!e) return null; const st = EQ_SIT[e.situacao] || EQ_SIT.ativo, c = eqCalSit(e), cal = e.cal || {};
-    return { ico: 'eng', sub: 'Equipamento' + (e.tag ? ' · ' + e.tag : ''), titulo: e.nome, pill: alPill(st[0], st[1]) + (c ? ' ' + alPill(EQ_CAL[c][0], EQ_CAL[c][1]) : ''),
+    return { ico: 'eng', sub: (e.tipo === 'qtd' ? 'Vidraria' : 'Equipamento') + (e.tag ? ' · ' + e.tag : ''), titulo: e.nome, cabAcoes: lgCab(e), pill: alPill(st[0], st[1]) + (c ? ' ' + alPill(EQ_CAL[c][0], EQ_CAL[c][1]) : ''),
       corpo: (e.naoAchado ? lcAv('<b>Não encontrado</b> na contagem ' + esc(e.naoAchado) + '. Some a marca quando ele for achado numa próxima contagem.', 'cr') : '') + (e.precisaCal ? gvNums([[cal.ultima ? fmtD(cal.ultima) : '—', 'última calibração'], [eqProxima(e) ? fmtD(eqProxima(e)) : '—', 'próxima', c === 'vencida' || c === 'sem' ? 'cr' : c === 'avencer' ? 'wa' : ''], [(cal.freqMeses || 12) + ' meses', 'frequência']]) : '') +
-        gvCampos([['Local', eqLocal(e)], ['Marca', e.marca], ['Modelo', e.modelo], ['Nº de série', e.serie], ['Quantidade', e.tipo === 'qtd' ? String(eqQtd(e)) : ''], ['Resultado', cal.resultado === 'aprovado' ? 'Aprovado para uso' : cal.resultado === 'reprovado' ? 'Reprovado' : ''], ['Certificado', cal.certificado || cal.cert || ''], ['Válido até', cal.validade ? fmtD(cal.validade) : ''], ['Quem calibrou', [cal.tecnico, cal.prestador].filter(Boolean).join(' · ')], ['Observação', e.obs]]) + (typeof cbHistEquip === 'function' && e.precisaCal ? cbHistEquip(e) : ''),
-      rodape: typeof alSup === 'function' && alSup() && e.precisaCal && e.situacao !== 'baixa' && !(typeof cbAbertas === 'function' && cbAbertas().some(c => (c.itens || []).some(i => i.equipId === e.id && !i.aplicado))) ? '<button type="button" class="bt pr" data-act="cb-pedir" data-id="' + esc(e.id) + '">' + ic('eng') + 'Pedir calibração</button>' : '' };
+        lgOndeHTML(e) + gvCampos([['Laboratório', e.tipo === 'qtd' ? '' : e.local], ['Marca', e.marca], ['Modelo', e.modelo], ['Nº de série', e.serie], ['Quantidade', e.tipo === 'qtd' ? String(eqQtd(e)) : ''], ['Resultado', cal.resultado === 'aprovado' ? 'Aprovado para uso' : cal.resultado === 'reprovado' ? 'Reprovado' : ''], ['Certificado', cal.certificado || cal.cert || ''], ['Válido até', cal.validade ? fmtD(cal.validade) : ''], ['Quem calibrou', [cal.tecnico, cal.prestador].filter(Boolean).join(' · ')], ['Observação', e.obs]]) + (typeof cbHistEquip === 'function' && e.precisaCal ? cbHistEquip(e) : ''),
+      rodape: lgBotoes(e) + (typeof alSup === 'function' && alSup() && e.precisaCal && e.situacao !== 'baixa' && !(typeof cbAbertas === 'function' && cbAbertas().some(c => (c.itens || []).some(i => i.equipId === e.id && !i.aplicado))) ? '<button type="button" class="bt pr" data-act="cb-pedir" data-id="' + esc(e.id) + '">' + ic('eng') + 'Pedir calibração</button>' : '') };
   });
   render();
 }

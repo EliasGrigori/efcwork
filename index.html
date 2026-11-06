@@ -536,6 +536,32 @@ div.cb-hc{cursor:default}
 .cb-hc .gv-fl{font-size:13px;grid-template-columns:130px minmax(0,1fr)}
 .cb-hc .cb-mini{margin:0}
 
+/* ===== lugares.css ===== */
+/* EFCwork · lugares.css — onde cada coisa fica (v0.3.5) */
+.lg-onde{display:flex;flex-direction:column;gap:10px}
+.lg-agora{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--bd);border-radius:var(--r);background:var(--bg0)}
+.lg-agora>.ic{width:26px;height:26px;flex:none;color:var(--a)}
+.lg-agora.guarda>.ic{color:var(--tx2)}
+.lg-agora div{display:flex;flex-direction:column;gap:1px;min-width:0}
+.lg-agora small{font-size:12px;color:var(--tx3)}
+.lg-agora b{font-size:18px;font-weight:600}
+.lg-ref{grid-template-columns:130px minmax(0,1fr)}
+.lg-l span,.lg-ig span{display:flex;align-items:center;gap:8px;min-width:0}
+.lg-l .ic,.lg-ig .ic{width:16px;height:16px;flex:none;color:var(--tx3)}
+.lg-tp{font-style:normal;font-size:12px;padding:1px 7px;border-radius:999px;background:var(--bg2);color:var(--tx2);white-space:nowrap}
+.lg-tp.uso{background:color-mix(in srgb,var(--a) 16%,transparent);color:var(--tx)}
+.lg-ig{width:100%;cursor:pointer;font:inherit;color:inherit;text-align:left}
+.lg-ig:hover{border-color:var(--a)}
+.lg-ig small{color:var(--tx3);font-size:13px;white-space:nowrap}
+.lg-lab{display:flex;flex-direction:column;gap:6px;margin-bottom:8px}
+.lg-lab>small{font-size:12px;color:var(--tx3)}
+.lg-dl{display:flex;flex-direction:column;gap:8px}
+.lg-dr{display:grid;grid-template-columns:minmax(0,1fr) 84px 36px;gap:8px;align-items:start}
+.lg-dr .dd{min-width:0}.lg-dr>.fm-i{grid-column:1}
+.lg-dr .fm-i.num{grid-column:2;grid-row:1;text-align:center}
+.lg-dr>.bt{grid-column:3;grid-row:1}
+.lg-add{align-self:flex-start}
+
 /* ===== sino.css ===== */
 /* EFCwork · sino.css — avisos e pedidos na gaveta. Prefixo: sn- (e o número no sino: cs-bdg) */
 .cs-sino{position:relative}
@@ -658,7 +684,7 @@ div.cb-hc{cursor:default}
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.3.4';
+const VERSAO = '0.3.5';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -752,6 +778,9 @@ const ICS = {
   pizza: '<path d="M21 12A9 9 0 1 1 12 3v9z"/><path d="M15 3.5A9 9 0 0 1 20.5 9H15z"/>',
   lista: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 13l2 2 4-4"/>',
   doc: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>',
+  pino: '<path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.4"/>',
+  guarda: '<rect x="3.5" y="4" width="17" height="16" rx="2"/><path d="M3.5 12h17M10 8h4M10 16h4"/>',
+  bancada: '<path d="M3 9h18M5 9v11M19 9v11M8 9V5h3v4M14 9V6h2v3"/>',
   caixa: '<path d="M3.5 7.5 12 3l8.5 4.5v9L12 21l-8.5-4.5z"/><path d="M3.5 7.5 12 12l8.5-4.5M12 12v9"/>',
   escudo: '<path d="M12 3l8 3v6c0 4.5-3.2 8-8 9-4.8-1-8-4.5-8-9V6z"/><path d="M9 12l2.2 2.2L15.5 10"/>',
   graf: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
@@ -821,7 +850,7 @@ const Data = (function () {
         },
         add(obj) { const a = dLoad(name); const id = uid(); a.push(Object.assign({ id: id }, clean(obj))); dSave(name, a); dNotify(name); return Promise.resolve(id); },
         set(id, obj) { const a = dLoad(name).filter(x => x.id !== id); a.push(Object.assign({ id: id }, clean(obj))); dSave(name, a); dNotify(name); return Promise.resolve(id); },
-        update(id, patch) { const a = dLoad(name); const it = a.find(x => x.id === id); if (!it) return Promise.reject(new Error('nf')); Object.keys(patch).forEach(k => setPath(it, k, clean({ v: patch[k] }).v)); dSave(name, a); dNotify(name); return Promise.resolve(); },
+        update(id, patch) { const ruim = Object.keys(patch).find(k => /[~*\/\[\]]/.test(k)); if (ruim) return Promise.reject(new Error('Invalid field path (' + ruim + '): o Firestore não aceita ~ * / [ ]')); const a = dLoad(name); const it = a.find(x => x.id === id); if (!it) return Promise.reject(new Error('nf')); Object.keys(patch).forEach(k => setPath(it, k, clean({ v: patch[k] }).v)); dSave(name, a); dNotify(name); return Promise.resolve(); },
         /* v2.84.0: acrescenta um item numa lista do registro sem regravar a lista inteira (ninguém apaga o passo do outro) */
         push(id, campo, item, extra) { const a = dLoad(name); const it = a.find(x => x.id === id); if (!it) return Promise.reject(new Error('nf')); it[campo] = (Array.isArray(it[campo]) ? it[campo] : []).concat([clean({ v: item }).v]); Object.keys(extra || {}).forEach(k => setPath(it, k, clean({ v: extra[k] }).v)); dSave(name, a); dNotify(name); return Promise.resolve(); },
         get(id) { return Promise.resolve(dLoad(name).find(x => x.id === id) || null); },
@@ -1428,7 +1457,7 @@ function tbHTML(cfg) {
     return '<th class="' + (c.tipo === 'num' ? 'n' : '') + '"' + (o ? ' aria-sort="' + (o === 'asc' ? 'ascending' : 'descending') + '"' : '') + '><button type="button" data-act="tb-ord" data-tb="' + esc(cfg.id) + '" data-k="' + esc(c.k) + '">' + esc(c.rot) + (o ? '<span class="tb-seta">' + (o === 'asc' ? '▲' : '▼') + '</span>' : '') + '</button></th>';
   }).join('') + '</tr></thead><tbody>';
   if (!l.length) h += '<tr><td colspan="' + cols.length + '" class="tb-vz">' + esc(cfg.vazio || 'Nada encontrado.') + '</td></tr>';
-  else h += l.map(r => { const id = chave(r); return '<tr' + (cfg.aoClicar ? ' data-act="tb-lin" data-tb="' + esc(cfg.id) + '" data-id="' + esc(id) + '" tabindex="0"' : '') + (cfg.selecionado === id ? ' class="sel"' : '') + '>' + cols.map(c => '<td class="' + (c.tipo === 'num' ? 'n' : '') + (c.cls ? ' ' + c.cls : '') + '">' + tbFmt(c, r) + '</td>').join('') + '</tr>'; }).join('');
+  else h += l.map(r => { const id = chave(r); return '<tr' + (cfg.aoClicar ? ' data-act="tb-lin" data-tb="' + esc(cfg.id) + '" data-id="' + esc(id) + '" tabindex="0"' : '') + (cfg.selecionado === id ? ' class="sel"' : '') + '>' + cols.map(c => '<td class="' + (c.tipo === 'num' ? 'n' : '') + (c.cls ? ' ' + c.cls : '') + '"' + (c.titulo ? ' title="' + esc(c.titulo(r)) + '"' : '') + '>' + tbFmt(c, r) + '</td>').join('') + '</tr>'; }).join('');
   h += '</tbody>';
   const comTotal = cols.some(c => c.total);
   if (comTotal && l.length) h += '<tfoot><tr>' + cols.map((c, i) => { if (!c.total) return '<td>' + (i === 0 ? 'Total' : '') + '</td>'; const v = typeof c.total === 'function' ? c.total(todas) : todas.reduce((s, r) => s + (Number(c.v(r)) || 0), 0); return '<td class="n">' + esc(c.fmtTotal ? c.fmtTotal(v) : numBR(v, c.dec)) + '</td>'; }).join('') + '</tr></tfoot>';
@@ -1772,7 +1801,7 @@ function alTabEq() {
       { k: 'tag', rot: 'TAG', v: e => e.tag || '' },
       { k: 'nome', rot: 'Equipamento', fixa: true, v: e => e.nome || '', cls: 'forte' },
       { k: 'marca', rot: 'Marca', v: e => e.marca || '' },
-      { k: 'loc', rot: 'Local', v: e => eqLocal(e) },
+      { k: 'loc', rot: 'Local', v: e => lgCurto(e), titulo: e => eqLocal(e) }, /* só o lugar (pedido de 06/11); o laboratório e o resto ficam na gaveta */
       { k: 'qtd', rot: 'Qtd', tipo: 'num', v: eqQtd },
       { k: 'sit', rot: 'Situação', v: e => (EQ_SIT[e.situacao] || EQ_SIT.ativo)[0], html: e => { const s = EQ_SIT[e.situacao] || EQ_SIT.ativo; return alPill(s[0], s[1]); } },
       { k: 'prox', rot: 'Próxima calibração', tipo: 'data', v: e => e.precisaCal ? eqProxima(e) : '' },
@@ -1844,10 +1873,10 @@ function alAbreSol(id) {
 function alAbreEq(id) {
   S._alSel = id; gvAbrir(() => {
     const e = S.almEq.find(y => y.id === id); if (!e) return null; const st = EQ_SIT[e.situacao] || EQ_SIT.ativo, c = eqCalSit(e), cal = e.cal || {};
-    return { ico: 'eng', sub: 'Equipamento' + (e.tag ? ' · ' + e.tag : ''), titulo: e.nome, pill: alPill(st[0], st[1]) + (c ? ' ' + alPill(EQ_CAL[c][0], EQ_CAL[c][1]) : ''),
+    return { ico: 'eng', sub: (e.tipo === 'qtd' ? 'Vidraria' : 'Equipamento') + (e.tag ? ' · ' + e.tag : ''), titulo: e.nome, cabAcoes: lgCab(e), pill: alPill(st[0], st[1]) + (c ? ' ' + alPill(EQ_CAL[c][0], EQ_CAL[c][1]) : ''),
       corpo: (e.naoAchado ? lcAv('<b>Não encontrado</b> na contagem ' + esc(e.naoAchado) + '. Some a marca quando ele for achado numa próxima contagem.', 'cr') : '') + (e.precisaCal ? gvNums([[cal.ultima ? fmtD(cal.ultima) : '—', 'última calibração'], [eqProxima(e) ? fmtD(eqProxima(e)) : '—', 'próxima', c === 'vencida' || c === 'sem' ? 'cr' : c === 'avencer' ? 'wa' : ''], [(cal.freqMeses || 12) + ' meses', 'frequência']]) : '') +
-        gvCampos([['Local', eqLocal(e)], ['Marca', e.marca], ['Modelo', e.modelo], ['Nº de série', e.serie], ['Quantidade', e.tipo === 'qtd' ? String(eqQtd(e)) : ''], ['Resultado', cal.resultado === 'aprovado' ? 'Aprovado para uso' : cal.resultado === 'reprovado' ? 'Reprovado' : ''], ['Certificado', cal.certificado || cal.cert || ''], ['Válido até', cal.validade ? fmtD(cal.validade) : ''], ['Quem calibrou', [cal.tecnico, cal.prestador].filter(Boolean).join(' · ')], ['Observação', e.obs]]) + (typeof cbHistEquip === 'function' && e.precisaCal ? cbHistEquip(e) : ''),
-      rodape: typeof alSup === 'function' && alSup() && e.precisaCal && e.situacao !== 'baixa' && !(typeof cbAbertas === 'function' && cbAbertas().some(c => (c.itens || []).some(i => i.equipId === e.id && !i.aplicado))) ? '<button type="button" class="bt pr" data-act="cb-pedir" data-id="' + esc(e.id) + '">' + ic('eng') + 'Pedir calibração</button>' : '' };
+        lgOndeHTML(e) + gvCampos([['Laboratório', e.tipo === 'qtd' ? '' : e.local], ['Marca', e.marca], ['Modelo', e.modelo], ['Nº de série', e.serie], ['Quantidade', e.tipo === 'qtd' ? String(eqQtd(e)) : ''], ['Resultado', cal.resultado === 'aprovado' ? 'Aprovado para uso' : cal.resultado === 'reprovado' ? 'Reprovado' : ''], ['Certificado', cal.certificado || cal.cert || ''], ['Válido até', cal.validade ? fmtD(cal.validade) : ''], ['Quem calibrou', [cal.tecnico, cal.prestador].filter(Boolean).join(' · ')], ['Observação', e.obs]]) + (typeof cbHistEquip === 'function' && e.precisaCal ? cbHistEquip(e) : ''),
+      rodape: lgBotoes(e) + (typeof alSup === 'function' && alSup() && e.precisaCal && e.situacao !== 'baixa' && !(typeof cbAbertas === 'function' && cbAbertas().some(c => (c.itens || []).some(i => i.equipId === e.id && !i.aplicado))) ? '<button type="button" class="bt pr" data-act="cb-pedir" data-id="' + esc(e.id) + '">' + ic('eng') + 'Pedir calibração</button>' : '') };
   });
   render();
 }
@@ -2535,14 +2564,15 @@ function cgAlvos(inv) {
   const p = (inv && inv.partes) || { mat: true }, out = [];
   if (p.mat !== false) alAtivos().forEach(i => out.push({ k: 'm:' + i.id, parte: 'mat', i: i, local: cgNomeLocal(i.local), lotes: alLotes(i.id, true).filter(l => l.saldo > 0) }));
   if (p.equip || p.vid) S.almEq.filter(e => e.situacao !== 'baixa' && !e.transito).forEach(e => {
-    if (e.tipo === 'qtd') { if (!p.vid) return; const ls = Object.keys(e.qtdLocal || {}); (ls.length ? ls : [e.local || '']).forEach(l => out.push({ k: 'v:' + e.id + (ls.length > 1 ? '~' + cgSlug(l) : ''), parte: 'vid', e: e, vloc: l, i: { id: e.id, nome: e.nome, codigo: [e.marca, ls.length > 1 ? l : ''].filter(Boolean).join(' · '), un: 'un' }, local: cgNomeLocal(l || e.local), lotes: [] })); }
-    else if (p.equip) out.push({ k: 'e:' + e.id, parte: 'equip', e: e, i: { id: e.id, nome: eqNomeC(e), codigo: [e.marca, e.serie ? 'série ' + e.serie : ''].filter(Boolean).join(' · '), un: '' }, local: cgNomeLocal([e.local, e.posicao].filter(Boolean).join(' · ')), lotes: [] });
+    /* vidraria: uma linha por laboratório e por lugar dentro dele (gaveta, porta, bancada, suporte… — v0.3.5); chaves só com letras, números, '-' e '__' (o Firestore não aceita '~' no caminho) */
+    if (e.tipo === 'qtd') { if (!p.vid) return; const ls = lgLabs(e).length ? lgLabs(e) : [e.local || '']; ls.forEach(l => { const dist = lgDist(e, l), varios = dist.length > 1 || (dist[0] && dist[0].lugar); (dist.length ? dist : [{ lugar: '', qtd: 0 }]).forEach(x => out.push({ k: 'v:' + e.id + (ls.length > 1 || varios ? '__' + cgSlug(l) : '') + (x.lugar ? '__' + cgSlug(x.lugar) : ''), parte: 'vid', e: e, vloc: l, vpos: x.lugar, i: { id: e.id, nome: e.nome, codigo: [ls.length > 1 || varios ? l : '', e.marca].filter(Boolean).join(' · '), un: 'un' }, local: x.lugar || (varios ? 'Sem lugar definido' : cgNomeLocal(l || e.local)), lotes: [] })); }); }
+    else if (p.equip) out.push({ k: 'e:' + e.id, parte: 'equip', e: e, i: { id: e.id, nome: eqNomeC(e), codigo: [e.local, lgGuardado(e) ? 'guardado' : '', e.marca].filter(Boolean).join(' · '), un: '' }, local: lgNome(e.posicao) || cgNomeLocal(e.local), lotes: [] });
   });
   const ord = { mat: 0, vid: 1, equip: 2 };
   return out.sort((a, b) => cgCmpLocal(a.local, b.local) || ord[a.parte] - ord[b.parte] || String(a.i.nome).localeCompare(b.i.nome, 'pt-BR'));
 }
 function cgEsperado(a) {
-  if (a.parte === 'vid') return { total: Number((a.e.qtdLocal || {})[a.vloc]) || 0 };
+  if (a.parte === 'vid') { const x = lgDist(a.e, a.vloc).find(y => y.lugar === (a.vpos || '')); return { total: x ? x.qtd : 0 }; }
   if (a.parte === 'equip') return { total: 1 };
   const l = {}; alLotes(a.i.id).forEach(x => { l[x.id] = x.saldo; }); return { total: alSaldo(a.i.id), lotes: l };
 }
@@ -2735,7 +2765,10 @@ async function cgResOk() {
   const k = f.kItem; try { await Data.col('sv2_alm_inv').update(inv.id, { ['resolucoes.' + cgChave(k)]: r }); } catch (e) { return lcErro(svErro(e)); }
   lcFim(); aviso('Decisão guardada. Ela vira lançamento quando você concluir a contagem.');
 }
-async function cgConcluir() {
+/* cópia de trabalho do equipamento durante o concluir: duas diferenças no mesmo equipamento (ex.: pipeta na gaveta e no suporte) não se apagam */
+let CG_EQ_COP = {};
+const cgEqCopia = id => { if (!CG_EQ_COP[id]) { const e = S.almEq.find(x => x.id === id); if (!e) return null; CG_EQ_COP[id] = JSON.parse(JSON.stringify(e)); } return CG_EQ_COP[id]; };
+async function cgConcluir() { CG_EQ_COP = {};
   const inv = cgAberta(); if (!inv || !alSup()) return; const pr = cgProgresso(inv), rs = inv.resolucoes || {};
   if (pr.recontar.length) { aviso('Ainda há recontagem pedida.', 'erro'); return; }
   const semDec = pr.difs.filter(a => !rs[cgChave(a.k)]); if (semDec.length) { aviso('Falta decidir: ' + semDec.slice(0, 3).map(a => a.i.nome).join(', ') + (semDec.length > 3 ? '…' : '') + '.', 'erro'); return; }
@@ -2745,11 +2778,16 @@ async function cgConcluir() {
     for (const a of pr.difs) {
       const c = pr.ct[a.k], r = rs[cgChave(a.k)];
       if (a.parte !== 'mat') {
-        const e = S.almEq.find(x => x.id === a.e.id); if (!e) continue; const mot = 'Contagem ' + inv.numero + ': ' + (r.tipo === 'nao_achado' ? 'não encontrado' : r.tipo) + (r.obs ? ' — ' + r.obs : '');
+        const e = cgEqCopia(a.e.id); if (!e) continue; const mot = 'Contagem ' + inv.numero + ': ' + (r.tipo === 'nao_achado' ? 'não encontrado' : r.tipo) + (r.obs ? ' — ' + r.obs : '');
         let patch = {}, ev;
-        if (a.parte === 'vid') { const qn = Object.assign({}, e.qtdLocal || {}); qn[a.vloc] = c.cont; patch = { qtdLocal: qn }; ev = { tipo: 'quantidade', data: hojeISO(), texto: mot + ' · ' + a.vloc + ' ' + (Number((e.qtdLocal || {})[a.vloc]) || 0) + ' → ' + c.cont, antes: { qtdLocal: e.qtdLocal || {} }, depois: { qtdLocal: qn } }; res.ajustes.push(e.nome + ' (' + a.vloc + ') → ' + c.cont + ' (' + r.tipo + ')'); }
+        if (a.parte === 'vid') { /* o total do laboratório muda pela diferença; o lugar contado fica com o que foi contado */
+          const qn = Object.assign({}, e.qtdLocal || {}), d = cgDif(c), esp = Number((c.esp || {}).total) || 0; qn[a.vloc] = Math.max(0, alR((Number(qn[a.vloc]) || 0) + d)); patch = { qtdLocal: qn };
+          if (a.vpos) { const pos = JSON.parse(JSON.stringify(e.qtdPos || {})); pos[a.vloc] = pos[a.vloc] || {}; if (c.cont > 0) pos[a.vloc][a.vpos] = c.cont; else delete pos[a.vloc][a.vpos]; patch.qtdPos = pos; const gd = Object.assign({}, e.qtdGuard || {}); gd[a.vloc] = Object.keys(pos[a.vloc]).filter(k => lgTipo(k) === 'guarda').reduce((s, k) => s + Number(pos[a.vloc][k]), 0); if (!gd[a.vloc]) delete gd[a.vloc]; patch.qtdGuard = gd; }
+          const onde = a.vloc + (a.vpos ? ' › ' + a.vpos : a.local === 'Sem lugar definido' ? ' › sem lugar' : '');
+          ev = { tipo: 'quantidade', data: hojeISO(), texto: mot + ' · ' + onde + ' ' + esp + ' → ' + c.cont, antes: { qtdLocal: e.qtdLocal || {}, qtdPos: e.qtdPos || {} }, depois: patch }; res.ajustes.push(e.nome + ' (' + onde + ') → ' + c.cont + ' (' + r.tipo + ')'); }
         else { if (r.tipo === 'nao_achado') patch = { naoAchado: inv.numero }; ev = { tipo: 'inventario', data: hojeISO(), texto: mot }; res.ajustes.push(eqNomeC(e) + ': ' + (r.tipo === 'nao_achado' ? 'não encontrado' : r.tipo)); }
-        await Data.col('sv2_alm_equip').update(e.id, Object.assign({}, patch, { hist: (e.hist || []).concat([Object.assign({ ts: nowISO(), porId: S.user.id, porNome: S.user.nome }, ev)]), atualizadoEm: nowISO() }));
+        const hist = (e.hist || []).concat([Object.assign({ ts: nowISO(), porId: S.user.id, porNome: S.user.nome }, ev)]); Object.assign(e, patch, { hist: hist });
+        await Data.col('sv2_alm_equip').update(e.id, Object.assign({}, patch, { hist: hist, atualizadoEm: nowISO() }));
         Audit.log({ acao: 'equip_inventario', entidade: 'almox_equip', entidadeId: e.id, resumo: eqNomeC(e) + ': ' + mot, depois: patch });
         continue;
       }
@@ -2772,7 +2810,7 @@ async function cgConcluir() {
       }
     }
     /* equipamento que estava marcado "não encontrado" e foi achado: tira a marca */
-    for (const a of pr.al.filter(x => x.parte === 'equip' && pr.ct[x.k] && pr.ct[x.k].cont && x.e.naoAchado)) { const e = S.almEq.find(x => x.id === a.e.id); if (e) { await Data.col('sv2_alm_equip').update(e.id, { naoAchado: '', hist: (e.hist || []).concat([{ ts: nowISO(), porId: S.user.id, porNome: S.user.nome, tipo: 'inventario', data: hojeISO(), texto: 'Encontrado na ' + inv.numero }]), atualizadoEm: nowISO() }); res.ajustes.push(eqNomeC(e) + ': encontrado de novo'); } }
+    for (const a of pr.al.filter(x => x.parte === 'equip' && pr.ct[x.k] && pr.ct[x.k].cont && x.e.naoAchado)) { const e = cgEqCopia(a.e.id); if (e) { await Data.col('sv2_alm_equip').update(e.id, { naoAchado: '', hist: (e.hist || []).concat([{ ts: nowISO(), porId: S.user.id, porNome: S.user.nome, tipo: 'inventario', data: hojeISO(), texto: 'Encontrado na ' + inv.numero }]), atualizadoEm: nowISO() }); res.ajustes.push(eqNomeC(e) + ': encontrado de novo'); } }
     await Data.col('sv2_alm_inv').update(inv.id, { situacao: 'concluido', concluidoEm: nowISO(), concluidoPor: S.user.nome, resumo: res });
     Audit.log({ acao: 'inventario_concluir', entidade: 'almox_inv', entidadeId: inv.id, resumo: 'Concluiu a ' + inv.numero + ': ' + res.contados + ' de ' + res.total + ' contados, ' + res.difs + ' diferença(s), ' + res.erros + ' erro(s) de lançamento' + (res.ajustes.length ? ' · ' + res.ajustes.join('; ') : ''), depois: res });
     S.cgVista = ''; aviso(inv.numero + ' concluída.' + (res.erros ? ' ' + res.erros + ' erro(s) de lançamento registrado(s).' : ''));
@@ -3219,6 +3257,163 @@ function cbFluir(g, abriuAgora) {
   setTimeout(passo, abriuAgora ? 220 : 0);
 }
 GV_DEPOIS.push(cbFluir);
+
+/* ===== lugares.js ===== */
+/* EFCwork · lugares.js — ONDE CADA COISA FICA (v0.3.5, pedido do Elias de 06/11 08:19).
+   Equipamentos e vidrarias têm o lugar de GUARDA (gaveta, porta/armário) e o lugar de USO (bancada, suporte de vidrarias).
+   Ex.: micropipeta reserva guardada na Gaveta 02 para substituir a da Bancada 1 quando ela der problema; um novato vê onde cada uma está.
+   Formato compatível com o EFClaudian: equipamento = `local` (laboratório) + `posicao` (onde está agora) + `situacao` 'ativo'/'armazenado'
+   (+ `guardadoEm`); vidraria = `qtdLocal` por laboratório + `qtdGuard` (quantas guardadas). Campos novos (o EFClaudian ignora):
+   `posGuarda` e `posUso` (os dois lugares de referência do equipamento) e `qtdPos` {laboratório: {lugar: qtd}} da vidraria. Prefixo: lg. */
+const LG_GUARDA_RE = /^(gaveta|porta|arm[aá]rio|caixa|prateleira|estoque|almox|guarda)/i;
+const lgTipo = l => LG_GUARDA_RE.test(String(l || '').trim()) ? 'guarda' : 'uso';
+const lgNome = l => { const s = String(l || '').trim().replace(/\s+/g, ' '); if (!s) return ''; const b = s.toLowerCase(); return b.charAt(0).toUpperCase() + b.slice(1); };
+const LG_USO_PADRAO = ['Bancada', 'Suporte de vidrarias']; /* só sugestões iniciais; a lista cresce com o que for usado */
+/* todos os lugares já usados (materiais, equipamentos, vidrarias), menos os tirados da lista pela pessoa */
+function lgLugares(tipo) {
+  const v = {}, add = l => { const n = lgNome(l); if (n) v[tbNorm(n)] = v[tbNorm(n)] || n; };
+  S.almItens.forEach(i => add(i.local));
+  S.almEq.forEach(e => { add(e.posicao); add(e.posGuarda); add(e.posUso); Object.keys(e.qtdPos || {}).forEach(lab => Object.keys(e.qtdPos[lab] || {}).forEach(add)); });
+  LG_USO_PADRAO.forEach(d => { if (!Object.keys(v).some(k => k.indexOf(tbNorm(d)) === 0)) add(d); });
+  const oc = (((S.almPref || {}).lugOcultos) || []).map(tbNorm);
+  return Object.keys(v).map(k => v[k]).filter(n => oc.indexOf(tbNorm(n)) < 0 && (!tipo || lgTipo(n) === tipo)).sort(cgCmpLocal);
+}
+/* campo de lugar: janela retrátil com os já usados (segurar 1,5 s e arrastar para tirar) ou "Outro lugar" */
+function lgCampo(campo, f, tipo, dica) {
+  const v = f[campo] || '', l = lgLugares(tipo), tem = l.some(x => tbNorm(x) === tbNorm(v)), sel = v === '__outro' || (v && !tem) ? '__outro' : v;
+  return ddHTML('lc:lg~' + campo, sel, [['', 'Escolha o lugar']].concat(l.map(x => [x, x])).concat([['__outro', 'Outro lugar']]), { remover: true }) +
+    (sel === '__outro' ? lcIn(campo + 'Txt', f[campo + 'Txt'] != null ? f[campo + 'Txt'] : (v !== '__outro' ? v : ''), ' placeholder="' + esc(dica || 'Ex.: Gaveta 03, Porta 05, Bancada 1') + '"') : '');
+}
+const lgValor = (f, campo) => lgNome(f[campo] === '__outro' || (f[campo] && !lgLugares().some(x => tbNorm(x) === tbNorm(f[campo]))) ? (f[campo + 'Txt'] != null ? f[campo + 'Txt'] : f[campo] === '__outro' ? '' : f[campo]) : f[campo]);
+DD_AO.lc = (function (ant) { return (k, v) => { const f = S.fm; if (f && k.indexOf('lg~') === 0) { const c = k.slice(3); f[c] = v; f[c + 'Txt'] = undefined; f.sujo = true; f.msg = ''; gvDesenha(true); if (v === '__outro') { const i = $('#gv [data-fm="' + c + 'Txt"]'); if (i) i.focus(); } return; } ant(k, v); }; })(DD_AO.lc);
+DD_RM.lc = (function (ant) { return (k, v) => { if (k.indexOf('lg~') === 0) { const oc = (((S.almPref || {}).lugOcultos) || []).slice(); oc.push(v); alPrefGravar({ lugOcultos: oc }); const f = S.fm, c = k.slice(3); if (f && f[c] === v) f[c] = ''; gvDesenha(true); aviso('"' + v + '" saiu da sua lista de lugares.'); return; } ant(k, v); }; })(DD_RM.lc);
+
+/* ---------- leitura ---------- */
+const lgGuardado = e => e.situacao === 'armazenado';
+const lgLabs = e => Object.keys(e.qtdLocal || {}).filter(k => Number(e.qtdLocal[k]) > 0 || Object.keys((e.qtdPos || {})[k] || {}).length);
+/* distribuição da vidraria num laboratório: [{lugar, qtd, tipo}] + o que está sem lugar definido */
+function lgDist(e, lab) {
+  const tot = Number((e.qtdLocal || {})[lab]) || 0, pos = (e.qtdPos || {})[lab] || {}, l = Object.keys(pos).filter(k => Number(pos[k]) > 0).map(k => ({ lugar: k, qtd: Number(pos[k]), tipo: lgTipo(k) })).sort((a, b) => cgCmpLocal(a.lugar, b.lugar));
+  const soma = l.reduce((s, x) => s + x.qtd, 0); if (tot - soma > 0) l.push({ lugar: '', qtd: alR(tot - soma), tipo: '' });
+  return l;
+}
+/* o texto curto da coluna Local (pedido de 06/11: só o lugar; o resto fica na gaveta) */
+function lgCurto(e) {
+  if (e.tipo === 'qtd') { const l = []; lgLabs(e).forEach(lab => lgDist(e, lab).forEach(x => l.push(x.lugar || lab))); const u = Array.from(new Set(l)); return u.length === 1 ? u[0] : u.length ? u.length + ' lugares' : '—'; }
+  return (e.transito ? 'Em trânsito' : lgNome(e.posicao) || e.local || '—');
+}
+/* outros iguais a este (mesmo nome): onde estão — para achar a reserva */
+const lgIguais = e => S.almEq.filter(x => x.id !== e.id && x.situacao !== 'baixa' && x.tipo !== 'qtd' && tbNorm(x.nome).trim() === tbNorm(e.nome).trim());
+function lgOndeHTML(e) {
+  if (e.tipo === 'qtd') {
+    const labs = lgLabs(e); if (!labs.length) return '';
+    return '<p class="gv-h">Onde ficam</p>' + labs.map(lab => '<div class="lg-lab">' + (labs.length > 1 || lab ? '<small>' + esc(lab || 'Sem laboratório') + ' · ' + alQ((e.qtdLocal || {})[lab] || 0) + '</small>' : '') + '<div class="gv-lotes">' + lgDist(e, lab).map(x => '<div class="gv-lote lg-l"><span>' + ic(x.tipo === 'guarda' ? 'guarda' : x.tipo === 'uso' ? 'bancada' : 'alerta') + '<b>' + esc(x.lugar || 'Sem lugar definido') + '</b>' + (x.tipo ? '<em class="lg-tp ' + x.tipo + '">' + (x.tipo === 'guarda' ? 'guardadas' : 'em uso') + '</em>' : '') + '</span><b class="num">' + alQ(x.qtd) + '</b></div>').join('') + '</div></div>').join('');
+  }
+  const g = lgGuardado(e), agora = lgNome(e.posicao), ig = lgIguais(e);
+  let h = '<p class="gv-h">Onde está</p><div class="lg-onde"><div class="lg-agora ' + (g ? 'guarda' : 'uso') + '">' + ic(g ? 'guarda' : 'bancada') + '<div><small>' + (e.transito ? 'Em trânsito' : g ? 'Guardado' : 'Em uso') + (e.local ? ' · ' + esc(e.local) : '') + '</small><b>' + esc(agora || 'Lugar não informado') + '</b></div></div>' +
+    '<dl class="gv-fl lg-ref"><dt>Quando guardado</dt><dd>' + esc(lgNome(e.posGuarda) || (g && agora) || '—') + '</dd><dt>Quando em uso</dt><dd>' + esc(lgNome(e.posUso) || (!g && agora) || '—') + '</dd></dl></div>';
+  if (ig.length) h += '<p class="gv-h">Iguais a este · ' + ig.length + '</p><div class="gv-lotes">' + ig.slice(0, 6).map(x => '<button type="button" class="gv-lote lg-ig" data-act="al-eq" data-id="' + esc(x.id) + '"><span>' + ic(lgGuardado(x) ? 'guarda' : 'bancada') + '<b>' + esc(x.tag || x.nome) + '</b><em class="lg-tp ' + (lgGuardado(x) ? 'guarda' : 'uso') + '">' + (lgGuardado(x) ? 'reserva guardada' : 'em uso') + '</em></span><small>' + esc(lgNome(x.posicao) || x.local || '') + '</small></button>').join('') + '</div>';
+  return h;
+}
+/* botões da gaveta do equipamento */
+function lgBotoes(e) {
+  if (typeof alPode !== 'function' || !alPode() || e.situacao === 'baixa' || e.transito) return '';
+  if (e.tipo === 'qtd') return lgLabs(e).length ? '<button type="button" class="bt" data-act="lg-dist" data-id="' + esc(e.id) + '">' + ic('pino') + 'Mudar os lugares</button>' : '';
+  return lgGuardado(e) ? '<button type="button" class="bt" data-act="lg-usar" data-id="' + esc(e.id) + '">' + ic('bancada') + 'Pôr em uso</button>' : '<button type="button" class="bt" data-act="lg-guardar" data-id="' + esc(e.id) + '">' + ic('guarda') + 'Guardar</button>';
+}
+const lgCab = e => typeof alPode === 'function' && alPode() && e.tipo !== 'qtd' && e.situacao !== 'baixa' ? '<button type="button" class="bt ic-so" data-act="lg-ref" data-id="' + esc(e.id) + '" title="Lugares de guarda e de uso" aria-label="Lugares de guarda e de uso">' + ic('pino') + '</button>' : '';
+/* calibração ao pôr em uso (como no EFClaudian: guardado pausa a calibração) */
+function lgCalProblema(e) {
+  if (!e.precisaCal) return ''; const c = e.cal || {}; if (!c.ultima) return 'nunca foi calibrado';
+  const p = eqProxima(e); return p && p < hojeISO() ? 'calibração vencida em ' + fmtD(p) : '';
+}
+
+/* ---------- formulários ---------- */
+const lgEq = f => S.almEq.find(x => x.id === f.eqId) || null;
+LC_FORM.lgguardar = f => { const e = lgEq(f); if (!e) return null; return { ico: 'guarda', sub: 'Guardar · ' + (e.local || ''), titulo: eqNomeC(e), corpo: lcMsg() +
+  lcAv('Fica guardado' + (e.precisaCal ? ' e a calibração fica pausada enquanto estiver guardado' : '') + '. Quem procurar vê onde ele está.') +
+  lcBl('Onde vai ficar guardado', lgCampo('lugar', f, 'guarda', 'Ex.: Gaveta 02, Porta 05')) + lcBl('Observação', lcIn('obs', f.obs, ' placeholder="opcional (ex.: reserva da Bancada 1)"')), rodape: lcPe('lg-guardar-ok', 'Guardar') }; };
+LC_FORM.lgusar = f => { const e = lgEq(f); if (!e) return null; const pb = lgCalProblema(e); return { ico: 'bancada', sub: 'Pôr em uso · ' + (e.local || ''), titulo: eqNomeC(e), corpo: lcMsg() +
+  (pb ? lcAv('Atenção: ' + esc(pb) + '. Ele entra como <b>Uso com restrição</b> e os seus superiores são avisados.', 'cr') : '') +
+  lcBl('Onde vai ficar em uso', lgCampo('lugar', f, 'uso', 'Ex.: Bancada 1, Suporte de vidrarias')) + lcBl('Observação', lcIn('obs', f.obs, ' placeholder="opcional (ex.: substitui a MP-02, que deu problema)"')), rodape: lcPe('lg-usar-ok', 'Pôr em uso') }; };
+LC_FORM.lgref = f => { const e = lgEq(f); if (!e) return null; return { ico: 'pino', sub: 'Lugares · ' + (e.local || ''), titulo: eqNomeC(e), corpo: lcMsg() +
+  lcAv('Os dois lugares de referência: onde ele fica quando está guardado e onde fica quando está em uso. Guardar e Pôr em uso já vêm com eles.') +
+  lcBl('Quando guardado', lgCampo('pg', f, 'guarda')) + lcBl('Quando em uso', lgCampo('pu', f, 'uso')), rodape: lcPe('lg-ref-ok', 'Guardar lugares') }; };
+LC_FORM.lgdist = f => { const e = lgEq(f); if (!e) return null; const labs = lgLabs(e), tot = Number((e.qtdLocal || {})[f.lab]) || 0, soma = f.d.reduce((s, x) => s + (alNum(x.q) || 0), 0), sobra = alR(tot - soma);
+  return { ico: 'pino', sub: 'Onde ficam · vidraria', titulo: e.nome, corpo: lcMsg() +
+    (labs.length > 1 ? lcBl('Laboratório', ddHTML('lc:lgLab', f.lab, labs.map(l => [l, l + ' · ' + alQ(e.qtdLocal[l])]))) : '') +
+    gvNums([[alQ(tot), 'no ' + (f.lab || 'laboratório')], [alQ(soma), 'com lugar'], [alQ(Math.abs(sobra)), sobra < 0 ? 'passou do total' : 'sem lugar', sobra < 0 ? 'cr' : sobra > 0 ? 'wa' : '']]) +
+    '<div class="lg-dl">' + f.d.map((x, n) => '<div class="lg-dr">' + lgCampo('d.' + n + '.l', x.__f || (x.__f = { ['d.' + n + '.l']: x.l }), '') + '<input class="fm-i num" data-fm="d.' + n + '.q" inputmode="decimal" autocomplete="off" value="' + esc(x.q) + '" aria-label="Quantidade"><button type="button" class="bt ic-so" data-act="lg-dist-rm" data-n="' + n + '" title="Tirar este lugar" aria-label="Tirar este lugar">' + ic('lixo') + '</button></div>').join('') + '</div>' +
+    '<button type="button" class="bt lg-add" data-act="lg-dist-add">' + ic('mais') + 'Mais um lugar</button>' +
+    '<p class="cg-ob">Para mudar o total, use o Inventário. Aqui só se diz onde cada uma está.</p>', rodape: lcPe('lg-dist-ok', 'Guardar') }; };
+DD_AO.lc = (function (ant) { return (k, v) => { const f = S.fm; if (f && k === 'lgLab') { f.lab = v; f.d = lgDistForm(lgEq(f), v); f.sujo = true; f.msg = ''; gvDesenha(true); return; } ant(k, v); }; })(DD_AO.lc);
+const lgDistForm = (e, lab) => { const l = lgDist(e, lab).filter(x => x.lugar).map(x => ({ l: x.lugar, q: String(x.qtd) })); return l.length ? l : [{ l: '', q: '' }]; };
+
+/* ---------- gravar ---------- */
+async function lgGrava(e, patch, ev, resumo) {
+  if (!lcTravar()) return false;
+  try {
+    await Data.col('sv2_alm_equip').update(e.id, Object.assign({}, patch, { hist: (e.hist || []).concat([Object.assign({ ts: nowISO(), porId: S.user.id, porNome: S.user.nome, data: hojeISO() }, ev)]), atualizadoEm: nowISO() }));
+    Audit.log({ acao: 'equip_' + ev.tipo, entidade: 'almox_equip', entidadeId: e.id, resumo: eqNomeC(e) + ': ' + resumo, depois: patch });
+    return true;
+  } catch (er) { lcErro(svErro(er)); return false; }
+}
+async function lgGuardarOk() {
+  const f = S.fm, e = lgEq(f); if (!e || !alPode()) return; const l = lgValor(f, 'lugar'); if (!l) return lcErro('Diga onde ele vai ficar guardado.');
+  const obs = String(f.obs || '').trim(), patch = { situacao: 'armazenado', guardadoEm: hojeISO(), posicao: l, posGuarda: l };
+  if (!e.posUso && e.posicao && !lgGuardado(e)) patch.posUso = lgNome(e.posicao);
+  if (await lgGrava(e, patch, { tipo: 'guardar', texto: 'Guardado em ' + l + (obs ? ' — ' + obs : ''), antes: { situacao: e.situacao || 'ativo', posicao: e.posicao || '' } }, 'guardado em ' + l)) { lcFim(); aviso(eqNomeC(e) + ' guardado em ' + l + '.'); }
+}
+async function lgUsarOk() {
+  const f = S.fm, e = lgEq(f); if (!e || !alPode()) return; const l = lgValor(f, 'lugar'); if (!l) return lcErro('Diga onde ele vai ficar em uso.');
+  const obs = String(f.obs || '').trim(), pb = lgCalProblema(e), patch = { situacao: pb ? 'restricao' : 'ativo', guardadoEm: '', posicao: l, posUso: l };
+  if (!e.posGuarda && e.posicao && lgGuardado(e)) patch.posGuarda = lgNome(e.posicao);
+  if (await lgGrava(e, patch, { tipo: 'usar', texto: 'Posto em uso em ' + l + (pb ? ' (' + pb + ': uso com restrição)' : '') + (obs ? ' — ' + obs : ''), antes: { situacao: e.situacao || '', posicao: e.posicao || '' } }, 'posto em uso em ' + l)) {
+    if (pb) { const sp = supsOf(S.user).map(u => u.id).filter(id => id !== S.user.id); if (sp.length) Notif.send({ nivel: 'aviso', titulo: 'Em uso com restrição: ' + eqNomeC(e), texto: S.user.nome + ' pôs em uso um equipamento guardado: ' + pb + '. Lugar: ' + l + '.', para: sp, refTipo: 'equip', refId: e.id }).catch(() => {}); }
+    lcFim(); aviso(eqNomeC(e) + ' em uso na ' + l + (pb ? ' (com restrição)' : '') + '.');
+  }
+}
+async function lgRefOk() {
+  const f = S.fm, e = lgEq(f); if (!e || !alPode()) return; const pg = lgValor(f, 'pg'), pu = lgValor(f, 'pu');
+  if (!pg && !pu) return lcErro('Diga pelo menos um dos lugares.');
+  const patch = { posGuarda: pg, posUso: pu }, cur = lgGuardado(e) ? pg : pu; if (cur && tbNorm(cur) !== tbNorm(e.posicao || '')) patch.posicao = cur;
+  if (await lgGrava(e, patch, { tipo: 'lugares', texto: 'Lugares: guardado em ' + (pg || '—') + ' · em uso em ' + (pu || '—'), antes: { posGuarda: e.posGuarda || '', posUso: e.posUso || '', posicao: e.posicao || '' } }, 'lugares de guarda e de uso')) { lcFim(); aviso('Lugares guardados.'); }
+}
+async function lgDistOk() {
+  const f = S.fm, e = lgEq(f); if (!e || !alPode()) return; const tot = Number((e.qtdLocal || {})[f.lab]) || 0, m = {};
+  for (let n = 0; n < f.d.length; n++) {
+    const x = f.d[n], l = lgValor(x.__f || {}, 'd.' + n + '.l') || lgNome(x.l), q = String(x.q || '').trim();
+    if (!l && !q) continue; if (!l) return lcErro('Escolha o lugar da linha ' + (n + 1) + '.');
+    const v = alNum(q); if (!(v > 0)) return lcErro('Quantidade inválida em ' + l + '.');
+    const k = Object.keys(m).find(y => tbNorm(y) === tbNorm(l)) || l; m[k] = alR((m[k] || 0) + v);
+  }
+  const soma = Object.keys(m).reduce((s, k) => s + m[k], 0); if (soma > tot) return lcErro('Passou do total do ' + f.lab + ' (' + alQ(tot) + '). Para mudar o total, use o Inventário.');
+  const pos = Object.assign({}, e.qtdPos || {}); pos[f.lab] = m;
+  const gd = Object.assign({}, e.qtdGuard || {}); gd[f.lab] = Object.keys(m).filter(k => lgTipo(k) === 'guarda').reduce((s, k) => s + m[k], 0); if (!gd[f.lab]) delete gd[f.lab];
+  const txt = Object.keys(m).map(k => k + ' ' + alQ(m[k])).join(' · ') + (tot - soma > 0 ? ' · sem lugar ' + alQ(tot - soma) : '');
+  if (await lgGrava(e, { qtdPos: pos, qtdGuard: gd }, { tipo: 'lugares', texto: f.lab + ': ' + txt, antes: { qtdPos: e.qtdPos || {} } }, 'lugares no ' + f.lab + ': ' + txt)) { lcFim(); aviso('Lugares guardados.'); }
+}
+/* o lugar escolhido em cada linha da distribuição fica no rascunho da própria linha */
+DD_AO.lc = (function (ant) { return (k, v) => { const f = S.fm; const m = /^lg~d\.(\d+)\.l$/.exec(k); if (f && m && f.d) { const x = f.d[Number(m[1])]; x.__f = x.__f || {}; x.__f['d.' + m[1] + '.l'] = v; x.__f['d.' + m[1] + '.lTxt'] = undefined; if (v !== '__outro') x.l = v; f.sujo = true; f.msg = ''; gvDesenha(true); if (v === '__outro') { const i = $('#gv [data-fm="d.' + m[1] + '.lTxt"]'); if (i) i.focus(); } return; } ant(k, v); }; })(DD_AO.lc);
+document.addEventListener('input', e => { const t = e.target, c = t && t.getAttribute && t.getAttribute('data-fm'), m = c && /^d\.(\d+)\.lTxt$/.exec(c); if (m && S.fm && S.fm.d) { const x = S.fm.d[Number(m[1])]; if (x) { x.__f = x.__f || {}; x.__f[c] = t.value; } } });
+
+document.addEventListener('click', ev => {
+  const t = ev.target.closest && ev.target.closest('[data-act^="lg-"]'); if (!t) return;
+  const a = t.getAttribute('data-act'), id = t.getAttribute('data-id'), vol = S.gv && !S.gvForm ? S.gv : null, volta = vol ? () => gvAbrir(vol) : null, e = id && S.almEq.find(x => x.id === id);
+  if (a === 'lg-guardar' && e) lcAbrir({ k: 'lgguardar', eqId: id, lugar: lgNome(e.posGuarda), obs: '' }, volta);
+  else if (a === 'lg-usar' && e) lcAbrir({ k: 'lgusar', eqId: id, lugar: lgNome(e.posUso), obs: '' }, volta);
+  else if (a === 'lg-ref' && e) lcAbrir({ k: 'lgref', eqId: id, pg: lgNome(e.posGuarda) || (lgGuardado(e) ? lgNome(e.posicao) : ''), pu: lgNome(e.posUso) || (!lgGuardado(e) ? lgNome(e.posicao) : '') }, volta);
+  else if (a === 'lg-dist' && e) { const lab = lgLabs(e)[0]; lcAbrir({ k: 'lgdist', eqId: id, lab: lab, d: lgDistForm(e, lab) }, volta); }
+  else if (a === 'lg-dist-add' && S.fm) { S.fm.d.push({ l: '', q: '' }); S.fm.sujo = true; gvDesenha(true); }
+  else if (a === 'lg-dist-rm' && S.fm) { S.fm.d.splice(Number(t.getAttribute('data-n')), 1); S.fm.d.forEach((x, n) => { if (x.__f) { const o = {}; Object.keys(x.__f).forEach(k => { o[k.replace(/^d\.\d+\./, 'd.' + n + '.')] = x.__f[k]; }); x.__f = o; } }); if (!S.fm.d.length) S.fm.d.push({ l: '', q: '' }); S.fm.sujo = true; gvDesenha(true); }
+  else if (a === 'lg-guardar-ok') lgGuardarOk(); else if (a === 'lg-usar-ok') lgUsarOk(); else if (a === 'lg-ref-ok') lgRefOk(); else if (a === 'lg-dist-ok') lgDistOk();
+});
+/* a soma de cima se atualiza enquanto digita (sem redesenhar, para não perder o clique nem o foco) */
+document.addEventListener('input', e => {
+  const c = e.target && e.target.getAttribute && e.target.getAttribute('data-fm'); if (!(c && /^d\.\d+\.q$/.test(c) && S.fm && S.fm.k === 'lgdist')) return;
+  const f = S.fm, eq = lgEq(f); if (!eq) return; const tot = Number((eq.qtdLocal || {})[f.lab]) || 0, soma = alR(f.d.reduce((s, x) => s + (alNum(x.q) || 0), 0)), sobra = alR(tot - soma), bx = $$('#gv .gv-kv > div'); if (bx.length < 3) return;
+  bx[1].querySelector('b').textContent = alQ(soma); bx[2].querySelector('b').textContent = alQ(Math.abs(sobra)); bx[2].querySelector('small').textContent = sobra < 0 ? 'passou do total' : 'sem lugar'; bx[2].className = sobra < 0 ? 'cr' : sobra > 0 ? 'wa' : '';
+});
 
 /* ===== sino.js ===== */
 /* EFCwork · sino.js — o SINO do topo (v0.3). Abre na gaveta: pedidos para você decidir (os do Almoxarifado decidem aqui; os das
