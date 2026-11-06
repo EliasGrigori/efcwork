@@ -1,0 +1,93 @@
+  ok  nenhum nome da Meri Pobo fixo no código
+  ok  apelido Cwork Quality e versão no arquivo
+  ok  sem Principal: aparece o primeiro acesso
+  ok  tela de entrar tem a ilustração agrícola
+  ok  nome sem sobrenome é recusado
+  ok  senhas diferentes são recusadas
+  ok  depois do primeiro acesso entra no app
+  ok  Início saúda pelo primeiro nome: "Boa noite, Joana"
+  ok  menu lateral: Início + 6 áreas + Relatórios, e Administração no pé
+  ok  "Cwork Quality" no pé do menu e da página
+  ok  sem empresa configurada: "Sua empresa"
+  ok  inicio: 0 abas (esperado 0)
+  ok  coletas: 4 abas (esperado 4)
+  ok  rateios: 0 abas (esperado 0)
+  ok  inspecoes: 3 abas (esperado 3)
+  ok  documentos: 3 abas (esperado 3)
+  ok  almox: 5 abas (esperado 5)
+  ok  qualidade: 3 abas (esperado 3)
+  ok  relatorios: 0 abas (esperado 0)
+  ok  adm: 3 abas (esperado 3)
+  ok  estrutura aprovada: Coletas 4, Rateios 1, Inspeções 3, Documentos 3, Almoxarifado 5, Qualidade 3 
+  ok  área e aba atuais marcadas no menu e nas abas
+  ok  área ainda não refeita leva ao EFClaudian
+  ok  botão do tema troca para o Escuro (Dourado)
+  ok  Escuro usa o fundo azul-tinta do Dourado original (rgb(11, 13, 22))
+  ok  empresa salva aparece no menu (nome e unidade)
+  ok  unidades repetidas são juntadas
+  ok  escolha da unidade é uma janela retrátil
+  ok  unidade deste aparelho trocada
+  ok  ao recarregar: continua logado, tema e empresa guardados
+  ok  Início mostra "Voltar para" e "Mais usadas"
+  ok  Sair volta para a tela de entrar
+  ok  lembra o usuário
+  ok  senha errada: "Login ou senha incorretos."
+  ok  entra com a senha certa
+  ok  nenhum erro de JavaScript no PC
+  ok  celular 390 px: nenhuma tela rola para o lado
+  ok  celular: barra de baixo visível e menu lateral escondido
+  ok  celular: alvos de toque com 36 px ou mais
+  ok  celular: "Mais" abre o menu lateral
+  ok  nenhum erro de JavaScript no celular
+
+t_v010: 41 ok · 0 falha(s)
+  ok  saldo por lote: luva 5−4 = 1; saída anulada não conta (água 34); gelo 22
+  ok  lote vencido não é utilizável (fenolftaleína: saldo 2, utilizável 0)
+  ok  situações: abaixo do mínimo, sem saldo, lote vencido, em dia, vence em 30 dias, inativo (min,zero,vencido,ok,avencer,inativo)
+  ok  Início: 4 materiais pedem atenção, 2 calibrações vencidas/a vencer, 1 solicitação pendente (4,2,1,0)
+  ok  número do Início abre Materiais já filtrado (4 linhas)
+  ok  Painel: 5 itens ativos, 4 pedem atenção, valor em estoque (5 | 4 | R$ 303,80 | 2)
+  ok  valor em estoque = soma de saldo × preço de cada lote
+  ok  aviso numa linha só (lote vencendo + solicitação pendente)
+  ok  consulta: nenhum botão de lançar nesta versão; aviso de que lançar continua no EFClaudian
+  ok  Materiais lista os 6 itens (inclui o inativo)
+  ok  colunas: Código, Item, Local, Un, Utilizável, Mínimo, Valor, Situação
+  ok  números alinhados à direita
+  ok  linha de total no rodapé
+  ok  um único filtro recolhível com Situação e Local em janelas retráteis
+  ok  filtro "Pedem atenção": 4 linhas e o resumo aparece no botão
+  ok  dois filtros juntos (Pedem atenção + Geladeira): 2 linhas
+  ok  busca sem acento acha "Água desmineralizada"
+  ok  ordenar por Utilizável (maior primeiro) pelo cabeçalho
+  ok  esconder a coluna Código (lembrado no aparelho)
+  ok  planilha .xlsx: aba Materiais, cabeçalho + 6 linhas (EFCwork-materiais-2026-11-05.xlsx)
+  ok  na planilha o número sai como número (Utilizável 34)
+  ok  impressora: monta a folha com título e as 6 linhas
+  ok  clicar na linha abre a gaveta do item
+  ok  gaveta: situação, lote L1 e a última saída com motivo
+  ok  linha aberta fica marcada na tabela
+  ok  Esc fecha a gaveta
+  ok  Movimentações: 6 lançamentos
+  ok  saída anulada aparece com a situação "Anulada"
+  ok  filtro Tipo = Saídas: 2 linhas; rodapé com entradas e saídas em R$
+  ok  Solicitações: 2 linhas e "1 pendentes" no cabeçalho
+  ok  gaveta da solicitação: itens, inclusive o ainda não cadastrado
+  ok  calibração: vencida (400 dias), a vencer (340 dias), em dia (30 dias), não calibra (vencida,avencer,ok,)
+  ok  gaveta do equipamento: calibração e local
+  ok  tecla / abre a busca geral
+  ok  busca vazia mostra "Voltar para"
+  ok  busca acha o material
+  ok  Enter vai para Materiais com a gaveta do item aberta
+  ok  Ctrl+K abre; acha equipamento pela TAG
+  ok  acha telas pelo nome
+  ok  Esc fecha a busca
+  ok  entra como Secundário sem a atribuição do Almoxarifado
+  ok  Início sem os números do Almoxarifado para quem não tem acesso
+  ok  Almoxarifado: mensagem "Você não tem acesso", sem tabela
+  ok  busca geral não mostra materiais para quem não tem acesso
+  ok  nenhum erro de JavaScript no PC
+  ok  celular: nenhuma aba do Almoxarifado rola a página para o lado (a tabela rola dentro dela)
+  ok  celular: a gaveta abre em tela cheia
+  ok  nenhum erro de JavaScript no celular
+
+t_v020: 48 ok · 0 falha(s)

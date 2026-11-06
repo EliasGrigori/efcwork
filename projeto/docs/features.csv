@@ -1,0 +1,275 @@
+funcao,area,prioridade,original,efcwork,destino,notas
+Aba Coletas › Programação,Coletas,must,sim,nao,Coletas › Programação,
+Aba Coletas › Solo,Coletas,must,sim,nao,Coletas › Amostras (filtro Tipo),
+Aba Coletas › Nematoide,Coletas,must,sim,nao,Coletas › Nematoide,
+Aba Coletas › Folha,Coletas,must,sim,nao,Coletas › Amostras (filtro Tipo),
+Aba Coletas › Fruta,Coletas,must,sim,nao,Coletas › Amostras (filtro Tipo),
+Aba Coletas › Composto,Coletas,must,sim,nao,Coletas › Amostras (filtro Tipo),
+Aba Coletas › Água,Coletas,must,sim,nao,Coletas › Amostras (filtro Tipo),
+Aba Coletas › Lotes de envio,Coletas,must,sim,nao,Coletas › Envio,
+Aba Coletas › Etiquetas,Coletas,must,sim,nao,Coletas › Etiquetas,
+Aba Coletas › Cadastros,Coletas,must,sim,nao,Coletas › Cadastros,
+Aba Rateios › Campo,Rateios,must,sim,nao,Rateios › Rateio (filtro Tipo),
+Aba Rateios › Água,Rateios,must,sim,nao,Rateios › Rateio (filtro Tipo),
+Aba Rateios › Calibração,Rateios,must,sim,nao,Rateios › Rateio (filtro Tipo),
+Aba Rateios › Painel,Rateios,must,sim,nao,Relatórios › Rateio,
+Aba Inspeções › Cloro,Inspeções,must,sim,nao,Inspeções › Cloro,
+Aba Inspeções › Apontamentos,Inspeções,must,sim,nao,Inspeções › Apontamentos,
+Aba Inspeções › Relatório de apontamentos,Inspeções,must,sim,nao,Inspeções › Relatório de apontamentos,
+Aba Inspeções › Auditoria interna,Inspeções,must,sim,nao,Inspeções › Auditoria interna,
+Aba Documentos › Relatório,Documentos,must,sim,nao,Relatórios › Documentos,
+Aba Documentos › Catálogo,Documentos,must,sim,nao,Documentos › Documentos,
+Aba Documentos › Caixas d’água,Documentos,must,sim,nao,Documentos › Caixas d’água,
+Aba Documentos › Lançamentos,Documentos,must,sim,nao,Documentos › Histórico,
+Aba Documentos › Correções,Documentos,must,sim,nao,Documentos › Histórico,
+Aba Gestão da Qualidade › Meu dia,Qualidade,must,sim,nao,Início,
+Aba Gestão da Qualidade › Atividade,Qualidade,must,sim,nao,Qualidade › Atividade,
+Aba Gestão da Qualidade › Notificações,Qualidade,must,sim,nao,Sino,
+Aba Gestão da Qualidade › Conversas,Qualidade,must,sim,nao,Dentro de cada registro + sino,
+Aba Gestão da Qualidade › Equipe,Qualidade,must,sim,nao,Administração › Pessoas,
+Aba Gestão da Qualidade › Aprovações,Qualidade,must,sim,nao,Início › Esperando você,
+Aba Gestão da Qualidade › Semana,Qualidade,must,sim,nao,Relatórios › Semana,
+Aba Gestão da Qualidade › Não conformidades,Qualidade,must,sim,nao,Qualidade › Não conformidades,
+Aba Gestão da Qualidade › Análise de problemas,Qualidade,must,sim,nao,Qualidade › Análise de problemas,
+Aba Gestão da Qualidade › Bugs e sugestões,Qualidade,must,sim,nao,Qualidade › Bugs e sugestões,
+Aba Gestão da Qualidade › Relatórios,Qualidade,must,sim,nao,Relatórios,
+Aba Almoxarifado › Painel,Almoxarifado,must,sim,parcial,Almoxarifado › Painel,v0.2.0: consulta; lançamentos na v0.3
+Aba Almoxarifado › Apresentação,Almoxarifado,must,sim,parcial,Relatórios › Almoxarifado do mês,v0.2.0: consulta; lançamentos na v0.3
+Aba Almoxarifado › Materiais,Almoxarifado,must,sim,parcial,Almoxarifado › Materiais,v0.2.0: consulta; lançamentos na v0.3
+Aba Almoxarifado › Movimentações,Almoxarifado,must,sim,parcial,Almoxarifado › Movimentações,v0.2.0: consulta; lançamentos na v0.3
+Aba Almoxarifado › Solicitações,Almoxarifado,must,sim,parcial,Almoxarifado › Solicitações,v0.2.0: consulta; lançamentos na v0.3
+Aba Almoxarifado › Equipamentos,Almoxarifado,must,sim,parcial,Almoxarifado › Equipamentos,v0.2.0: consulta; lançamentos na v0.3
+Aba Almoxarifado › Inventário,Almoxarifado,must,sim,parcial,Almoxarifado › Materiais (ação Contagem),v0.2.0: consulta; lançamentos na v0.3
+Janela Meu perfil (openMeuPerfil),Administração,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Sheet (openSheet),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Colunas (openColunas),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Filter (openFilter),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Doc Detail (openDocDetail),Documentos,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Caixa Detail (openCaixaDetail),Documentos,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Lanc Detail (openLancDetail),Documentos,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Corr New (openCorrNew),Documentos,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Doc Edit (openDocEdit),Documentos,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Caixa Edit (openCaixaEdit),Documentos,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Carregar catálogo inicial (openSeedAsk),Documentos,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Cloro Detail (openCloroDetail),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Cl Corr (openClCorr),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Verificação de (openCfRetro),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Justificar (openCfJust),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Verificação de cloro (openCloroNew),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Nova verificação (openCloroRv),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Registrar tratado (openCloroTrat),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Texto Acao (openTextoAcao),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Bebedouros (openBebList),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Beb Detail (openBebDetail),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Beb Edit (openBebEdit),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Locais nos velocímetros (openGaugesPick),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Relatório do cloro (openCloroRel),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Cadastros (openCadastros),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Cadastros das coletas (openCadastrosAntigo),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Tal Edit (openTalEdit),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Ana Edit (openAnaEdit),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Tip Edit (openTipEdit),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Novo tipo de coleta (openTipNovo),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Rz (openRz),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Planos de coleta (openRzLista),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Rz Edit (openRzEdit),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Recoleta · (openRzRec),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Encerrar (openRzFechar),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Enviar ao laboratório (openEnviarAmostra),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Excluir (openLabExcluir),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Procedimento de coleta · (openProcVer),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Proc Enviar (openProcEnviar),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Solicitar revisão (openProcPedir),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Pedidos de revisão (openProcPedidos),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Lançar coleta avulsa (openColDireto),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Prog Detail (openProgDetail),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Editar programação (openProgEdit),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Coletado (openColetado),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Plano de coleta concluído no ano (openRzRenovar),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Histórico do ano (openRzHist),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Repetir programação (openProgRepetir),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Atu Lote (openAtuLote),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Remessa (openRemessa),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela ✓ Enviado (openRemessaOS),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Col New (openColNew),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Col Detail (openColDetail),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Col Env (openColEnv),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Cancel Col (openCancelCol),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Motivo (openMotivo),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Pj (openPj),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Remarcar coleta (openPjRem),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Já há coleta remarcada à mão mais à frente (openPjRealinharPergunta),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Pj Edit (openPjEdit),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Pj Ponto (openPjPonto),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Nova coleta de água (openAguaNew),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Água · (openAguaDetail),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Prazos da água (openAgCfg),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Ação corretiva (openAcaoNova),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Ação corretiva · (openAcao),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Relatório de água por local (openAgRel),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Prazo Lote (openPrazoLote),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Lab Edit (openLabEdit),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Faz Edit (openFazEdit),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Reajustar preços (openReajuste),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Desativar Cad (openDesativarCad),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Dar baixa no laudo? (openLaudoBaixa),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Laudo Corr (openLaudoCorr),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela O.S da remessa (openOSRem),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela O.S da remessa primeiro (openOSLaudo),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Corrigir O.S (openOSCorr),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Emitir solicitação de compra (openEmitir),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Laudo com erro (openLaudoErro),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Etiqueta da caixa (openFichas),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Lote (openLoteDetail),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Revisar etiquetas (openEtqRevisao),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Novo apontamento (openApNovo),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Ap Detail (openApDetail),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Ap Zoom (openApZoom),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Reclassificar gravidade (openApReclass),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Abrir não conformidade (openApNC),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Fechar a NC (openApNCFechar),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Rn Filtro (openRnFiltro),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Relatórios da semana (openRelSemana),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Setores dos apontamentos (openApSetores),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Al Saida (openAlSaida),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Al Kit (openAlKit),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Entrada (openAlEntrada),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Al Item (openAlItem),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Al Item Form (openAlItemForm),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Al Motivo Sheet (openAlMotivoSheet),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Ajustar saldo (openAlAjuste),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Corrigir (openAlMovCorr),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Conferência inicial (openAlConfLista),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Al Conf (openAlConf),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Nova solicitação (openAlSolNova),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Solicitação Nº (openAlSol),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Motivos e kits (openAlCfg),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Al Abrir (openAlAbrir),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela O frasco acabou (openAlFim),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Tirar este motivo? (openAlMotivoRm),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Conferência · (openEqConf),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Eq (openEq),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Eq Form (openEqForm),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Eq Ev (openEqEv),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Calibração · (openEqCal),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Solicitação de calibração (openCalNova),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Cal (openCal),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Cotação · (openCalCot),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Calibrado · (openCalReal),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Solicitações de calibração (openCalLista),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Emitir solicitação de compra (openRcEmitir),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Contar · (openInvContar),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Inv Item (openInvItem),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Conferir · (openInvConf),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Inv Res (openInvRes),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Quantidade · (openEqQtd),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Frequência da contagem e do inventário (openInvFreq),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Inv Novo (openInvNovo),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Saída não confere (openAlCritNao),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Al Mov (openAlMov),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Vidraria quebrada (openQbNova),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Quebras de vidraria por pessoa (openQbRel),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Transferências (openTrfLista),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela O que vai (openTrfNova),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Trf (openTrf),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Recebi · (openTrfReceber),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Cancelar (openTrfCancelar),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Responsáveis por local (openTrfResp),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Relatório de transferências (openTrfRelSem),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Lanc New (openLancNew),Documentos,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Origem do apontamento (openApOrigMudar),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Fotos · (openRncFotos),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Foto (openRncFotoVer),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Rnc (openRnc),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Nova auditoria interna (openRncNova),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Registrar · (openRncNc),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Tirar a (openRncNcCanc),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Enviar (openRncEnviar),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Nova análise de problema (openAnlNova),Qualidade,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Anl (openAnl),Qualidade,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Anl Acao (openAnlAcao),Qualidade,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Anl Acao Fim (openAnlAcaoFim),Qualidade,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Trocar o responsável pela resposta (openAnlResp),Qualidade,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Verificar a eficácia (openAnlEfic),Qualidade,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Cancelar a análise (openAnlCanc),Qualidade,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Pareto das NCs (openRncPareto),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Pareto dos apontamentos (openApPareto),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Trocar o tratamento (openTratTroca),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Plano Acao (openPlanoAcao),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Acao Fim (openAcaoFim),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Análise · (openRncPlano),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Trocar o responsável pela resposta (openPlanoResp),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Conferir · (openRncConf),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Rnc Motivo (openRncMotivo),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Excluir a auditoria (openRncExcluir),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Lixeira das auditorias (openRncLixeira),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Documento controlado (openDc),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Dc Edit (openDcEdit),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Backup e exportação (openBackup),Administração,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Arquivo por ano (openArquivo),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Chat (openChat),Qualidade,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Ambiente de teste (openTeste),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Preparar folha de campo (openAvulsas),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Alterar (openTlLote),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Imp (openImp),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Pedir equipamento novo (openCqNova),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Pedido de equipamento Nº (openCq),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Conquistas (openCnq),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Reposição automática (openAlRep),Almoxarifado,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Lançar (openRlmLancar),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Cobrar (openRcb),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Normas e editais (openNrm),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Nova norma (openNrmNova),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Nrm Norma (openNrmNorma),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Desativar (openNrmDesativar),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Nova edição · (openNrmEdNova),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Nrm Ed (openNrmEd),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Nrm Item (openNrmItem),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Checklist · (openNrmCl),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Cad Rec (openCadRec),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Liberar o acesso de (openCadLiberar),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Acesso liberado (openCadLiberado),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Registros de teste (openV75Teste),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Programar coleta (openRzProg),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Empresa (openEmpresa),Administração,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Trocar o login (openTrocarLogin),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Bug Novo (openBugNovo),Qualidade,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Nº (openBug),Qualidade,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Cancelar a tarefa (openTfRot),Início,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Audit Detail (openAuditDetail),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Notif Detail (openNotifDetail),Início,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Histórico do registro (openHistorico),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela User Detail (openUserDetail),Administração,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Editar (openUserEdit),Administração,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Pedir autorização (openPedido),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Aprov Detail (openAprovDetail),Início,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Notificações (openBell),Início,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Administração (openGear),Administração,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Usuários (openUsers),Administração,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Novo usuário (openNewUser),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Login por usuário ou e-mail (sv2_login),Acesso,must,sim,sim,,v0.1.0
+Primeiro acesso (cria o Principal),Acesso,must,sim,sim,,v0.1.0
+Modo demonstração ?demo=1,Acesso,must,sim,sim,,v0.1.0
+Funciona sem internet (cache do Firestore + sw.js),Geral,must,sim,parcial,,
+Temas Claro e Escuro (Dourado original),Visual,must,sim,sim,,v0.1.0
+Menu lateral por trabalho,Visual,must,sim,sim,,v0.1.0
+Cabeçalho de página padrão,Visual,must,sim,sim,,v0.1.0
+"Configuração da empresa (nome, unidades, logo) sem Meri Pobo fixa",Administração,must,sim,sim,,v0.1.0
+"""Cwork Quality"" no pé do app",Visual,must,nao,sim,,v0.1.0
+Busca geral (tecla /),Geral,should,sim,sim,,v0.2.0
+Últimas telas e mais usadas,Início,should,sim,sim,,v0.1.0
+"Tabela padrão (filtro único, colunas, planilha, impressora, total)",Visual,must,sim,sim,,v0.2.0
+Gaveta de detalhe lateral,Visual,must,sim,sim,,v0.2.0
+Perfis Só ver / Ver e alterar por área,Administração,must,sim,nao,,
+Sino de avisos,Geral,must,sim,nao,,
+Impressão A4 / PDF,Geral,must,sim,nao,,
+Backup e exportação,Administração,must,sim,nao,,
+Registro de atividade (auditoria),Administração,must,sim,nao,,
+Saúde dos dados,Administração,should,sim,nao,,
+Ciclo da amostra na gaveta (programação→laudo/compra),Coletas,must,sim,nao,,
+"NF, cupom dos Correios e rastreio no envio",Coletas,should,sim,nao,,
+"EFCdocs: planilhas compatíveis, só pelo Cwork/Sabiá",Integração,could,sim,nao,,
+Fichas/etiquetas/cadeia de custódia preenchidas no EFCdocs,Integração,could,sim,nao,,
+Tela de entrar animada (bichos),Visual,skip,sim,nao,,
+Conquistas (medalhas e níveis),Geral,skip,sim,nao,,
+16 temas + 5 fundos de campo,Visual,skip,sim,nao,,

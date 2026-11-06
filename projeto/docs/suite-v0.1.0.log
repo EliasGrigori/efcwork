@@ -1,0 +1,43 @@
+  ok  nenhum nome da Meri Pobo fixo no código
+  ok  apelido Cwork Quality e versão 0.1.0 no arquivo
+  ok  sem Principal: aparece o primeiro acesso
+  ok  tela de entrar tem a ilustração agrícola
+  ok  nome sem sobrenome é recusado
+  ok  senhas diferentes são recusadas
+  ok  depois do primeiro acesso entra no app
+  ok  Início saúda pelo primeiro nome: "Boa noite, Joana"
+  ok  menu lateral: Início + 6 áreas + Relatórios, e Administração no pé
+  ok  "Cwork Quality" no pé do menu e da página
+  ok  sem empresa configurada: "Sua empresa"
+  ok  inicio: 0 abas (esperado 0)
+  ok  coletas: 4 abas (esperado 4)
+  ok  rateios: 0 abas (esperado 0)
+  ok  inspecoes: 3 abas (esperado 3)
+  ok  documentos: 3 abas (esperado 3)
+  ok  almox: 5 abas (esperado 5)
+  ok  qualidade: 3 abas (esperado 3)
+  ok  relatorios: 0 abas (esperado 0)
+  ok  adm: 3 abas (esperado 3)
+  ok  estrutura aprovada: Coletas 4, Rateios 1, Inspeções 3, Documentos 3, Almoxarifado 5, Qualidade 3 
+  ok  área e aba atuais marcadas no menu e nas abas
+  ok  área ainda não refeita leva ao EFClaudian
+  ok  botão do tema troca para o Escuro (Dourado)
+  ok  Escuro usa o fundo azul-tinta do Dourado original (rgb(11, 13, 22))
+  ok  empresa salva aparece no menu (nome e unidade)
+  ok  unidades repetidas são juntadas
+  ok  escolha da unidade é uma janela retrátil
+  ok  unidade deste aparelho trocada
+  ok  ao recarregar: continua logado, tema e empresa guardados
+  ok  Início mostra "Voltar para" e "Mais usadas"
+  ok  Sair volta para a tela de entrar
+  ok  lembra o usuário
+  ok  senha errada: "Login ou senha incorretos."
+  ok  entra com a senha certa
+  ok  nenhum erro de JavaScript no PC
+  ok  celular 390 px: nenhuma tela rola para o lado
+  ok  celular: barra de baixo visível e menu lateral escondido
+  ok  celular: alvos de toque com 36 px ou mais
+  ok  celular: "Mais" abre o menu lateral
+  ok  nenhum erro de JavaScript no celular
+
+t_v010: 41 ok · 0 falha(s)

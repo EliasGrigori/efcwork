@@ -1,0 +1,5 @@
+/* EFCwork · areas.css — Prefixo: ar- */
+.ar-vz{padding:32px 16px}
+.ar-vz .ic{width:30px;height:30px;color:var(--a)}
+.ar-pl{border-top:1px solid var(--bd)}
+.ar-pl ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;color:var(--tx2)}

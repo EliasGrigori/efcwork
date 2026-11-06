@@ -1,0 +1,13 @@
+/* EFCwork · almox.css — Prefixo: al- */
+.al-kps .kp{cursor:pointer}
+a.kp:hover{border-color:var(--a)}
+.al-aviso{margin:0;display:flex;gap:8px;align-items:center;padding:9px 12px;border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg1);color:var(--tx2);font-size:14px}
+.al-aviso .ic{width:16px;height:16px;color:var(--wa)}
+.al-aviso.cr{color:var(--cr);border-color:var(--cr)}.al-aviso.cr .ic{color:var(--cr)}
+.al-gr{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:16px;align-items:start}
+.al-col{display:flex;flex-direction:column;gap:16px;min-width:0}
+.al-li{width:100%;text-align:left;background:transparent;border:0;border-bottom:1px solid var(--bd);cursor:pointer;color:inherit}
+.al-li:hover{background:var(--bg2)}
+.al-q{font-weight:600;white-space:nowrap}
+.al-so{gap:6px}.al-so .ic{width:14px;height:14px}
+@media(max-width:1099px){.al-gr{grid-template-columns:1fr}.al-so{display:none}}

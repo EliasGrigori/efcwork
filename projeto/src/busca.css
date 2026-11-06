@@ -1,0 +1,19 @@
+/* EFCwork · busca.css — Prefixo: bg- */
+.bg-fundo{position:fixed;inset:0;z-index:70;background:rgba(10,10,20,.38);display:flex;justify-content:center;align-items:flex-start;padding:max(10vh,env(safe-area-inset-top,0px)) 16px 16px}
+.bg-caixa{width:min(620px,100%);background:var(--bg1);border:1px solid var(--bd2);border-radius:12px;box-shadow:0 24px 60px rgba(0,0,0,.3);display:flex;flex-direction:column;max-height:76vh;overflow:hidden}
+:root[data-tema="escuro"] .bg-caixa{border-color:rgba(217,180,106,.22)}
+.bg-campo{display:flex;align-items:center;gap:10px;padding:0 14px;height:54px;border-bottom:1px solid var(--bd);color:var(--tx3)}
+.bg-campo input{flex:1;border:0;outline:none;background:transparent;font-size:17px;color:var(--tx);min-width:0}
+.bg-campo kbd{font-family:var(--f);font-size:12px;border:1px solid var(--bd2);border-bottom-width:2px;border-radius:4px;padding:0 5px;color:var(--tx2)}
+.bg-res{overflow:auto;padding:6px}
+.bg-gh{margin:8px 8px 4px;font-size:12px;font-weight:600;color:var(--tx3)}
+.bg-it{display:flex;gap:10px;align-items:center;width:100%;text-align:left;border:0;background:transparent;padding:8px 10px;border-radius:8px;cursor:pointer;color:var(--tx);min-height:44px}
+.bg-it .ic{color:var(--tx3)}
+.bg-it span{min-width:0;display:flex;flex-direction:column}
+.bg-it b{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bg-it small{color:var(--tx3);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bg-it.on,.bg-it:hover{background:var(--aS)}
+.bg-it.on .ic{color:var(--aTx)}
+.bg-vz{margin:14px 10px;color:var(--tx3)}
+.bg-dica{margin:0;padding:8px 14px;border-top:1px solid var(--bd);font-size:13px;color:var(--tx3)}
+@media(max-width:899px){.bg-fundo{padding-top:max(12px,env(safe-area-inset-top,0px))}.bg-caixa{max-height:86vh}.bg-dica{display:none}}

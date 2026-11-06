@@ -1,0 +1,15 @@
+/* EFCwork · inicio.css — Prefixo: ini- */
+.ini-gr{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:16px;align-items:start}
+.ini-col{display:flex;flex-direction:column;gap:16px;min-width:0}
+.ini-cr{background:var(--crS);color:var(--cr)}.ini-wa{background:var(--waS);color:var(--wa)}
+.ini-sub{margin:0 0 6px;font-size:13px;font-weight:600;color:var(--tx3)}
+.ini-ats{display:flex;flex-wrap:wrap;gap:8px}
+.ini-at{display:inline-flex;align-items:center;gap:7px;padding:6px 10px;border:1px solid var(--bd);border-radius:var(--rs);font-size:14px;font-weight:500;background:var(--bg0);color:var(--tx);text-decoration:none;min-height:36px}
+.ini-at:hover{border-color:var(--a)}
+.ini-at em{font-style:normal;color:var(--tx3);font-size:13px}
+.ini-at .ic{width:16px;height:16px;color:var(--tx2)}
+.ini-vz{margin:0;color:var(--tx3);font-size:14px}
+.ini-li{text-decoration:none;color:inherit}
+.ini-li:hover{background:var(--bg2)}
+.ini-li>.ic{color:var(--tx3)}
+@media(max-width:1099px){.ini-gr{grid-template-columns:1fr}}

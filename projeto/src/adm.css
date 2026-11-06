@@ -1,0 +1,12 @@
+/* EFCwork · adm.css — Prefixo: adm- */
+.adm-gr{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:16px;align-items:start}
+.adm-uma{max-width:560px}
+.adm-logo{display:flex;gap:14px;align-items:center}
+.adm-logo b{display:block}.adm-logo small{display:block;color:var(--tx3);font-size:13px}
+.adm-lg{width:64px;height:64px;border-radius:12px;border:1px solid var(--bd);background:var(--bg0);display:grid;place-items:center;overflow:hidden;color:var(--tx3);flex:none}
+.adm-lg img{width:100%;height:100%;object-fit:contain}
+.adm-lg .ic{width:26px;height:26px}
+.adm-lgb{display:flex;gap:8px;margin-top:8px}
+.adm-dl{display:grid;grid-template-columns:120px minmax(0,1fr);gap:8px 14px;margin:0;padding:14px 16px}
+.adm-dl dt{color:var(--tx3)}.adm-dl dd{margin:0;font-weight:500}
+@media(max-width:899px){.adm-gr{grid-template-columns:1fr}}
