@@ -92,7 +92,7 @@ function coTabAmostras() {
       { k: 'lab', rot: 'Laboratório', v: c => c.lab || '' },
       { k: 'env', rot: 'Envio', tipo: 'data', v: c => c.enviado ? c.envio || '' : '' },
       { k: 'os', rot: 'O.S', v: c => c.os || '' },
-      { k: 'laudo', rot: 'Laudo', v: c => coLaudoSit(c), html: c => { const s = coLaudoSit(c); return s === '—' ? '<span class="tb-nada">—</span>' : alPill(s, s === 'Atrasado' ? 'cr' : s === 'Baixado' ? 'ok' : ''); } },
+      { k: 'laudo', rot: 'Laudo', v: c => coLaudoSit(c) === '—' ? '' : coLaudoSit(c), html: c => { const s = coLaudoSit(c); return s === '—' ? '' : alPill(s, s === 'Atrasado' ? 'cr' : s === 'Baixado' ? 'ok' : ''); } },
       { k: 'val', rot: 'Valor', tipo: 'num', v: c => Number(c.valor) || 0, html: c => esc(brl(c.valor)), total: 'soma', fmtTotal: brl },
       { k: 'sit', rot: 'Situação', v: c => coSit(c).txt, html: c => { const s = coSit(c); return alPill(s.txt, s.cor); } }] });
 }
@@ -115,7 +115,7 @@ function coTabRemessas() {
       { k: 'os', rot: 'O.S', v: r => r.os },
       { k: 'nf', rot: 'NF do envio', v: r => r.nf },
       { k: 'ras', rot: 'Rastreio', v: r => r.rastreio },
-      { k: 'cup', rot: 'Cupom', v: r => r.cupom ? 'sim' : '', html: r => r.cupom ? ic('imagem') : '<span class="tb-nada">—</span>' },
+      { k: 'cup', rot: 'Cupom', v: r => r.cupom ? 'sim' : '', html: r => r.cupom ? ic('imagem') : '' },
       { k: 'lau', rot: 'Laudos', v: r => r.lau + '/' + r.n, html: r => alPill(r.lau + ' de ' + r.n, r.lau === r.n ? 'ok' : r.at ? 'cr' : '') },
       { k: 'prev', rot: 'Laudo previsto', tipo: 'data', v: r => r.lau === r.n ? '' : r.prev }] });
 }
@@ -249,13 +249,28 @@ APROV_APLICA.envio_retro = async (p, aprov) => {
   return n;
 };
 
-/* ---- NF, cupom e rastreio (a qualquer momento, para a remessa inteira) ---- */
-LC_FORM.coanx = f => { const l = coLote(f.lk); if (!l.length) return null; const c0 = l[0];
-  return { ico: 'imagem', sub: 'Remessa · ' + fmtD(c0.envio) + ' · ' + (c0.lab || ''), titulo: 'NF, cupom e rastreio', corpo: lcMsg() + lcAv('Vale para as ' + l.length + ' amostra(s) desta remessa. Pode anexar a qualquer momento, mesmo depois do laudo.') +
+/* ---- lançamentos na remessa (v0.4.1, pedido de 06/11 17:54/17:58): a Aquasollus pode mandar duas O.S para a mesma remessa.
+   Regra para TODO lançamento em remessa (O.S, laudo, NF/cupom/rastreio): sugere lançar em todas as que ainda não têm; se não, escolher
+   quais; ao lançar de novo, pergunta igual, só com as que continuam sem. ---- */
+function coAlvoHTML(f, cand, rot) {
+  if (cand.length <= 1) return cand.length ? '<p class="cg-ob">Vale para: <b>' + esc(coNome(cand[0])) + '</b> · ' + esc([CO_TXT[cand[0].tipo], cand[0].sigla || cand[0].analiseNome].filter(Boolean).join(' · ')) + '</p>' : '';
+  const n = cand.filter(c => f.sel[c.id]).length;
+  return lcBl('Lançar em', ddHTML('lc:coalvo', f.alvo, [['todas', 'Todas as ' + cand.length + ' ' + rot], ['escolher', 'Escolher quais']])) +
+    (f.alvo === 'escolher' ? '<div class="cb-selh"><p class="gv-h">Amostras · <span id="co-n">' + n + ' marcada(s)</span></p></div><div class="fm-pk"><div class="fm-pkl co-pkl">' + cand.map(c => { const on = !!f.sel[c.id], at = coLaudoSit(c) === 'Atrasado' && !c.laudo; return '<button type="button" class="fm-pki cb-ck' + (on ? ' on' : '') + '" data-act="co-ck" data-id="' + esc(c.id) + '" aria-pressed="' + on + '"><span class="cb-box">' + (on ? ic('ok') : '') + '</span><span><b>' + esc(coNome(c)) + '</b><small>' + esc([CO_TXT[c.tipo], c.sigla || c.analiseNome, c.os ? 'O.S ' + c.os : '', c.rastreio ? 'rastreio ' + c.rastreio : ''].filter(Boolean).join(' · ')) + '</small></span>' + (at ? alPill('atrasado', 'cr') : '') + '</button>'; }).join('') + '</div></div>' : '');
+}
+const coAlvos = (f, cand) => cand.length <= 1 || f.alvo !== 'escolher' ? cand : cand.filter(c => f.sel[c.id]);
+const coSemAnexo = c => !c.nfEnvio && !c.rastreio && !c.cupomFoto;
+
+/* ---- NF, cupom e rastreio (a qualquer momento) ---- */
+const coAnxCand = f => { const l = coLote(f.lk), s = l.filter(coSemAnexo); return f.modo === 'todas' || !s.length ? l : s; };
+LC_FORM.coanx = f => { const l = coLote(f.lk); if (!l.length) return null; const c0 = l[0], cand = coAnxCand(f), sem = l.filter(coSemAnexo).length;
+  return { ico: 'imagem', sub: 'Remessa · ' + fmtD(c0.envio) + ' · ' + (c0.lab || ''), titulo: 'NF, cupom e rastreio', corpo: lcMsg() +
+    (sem && sem < l.length ? lcAv(sem + ' de ' + l.length + ' amostra(s) ainda sem NF, cupom ou rastreio.' + (f.modo === 'todas' ? '' : ' <button type="button" class="bt lk" data-act="co-anx-todas">Mostrar todas</button>')) : !sem ? lcAv('Todas já têm algo anexado: aqui você corrige ou completa. Pode anexar a qualquer momento, mesmo depois do laudo.') : '') +
+    coAlvoHTML(f, cand, sem && f.modo !== 'todas' ? 'sem anexo' : 'da remessa') +
     '<div class="fm-g">' + lcBl('NF do envio', lcIn('nf', f.nf, ' placeholder="Correios, se o pacote foi com nota"')) + lcBl('Código de rastreio', lcIn('rastreio', f.rastreio, ' placeholder="Ex.: AB123456789BR" autocapitalize="characters"')) + '</div>' + coCupomBl(f) + lcBl('Observação do envio', lcIn('obs', f.obs, ' placeholder="opcional"')),
     rodape: lcPe('co-anx-ok', 'Guardar') }; };
 async function coAnxOk() {
-  const f = S.fm, l = coLote(f.lk); if (!l.length || !coPode()) return;
+  const f = S.fm, l = coAlvos(f, coAnxCand(f)); if (!coPode()) return; if (!l.length) return lcErro('Marque pelo menos uma amostra.');
   const ras = String(f.rastreio || '').trim().toUpperCase().replace(/\s+/g, ''), nf = String(f.nf || '').trim(), obs = String(f.obs || '').trim();
   if (!lcTravar()) return;
   try {
@@ -270,25 +285,27 @@ async function coAnxOk() {
   } catch (e) { lcErro(svErro(e)); }
 }
 
-/* ---- O.S (informar; trocar uma que já existe = correção, como no EFClaudian) ---- */
-LC_FORM.coos = f => { const l = coLote(f.lk).filter(c => !coEncerrada(c)); if (!l.length) return null; const c0 = l[0], atuais = Array.from(new Set(l.map(c => c.os).filter(Boolean))), corr = atuais.length > 0;
+/* ---- O.S: informar nas que ainda não têm; corrigir uma já lançada = correção, como no EFClaudian ---- */
+const coOsCand = f => { const l = coLote(f.lk).filter(c => !coEncerrada(c)); return f.modo === 'corr' ? l.filter(c => c.os) : l.filter(c => !c.os); };
+LC_FORM.coos = f => { const l = coLote(f.lk).filter(c => !coEncerrada(c)); if (!l.length) return null; const c0 = l[0], corr = f.modo === 'corr', cand = coOsCand(f), com = l.filter(c => c.os).length, os = Array.from(new Set(l.map(c => c.os).filter(Boolean)));
   return { ico: 'lapis', sub: 'Remessa · ' + fmtD(c0.envio) + ' · ' + (c0.lab || ''), titulo: corr ? 'Corrigir O.S' : 'Informar O.S', corpo: lcMsg() +
-    (corr ? lcAv('O.S atual: <b>' + esc(atuais.join(', ')) + '</b>. Trocar é uma correção: ' + (isPrincipal(S.user) ? 'você corrige direto, com o motivo.' : 'vai como pedido ao seu superior, com o motivo.'), 'wa') : lcAv('Vale para as ' + l.length + ' amostra(s) desta remessa que ainda não têm O.S.')) +
-    lcBl('O.S', lcIn('os', f.os, ' placeholder="Número que o laboratório mandou"')) + (corr ? lcBl('Motivo', lcIn('motivo', f.motivo, ' placeholder="Ex.: O.S digitada errada"')) : ''),
+    (corr ? lcAv('Trocar uma O.S já lançada é correção: ' + (isPrincipal(S.user) ? 'você corrige direto, com o motivo.' : 'vai como pedido ao seu superior, com o motivo.'), 'wa')
+      : (com ? lcAv(com + ' amostra(s) já com O.S (' + esc(os.join(', ')) + '). Aqui entram só as que ainda não têm. <button type="button" class="bt lk" data-act="co-os-corr">Corrigir uma O.S já lançada</button>') : '')) +
+    coAlvoHTML(f, cand, corr ? 'com O.S' : 'sem O.S') +
+    lcBl(corr ? 'O.S certa' : 'O.S', lcIn('os', f.os, ' placeholder="Número que o laboratório mandou"')) + (corr ? lcBl('Motivo', lcIn('motivo', f.motivo, ' placeholder="Ex.: O.S digitada errada"')) : ''),
     rodape: lcPe('co-os-ok', corr ? (isPrincipal(S.user) ? 'Corrigir' : 'Pedir correção') : 'Guardar O.S') }; };
 async function coOsOk() {
-  const f = S.fm, l = coLote(f.lk).filter(c => !coEncerrada(c)); if (!l.length || !coPode()) return;
+  const f = S.fm; if (!coPode()) return; const l = coAlvos(f, coOsCand(f)); if (!l.length) return lcErro('Marque pelo menos uma amostra.');
   const os = String(f.os || '').trim(); if (!os) return lcErro('Informe a O.S.');
-  const corr = l.some(c => c.os);
-  if (!corr) {
+  if (f.modo !== 'corr') {
     if (!lcTravar()) return;
-    try { for (const c of l.filter(x => !x.os)) { await Data.col('sv2_coletas').update(c.id, { os: os }); Audit.log({ acao: 'envio_coleta', entidade: 'coleta', entidadeId: c.id, resumo: 'O.S ' + os + ' do lote ' + fmtD(c.envio) + ' · ' + (c.lab || ''), antes: { os: '' }, depois: { os: os } }); } lcFim(); aviso('O.S guardada.'); }
+    try { for (const c of l) { await Data.col('sv2_coletas').update(c.id, { os: os }); Audit.log({ acao: 'envio_coleta', entidade: 'coleta', entidadeId: c.id, resumo: 'O.S ' + os + ' do lote ' + fmtD(c.envio) + ' · ' + (c.lab || ''), antes: { os: '' }, depois: { os: os } }); } lcFim(); aviso('O.S ' + os + ' em ' + l.length + ' amostra(s).'); }
     catch (e) { lcErro(svErro(e)); } return;
   }
   const mot = String(f.motivo || '').trim(); if (mot.length < 5) return lcErro('Escreva o motivo da correção.');
   const ids = l.filter(c => c.os !== os).map(c => c.id); if (!ids.length) return lcErro('A O.S já é essa.');
-  if (ids.some(coOsPend)) return lcErro('Já tem um pedido de correção de O.S desta remessa esperando.');
-  const p = { ids: ids, agua: false, os: os, antes: Array.from(new Set(l.map(c => c.os || ''))).join(', '), motivo: mot, rotulo: 'remessa de ' + fmtD(l[0].envio) + ' · ' + (l[0].lab || '') };
+  if (ids.some(coOsPend)) return lcErro('Já tem um pedido de correção de O.S destas amostras esperando.');
+  const p = { ids: ids, agua: false, os: os, antes: Array.from(new Set(l.filter(c => ids.indexOf(c.id) >= 0).map(c => c.os || ''))).join(', '), motivo: mot, rotulo: 'remessa de ' + fmtD(l[0].envio) + ' · ' + (l[0].lab || '') };
   if (!lcTravar()) return;
   try {
     if (isPrincipal(S.user)) { await APROV_APLICA.corrigir_os(p, null); lcFim(); aviso('O.S corrigida.'); return; }
@@ -307,19 +324,19 @@ APROV_APLICA.corrigir_os = async (p, aprov) => {
 };
 
 /* ---- Laudo recebido ---- */
-LC_FORM.colaudo = f => { const l = coLote(f.lk).filter(c => !c.laudo && !coEncerrada(c)); if (!l.length) return null; const c0 = l[0], n = Object.keys(f.sel).filter(k => f.sel[k]).length;
-  return { ico: 'ok', sub: 'Remessa · ' + fmtD(c0.envio) + ' · ' + (c0.lab || ''), titulo: 'Laudo recebido', corpo: lcMsg() + lcAv('Marque as amostras cujo laudo chegou. Fica registrado quem marcou e quando.') +
-    '<div class="cb-selh"><p class="gv-h">Amostras · <span id="co-n">' + n + ' marcada(s)</span></p></div><div class="fm-pk"><div class="fm-pkl co-pkl">' + l.map(c => { const on = !!f.sel[c.id], at = coLaudoSit(c) === 'Atrasado'; return '<button type="button" class="fm-pki cb-ck' + (on ? ' on' : '') + '" data-act="co-ck" data-id="' + esc(c.id) + '" aria-pressed="' + on + '"><span class="cb-box">' + (on ? ic('ok') : '') + '</span><span><b>' + esc(coNome(c)) + '</b><small>' + esc([CO_TXT[c.tipo], c.sigla || c.analiseNome, c.os ? 'O.S ' + c.os : ''].filter(Boolean).join(' · ')) + '</small></span>' + (at ? alPill('atrasado', 'cr') : '') + '</button>'; }).join('') + '</div></div>',
+const coLaudoCand = f => coLote(f.lk).filter(c => !c.laudo && !coEncerrada(c));
+LC_FORM.colaudo = f => { const cand = coLaudoCand(f); if (!cand.length) return null; const c0 = cand[0], com = coLote(f.lk).filter(c => c.laudo).length;
+  return { ico: 'ok', sub: 'Remessa · ' + fmtD(c0.envio) + ' · ' + (c0.lab || ''), titulo: 'Laudo recebido', corpo: lcMsg() + lcAv((com ? com + ' amostra(s) já com laudo. ' : '') + 'Fica registrado quem marcou e quando.') + coAlvoHTML(f, cand, 'sem laudo'),
     rodape: lcPe('co-laudo-ok', 'Marcar laudo recebido') }; };
 async function coLaudoOk() {
-  const f = S.fm, l = coLote(f.lk).filter(c => !c.laudo && !coEncerrada(c) && f.sel[c.id]); if (!coPode()) return; if (!l.length) return lcErro('Marque pelo menos uma amostra.');
+  const f = S.fm; if (!coPode()) return; const l = coAlvos(f, coLaudoCand(f)); if (!l.length) return lcErro('Marque pelo menos uma amostra.');
   if (!lcTravar()) return;
   try { for (const c of l) { const o = { laudo: true, laudoEm: nowISO(), laudoPor: S.user.nome }; await Data.col('sv2_coletas').update(c.id, o); Audit.log({ acao: 'envio_coleta', entidade: 'coleta', entidadeId: c.id, resumo: 'Laudo recebido: ' + CO_TXT[c.tipo] + ' ' + coNome(c) + (c.os ? ' · O.S ' + c.os : ''), antes: { laudo: false }, depois: { laudo: true } }); } lcFim(); aviso('Laudo marcado em ' + l.length + ' amostra(s).'); }
   catch (e) { lcErro(svErro(e)); }
 }
 
 /* ---------- eventos ---------- */
-DD_AO.lc = (function (ant) { return (k, v) => { const f = S.fm; if (f && (k === 'comat' || k === 'colab')) { if (k === 'comat') f.mat = v; else f.lab = v; f.sujo = true; f.msg = ''; gvDesenha(true); return; } ant(k, v); }; })(DD_AO.lc);
+DD_AO.lc = (function (ant) { return (k, v) => { const f = S.fm; if (f && (k === 'comat' || k === 'colab' || k === 'coalvo')) { if (k === 'comat') f.mat = v; else if (k === 'colab') f.lab = v; else f.alvo = v; f.sujo = true; f.msg = ''; gvDesenha(true); return; } ant(k, v); }; })(DD_AO.lc);
 document.addEventListener('change', e => {
   const t = e.target; if (!(t && t.hasAttribute && t.hasAttribute('data-cofile')) || !S.fm) return; const a = t.files && t.files[0]; if (!a) return;
   coFotoReduz(a).then(u => { if (!S.fm) return; S.fm.cupom = u; S.fm.sujo = true; S.fm.msg = ''; gvDesenha(true); }).catch(er => lcErro(er.message));
@@ -335,11 +352,13 @@ document.addEventListener('click', ev => {
   else if (a === 'co-limpa' && f) { f.sel = {}; gvDesenha(true); }
   else if (a === 'co-cup-x' && f) { f.cupom = ''; gvDesenha(true); }
   else if (a === 'co-env-ok') coEnvOk();
-  else if (a === 'co-anx') { const l = coLote(k); if (!l.length || !coPode()) return; const um = x => { const v = Array.from(new Set(l.map(c => c[x]).filter(Boolean))); return v.length === 1 ? v[0] : ''; }; lcAbrir({ k: 'coanx', lk: k, nf: um('nfEnvio'), rastreio: um('rastreio'), obs: um('obsEnvio'), cupom: '', cupomAtual: um('cupomFoto') }, volta); }
+  else if (a === 'co-anx') { const l = coLote(k); if (!l.length || !coPode()) return; const sem = l.some(coSemAnexo), um = x => { if (sem) return ''; const v = Array.from(new Set(l.map(c => c[x]).filter(Boolean))); return v.length === 1 ? v[0] : ''; }; lcAbrir({ k: 'coanx', lk: k, modo: '', alvo: 'todas', sel: {}, nf: um('nfEnvio'), rastreio: um('rastreio'), obs: um('obsEnvio'), cupom: '', cupomAtual: um('cupomFoto') }, volta); }
+  else if (a === 'co-anx-todas' && f) { f.modo = 'todas'; f.alvo = 'escolher'; f.sel = {}; coAnxCand(f).forEach(c => { if (coSemAnexo(c)) f.sel[c.id] = true; }); gvDesenha(true); }
+  else if (a === 'co-os-corr' && f) { f.modo = 'corr'; f.alvo = 'escolher'; f.sel = {}; f.os = ''; f.msg = ''; gvDesenha(true); }
   else if (a === 'co-anx-ok') coAnxOk();
-  else if (a === 'co-os') { if (coPode()) lcAbrir({ k: 'coos', lk: k, os: '', motivo: '' }, volta); }
+  else if (a === 'co-os') { if (!coPode()) return; const l = coLote(k).filter(c => !coEncerrada(c)); lcAbrir({ k: 'coos', lk: k, modo: l.some(c => !c.os) ? '' : 'corr', alvo: l.some(c => !c.os) ? 'todas' : 'escolher', sel: {}, os: '', motivo: '' }, volta); }
   else if (a === 'co-os-ok') coOsOk();
-  else if (a === 'co-laudo') { if (!coPode()) return; const sel = {}; coLote(k).filter(c => !c.laudo).forEach(c => { if (!id || c.id === id) sel[c.id] = true; }); lcAbrir({ k: 'colaudo', lk: k, sel: sel }, volta); }
+  else if (a === 'co-laudo') { if (!coPode()) return; const sel = {}; if (id) sel[id] = true; lcAbrir({ k: 'colaudo', lk: k, alvo: id && coLote(k).filter(c => !c.laudo).length > 1 ? 'escolher' : 'todas', sel: sel }, volta); }
   else if (a === 'co-laudo-ok') coLaudoOk();
   else if (a === 'co-lote') { S._gvNav = true; if (S.rota.aba !== 'envio') ir('coletas', 'envio'); coAbreLote(k); }
   else if (a === 'co-abre') { if (S.rota.aba !== 'amostras') { S._gvNav = true; ir('coletas', 'amostras'); } coAbre(id); }

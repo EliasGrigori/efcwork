@@ -1,7 +1,7 @@
 /* EFCwork · sino.css — avisos e pedidos na gaveta. Prefixo: sn- (e o número no sino: cs-bdg) */
 .cs-sino{position:relative}
 .cs-bdg{position:absolute;top:3px;right:2px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--cr);color:var(--onCr);font-size:11px;font-weight:700;line-height:17px;text-align:center}
-.sn-pd{display:flex;flex-direction:column;gap:4px;padding:10px 12px;border:1px solid var(--bd);border-left:3px solid var(--a);border-radius:var(--rs);background:var(--bg0)}
+.sn-pd{display:flex;flex-direction:column;gap:4px;padding:10px 12px;border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg0)} /* sem a faixa lateral (sinal de 'cara de IA', auditoria v0.4.1) */
 .sn-pd b{font-weight:600}
 .sn-pd>span{font-size:14px;color:var(--tx2)}
 .sn-pd small{font-size:13px;color:var(--tx3)}
@@ -18,3 +18,12 @@
 .sn-n.nl .sn-nb b{font-weight:700}
 .sn-nb span span{font-size:13px;color:var(--tx2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .sn-nb small{font-size:12px;color:var(--tx3)}
+.sn-toast{position:fixed;right:20px;bottom:20px;z-index:70;width:min(380px,calc(100vw - 32px));background:var(--bg1);border:1px solid var(--bd2);border-radius:var(--r);box-shadow:var(--sh);padding:12px 14px;display:flex;flex-direction:column;gap:6px;animation:snEntra .28s cubic-bezier(.2,.8,.2,1)}
+.sn-tc{display:flex;gap:10px;align-items:flex-start}
+.sn-tc>.ic{width:20px;height:20px;flex:none;color:var(--a);margin-top:2px}
+.sn-tc span{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+.sn-tc b{font-weight:600}.sn-tc em{font-style:normal;font-size:14px;color:var(--tx2);white-space:pre-line}.sn-tc small{font-size:12px;color:var(--tx3)}
+.sn-tc .bt{margin:-4px -6px 0 0}
+@keyframes snEntra{from{transform:translateY(16px);opacity:0}to{transform:none;opacity:1}}
+@media(max-width:899px){.sn-toast{right:16px;bottom:76px}}
+@media(prefers-reduced-motion:reduce){.sn-toast{animation:none}}

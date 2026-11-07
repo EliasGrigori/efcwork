@@ -63,6 +63,7 @@ document.addEventListener('submit', async e => {
   if (f.getAttribute('data-form') === 'en-entrar') {
     const login = $('#en-login').value.trim(), senha = $('#en-senha').value;
     if (!login || !senha) return enMsg('Preencha o usuário e a senha.');
+    if (login.indexOf('@') < 0 && /(gmail|hotmail|outlook|yahoo|icloud)\.com|\.com\.br$/i.test(login)) return enMsg('Parece um e-mail sem o @. Digite o e-mail completo (ex.: nome@gmail.com) ou o seu login.'); /* v0.4.1 */
     bt.disabled = true; bt.textContent = 'Entrando…'; enMsg('');
     try {
       if ($('#en-lembrar').checked) Store.set('cw-ultimo-login', login); else Store.del('cw-ultimo-login');

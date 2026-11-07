@@ -23,7 +23,7 @@ const tbVisiveis = cfg => { const st = tbEstado(cfg.id); return cfg.cols.filter(
 function tbFmt(c, r) {
   if (c.html) return c.html(r);
   const v = c.v(r);
-  if (v == null || v === '') return '<span class="tb-nada">—</span>';
+  if (v == null || v === '') return ''; /* célula sem dado fica em branco (pedido de 06/11 17:54) */
   if (c.tipo === 'data') return esc(fmtD(v));
   if (c.tipo === 'num') return esc(typeof v === 'number' ? numBR(v, c.dec) : v);
   return esc(v);
@@ -33,6 +33,10 @@ const brl = n => 'R$ ' + Number(n || 0).toLocaleString('pt-BR', { minimumFractio
 function tbResumoFiltro(cfg) {
   const st = tbEstado(cfg.id), at = (cfg.filtros || []).filter(f => st.filtros[f.k] != null && st.filtros[f.k] !== '');
   return { n: at.length, txt: at.length ? at.map(f => { const o = f.opcoes.find(x => x[0] === st.filtros[f.k]); return o ? o[1] : st.filtros[f.k]; }).join(' · ') : 'Todos' };
+}
+function tbTotal(cols, l, todas) {
+  if (!cols.some(c => c.total) || !l.length) return '';
+  return '<tr class="tb-tot">' + cols.map((c, i) => { if (!c.total) return '<td>' + (i === 0 ? 'Total' : '') + '</td>'; const v = typeof c.total === 'function' ? c.total(todas) : todas.reduce((s, r) => s + (Number(c.v(r)) || 0), 0); return '<td class="n">' + esc(c.fmtTotal ? c.fmtTotal(v) : numBR(v, c.dec)) + '</td>'; }).join('') + '</tr>';
 }
 function tbHTML(cfg) {
   TB[cfg.id] = cfg; const st = tbEstado(cfg.id), cols = tbVisiveis(cfg), todas = tbFiltrar(cfg), l = todas.slice(0, st.limite), rf = tbResumoFiltro(cfg);
@@ -49,12 +53,10 @@ function tbHTML(cfg) {
   h += '<div class="tb-w"><table class="tb-t"><thead><tr>' + cols.map(c => {
     const o = st.ordem && st.ordem.k === c.k ? st.ordem.dir : '';
     return '<th class="' + (c.tipo === 'num' ? 'n' : '') + '"' + (o ? ' aria-sort="' + (o === 'asc' ? 'ascending' : 'descending') + '"' : '') + '><button type="button" data-act="tb-ord" data-tb="' + esc(cfg.id) + '" data-k="' + esc(c.k) + '">' + esc(c.rot) + (o ? '<span class="tb-seta">' + (o === 'asc' ? '▲' : '▼') + '</span>' : '') + '</button></th>';
-  }).join('') + '</tr></thead><tbody>';
+  }).join('') + '</tr>' + tbTotal(cols, l, todas) + '</thead><tbody>'; /* total em cima, logo abaixo dos títulos (pedido de 06/11 17:54) */
   if (!l.length) h += '<tr><td colspan="' + cols.length + '" class="tb-vz">' + esc(cfg.vazio || 'Nada encontrado.') + '</td></tr>';
   else h += l.map(r => { const id = chave(r); return '<tr' + (cfg.aoClicar ? ' data-act="tb-lin" data-tb="' + esc(cfg.id) + '" data-id="' + esc(id) + '" tabindex="0"' : '') + (cfg.selecionado === id ? ' class="sel"' : '') + '>' + cols.map(c => '<td class="' + (c.tipo === 'num' ? 'n' : '') + (c.cls ? ' ' + c.cls : '') + '"' + (c.titulo ? ' title="' + esc(c.titulo(r)) + '"' : '') + '>' + tbFmt(c, r) + '</td>').join('') + '</tr>'; }).join('');
   h += '</tbody>';
-  const comTotal = cols.some(c => c.total);
-  if (comTotal && l.length) h += '<tfoot><tr>' + cols.map((c, i) => { if (!c.total) return '<td>' + (i === 0 ? 'Total' : '') + '</td>'; const v = typeof c.total === 'function' ? c.total(todas) : todas.reduce((s, r) => s + (Number(c.v(r)) || 0), 0); return '<td class="n">' + esc(c.fmtTotal ? c.fmtTotal(v) : numBR(v, c.dec)) + '</td>'; }).join('') + '</tr></tfoot>';
   h += '</table></div>';
   h += '<div class="tb-pe"><span>Mostrando <b>' + l.length + '</b> de ' + todas.length + '</span>' + (cfg.rodape ? '<span>' + cfg.rodape(todas) + '</span>' : '') + (todas.length > l.length ? '<button type="button" class="bt" data-act="tb-mais" data-tb="' + esc(cfg.id) + '">Mostrar mais ' + Math.min(100, todas.length - l.length) + '</button>' : '') + '</div></div>';
   return h;

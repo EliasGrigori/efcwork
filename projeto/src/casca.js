@@ -166,10 +166,12 @@ function csOuve(col, cb, o) { const off = Data.col(col).watch(cb, o); S._desl.pu
 async function csCarregaUsuario(uidAtual) {
   S._desl.forEach(f => { try { f(); } catch {} }); S._desl = [];
   if (!uidAtual) { S.user = null; S.pronto = true; render(); return; }
-  let u = null; try { u = await Data.col('sv2_users').get(uidAtual); } catch (e) { console.error(e); }
+  let u = null, erro = null; try { u = await Data.col('sv2_users').get(uidAtual); } catch (e) { console.error(e); erro = e; }
   if (!u || u.ativo === false || u.bloqueado) {
     try { await Data.auth.signOut(); } catch {}
-    S.user = null; S.pronto = true; S._erroEntrar = !u ? 'Este acesso não tem perfil cadastrado. Peça ao administrador.' : 'Este acesso está bloqueado. Fale com o administrador.'; render(); return;
+    /* v0.4.1: diferencia "não achou o perfil" de "não conseguiu ler" (antes, um erro de leitura aparecia como "sem perfil") */
+    S.user = null; S.pronto = true; S._erroEntrar = erro ? 'A senha está certa, mas não deu para ler o seu perfil (' + svErro(erro) + '). Tente de novo; se continuar, avise o administrador.'
+      : !u ? 'A senha está certa, mas este acesso não tem perfil no app. Confira se digitou o seu login ou o e-mail completo (com @), igual ao do EFClaudian.' : 'Este acesso está bloqueado. Fale com o administrador.'; render(); return;
   }
   S.user = Object.assign({ id: uidAtual }, u); S.pronto = true; S._erroEntrar = '';
   csOuve('sv2_cfg', l => { const e = l.find(x => x.id === 'empresa'); S.empresa = e || null; S.cfgAlm = l.find(x => x.id === 'almox') || null; S.cfgCol = l.find(x => x.id === 'coletas') || null; render(); });

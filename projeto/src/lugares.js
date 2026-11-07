@@ -38,8 +38,8 @@ function lgDist(e, lab) {
 }
 /* o texto curto da coluna Local (pedido de 06/11: só o lugar; o resto fica na gaveta) */
 function lgCurto(e) {
-  if (e.tipo === 'qtd') { const l = []; lgLabs(e).forEach(lab => lgDist(e, lab).forEach(x => l.push(x.lugar || lab))); const u = Array.from(new Set(l)); return u.length === 1 ? u[0] : u.length ? u.length + ' lugares' : '—'; }
-  return (e.transito ? 'Em trânsito' : lgNome(e.posicao) || e.local || '—');
+  if (e.tipo === 'qtd') { const l = []; lgLabs(e).forEach(lab => lgDist(e, lab).forEach(x => l.push(x.lugar || lab))); const u = Array.from(new Set(l)); return u.length === 1 ? u[0] : u.length ? u.length + ' lugares' : ''; }
+  return (e.transito ? 'Em trânsito' : lgNome(e.posicao) || e.local || '');
 }
 /* outros iguais a este (mesmo nome): onde estão — para achar a reserva */
 const lgIguais = e => S.almEq.filter(x => x.id !== e.id && x.situacao !== 'baixa' && x.tipo !== 'qtd' && tbNorm(x.nome).trim() === tbNorm(e.nome).trim());

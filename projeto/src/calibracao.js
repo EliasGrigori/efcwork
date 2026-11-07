@@ -74,7 +74,7 @@ function cbTela() {
       { k: 'n', rot: 'Equipamentos', tipo: 'num', v: c => (c.itens || []).length },
       { k: 'cot', rot: 'Cotação', tipo: 'data', v: c => c.cotacaoEm || '' },
       { k: 'ag', rot: 'Agendada', tipo: 'data', v: c => (c.agenda && c.agenda.data) || '' },
-      { k: 'val', rot: 'Valor', tipo: 'num', v: c => cbTotal(c), html: c => cbTotal(c) ? brl(cbTotal(c)) : '<span class="tb-nada">—</span>', total: true, fmtTotal: brl },
+      { k: 'val', rot: 'Valor', tipo: 'num', v: c => cbTotal(c), html: c => cbTotal(c) ? brl(cbTotal(c)) : '', total: true, fmtTotal: brl },
       { k: 'sit', rot: 'Situação', v: c => cbSitTxt(c), html: c => cbPill(c) }] });
   return h;
 }

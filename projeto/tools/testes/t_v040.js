@@ -126,13 +126,14 @@ const abre = async (p, id) => { await p.evaluate(() => { location.hash = '#/cole
   conf((await col(p, 'c3')).os === 'OS-77' && (await col(p, 'c4')).os === 'OS-77', 'O.S vale para a remessa inteira');
   await p.click('#gv [data-act="co-os"]'); await p.waitForTimeout(150);
   conf(/Corrigir O.S/.test(await titulo(p)), 'com O.S, o botão vira "Corrigir O.S"');
+  await p.click('#gv [data-act="co-ck"][data-id="c3"]'); await p.click('#gv [data-act="co-ck"][data-id="c4"]'); /* v0.4.1: corrigir escolhe quais */
   await p.fill('#gv [data-fm="os"]', 'OS-78'); await p.click('[data-act="co-os-ok"]'); await p.waitForTimeout(80);
   conf(/motivo/.test(await msg(p)), 'corrigir pede o motivo');
   await p.fill('#gv [data-fm="motivo"]', 'número digitado errado'); await p.click('[data-act="co-os-ok"]'); await p.waitForTimeout(400);
   const c3 = await col(p, 'c3');
   conf(c3.os === 'OS-78' && c3.alterado && /digitado errado/.test(c3.historico.slice(-1)[0].motivo), 'Administrador corrige direto; o histórico guarda antes, depois e o motivo (formato do EFClaudian)');
   await p.click('#gv [data-act="co-laudo"]'); await p.waitForTimeout(150);
-  conf((await p.$$('#gv [data-act="co-ck"].on')).length === 1 && /atrasado/.test(await p.textContent('#gv .co-pkl')), 'Laudos recebidos: lista as sem laudo, já marcadas, com o atraso à vista');
+  conf(/Vale para: RU12TAI24/.test(await p.textContent('#gv')), 'Laudos recebidos: só a que falta (v0.4.1: com 1, vai direto)');
   await p.click('[data-act="co-laudo-ok"]'); await p.waitForTimeout(400);
   const c3b = await col(p, 'c3');
   conf(c3b.laudo && c3b.laudoPor === 'Joana Silva' && /^\d{4}-/.test(c3b.laudoEm), 'laudo marcado com quem e quando');

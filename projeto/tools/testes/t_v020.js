@@ -68,7 +68,7 @@ async function semear(p) {
   const ths = await p.$$eval('.tb-t thead th', l => l.map(x => x.textContent.replace(/[▲▼]/g, '')));
   conf(ths.join('|') === 'Código|Item|Local|Un|Utilizável|Mínimo|Valor|Situação', 'colunas: ' + ths.join(', '));
   conf(await p.$eval('.tb-t thead th:nth-child(5)', e => e.classList.contains('n')) && await p.$eval('.tb-t tbody td:nth-child(5)', e => getComputedStyle(e).textAlign === 'right'), 'números alinhados à direita');
-  conf(/Total/.test(await p.textContent('.tb-t tfoot')), 'linha de total no rodapé');
+  conf(/Total/.test(await p.textContent('.tb-t .tb-tot')), 'linha de total (em cima, desde a v0.4.1)');
   await p.click('[data-act="tb-painel"]'); await p.waitForTimeout(120);
   conf(await p.isVisible('.tb-painel [data-dd="tbf:al-mat:sit"]') && await p.isVisible('.tb-painel [data-dd="tbf:al-mat:loc"]'), 'um único filtro recolhível com Situação e Local em janelas retráteis');
   await p.click('[data-dd="tbf:al-mat:sit"] .dd-b'); await p.click('[data-dd="tbf:al-mat:sit"] li[data-v="atencao"]'); await p.waitForTimeout(150);

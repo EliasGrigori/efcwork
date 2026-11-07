@@ -9,6 +9,21 @@ function snAtualiza() {
   if (b) { b.hidden = !n; b.textContent = n > 99 ? '99+' : String(n); }
   if (snAberto()) { const a = document.activeElement; if (!(a && a.closest && a.closest('#gv') && /INPUT|TEXTAREA/.test(a.tagName))) gvDesenha(true); }
   if (S.rota.area === 'inicio' && !S.gv) render();
+  snToastNovos();
+}
+/* confirmação rápida (v0.4.1, pedido de 06/11 17:54): pedido novo para você aparece num aviso no canto, com Confirmar ali mesmo.
+   Os que já esperavam quando o app abriu não pulam (estão no sino). Recusar abre o sino, que pede o motivo. */
+S._snVistos = null;
+function snToastNovos() {
+  if (!S.user) return; const pend = Aprov.pendentesParaMim();
+  if (!S._snVistos) { S._snVistos = {}; pend.forEach(a => { S._snVistos[a.id] = 1; }); return; }
+  const novos = pend.filter(a => !S._snVistos[a.id]); novos.forEach(a => { S._snVistos[a.id] = 1; });
+  const ab = $('#sn-toast'); if (ab && !pend.some(a => a.id === ab.getAttribute('data-id'))) ab.remove();
+  if (!novos.length || snAberto()) return; const a = novos[novos.length - 1], aqui = !!APROV_APLICA[a.tipo];
+  let d = $('#sn-toast'); if (!d) { d = document.createElement('div'); d.id = 'sn-toast'; d.className = 'sn-toast'; d.setAttribute('role', 'alert'); document.body.appendChild(d); }
+  d.setAttribute('data-id', a.id);
+  d.innerHTML = '<div class="sn-tc">' + ic('sino') + '<span><small>Pedido para você confirmar' + (novos.length > 1 ? ' · +' + (novos.length - 1) + ' no sino' : '') + '</small><b>' + esc(a.titulo) + '</b>' + (a.descricao ? '<em>' + esc(a.descricao) + '</em>' : '') + '<small>' + esc(a.solicitanteNome || '') + ' · ' + fmtDT(a.ts) + '</small></span><button type="button" class="bt ic-so" data-act="sn-tx" aria-label="Fechar">' + ic('x') + '</button></div>' +
+    '<div class="sn-bts"><button type="button" class="bt" data-act="sn-ver">Ver no sino</button>' + (aqui ? '<button type="button" class="bt pr" data-act="sn-apr" data-id="' + esc(a.id) + '">' + ic('ok') + 'Confirmar</button>' : '') + '</div>';
 }
 const snNivel = { critico: ['Crítico', 'cr'], aviso: ['Aviso', 'wa'], info: ['', ''] };
 function snGaveta() {
@@ -18,8 +33,8 @@ function snGaveta() {
   if (pend.length) c += '<p class="gv-h">Para você decidir · ' + pend.length + '</p>' + pend.map(a => {
     const aqui = !!APROV_APLICA[a.tipo];
     return '<div class="sn-pd"><b>' + esc(a.titulo) + '</b>' + (a.descricao ? '<span>' + esc(a.descricao) + '</span>' : '') + '<small>Pedido por ' + esc(a.solicitanteNome || '') + ' · ' + fmtDT(a.ts) + '</small>' +
-      (S.snRep === a.id ? '<div class="fm-c"><span class="fm-r">Motivo da reprovação</span><textarea class="fm-i" id="sn-mot" rows="2"></textarea></div><div class="sn-bts"><button type="button" class="bt" data-act="sn-rep-x">Voltar</button><button type="button" class="bt pr" data-act="sn-rep-ok" data-id="' + esc(a.id) + '">Reprovar</button></div>'
-        : aqui ? '<div class="sn-bts"><button type="button" class="bt" data-act="sn-rep" data-id="' + esc(a.id) + '">Reprovar</button><button type="button" class="bt pr" data-act="sn-apr" data-id="' + esc(a.id) + '">' + ic('ok') + 'Aprovar</button></div>'
+      (S.snRep === a.id ? '<div class="fm-c"><span class="fm-r">Por que recusa?</span><textarea class="fm-i" id="sn-mot" rows="2"></textarea></div><div class="sn-bts"><button type="button" class="bt" data-act="sn-rep-x">Voltar</button><button type="button" class="bt pr" data-act="sn-rep-ok" data-id="' + esc(a.id) + '">Recusar</button></div>'
+        : aqui ? '<div class="sn-bts"><button type="button" class="bt" data-act="sn-rep" data-id="' + esc(a.id) + '">Recusar</button><button type="button" class="bt pr" data-act="sn-apr" data-id="' + esc(a.id) + '">' + ic('ok') + 'Confirmar</button></div>'
         : '<div class="sn-bts"><a class="bt" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener">' + ic('externo') + 'Decidir no EFClaudian</a></div>') + '</div>';
   }).join('');
   if (meus.length) c += '<p class="gv-h">Seus pedidos esperando</p>' + gvLinha(meus.map(a => [a.titulo, 'aguardando ' + ((a.paraNomes || []).join(', ') || 'o superior') + ' · ' + fmtDT(a.ts)]));
@@ -39,8 +54,10 @@ document.addEventListener('click', async e => {
   else if (a === 'sn-conf') Notif.confirm(id);
   else if (a === 'sn-rep') { S.snRep = id; gvDesenha(true); const m = $('#sn-mot'); if (m) m.focus(); }
   else if (a === 'sn-rep-x') { S.snRep = null; gvDesenha(true); }
-  else if (a === 'sn-rep-ok') { const m = String(($('#sn-mot') || {}).value || '').trim(); if (m.length < 3) { aviso('Escreva o motivo da reprovação.', 'erro'); return; } t.disabled = true; if (await Aprov.decidir(id, false, m)) S.snRep = null; gvDesenha(true); }
-  else if (a === 'sn-apr') { t.disabled = true; await Aprov.decidir(id, true); gvDesenha(true); }
+  else if (a === 'sn-rep-ok') { const m = String(($('#sn-mot') || {}).value || '').trim(); if (m.length < 3) { aviso('Escreva o motivo da recusa.', 'erro'); return; } t.disabled = true; if (await Aprov.decidir(id, false, m)) S.snRep = null; gvDesenha(true); }
+  else if (a === 'sn-apr') { t.disabled = true; const ok = await Aprov.decidir(id, true); const x = $('#sn-toast'); if (x && x.getAttribute('data-id') === id) x.remove(); if (ok) aviso('Confirmado.'); if (snAberto()) gvDesenha(true); }
+  else if (a === 'sn-tx') { const x = $('#sn-toast'); if (x) x.remove(); }
+  else if (a === 'sn-ver') { const x = $('#sn-toast'); if (x) x.remove(); snAbrir(); }
   else if (a === 'sn-abre') {
     const n = S.notifs.find(x => x.id === id); if (!n) return; Notif.read(n.id);
     if (n.refTipo === 'alm_mov' && n.refId && alVe() && S.almMov.some(m => m.id === n.refId)) { S._gvNav = true; ir('almox', 'movimentacoes'); alAbreMov(n.refId); }

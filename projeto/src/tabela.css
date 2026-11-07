@@ -30,7 +30,7 @@
 .tb-t tbody tr[data-act]:hover td{background:var(--bg2)}
 .tb-t tbody tr.sel td{background:var(--aS)}
 .tb-t tbody tr.sel td:first-child{box-shadow:inset 3px 0 0 var(--a)}
-.tb-t tfoot td{height:var(--row);padding:0 12px;font-weight:700;background:var(--bg2);border-top:1px solid var(--bd2)}
+.tb-t .tb-tot td{height:34px;padding:0 12px;font-weight:700;background:var(--bg2);border-bottom:1px solid var(--bd2);font-size:14px}
 .tb-t td.forte{font-weight:600}
 .tb-vz{text-align:center;color:var(--tx3);padding:28px 12px!important;white-space:normal!important}
 .tb-nada{color:var(--tx3)}

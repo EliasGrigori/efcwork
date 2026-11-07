@@ -256,7 +256,7 @@ function alAbreSol(id) {
   S._alSel = id; gvAbrir(() => {
     const x = S.almSol.find(y => y.id === id); if (!x) return null; const s = AL_SOL_ST[x.situacao] || AL_SOL_ST.pendente;
     const pend = (x.situacao || 'pendente') === 'pendente' && typeof alPode === 'function' && alPode();
-    return { ico: 'doc', sub: 'Solicitação · ' + fmtD(x.data), titulo: 'Nº ' + (x.numero || '—'), pill: alPill(s[0], s[1]), lixeira: pend ? { act: 'lc-sol-canc', id: x.id, titulo: 'Cancelar solicitação' } : null,
+    return { ico: 'doc', sub: 'Solicitação · ' + fmtD(x.data), titulo: 'Nº ' + (x.numero || '—'), pill: alPill(s[0], s[1]), cabAcoes: '<button type="button" class="bt ic-so" data-act="nt-sol" data-id="' + esc(x.id) + '" title="Imprimir a notinha" aria-label="Imprimir a notinha">' + ic('impressora') + '</button>', lixeira: pend ? { act: 'lc-sol-canc', id: x.id, titulo: 'Cancelar solicitação' } : null,
       rodape: pend ? '<button type="button" class="bt pr" data-act="lc-sol-atender" data-id="' + esc(x.id) + '">' + ic('entra') + 'Chegou: marcar Atendida</button>' : '',
       corpo: gvCampos([['Solicitante', x.solicitante], ['Liberador', x.liberador], ['Previsão', x.previsao ? fmtD(x.previsao) : ''], ['Observação', x.obs], ['Atendida em', x.atendidaEm ? fmtD(x.atendidaEm) + (x.atendidaPor ? ' · ' + x.atendidaPor : '') : ''], ['Cancelada', x.situacao === 'cancelada' ? (x.canceladaPor || '') + ' — ' + (x.canceladaMotivo || '') : '']]) +
         '<p class="gv-h">Itens</p><div class="gv-lotes">' + (x.linhas || []).map(l => '<div class="gv-lote"><span>' + esc(l.nome) + (!l.itemId || !alItem(l.itemId) ? ' ' + alPill('ainda não cadastrado', '') : '') + '</span><span class="num">' + alQ(l.qtd) + '</span></div>').join('') + '</div>' };
