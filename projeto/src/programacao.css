@@ -1,0 +1,34 @@
+/* EFCwork · programacao.css — Coletas › Programação (v0.4.4). Prefixo: pg- */
+.pill.info{background:var(--aS);color:var(--aTx)}
+.pg-aviso{padding:10px 12px;margin-bottom:12px}
+.pg-res{display:flex;flex-direction:column;gap:2px;padding:9px 12px;border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg0);font-size:14px;margin-top:8px}
+.pg-res small{color:var(--tx3);font-size:13px}
+.pg-ans{margin-bottom:4px}
+/* tabela (modelo 5) */
+.pg-sub{display:block;color:var(--tx3);font-size:12.5px;font-weight:400;margin-top:1px}
+.pg-quem{display:inline-flex;align-items:center;gap:7px}
+.pg-av{width:24px;height:24px;border-radius:50%;display:inline-grid;place-items:center;font-size:11px;font-weight:700;background:var(--aS);color:var(--aTx);flex:none}
+.pg-et{display:flex;align-items:center}
+.pg-et span{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;color:var(--tx3);min-width:62px;position:relative}
+.pg-et span i{width:12px;height:12px;border-radius:50%;border:2px solid var(--bd2,var(--bd));background:var(--bg1);position:relative;z-index:1}
+.pg-et span.on{color:var(--tx2)}.pg-et span.on i{background:var(--ok);border-color:var(--ok)}
+.pg-et span.ag i{border-color:var(--a)}.pg-et span.at i{border-color:var(--cr);background:rgba(179,58,50,.12)}
+.pg-et span.meio i{border-color:var(--ok);background:linear-gradient(90deg,var(--ok) 50%,var(--bg1) 50%)}
+.pg-et span+span::before{content:"";position:absolute;top:5px;right:50%;width:100%;height:2px;background:var(--bd)}
+.pg-et span.on+span.on::before,.pg-et span.on+span.meio::before{background:var(--ok)}
+/* cartões dos planos */
+.pg-planos{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px;margin-bottom:14px}
+.pg-pl{background:var(--bg1);border:1px solid var(--bd);border-radius:var(--r);padding:14px 16px;box-shadow:var(--sh);display:flex;flex-direction:column;gap:8px}
+.pg-pl header{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.pg-pl h3{margin:0;font-family:var(--fh);font-weight:600;font-size:17px}.pg-pl header small{color:var(--tx3);font-size:13px}
+.pg-plb{height:8px;border-radius:4px;background:var(--bg2,var(--bd));overflow:hidden}.pg-plb i{display:block;height:100%;background:var(--ok);border-radius:4px}
+.pg-pln{margin:0;font-size:14px;color:var(--tx2)}.pg-pln b{color:var(--tx)}
+.pg-ars{display:flex;flex-wrap:wrap;gap:5px}
+.pg-ar{display:inline-grid;place-items:center;min-width:44px;height:26px;padding:0 6px;border-radius:6px;font-size:12px;font-weight:700;border:1px solid var(--bd);color:var(--tx3);background:var(--bg1);font-variant-numeric:tabular-nums}
+.pg-ar.c{background:var(--ok);border-color:var(--ok);color:#fff}
+.pg-ar.p{border:2px solid var(--tx);color:var(--tx);box-shadow:0 0 0 2px var(--aS)}
+.pg-ar.x{border:2px solid var(--cr);color:var(--cr);box-shadow:0 0 0 2px rgba(179,58,50,.12)}
+.pg-leg{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:14px;margin:0;font-size:13px;color:var(--tx2)}
+.pg-leg span{display:inline-flex;align-items:center;gap:6px}.pg-leg .pg-ar{min-width:18px;height:14px;padding:0;border-radius:4px}
+@media(max-width:899px){.pg-planos{grid-template-columns:1fr}.pg-et span{min-width:50px;font-size:10.5px}}
+.pg-cdi{flex:1;min-width:0}

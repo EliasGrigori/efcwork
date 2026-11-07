@@ -1,0 +1,59 @@
+Suíte EFCwork v0.4.4 — 07/11/2026
+t_v010: 41 ok · 0 falha(s)
+t_v020: 48 ok · 0 falha(s)
+t_v030: 62 ok · 0 falha(s)
+t_v031: 49 ok · 0 falha(s)
+t_v032: 48 ok · 0 falha(s)
+t_v033: 39 ok · 0 falha(s)
+t_v034: 48 ok · 0 falha(s)
+t_v035: 35 ok · 0 falha(s)
+t_v036: 31 ok · 0 falha(s)
+t_v040: 45 ok · 0 falha(s)
+t_v041: 27 ok · 0 falha(s)
+t_v042: 36 ok · 0 falha(s)
+t_v044: 35 ok · 0 falha(s)
+Total: 544 ok · 0 falhas
+
+— Aba Programação
+  ok  tabela da Programação aparece, com "2 programadas a coletar" no cabeçalho (sem dia não conta)
+  ok  ordem pela data definida, mais nova em cima (situação não muda a ordem)
+  ok  programação sem dia definido não aparece na tabela
+  ok  marcador: Atrasada / Esta semana / Próximos dias / Programada
+  ok  tabela do modelo 5: Área · Tipo · Quem · Quando · Etapas, sem caixas de números
+  ok  etapas: coletada mostra Programada → Coletada preenchidas
+  ok  cartões dos planos: RU12 coletada (100%), RU13 programada e atrasada (contorno), plano encerrado
+  ok  rótulo curto da área: JD01; quando dois iguais (RU35), mostra mais dígitos
+  ok  coletadas, canceladas e coletas sem programação também aparecem
+  ok  botões Coletado e Coleta avulsa no cabeçalho
+— Detalhe e Coletado
+  ok  detalhe mostra tipo, talhão e as análises
+  ok  Coletado já vem com a área marcada: vai gravar Solo e Nematoide
+  ok  sem profundidade: pede a profundidade
+  ok  data no futuro: não deixa
+  ok  2 amostras gravadas (Solo e Nematoide), no mesmo lote
+  ok  profundidade, coletor, pontos, laboratório de cada análise e semana preenchidos
+  ok  programação fica como coletada (data e quem lançou); criadoPor = quem lança (regra do Firebase)
+  ok  histórico (auditoria) registrado
+  ok  cabeçalho passa para "1 programada a coletar" (1 programada a coletarNova programação e planos de coleta: no EFClaudian)
+— Travas dos planos
+  ok  plano encerrado: não aceita coleta da área (igual ao EFClaudian)
+— Coleta avulsa
+  ok  abre em Solo com a primeira análise marcada
+  ok  área do plano que já tem solo no período: barra e explica (recoleta no EFClaudian)
+  ok  duas análises marcadas = 2 amostras no mesmo lote
+  ok  fruta: identificação e rastreabilidade preenchidas pelo talhão (MAMÃO RU11 / 202611071811)
+  ok  fruta não pede profundidade nem estádio
+  ok  fruta gravada com a sigla no fim (etiqueta completa do IBRA)
+  ok  composto: sem talhão, análise marcada
+  ok  composto sem pilha / lote: avisa
+  ok  composto gravado (lote em maiúsculas, identificação e fertilizante padrão)
+  ok  as amostras novas aparecem em Amostras
+— Quem não lança
+  ok  visitante vê a tabela, sem Coletado nem Coleta avulsa
+— Celular
+  ok  celular: tabela sem rolar para o lado
+  ok  celular: Coletado abre em tela cheia, sem rolar para o lado
+  ok  nenhum erro de JavaScript no PC
+  ok  nenhum erro de JavaScript no celular
+
+t_v044: 35 ok · 0 falha(s)

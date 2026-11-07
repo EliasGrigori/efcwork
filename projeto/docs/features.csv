@@ -301,3 +301,9 @@ Tela de entrar: Avisos flutuando (tema Claro),Entrar,should,nao,sim,Tela de entr
 Administração › Tela de entrar (foto/palavra/faixa/avisos),Administração,should,nao,sim,Administração › Empresa,v0.4.2
 Tema segue o aparelho quando não escolhido,Casca,could,nao,sim,Todas,v0.4.2
 Tela de entrar: ilustração padrão (Flat) sem foto,Entrar,should,nao,sim,Tela de entrar,v0.4.3
+Programação: tabela com etapas (só com dia definido),Coletas,must,nao,sim,Coletas › Programação,v0.4.4
+Programação: marcador Atrasada/Esta semana/Próximos dias,Coletas,must,nao,sim,Coletas › Programação,v0.4.4
+Programação: cartões dos planos (coletada/programada/falta),Coletas,should,nao,sim,Coletas › Programação,v0.4.4
+Coletado (uma ou várias programações),Coletas,must,sim,sim,Coletas › Programação,v0.4.4
+Coleta avulsa (solo/nematoide/folha/fruta/composto),Coletas,must,sim,sim,Coletas › Programação,v0.4.4
+Travas dos planos de coleta (encerrado / já coletado no período),Coletas,must,nao,sim,Coletas › Programação,v0.4.4
