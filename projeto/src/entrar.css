@@ -84,3 +84,5 @@
 @media(prefers-reduced-motion:reduce){
   .en *,.en *::before,.en *::after{animation:none!important;transition:none!important}
 }
+/* v0.4.5: em telas baixas (800 px) o formulário do primeiro acesso cabe inteiro */
+@media(min-width:900px) and (max-height:880px){.en-caixa{padding:22px 26px 18px;gap:8px}.en-caixa h2{font-size:26px}.en-form{gap:9px;margin-top:2px}.en-mk{margin-bottom:2px}}

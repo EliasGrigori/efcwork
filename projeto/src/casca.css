@@ -88,3 +88,6 @@
 .cf-caixa h2{font-size:20px}
 .cf-caixa p{margin:0;color:var(--tx2)}
 .cf-bts{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:8px}
+
+/* v0.4.5: ícone ao lado do título (ex.: legenda da Programação) */
+.cs-ht{display:flex;align-items:center;gap:10px}.cs-ht .pg-lg{margin-bottom:8px}

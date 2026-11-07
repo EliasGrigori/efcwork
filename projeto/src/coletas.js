@@ -72,8 +72,7 @@ TELAS.coletas = function (aba) {
   if (t.id === 'cadastros') return cabecalho({ titulo: t.nome, abaNome: t.nome, meta: [metaPl('chega numa próxima versão', 'wa', 'relogio')], acoes: '<a class="bt pr" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener">' + ic('externo') + 'Usar no EFClaudian</a>' }) +
     '<section class="pn"><div class="vazio">' + ic('lista') + '<b>Talhões, análises, laboratórios e prazos continuam no EFClaudian por enquanto.</b><span>Os dados são os mesmos: o que for lançado lá aparece aqui na hora.</span></div></section>';
   if (t.id === 'programacao') { /* v0.4.4 (programacao.js) */
-    const np = pgPendentes().filter(p => p.data).length;
-    const h2 = cabecalho({ titulo: t.nome, abaNome: t.nome, meta: [np ? metaPl(pl(np, 'programada a coletar', 'programadas a coletar'), 'wa') : '', '<span>Nova programação e planos de coleta: no EFClaudian</span>'].filter(Boolean), acoes: pgAcoes() });
+    const h2 = cabecalho({ titulo: t.nome, abaNome: t.nome, aoLado: pgLegenda(), acoes: pgAcoes() });
     if (!S.colCarregado && !DEMO) return h2 + '<section class="pn"><div class="vazio">' + ic('relogio') + '<b>Carregando a programação…</b></div></section>';
     return h2 + pgTela();
   }

@@ -51,14 +51,14 @@ async function primeiro(p) {
 
   console.log('— Aba Programação');
   await p.evaluate(() => { location.hash = '#/coletas/programacao'; }); await p.waitForTimeout(400);
-  conf(await p.evaluate(() => !!document.querySelector('[data-tb="pg"]') && /2 programadas a coletar/.test(document.querySelector('.cs-meta').textContent)), 'tabela da Programação aparece, com "2 programadas a coletar" no cabeçalho (sem dia não conta)');
+  conf(await p.evaluate(() => !!document.querySelector('[data-tb="pg"]') && !/programadas a coletar/.test(document.querySelector('.cs-ph').textContent)), 'tabela da Programação aparece, com "2 programadas a coletar" no cabeçalho (sem dia não conta)');
   const linhas = await p.evaluate(() => Array.from(document.querySelectorAll('[data-tb="pg"] tbody tr')).map(tr => tr.textContent));
   const datas = await p.evaluate(() => Array.from(document.querySelectorAll('[data-tb="pg"] tbody tr')).map(tr => tr.getAttribute('data-id')));
   conf(await p.evaluate(ids => { const ds = ids.map(id => { const r = pgLinhas().find(x => x.id === id); return r.data; }); return ds.every((d, i) => !i || ds[i - 1] >= d); }, datas), 'ordem pela data definida, mais nova em cima (situação não muda a ordem)');
   conf(datas.indexOf('p|p5') < 0, 'programação sem dia definido não aparece na tabela');
   conf(await p.evaluate(() => { const r = pgQuando, h = hojeISO(); return r({ data: addDias(h, -3) }).k === 'atrasada' && r({ data: addDias(h, -3), prazo: addDias(h, 2) }).k !== 'atrasada' && r({ data: pgFimSemana() }).k === 'semana' && r({ data: addDias(pgFimSemana(), 1) }).k === 'proximos' && r({ data: addDias(h, 30) }).k === 'depois'; }), 'marcador: Atrasada / Esta semana / Próximos dias / Programada');
-  conf(await p.evaluate(() => !document.querySelector('.pg-kp') && Array.from(document.querySelectorAll('[data-tb="pg"] thead th')).map(t => t.textContent.trim()).join('|').indexOf('Área|Tipo|Quem|Quando|Etapas') === 0), 'tabela do modelo 5: Área · Tipo · Quem · Quando · Etapas, sem caixas de números');
-  conf(await p.evaluate(() => { const tr = document.querySelector('[data-tb="pg"] tr[data-id="p|p3"]'); return tr && tr.querySelectorAll('.pg-et span.on').length === 2; }), 'etapas: coletada mostra Programada → Coletada preenchidas');
+  conf(await p.evaluate(() => !document.querySelector('.pg-kp') && Array.from(document.querySelectorAll('[data-tb="pg"] thead th')).map(t => t.textContent.trim()).join('|').indexOf('Data|Sem|Talhão|Tipo|Origem|Pontos|Coletor|Prof|Estádio|Prazo|Situação') === 0), 'tabela igual à do EFClaudian (v0.4.5): Data · Sem · Talhão · Tipo · Origem · Pontos · Coletor · Prof · Estádio · Prazo · Situação');
+  conf(await p.evaluate(() => { const tr = document.querySelector('[data-tb="pg"] tr[data-id="p|p3"]'); return tr && !tr.querySelector('.pg-et') && /Coletada/.test(tr.textContent); }), 'sem bolinhas na linha (v0.4.5): a coletada mostra só a situação');
   conf(await p.evaluate(() => { const c = Array.from(document.querySelectorAll('.pg-pl')); const solo = c.find(x => /SOLO · anual/.test(x.textContent)), fol = c.find(x => /FOLHA · anual/.test(x.textContent)); return c.length === 2 && solo && solo.querySelector('.pg-ar.c') && solo.querySelector('.pg-ar.c').textContent === 'RU12' && /100%/.test(solo.textContent) && fol && fol.querySelector('.pg-ar.x') && /Encerrado/.test(fol.textContent); }), 'cartões dos planos: RU12 coletada (100%), RU13 programada e atrasada (contorno), plano encerrado');
   conf(await p.evaluate(() => { const r = pgRotulos(['RU3523520', 'RU3530920', 'JD0130923']); return r.RU3523520 === 'RU3523' && r.RU3530920 === 'RU3530' && r.JD0130923 === 'JD01'; }), 'rótulo curto da área: JD01; quando dois iguais (RU35), mostra mais dígitos');
   conf(linhas.some(x => /RU12TAI24/.test(x) && /Coletada/.test(x)) && linhas.some(x => /Cancelada/.test(x)) && linhas.length >= 5, 'coletadas, canceladas e coletas sem programação também aparecem');
@@ -67,9 +67,9 @@ async function primeiro(p) {
 
   console.log('— Detalhe e Coletado');
   await p.click('[data-tb="pg"] tbody tr[data-id="p|p1"]'); await p.waitForTimeout(300);
-  conf(/SOLO\+RAIZ · RU11TAI24/.test(await gv(p)) && /Solo completo · Nematoide/.test(await gv(p)), 'detalhe mostra tipo, talhão e as análises');
+  conf(/SOLO\+RAIZ · RU11TAI24/.test(await gv(p)) && /Solo completo, Nematoide/.test(await gv(p)), 'detalhe mostra tipo, talhão e as análises');
   await p.click('#gv [data-act="pg-cd"]'); await p.waitForTimeout(300);
-  conf(/Vai gravar 2 amostra\(s\): Solo 1 · Nematoide 1/.test(await gv(p)), 'Coletado já vem com a área marcada: vai gravar Solo e Nematoide');
+  conf(/Vai gravar 2 amostra\(s\): Solo 1, Nematoide 1/.test(await gv(p)), 'Coletado já vem com a área marcada: vai gravar Solo e Nematoide');
   await p.click('#gv [data-act="pg-cd-ok"]'); await p.waitForTimeout(250);
   conf(/profundidade/i.test(await msg(p)), 'sem profundidade: pede a profundidade');
   await dd(p, 'lc:pgprof', '0-20');
@@ -83,7 +83,7 @@ async function primeiro(p) {
   conf(r1.prof === '0-20,0-20' && r1.col === 'Equipe A' && r1.pts === '18,18' && r1.lab === 'BIOAGRI,IBRA' && r1.sem > 0, 'profundidade, coletor, pontos, laboratório de cada análise e semana preenchidos');
   conf(!!r1.coletada && r1.por === 'Joana Silva' && r1.crp, 'programação fica como coletada (data e quem lançou); criadoPor = quem lança (regra do Firebase)');
   conf(await p.evaluate(async () => (await Data.col('sv2_audit').all()).some(a => a.acao === 'coletado_programacao' && a.entidadeId === 'p1')), 'histórico (auditoria) registrado');
-  const mt = await p.evaluate(() => document.querySelector('.cs-meta').textContent); conf(/1 programada a coletar/.test(mt), 'cabeçalho passa para "1 programada a coletar" (' + mt + ')');
+  conf(await p.evaluate(() => !/programada a coletar/.test(document.querySelector('.cs-ph').textContent)), 'cabeçalho sem contagem (v0.4.5: tirado a pedido)');
 
   console.log('— Travas dos planos');
   await p.click('[data-act="pg-cd"]'); await p.waitForTimeout(300);
@@ -98,7 +98,7 @@ async function primeiro(p) {
   await dd(p, 'lc:pgtal', 'RU12TAI24'); await dd(p, 'lc:pgprof', '0-20');
   await p.click('#gv [data-act="pg-av-ok"]'); await p.waitForTimeout(250);
   conf(/já tem solo no Ano/.test(await msg(p)), 'área do plano que já tem solo no período: barra e explica (recoleta no EFClaudian)');
-  await dd(p, 'lc:pgtal', 'RU11TAI24'); await p.click('#gv [data-act="pg-an"][data-id="a6"]'); await p.waitForTimeout(100);
+  await dd(p, 'lc:pgtal', 'RU11TAI24'); await p.click('#gv [data-act="pg-ans-abre"]'); await p.click('#gv [data-act="pg-an"][data-id="a6"]'); await p.waitForTimeout(100);
   await p.click('#gv [data-act="pg-av-ok"]'); await p.waitForTimeout(400);
   const r2 = await p.evaluate(() => { const cs = S.coletas.filter(c => !c.progId && c.talhao === 'RU11TAI24' && c.tipo === 'SOLO'); return { n: cs.length, lote: cs.length === 2 && cs[0].loteId === cs[1].loteId && !!cs[0].loteId, sig: cs.map(c => c.sigla).sort().join(), prof: cs.map(c => c.prof).join() }; });
   conf(r2.n === 2 && r2.lote && r2.sig === 'MIC,SC' && r2.prof === '0-20,0-20', 'duas análises marcadas = 2 amostras no mesmo lote');

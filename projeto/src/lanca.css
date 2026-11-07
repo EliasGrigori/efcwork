@@ -52,6 +52,11 @@ textarea.fm-i{height:auto;min-height:64px;padding:9px 12px;resize:vertical}
 .fm-lt .fm-i{width:96px;flex:none}
 .gv-pe .bt.pr{margin-left:auto}
 .gv-pe .bt.pr~.bt.pr{margin-left:0}
-@media(max-width:899px){.fm-g{grid-template-columns:1fr}}
+@media(max-width:899px){.fm-g{gap:10px}}
 .fm-fav{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
 .fm-fav .fm-c{flex:1 1 220px}
+
+/* v0.4.5: listas suspensas dos formulários menores */
+.fm-c .dd-b{height:34px;padding:0 10px;font-size:14px}
+.fm-c .dd-l{padding:3px;max-width:calc(100vw - 40px)}
+.fm-c .dd-l li{min-height:32px;padding:5px 9px;font-size:14px}

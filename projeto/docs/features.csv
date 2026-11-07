@@ -307,3 +307,7 @@ Programação: cartões dos planos (coletada/programada/falta),Coletas,should,na
 Coletado (uma ou várias programações),Coletas,must,sim,sim,Coletas › Programação,v0.4.4
 Coleta avulsa (solo/nematoide/folha/fruta/composto),Coletas,must,sim,sim,Coletas › Programação,v0.4.4
 Travas dos planos de coleta (encerrado / já coletado no período),Coletas,must,nao,sim,Coletas › Programação,v0.4.4
+Tabela da Programação na ordem da planilha (Sem·Data·Área·Pontos·Coletor·Tipo·Profund.·Estádio·Situação),Coletas,must,sim,sim,Coletas › Programação,v0.4.5
+Etapas da programação na gaveta (linha do tempo com fluido),Coletas,should,nao,sim,Coletas › Programação,v0.4.5
+SOLO+RAIZ coletada em linhas separadas (Solo / Nematoide),Coletas,must,nao,sim,Coletas › Programação,v0.4.5
+Legenda das cores dos planos no ícone "!",Coletas,could,nao,sim,Coletas › Programação,v0.4.5
