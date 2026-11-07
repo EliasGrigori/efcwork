@@ -17,7 +17,7 @@ const conf = (c, msg) => { if (c) { ok++; console.log('  ok  ' + msg); } else { 
   conf(/Cwork Quality/.test(html) && /const VERSAO = '0\.\d+\.\d+'/.test(html), 'apelido Cwork Quality e versão no arquivo');
   /* primeiro acesso */
   conf(await p.isVisible('[data-form="en-primeiro"]'), 'sem Principal: aparece o primeiro acesso');
-  conf(await p.isVisible('.en-cena'), 'tela de entrar tem a ilustração agrícola');
+  conf(await p.isVisible('.en-caixa') && await p.isVisible('.en-arte'), 'tela de entrar tem a arte e o formulário (v0.4.2: garota-propaganda vem da Administração)');
   await p.fill('#en-nome', 'Joana'); await p.click('[data-form="en-primeiro"] button[type=submit]');
   conf(/nome completo/i.test(await p.textContent('#en-msg')), 'nome sem sobrenome é recusado');
   await p.fill('#en-nome', 'Joana Silva'); await p.fill('#en-login', 'joana.silva'); await p.fill('#en-senha', 'senha1234'); await p.fill('#en-senha2', 'senha12345');

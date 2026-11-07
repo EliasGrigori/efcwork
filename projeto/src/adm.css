@@ -9,4 +9,8 @@
 .adm-lgb{display:flex;gap:8px;margin-top:8px}
 .adm-dl{display:grid;grid-template-columns:120px minmax(0,1fr);gap:8px 14px;margin:0;padding:14px 16px}
 .adm-dl dt{color:var(--tx3)}.adm-dl dd{margin:0;font-weight:500}
-@media(max-width:899px){.adm-gr{grid-template-columns:1fr}}
+.adm-en{margin-top:16px;max-width:760px}
+.adm-ftv{width:64px;height:84px}.adm-ftv img{object-fit:contain}
+.adm-avs{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+.adm-en .cp>span{font-weight:600}
+@media(max-width:899px){.adm-gr{grid-template-columns:1fr}.adm-avs{grid-template-columns:1fr}}

@@ -296,3 +296,7 @@ Total da tabela em cima; vazio em branco,Visual,should,nao,sim,v0.4.1,
 Lançamento em remessa: todas ou escolher quais (várias O.S),Coletas,must,nao,sim,v0.4.1,
 Confirmação rápida de pedido no aviso,Avisos,should,nao,sim,v0.4.1,
 Notinha estilo cupom (solicitação do almoxarifado),Almoxarifado,should,nao,sim,v0.4.1,
+Tela de entrar: Revista (tema Escuro),Entrar,should,nao,sim,Tela de entrar,v0.4.2
+Tela de entrar: Avisos flutuando (tema Claro),Entrar,should,nao,sim,Tela de entrar,v0.4.2
+Administração › Tela de entrar (foto/palavra/faixa/avisos),Administração,should,nao,sim,Administração › Empresa,v0.4.2
+Tema segue o aparelho quando não escolhido,Casca,could,nao,sim,Todas,v0.4.2

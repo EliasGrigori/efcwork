@@ -19,13 +19,15 @@ const AREAS = [
 const csArea = id => AREAS.find(a => a.id === id) || AREAS[0];
 
 /* ---------- tema ---------- */
-function csTema() { return Store.get('cw-tema') === 'escuro' ? 'escuro' : 'claro'; }
+/* v0.4.2: sem escolha feita no app, segue o tema do aparelho */
+function csTema() { const t = Store.get('cw-tema'); if (t === 'escuro' || t === 'claro') return t; try { return matchMedia('(prefers-color-scheme: dark)').matches ? 'escuro' : 'claro'; } catch { return 'claro'; } }
 function csAplicaTema(t) {
   document.documentElement.setAttribute('data-tema', t);
   const m = document.querySelector('meta[name="theme-color"]'); if (m) m.setAttribute('content', t === 'escuro' ? '#121524' : '#fffefb');
 }
 function csTrocaTema(t) { Store.set('cw-tema', t); csAplicaTema(t); render(); }
 csAplicaTema(csTema());
+try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if (!Store.get('cw-tema')) { csAplicaTema(csTema()); render(); } }); } catch {}
 
 /* ---------- rotas ---------- */
 function csLeRota() {
@@ -174,7 +176,7 @@ async function csCarregaUsuario(uidAtual) {
       : !u ? 'A senha está certa, mas este acesso não tem perfil no app. Confira se digitou o seu login ou o e-mail completo (com @), igual ao do EFClaudian.' : 'Este acesso está bloqueado. Fale com o administrador.'; render(); return;
   }
   S.user = Object.assign({ id: uidAtual }, u); S.pronto = true; S._erroEntrar = '';
-  csOuve('sv2_cfg', l => { const e = l.find(x => x.id === 'empresa'); S.empresa = e || null; S.cfgAlm = l.find(x => x.id === 'almox') || null; S.cfgCol = l.find(x => x.id === 'coletas') || null; render(); });
+  csOuve('sv2_cfg', l => { const e = l.find(x => x.id === 'empresa'); S.empresa = e || null; S.cfgAlm = l.find(x => x.id === 'almox') || null; S.cfgCol = l.find(x => x.id === 'coletas') || null; S.cfgEntrar = l.find(x => x.id === 'entrar') || null; enGuardaCache(); render(); });
   csOuve('sv2_tarefas', l => { S.tarefas = l; if (S.rota.area === 'inicio') render(); });
   CS_CARGAS.forEach(f => { try { f(); } catch (e) { console.error(e); } });
   csUso(); render();

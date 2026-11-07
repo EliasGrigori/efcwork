@@ -1,0 +1,59 @@
+Suíte EFCwork v0.4.2 — 07/11/2026
+t_v010: 41 ok · 0 falha(s)
+t_v020: 48 ok · 0 falha(s)
+t_v030: 62 ok · 0 falha(s)
+t_v031: 49 ok · 0 falha(s)
+t_v032: 48 ok · 0 falha(s)
+t_v033: 39 ok · 0 falha(s)
+t_v034: 48 ok · 0 falha(s)
+t_v035: 35 ok · 0 falha(s)
+t_v036: 31 ok · 0 falha(s)
+t_v040: 45 ok · 0 falha(s)
+t_v041: 27 ok · 0 falha(s)
+t_v042: 34 ok · 0 falha(s)
+Total: 507 ok · 0 falhas
+
+— Antes de configurar
+  ok  aparelho no tema claro, sem configuração: Avisos, só fundo e formulário (sem foto)
+  ok  primeiro acesso aparece dentro do mesmo cartão
+— Administração › Empresa › Tela de entrar
+  ok  parte "Tela de entrar" aparece, com QUALIDADE como padrão
+  ok  faixa padrão = áreas do app; avisos de exemplo preenchidos
+  ok  foto sem fundo: reconhecida como recortada e guardada em sv2_cfg/entrar (image/webp)
+  ok  bordas transparentes cortadas e tamanho reduzido
+  ok  foto cabe com folga no documento (11 KB)
+  ok  a Administração avisa: "Recortada (sem fundo): efeito completo"
+  ok  cópia guardada no aparelho para a tela de entrar
+— Tema Claro: Avisos flutuando (PC)
+  ok  depois de sair: foto no arco e 3 avisos
+  ok  rodapé mostra o nome da empresa (da cópia do aparelho)
+  ok  PC claro: nada rola para o lado
+— Tema Escuro: Revista (PC)
+  ok  Revista: QUALIDADE atrás e na frente da foto e faixa dourada
+  ok  o formulário não fica em cima da faixa
+  ok  PC escuro: nada rola para o lado
+— Trocar textos e foto com fundo
+  ok  salva palavra em maiúsculas, faixa e avisos (aviso sem título sai)
+  ok  palavra curta demais: avisa e não salva
+  ok  foto com fundo: reconhecida e guardada como JPG
+  ok  a Administração avisa que vai numa moldura
+  ok  escuro com foto com fundo: moldura, CAMPO só atrás, faixa nova
+  ok  claro: avisos com o texto novo
+— Quem não é Administrador
+  ok  colaborador só vê (campos travados, sem Escolher/Salvar)
+  ok  lixeira tira a foto
+— Celular
+  ok  aparelho novo, sem cópia: só fundo e formulário
+  ok  celular claro: arte em cima (380 px) e botão Entrar visível sem rolar (783 px)
+  ok  celular claro: nada rola para o lado
+  ok  celular escuro: arte em cima (380 px) e botão Entrar visível sem rolar (793 px)
+  ok  celular escuro: nada rola para o lado
+  ok  celular escuro: palavra em duas linhas, dentro da tela
+— Tema do aparelho e reduzir movimento
+  ok  sem escolha no app, segue o tema escuro do aparelho
+  ok  reduzir movimento: tudo parado e visível
+  ok  escolha feita no app vale mais que o tema do aparelho
+  ok  nenhum erro de JavaScript no PC
+  ok  nenhum erro de JavaScript no celular
+
+t_v042: 34 ok · 0 falha(s)

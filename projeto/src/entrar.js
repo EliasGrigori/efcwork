@@ -1,4 +1,4 @@
-/* EFCwork · entrar.js — tela de entrar (dividida, com ilustração agrícola) e primeiro acesso. Prefixo: en.
+/* EFCwork · entrar.js — tela de entrar (garota-propaganda: Revista no Escuro, Avisos no Claro) e primeiro acesso. Prefixo: en.
    Usa o mesmo login do EFClaudian (usuário ou e-mail; senha). O primeiro acesso só aparece num projeto/demonstração sem nenhum Principal. */
 const EN_ERROS = {
   'auth/invalid-credential': 'Login ou senha incorretos.', 'auth/wrong-password': 'Login ou senha incorretos.', 'auth/user-not-found': 'Login ou senha incorretos.',
@@ -8,25 +8,44 @@ const EN_ERROS = {
 };
 const enErro = e => EN_ERROS[e && e.code] || 'Não foi possível entrar agora. Tente de novo.';
 
-/* ilustração: mamoeiros, sol e fileiras de plantio (desenhada por código, sem imagem externa) */
-function enCena() {
-  const p = csTema() === 'escuro' ? ['#0b0d16', '#1b2036', '#26304a', '#b08d3e', '#e9c97a', '#2f3b5a'] : ['#1f3a2a', '#2c5a3c', '#4f8a55', '#a9c97f', '#f2d58b', '#3a6d47'];
-  let s = '<svg class="en-cena" viewBox="0 0 700 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="enCeu" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + p[0] + '"/><stop offset="1" stop-color="' + p[1] + '"/></linearGradient></defs><rect width="700" height="800" fill="url(#enCeu)"/>';
-  s += '<circle cx="520" cy="240" r="74" fill="' + p[4] + '" opacity=".92"/><circle cx="520" cy="240" r="110" fill="' + p[4] + '" opacity=".08"/>';
-  s += '<path d="M0 470 C160 420 300 440 420 410 S640 380 700 400 V800 H0Z" fill="' + p[5] + '"/>';
-  s += '<path d="M0 540 C180 500 330 520 470 490 S650 470 700 480 V800 H0Z" fill="' + p[2] + '"/>';
-  for (let k = 0; k < 14; k++) { const y = 560 + k * 20, sk = k * 6; s += '<path d="M' + (-40 + sk) + ' ' + (y + 18) + ' Q350 ' + (y - 6) + ' ' + (740 - sk) + ' ' + (y + 18) + '" stroke="' + p[3] + '" stroke-width="' + (2 + k * 0.35).toFixed(2) + '" fill="none" opacity="' + (0.35 + k * 0.04).toFixed(2) + '"/>'; }
-  for (let j = 0; j < 6; j++) {
-    const x = 80 + j * 108 + (j % 2) * 10, h = 92 + (j % 3) * 18, top = 508 - h;
-    s += '<path d="M' + x + ' 512 C' + (x - 2) + ' ' + (top + 40) + ' ' + (x + 3) + ' ' + (top + 20) + ' ' + x + ' ' + top + '" stroke="' + p[5] + '" stroke-width="7" fill="none" stroke-linecap="round"/>';
-    for (let a = -80; a <= 80; a += 32) s += '<path d="M' + x + ' ' + top + ' q 18 -6 40 4 q -20 6 -40 -4z" fill="' + p[3] + '" transform="rotate(' + a + ' ' + x + ' ' + top + ')"/>';
-    for (let b = -56; b <= 56; b += 37) s += '<path d="M' + x + ' ' + top + ' q 14 -5 30 3 q -15 5 -30 -3z" fill="' + p[2] + '" transform="rotate(' + (b - 90) + ' ' + x + ' ' + top + ')"/>';
-    s += '<ellipse cx="' + (x - 6) + '" cy="' + (top + 16) + '" rx="5.5" ry="9" fill="' + p[4] + '"/><ellipse cx="' + (x + 6) + '" cy="' + (top + 18) + '" rx="5.5" ry="9" fill="' + p[4] + '" opacity=".85"/><ellipse cx="' + x + '" cy="' + (top + 28) + '" rx="5" ry="8" fill="' + p[4] + '" opacity=".75"/>';
+/* v0.4.2 — tela de entrar com a garota-propaganda (aprovada em 07/11/2026, jeito A):
+   tema Escuro = "Revista" (palavra gigante atrás e na frente da foto + faixa dourada com as áreas);
+   tema Claro = "Avisos flutuando" (foto num arco dourado + cartões do dia a dia).
+   Tudo vem da Administração (sv2_cfg/entrar). Antes do login o Firebase não deixa ler a configuração,
+   então o app guarda uma cópia no aparelho (cw-entrar) sempre que alguém entra; sem cópia, fica só o fundo e o formulário. */
+const EN_PADRAO = { palavra: 'QUALIDADE', avisos: [['Laudo recebido', 'RU12 · O.S AQ-100'], ['Coleta enviada', '3 amostras · IBRA'], ['Calibração em dia', 'pHmetro PHM-02']] };
+const enFaixaPadrao = () => AREAS.filter(a => a.id !== 'inicio' && a.id !== 'adm').map(a => a.nome);
+function enCfg() {
+  let c = S.cfgEntrar || null;
+  if (!c) { try { c = JSON.parse(Store.get('cw-entrar') || 'null'); } catch { c = null; } }
+  c = c || {};
+  const av = Array.isArray(c.avisos) ? c.avisos.filter(x => x && x[0]) : [];
+  return { foto: imgSrc(c.foto), recorte: c.recorte !== false, palavra: String(c.palavra || EN_PADRAO.palavra).toUpperCase().replace(/\s+/g, '').slice(0, 12) || EN_PADRAO.palavra,
+    faixa: (Array.isArray(c.faixa) && c.faixa.filter(Boolean).length ? c.faixa.filter(Boolean) : enFaixaPadrao()).slice(0, 12),
+    avisos: (av.length ? av : EN_PADRAO.avisos).slice(0, 3), nome: c.nome || (S.empresa && S.empresa.nome) || '' };
+}
+/* chamada pela casca sempre que sv2_cfg muda (depois do login) */
+function enGuardaCache() {
+  const c = Object.assign({}, S.cfgEntrar || {}); delete c.id; delete c.srv; c.nome = (S.empresa && S.empresa.nome) || '';
+  try { Store.set('cw-entrar', JSON.stringify(c)); } catch {}
+}
+const EN_OK = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>', EN_IDA = '<svg viewBox="0 0 24 24"><path d="M4 12h12M12 6l6 6-6 6"/></svg>';
+function enArte(c, escuro) {
+  const ft = c.foto ? '<div class="en-ft' + (c.recorte ? '' : ' moldura') + '" data-px="14"><img src="' + c.foto + '" alt="">' + (c.recorte ? '<i class="en-br"></i>' : '') + '</div>' : '';
+  if (escuro) {
+    const n = c.palavra.length, meio = Math.ceil(n / 2);
+    const pal = cls => '<div class="en-pal' + cls + '" data-px="5" aria-hidden="true">' + c.palavra.split('').map((l, i) => (i === meio && n > 6 ? '<br>' : '') + '<span style="--i:' + i + '">' + esc(l) + '</span>').join('') + '</div>';
+    const fx = c.faixa.map(x => '<span>' + esc(x) + '</span>').join('');
+    return '<div class="en-fundo"></div>' + pal('') + ft + (c.foto && c.recorte ? pal(' frente') : '') +
+      '<div class="en-faixa" aria-hidden="true"><div>' + fx + fx + '</div></div><i class="en-luz"></i>';
   }
-  return s + '</svg>';
+  const pos = ['a', 'b', 'c'];
+  return '<div class="en-fundo"></div><div class="en-arco" data-px="5"></div>' + ft +
+    c.avisos.map((x, i) => '<div class="en-chip ' + pos[i] + '" data-px="' + [18, 22, 16][i] + '" aria-hidden="true"><i class="' + (i === 1 ? 'ida' : 'ok') + '">' + (i === 1 ? EN_IDA : EN_OK) + '</i><span><b>' + esc(x[0]) + '</b><small>' + esc(x[1] || '') + '</small></span></div>').join('');
 }
 function enTela() {
-  const e = S.empresa || {}, primeiro = S._setup === false;
+  const primeiro = S._setup === false, c = enCfg(), escuro = csTema() === 'escuro';
+  const n = c.palavra.length;
   const form = primeiro ?
     '<h2>Primeiro acesso</h2><p>Crie a conta do Administrador. Depois ele cadastra as outras pessoas.</p>' +
     '<form class="en-form" data-form="en-primeiro" novalidate>' +
@@ -43,12 +62,18 @@ function enTela() {
     '<label class="cp">Senha<span class="en-sen"><input id="en-senha" type="password" autocomplete="current-password" required><button type="button" class="bt ic-so" data-act="en-ver" aria-label="Mostrar a senha">' + ic('olho') + '</button></span></label>' +
     '<div class="en-lin"><label class="en-ck"><input type="checkbox" id="en-lembrar"' + (Store.get('cw-ultimo-login') ? ' checked' : '') + '> Lembrar usuário</label><a href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener">Esqueci a senha</a></div>' +
     '<p class="en-msg" id="en-msg" role="alert">' + esc(S._erroEntrar || '') + '</p><button class="bt pr en-bt" type="submit">Entrar</button></form>';
-  return '<div class="en">' +
-    '<section class="en-arte">' + enCena() + '<div class="en-mk"><span class="cs-logo">' + ic('broto') + '</span>' + APP_NOME + ' · família ' + APP_FAMILIA + '</div>' +
-    '<div class="en-frase"><b>Qualidade do campo ao laboratório, num lugar só.</b><p>Coletas, documentos, inspeções e almoxarifado da sua empresa, com o que vence hoje na primeira tela.</p></div></section>' +
-    '<section class="en-lado"><div class="en-caixa">' + form +
-    '<div class="en-rod"><span>' + APP_APELIDO + ' · v' + VERSAO + (DEMO ? ' · demonstração' : '') + '</span><span>' + esc(e.nome || '') + '</span></div></div></section></div>';
+  return '<div class="en ' + (escuro ? 'en-rev' : 'en-avi') + (c.foto ? '' : ' sem-foto') + '" style="--n:' + n + ';--h:' + (n > 6 ? Math.ceil(n / 2) : n) + (c.foto && c.recorte ? ';--foto:url(' + c.foto + ')' : '') + '">' +
+    '<section class="en-arte">' + enArte(c, escuro) + '</section>' +
+    '<section class="en-lado"><div class="en-caixa">' +
+    '<div class="en-mk"><span class="cs-logo">' + ic('broto') + '</span><span><b>' + APP_NOME + '</b><small>família ' + APP_FAMILIA + '</small></span></div>' + form +
+    '<div class="en-rod"><span>' + APP_APELIDO + ' · v' + VERSAO + (DEMO ? ' · demonstração' : '') + '</span><span>' + esc(c.nome) + '</span></div></div></section></div>';
 }
+/* a foto e as camadas acompanham o mouse (no PC); parado com "reduzir movimento" */
+document.addEventListener('mousemove', e => {
+  const en = document.querySelector('.en'); if (!en || matchMedia('(prefers-reduced-motion: reduce)').matches || innerWidth < 900) return;
+  const x = e.clientX / innerWidth - .5, y = e.clientY / innerHeight - .5;
+  en.querySelectorAll('[data-px]').forEach(c => { const k = Number(c.dataset.px); c.style.translate = (-x * k * 2).toFixed(1) + 'px ' + (-y * k).toFixed(1) + 'px'; });
+});
 function enDepois() { const i = $('#en-login'); if (i && !i.value) { try { i.focus(); } catch {} } else { const s = $('#en-senha'); if (s) try { s.focus(); } catch {} } }
 function enMsg(t) { const m = $('#en-msg'); if (m) m.textContent = t || ''; }
 
