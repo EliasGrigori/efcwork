@@ -37,8 +37,7 @@
 .en-pal br{display:none}
 .en-pal span{display:inline-block;color:transparent;-webkit-text-stroke:2px rgba(217,180,106,.75);animation:en-sobe .8s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i) * 70ms + 200ms)}
 .en-pal.frente{z-index:5;-webkit-mask:linear-gradient(180deg,transparent 0,transparent 63%,#000 63%);mask:linear-gradient(180deg,transparent 0,transparent 63%,#000 63%)}
-.en-pal.frente span,.sem-foto .en-pal span{-webkit-text-stroke:0;background:linear-gradient(180deg,#f7df9e,#b4862f);-webkit-background-clip:text;background-clip:text}
-.sem-foto .en-pal span{opacity:.9}
+.en-pal.frente span{-webkit-text-stroke:0;background:linear-gradient(180deg,#f7df9e,#b4862f);-webkit-background-clip:text;background-clip:text}
 @keyframes en-sobe{from{opacity:0;transform:translateY(60px)}to{opacity:1;transform:none}}
 .en-faixa{position:absolute;left:0;right:0;bottom:0;height:54px;background:var(--ouro);z-index:6;overflow:hidden;display:flex;align-items:center}
 .en-faixa div{display:flex;gap:44px;white-space:nowrap;font-weight:700;font-size:18px;color:var(--onOuro);animation:en-corre 26s linear infinite;padding-left:44px}

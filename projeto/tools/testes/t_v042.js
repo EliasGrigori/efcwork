@@ -1,4 +1,4 @@
-/* EFCwork · suíte da v0.4.2 — tela de entrar com a garota-propaganda: Revista (Escuro) e Avisos (Claro), PC e celular,
+/* EFCwork · suíte da v0.4.2/v0.4.3 — tela de entrar com a garota-propaganda: Revista (Escuro) e Avisos (Claro), PC e celular,
    foto recortada x com fundo (moldura), configuração na Administração, cópia no aparelho, tema do aparelho, reduzir movimento.
    As fotos do teste são desenhadas na hora (sem foto de pessoa). Modo demonstração. Uso: node tools/testes/t_v042.js */
 const { chromium } = require('playwright');
@@ -31,8 +31,8 @@ const semRolagem = p => p.evaluate(() => document.documentElement.scrollWidth <=
   await p.goto(URL); await p.waitForTimeout(400);
 
   console.log('— Antes de configurar');
-  conf(await p.evaluate(() => { const e = document.querySelector('.en'); return e && e.classList.contains('en-avi') && e.classList.contains('sem-foto'); }), 'aparelho no tema claro, sem configuração: Avisos, só fundo e formulário (sem foto)');
-  conf(await p.evaluate(() => !document.querySelector('.en-ft') && !!document.querySelector('[data-form="en-primeiro"]')), 'primeiro acesso aparece dentro do mesmo cartão');
+  conf(await p.evaluate(() => { const e = document.querySelector('.en'); return e && e.classList.contains('en-avi') && e.classList.contains('padrao') && /^data:image\/svg\+xml/.test(document.querySelector('.en-ft img').src); }), 'aparelho no tema claro, sem configuração: Avisos com a ilustração padrão (v0.4.3)');
+  conf(await p.evaluate(() => !!document.querySelector('[data-form="en-primeiro"]')), 'primeiro acesso aparece dentro do mesmo cartão');
   await p.fill('#en-nome', 'Joana Silva'); await p.fill('#en-login', 'joana.silva'); await p.fill('#en-senha', 'senha1234'); await p.fill('#en-senha2', 'senha1234');
   await p.click('[data-form="en-primeiro"] button[type=submit]'); await p.waitForTimeout(700);
   await p.evaluate(async () => { await Data.col('sv2_cfg').set('empresa', { nome: 'Empresa Teste', unidades: [] }); const a = await Data.auth.createAccount('ana.lima', 'senha1234'); await Data.col('sv2_users').set(a, { nome: 'Ana Lima', login: 'ana.lima', perfil: 'secundario', superiores: [S.user.id] }); });
@@ -53,7 +53,7 @@ const semRolagem = p => p.evaluate(() => document.documentElement.scrollWidth <=
 
   console.log('— Tema Claro: Avisos flutuando (PC)');
   await sai(p);
-  conf(await p.evaluate(() => { const e = document.querySelector('.en'); return e.classList.contains('en-avi') && !e.classList.contains('sem-foto') && !!document.querySelector('.en-ft img') && document.querySelectorAll('.en-chip').length === 3; }), 'depois de sair: foto no arco e 3 avisos');
+  conf(await p.evaluate(() => { const e = document.querySelector('.en'); return e.classList.contains('en-avi') && !e.classList.contains('padrao') && /^data:image\/(webp|png)/.test(document.querySelector('.en-ft img').src) && document.querySelectorAll('.en-chip').length === 3; }), 'depois de sair: foto no arco e 3 avisos');
   conf(await p.evaluate(() => /Empresa Teste/.test(document.querySelector('.en-rod').textContent)), 'rodapé mostra o nome da empresa (da cópia do aparelho)');
   await p.waitForTimeout(1600); await p.screenshot({ path: path.join(SHOTS, 'v042-claro-pc.png') });
   conf(await semRolagem(p), 'PC claro: nada rola para o lado');
@@ -86,12 +86,17 @@ const semRolagem = p => p.evaluate(() => document.documentElement.scrollWidth <=
   await sai(p); await entra(p, 'joana.silva'); await p.evaluate(() => { location.hash = '#/adm/empresa'; }); await p.waitForTimeout(300);
   await p.click('[data-act="adm-tira-ftent"]'); await p.waitForTimeout(400);
   conf(await p.evaluate(() => !S.cfgEntrar.foto), 'lixeira tira a foto');
+  await sai(p); await tema(p, 'escuro');
+  conf(await p.evaluate(() => document.querySelector('.en').classList.contains('padrao') && !!document.querySelector('.en-pal.frente') && /^data:image\/svg/.test(document.querySelector('.en-ft img').src)), 'sem foto: Revista com a ilustração padrão, palavra atrás e na frente (v0.4.3)');
+  await p.screenshot({ path: path.join(SHOTS, 'v043-padrao-escuro.png') }); await tema(p, 'claro'); await p.waitForTimeout(1500); await p.screenshot({ path: path.join(SHOTS, 'v043-padrao-claro.png') });
+  await entra(p, 'joana.silva'); await p.evaluate(() => { location.hash = '#/adm/empresa'; }); await p.waitForTimeout(300);
+  conf(await p.evaluate(() => /ilustração padrão/.test(document.querySelector('.adm-en').textContent)), 'Administração avisa: sem foto aparece a ilustração padrão');
   await enviaFoto(p, true); await sai(p);
 
   console.log('— Celular');
   const cel = await b.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true }); const q = await cel.newPage(); const e2 = []; q.on('pageerror', e => e2.push(String(e)));
   await q.goto(URL); await q.waitForTimeout(400);
-  conf(await q.evaluate(() => document.querySelector('.en').classList.contains('sem-foto')), 'aparelho novo, sem cópia: só fundo e formulário');
+  conf(await q.evaluate(() => document.querySelector('.en').classList.contains('padrao') && !!document.querySelector('.en-ft img')), 'aparelho novo, sem cópia: ilustração padrão (v0.4.3)');
   /* a cópia do aparelho do PC (foto recortada) passa para o celular; tela de "Entrar" (não a de primeiro acesso) */
   const cache = await p.evaluate(() => { const c = JSON.parse(Store.get('cw-entrar')); c.palavra = 'QUALIDADE'; return JSON.stringify(c); });
   await q.evaluate(c => { Store.set('cw-entrar', c); S._setup = true; render(); }, cache); await q.waitForTimeout(300);

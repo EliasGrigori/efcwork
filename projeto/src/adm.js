@@ -21,13 +21,13 @@ function admEntrar() {
   return '<section class="pn adm-en"><div class="hd"><h3>Tela de entrar</h3><span class="sp"></span>' + (pode ? '' : '<span class="pill">só o Administrador altera</span>') + '</div>' +
     '<form class="cpo" data-form="adm-entrar">' +
     '<div class="adm-logo"><span class="adm-lg adm-ftv">' + (foto ? '<img src="' + foto + '" alt="Foto atual">' : ic('imagem')) + '</span><div><b>Foto da garota-propaganda</b>' +
-    '<small>' + (foto ? (S.cfgEntrar.recorte !== false ? 'Recortada (sem fundo): efeito completo.' : 'Com fundo: aparece numa moldura arredondada. Para o efeito completo, use um PNG sem fundo.') : 'Melhor um PNG sem fundo (recortado). Com fundo também serve: aparece numa moldura.') + '</small>' +
+    '<small>' + (foto ? (S.cfgEntrar.recorte !== false ? 'Recortada (sem fundo): efeito completo.' : 'Com fundo: aparece numa moldura arredondada. Para o efeito completo, use um PNG sem fundo.') : 'Sem foto, aparece a ilustração padrão. Melhor um PNG sem fundo (recortado); com fundo também serve: aparece numa moldura.') + '</small>' +
     (pode ? '<div class="adm-lgb"><label class="bt">' + ic('imagem') + 'Escolher<input type="file" id="adm-ftent" accept="image/png,image/jpeg,image/webp" hidden></label>' + (foto ? '<button type="button" class="bt ic-so" data-act="adm-tira-ftent" title="Tirar a foto" aria-label="Tirar a foto">' + ic('lixo') + '</button>' : '') + '</div>' : '') + '</div></div>' +
     '<label class="cp">Palavra grande (tema Escuro)<input id="adm-pal" maxlength="12" value="' + esc(c.palavra) + '"' + dis + '><small>Uma palavra, até 12 letras. Ex.: QUALIDADE</small></label>' +
     '<label class="cp">Faixa dourada (tema Escuro)<textarea id="adm-faixa" rows="4"' + dis + '>' + esc(c.faixa.join('\n')) + '</textarea><small>Uma por linha, até 12. Vazio = as áreas do app.</small></label>' +
     '<div class="cp"><span>Avisos flutuando (tema Claro)</span><div class="adm-avs">' + av.map((x, i) => '<input id="adm-av' + i + 't" maxlength="28" placeholder="Título" aria-label="Título do aviso ' + (i + 1) + '" value="' + esc(x[0]) + '"' + dis + '><input id="adm-av' + i + 'd" maxlength="32" placeholder="Detalhe" aria-label="Detalhe do aviso ' + (i + 1) + '" value="' + esc(x[1]) + '"' + dis + '>').join('') + '</div>' +
     '<small>São só textos de exemplo: a pessoa ainda não entrou, então não aparecem dados reais.</small></div>' +
-    '<p class="ini-vz">Antes do login o app não pode ler a configuração; cada aparelho guarda uma cópia quando alguém entra nele. Sem cópia, aparece só o fundo e o formulário.</p>' +
+    '<p class="ini-vz">Antes do login o app não pode ler a configuração; cada aparelho guarda uma cópia quando alguém entra nele. Sem cópia, aparece a ilustração padrão.</p>' +
     (pode ? '<p class="en-msg" id="adm-enmsg" role="alert"></p><div><button class="bt pr" type="submit">Salvar</button></div>' : '') + '</form></section>';
 }
 /* foto: recorta as bordas transparentes, reduz para até 1000 px de altura e vê se tem fundo */
