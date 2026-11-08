@@ -25,6 +25,7 @@
   --bg0:#f7f5ef;--bg1:#fffefb;--bg2:#f2eee4;--bd:#e6dfcf;--bd2:#d8cdb2;
   --tx:#1e1b14;--tx2:#5b5443;--tx3:#8d846c;
   --a:#9a7128;--aS:rgba(154,113,40,.12);--aT:#1c1406;--aTx:#7d5a1c;
+  --arC:#2f7d4f;--arPF:#f2f8f4;--arXF:#fcf6e6;--arPB:#bcdcc8;--arXB:#e7d39f;--arFB:#e9e3d5;
   --ok:#2f7d4f;--okS:rgba(47,125,79,.12);--wa:#9a6a0c;--waS:rgba(154,106,12,.13);--cr:#b33a32;--crS:rgba(179,58,50,.11);
   --sh:0 1px 2px rgba(40,30,10,.06),0 4px 14px rgba(40,30,10,.05);
   --sb:#fffdf8;--sbTx:#2a2519;--sbBd:#e6dfcf;
@@ -36,6 +37,7 @@
   --bg0:#0b0d16;--bg1:#121524;--bg2:#181c2e;--bd:#2a2b3b;--bd2:#3d3b4b;
   --tx:#f3eee3;--tx2:#bcb3a1;--tx3:#80796a;
   --a:#d9b46a;--aS:rgba(217,180,106,.15);--aT:#1c1406;--aTx:#f0d48f;
+  --arC:#2b6e48;--arPF:rgba(127,191,152,.07);--arXF:rgba(226,181,95,.07);--arPB:rgba(127,191,152,.38);--arXB:rgba(226,181,95,.4);--arFB:#262839;
   --ok:#7fbf98;--okS:rgba(127,191,152,.14);--wa:#e2b55f;--waS:rgba(226,181,95,.14);--cr:#e38b7d;--crS:rgba(227,139,125,.14);
   --sh:0 16px 40px rgba(0,0,0,.45);
   --sb:rgba(14,17,32,.94);--sbTx:#efe9da;--sbBd:rgba(217,180,106,.14);
@@ -203,6 +205,8 @@ h1,h2,h3{font-family:var(--fh);font-weight:600;letter-spacing:-.01em;margin:0}
 
 /* v0.4.5: ícone ao lado do título (ex.: legenda da Programação) */
 .cs-ht{display:flex;align-items:center;gap:10px}.cs-ht .pg-lg{margin-bottom:8px}
+/* v0.4.6: com ícone ao lado do título (Programação, plano), os botões ficam na linha do título também quando há situação embaixo */
+@media(min-width:900px){.cs-phr:has(.cs-ht){align-items:flex-start}.cs-phr:has(.cs-ht) .cs-acts{margin-top:4px}}
 
 /* ===== tabela.css ===== */
 /* EFCwork · tabela.css — tabela padrão, janela retrátil, gaveta e impressão. Prefixos: tb-, dd-, gv- */
@@ -704,9 +708,10 @@ div.cb-hc{cursor:default}
 .pg-pln{margin:0;font-size:14px;color:var(--tx2)}.pg-pln b{color:var(--tx)}
 .pg-ars{display:flex;flex-wrap:wrap;gap:5px}
 .pg-ar{display:inline-grid;place-items:center;min-width:44px;height:26px;padding:0 6px;border-radius:var(--rs);font-size:13px;font-weight:600;border:1px solid var(--bd);color:var(--tx3);background:var(--bg1);font-variant-numeric:tabular-nums}
-.pg-ar.c{background:var(--ok);border-color:var(--ok);color:var(--onCr)}
-.pg-ar.p{border-color:var(--ok);color:var(--tx)}
-.pg-ar.x{border-color:var(--wa);color:var(--tx)}
+.pg-ar{border-color:var(--arFB);color:var(--tx2)}
+.pg-ar.c{background:var(--arC);border-color:var(--arC);color:#fff}
+.pg-ar.p{border-color:var(--arPB);background:var(--arPF)}
+.pg-ar.x{border-color:var(--arXB);background:var(--arXF)}
 /* legenda: ícone "!" junto do subtítulo */
 .pg-lg{position:relative;display:inline-flex}
 .pg-i{width:22px;height:22px;padding:0;border:1px solid var(--bd2);border-radius:50%;background:var(--bg1);color:var(--tx2);display:inline-grid;place-items:center;cursor:help}
@@ -720,6 +725,32 @@ div.cb-hc{cursor:default}
 [data-tb="pg"] .tb-t th button{justify-content:center}[data-tb="pg"] .tb-t td{text-align:center}
 .pg-ansdd{margin-bottom:6px}.pg-ans{max-height:min(30vh,240px)}
 .pg-ansdd .dd-b{height:34px;padding:0 10px;font-size:14px}
+
+/* v0.4.6: o cartão abre a página do plano */
+a.pg-pl{color:inherit;text-decoration:none;cursor:pointer;transition:border-color .15s}a.pg-pl:hover{border-color:var(--bd2)}a.pg-pl:focus-visible{outline:2px solid var(--a);outline-offset:2px}
+
+/* ===== plano.css ===== */
+/* v0.4.6 · página do plano (prefixo pp) */
+.pp{padding-bottom:84px}
+.pp-prog{display:flex;align-items:center;gap:12px;margin:2px 0 14px;color:var(--tx2);font-size:14px}.pp-prog .pg-plb{flex:1}.pp-prog b{color:var(--tx)}
+.pp-gh{display:flex;align-items:center;gap:10px;margin:14px 0 8px;font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--tx2)}
+.pp-gh .bt.lk{margin-left:auto;text-transform:none;letter-spacing:0;height:auto;padding:0;font-size:13px}
+.pp-grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:6px}
+.pp-ar{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;height:44px;padding:0 6px;border-radius:var(--rs);border:1px solid var(--arFB);background:var(--bg1);color:var(--tx2);font:inherit;line-height:1.15;font-variant-numeric:tabular-nums}
+.pp-ar b{font-size:14px;font-weight:600}.pp-ar small{font-size:12px;color:var(--tx3)}
+button.pp-ar{cursor:pointer}button.pp-ar:hover{border-color:var(--bd2)}
+.pp-ar.p{border-color:var(--arPB);background:var(--arPF)}.pp-ar.x{border-color:var(--arXB);background:var(--arXF)}
+.pp-ar.c{background:var(--arC);border-color:var(--arC);color:#fff}.pp-ar.c b{font-weight:700}.pp-ar.c small{color:inherit;opacity:.85}
+.pp-ar.sel{border-color:var(--a);box-shadow:0 0 0 1px var(--a);color:var(--tx)}
+.pp-ok{position:absolute;top:3px;right:3px;width:16px;height:16px;border-radius:50%;background:var(--a);color:#1c1406;display:grid;place-items:center}.pp-ok .ic{width:11px;height:11px;stroke-width:3}
+.pp-nada{color:var(--tx3);font-size:14px;margin:0}
+.pp-gv{grid-template-columns:repeat(auto-fill,minmax(70px,1fr));margin-bottom:6px}.pp-gv .pp-ar{height:36px}
+.pp-bar{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:40;display:flex;align-items:center;gap:8px;padding:8px 10px 8px 16px;background:var(--bg1);border:1px solid var(--bd2);border-radius:var(--r);box-shadow:0 10px 30px rgba(0,0,0,.18);white-space:nowrap;font-weight:600;font-size:14px}
+@media(min-width:900px){.pp-bar{left:calc(50% + var(--cs-lado-w,0px)/2)}}
+@media(max-width:899px){.pp-bar{left:12px;right:12px;transform:none;bottom:calc(72px + env(safe-area-inset-bottom,0px));gap:6px;padding:7px 8px 7px 12px;font-size:13px}.pp-bar>span{margin-right:auto}.pp-bar .bt{height:36px;padding:0 10px;font-size:13px}.pp-bar .bt .ic{display:none}.pp-bar .bt.ic-so .ic{display:block}.pp-grade{grid-template-columns:repeat(auto-fill,minmax(64px,1fr))}}
+body:has(#gv) .pp-bar{display:none}
+.pp-ja{font-size:13px;margin:0 0 4px}
+.pp-gv{grid-template-columns:repeat(auto-fill,minmax(78px,1fr))}.pp-gv .pp-ok{top:2px;right:2px;width:14px;height:14px}.pp-gv .pp-ok .ic{width:10px;height:10px}
 
 /* ===== entrar.css ===== */
 /* EFCwork · entrar.css — tela de entrar com a garota-propaganda (v0.4.2). Prefixo: en-
@@ -864,7 +895,7 @@ div.cb-hc{cursor:default}
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.4.5';
+const VERSAO = '0.4.6';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -1210,7 +1241,7 @@ const CS_CARGAS = []; /* funções que cada área registra para começar a ouvir
 /* áreas do EFCwork (estrutura aprovada no Estudo do Rework, 05/11/2026). "versao" = quando a área é refeita aqui */
 const AREAS = [
   { id: 'inicio', nome: 'Início', ic: 'casa', abas: [] },
-  { id: 'coletas', nome: 'Coletas', ic: 'frasco', versao: 'v0.4', abas: [{ id: 'amostras', nome: 'Amostras' }, { id: 'programacao', nome: 'Programação' }, { id: 'envio', nome: 'Envio' }, { id: 'cadastros', nome: 'Cadastros' }] },
+  { id: 'coletas', nome: 'Coletas', ic: 'frasco', versao: 'v0.4', abas: [{ id: 'amostras', nome: 'Amostras' }, { id: 'programacao', nome: 'Programação' }, { id: 'envio', nome: 'Envio' }, { id: 'cadastros', nome: 'Cadastros' }, { id: 'plano', nome: 'Plano de coleta', oculta: true, pai: 'programacao' }] },
   { id: 'rateios', nome: 'Rateios', ic: 'pizza', versao: 'v0.7', abas: [] },
   { id: 'inspecoes', nome: 'Inspeções', ic: 'lista', versao: 'v0.6', abas: [{ id: 'cloro', nome: 'Cloro' }, { id: 'apontamentos', nome: 'Apontamentos' }, { id: 'auditoria', nome: 'Auditoria interna' }] },
   { id: 'documentos', nome: 'Documentos', ic: 'doc', versao: 'v0.5', abas: [{ id: 'documentos', nome: 'Documentos' }, { id: 'caixas', nome: 'Caixas d’água' }, { id: 'historico', nome: 'Histórico' }] },
@@ -1238,7 +1269,7 @@ function csLeRota() {
   let a = AREAS.find(x => x.id === p[0]) ? p[0] : 'inicio';
   const ar = csArea(a);
   let aba = p[1] && ar.abas.some(x => x.id === p[1]) ? p[1] : (ar.abas[0] ? ar.abas[0].id : '');
-  return { area: a, aba: aba };
+  return { area: a, aba: aba, id: p[2] ? decodeURIComponent(p[2]) : '' };
 }
 function ir(area, aba) { const h = '#/' + area + (aba ? '/' + aba : ''); if (location.hash !== h) location.hash = h; else render(); }
 window.addEventListener('hashchange', () => { S.rota = csLeRota(); csUso(); csFechaMenu(); S.camadas = S.camadas.filter(c => c.nome !== 'menu'); if (S._gvNav) S._gvNav = false; else { S.gv = null; S.gvForm = false; S.fm = null; S._alSel = null; S.camadas = []; const g = $('#gv'); if (g) g.remove(); document.body.classList.remove('gv-aberta'); } render(); try { window.scrollTo(0, 0); } catch {} });
@@ -3904,6 +3935,10 @@ TELAS.coletas = function (aba) {
   const acoes = (coPode() && r.naoenv ? '<button type="button" class="bt pr" data-act="co-env">' + ic('sai') + 'Enviar</button>' : '') + ext;
   if (t.id === 'cadastros') return cabecalho({ titulo: t.nome, abaNome: t.nome, meta: [metaPl('chega numa próxima versão', 'wa', 'relogio')], acoes: '<a class="bt pr" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener">' + ic('externo') + 'Usar no EFClaudian</a>' }) +
     '<section class="pn"><div class="vazio">' + ic('lista') + '<b>Talhões, análises, laboratórios e prazos continuam no EFClaudian por enquanto.</b><span>Os dados são os mesmos: o que for lançado lá aparece aqui na hora.</span></div></section>';
+  if (t.id === 'plano') { /* v0.4.6 (plano.js) */
+    if (!S.colCarregado && !DEMO) return cabecalho({ caminho: ['Coletas', 'Programação', 'Plano'], titulo: 'Plano de coleta' }) + '<section class="pn"><div class="vazio">' + ic('relogio') + '<b>Carregando o plano…</b></div></section>';
+    return ppTela(S.rota.id);
+  }
   if (t.id === 'programacao') { /* v0.4.4 (programacao.js) */
     const h2 = cabecalho({ titulo: t.nome, abaNome: t.nome, aoLado: pgLegenda(), acoes: pgAcoes() });
     if (!S.colCarregado && !DEMO) return h2 + '<section class="pn"><div class="vazio">' + ic('relogio') + '<b>Carregando a programação…</b></div></section>';
@@ -4436,11 +4471,11 @@ function pgPlanosHTML() {
     const fechado = r.fechados && r.fechados[p.k], sit = fechado ? ['Encerrado', ''] : c === areas.length && areas.length ? ['Concluído', 'ok'] : ['Em andamento', 'info'];
     const tit = { c: 'coletada', p: 'programada', x: 'programada e atrasada', f: 'falta' };
     const pl1 = n => n + ' ' + (n === 1 ? 'área' : 'áreas');
-    return '<article class="pg-pl"><header><h3>' + esc(r.tipo || r.nome) + ' · ' + esc(RZ_FREQ[r.freq] || '') + ' · ' + esc(String(r.ano)) + '</h3><span class="pg-dt">' + fmtD(p.ini).slice(0, 5) + ' a ' + fmtD(p.fim).slice(0, 5) + '</span>' + alPill(sit[0], sit[1]) + '</header>' +
+    return '<a class="pg-pl" href="#/coletas/plano/' + encodeURIComponent(r.id) + '" aria-label="Abrir o plano ' + esc((r.tipo || r.nome) + ' ' + r.ano) + '"><header><h3>' + esc(r.tipo || r.nome) + ' · ' + esc(RZ_FREQ[r.freq] || '') + ' · ' + esc(String(r.ano)) + '</h3><span class="pg-dt">' + fmtD(p.ini).slice(0, 5) + ' a ' + fmtD(p.fim).slice(0, 5) + '</span>' + alPill(sit[0], sit[1]) + '</header>' +
       (r.nome && !String(r.nome).toLowerCase().includes(String(r.tipo || '').toLowerCase()) ? '<small>' + esc(r.nome) + '</small>' : '') +
       '<div class="pg-plb" role="img" aria-label="' + pc + '% coletado"><i style="width:' + pc + '%"></i></div>' +
       '<p class="pg-pln"><b>' + pc + '%</b> · ' + c + ' de ' + pl1(areas.length) + ' coletada' + (c === 1 ? '' : 's') + '</p>' + (pr ? '<p class="pg-pln">' + pr + ' programada' + (pr > 1 ? 's' : '') + '</p>' : '') +
-      '<div class="pg-ars">' + est.map(y => '<span class="pg-ar ' + y.e.k + '" title="' + esc(y.a + ', ' + tit[y.e.k] + (y.e.d ? ' para ' + pgDiaTxt(y.e.d) + (y.e.col ? ', ' + y.e.col : '') : '')) + '">' + esc(rot[y.a]) + '</span>').join('') + '</div></article>';
+      '<div class="pg-ars">' + est.map(y => '<span class="pg-ar ' + y.e.k + '" title="' + esc(y.a + ', ' + tit[y.e.k] + (y.e.d ? ' para ' + pgDiaTxt(y.e.d) + (y.e.col ? ', ' + y.e.col : '') : '')) + '">' + esc(rot[y.a]) + '</span>').join('') + '</div></a>';
   }).join('') + '</section>';
 }
 const pgLegenda = () => '<span class="pg-lg"><button type="button" class="pg-i" aria-label="Legenda das cores das áreas">' + ic('excl') + '</button><span class="pg-leg" role="tooltip"><span><i class="pg-ar c"></i>coletada</span><span><i class="pg-ar p"></i>programada</span><span><i class="pg-ar x"></i>programada e atrasada</span><span><i class="pg-ar f"></i>falta</span></span></span>';
@@ -4609,6 +4644,181 @@ document.addEventListener('click', ev => {
   else if (a === 'pg-ans-abre' && f) { f.ansAberta = !f.ansAberta; gvDesenha(true); }
   else if (a === 'pg-an' && f) { f.ans[id] = !f.ans[id]; f.sujo = true; f.msg = ''; gvDesenha(true); }
   else if (a === 'pg-av-ok') pgAvOk();
+});
+
+/* ===== plano.js ===== */
+/* ======================= EFCwork · plano.js — v0.4.6 =======================
+   Página própria do plano de coleta (abre ao tocar no cartão em Coletas › Programação).
+   Modelo escolhido em 07/11/2026 17:14: "Opção 2" da 2ª leva — grade alinhada de áreas (Faltam / Coletadas),
+   chips com o código e o dia, barra de seleção flutuante, Programar e Lançar coletadas na gaveta.
+   Sem Calendário e sem Histórico (decisão de 07/11 19:46).
+   Regras do EFClaudian mantidas: área com programação pendente usa a programação (não duplica);
+   área sem programação é coletada direto (amostras sem sv2_prog, progId vazio, auditoria coletado_plano);
+   área já coletada no período é barrada (rzBarrar). Prefixo: pp. */
+
+const ppPlano = id => (S.rodizios || []).find(r => r.id === id) || null;
+/* período mostrado: o de hoje; se o plano ainda não começou ou já acabou, o mais próximo */
+function ppPeriodo(r) {
+  const h = hojeISO(), l = rzPeriodos(r).filter(p => rzVale(r, p)); if (!l.length) return null;
+  return l.find(p => h >= p.ini && h <= p.fim) || l.filter(p => p.fim < h).pop() || l[0];
+}
+const ppProgDe = (r, p, area) => (S.prog || []).find(x => pgSit(x) === 'pendente' && pgOrigem(x) === 'Plano' && x.talhao === area && x.data && pgGera(x.tipo).indexOf(rzMat(r)) >= 0 && x.data <= p.fim && (x.prazo || x.data) >= addDias(p.ini, -31)) || null;
+function ppAreas(r, p) {
+  const rot = pgRotulos(r.areas || []);
+  return (r.areas || []).slice().sort(cmpTxt).map(a => {
+    const cs = rzColetasDe(r, p, a), pr = cs.length ? null : ppProgDe(r, p, a);
+    const k = cs.length ? 'c' : pr ? (pgQuando(pr).k === 'atrasada' ? 'x' : 'p') : 'f';
+    return { a: a, rot: rot[a], k: k, d: cs.length ? cs.map(c => c.data).sort().pop() : pr ? pr.data : '', pr: pr, cs: cs };
+  });
+}
+const ppSel = rid => { if (!S._pp || S._pp.rid !== rid) S._pp = { rid: rid, sel: {} }; return S._pp.sel; };
+const ppMarcadas = rid => Object.keys(ppSel(rid)).filter(k => ppSel(rid)[k]);
+const PP_TIT = { c: 'coletada', p: 'programada', x: 'programada e atrasada', f: 'falta' };
+
+function ppTela(id) {
+  const r = ppPlano(id);
+  if (!r) return cabecalho({ caminho: ['Coletas', 'Programação', 'Plano'], titulo: 'Plano de coleta' }) + '<section class="pn"><div class="vazio">' + ic('lista') + '<b>Plano não encontrado.</b><span>Volte para a Programação e toque no cartão do plano.</span><a class="bt" href="#/coletas/programacao">Voltar para a Programação</a></div></section>';
+  const p = ppPeriodo(r); const tit = (r.tipo || r.nome) + ' · ' + (RZ_FREQ[r.freq] || '') + ' · ' + r.ano;
+  if (!p) return cabecalho({ caminho: ['Coletas', 'Programação', tit], titulo: tit }) + '<section class="pn"><div class="vazio">' + ic('relogio') + '<b>Este plano não tem período em aberto.</b></div></section>';
+  const ar = ppAreas(r, p), c = ar.filter(x => x.k === 'c'), f = ar.filter(x => x.k !== 'c'), pc = ar.length ? Math.round(c.length / ar.length * 100) : 0;
+  const fechado = r.fechados && r.fechados[p.k], sit = fechado ? ['Encerrado', ''] : c.length === ar.length && ar.length ? ['Concluído', 'ok'] : ['Em andamento', 'info'];
+  const pode = coPode() && !fechado;
+  /* marcadas que deixaram de faltar (alguém coletou) saem da seleção */
+  const sel = ppSel(r.id); Object.keys(sel).forEach(k => { if (!f.some(x => x.a === k)) delete sel[k]; });
+  const acoes = (pode ? '<button type="button" class="bt" data-act="pp-prog" data-id="' + esc(r.id) + '">' + ic('mais') + 'Programar</button>' : '') +
+    '<button type="button" class="bt ic-so" data-act="pp-folha" data-id="' + esc(r.id) + '" title="Folha de campo (áreas que faltam)" aria-label="Imprimir a folha de campo">' + ic('impressora') + '</button>';
+  const meta = [alPill(sit[0], sit[1]), '<span>' + esc((p.nome ? p.nome + ' · ' : '') + fmtD(p.ini).slice(0, 5) + ' a ' + fmtD(p.fim).slice(0, 5)) + '</span>'];
+  const chip = x => { const on = !!sel[x.a], dica = x.a + ', ' + PP_TIT[x.k] + (x.d ? ' ' + fmtD(x.d) : '') + (x.pr && x.pr.coletor ? ', ' + x.pr.coletor : '');
+    const dentro = (on ? '<i class="pp-ok">' + ic('ok') + '</i>' : '') + '<b>' + esc(x.rot) + '</b>' + (x.d ? '<small>' + fmtD(x.d).slice(0, 5) + '</small>' : '');
+    return x.k === 'c' || !pode ? '<span class="pp-ar ' + x.k + '" title="' + esc(dica) + '">' + dentro + '</span>'
+      : '<button type="button" class="pp-ar ' + x.k + (on ? ' sel' : '') + '" data-act="pp-ck" data-id="' + esc(x.a) + '" data-r="' + esc(r.id) + '" aria-pressed="' + on + '" title="' + esc(dica) + '">' + dentro + '</button>'; };
+  const n = ppMarcadas(r.id).length;
+  return cabecalho({ caminho: ['Coletas', 'Programação', tit], titulo: tit, abaNome: 'Plano', aoLado: pgLegenda(), meta: meta, acoes: acoes }) +
+    '<section class="pp">' +
+    '<div class="pp-prog"><div class="pg-plb" role="img" aria-label="' + pc + '% coletado"><i style="width:' + pc + '%"></i></div><span><b>' + pc + '%</b> · ' + c.length + ' de ' + ar.length + ' ' + (ar.length === 1 ? 'área' : 'áreas') + ' coletada' + (c.length === 1 ? '' : 's') + '</span></div>' +
+    (fechado ? lcAv('Período encerrado: só consulta.', '') : '') +
+    '<p class="pp-gh">Faltam (' + f.length + ')' + (pode && f.length ? '<button type="button" class="bt lk" data-act="pp-todas" data-id="' + esc(r.id) + '">' + (n === f.length ? 'Desmarcar todas' : 'Marcar todas') + '</button>' : '') + '</p>' +
+    (f.length ? '<div class="pp-grade">' + f.map(chip).join('') + '</div>' : '<p class="pp-nada">Nenhuma área faltando neste período.</p>') +
+    '<p class="pp-gh">Coletadas (' + c.length + ')</p>' + (c.length ? '<div class="pp-grade">' + c.map(chip).join('') + '</div>' : '<p class="pp-nada">Nenhuma coletada ainda.</p>') +
+    '</section>' +
+    (n && pode ? '<div class="pp-bar" role="region" aria-label="Áreas marcadas"><span>' + n + ' marcada' + (n > 1 ? 's' : '') + '</span><button type="button" class="bt" data-act="pp-prog" data-id="' + esc(r.id) + '">Programar</button><button type="button" class="bt pr" data-act="pp-lanc" data-id="' + esc(r.id) + '">' + ic('ok') + 'Lançar coletadas</button><button type="button" class="bt ic-so" data-act="pp-limpa" data-id="' + esc(r.id) + '" aria-label="Limpar a seleção" title="Limpar a seleção">' + ic('x') + '</button></div>' : '');
+}
+
+/* ---------- Programar (cria sv2_prog no formato do EFClaudian) ---------- */
+function ppCtx(f) { const r = ppPlano(f.rid), p = r && ppPeriodo(r); return r && p ? { r: r, p: p, ar: ppAreas(r, p) } : null; }
+LC_FORM.ppprog = f => {
+  const x = ppCtx(f); if (!x) return { titulo: 'Programar', corpo: lcAv('Plano não encontrado.', 'cr'), rodape: '' };
+  const livres = x.ar.filter(a => a.k === 'f'), ja = x.ar.filter(a => a.k === 'p' || a.k === 'x'), marc = livres.filter(a => f.sel[a.a]);
+  const pick = a => { const on = !!f.sel[a.a]; return '<button type="button" class="pp-ar f' + (on ? ' sel' : '') + '" data-act="pp-fck" data-id="' + esc(a.a) + '" aria-pressed="' + on + '">' + (on ? '<i class="pp-ok">' + ic('ok') + '</i>' : '') + '<b>' + esc(a.rot) + '</b></button>'; };
+  return { ico: 'mais', sub: (x.r.tipo || '') + ' · ' + (RZ_FREQ[x.r.freq] || '') + ' · ' + x.r.ano, titulo: 'Programar', corpo: lcMsg() +
+    '<p class="gv-h">1 · Áreas · ' + marc.length + ' marcada(s)</p>' +
+    (livres.length ? '<div class="pp-grade pp-gv">' + livres.map(pick).join('') + '</div>' : '<p class="pp-nada">Todas as áreas que faltam já estão programadas.</p>') +
+    (ja.length ? '<p class="pp-nada pp-ja">Já programadas (mudar o dia continua no EFClaudian): ' + esc(ja.map(a => a.rot + ' ' + fmtD(a.d).slice(0, 5)).join(', ')) + '</p>' : '') +
+    '<p class="gv-h">2 · Quando e quem</p><div class="fm-g">' + lcBl('Dia da coleta', lcData('data', f.data, true)) + lcBl('Prazo', lcData('prazo', f.prazo, true), 'opcional') + '</div>' +
+    '<div class="fm-g">' + lcBl('Quem coleta', pgDdLivre('pgcol', f.col, pgEquipes().concat(S.users.map(u => u.nome))) + pgLivreIn(f, 'col', 'Ex.: Equipe A')) + lcBl('Observação', lcIn('obs', f.obs, ' placeholder="opcional"')) + '</div>',
+    rodape: lcPe('pp-prog-ok', marc.length ? 'Programar ' + marc.length + ' área(s)' : 'Programar') };
+};
+async function ppProgOk() {
+  const f = S.fm, x = f && ppCtx(f); if (!x || !coPode()) return;
+  const areas = x.ar.filter(a => a.k === 'f' && f.sel[a.a]); if (!areas.length) return lcErro('Marque pelo menos uma área.');
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(f.data || '')) return lcErro('Informe o dia da coleta.');
+  if (f.data < x.p.ini || f.data > x.p.fim) return lcErro('O dia tem que estar dentro do período do plano (' + fmtD(x.p.ini) + ' a ' + fmtD(x.p.fim) + ').');
+  if (f.prazo && f.prazo < f.data) return lcErro('O prazo não pode ser antes do dia da coleta.');
+  const coletor = pgLivreVal(f, 'col');
+  { const bl = []; areas.forEach(a => pgGera(x.r.tipo).forEach(g => { const m = rzBarrar(g, a.a, f.data); if (m && bl.indexOf(m) < 0) bl.push(m); })); if (bl.length) return lcErro(bl.slice(0, 3).join(' ')); }
+  const ans = pgGera(x.r.tipo).map(g => (pgAnPadrao(g) || {}).id).filter(Boolean);
+  if (!lcTravar()) return;
+  const ops = areas.map(a => ({ col: 'sv2_prog', tipo: 'set', id: 'pg_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7) + '_' + String(a.a).replace(/[^A-Za-z0-9]/g, ''),
+    dados: { data: f.data, semana: pgSemana(f.data), ano: Number(f.data.slice(0, 4)), talhao: a.a, tipo: x.r.tipo, pontos: pgPontos(x.r.tipo, a.a), prof: '', coletor: coletor, estadio: '', obs: String(f.obs || '').trim().toUpperCase(), analiseIds: ans, situacao: 'ativa', prazo: f.prazo || '', criadoEm: nowISO(), criadoPor: S.user.id, criadoPorNome: S.user.nome } }));
+  try {
+    await Data.lote(ops);
+    ops.forEach(o => Audit.log({ acao: 'criar_programacao', entidade: 'programacao', entidadeId: o.id, resumo: 'Programada ' + x.r.tipo + ' ' + o.dados.talhao + ' para ' + fmtD(f.data) + (coletor ? ' (' + coletor + ')' : '') + ' — plano ' + (x.r.nome || x.r.tipo), depois: { data: f.data, talhao: o.dados.talhao, tipo: x.r.tipo, coletor: coletor, prazo: f.prazo || '' } }));
+    const sel = ppSel(x.r.id); areas.forEach(a => { delete sel[a.a]; });
+    lcFim(); aviso(areas.length + ' área(s) programada(s) para ' + fmtD(f.data) + '.');
+  } catch (e) { lcErro(svErro(e)); }
+}
+
+/* ---------- Lançar coletadas (programação pendente = usa a programação; sem programação = coleta direta do plano) ---------- */
+function ppAlvos(x, f) { return x.ar.filter(a => a.k !== 'c' && f.sel[a.a]).map(a => a.pr || { id: '', tipo: x.r.tipo, talhao: a.a, analiseIds: [], pontos: pgPontos(x.r.tipo, a.a), _direta: true }); }
+const ppNovas = p => p._direta ? { ids: pgCdAnalises(p).ids, existem: [], avisos: [] } : pgCdNovas(p);
+LC_FORM.pplanc = f => {
+  const x = ppCtx(f); if (!x) return { titulo: 'Lançar coletadas', corpo: lcAv('Plano não encontrado.', 'cr'), rodape: '' };
+  const ps = ppAlvos(x, f), prof = pgPedeProf(x.r.tipo), est = !pgSoComposto(x.r.tipo), cont = {}; let n = 0;
+  ps.forEach(p => ppNovas(p).ids.forEach(aid => { const a = pgAnalises().find(y => y.id === aid); if (a) { cont[a.tipo] = (cont[a.tipo] || 0) + 1; n++; } }));
+  return { ico: 'ok', sub: (x.r.tipo || '') + ' · ' + (RZ_FREQ[x.r.freq] || '') + ' · ' + x.r.ano, titulo: 'Lançar coletadas', corpo: lcMsg() +
+    '<p class="gv-h">1 · Áreas · ' + ps.length + '</p><div class="pp-grade pp-gv">' + ps.map(p => { const a = x.ar.find(y => y.a === p.talhao); return '<span class="pp-ar ' + a.k + '"><b>' + esc(a.rot) + '</b>' + (a.d ? '<small>' + fmtD(a.d).slice(0, 5) + '</small>' : '') + '</span>'; }).join('') + '</div>' +
+    '<div class="pg-res"><span><b>Vai gravar ' + n + ' amostra(s)</b>' + (n ? ': ' + Object.keys(cont).map(k => esc(CO_TXT[k] || k) + ' ' + cont[k]).join(', ') : '') + '</span></div>' +
+    '<p class="gv-h">2 · Quando e quem</p><div class="fm-g">' + lcBl('Data da coleta', lcData('data', f.data), 'pode ser de dias atrás') + lcBl('Coletores', pgDdLivre('pgcol', f.col, pgEquipes().concat(S.users.map(u => u.nome))) + pgLivreIn(f, 'col', 'Ex.: Equipe A')) + '</div>' +
+    (prof || est ? '<p class="gv-h">3 · Campo</p><div class="fm-g">' + (prof ? lcBl('Profundidade', pgDdLivre('pgprof', f.prof, pgProfsDo(x.r.tipo).concat(pgProfsTodas()).concat(['N/A']), 'Outra (digitar)') + pgLivreIn(f, 'prof', 'Ex.: 40-60'), 'solo e raiz') : '') + (est ? lcBl('Estádio', pgDdLivre('pgest', f.est, PG_ESTADIOS) + pgLivreIn(f, 'est', 'Ex.: PÓS-COLHEITA')) : '') + '</div>' : '') +
+    lcBl('Observação', lcIn('obs', f.obs, ' placeholder="opcional"')),
+    rodape: lcPe('pp-lanc-ok', 'Lançar ' + ps.length + ' coletada(s)') };
+};
+async function ppLancOk() {
+  const f = S.fm, x = f && ppCtx(f); if (!x || !coPode()) return;
+  const ps = ppAlvos(x, f); if (!ps.length) return lcErro('Marque pelo menos uma área.');
+  const d = { data: f.data, coletor: pgLivreVal(f, 'col'), prof: pgLivreVal(f, 'prof'), estadio: pgLivreVal(f, 'est'), obs: String(f.obs || '').trim() };
+  const er = pgValidaData(d.data); if (er) return lcErro(er);
+  if (d.data < x.p.ini) return lcErro('A data é antes do começo do período do plano (' + fmtD(x.p.ini) + ').');
+  const semAn = ps.filter(p => !pgCdAnalises(p).ids.length); if (semAn.length) return lcErro('Sem análise cadastrada para ' + x.r.tipo + '. Cadastre a análise no EFClaudian (Coletas › Cadastros). Nada foi gravado.');
+  if (pgPedeProf(x.r.tipo) && !d.prof && ps.some(p => !p.prof)) return lcErro('Informe a profundidade (solo e raiz).');
+  { const bl = []; ps.forEach(p => pgGera(p.tipo).forEach(g => { const m = rzBarrar(g, p.talhao, d.data); if (m && bl.indexOf(m) < 0) bl.push(m); })); if (bl.length) return lcErro(bl.slice(0, 3).join(' ')); }
+  if (!lcTravar()) return;
+  const ops = [], logs = []; let n = 0;
+  try {
+    for (const p of ps) {
+      const ca = ppNovas(p), lote = ca.ids.length > 1 ? pgLoteId() : '', pontos = p.pontos || pgPontos(p.tipo, p.talhao);
+      const prof = d.prof || p.prof || '', coletor = d.coletor || p.coletor || '', estadio = d.estadio || p.estadio || ''; let k = 0;
+      for (const aid of ca.ids) {
+        const an = pgAnalises().find(a => a.id === aid); if (!an) continue;
+        ops.push({ col: 'sv2_coletas', tipo: 'set', id: pgColIdLivre(pgColId(p, aid, d.data), ops), dados: pgNovaColeta(an.tipo, { data: d.data, talhao: p.talhao, pontos: pontos, analiseId: aid, coletor: coletor, prof: an.tipo === 'SOLO' || an.tipo === 'NEMATOIDE' ? prof : 'N/A', estadio: estadio, obs: [p.obs, d.obs].filter(Boolean).join(', '), progId: p.id || '', loteId: lote }) });
+        k++;
+      }
+      if (!k) continue;
+      if (p.id) ops.push({ col: 'sv2_prog', tipo: 'update', id: p.id, dados: { coletadaEm: d.data, coletadaPor: S.user.nome, coletadaReg: nowISO(), coletor: coletor, prof: prof, estadio: estadio } });
+      const kk = k, dir = !p.id;
+      logs.push(() => Audit.log({ acao: dir ? 'coletado_plano' : 'coletado_programacao', entidade: dir ? 'coleta' : 'programacao', entidadeId: p.id || p.talhao, resumo: 'Coletado' + (dir ? ' (plano ' + (x.r.nome || x.r.tipo) + ')' : '') + ': ' + p.tipo + ' ' + p.talhao + ' em ' + fmtD(d.data) + (coletor ? ' por ' + coletor : '') + ' — ' + kk + ' amostra(s)', depois: { data: d.data, coletor: coletor, prof: prof, estadio: estadio, amostras: kk, plano: x.r.id } }));
+      n += k;
+    }
+    if (!ops.length) return lcErro('Nada novo para gravar.');
+    for (let i = 0; i < ops.length; i += 450) await Data.lote(ops.slice(i, i + 450));
+    logs.forEach(y => { try { y(); } catch (e) {} });
+    const sel = ppSel(x.r.id); ps.forEach(p => { delete sel[p.talhao]; });
+    lcFim(); aviso(ps.length + ' área(s) coletada(s) · ' + n + ' amostra(s) em Amostras.');
+  } catch (e) { lcErro(svErro(e)); }
+}
+
+/* ---------- folha de campo do plano (áreas que faltam; data, coletor, profundidade e estádio em branco; A4 deitado) ---------- */
+function ppFolha(id) {
+  const r = ppPlano(id), p = r && ppPeriodo(r); if (!p) return; const e0 = S.empresa || {}, ar = ppAreas(r, p).filter(a => a.k !== 'c');
+  let el = $('#tb-imp'); if (!el) { el = document.createElement('div'); el.id = 'tb-imp'; document.body.appendChild(el); }
+  el.innerHTML = '<div class="imp-cab"><b>Folha de campo · ' + esc(r.tipo + ' · ' + (RZ_FREQ[r.freq] || '') + ' · ' + r.ano) + '</b><span>' + esc(e0.nome || '') + ' · ' + fmtD(p.ini) + ' a ' + fmtD(p.fim) + ' · ' + ar.length + ' área(s) que faltam</span></div>' +
+    '<table><thead><tr><th>#</th><th>Área</th><th>Local</th><th>Pontos</th><th>Programada</th><th>Data</th><th>Coletor</th><th>Profundidade</th><th>Estádio</th><th>Observação</th></tr></thead><tbody>' +
+    ar.map((a, i) => { const t = pgTalhao(a.a); return '<tr><td>' + (i + 1) + '</td><td>' + esc(a.a) + '</td><td>' + esc(t ? [t.cultura, t.pivo].filter(Boolean).join(', ') : '') + '</td><td class="n">' + esc(String(pgPontos(r.tipo, a.a) || '')) + '</td><td>' + (a.pr ? fmtD(a.pr.data).slice(0, 5) + (a.pr.coletor ? ', ' + esc(a.pr.coletor) : '') : '') + '</td><td></td><td></td><td></td><td></td><td></td></tr>'; }).join('') +
+    '</tbody></table><div class="imp-pe">' + APP_APELIDO + '</div>';
+  Audit.log({ acao: 'imprimir', entidade: 'plano_coleta', entidadeId: id, resumo: 'Folha de campo do plano ' + (r.nome || r.tipo) + ' (' + ar.length + ' áreas)' });
+  document.body.classList.add('imprimindo'); setTimeout(() => { try { window.print(); } catch {} document.body.classList.remove('imprimindo'); }, 50);
+}
+
+/* ---------- ações ---------- */
+DD_AO.lc = (function (ant) { return (k, v) => {
+  const f = S.fm; if (!f || (f.k !== 'ppprog' && f.k !== 'pplanc')) return ant(k, v);
+  const mapa = { pgcol: 'col', pgprof: 'prof', pgest: 'est' }; if (!mapa[k]) return ant(k, v);
+  f[mapa[k]] = v; f.sujo = true; f.msg = ''; gvDesenha(true);
+  if (v === '__outro') { const i = $('#gv [data-fm="' + mapa[k] + 'Txt"]'); if (i) i.focus(); }
+}; })(DD_AO.lc);
+document.addEventListener('click', ev => {
+  const t = ev.target.closest && ev.target.closest('[data-act^="pp-"]'); if (!t) return;
+  const a = t.getAttribute('data-act'), id = t.getAttribute('data-id'), f = S.fm;
+  if (a === 'pp-ck') { const sel = ppSel(t.getAttribute('data-r')); sel[id] = !sel[id]; render(); }
+  else if (a === 'pp-todas') { const r = ppPlano(id), p = r && ppPeriodo(r); if (!p) return; const l = ppAreas(r, p).filter(x => x.k !== 'c'), sel = ppSel(id), todas = l.every(x => sel[x.a]); l.forEach(x => { sel[x.a] = !todas; }); render(); }
+  else if (a === 'pp-limpa') { S._pp = { rid: id, sel: {} }; render(); }
+  else if (a === 'pp-prog') { if (!coPode()) return; const sel = {}; ppMarcadas(id).forEach(k => { sel[k] = true; }); lcAbrir({ k: 'ppprog', rid: id, sel: sel, data: '', prazo: '', col: pgEquipes()[0] || '', obs: '' }); }
+  else if (a === 'pp-fck' && f) { f.sel[id] = !f.sel[id]; f.sujo = true; f.msg = ''; gvDesenha(true); }
+  else if (a === 'pp-prog-ok') ppProgOk();
+  else if (a === 'pp-lanc') { if (!coPode()) return; const sel = {}; ppMarcadas(id).forEach(k => { sel[k] = true; }); const x = ppCtx({ rid: id }); const ps = x ? ppAlvos(x, { sel: sel }) : []; const um = k => { const v = Array.from(new Set(ps.map(p => p[k] || ''))); return v.length === 1 ? v[0] : ''; };
+    lcAbrir({ k: 'pplanc', rid: id, sel: sel, data: hojeISO(), col: um('coletor') || pgEquipes()[0] || '', prof: um('prof'), est: um('estadio') || pgEstadioSug(ps.filter(p => p.id)), obs: '' }); }
+  else if (a === 'pp-lanc-ok') ppLancOk();
+  else if (a === 'pp-folha') ppFolha(id);
 });
 
 /* ===== entrar.js ===== */
