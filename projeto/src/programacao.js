@@ -31,9 +31,24 @@ function pgIsoSemana(iso) { const d = new Date(iso + 'T12:00:00'), t = new Date(
 const pgSemana = iso => /^\d{4}-\d{2}-\d{2}$/.test(iso || '') ? pgIsoSemana(iso) : '';
 function pgPtsHa(tipoNome, cod) { const t = (pgCfg().tipos || []).find(x => x.nome === tipoNome), ta = pgTalhao(cod); const k = tipoNome === 'SOLO' || tipoNome === 'SOLO+RAIZ' ? 'ptsSolo' : tipoNome === 'FOLHA' ? 'ptsFolha' : tipoNome === 'FRUTA VERDE' ? 'ptsFruta' : ''; return ta && k && Number(ta[k]) > 0 ? Number(ta[k]) : (t ? t.pontosPorHa : 0); }
 const pgPontos = (tipoNome, cod) => { const ta = pgTalhao(cod), ph = pgPtsHa(tipoNome, cod); return ph && ta ? Math.round(ph * ta.hectares) : ''; };
-function pgSit(p) { if (!p || p.situacao === 'cancelada') return 'cancelada'; return p.coletadaEm || S.coletas.some(c => c.progId === p.id && c.situacao !== 'cancelada') ? 'coletada' : 'pendente'; }
-const pgPendentes = () => (S.prog || []).filter(p => pgSit(p) === 'pendente');
-function pgEquipes() { const l = S.coletas.filter(c => c.coletor).sort((a, b) => String(b.criadoEm || '').localeCompare(String(a.criadoEm || ''))).map(c => c.coletor.trim()).concat((S.prog || []).map(p => (p.coletor || '').trim())); return l.filter((v, i) => v && l.indexOf(v) === i).slice(0, 6); }
+function pgSit(p) { if (!p || p.situacao === 'cancelada') return 'cancelada'; if (p._rz) return pgRzCs(p).length ? 'coletada' : 'pendente'; return p.coletadaEm || S.coletas.some(c => c.progId === p.id && c.situacao !== 'cancelada') ? 'coletada' : 'pendente'; }
+/* v0.4.7: as programações do PLANO ficam dentro do próprio plano (sv2_rodizio.progs[período][área] = {data, coletor, pontos, prof, estadio, por, em}),
+   como o EFClaudian grava (sv2_prog fica só para avulsas). Aqui viram programações "virtuais" com id rz~plano~período~área. */
+function pgRzProgs() {
+  const out = [];
+  rzAtivos().forEach(r => { const per = rzPeriodos(r); Object.keys(r.progs || {}).forEach(pk => { const p = per.find(x => x.k === pk); if (!p) return; const fch = r.fechados && r.fechados[pk], o = r.progs[pk] || {};
+    Object.keys(o).forEach(a => { const g = o[a]; if (!g || (r.areas || []).indexOf(a) < 0) return;
+      const lib = rzLib(r, p, a); if (lib && String(g.em || '') < String(lib.ts || '')) return; /* programação de antes da recoleta: já foi usada */
+      out.push({ id: 'rz~' + r.id + '~' + pk + '~' + a, _rz: { r: r, p: p, a: a }, data: g.data || '', semana: g.data ? pgSemana(g.data) : '', ano: Number(r.ano), talhao: a, tipo: r.tipo, pontos: g.pontos || '', prof: g.prof || '', coletor: g.coletor || '', estadio: g.estadio || '', obs: g.obs || '', prazo: g.prazo || '', analiseIds: r.analiseIds || [], situacao: 'ativa', criadoEm: g.em || '', criadoPorNome: g.por || '' });
+      const z = out[out.length - 1]; if (fch && !pgRzCs(z).length) { z.situacao = 'cancelada'; z.canceladaMotivo = 'Período encerrado'; } }); }); });
+  return out;
+}
+const pgTodas = () => (S.prog || []).concat(pgRzProgs());
+/* amostras de uma programação do plano: as do período, dos materiais do tipo, depois da última recoleta liberada */
+const pgRzCs = p => { const z = p._rz, mats = pgGera(z.r.tipo), lib = rzLib(z.r, z.p, z.a); return S.coletas.filter(c => c.situacao !== 'cancelada' && mats.indexOf(c.tipo) >= 0 && c.talhao === z.a && c.data >= z.p.ini && c.data <= z.p.fim && (!lib || String(c.criadoEm || c.data) > String(lib.ts || ''))); };
+const pgCsDe = p => p._rz ? pgRzCs(p) : S.coletas.filter(c => c.progId === p.id);
+const pgPendentes = () => pgTodas().filter(p => pgSit(p) === 'pendente');
+function pgEquipes() { const l = S.coletas.filter(c => c.coletor).sort((a, b) => String(b.criadoEm || '').localeCompare(String(a.criadoEm || ''))).map(c => c.coletor.trim()).concat(pgTodas().map(p => (p.coletor || '').trim())); return l.filter((v, i) => v && l.indexOf(v) === i).slice(0, 6); }
 function pgEstadioSug(ps) { if (!ps.length) return ''; const u = ps.map(p => { const c = S.coletas.filter(x => x.talhao === p.talhao && x.estadio).sort((a, b) => String(b.data).localeCompare(String(a.data)))[0]; return c ? c.estadio : ''; }); return u.every(v => v && v === u[0]) ? u[0] : ''; }
 function pgValidaData(v) { if (!/^\d{4}-\d{2}-\d{2}$/.test(v || '')) return 'Informe a data da coleta.'; if (v > hojeISO()) return 'A data da coleta não pode ser no futuro.'; if (v < '2000-01-01') return 'Data inválida.'; return ''; }
 /* etiqueta da fruta (modelo do laboratório e fazendas vêm de sv2_cfg/coletas) */
@@ -74,7 +89,9 @@ function rzDaArea(mat, area, iso) { for (const r of rzAtivos()) { if (!rzCobre(r
 function rzDono(mat, area, iso) { const l = (S.rodizios || []).filter(r => rzCobre(r, mat) && (r.areas || []).indexOf(area) >= 0).sort((a, b) => (a.ativo === false ? 1 : 0) - (b.ativo === false ? 1 : 0)); for (const r of l) { const p = rzPeriodoDe(r, iso); if (p) return { r: r, p: p }; } return null; }
 const rzTrancado = (mat, area, iso) => { const d = rzDono(mat, area, iso); return d && d.r.fechados && d.r.fechados[d.p.k] ? d : null; };
 const rzLiberada = (r, p, area) => !!(r.liberadas && r.liberadas[p.k] && r.liberadas[p.k][area]);
-const rzColetasDe = (r, p, area) => { const mat = rzMat(r); return S.coletas.filter(c => c.situacao !== 'cancelada' && c.tipo === mat && (c.talhao === area || (mat === 'COMPOSTO' && !c.talhao && c.loteComp === area)) && c.data >= p.ini && c.data <= p.fim); };
+const rzLib = (r, p, area) => (r.liberadas && r.liberadas[p.k] && r.liberadas[p.k][area]) || null;
+/* v0.4.7: com recoleta liberada, só contam as amostras registradas DEPOIS da liberação (a anterior fica no histórico) */
+const rzColetasDe = (r, p, area) => { const mat = rzMat(r), lib = rzLib(r, p, area); return S.coletas.filter(c => c.situacao !== 'cancelada' && c.tipo === mat && (c.talhao === area || (mat === 'COMPOSTO' && !c.talhao && c.loteComp === area)) && c.data >= p.ini && c.data <= p.fim && (!lib || String(c.criadoEm || c.data) > String(lib.ts || ''))); };
 /* devolve o texto do bloqueio ou '' (igual ao EFClaudian) */
 function rzBarrar(mat, area, iso) {
   const t = rzTrancado(mat, area, iso); if (t) return area + ': o plano de coleta "' + t.r.nome + '" (' + t.p.nome + ') foi encerrado — não aceita mais coleta.';
@@ -83,7 +100,7 @@ function rzBarrar(mat, area, iso) {
   if (ja.length && !rzLiberada(x.r, x.p, area)) return area + ' já tem ' + (CO_TXT[mat] || mat).toLowerCase() + ' no ' + x.p.nome + ' (plano de coleta "' + x.r.nome + '", ' + fmtD(ja[0].data) + '). Para coletar de novo, peça recoleta no plano de coleta (EFClaudian).';
   return '';
 }
-const pgOrigem = p => { const m = pgGera(p.tipo)[0]; return m && p.talhao && p.data && rzDaArea(m, p.talhao, p.data) ? 'Plano' : 'Avulsa'; };
+const pgOrigem = p => { if (p._rz) return 'Plano'; const m = pgGera(p.tipo)[0]; return m && p.talhao && p.data && rzDaArea(m, p.talhao, p.data) ? 'Plano' : 'Avulsa'; };
 
 /* ---------- a nova amostra (mesmos campos do EFClaudian) ---------- */
 function pgNovaColeta(mat, b) {
@@ -97,7 +114,7 @@ function pgNovaColeta(mat, b) {
   return o;
 }
 const pgLoteId = () => 'L' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
-const pgColId = (p, aid, data) => ('col_' + String(p.id || p.talhao) + '_' + aid + '_' + data).replace(/[^A-Za-z0-9_-]/g, '_').slice(0, 400);
+const pgColId = (p, aid, data) => ('col_' + String(p._rz ? p.talhao : (p.id || p.talhao)) + '_' + aid + '_' + data).replace(/[^A-Za-z0-9_-]/g, '_').slice(0, 400);
 function pgColIdLivre(id, ops) { let x = id, n = 2; while (S.coletas.some(c => c.id === x) || ops.some(o => o.id === x)) x = id + '_' + (n++); return x; }
 /* análises de cada programação conferidas contra o material (SOLO+RAIZ → Solo e Nematoide) */
 function pgCdAnalises(p) {
@@ -111,7 +128,7 @@ function pgCdAnalises(p) {
 }
 function pgCdNovas(p) {
   const ca = pgCdAnalises(p), novas = [], existem = [];
-  ca.ids.forEach(aid => { const an = pgAnalises().find(a => a.id === aid); if (!an) return; if (S.coletas.some(c => c.progId === p.id && c.tipo === an.tipo && c.situacao !== 'cancelada')) existem.push(an.tipo); else novas.push(aid); });
+  ca.ids.forEach(aid => { const an = pgAnalises().find(a => a.id === aid); if (!an) return; if (pgCsDe(p).some(c => c.tipo === an.tipo && c.situacao !== 'cancelada')) existem.push(an.tipo); else novas.push(aid); });
   return { ids: novas, existem: existem, avisos: ca.avisos };
 }
 
@@ -135,9 +152,9 @@ function pgEtapasLista(p, cs, st, q) {
 function pgLinhas() {
   const out = [], visto = new Set();
   const base = (t) => t ? [t.cultura, t.pivo].filter(Boolean).join(', ') : '';
-  (S.prog || []).forEach(p => {
+  pgTodas().forEach(p => {
     if (!p.data) return; /* sem dia definido: não aparece (fica só no plano) */
-    const st = pgSit(p), cs = S.coletas.filter(c => c.progId === p.id).sort((a, b) => String(a.data).localeCompare(String(b.data)));
+    const st = pgSit(p), cs = pgCsDe(p).sort((a, b) => String(a.data).localeCompare(String(b.data)));
     cs.forEach(c => visto.add(c.id));
     const vivas = cs.filter(c => c.situacao !== 'cancelada'), t = pgTalhao(p.talhao), q = st === 'pendente' ? pgQuando(p) : null;
     const mats = st === 'coletada' ? Array.from(new Set(vivas.map(c => c.tipo))) : [];
@@ -207,9 +224,10 @@ function pgRotulos(areas) {
   const curto = a => pgCodCurto(a), conta = {}; areas.forEach(a => { conta[curto(a)] = (conta[curto(a)] || 0) + 1; });
   const r = {}; areas.forEach(a => { const c = curto(a), m = /^([A-Z]+)(\d+)/.exec(String(a).toUpperCase()); r[a] = conta[c] > 1 && m ? m[1] + m[2].slice(0, 4) : c; }); return r;
 }
+const pgRzDe = (r, p, area) => { const g = r.progs && r.progs[p.k] && r.progs[p.k][area]; if (!g) return null; const x = pgRzProgs().find(y => y.id === 'rz~' + r.id + '~' + p.k + '~' + area); return x && pgSit(x) === 'pendente' ? x : null; };
 function pgAreaEstado(r, p, area) {
   const mat = rzMat(r); if (rzColetasDe(r, p, area).length) return { k: 'c' };
-  const pr = (S.prog || []).find(x => pgSit(x) === 'pendente' && pgOrigem(x) === 'Plano' && x.talhao === area && x.data && pgGera(x.tipo).indexOf(mat) >= 0 && x.data <= p.fim && (x.prazo || x.data) >= addDias(p.ini, -31));
+  const pr = pgRzDe(r, p, area) || (S.prog || []).find(x => pgSit(x) === 'pendente' && pgOrigem(x) === 'Plano' && x.talhao === area && x.data && pgGera(x.tipo).indexOf(mat) >= 0 && x.data <= p.fim && (x.prazo || x.data) >= addDias(p.ini, -31));
   return pr ? { k: pgQuando(pr).k === 'atrasada' ? 'x' : 'p', d: pr.data, col: pr.coletor } : { k: 'f' };
 }
 function pgPlanosHTML() {
@@ -237,8 +255,8 @@ function pgAcoes() {
 function pgAbre(id) {
   if (String(id).indexOf('c|') === 0) { const c = S.coletas.find(x => x.id === id.slice(2)); if (c) { S._pgSel = id; coAbre(c.id); } return; }
   S._pgSel = id; gvAbrir(() => {
-    const pt = String(id).split('|'), mat = pt[2] || '', p = (S.prog || []).find(x => x.id === pt[1]); if (!p) return null;
-    const st = pgSit(p), cs = S.coletas.filter(c => c.progId === p.id && (!mat || c.tipo === mat)), q = st === 'pendente' ? pgQuando(p) : null, ans = (p.analiseIds || []).map(a => pgAnalises().find(x => x.id === a) || {}).filter(x => x.nome && (!mat || x.tipo === mat)).map(x => x.nome), t = pgTalhao(p.talhao);
+    const pt = String(id).split('|'), mat = pt[2] || '', p = pgTodas().find(x => x.id === pt[1]); if (!p) return null;
+    const st = pgSit(p), cs = pgCsDe(p).filter(c => !mat || c.tipo === mat), q = st === 'pendente' ? pgQuando(p) : null, ans = (p.analiseIds || []).map(a => pgAnalises().find(x => x.id === a) || {}).filter(x => x.nome && (!mat || x.tipo === mat)).map(x => x.nome), t = pgTalhao(p.talhao);
     const tp = (pgCfg().tipos || []).find(x => x.nome === p.tipo) || {};
     return { ico: 'relogio', sub: 'Programação · ' + pgOrigem(p), titulo: (mat ? String(CO_TXT[mat] || mat).toUpperCase() : (p.tipo || '')) + ' · ' + (p.talhao || ''), pill: st === 'pendente' ? alPill(pgQuando(p).txt, pgQuando(p).cor) : alPill(PG_ST[st][0], PG_ST[st][1]),
       corpo: (st === 'cancelada' ? '' : tlFluido('pg-' + p.id + (mat ? '-' + mat : ''), pgEtapasLista(p, cs, st, q))) + (mat ? '<p class="cg-ob">Programada como ' + esc(p.tipo || '') + '; depois da coleta, cada material segue separado.</p>' : '') +
@@ -301,13 +319,13 @@ async function pgCdOk() {
       const prof = d.prof || p.prof || '', coletor = d.coletor || p.coletor || '', estadio = d.estadio || p.estadio || ''; let k = 0;
       for (const aid of ca.ids) {
         const an = pgAnalises().find(a => a.id === aid); if (!an) continue; const cp = an.tipo === 'COMPOSTO';
-        ops.push({ col: 'sv2_coletas', tipo: 'set', id: pgColIdLivre(pgColId(p, aid, d.data), ops), dados: pgNovaColeta(an.tipo, { data: d.data, talhao: cp ? '' : p.talhao, loteComp: cp ? p.talhao : '', dataFabr: cp ? p.dataFabr || '' : '', identif: cp ? 'COMPOSTO' : '', fertilizante: cp ? 'COMPOSTO ORGANICO' : '', pontos: cp ? '' : pontos, analiseId: aid, coletor: coletor, prof: an.tipo === 'SOLO' || an.tipo === 'NEMATOIDE' ? prof : 'N/A', estadio: cp ? '' : estadio, obs: [p.obs, d.obs].filter(Boolean).join(' · '), progId: p.id, loteId: lote }) });
+        ops.push({ col: 'sv2_coletas', tipo: 'set', id: pgColIdLivre(pgColId(p, aid, d.data), ops), dados: pgNovaColeta(an.tipo, { data: d.data, talhao: cp ? '' : p.talhao, loteComp: cp ? p.talhao : '', dataFabr: cp ? p.dataFabr || '' : '', identif: cp ? 'COMPOSTO' : '', fertilizante: cp ? 'COMPOSTO ORGANICO' : '', pontos: cp ? '' : pontos, analiseId: aid, coletor: coletor, prof: an.tipo === 'SOLO' || an.tipo === 'NEMATOIDE' ? prof : 'N/A', estadio: cp ? '' : estadio, obs: [p.obs, d.obs].filter(Boolean).join(' · '), progId: p._rz ? '' : p.id, loteId: lote }) });
         k++;
       }
       if (!k && ca.existem.length) continue;
       if (!k) throw new Error('Nenhuma amostra gravada para ' + p.tipo + ' ' + p.talhao + ' (análise não encontrada).');
-      ops.push({ col: 'sv2_prog', tipo: 'update', id: p.id, dados: { coletadaEm: d.data, coletadaPor: S.user.nome, coletadaReg: nowISO(), coletor: coletor, prof: prof, estadio: estadio } });
-      const kk = k; logs.push(() => Audit.log({ acao: 'coletado_programacao', entidade: 'programacao', entidadeId: p.id, resumo: 'Coletado: ' + p.tipo + ' ' + p.talhao + ' em ' + fmtD(d.data) + (coletor ? ' por ' + coletor : '') + ' — ' + kk + ' amostra(s)', depois: { coletadaEm: d.data, coletor: coletor, prof: prof, estadio: estadio, amostras: kk } }));
+      if (!p._rz) ops.push({ col: 'sv2_prog', tipo: 'update', id: p.id, dados: { coletadaEm: d.data, coletadaPor: S.user.nome, coletadaReg: nowISO(), coletor: coletor, prof: prof, estadio: estadio } });
+      const kk = k; logs.push(() => Audit.log({ acao: p._rz ? 'coletado_plano' : 'coletado_programacao', entidade: p._rz ? 'coleta' : 'programacao', entidadeId: p._rz ? p.talhao : p.id, resumo: 'Coletado: ' + p.tipo + ' ' + p.talhao + ' em ' + fmtD(d.data) + (coletor ? ' por ' + coletor : '') + ' — ' + kk + ' amostra(s)', depois: { coletadaEm: d.data, coletor: coletor, prof: prof, estadio: estadio, amostras: kk } }));
       n += k;
     }
     for (let i = 0; i < ops.length; i += 450) await Data.lote(ops.slice(i, i + 450));

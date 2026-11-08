@@ -90,11 +90,12 @@ async function primeiro(p) {
   await p.fill('#gv [data-fm="data"]', dia); await p.fill('#gv [data-fm="prazo"]', await p.evaluate(d => addDias(d, -1), dia)); await p.click('#gv [data-act="pp-prog-ok"]'); await p.waitForTimeout(300);
   conf(await p.evaluate(() => /prazo não pode ser antes/.test(document.querySelector('#gv .fm-msg').textContent)), 'prazo antes do dia: avisa');
   await p.fill('#gv [data-fm="prazo"]', ''); await p.click('#gv [data-act="pp-prog-ok"]'); await p.waitForTimeout(700);
-  const pr = await p.evaluate(() => (S.prog || []).filter(x => x.id.indexOf('pg_') === 0).map(x => [x.talhao, x.tipo, x.situacao, (x.analiseIds || []).join('+'), x.pontos, x.semana ? 'sem' : '', x.criadoPorNome].join('/')));
+  /* v0.4.7: a programação do plano vai para dentro do plano (sv2_rodizio.progs[período][área]), igual ao EFClaudian */
+  const pr = await p.evaluate(() => { const r = S.rodizios.find(x => x.id === 'r3'), g = r.progs || {}, pk = Object.keys(g)[0] || ''; return Object.keys(g[pk] || {}).sort().map(a => [a, g[pk][a].data ? 'dia' : '', g[pk][a].pontos, g[pk][a].por].join('/')).concat([pk]); });
   console.log('   ', pr.join(' | '));
-  conf(pr.length === 2 && pr.every(x => /\/SOLO\+RAIZ\/ativa\/a1\+a2\/\d+\/sem\/Joana Silva$/.test(x)) && pr.some(x => /^RU13TAI24.*\/16\//.test(x)) && pr.some(x => /^RU14TAI24.*\/12\//.test(x)), 'gravou 2 programações no formato do EFClaudian (tipo, análises, pontos = ha × 4, semana, quem)');
+  conf(pr.length === 3 && /^\d{4}-S[12]$/.test(pr[2]) && /^RU13TAI24\/dia\/16\/Joana Silva$/.test(pr[0]) && /^RU14TAI24\/dia\/12\/Joana Silva$/.test(pr[1]) && !(S => S)(0), 'gravou 2 programações dentro do plano, no formato do EFClaudian (dia, pontos = ha × 4, quem)');
   conf(await p.evaluate(() => !document.querySelector('#gv') && document.querySelectorAll('.pp-ar.p').length === 3 && !document.querySelector('.pp-bar')), 'as 2 viram programadas, a gaveta fecha e a seleção limpa');
-  conf(await p.evaluate(async () => (await Data.col('sv2_audit').all()).filter(a => a.acao === 'criar_programacao').length === 2), 'auditoria registrada (2 × criar_programacao)');
+  conf(await p.evaluate(async () => (await Data.col('sv2_audit').all()).filter(a => a.acao === 'programar_plano' && /programou 2 área/.test(a.resumo)).length === 1), 'auditoria registrada (programar_plano, igual ao EFClaudian)');
 
   console.log('— Lançar coletadas (com e sem programação)');
   await p.click('.pp-ar[data-id="RU11TAI24"]'); await p.click('.pp-ar[data-id="RU15TAI24"]'); await p.waitForTimeout(150);

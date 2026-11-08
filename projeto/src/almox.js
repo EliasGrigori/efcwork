@@ -142,9 +142,9 @@ function alTabMateriais() {
       { k: 'nome', rot: 'Item', fixa: true, v: i => i.nome, cls: 'forte' },
       { k: 'loc', rot: 'Local', v: i => i.local || '' },
       { k: 'un', rot: 'Un', v: i => i.un || '' },
-      { k: 'disp', rot: 'Utilizável', tipo: 'num', v: i => alDisp(i.id), html: i => '<span class="num">' + alQ(alDisp(i.id)) + '</span>' + alMedidor(i), total: 'soma' },
+      { k: 'disp', rot: 'Utilizável', tipo: 'num', v: i => alDisp(i.id), html: i => '<span class="num">' + alQ(alDisp(i.id)) + '</span>' + alMedidor(i) },
       { k: 'min', rot: 'Mínimo', tipo: 'num', v: i => Number(i.min) || 0 },
-      { k: 'val', rot: 'Valor', tipo: 'num', v: i => Math.round(alValorEst(i.id) * 100) / 100, dec: 2, html: i => esc(brl(alValorEst(i.id))), total: 'soma', fmtTotal: brl },
+      { k: 'val', rot: 'Valor', tipo: 'num', v: i => Math.round(alValorEst(i.id) * 100) / 100, dec: 2, html: i => esc(brl(alValorEst(i.id))), total: rs => Math.round(rs.reduce((a, i) => a + alValorEst(i.id), 0) * 100) / 100, fmtTotal: brl },
       { k: 'sit', rot: 'Situação', v: i => alSit(i).txt, html: i => { const s = alSit(i); return alPill(s.txt, s.cor); } }] });
 }
 function alSitMov(m) { return m.anulada ? ['Anulada', ''] : m.erro ? ['Erro de lançamento', 'cr'] : m.critico && m.critico.st === 'nao_confere' ? ['Não confere', 'cr'] : m.historico && m.historico.length ? ['Corrigida', ''] : ['', '']; }

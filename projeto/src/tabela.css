@@ -105,3 +105,8 @@ body.dd-arrastando{cursor:grabbing;-webkit-user-select:none;user-select:none}
 @keyframes gvEntra{from{transform:translateX(100%);opacity:.4}to{transform:none;opacity:1}}
 @keyframes gvSai{from{transform:none;opacity:1}to{transform:translateX(100%);opacity:.3}}
 @media(prefers-reduced-motion:reduce){.gv.gv-entra,.gv.gv-sai{animation:none}}
+/* v0.4.7: total acima da tabela, em caixinhas; segue o filtro e a busca */
+.tb-tots{display:flex;flex-wrap:wrap;align-items:stretch;gap:8px;margin:0 0 10px}
+.tb-tt{display:flex;flex-direction:column;justify-content:center;padding:0 4px 0 2px;font-weight:700;font-size:14px;color:var(--tx)}.tb-tt small{font-weight:400;font-size:12px;color:var(--tx3)}
+.tb-tv{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:120px;padding:6px 14px;border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg1)}
+.tb-tv b{font-size:17px;font-variant-numeric:tabular-nums;color:var(--tx)}.tb-tv small{font-size:12px;color:var(--tx3)}

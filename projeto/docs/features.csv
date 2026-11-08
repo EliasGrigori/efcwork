@@ -316,3 +316,12 @@ Página própria do plano de coleta (abre pelo cartão),Coletas,must,sim,sim,Col
 Programar áreas do plano (sv2_prog),Coletas,must,sim,sim,Coletas › Programação › Plano,v0.4.6
 Lançar coletadas pelo plano (com e sem programação),Coletas,must,sim,sim,Coletas › Programação › Plano,v0.4.6
 Folha de campo do plano,Coletas,should,sim,sim,Coletas › Programação › Plano,v0.4.6
+Programações do plano dentro do plano (sv2_rodizio.progs) — ler e gravar,Coletas,must,sim,sim,Coletas › Programação › Plano,v0.4.7
+Aba Ajustes do plano (Plano · Áreas · Período · Recoletas),Coletas,must,sim,sim,Coletas › Programação › Plano › Ajustes,v0.4.7
+Editar análises do plano,Coletas,should,sim,sim,Plano › Ajustes,v0.4.7
+Editar áreas do plano (entra/sai; cancela programação),Coletas,must,sim,sim,Plano › Ajustes,v0.4.7
+Encerrar período (motivos; cancelar programações abertas),Coletas,must,sim,sim,Plano › Ajustes,v0.4.7
+Liberar recoleta (direto ou por pedido),Coletas,must,sim,sim,Plano › Ajustes,v0.4.7
+Sugestão de renovar plano no sino (fim do ano),Coletas,should,sim,sim,Sino,v0.4.7
+Login sem @ não bloqueia antes de tentar,Entrar,must,sim,sim,Entrar,v0.4.7
+Total acima da tabela seguindo filtro e busca (todas as tabelas),Tabelas,should,sim,sim,Materiais · Amostras · Calibração,v0.4.7

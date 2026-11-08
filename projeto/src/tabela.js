@@ -34,9 +34,11 @@ function tbResumoFiltro(cfg) {
   const st = tbEstado(cfg.id), at = (cfg.filtros || []).filter(f => st.filtros[f.k] != null && st.filtros[f.k] !== '');
   return { n: at.length, txt: at.length ? at.map(f => { const o = f.opcoes.find(x => x[0] === st.filtros[f.k]); return o ? o[1] : st.filtros[f.k]; }).join(' · ') : 'Todos' };
 }
-function tbTotal(cols, l, todas) {
-  if (!cols.some(c => c.total) || !l.length) return '';
-  return '<tr class="tb-tot">' + cols.map((c, i) => { if (!c.total) return '<td>' + (i === 0 ? 'Total' : '') + '</td>'; const v = typeof c.total === 'function' ? c.total(todas) : todas.reduce((s, r) => s + (Number(c.v(r)) || 0), 0); return '<td class="n">' + esc(c.fmtTotal ? c.fmtTotal(v) : numBR(v, c.dec)) + '</td>'; }).join('') + '</tr>';
+/* v0.4.7: total ACIMA da tabela (fora dela), em caixinhas, e segue o filtro e a busca (pedido de 08/11 13:27) */
+function tbTotal(cfg, todas, filtrado) {
+  const cs = (cfg.cols || []).filter(c => c.total); if (!cs.length) return '';
+  return '<div class="tb-tots" data-tbtot="' + esc(cfg.id) + '"><span class="tb-tt">Total' + (filtrado ? '<small>do filtro · ' + todas.length + ' ' + esc(cfg.unidade || 'registros') + '</small>' : '<small>' + todas.length + ' ' + esc(cfg.unidade || 'registros') + '</small>') + '</span>' +
+    cs.map(c => { const v = typeof c.total === 'function' ? c.total(todas) : todas.reduce((s, r) => s + (Number(c.v(r)) || 0), 0); return '<span class="tb-tv"><b>' + esc(c.fmtTotal ? c.fmtTotal(v) : numBR(v, c.dec)) + '</b><small>' + esc(c.rot) + '</small></span>'; }).join('') + '</div>';
 }
 function tbHTML(cfg) {
   TB[cfg.id] = cfg; const st = tbEstado(cfg.id), cols = tbVisiveis(cfg), todas = tbFiltrar(cfg), l = todas.slice(0, st.limite), rf = tbResumoFiltro(cfg);
@@ -50,10 +52,11 @@ function tbHTML(cfg) {
     '<button type="button" class="bt ic-so" data-act="tb-imp" data-tb="' + esc(cfg.id) + '" title="Imprimir" aria-label="Imprimir">' + ic('impressora') + '</button></div>';
   if (st.painel && (cfg.filtros || []).length) h += '<div class="tb-painel">' + cfg.filtros.map(f => '<div class="tb-pf"><span>' + esc(f.rot) + '</span>' + ddHTML('tbf:' + cfg.id + ':' + f.k, st.filtros[f.k] == null ? '' : st.filtros[f.k], [['', 'Todos']].concat(f.opcoes)) + '</div>').join('') + '</div>';
   if (st.colsAberto) h += '<div class="tb-painel tb-colsp"><span class="tb-pt">Colunas que aparecem</span>' + cfg.cols.filter(c => !c.fixa).map(c => '<label class="tb-ck"><input type="checkbox" data-tbcol="' + esc(cfg.id) + '" value="' + esc(c.k) + '"' + (st.ocultas.indexOf(c.k) < 0 ? ' checked' : '') + '>' + esc(c.rot) + '</label>').join('') + '</div>';
+  h += tbTotal(cfg, todas, !!(rf.n || st.busca));
   h += '<div class="tb-w"><table class="tb-t"><thead><tr>' + cols.map(c => {
     const o = st.ordem && st.ordem.k === c.k ? st.ordem.dir : '';
     return '<th class="' + (c.tipo === 'num' ? 'n' : '') + '"' + (o ? ' aria-sort="' + (o === 'asc' ? 'ascending' : 'descending') + '"' : '') + '><button type="button" data-act="tb-ord" data-tb="' + esc(cfg.id) + '" data-k="' + esc(c.k) + '">' + esc(c.rot) + (o ? '<span class="tb-seta">' + (o === 'asc' ? '▲' : '▼') + '</span>' : '') + '</button></th>';
-  }).join('') + '</tr>' + tbTotal(cols, l, todas) + '</thead><tbody>'; /* total em cima, logo abaixo dos títulos (pedido de 06/11 17:54) */
+  }).join('') + '</tr></thead><tbody>';
   if (!l.length) h += '<tr><td colspan="' + cols.length + '" class="tb-vz">' + esc(cfg.vazio || 'Nada encontrado.') + '</td></tr>';
   else h += l.map(r => { const id = chave(r); return '<tr' + (cfg.aoClicar ? ' data-act="tb-lin" data-tb="' + esc(cfg.id) + '" data-id="' + esc(id) + '" tabindex="0"' : '') + (cfg.selecionado === id ? ' class="sel"' : '') + '>' + cols.map(c => '<td class="' + (c.tipo === 'num' ? 'n' : '') + (c.cls ? ' ' + c.cls : '') + '"' + (c.titulo ? ' title="' + esc(c.titulo(r)) + '"' : '') + '>' + tbFmt(c, r) + '</td>').join('') + '</tr>'; }).join('');
   h += '</tbody>';

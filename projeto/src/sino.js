@@ -2,7 +2,8 @@
    outras áreas, no EFClaudian até elas serem refeitas), seus pedidos esperando e os avisos (os mesmos do sino do EFClaudian:
    sv2_notifs, lidos por pessoa). O número no sino = avisos não lidos + pedidos para decidir. Prefixo: sn. */
 S.snRep = null; /* id do pedido que está sendo reprovado (mostra o campo do motivo) */
-const snConta = () => S.user ? Notif.unread().length + Aprov.pendentesParaMim().length : 0;
+const snRen = () => typeof ppRenovaveis === 'function' ? ppRenovaveis() : [];
+const snConta = () => S.user ? Notif.unread().length + Aprov.pendentesParaMim().length + snRen().length : 0;
 const snAberto = () => S.gv === snGaveta;
 function snAtualiza() {
   const b = $('#sn-n'), n = snConta();
@@ -37,6 +38,8 @@ function snGaveta() {
         : aqui ? '<div class="sn-bts"><button type="button" class="bt" data-act="sn-rep" data-id="' + esc(a.id) + '">Recusar</button><button type="button" class="bt pr" data-act="sn-apr" data-id="' + esc(a.id) + '">' + ic('ok') + 'Confirmar</button></div>'
         : '<div class="sn-bts"><a class="bt" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener">' + ic('externo') + 'Decidir no EFClaudian</a></div>') + '</div>';
   }).join('');
+  const ren = snRen(); /* v0.4.7: no fim do ano, sugere renovar os planos de coleta */
+  if (ren.length) c += '<p class="gv-h">Sugestões · ' + ren.length + '</p>' + ren.map(r => '<div class="sn-pd"><b>Renovar ' + esc(r.nome || r.tipo) + ' para ' + (Number(r.ano) + 1) + '?</b><span>Cria o plano de ' + (Number(r.ano) + 1) + ' igual a este: ' + (r.areas || []).length + ' áreas, as mesmas análises e a mesma frequência. O de ' + esc(String(r.ano)) + ' continua até o fim.</span><div class="sn-bts"><button type="button" class="bt" data-act="sn-ren-nao" data-id="' + esc(r.id) + '">Agora não</button><button type="button" class="bt pr" data-act="sn-ren" data-id="' + esc(r.id) + '">' + ic('recontar') + 'Renovar</button></div></div>').join('');
   if (meus.length) c += '<p class="gv-h">Seus pedidos esperando</p>' + gvLinha(meus.map(a => [a.titulo, 'aguardando ' + ((a.paraNomes || []).join(', ') || 'o superior') + ' · ' + fmtDT(a.ts)]));
   c += '<p class="gv-h">Avisos' + (nl ? ' · ' + nl + ' não lido(s)' : '') + '</p>' + (ns.length ? '<div class="sn-l">' + ns.map(n => {
     const lido = Notif.isRead(n), nv = snNivel[n.nivel] || snNivel.info, conf = n.nivel === 'critico' && !Notif.isConfirmed(n);
@@ -50,6 +53,8 @@ function snAbrir() { S.snRep = null; gvAbrir(snGaveta, true); }
 document.addEventListener('click', async e => {
   const t = e.target.closest && e.target.closest('[data-act^="sn-"]'); if (!t) return;
   const a = t.getAttribute('data-act'), id = t.getAttribute('data-id');
+  if (a === 'sn-ren') { t.disabled = true; await ppRenova(id); snAtualiza(); if (snAberto()) gvDesenha(true); return; }
+  if (a === 'sn-ren-nao') { ppRenovaNao(id); snAtualiza(); if (snAberto()) gvDesenha(true); return; }
   if (a === 'sn-todas') { Notif.readAll(); aviso('Avisos marcados como lidos.'); }
   else if (a === 'sn-conf') Notif.confirm(id);
   else if (a === 'sn-rep') { S.snRep = id; gvDesenha(true); const m = $('#sn-mot'); if (m) m.focus(); }

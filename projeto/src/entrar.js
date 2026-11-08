@@ -92,13 +92,13 @@ document.addEventListener('submit', async e => {
   if (f.getAttribute('data-form') === 'en-entrar') {
     const login = $('#en-login').value.trim(), senha = $('#en-senha').value;
     if (!login || !senha) return enMsg('Preencha o usuário e a senha.');
-    if (login.indexOf('@') < 0 && /(gmail|hotmail|outlook|yahoo|icloud)\.com|\.com\.br$/i.test(login)) return enMsg('Parece um e-mail sem o @. Digite o e-mail completo (ex.: nome@gmail.com) ou o seu login.'); /* v0.4.1 */
+    const semArroba = login.indexOf('@') < 0 && /(gmail|hotmail|outlook|yahoo|icloud)\.com|\.com\.br$/i.test(login); /* v0.4.7: só avisa DEPOIS de falhar (há logins antigos escritos assim) */
     bt.disabled = true; bt.textContent = 'Entrando…'; enMsg('');
     try {
       if ($('#en-lembrar').checked) Store.set('cw-ultimo-login', login); else Store.del('cw-ultimo-login');
       const id = await Data.auth.signIn(login, senha);
       if (DEMO) await csCarregaUsuario(id);
-    } catch (er) { enMsg(enErro(er)); bt.disabled = false; bt.textContent = 'Entrar'; }
+    } catch (er) { enMsg(semArroba ? 'Login ou senha incorretos. Parece um e-mail sem o @: se for e-mail, digite completo (ex.: nome@gmail.com).' : enErro(er)); bt.disabled = false; bt.textContent = 'Entrar'; }
     return;
   }
   /* primeiro acesso */
