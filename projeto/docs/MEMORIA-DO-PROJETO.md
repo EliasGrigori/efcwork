@@ -110,3 +110,5 @@ v0.2 Almoxarifado consulta + tabela padrão + busca · v0.3 Almoxarifado lançam
 232 itens: 166 OK · 1 FALHOU · 51 PARCIAL · 14 NÃO TESTADO. FALHOU: linha Total de Materiais (v0.2.0 B6). ACHADO: login real do Principal sem @ era bloqueado (v0.4.1). Ambos corrigidos na v0.4.7. Todos os roteiros v0.1.0–v0.4.6 já tiveram retorno.
 
 - Publicado no GitHub em 08/11/2026: v0.4.7, commit b70f154 (autorizado por "pode iniciar"; item 8 publicado com a resposta do Elias ainda pendente).
+
+- Publicado no GitHub em 08/11/2026 15:43: v0.4.8, commit 36cda94 (autorizado por "pode iniciar" depois da aprovação 15:37).

@@ -1435,3 +1435,5 @@ Feito: tabela.js — o total saiu da linha dentro da tabela e virou faixa acima 
 - Pílulas do cabeçalho de Materiais seguirem o filtro: sem resposta.
 - Item 8 da v0.4.7 foi substituído por este desenho.
 - Pílulas do cabeçalho de Materiais seguirem o filtro: ainda sem resposta.
+
+- Publicado no GitHub em 08/11/2026 15:43: v0.4.8, commit 36cda94 (autorizado por "pode iniciar" depois da aprovação 15:37).
