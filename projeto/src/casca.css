@@ -91,3 +91,5 @@
 
 /* v0.4.5: ícone ao lado do título (ex.: legenda da Programação) */
 .cs-ht{display:flex;align-items:center;gap:10px}.cs-ht .pg-lg{margin-bottom:8px}
+/* v0.4.6: com ícone ao lado do título (Programação, plano), os botões ficam na linha do título também quando há situação embaixo */
+@media(min-width:900px){.cs-phr:has(.cs-ht){align-items:flex-start}.cs-phr:has(.cs-ht) .cs-acts{margin-top:4px}}

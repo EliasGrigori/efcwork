@@ -7,7 +7,7 @@ const CS_CARGAS = []; /* funções que cada área registra para começar a ouvir
 /* áreas do EFCwork (estrutura aprovada no Estudo do Rework, 05/11/2026). "versao" = quando a área é refeita aqui */
 const AREAS = [
   { id: 'inicio', nome: 'Início', ic: 'casa', abas: [] },
-  { id: 'coletas', nome: 'Coletas', ic: 'frasco', versao: 'v0.4', abas: [{ id: 'amostras', nome: 'Amostras' }, { id: 'programacao', nome: 'Programação' }, { id: 'envio', nome: 'Envio' }, { id: 'cadastros', nome: 'Cadastros' }] },
+  { id: 'coletas', nome: 'Coletas', ic: 'frasco', versao: 'v0.4', abas: [{ id: 'amostras', nome: 'Amostras' }, { id: 'programacao', nome: 'Programação' }, { id: 'envio', nome: 'Envio' }, { id: 'cadastros', nome: 'Cadastros' }, { id: 'plano', nome: 'Plano de coleta', oculta: true, pai: 'programacao' }] },
   { id: 'rateios', nome: 'Rateios', ic: 'pizza', versao: 'v0.7', abas: [] },
   { id: 'inspecoes', nome: 'Inspeções', ic: 'lista', versao: 'v0.6', abas: [{ id: 'cloro', nome: 'Cloro' }, { id: 'apontamentos', nome: 'Apontamentos' }, { id: 'auditoria', nome: 'Auditoria interna' }] },
   { id: 'documentos', nome: 'Documentos', ic: 'doc', versao: 'v0.5', abas: [{ id: 'documentos', nome: 'Documentos' }, { id: 'caixas', nome: 'Caixas d’água' }, { id: 'historico', nome: 'Histórico' }] },
@@ -35,7 +35,7 @@ function csLeRota() {
   let a = AREAS.find(x => x.id === p[0]) ? p[0] : 'inicio';
   const ar = csArea(a);
   let aba = p[1] && ar.abas.some(x => x.id === p[1]) ? p[1] : (ar.abas[0] ? ar.abas[0].id : '');
-  return { area: a, aba: aba };
+  return { area: a, aba: aba, id: p[2] ? decodeURIComponent(p[2]) : '' };
 }
 function ir(area, aba) { const h = '#/' + area + (aba ? '/' + aba : ''); if (location.hash !== h) location.hash = h; else render(); }
 window.addEventListener('hashchange', () => { S.rota = csLeRota(); csUso(); csFechaMenu(); S.camadas = S.camadas.filter(c => c.nome !== 'menu'); if (S._gvNav) S._gvNav = false; else { S.gv = null; S.gvForm = false; S.fm = null; S._alSel = null; S.camadas = []; const g = $('#gv'); if (g) g.remove(); document.body.classList.remove('gv-aberta'); } render(); try { window.scrollTo(0, 0); } catch {} });

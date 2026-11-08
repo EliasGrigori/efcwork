@@ -7,6 +7,7 @@
   --bg0:#f7f5ef;--bg1:#fffefb;--bg2:#f2eee4;--bd:#e6dfcf;--bd2:#d8cdb2;
   --tx:#1e1b14;--tx2:#5b5443;--tx3:#8d846c;
   --a:#9a7128;--aS:rgba(154,113,40,.12);--aT:#1c1406;--aTx:#7d5a1c;
+  --arC:#2f7d4f;--arPF:#f2f8f4;--arXF:#fcf6e6;--arPB:#bcdcc8;--arXB:#e7d39f;--arFB:#e9e3d5;
   --ok:#2f7d4f;--okS:rgba(47,125,79,.12);--wa:#9a6a0c;--waS:rgba(154,106,12,.13);--cr:#b33a32;--crS:rgba(179,58,50,.11);
   --sh:0 1px 2px rgba(40,30,10,.06),0 4px 14px rgba(40,30,10,.05);
   --sb:#fffdf8;--sbTx:#2a2519;--sbBd:#e6dfcf;
@@ -18,6 +19,7 @@
   --bg0:#0b0d16;--bg1:#121524;--bg2:#181c2e;--bd:#2a2b3b;--bd2:#3d3b4b;
   --tx:#f3eee3;--tx2:#bcb3a1;--tx3:#80796a;
   --a:#d9b46a;--aS:rgba(217,180,106,.15);--aT:#1c1406;--aTx:#f0d48f;
+  --arC:#2b6e48;--arPF:rgba(127,191,152,.07);--arXF:rgba(226,181,95,.07);--arPB:rgba(127,191,152,.38);--arXB:rgba(226,181,95,.4);--arFB:#262839;
   --ok:#7fbf98;--okS:rgba(127,191,152,.14);--wa:#e2b55f;--waS:rgba(226,181,95,.14);--cr:#e38b7d;--crS:rgba(227,139,125,.14);
   --sh:0 16px 40px rgba(0,0,0,.45);
   --sb:rgba(14,17,32,.94);--sbTx:#efe9da;--sbBd:rgba(217,180,106,.14);

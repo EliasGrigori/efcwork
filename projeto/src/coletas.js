@@ -71,6 +71,10 @@ TELAS.coletas = function (aba) {
   const acoes = (coPode() && r.naoenv ? '<button type="button" class="bt pr" data-act="co-env">' + ic('sai') + 'Enviar</button>' : '') + ext;
   if (t.id === 'cadastros') return cabecalho({ titulo: t.nome, abaNome: t.nome, meta: [metaPl('chega numa próxima versão', 'wa', 'relogio')], acoes: '<a class="bt pr" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener">' + ic('externo') + 'Usar no EFClaudian</a>' }) +
     '<section class="pn"><div class="vazio">' + ic('lista') + '<b>Talhões, análises, laboratórios e prazos continuam no EFClaudian por enquanto.</b><span>Os dados são os mesmos: o que for lançado lá aparece aqui na hora.</span></div></section>';
+  if (t.id === 'plano') { /* v0.4.6 (plano.js) */
+    if (!S.colCarregado && !DEMO) return cabecalho({ caminho: ['Coletas', 'Programação', 'Plano'], titulo: 'Plano de coleta' }) + '<section class="pn"><div class="vazio">' + ic('relogio') + '<b>Carregando o plano…</b></div></section>';
+    return ppTela(S.rota.id);
+  }
   if (t.id === 'programacao') { /* v0.4.4 (programacao.js) */
     const h2 = cabecalho({ titulo: t.nome, abaNome: t.nome, aoLado: pgLegenda(), acoes: pgAcoes() });
     if (!S.colCarregado && !DEMO) return h2 + '<section class="pn"><div class="vazio">' + ic('relogio') + '<b>Carregando a programação…</b></div></section>';

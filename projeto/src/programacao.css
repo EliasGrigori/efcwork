@@ -17,9 +17,10 @@
 .pg-pln{margin:0;font-size:14px;color:var(--tx2)}.pg-pln b{color:var(--tx)}
 .pg-ars{display:flex;flex-wrap:wrap;gap:5px}
 .pg-ar{display:inline-grid;place-items:center;min-width:44px;height:26px;padding:0 6px;border-radius:var(--rs);font-size:13px;font-weight:600;border:1px solid var(--bd);color:var(--tx3);background:var(--bg1);font-variant-numeric:tabular-nums}
-.pg-ar.c{background:var(--ok);border-color:var(--ok);color:var(--onCr)}
-.pg-ar.p{border-color:var(--ok);color:var(--tx)}
-.pg-ar.x{border-color:var(--wa);color:var(--tx)}
+.pg-ar{border-color:var(--arFB);color:var(--tx2)}
+.pg-ar.c{background:var(--arC);border-color:var(--arC);color:#fff}
+.pg-ar.p{border-color:var(--arPB);background:var(--arPF)}
+.pg-ar.x{border-color:var(--arXB);background:var(--arXF)}
 /* legenda: ícone "!" junto do subtítulo */
 .pg-lg{position:relative;display:inline-flex}
 .pg-i{width:22px;height:22px;padding:0;border:1px solid var(--bd2);border-radius:50%;background:var(--bg1);color:var(--tx2);display:inline-grid;place-items:center;cursor:help}
@@ -33,3 +34,6 @@
 [data-tb="pg"] .tb-t th button{justify-content:center}[data-tb="pg"] .tb-t td{text-align:center}
 .pg-ansdd{margin-bottom:6px}.pg-ans{max-height:min(30vh,240px)}
 .pg-ansdd .dd-b{height:34px;padding:0 10px;font-size:14px}
+
+/* v0.4.6: o cartão abre a página do plano */
+a.pg-pl{color:inherit;text-decoration:none;cursor:pointer;transition:border-color .15s}a.pg-pl:hover{border-color:var(--bd2)}a.pg-pl:focus-visible{outline:2px solid var(--a);outline-offset:2px}

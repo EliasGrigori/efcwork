@@ -221,11 +221,11 @@ function pgPlanosHTML() {
     const fechado = r.fechados && r.fechados[p.k], sit = fechado ? ['Encerrado', ''] : c === areas.length && areas.length ? ['Concluído', 'ok'] : ['Em andamento', 'info'];
     const tit = { c: 'coletada', p: 'programada', x: 'programada e atrasada', f: 'falta' };
     const pl1 = n => n + ' ' + (n === 1 ? 'área' : 'áreas');
-    return '<article class="pg-pl"><header><h3>' + esc(r.tipo || r.nome) + ' · ' + esc(RZ_FREQ[r.freq] || '') + ' · ' + esc(String(r.ano)) + '</h3><span class="pg-dt">' + fmtD(p.ini).slice(0, 5) + ' a ' + fmtD(p.fim).slice(0, 5) + '</span>' + alPill(sit[0], sit[1]) + '</header>' +
+    return '<a class="pg-pl" href="#/coletas/plano/' + encodeURIComponent(r.id) + '" aria-label="Abrir o plano ' + esc((r.tipo || r.nome) + ' ' + r.ano) + '"><header><h3>' + esc(r.tipo || r.nome) + ' · ' + esc(RZ_FREQ[r.freq] || '') + ' · ' + esc(String(r.ano)) + '</h3><span class="pg-dt">' + fmtD(p.ini).slice(0, 5) + ' a ' + fmtD(p.fim).slice(0, 5) + '</span>' + alPill(sit[0], sit[1]) + '</header>' +
       (r.nome && !String(r.nome).toLowerCase().includes(String(r.tipo || '').toLowerCase()) ? '<small>' + esc(r.nome) + '</small>' : '') +
       '<div class="pg-plb" role="img" aria-label="' + pc + '% coletado"><i style="width:' + pc + '%"></i></div>' +
       '<p class="pg-pln"><b>' + pc + '%</b> · ' + c + ' de ' + pl1(areas.length) + ' coletada' + (c === 1 ? '' : 's') + '</p>' + (pr ? '<p class="pg-pln">' + pr + ' programada' + (pr > 1 ? 's' : '') + '</p>' : '') +
-      '<div class="pg-ars">' + est.map(y => '<span class="pg-ar ' + y.e.k + '" title="' + esc(y.a + ', ' + tit[y.e.k] + (y.e.d ? ' para ' + pgDiaTxt(y.e.d) + (y.e.col ? ', ' + y.e.col : '') : '')) + '">' + esc(rot[y.a]) + '</span>').join('') + '</div></article>';
+      '<div class="pg-ars">' + est.map(y => '<span class="pg-ar ' + y.e.k + '" title="' + esc(y.a + ', ' + tit[y.e.k] + (y.e.d ? ' para ' + pgDiaTxt(y.e.d) + (y.e.col ? ', ' + y.e.col : '') : '')) + '">' + esc(rot[y.a]) + '</span>').join('') + '</div></a>';
   }).join('') + '</section>';
 }
 const pgLegenda = () => '<span class="pg-lg"><button type="button" class="pg-i" aria-label="Legenda das cores das áreas">' + ic('excl') + '</button><span class="pg-leg" role="tooltip"><span><i class="pg-ar c"></i>coletada</span><span><i class="pg-ar p"></i>programada</span><span><i class="pg-ar x"></i>programada e atrasada</span><span><i class="pg-ar f"></i>falta</span></span></span>';

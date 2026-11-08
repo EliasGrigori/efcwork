@@ -311,3 +311,8 @@ Tabela da Programação na ordem da planilha (Sem·Data·Área·Pontos·Coletor�
 Etapas da programação na gaveta (linha do tempo com fluido),Coletas,should,nao,sim,Coletas › Programação,v0.4.5
 SOLO+RAIZ coletada em linhas separadas (Solo / Nematoide),Coletas,must,nao,sim,Coletas › Programação,v0.4.5
 Legenda das cores dos planos no ícone "!",Coletas,could,nao,sim,Coletas › Programação,v0.4.5
+Página própria do plano de coleta (abre pelo cartão),Coletas,must,sim,sim,Coletas › Programação › Plano,v0.4.6
+Áreas do plano em grade com seleção e barra flutuante,Coletas,must,nao,sim,Coletas › Programação › Plano,v0.4.6
+Programar áreas do plano (sv2_prog),Coletas,must,sim,sim,Coletas › Programação › Plano,v0.4.6
+Lançar coletadas pelo plano (com e sem programação),Coletas,must,sim,sim,Coletas › Programação › Plano,v0.4.6
+Folha de campo do plano,Coletas,should,sim,sim,Coletas › Programação › Plano,v0.4.6
