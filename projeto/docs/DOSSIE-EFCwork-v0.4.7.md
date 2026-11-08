@@ -1390,3 +1390,5 @@ Página de aprovação: aprovacao-efcwork-v0.4.7.html (8 itens).
 ## Aprovação (08/11/2026 13:27)
 Itens 1–7 Aprovado. Item 8 Aprovado com pedido: "total tem que ficar acima da tabela, e eles têm que receber a influência dos filtros".
 Feito: tabela.js — o total saiu da linha dentro da tabela e virou faixa acima dela (`.tb-tots`: "Total" + caixinhas por coluna com total), calculada sobre as linhas filtradas/buscadas; com filtro ou busca mostra "do filtro · N". Vale para Materiais, Amostras e Calibração. Pílulas do cabeçalho continuam com o estoque inteiro (perguntado no item). Testes t_v020/t_v041 ajustados (+1 teste da busca). Suíte 676 ok. Página aprovacao-efcwork-v0.4.7-item8.html.
+
+- Publicado no GitHub em 08/11/2026: v0.4.7, commit b70f154 (autorizado por "pode iniciar"; item 8 publicado com a resposta do Elias ainda pendente).
