@@ -1,7 +1,7 @@
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.4.7';
+const VERSAO = '0.4.8';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -116,6 +116,8 @@ const ICS = {
   info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.2"/>', menu: '<path d="M4 7h16M4 12h16M4 17h16"/>', externo: '<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
   olho: '<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/>',
   filtro: '<path d="M3 5h18l-7 8.5V19l-4 2v-7.5z"/>',
+  ordAsc: '<path d="M7 4v16M3.5 16.5 7 20l3.5-3.5M14 6h6M14 12h4.5M14 18h3"/>', ordDesc: '<path d="M7 4v16M3.5 16.5 7 20l3.5-3.5M14 6h3M14 12h4.5M14 18h6"/>',
+  ordPad: '<path d="M4 7h16M4 12h16M4 17h16"/>', abre: '<path d="m7 10 5 5 5-5"/>', arrasta: '<circle cx="9" cy="6" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="18" r="1"/>',
   colunas: '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9.5 4v16M14.5 4v16"/>',
   planilha: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M8.5 12h7M8.5 16h7M12 12v6"/>',
   impressora: '<path d="M7 9V3h10v6M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2"/><rect x="7" y="14" width="10" height="7" rx="1"/>',

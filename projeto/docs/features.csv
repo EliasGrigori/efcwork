@@ -325,3 +325,10 @@ Liberar recoleta (direto ou por pedido),Coletas,must,sim,sim,Plano › Ajustes,v
 Sugestão de renovar plano no sino (fim do ano),Coletas,should,sim,sim,Sino,v0.4.7
 Login sem @ não bloqueia antes de tentar,Entrar,must,sim,sim,Entrar,v0.4.7
 Total acima da tabela seguindo filtro e busca (todas as tabelas),Tabelas,should,sim,sim,Materiais · Amostras · Calibração,v0.4.7
+Menu da coluna: ordenar A-Z/Z-A/padrão,Tabelas,should,sim,sim,Todas as tabelas,v0.4.8
+Menu da coluna: busca e lista de valores com caixinhas,Tabelas,should,sim,sim,Todas as tabelas,v0.4.8
+Menu da coluna: De/Até em números,Tabelas,should,sim,sim,Todas as tabelas,v0.4.8
+Travar ordem e filtro da coluna,Tabelas,should,sim,sim,Todas as tabelas,v0.4.8
+Arrastar colunas para reorganizar,Tabelas,should,sim,sim,Todas as tabelas,v0.4.8
+Faixa do total alinhada às colunas,Tabelas,should,sim,sim,Todas as tabelas,v0.4.8
+Limpar filtro no lugar do botão Filtro,Tabelas,should,sim,sim,Todas as tabelas,v0.4.8

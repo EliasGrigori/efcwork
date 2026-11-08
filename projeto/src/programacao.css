@@ -31,7 +31,7 @@
 .pg-cdi{flex:1;min-width:0}
 
 /* v0.4.5: tabela centralizada como a do EFClaudian; análises em lista suspensa */
-[data-tb="pg"] .tb-t th button{justify-content:center}[data-tb="pg"] .tb-t td{text-align:center}
+[data-tb="pg"] .tb-thi{justify-content:center}[data-tb="pg"] .tb-t td{text-align:center}
 .pg-ansdd{margin-bottom:6px}.pg-ans{max-height:min(30vh,240px)}
 .pg-ansdd .dd-b{height:34px;padding:0 10px;font-size:14px}
 

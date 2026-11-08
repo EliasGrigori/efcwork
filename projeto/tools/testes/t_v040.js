@@ -59,7 +59,7 @@ const abre = async (p, id) => { await p.evaluate(() => { location.hash = '#/cole
   const sit = await p.evaluate(() => ['c1', 'c3', 'c4', 'c5', 'c6', 'c7'].map(i => coSit(S.coletas.find(x => x.id === i)).txt).join(','));
   conf(sit === 'Não enviada,Laudo atrasado,Laudo baixado,Aguardando laudo,Encerrada,Cancelada', 'situações calculadas como no EFClaudian (' + sit + ')');
   conf(await p.evaluate(() => coLaudoLimite(S.coletas.find(x => x.id === 'c3')) === 15 && coLaudoLimite(S.coletas.find(x => x.id === 'c5')) === 12), 'prazo do laboratório da configuração (IBRA 10 dias) + 5 de folga; sem prazo = 7 + 5');
-  await p.click('[data-act="tb-painel"][data-tb="co-am"]'); await p.waitForTimeout(80); await dd(p, 'tbf:co-am:mat', 'Folha'); await p.waitForTimeout(150);
+  await p.click('[data-tb="co-am"] .tb-cab th[data-tbk="mat"] .tb-hm'); await p.waitForTimeout(120); await dd(p, 'tbf:co-am:mat', 'Folha'); await p.waitForTimeout(150); await p.keyboard.press('Escape'); await p.waitForTimeout(200);
   conf((await p.$$('.tb-t tbody tr[data-id]')).length === 2, 'filtro único: Material = Folha → 2');
   await p.click('[data-act="tb-limpa"]'); await p.waitForTimeout(150);
   await p.screenshot({ path: path.join(SHOTS, 'v040-pc-claro-amostras.png') });

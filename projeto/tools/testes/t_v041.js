@@ -84,13 +84,16 @@ const alvo = async (p, v) => { await dd(p, 'lc:coalvo', v); await p.waitForTimeo
 
   console.log('— Tabelas');
   await p.evaluate(() => { location.hash = '#/coletas/amostras'; }); await p.waitForTimeout(250);
-  conf(await p.evaluate(() => { const t = document.querySelector('.tb-tots'); return !!t && !document.querySelector('.tb-t .tb-tot') && !document.querySelector('.tb-t tfoot') && /Total/.test(t.textContent) && t.nextElementSibling && t.nextElementSibling.classList.contains('tb-w'); }), 'o total fica acima da tabela, fora dela (v0.4.7)');
+  conf(await p.evaluate(() => { const t = document.querySelector('.tb-bar .tb-tots'); return !!t && !document.querySelector('.tb-totr') && !document.querySelector('.tb-t tfoot') && /Total/.test(t.textContent); }), 'o total fica na barra de cima, acima da sua coluna (v0.4.8)');
   const tt0 = await p.evaluate(() => document.querySelector('.tb-tots .tb-tv b').textContent);
-  await p.fill('[data-tbbusca]', 'zzzz-nada'); await p.waitForTimeout(250);
+  await p.click('.tb-cab th:first-child .tb-hm'); await p.waitForTimeout(150);
+  await p.fill('[data-tbmnbusca]', 'zzzz-nada'); await p.waitForTimeout(400);
   const tt1 = await p.evaluate(() => (document.querySelector('.tb-tots .tb-tv b') || {}).textContent || '');
-  await p.fill('[data-tbbusca]', 'c1'); await p.waitForTimeout(250);
+  await p.fill('[data-tbmnbusca]', ''); await p.waitForTimeout(400);
+  const um = await p.$eval('.tb-mn-li:not(.tb-mn-all) span', e => e.textContent);
+  await p.fill('[data-tbmnbusca]', um); await p.waitForTimeout(400);
   const tt2 = await p.evaluate(() => (document.querySelector('.tb-tots') || {}).textContent || '');
-  await p.fill('[data-tbbusca]', ''); await p.waitForTimeout(250);
+  await p.fill('[data-tbmnbusca]', ''); await p.waitForTimeout(400); await p.keyboard.press('Escape'); await p.waitForTimeout(200);
   console.log('    total:', tt0, '| busca sem resultado:', tt1, '| busca:', tt2);
   conf(/R\$/.test(tt0) && /R\$\s?0,00/.test(tt1) && /do filtro/.test(tt2), 'o total segue a busca e o filtro ("Total do filtro")');
   conf(await p.evaluate(() => !Array.from(document.querySelectorAll('.tb-t tbody td')).some(td => td.textContent.trim() === '—')), 'nenhuma célula com "—": sem dado = em branco');

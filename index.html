@@ -231,9 +231,6 @@ h1,h2,h3{font-family:var(--fh);font-weight:600;letter-spacing:-.01em;margin:0}
 :root[data-tema="escuro"] .tb-w{border-color:rgba(217,180,106,.16);box-shadow:inset 0 1px 0 rgba(217,180,106,.10)}
 .tb-t{width:100%;border-collapse:collapse;font-size:14px}
 .tb-t th{position:sticky;top:0;z-index:1;height:var(--row);text-align:left;font-weight:600;font-size:13px;color:var(--tx2);background:var(--bg2);padding:0;border-bottom:1px solid var(--bd);white-space:nowrap}
-.tb-t th button{all:unset;box-sizing:border-box;display:flex;gap:5px;align-items:center;width:100%;height:var(--row);padding:0 12px;cursor:pointer}
-.tb-t th.n button{justify-content:flex-end}
-.tb-t th button:focus-visible{outline:2px solid var(--a);outline-offset:-2px}
 .tb-seta{color:var(--aTx);font-size:10px}
 .tb-t td{height:var(--row);padding:4px 12px;border-bottom:1px solid var(--bd);white-space:nowrap}
 .tb-t td.n,.tb-t th.n{text-align:right;font-variant-numeric:tabular-nums}
@@ -316,11 +313,95 @@ body.dd-arrastando{cursor:grabbing;-webkit-user-select:none;user-select:none}
 @keyframes gvEntra{from{transform:translateX(100%);opacity:.4}to{transform:none;opacity:1}}
 @keyframes gvSai{from{transform:none;opacity:1}to{transform:translateX(100%);opacity:.3}}
 @media(prefers-reduced-motion:reduce){.gv.gv-entra,.gv.gv-sai{animation:none}}
-/* v0.4.7: total acima da tabela, em caixinhas; segue o filtro e a busca */
-.tb-tots{display:flex;flex-wrap:wrap;align-items:stretch;gap:8px;margin:0 0 10px}
-.tb-tt{display:flex;flex-direction:column;justify-content:center;padding:0 4px 0 2px;font-weight:700;font-size:14px;color:var(--tx)}.tb-tt small{font-weight:400;font-size:12px;color:var(--tx3)}
-.tb-tv{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:120px;padding:6px 14px;border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg1)}
-.tb-tv b{font-size:17px;font-variant-numeric:tabular-nums;color:var(--tx)}.tb-tv small{font-size:12px;color:var(--tx3)}
+/* v0.4.8: total na barra de cima, cada valor acima da sua coluna */
+.tb-bar{position:relative}
+.tb-tots{position:absolute;left:0;top:0;height:var(--btn);pointer-events:none}
+.tb-tots>span{position:absolute;top:0;height:var(--btn);box-sizing:border-box;pointer-events:auto;border-radius:8px}
+.tb-tl{display:flex;flex-direction:column;justify-content:center;align-items:flex-end;padding:0 10px;border:1px solid var(--bd);background:var(--bg1);line-height:1.1;white-space:nowrap}
+.tb-tl b{font-size:13px;color:var(--tx);font-weight:700}.tb-tl small{font-size:11.5px;color:var(--tx3)}
+.tb-tv{display:flex;align-items:center;justify-content:flex-end;padding:0 12px;border:1px solid color-mix(in srgb,var(--a) 40%,var(--bd));background:color-mix(in srgb,var(--a) 8%,var(--bg1));white-space:nowrap}
+.tb-tv b{font-size:15px;font-variant-numeric:tabular-nums;color:var(--tx);font-weight:700}
+.tb-tots.tb-tots-fluxo{position:static;display:flex;gap:6px;height:auto;order:0}
+.tb-tots.tb-tots-fluxo>span{position:static}
+@media(max-width:599px){.tb-tots{position:static;display:flex;gap:6px;height:auto;width:100%}.tb-tots>span{position:static}.tb-tl{align-items:flex-start}.tb-tv{flex:1;justify-content:center}}
+/* botão Limpar filtro (no lugar do antigo botão Filtro) */
+.tb-limpa{display:inline-flex;align-items:center;gap:6px;height:var(--btn);padding:0 12px 0 10px;border:1px solid color-mix(in srgb,var(--a) 45%,var(--bd2));border-radius:var(--rs);background:color-mix(in srgb,var(--a) 9%,var(--bg1));color:var(--aTx);font-size:14px;font-weight:600;cursor:pointer}
+.tb-limpa .ic{width:14px;height:14px}.tb-limpa:hover{background:color-mix(in srgb,var(--a) 16%,var(--bg1))}
+/* cabeçalho com menu */
+.tb-t th.tb-th,.tb-t .tb-cab th{padding:0}
+.tb-thi{display:flex;align-items:center;height:var(--row);padding:0 6px 0 12px;gap:4px}
+.tb-t th.n .tb-thi{justify-content:flex-end}
+.tb-t .tb-thr{all:unset;box-sizing:border-box;cursor:pointer;height:100%;display:flex;align-items:center;min-width:0;overflow:hidden;text-overflow:ellipsis;user-select:none;-webkit-user-select:none}
+.tb-t .tb-thr:focus-visible,.tb-hm:focus-visible{outline:2px solid var(--a);outline-offset:-2px;border-radius:4px}
+.tb-hm{all:unset;box-sizing:border-box;display:inline-flex;align-items:center;gap:1px;height:22px;min-width:22px;padding:0 3px;border-radius:6px;cursor:pointer;color:var(--tx3);opacity:0;transition:opacity .15s,background .15s}
+.tb-hm .ic{width:13px;height:13px}.tb-hm i{display:inline-flex}
+.tb-t th:hover .tb-hm,.tb-t th.tb-ab .tb-hm,.tb-hm:focus-visible{opacity:1}
+.tb-hm:hover,.tb-t th.tb-ab .tb-hm{background:var(--bg0);color:var(--tx)}
+.tb-hm.on{opacity:1;color:var(--aTx);background:color-mix(in srgb,var(--a) 14%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--a) 40%,transparent);padding:0 4px}
+.tb-hm.on .tb-hv{display:none}.tb-t th:hover .tb-hm.on .tb-hv,.tb-t th.tb-ab .tb-hm.on .tb-hv{display:inline-flex}
+.tb-hm .tb-mt .ic{width:11px;height:11px}
+.tb-t th.tb-at{color:var(--tx);box-shadow:inset 0 -2px 0 var(--a)}
+@media(hover:none){.tb-hm{opacity:.55}}
+/* arrastar a coluna */
+body.tb-arrastando,body.tb-arrastando *{cursor:grabbing!important;user-select:none}
+.tb-t th.tb-pega{opacity:.45}
+.tb-t th.tb-alvo-e{box-shadow:inset 3px 0 0 var(--a)}.tb-t th.tb-alvo-d{box-shadow:inset -3px 0 0 var(--a)}
+.tb-fant{position:fixed;z-index:96;pointer-events:none;display:flex;align-items:center;gap:6px;padding:6px 12px 6px 8px;border-radius:8px;background:var(--bg1);border:1px solid var(--a);box-shadow:0 10px 28px rgba(0,0,0,.22);font-size:13px;font-weight:600;color:var(--tx)}
+.tb-fant .ic{width:14px;height:14px;color:var(--tx3)}
+/* menu da coluna */
+.tb-mn{position:fixed;z-index:60;width:300px;--tb-pt:24px;max-height:min(640px,calc(100vh - 16px));display:flex;flex-direction:column;background:var(--bg1);border:1px solid var(--bd2);border-radius:12px;box-shadow:0 18px 48px rgba(20,16,8,.22),0 2px 6px rgba(20,16,8,.08);overflow:hidden;animation:tbMn .14s ease-out;font-size:14px;overflow:visible}
+:root[data-tema="escuro"] .tb-mn{border-color:rgba(217,180,106,.22);box-shadow:0 18px 48px rgba(0,0,0,.55)}
+@keyframes tbMn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.tb-mn-cab{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 12px 10px 14px;border-bottom:1px solid var(--bd)}
+.tb-mn-t{display:flex;flex-direction:column;min-width:0}.tb-mn-t small{font-size:12px;color:var(--tx3)}
+.tb-mn-t b{font-family:var(--fh);font-size:18px;font-weight:600;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb-mn-tr{all:unset;box-sizing:border-box;display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px;border:1px solid var(--bd2);border-radius:8px;font-size:13px;font-weight:600;color:var(--tx2);cursor:pointer;flex-shrink:0}
+.tb-mn-tr .ic{width:14px;height:14px}
+.tb-mn-tr:hover{border-color:var(--a);color:var(--tx)}
+.tb-mn-tr.on{background:var(--a);border-color:var(--a);color:var(--aT)}
+.tb-mn-av{display:flex;align-items:center;gap:6px;margin:0;padding:8px 14px;font-size:12.5px;color:var(--aTx);background:color-mix(in srgb,var(--a) 8%,var(--bg1));border-bottom:1px solid var(--bd)}
+.tb-mn-av .ic{width:13px;height:13px;flex-shrink:0}
+.tb-mn-g{display:flex;flex-direction:column;gap:2px;padding:10px 8px 8px;border-bottom:1px solid var(--bd)}.tb-mn-g:last-child{border-bottom:0}
+.tb-mn-corpo{flex:1 1 auto;min-height:0;overflow:auto;overscroll-behavior:contain}
+.tb-mn-fg .tb-mn-l{max-height:250px}
+.tb-mn-cab,.tb-mn-av,.tb-mn-pe{flex-shrink:0}
+.tb-mn-h{font-size:12.5px;color:var(--tx3);font-weight:600;padding:0 6px 4px}
+.tb-mn-o{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:10px;min-height:34px;padding:0 8px;border-radius:7px;cursor:pointer;color:var(--tx2)}
+.tb-mn-o .ic{width:16px;height:16px;color:var(--tx3)}.tb-mn-o span{flex:1}.tb-mn-o i{display:inline-flex;color:var(--aTx)}
+.tb-mn-o:hover:not([disabled]){background:var(--bg2);color:var(--tx)}
+.tb-mn-o.on{color:var(--tx);font-weight:600}.tb-mn-o.on>.ic{color:var(--aTx)}
+.tb-mn-o[disabled],.tb-mn-off{opacity:.45;cursor:default;pointer-events:none}
+.tb-mn-pre{display:flex;flex-direction:column;gap:3px;padding:0 6px 4px}.tb-mn-pre small{font-size:12px;color:var(--tx3)}
+.tb-mn-pre .dd{min-width:0}
+.tb-mn-bs{display:flex;align-items:center;gap:7px;height:36px;margin:0 6px 6px;padding:0 10px;border:1px solid var(--bd2);border-radius:8px;background:var(--bg0);color:var(--tx3)}
+.tb-mn-bs:focus-within{border-color:var(--a)}
+.tb-mn-bs .ic{width:15px;height:15px}.tb-mn-bs input{all:unset;flex:1;min-width:0;color:var(--tx);font-size:14px}
+.tb-mn-nr{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:0 6px 6px}
+.tb-mn-nr label{display:flex;align-items:center;gap:6px;height:34px;padding:0 8px;border:1px solid var(--bd2);border-radius:8px;background:var(--bg0)}
+.tb-mn-nr small{font-size:12px;color:var(--tx3)}.tb-mn-nr input{all:unset;width:100%;min-width:0;font-size:14px;color:var(--tx);font-variant-numeric:tabular-nums}
+.tb-mn-l{overflow:auto;max-height:230px;padding:0 2px;overscroll-behavior:contain}
+.tb-mn-li{display:flex;align-items:center;gap:9px;min-height:32px;padding:0 6px;border-radius:7px;cursor:pointer}
+.tb-mn-li:hover{background:var(--bg2)}
+.tb-mn-li input{accent-color:var(--a);width:15px;height:15px;margin:0;flex-shrink:0}
+.tb-mn-li span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tb-mn-li em{font-style:normal;font-size:12px;color:var(--tx3);font-variant-numeric:tabular-nums;min-width:22px;text-align:right}
+.tb-mn-all{border-bottom:1px dashed var(--bd);border-radius:7px 7px 0 0;margin-bottom:2px;font-weight:600}
+.tb-mn-vz{color:var(--tx3);font-style:italic}
+.tb-mn-nd{margin:6px;color:var(--tx3);font-size:13px}
+.tb-mn-pe{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;background:var(--bg0)}
+.tb-mn-mv{display:flex;gap:4px}.tb-mn-mv .bt{height:34px;width:34px}.tb-sesq{display:inline-flex;transform:rotate(180deg)}
+.tb-mn.tb-mn-folha{left:0!important;right:0;top:auto!important;bottom:0;width:auto;max-height:82vh;border-radius:16px 16px 0 0;animation:tbFolha .2s ease-out;padding-bottom:env(safe-area-inset-bottom,0px)}
+@keyframes tbFolha{from{transform:translateY(30%);opacity:.4}to{transform:none;opacity:1}}
+@media(prefers-reduced-motion:reduce){.tb-mn,.tb-mn.tb-mn-folha{animation:none}}
+.tb-mn-bs,.tb-mn-nr,.tb-mn-h{flex-shrink:0}
+/* pontinha do menu apontando para a coluna */
+.tb-mn-pt{position:absolute;top:-6px;left:var(--tb-pt);width:11px;height:11px;margin-left:-5.5px;transform:rotate(45deg);background:var(--bg1);border-left:1px solid var(--bd2);border-top:1px solid var(--bd2);z-index:1}
+.tb-mn>.tb-mn-cab{border-radius:12px 12px 0 0}.tb-mn>.tb-mn-pe{border-radius:0 0 12px 12px}
+.tb-mn.tb-mn-folha .tb-mn-pt{display:none}
+/* toque: alvos de 44 px */
+.tb-mn.tb-mn-folha .tb-mn-o,.tb-mn.tb-mn-folha .tb-mn-li,.tb-mn.tb-mn-folha .tb-mn-tr,.tb-mn.tb-mn-folha .tb-mn-bs,.tb-mn.tb-mn-folha .tb-mn-nr label{min-height:44px;height:auto}
+.tb-mn.tb-mn-folha .tb-mn-mv .bt{height:44px;width:44px}
+.tb-mn.tb-mn-cima .tb-mn-pt{top:auto;bottom:-6px;transform:rotate(225deg)}
 
 /* ===== almox.css ===== */
 /* EFCwork · almox.css — Prefixo: al- */
@@ -727,7 +808,7 @@ div.cb-hc{cursor:default}
 .pg-cdi{flex:1;min-width:0}
 
 /* v0.4.5: tabela centralizada como a do EFClaudian; análises em lista suspensa */
-[data-tb="pg"] .tb-t th button{justify-content:center}[data-tb="pg"] .tb-t td{text-align:center}
+[data-tb="pg"] .tb-thi{justify-content:center}[data-tb="pg"] .tb-t td{text-align:center}
 .pg-ansdd{margin-bottom:6px}.pg-ans{max-height:min(30vh,240px)}
 .pg-ansdd .dd-b{height:34px;padding:0 10px;font-size:14px}
 
@@ -928,7 +1009,7 @@ body:has(#gv) .pp-bar{display:none}
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.4.7';
+const VERSAO = '0.4.8';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -1043,6 +1124,8 @@ const ICS = {
   info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.2"/>', menu: '<path d="M4 7h16M4 12h16M4 17h16"/>', externo: '<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
   olho: '<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/>',
   filtro: '<path d="M3 5h18l-7 8.5V19l-4 2v-7.5z"/>',
+  ordAsc: '<path d="M7 4v16M3.5 16.5 7 20l3.5-3.5M14 6h6M14 12h4.5M14 18h3"/>', ordDesc: '<path d="M7 4v16M3.5 16.5 7 20l3.5-3.5M14 6h3M14 12h4.5M14 18h6"/>',
+  ordPad: '<path d="M4 7h16M4 12h16M4 17h16"/>', abre: '<path d="m7 10 5 5 5-5"/>', arrasta: '<circle cx="9" cy="6" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="18" r="1"/>',
   colunas: '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9.5 4v16M14.5 4v16"/>',
   planilha: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M8.5 12h7M8.5 16h7M12 12v6"/>',
   impressora: '<path d="M7 9V3h10v6M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2"/><rect x="7" y="14" width="10" height="7" rx="1"/>',
@@ -1656,27 +1739,61 @@ function plBaixar(arqs, nome) {
 
 /* ===== tabela.js ===== */
 /* EFCwork · tabela.js — a TABELA PADRÃO, a GAVETA de detalhe e a JANELA RETRÁTIL usadas por todas as áreas. Prefixos: tb, gv, dd.
-   Tabela: busca, um único filtro recolhível (resumo no botão), ordenar pelo cabeçalho, colunas (lembradas no aparelho),
+   Tabela: busca, menu em cada coluna (ordenar, filtrar, travar, mover — v0.4.8), colunas (lembradas no aparelho),
    planilha .xlsx e impressora (só ícones), números à direita, total no rodapé, "mostrar mais".
    cfg = { id, titulo, linhas, cols:[{k, rot, v:r=>valor, html?:r=>html, tipo:'num'|'data'|'txt', fixa?, total?:'soma'|fn}], chave:r=>id,
            aoClicar:'nome da função global' , busca:r=>texto, filtros:[{k, rot, opcoes:[[v, rot]], teste:(r, v)=>bool}], selecionado, vazio, rodape } */
 const TB = {}; S.tb = S.tb || {};
+/* v0.4.8 (pedido de 08/11 14:12): sem botão Filtro; cada coluna tem um menu no cabeçalho (aparece ao passar o mouse; no celular fica sempre à vista):
+   ordenar crescente/decrescente/padrão, busca por texto, lista de valores com caixinhas, mínimo e máximo nos números, mover a coluna, e TRAVAR
+   (a coluna fica assim, mesmo depois de sair do app, até destravar). Coluna com filtro, ordem ou trava mostra o símbolo no cabeçalho.
+   As colunas também se reorganizam arrastando o cabeçalho. O total fica numa faixa logo acima do cabeçalho, alinhado com cada coluna. */
+function tbLeJ(k, pad) { try { const v = JSON.parse(Store.get(k) || 'null'); return v == null ? pad : v; } catch { return pad; } }
 function tbEstado(id) {
-  if (!S.tb[id]) { let oc = []; try { oc = JSON.parse(Store.get('cw-tbcol-' + id) || '[]'); } catch {} S.tb[id] = { busca: '', filtros: {}, ordem: null, ocultas: Array.isArray(oc) ? oc : [], limite: 100, painel: false }; }
+  if (!S.tb[id]) {
+    const oc = tbLeJ('cw-tbcol-' + id, []), co = tbLeJ('cw-tbord-' + id, []), tv = tbLeJ('cw-tbtrava-' + id, {});
+    const st = S.tb[id] = { busca: '', filtros: {}, ordem: null, ocultas: Array.isArray(oc) ? oc : [], limite: 100, cf: {}, trava: {}, colOrd: Array.isArray(co) ? co : [] };
+    Object.keys(tv || {}).forEach(k => { const t = tv[k] || {}; st.trava[k] = true; if (t.ordem) st.ordem = { k: k, dir: t.ordem }; if (t.cf) st.cf[k] = t.cf; Object.keys(t.pre || {}).forEach(fk => { st.filtros[fk] = t.pre[fk]; }); });
+  }
   return S.tb[id];
 }
+function tbSalvaTrava(id) {
+  const st = tbEstado(id), cfg = TB[id], o = {};
+  Object.keys(st.trava).forEach(k => { if (!st.trava[k]) return; const pre = {}; tbPresetsDe(cfg, k).forEach(f => { if (st.filtros[f.k] != null && st.filtros[f.k] !== '') pre[f.k] = st.filtros[f.k]; });
+    o[k] = { ordem: st.ordem && st.ordem.k === k ? st.ordem.dir : null, cf: tbCfAtivo(st.cf[k]) ? st.cf[k] : null, pre: pre }; });
+  try { if (Object.keys(o).length) Store.set('cw-tbtrava-' + id, JSON.stringify(o)); else Store.del('cw-tbtrava-' + id); } catch {}
+}
 const tbNorm = s => String(s == null ? '' : s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
-function tbFiltrar(cfg) {
-  const st = tbEstado(cfg.id), pal = tbNorm(st.busca).split(/\s+/).filter(Boolean);
-  let l = (cfg.linhas || []).filter(r => (cfg.filtros || []).every(f => { const v = st.filtros[f.k]; return v == null || v === '' || f.teste(r, v); }));
+/* texto que a célula mostra (é o que aparece na lista de valores do menu) */
+function tbRot(c, r) { const v = c.v(r); if (v == null || v === '') return ''; if (c.txt) return String(c.txt(r)); if (c.tipo === 'data') return fmtD(v); if (c.tipo === 'num' && typeof v === 'number') return c.fmtTotal ? c.fmtTotal(v) : numBR(v, c.dec); return String(v); }
+const tbVazio = x => x == null || x === '';
+const tbCfAtivo = f => !!f && (!!f.txt || !!f.sel || !tbVazio(f.min) || !tbVazio(f.max));
+function tbPassaCol(c, f, r) {
+  if (!tbCfAtivo(f)) return true; const lab = tbRot(c, r);
+  if (f.txt && tbNorm(lab).indexOf(tbNorm(f.txt)) < 0) return false;
+  if (f.sel && f.sel.indexOf(lab) < 0) return false;
+  if (!tbVazio(f.min) || !tbVazio(f.max)) { const v = c.v(r); if (typeof v !== 'number') return false; if (!tbVazio(f.min) && v < Number(f.min)) return false; if (!tbVazio(f.max) && v > Number(f.max)) return false; }
+  return true;
+}
+/* os filtros prontos de cada tela (Situação, Local…) moram no menu da coluna correspondente */
+function tbColDoPreset(cfg, f) { const cs = cfg.cols || []; return (cs.find(c => c.k === f.k) || cs.find(c => tbNorm(c.rot) === tbNorm(f.rot)) || cs.find(c => !c.fixa) || cs[0] || {}).k; }
+const tbPresetsDe = (cfg, k) => cfg ? (cfg.filtros || []).filter(f => tbColDoPreset(cfg, f) === k) : [];
+function tbFiltrar(cfg, o) {
+  o = o || {}; const st = tbEstado(cfg.id), pal = tbNorm(st.busca).split(/\s+/).filter(Boolean);
+  let l = (cfg.linhas || []).filter(r => (cfg.filtros || []).every(f => { if (o.semCol && tbColDoPreset(cfg, f) === o.semCol) return true; const v = st.filtros[f.k]; return v == null || v === '' || f.teste(r, v); }));
+  (cfg.cols || []).forEach(c => { if (c.k === o.semCol || !tbCfAtivo(st.cf[c.k])) return; l = l.filter(r => tbPassaCol(c, st.cf[c.k], r)); });
   if (pal.length) l = l.filter(r => { const t = tbNorm(cfg.busca ? cfg.busca(r) : cfg.cols.map(c => c.v(r)).join(' ')); return pal.every(p => t.indexOf(p) >= 0); });
-  if (st.ordem) {
+  if (st.ordem && !o.semOrdem) {
     const c = cfg.cols.find(x => x.k === st.ordem.k);
     if (c) { const s = st.ordem.dir === 'desc' ? -1 : 1; l = l.slice().sort((a, b) => { const x = c.v(a), y = c.v(b); if (typeof x === 'number' && typeof y === 'number') return (x - y) * s; return String(x == null ? '' : x).localeCompare(String(y == null ? '' : y), 'pt-BR', { numeric: true }) * s; }); }
   }
   return l;
 }
-const tbVisiveis = cfg => { const st = tbEstado(cfg.id); return cfg.cols.filter(c => c.fixa || st.ocultas.indexOf(c.k) < 0); };
+function tbOrdenadas(cfg) {
+  const o = tbEstado(cfg.id).colOrd; if (!o || !o.length) return cfg.cols.slice();
+  return cfg.cols.map((c, i) => [c, i]).sort((a, b) => { const ia = o.indexOf(a[0].k), ib = o.indexOf(b[0].k); return (ia < 0 ? 1000 + a[1] : ia) - (ib < 0 ? 1000 + b[1] : ib); }).map(x => x[0]);
+}
+const tbVisiveis = cfg => { const st = tbEstado(cfg.id); return tbOrdenadas(cfg).filter(c => c.fixa || st.ocultas.indexOf(c.k) < 0); };
 function tbFmt(c, r) {
   if (c.html) return c.html(r);
   const v = c.v(r);
@@ -1687,40 +1804,143 @@ function tbFmt(c, r) {
 }
 const numBR = (n, dec) => Number(n).toLocaleString('pt-BR', { minimumFractionDigits: dec || 0, maximumFractionDigits: dec == null ? 3 : dec });
 const brl = n => 'R$ ' + Number(n || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-function tbResumoFiltro(cfg) {
-  const st = tbEstado(cfg.id), at = (cfg.filtros || []).filter(f => st.filtros[f.k] != null && st.filtros[f.k] !== '');
-  return { n: at.length, txt: at.length ? at.map(f => { const o = f.opcoes.find(x => x[0] === st.filtros[f.k]); return o ? o[1] : st.filtros[f.k]; }).join(' · ') : 'Todos' };
+/* filtro ativo em cada coluna (filtro pronto ou do menu) */
+function tbColFiltrada(cfg, k) { const st = tbEstado(cfg.id); return tbCfAtivo(st.cf[k]) || tbPresetsDe(cfg, k).some(f => !tbVazio(st.filtros[f.k])); }
+function tbTemFiltro(cfg) { const st = tbEstado(cfg.id); return !!st.busca || (cfg.cols || []).some(c => tbColFiltrada(cfg, c.k)); }
+function tbTemFiltroSolto(cfg) { const st = tbEstado(cfg.id); return !!st.busca || (cfg.cols || []).some(c => !st.trava[c.k] && tbColFiltrada(cfg, c.k)); }
+/* total (v0.4.8, refeito 08/11 15:00): na barra de cima, na linha dos ícones; cada valor fica exatamente acima da sua coluna
+   e à esquerda vai "Total · N itens". As posições são medidas na tela (tbAlinhaTot); se não couber, ficam em sequência. */
+function tbTotal(cfg, cols, todas, filtrado) {
+  const cs = cols.filter(c => c.total); if (!cs.length) return '';
+  return '<div class="tb-tots" data-tbtot="' + esc(cfg.id) + '"><span class="tb-tl" title="' + (filtrado ? 'Soma só do que está filtrado' : 'Soma de toda a lista') + '"><b>Total</b><small>' + (filtrado ? 'do filtro · ' : '') + todas.length + ' ' + esc(cfg.unidade || 'registros') + '</small></span>' +
+    cs.map(c => { const v = typeof c.total === 'function' ? c.total(todas) : todas.reduce((s, r) => s + (Number(c.v(r)) || 0), 0); return '<span class="tb-tv" data-k="' + esc(c.k) + '" title="Total de ' + esc(c.rot) + '"><b>' + esc(c.fmtTotal ? c.fmtTotal(v) : numBR(v, c.dec)) + '</b></span>'; }).join('') + '</div>';
 }
-/* v0.4.7: total ACIMA da tabela (fora dela), em caixinhas, e segue o filtro e a busca (pedido de 08/11 13:27) */
-function tbTotal(cfg, todas, filtrado) {
-  const cs = (cfg.cols || []).filter(c => c.total); if (!cs.length) return '';
-  return '<div class="tb-tots" data-tbtot="' + esc(cfg.id) + '"><span class="tb-tt">Total' + (filtrado ? '<small>do filtro · ' + todas.length + ' ' + esc(cfg.unidade || 'registros') + '</small>' : '<small>' + todas.length + ' ' + esc(cfg.unidade || 'registros') + '</small>') + '</span>' +
-    cs.map(c => { const v = typeof c.total === 'function' ? c.total(todas) : todas.reduce((s, r) => s + (Number(c.v(r)) || 0), 0); return '<span class="tb-tv"><b>' + esc(c.fmtTotal ? c.fmtTotal(v) : numBR(v, c.dec)) + '</b><small>' + esc(c.rot) + '</small></span>'; }).join('') + '</div>';
+function tbAlinhaTot() {
+  $$('.tb-tots').forEach(t => {
+    const tb = t.closest('.tb'), bar = t.parentElement, br = bar.getBoundingClientRect(), tvs = Array.from(t.querySelectorAll('.tb-tv')), lb = t.querySelector('.tb-tl');
+    t.classList.remove('tb-tots-fluxo'); t.style.width = br.width + 'px';
+    let ok = innerWidth >= 600, min = 1e9;
+    tvs.forEach(v => { const th = tb.querySelector('.tb-cab th[data-tbk="' + v.getAttribute('data-k') + '"]'); if (!th) { ok = false; return; } const r = th.getBoundingClientRect(); v.style.left = (r.left - br.left) + 'px'; v.style.width = r.width + 'px'; min = Math.min(min, r.left - br.left); });
+    if (ok) { lb.style.left = ''; lb.style.right = (br.width - min + 6) + 'px'; }
+    const esq = Array.from(bar.children).filter(x => x !== t && !x.classList.contains('tb-sp') && x.getBoundingClientRect().right < br.left + min).reduce((m, x) => Math.max(m, x.getBoundingClientRect().right - br.left), 0);
+    const dir = Array.from(bar.querySelectorAll('.ic-so')).reduce((m, x) => Math.min(m, x.getBoundingClientRect().left - br.left), br.width);
+    const ll = ok ? min - 6 - lb.offsetWidth : 0, rr = ok ? Math.max.apply(null, tvs.map(v => v.offsetLeft + v.offsetWidth)) : 0;
+    if (!ok || ll < esq + 8 || rr > dir - 8) { t.classList.add('tb-tots-fluxo'); t.style.width = ''; tvs.concat(lb).forEach(x => { x.style.left = ''; x.style.right = ''; x.style.width = ''; }); }
+  });
+}
+addEventListener('resize', () => tbAlinhaTot()); addEventListener('scroll', e => { if (e.target && e.target.classList && e.target.classList.contains('tb-w')) tbAlinhaTot(); }, true);
+function tbMarcas(cfg, c) {
+  const st = tbEstado(cfg.id), o = st.ordem && st.ordem.k === c.k ? st.ordem.dir : '', f = tbColFiltrada(cfg, c.k), t = !!st.trava[c.k];
+  return (f ? '<i class="tb-mf" title="Filtrada">' + ic('filtro') + '</i>' : '') + (o ? '<i class="tb-mo" title="' + (o === 'asc' ? 'Crescente' : 'Decrescente') + '">' + ic(o === 'asc' ? 'ordAsc' : 'ordDesc') + '</i>' : '') + (t ? '<i class="tb-mt" title="Travada">' + ic('cadeado') + '</i>' : '');
 }
 function tbHTML(cfg) {
-  TB[cfg.id] = cfg; const st = tbEstado(cfg.id), cols = tbVisiveis(cfg), todas = tbFiltrar(cfg), l = todas.slice(0, st.limite), rf = tbResumoFiltro(cfg);
-  const chave = cfg.chave || (r => r.id);
+  TB[cfg.id] = cfg; const st = tbEstado(cfg.id), cols = tbVisiveis(cfg), todas = tbFiltrar(cfg), l = todas.slice(0, st.limite), fl = tbTemFiltro(cfg);
+  const chave = cfg.chave || (r => r.id), mn = S.tbMenu && S.tbMenu.id === cfg.id ? S.tbMenu.k : null;
   let h = '<div class="tb" data-tb="' + esc(cfg.id) + '"><div class="tb-bar">' +
-    '<label class="tb-busca">' + ic('lupa') + '<input type="search" data-tbbusca="' + esc(cfg.id) + '" value="' + esc(st.busca) + '" placeholder="' + esc(cfg.buscaDica || 'Buscar nesta lista') + '" aria-label="Buscar nesta lista"></label>' +
-    ((cfg.filtros || []).length ? '<button type="button" class="tb-flt' + (st.painel ? ' on' : '') + '" data-act="tb-painel" data-tb="' + esc(cfg.id) + '" aria-expanded="' + st.painel + '">' + ic('filtro') + '<span>Filtro: <b>' + esc(rf.txt) + '</b></span>' + (rf.n ? '<em>' + rf.n + '</em>' : '') + '</button>' : '') +
-    '<span class="tb-cont">' + todas.length + (todas.length !== (cfg.linhas || []).length ? ' de ' + (cfg.linhas || []).length : '') + ' ' + esc(cfg.unidade || 'registros') + (rf.n || st.busca ? '<button type="button" class="bt lk" data-act="tb-limpa" data-tb="' + esc(cfg.id) + '">Limpar</button>' : '') + '</span><span class="tb-sp"></span>' +
+    (tbTemFiltroSolto(cfg) ? '<button type="button" class="tb-limpa" data-act="tb-limpa" data-tb="' + esc(cfg.id) + '">' + ic('x') + '<span>Limpar filtro</span></button>' : '') +
+    '<span class="tb-cont">' + todas.length + (todas.length !== (cfg.linhas || []).length ? ' de ' + (cfg.linhas || []).length : '') + ' ' + esc(cfg.unidade || 'registros') + '</span><span class="tb-sp"></span>' + tbTotal(cfg, cols, todas, fl) +
     '<button type="button" class="bt ic-so" data-act="tb-cols" data-tb="' + esc(cfg.id) + '" title="Escolher colunas" aria-label="Escolher colunas">' + ic('colunas') + '</button>' +
     '<button type="button" class="bt ic-so" data-act="tb-xlsx" data-tb="' + esc(cfg.id) + '" title="Baixar planilha (.xlsx)" aria-label="Baixar planilha (.xlsx)">' + ic('planilha') + '</button>' +
     '<button type="button" class="bt ic-so" data-act="tb-imp" data-tb="' + esc(cfg.id) + '" title="Imprimir" aria-label="Imprimir">' + ic('impressora') + '</button></div>';
-  if (st.painel && (cfg.filtros || []).length) h += '<div class="tb-painel">' + cfg.filtros.map(f => '<div class="tb-pf"><span>' + esc(f.rot) + '</span>' + ddHTML('tbf:' + cfg.id + ':' + f.k, st.filtros[f.k] == null ? '' : st.filtros[f.k], [['', 'Todos']].concat(f.opcoes)) + '</div>').join('') + '</div>';
-  if (st.colsAberto) h += '<div class="tb-painel tb-colsp"><span class="tb-pt">Colunas que aparecem</span>' + cfg.cols.filter(c => !c.fixa).map(c => '<label class="tb-ck"><input type="checkbox" data-tbcol="' + esc(cfg.id) + '" value="' + esc(c.k) + '"' + (st.ocultas.indexOf(c.k) < 0 ? ' checked' : '') + '>' + esc(c.rot) + '</label>').join('') + '</div>';
-  h += tbTotal(cfg, todas, !!(rf.n || st.busca));
-  h += '<div class="tb-w"><table class="tb-t"><thead><tr>' + cols.map(c => {
-    const o = st.ordem && st.ordem.k === c.k ? st.ordem.dir : '';
-    return '<th class="' + (c.tipo === 'num' ? 'n' : '') + '"' + (o ? ' aria-sort="' + (o === 'asc' ? 'ascending' : 'descending') + '"' : '') + '><button type="button" data-act="tb-ord" data-tb="' + esc(cfg.id) + '" data-k="' + esc(c.k) + '">' + esc(c.rot) + (o ? '<span class="tb-seta">' + (o === 'asc' ? '▲' : '▼') + '</span>' : '') + '</button></th>';
+  if (st.colsAberto) h += '<div class="tb-painel tb-colsp"><span class="tb-pt">Colunas que aparecem</span>' + tbOrdenadas(cfg).filter(c => !c.fixa).map(c => '<label class="tb-ck"><input type="checkbox" data-tbcol="' + esc(cfg.id) + '" value="' + esc(c.k) + '"' + (st.ocultas.indexOf(c.k) < 0 ? ' checked' : '') + '>' + esc(c.rot) + '</label>').join('') + (st.colOrd.length ? '<button type="button" class="bt lk" data-act="tb-ordpad" data-tb="' + esc(cfg.id) + '">Voltar à ordem original das colunas</button>' : '') + '</div>';
+  h += '<div class="tb-w"><table class="tb-t"><thead><tr class="tb-cab">' + cols.map(c => {
+    const o = st.ordem && st.ordem.k === c.k ? st.ordem.dir : '', mk = tbMarcas(cfg, c), ab = mn === c.k;
+    return '<th class="' + (c.tipo === 'num' ? 'n ' : '') + (mk ? 'tb-at ' : '') + (ab ? 'tb-ab' : '') + '" data-tbk="' + esc(c.k) + '"' + (o ? ' aria-sort="' + (o === 'asc' ? 'ascending' : 'descending') + '"' : '') + '><div class="tb-thi">' +
+      '<button type="button" class="tb-thr" data-act="tb-menu" data-tb="' + esc(cfg.id) + '" data-k="' + esc(c.k) + '" title="Opções da coluna · arraste para mudar de lugar">' + esc(c.rot) + '</button>' +
+      '<button type="button" class="tb-hm' + (mk ? ' on' : '') + '" data-act="tb-menu" data-tb="' + esc(cfg.id) + '" data-k="' + esc(c.k) + '" aria-haspopup="dialog" aria-expanded="' + ab + '" aria-label="Opções da coluna ' + esc(c.rot) + '">' + (mk || '') + '<i class="tb-hv">' + ic('abre') + '</i></button></div></th>';
   }).join('') + '</tr></thead><tbody>';
   if (!l.length) h += '<tr><td colspan="' + cols.length + '" class="tb-vz">' + esc(cfg.vazio || 'Nada encontrado.') + '</td></tr>';
   else h += l.map(r => { const id = chave(r); return '<tr' + (cfg.aoClicar ? ' data-act="tb-lin" data-tb="' + esc(cfg.id) + '" data-id="' + esc(id) + '" tabindex="0"' : '') + (cfg.selecionado === id ? ' class="sel"' : '') + '>' + cols.map(c => '<td class="' + (c.tipo === 'num' ? 'n' : '') + (c.cls ? ' ' + c.cls : '') + '"' + (c.titulo ? ' title="' + esc(c.titulo(r)) + '"' : '') + '>' + tbFmt(c, r) + '</td>').join('') + '</tr>'; }).join('');
-  h += '</tbody>';
-  h += '</table></div>';
-  h += '<div class="tb-pe"><span>Mostrando <b>' + l.length + '</b> de ' + todas.length + '</span>' + (cfg.rodape ? '<span>' + cfg.rodape(todas) + '</span>' : '') + (todas.length > l.length ? '<button type="button" class="bt" data-act="tb-mais" data-tb="' + esc(cfg.id) + '">Mostrar mais ' + Math.min(100, todas.length - l.length) + '</button>' : '') + '</div></div>';
+  h += '</tbody></table></div>';
+  h += '<div class="tb-pe"><span>Mostrando <b>' + l.length + '</b> de ' + todas.length + '</span>' + (cfg.rodape ? '<span>' + cfg.rodape(todas) + '</span>' : '') + (todas.length > l.length ? '<button type="button" class="bt" data-act="tb-mais" data-tb="' + esc(cfg.id) + '">Mostrar mais ' + Math.min(100, todas.length - l.length) + '</button>' : '') + '</div>';
+  requestAnimationFrame(tbAlinhaTot);
+  if (mn) { h += tbMenuHTML(cfg, mn); requestAnimationFrame(tbPosMenu); }
+  return h + '</div>';
+}
+/* ---------- menu da coluna ---------- */
+function tbValores(cfg, c) {
+  const m = new Map(); tbFiltrar(cfg, { semCol: c.k, semOrdem: true }).forEach(r => { const lab = tbRot(c, r), x = m.get(lab); if (x) x.n++; else m.set(lab, { lab: lab, v: c.v(r), n: 1 }); });
+  return Array.from(m.values()).sort((a, b) => a.lab === '' ? 1 : b.lab === '' ? -1 : typeof a.v === 'number' && typeof b.v === 'number' ? a.v - b.v : c.tipo === 'data' ? String(a.v).localeCompare(String(b.v)) : a.lab.localeCompare(b.lab, 'pt-BR', { numeric: true }));
+}
+function tbMenuHTML(cfg, k) {
+  const st = tbEstado(cfg.id), c = cfg.cols.find(x => x.k === k); if (!c) return '';
+  const f = st.cf[k] || {}, tr = !!st.trava[k], dis = tr ? ' disabled' : '', o = st.ordem && st.ordem.k === k ? st.ordem.dir : '', id = esc(cfg.id);
+  const nomes = c.tipo === 'num' ? ['Menor para o maior', 'Maior para o menor'] : c.tipo === 'data' ? ['Mais antiga primeiro', 'Mais recente primeiro'] : ['De A a Z', 'De Z a A'];
+  const vals = tbValores(cfg, c), bq = tbNorm(f.txt), vis = bq ? vals.filter(x => tbNorm(x.lab).indexOf(bq) >= 0) : vals, sel = f.sel;
+  const pos = tbVisiveis(cfg).findIndex(x => x.k === k), nv = tbVisiveis(cfg).length;
+  const lin = (act, ico, txt, on, extra) => '<button type="button" class="tb-mn-o' + (on ? ' on' : '') + '" data-act="' + act + '" data-tb="' + id + '" data-k="' + esc(k) + '"' + (extra || '') + dis + '>' + ic(ico) + '<span>' + txt + '</span>' + (on ? '<i>' + ic('ok') + '</i>' : '') + '</button>';
+  let h = '<div class="tb-mn" data-tbmn="' + id + '" data-k="' + esc(k) + '" role="dialog" aria-label="Coluna ' + esc(c.rot) + '">' +
+    '<i class="tb-mn-pt"></i><div class="tb-mn-cab"><div class="tb-mn-t"><b>' + esc(c.rot) + '</b><small>' + vals.reduce((q, x) => q + x.n, 0) + ' ' + esc(cfg.unidade || 'registros') + ' · ' + vals.length + (vals.length === 1 ? ' valor' : ' valores') + '</small></div>' +
+    '<button type="button" class="tb-mn-tr' + (tr ? ' on' : '') + '" data-act="tb-trava" data-tb="' + id + '" data-k="' + esc(k) + '" aria-pressed="' + tr + '" title="' + (tr ? 'Destravar: volta a poder mudar e o Limpar filtro passa a valer' : 'Travar: a ordem e o filtro desta coluna ficam assim, mesmo ao sair do app, até você destravar') + '">' + ic('cadeado') + '<span>' + (tr ? 'Travada' : 'Travar') + '</span></button></div>' +
+    (tr ? '<p class="tb-mn-av">' + ic('cadeado') + 'Travada. Destrave para mudar a ordem ou o filtro.</p>' : '') +
+    '<div class="tb-mn-corpo"><div class="tb-mn-g tb-mn-ord"><span class="tb-mn-h">Ordenar</span>' + lin('tb-oasc', 'ordAsc', nomes[0], o === 'asc') + lin('tb-odesc', 'ordDesc', nomes[1], o === 'desc') + lin('tb-opad', 'ordPad', 'Ordem padrão', !o) + '</div>';
+  const pre = tbPresetsDe(cfg, k);
+  if (pre.length) h += '<div class="tb-mn-g"><span class="tb-mn-h">Filtros prontos</span>' + pre.map(p => '<div class="tb-mn-pre' + (tr ? ' tb-mn-off' : '') + '">' + (pre.length > 1 || p.rot !== c.rot ? '<small>' + esc(p.rot) + '</small>' : '') + ddHTML('tbf:' + cfg.id + ':' + p.k, st.filtros[p.k] == null ? '' : st.filtros[p.k], [['', 'Todos']].concat(p.opcoes)) + '</div>').join('') + '</div>';
+  h += '<div class="tb-mn-g tb-mn-fg"><span class="tb-mn-h">Filtrar</span><label class="tb-mn-bs">' + ic('lupa') + '<input type="search" data-tbmnbusca="' + id + '" data-k="' + esc(k) + '" value="' + esc(f.txt || '') + '" placeholder="Buscar em ' + esc(c.rot) + '" aria-label="Buscar em ' + esc(c.rot) + '"' + dis + '></label>';
+  if (c.tipo === 'num') h += '<div class="tb-mn-nr"><label><small>De</small><input type="number" inputmode="decimal" data-tbmnmin="' + id + '" data-k="' + esc(k) + '" value="' + esc(f.min == null ? '' : f.min) + '" placeholder="mínimo"' + dis + '></label><label><small>Até</small><input type="number" inputmode="decimal" data-tbmnmax="' + id + '" data-k="' + esc(k) + '" value="' + esc(f.max == null ? '' : f.max) + '" placeholder="máximo"' + dis + '></label></div>';
+  const todosMarc = vis.length && vis.every(x => !sel || sel.indexOf(x.lab) >= 0), algum = vis.some(x => !sel || sel.indexOf(x.lab) >= 0);
+  h += '<div class="tb-mn-l">' + (vis.length ? '<label class="tb-mn-li tb-mn-all"><input type="checkbox" data-tbmnall="' + id + '" data-k="' + esc(k) + '"' + (todosMarc ? ' checked' : '') + (!todosMarc && algum ? ' data-meio="1"' : '') + dis + '><span>' + (bq ? 'Marcar os encontrados' : 'Marcar todos') + '</span><em>' + vis.reduce((s, x) => s + x.n, 0) + '</em></label>' : '') +
+    vis.slice(0, 400).map(x => '<label class="tb-mn-li"><input type="checkbox" data-tbmnv="' + id + '" data-k="' + esc(k) + '" value="' + esc(x.lab) + '"' + (!sel || sel.indexOf(x.lab) >= 0 ? ' checked' : '') + dis + '><span' + (x.lab === '' ? ' class="tb-mn-vz"' : '') + '>' + esc(x.lab === '' ? '(em branco)' : x.lab) + '</span><em>' + x.n + '</em></label>').join('') +
+    (!vis.length ? '<p class="tb-mn-nd">Nada com “' + esc(f.txt || '') + '”.</p>' : '') + '</div></div></div>';
+  h += '<div class="tb-mn-pe"><span class="tb-mn-mv"><button type="button" class="bt ic-so" data-act="tb-mvesq" data-tb="' + id + '" data-k="' + esc(k) + '" title="Mover a coluna para a esquerda" aria-label="Mover a coluna para a esquerda"' + (pos <= 0 ? ' disabled' : '') + '><span class="tb-sesq">' + ic('seta') + '</span></button><button type="button" class="bt ic-so" data-act="tb-mvdir" data-tb="' + id + '" data-k="' + esc(k) + '" title="Mover a coluna para a direita" aria-label="Mover a coluna para a direita"' + (pos >= nv - 1 ? ' disabled' : '') + '>' + ic('seta') + '</button></span>' +
+    '<button type="button" class="bt lk" data-act="tb-mnlimpa" data-tb="' + id + '" data-k="' + esc(k) + '"' + (tbColFiltrada(cfg, k) && !tr ? '' : ' disabled') + '>Limpar esta coluna</button></div></div>';
   return h;
 }
+function tbRolador(el) { for (let e = el.parentElement; e && e !== document.body; e = e.parentElement) { const o = getComputedStyle(e).overflowY; if ((o === 'auto' || o === 'scroll') && e.scrollHeight > e.clientHeight) return e; } return document.scrollingElement || document.documentElement; }
+/* o menu nasce embaixo da própria coluna, com a pontinha apontando para ela; se faltar espaço embaixo, a página sobe um pouco (pedido de 08/11 15:00) */
+function tbPosMenu() {
+  const m = document.querySelector('.tb-mn'); if (!m) return;
+  const meio = m.querySelector('[data-meio]'); if (meio) meio.indeterminate = true;
+  const th = document.querySelector('.tb[data-tb="' + m.getAttribute('data-tbmn') + '"] th[data-tbk="' + m.getAttribute('data-k') + '"]');
+  const l = m.querySelector('.tb-mn-l'); if (l && S._tbMnScroll) l.scrollTop = S._tbMnScroll; const cp = m.querySelector('.tb-mn-corpo'); if (cp && S._tbMnCorpo) cp.scrollTop = S._tbMnCorpo;
+  if (!th || innerWidth < 600) { m.classList.add('tb-mn-folha'); return; }
+  m.classList.remove('tb-mn-folha'); m.style.maxHeight = '';
+  let r = th.getBoundingClientRect(); const w = m.offsetWidth, hh = Math.min(m.scrollHeight, 640);
+  const falta = r.bottom + 10 + hh - (innerHeight - 8);
+  if (falta > 0 && !S._tbMnRolou) { S._tbMnRolou = true; const sob = Math.min(falta, Math.max(0, r.top - 72)); if (sob > 0) { tbRolador(th).scrollBy(0, sob); r = th.getBoundingClientRect(); } }
+  let x = th.classList.contains('n') ? r.right - w : r.left; x = Math.max(8, Math.min(x, innerWidth - w - 8));
+  const baixo = innerHeight - r.bottom - 18, cima = r.top - 72, sobe = hh > baixo && cima > baixo;
+  m.classList.toggle('tb-mn-cima', sobe);
+  const alt = Math.min(hh, sobe ? cima : baixo), y = sobe ? r.top - 8 - alt : r.bottom + 8;
+  m.style.left = x + 'px'; m.style.top = y + 'px'; m.style.maxHeight = Math.max(200, alt) + 'px';
+  m.style.setProperty('--tb-pt', Math.max(14, Math.min(w - 14, r.left + Math.min(r.width, 160) / 2 - x)) + 'px');
+}
+addEventListener('resize', tbPosMenu); addEventListener('scroll', () => { if (S.tbMenu) tbPosMenu(); }, true);
+function tbMenuAbre(id, k) {
+  if (S.tbMenu && S.tbMenu.id === id && S.tbMenu.k === k) { tbMenuFecha(); return; }
+  const ja = !!S.tbMenu; S.tbMenu = { id: id, k: k }; S._tbMnScroll = 0; S._tbMnCorpo = 0; S._tbMnRolou = false;
+  if (!ja) csCamadaAbre('tbmn', () => { S.tbMenu = null; render(); });
+  render(); setTimeout(() => { const i = document.querySelector('.tb-mn [data-tbmnbusca]'); if (i && innerWidth >= 600 && !i.disabled) i.focus(); }, 30);
+}
+function tbMenuFecha() { if (!S.tbMenu) return; if (S.camadas.length && S.camadas[S.camadas.length - 1].nome === 'tbmn') csVolta(); else { S.tbMenu = null; render(); } }
+function tbMuda(id, fn) { const st = tbEstado(id); fn(st); st.limite = 100; tbSalvaTrava(id); render(); }
+function tbMove(id, k, alvo, depois) {
+  const cfg = TB[id], st = tbEstado(id); let o = tbOrdenadas(cfg).map(c => c.k).filter(x => x !== k);
+  let i = o.indexOf(alvo); if (i < 0) return; o.splice(depois ? i + 1 : i, 0, k);
+  st.colOrd = o; try { Store.set('cw-tbord-' + id, JSON.stringify(o)); } catch {} render();
+}
+function tbMoveLado(id, k, d) { const v = tbVisiveis(TB[id]).map(c => c.k), i = v.indexOf(k), j = i + d; if (i < 0 || j < 0 || j >= v.length) return; tbMove(id, k, v[j], d > 0); }
+/* arrastar o cabeçalho para mudar a coluna de lugar (mouse) */
+let tbDr = null;
+document.addEventListener('pointerdown', e => {
+  const b = e.target.closest && e.target.closest('.tb-thr'); if (!b || e.button !== 0 || e.pointerType === 'touch') return;
+  const th = b.closest('th'); tbDr = { id: b.getAttribute('data-tb'), k: b.getAttribute('data-k'), x: e.clientX, y: e.clientY, th: th, on: false };
+});
+document.addEventListener('pointermove', e => {
+  if (!tbDr) return;
+  if (!tbDr.on) { if (Math.abs(e.clientX - tbDr.x) < 7 && Math.abs(e.clientY - tbDr.y) < 7) return; tbDr.on = true; tbDr.th.classList.add('tb-pega'); document.body.classList.add('tb-arrastando');
+    tbDr.f = document.createElement('div'); tbDr.f.className = 'tb-fant'; tbDr.f.innerHTML = ic('arrasta') + '<span>' + esc(tbDr.th.textContent.trim()) + '</span>'; document.body.appendChild(tbDr.f); }
+  tbDr.f.style.left = (e.clientX + 12) + 'px'; tbDr.f.style.top = (e.clientY + 10) + 'px';
+  $$('.tb-alvo-e,.tb-alvo-d').forEach(x => x.classList.remove('tb-alvo-e', 'tb-alvo-d')); tbDr.alvo = null;
+  const el = document.elementFromPoint(e.clientX, e.clientY), th = el && el.closest && el.closest('.tb[data-tb="' + tbDr.id + '"] th[data-tbk]');
+  if (th && th !== tbDr.th) { const r = th.getBoundingClientRect(), dep = e.clientX > r.left + r.width / 2; th.classList.add(dep ? 'tb-alvo-d' : 'tb-alvo-e'); tbDr.alvo = { k: th.getAttribute('data-tbk'), dep: dep }; }
+});
+document.addEventListener('pointerup', () => {
+  if (!tbDr) return; const d = tbDr; tbDr = null; if (!d.on) return;
+  if (d.f) d.f.remove(); d.th.classList.remove('tb-pega'); document.body.classList.remove('tb-arrastando'); $$('.tb-alvo-e,.tb-alvo-d').forEach(x => x.classList.remove('tb-alvo-e', 'tb-alvo-d'));
+  S._tbEngole = true; setTimeout(() => { S._tbEngole = false; }, 0);
+  if (d.alvo) tbMove(d.id, d.k, d.alvo.k, d.alvo.dep);
+});
 
 /* ---------- janela retrátil (escolha de opção) ---------- */
 /* o = { remover: true } → as opções podem sair da lista: segurar 1,5 s e arrastar até a lixeira que aparece ao lado (DD_RM[prefixo]) */
@@ -1821,42 +2041,66 @@ function tbImprimir(id) {
 
 /* ---------- eventos ---------- */
 document.addEventListener('input', e => {
-  const t = e.target; if (!t || !t.getAttribute) return; const id = t.getAttribute('data-tbbusca'); if (!id) return;
+  const t = e.target; if (!t || !t.getAttribute) return;
+  const mb = t.getAttribute('data-tbmnbusca') || t.getAttribute('data-tbmnmin') || t.getAttribute('data-tbmnmax');
+  if (mb) { const k = t.getAttribute('data-k'), campo = t.hasAttribute('data-tbmnbusca') ? 'txt' : t.hasAttribute('data-tbmnmin') ? 'min' : 'max', sel = '[data-tbmn' + (campo === 'txt' ? 'busca' : campo) + '="' + mb + '"]', st = tbEstado(mb);
+    const f = st.cf[k] = st.cf[k] || {}; f[campo] = t.value; st.limite = 100;
+    clearTimeout(S._tbT); S._tbT = setTimeout(() => { const pos = t.selectionStart; tbSalvaTrava(mb); S._tbMnScroll = 0; render(); const n = document.querySelector(sel); if (n) { n.focus(); try { n.setSelectionRange(pos, pos); } catch {} } }, 180); return; }
+  const id = t.getAttribute('data-tbbusca'); if (!id) return;
   const st = tbEstado(id); st.busca = t.value; st.limite = 100;
   clearTimeout(S._tbT); S._tbT = setTimeout(() => { const pos = t.selectionStart; render(); const n = document.querySelector('[data-tbbusca="' + id + '"]'); if (n) { n.focus(); try { n.setSelectionRange(pos, pos); } catch {} } }, 160);
 });
 document.addEventListener('change', e => {
-  const t = e.target; if (!t || !t.getAttribute) return; const id = t.getAttribute('data-tbcol'); if (!id) return;
+  const t = e.target; if (!t || !t.getAttribute) return;
+  const mv = t.getAttribute('data-tbmnv') || t.getAttribute('data-tbmnall');
+  if (mv) {
+    const cfg = TB[mv], k = t.getAttribute('data-k'), c = cfg.cols.find(x => x.k === k), st = tbEstado(mv), f = st.cf[k] = st.cf[k] || {};
+    const vals = tbValores(cfg, c).map(x => x.lab), bq = tbNorm(f.txt), vis = bq ? vals.filter(x => tbNorm(x).indexOf(bq) >= 0) : vals;
+    let sel = f.sel ? f.sel.slice() : vals.slice();
+    if (t.hasAttribute('data-tbmnall')) { if (t.checked) vis.forEach(x => { if (sel.indexOf(x) < 0) sel.push(x); }); else sel = sel.filter(x => vis.indexOf(x) < 0); }
+    else { const v = t.value; if (t.checked) { if (sel.indexOf(v) < 0) sel.push(v); } else sel = sel.filter(x => x !== v); }
+    f.sel = vals.every(x => sel.indexOf(x) >= 0) ? null : sel;
+    const l = document.querySelector('.tb-mn-l'), cp = document.querySelector('.tb-mn-corpo'); S._tbMnScroll = l ? l.scrollTop : 0; S._tbMnCorpo = cp ? cp.scrollTop : 0;
+    tbMuda(mv, () => {}); return;
+  }
+  const id = t.getAttribute('data-tbcol'); if (!id) return;
   const st = tbEstado(id), cfg = TB[id], k = t.value;
   if (t.checked) st.ocultas = st.ocultas.filter(x => x !== k);
-  else { const vis = cfg.cols.filter(c => !c.fixa && st.ocultas.indexOf(c.k) < 0); if (vis.length <= 1) { t.checked = true; aviso('Deixe pelo menos uma coluna.'); return; } st.ocultas.push(k); delete st.filtros[k]; if (st.ordem && st.ordem.k === k) st.ordem = null; }
+  else { const vis = cfg.cols.filter(c => !c.fixa && st.ocultas.indexOf(c.k) < 0); if (vis.length <= 1) { t.checked = true; aviso('Deixe pelo menos uma coluna.'); return; } st.ocultas.push(k); delete st.cf[k]; if (st.ordem && st.ordem.k === k) st.ordem = null; delete st.trava[k]; tbSalvaTrava(id); }
   try { if (st.ocultas.length) Store.set('cw-tbcol-' + id, JSON.stringify(st.ocultas)); else Store.del('cw-tbcol-' + id); } catch {}
   render();
 });
 document.addEventListener('click', e => {
   const t = e.target.closest && e.target.closest('[data-act]');
+  if (S.tbMenu && !(e.target.closest && (e.target.closest('.tb-mn') || e.target.closest('[data-act="tb-menu"]')))) { tbMenuFecha(); return; }
   if (!t || !/^(tb-|dd-|gv-)/.test(t.getAttribute('data-act'))) { if (!(e.target.closest && e.target.closest('.dd'))) ddFecha(); return; }
   const a = t.getAttribute('data-act'), id = t.getAttribute('data-tb');
   if (a === 'dd-abre') { const l = t.nextElementSibling, ab = l.hidden; ddFecha(); l.hidden = !ab; t.setAttribute('aria-expanded', String(ab)); if (ab) { const s = l.querySelector('[aria-selected="true"]') || l.querySelector('li'); if (s) s.focus(); } return; }
   if (a === 'dd-v') {
     if (S._ddEngole) return; /* foi segurar e arrastar, não escolher */
     const dd = t.closest('.dd'), nome = dd.getAttribute('data-dd'), v = t.getAttribute('data-v'); ddFecha();
-    if (nome.indexOf('tbf:') === 0) { const p = nome.split(':'), st = tbEstado(p[1]); st.filtros[p[2]] = v; st.limite = 100; render(); return; }
+    if (nome.indexOf('tbf:') === 0) { const p = nome.split(':'); tbMuda(p[1], st => { st.filtros[p[2]] = v; }); return; }
     const pf = nome.split(':')[0]; if (DD_AO[pf]) DD_AO[pf](nome.slice(pf.length + 1), v); return;
   }
   if (a === 'gv-fecha') { gvFechar(); return; }
   const st = id ? tbEstado(id) : null;
-  if (a === 'tb-ord') { const k = t.getAttribute('data-k'); st.ordem = st.ordem && st.ordem.k === k ? (st.ordem.dir === 'asc' ? { k: k, dir: 'desc' } : null) : { k: k, dir: 'asc' }; render(); }
-  else if (a === 'tb-painel') { st.painel = !st.painel; st.colsAberto = false; render(); }
-  else if (a === 'tb-cols') { st.colsAberto = !st.colsAberto; st.painel = false; render(); }
-  else if (a === 'tb-limpa') { st.filtros = {}; st.busca = ''; st.limite = 100; render(); }
+  const k = t.getAttribute('data-k'), cfg = id ? TB[id] : null;
+  if (a === 'tb-menu') { if (S._tbEngole) return; tbMenuAbre(id, k); }
+  else if (a === 'tb-oasc' || a === 'tb-odesc') { if (st.ordem && st.ordem.k !== k && st.trava[st.ordem.k]) { aviso('A ordem está travada na coluna ' + (cfg.cols.find(c => c.k === st.ordem.k) || {}).rot + '. Destrave lá para ordenar por esta.'); return; } tbMuda(id, s => { s.ordem = { k: k, dir: a === 'tb-oasc' ? 'asc' : 'desc' }; }); }
+  else if (a === 'tb-opad') tbMuda(id, s => { if (s.ordem && s.ordem.k === k) s.ordem = null; });
+  else if (a === 'tb-trava') tbMuda(id, s => { if (s.trava[k]) delete s.trava[k]; else s.trava[k] = true; });
+  else if (a === 'tb-mnlimpa') { const l = document.querySelector('.tb-mn-l'); tbMuda(id, s => { delete s.cf[k]; tbPresetsDe(cfg, k).forEach(f => { delete s.filtros[f.k]; }); }); }
+  else if (a === 'tb-mvesq' || a === 'tb-mvdir') tbMoveLado(id, k, a === 'tb-mvesq' ? -1 : 1);
+  else if (a === 'tb-ordpad') { st.colOrd = []; try { Store.del('cw-tbord-' + id); } catch {} render(); }
+  else if (a === 'tb-cols') { st.colsAberto = !st.colsAberto; render(); }
+  else if (a === 'tb-limpa') tbMuda(id, s => { s.busca = ''; (cfg.cols || []).forEach(c => { if (s.trava[c.k]) return; delete s.cf[c.k]; tbPresetsDe(cfg, c.k).forEach(f => { delete s.filtros[f.k]; }); }); });
   else if (a === 'tb-mais') { st.limite += 100; render(); }
   else if (a === 'tb-xlsx') tbPlanilha(id);
   else if (a === 'tb-imp') tbImprimir(id);
   else if (a === 'tb-lin') { const cfg = TB[id]; if (cfg && cfg.aoClicar) cfg.aoClicar(t.getAttribute('data-id')); }
 });
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { if ($$('.dd-l:not([hidden])').length) { ddFecha(); return; } if (S.camadas.length) { e.preventDefault(); csVolta(); } }
+  if (e.key === 'Escape') { if ($$('.dd-l:not([hidden])').length) { ddFecha(); return; } if (S.tbMenu) { e.preventDefault(); tbMenuFecha(); return; } if (S.camadas.length) { e.preventDefault(); csVolta(); } }
   if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('[data-act="dd-v"], tr[data-act="tb-lin"]')) { e.preventDefault(); e.target.click(); }
 });
 
