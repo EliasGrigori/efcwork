@@ -367,7 +367,7 @@ body.tb-arrastando,body.tb-arrastando *{cursor:grabbing!important;user-select:no
 .tb-mn-fg .tb-mn-l{max-height:250px}
 .tb-mn-cab,.tb-mn-av,.tb-mn-pe{flex-shrink:0}
 .tb-mn-h{font-size:12.5px;color:var(--tx3);font-weight:600;padding:0 6px 4px}
-.tb-mn-o{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:10px;min-height:34px;padding:0 8px;border-radius:7px;cursor:pointer;color:var(--tx2)}
+.tb-mn-o{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:10px;min-height:34px;padding:0 8px;border-radius:8px;cursor:pointer;color:var(--tx2)}
 .tb-mn-o .ic{width:16px;height:16px;color:var(--tx3)}.tb-mn-o span{flex:1}.tb-mn-o i{display:inline-flex;color:var(--aTx)}
 .tb-mn-o:hover:not([disabled]){background:var(--bg2);color:var(--tx)}
 .tb-mn-o.on{color:var(--tx);font-weight:600}.tb-mn-o.on>.ic{color:var(--aTx)}
@@ -381,12 +381,12 @@ body.tb-arrastando,body.tb-arrastando *{cursor:grabbing!important;user-select:no
 .tb-mn-nr label{display:flex;align-items:center;gap:6px;height:34px;padding:0 8px;border:1px solid var(--bd2);border-radius:8px;background:var(--bg0)}
 .tb-mn-nr small{font-size:12px;color:var(--tx3)}.tb-mn-nr input{all:unset;width:100%;min-width:0;font-size:14px;color:var(--tx);font-variant-numeric:tabular-nums}
 .tb-mn-l{overflow:auto;max-height:230px;padding:0 2px;overscroll-behavior:contain}
-.tb-mn-li{display:flex;align-items:center;gap:9px;min-height:32px;padding:0 6px;border-radius:7px;cursor:pointer}
+.tb-mn-li{display:flex;align-items:center;gap:9px;min-height:32px;padding:0 6px;border-radius:8px;cursor:pointer}
 .tb-mn-li:hover{background:var(--bg2)}
 .tb-mn-li input{accent-color:var(--a);width:15px;height:15px;margin:0;flex-shrink:0}
 .tb-mn-li span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .tb-mn-li em{font-style:normal;font-size:12px;color:var(--tx3);font-variant-numeric:tabular-nums;min-width:22px;text-align:right}
-.tb-mn-all{border-bottom:1px dashed var(--bd);border-radius:7px 7px 0 0;margin-bottom:2px;font-weight:600}
+.tb-mn-all{border-bottom:1px dashed var(--bd);border-radius:8px 8px 0 0;margin-bottom:2px;font-weight:600}
 .tb-mn-vz{color:var(--tx3);font-style:italic}
 .tb-mn-nd{margin:6px;color:var(--tx3);font-size:13px}
 .tb-mn-pe{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;background:var(--bg0)}
@@ -1028,7 +1028,7 @@ body:has(#gv) .pp-bar{display:none}
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.4.11';
+const VERSAO = '0.4.12';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -1573,7 +1573,7 @@ async function csCarregaUsuario(uidAtual) {
   if (!u || u.ativo === false || u.bloqueado) {
     try { await Data.auth.signOut(); } catch {}
     /* v0.4.1: diferencia "não achou o perfil" de "não conseguiu ler" (antes, um erro de leitura aparecia como "sem perfil") */
-    S.user = null; S.pronto = true; S._erroEntrar = erro ? (csTerminado(erro) ? 'A senha está certa, mas o cache deste aparelho travou. Feche todas as abas do EFCwork e do EFClaudian e abra de novo; se continuar, avise o administrador.' : 'A senha está certa, mas não deu para ler o seu perfil (' + svErro(erro) + '). Tente de novo; se continuar, avise o administrador.')
+    S.user = null; S.pronto = true; S._erroEntrar = erro ? (csTerminado(erro) ? 'A senha está certa, mas o cache deste aparelho travou. Feche todas as abas do EFCwork e do EFClaudian e abra de novo; se continuar, avise o administrador.' : 'A senha está certa, mas não deu para ler o seu perfil (' + (/permission/i.test((erro && (erro.code || erro.message)) || '') ? 'o Firebase recusou a leitura: confira as regras ou o App Check' : svErro(erro)) + '). Tente de novo; se continuar, avise o administrador.')
       : !u ? 'A senha está certa, mas este acesso não tem perfil no app. Confira se digitou o seu login ou o e-mail completo (com @), igual ao do EFClaudian.' : 'Este acesso está bloqueado. Fale com o administrador.'; render(); return;
   }
   S.user = Object.assign({ id: uidAtual }, u); S.pronto = true; S._erroEntrar = ''; try { sessionStorage.removeItem('cw-reparou'); } catch {}

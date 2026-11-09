@@ -89,6 +89,11 @@ f.auth.Auth={Persistence:{LOCAL:'l',SESSION:'s'}};f.firestore.FieldValue={server
   await p.click('.tb[data-tb="al-mat"] tbody tr[data-id] >> nth=2', { position: { x: 5, y: 10 } }); await p.waitForTimeout(400);
   conf(!!(await p.$('#gv [data-act="gv-fecha"]')), 'sem menu aberto, a linha abre a gaveta normalmente');
   await p.keyboard.press('Escape'); await p.waitForTimeout(300);
+  console.log('— v0.4.12: cantos do menu iguais e mensagem de leitura');
+  await p.click('.tb[data-tb="al-mat"] .tb-cab th[data-tbk="loc"] .tb-hm'); await p.waitForTimeout(250);
+  const rd = await p.evaluate(() => ['.tb-mn-tr', '.tb-mn-o', '.tb-mn-li:not(.tb-mn-all)'].map(q => getComputedStyle(document.querySelector(q)).borderTopLeftRadius));
+  conf(rd.every(x => x === '8px'), 'Travar, ordenar e itens do menu com o mesmo canto de 8 px (' + rd.join(', ') + ')');
+  await p.keyboard.press('Escape'); await p.waitForTimeout(200);
   console.log('— Login e cache separados do EFClaudian (Firebase simulado)');
   { const q = await b.newPage(); const er2 = [];
     q.on('pageerror', e => er2.push(String(e)));
