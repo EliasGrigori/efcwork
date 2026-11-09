@@ -1541,3 +1541,4 @@ Feito: tabela.js — o total saiu da linha dentro da tabela e virou faixa acima 
 - Testes: t_v0410 ganhou verificação dos cantos (13 ok).
 - Suíte completa: 780 ok, 19 suítes, 0 falha (docs/suite-v0.4.12.log).
 - 09/11/2026 11:33 — Elias aprovou os itens 1 e 2 da v0.4.12. Aguardando 'pode publicar' explícito.
+- 09/11/2026 — Publicada no GitHub (commit 5005a46). Site ao vivo conferido: VERSAO 0.4.12.
