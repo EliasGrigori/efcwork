@@ -1,7 +1,7 @@
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.4.9';
+const VERSAO = '0.4.10';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -286,9 +286,13 @@ const Data = (function () {
     async init() {
       if (DEMO) return;
       if (typeof firebase === 'undefined') throw new Error('sdk');
-      firebase.initializeApp(fbConfigAtual());
+      /* v0.4.10 (09/11): app do Firebase com nome próprio. O EFClaudian fica no mesmo endereço (eliasgrigori.github.io) e,
+         com o app padrão, os dois dividiam o login e o cache do aparelho: sair de um derrubava o outro e limpar o cache de um
+         quebrava o outro ("The client has already been terminated"). Com o nome 'efcwork', cada app tem o seu login e o seu cache.
+         Os dados na nuvem são os mesmos. Efeito colateral: na 1ª abertura da v0.4.10 é preciso entrar de novo. */
+      const app = firebase.apps.find(x => x.name === 'efcwork') || firebase.initializeApp(fbConfigAtual(), 'efcwork');
       appCheckLigar(); /* v2.88.0: antes do Firestore e do login */
-      fdb = firebase.firestore(); fauth = firebase.auth(); try { fauth.languageCode = 'pt'; } catch (e) {}
+      fdb = app.firestore(); fauth = app.auth(); try { fauth.languageCode = 'pt'; } catch (e) {}
       try { await fauth.setPersistence(firebase.auth.Auth.Persistence.LOCAL); } catch (e) { try { await fauth.setPersistence(firebase.auth.Auth.Persistence.SESSION); S._authSessao = true; } catch {} } /* v2.76.0: o aparelho guarda a sessão; ao abrir, o app pede a senha (funciona sem internet). v2.102.9: se não der, guarda na aba */
       /* v0.4.9: se o cache do aparelho quebrou duas vezes seguidas, abre sem ele por 1 dia (o app funciona online normalmente) */
       let semCache = false; try { semCache = Number(localStorage.getItem('cw-semcache-ate') || 0) > Date.now(); } catch {}

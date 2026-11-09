@@ -60,3 +60,6 @@ textarea.fm-i{height:auto;min-height:64px;padding:9px 12px;resize:vertical}
 .fm-c .dd-b{height:34px;padding:0 10px;font-size:14px}
 .fm-c .dd-l{padding:3px;max-width:calc(100vw - 40px)}
 .fm-c .dd-l li{min-height:32px;padding:5px 9px;font-size:14px}
+
+/* v0.4.10 (auditoria aprovada 09/11): no celular, campos de lista e de texto das gavetas com 44 px de toque */
+@media(max-width:599px){#gv .fm-c .dd-b,#gv .pg-ansdd .dd-b,#gv .fm-c input:not([type=checkbox]):not([type=radio]),#gv .fm-c select{height:44px;min-height:44px}#gv .dd-l li:not(.dd-dica){min-height:44px}}

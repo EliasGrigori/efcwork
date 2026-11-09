@@ -487,6 +487,9 @@ textarea.fm-i{height:auto;min-height:64px;padding:9px 12px;resize:vertical}
 .fm-c .dd-l{padding:3px;max-width:calc(100vw - 40px)}
 .fm-c .dd-l li{min-height:32px;padding:5px 9px;font-size:14px}
 
+/* v0.4.10 (auditoria aprovada 09/11): no celular, campos de lista e de texto das gavetas com 44 px de toque */
+@media(max-width:599px){#gv .fm-c .dd-b,#gv .pg-ansdd .dd-b,#gv .fm-c input:not([type=checkbox]):not([type=radio]),#gv .fm-c select{height:44px;min-height:44px}#gv .dd-l li:not(.dd-dica){min-height:44px}}
+
 /* ===== contagem.css ===== */
 /* EFCwork · contagem.css — contagem às cegas. Prefixo: cg- (e ini-cg no Início) */
 .cg-em{font-style:normal;font-size:12px;font-weight:600;color:var(--wa);background:var(--waS);border-radius:5px;padding:0 6px;margin-left:2px}
@@ -827,7 +830,7 @@ a.pg-pl{color:inherit;text-decoration:none;cursor:pointer;transition:border-colo
 /* v0.4.6 · página do plano (prefixo pp) */
 .pp{padding-bottom:84px}
 .pp-prog{display:flex;align-items:center;gap:12px;margin:2px 0 14px;color:var(--tx2);font-size:14px}.pp-prog .pg-plb{flex:1}.pp-prog b{color:var(--tx)}
-.pp-gh{display:flex;align-items:center;gap:10px;margin:14px 0 8px;font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--tx2)}
+.pp-gh{display:flex;align-items:center;gap:10px;margin:14px 0 8px;font-size:14px;font-weight:700;color:var(--tx2)} /* v0.4.10: sem maiúsculas espaçadas (auditoria) */
 .pp-gh .bt.lk{margin-left:auto;text-transform:none;letter-spacing:0;height:auto;padding:0;font-size:13px}
 .pp-grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:6px}
 .pp-ar{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;height:44px;padding:0 6px;border-radius:var(--rs);border:1px solid var(--arFB);background:var(--bg1);color:var(--tx2);font:inherit;line-height:1.15;font-variant-numeric:tabular-nums}
@@ -1024,7 +1027,7 @@ body:has(#gv) .pp-bar{display:none}
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.4.9';
+const VERSAO = '0.4.10';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -1309,9 +1312,13 @@ const Data = (function () {
     async init() {
       if (DEMO) return;
       if (typeof firebase === 'undefined') throw new Error('sdk');
-      firebase.initializeApp(fbConfigAtual());
+      /* v0.4.10 (09/11): app do Firebase com nome próprio. O EFClaudian fica no mesmo endereço (eliasgrigori.github.io) e,
+         com o app padrão, os dois dividiam o login e o cache do aparelho: sair de um derrubava o outro e limpar o cache de um
+         quebrava o outro ("The client has already been terminated"). Com o nome 'efcwork', cada app tem o seu login e o seu cache.
+         Os dados na nuvem são os mesmos. Efeito colateral: na 1ª abertura da v0.4.10 é preciso entrar de novo. */
+      const app = firebase.apps.find(x => x.name === 'efcwork') || firebase.initializeApp(fbConfigAtual(), 'efcwork');
       appCheckLigar(); /* v2.88.0: antes do Firestore e do login */
-      fdb = firebase.firestore(); fauth = firebase.auth(); try { fauth.languageCode = 'pt'; } catch (e) {}
+      fdb = app.firestore(); fauth = app.auth(); try { fauth.languageCode = 'pt'; } catch (e) {}
       try { await fauth.setPersistence(firebase.auth.Auth.Persistence.LOCAL); } catch (e) { try { await fauth.setPersistence(firebase.auth.Auth.Persistence.SESSION); S._authSessao = true; } catch {} } /* v2.76.0: o aparelho guarda a sessão; ao abrir, o app pede a senha (funciona sem internet). v2.102.9: se não der, guarda na aba */
       /* v0.4.9: se o cache do aparelho quebrou duas vezes seguidas, abre sem ele por 1 dia (o app funciona online normalmente) */
       let semCache = false; try { semCache = Number(localStorage.getItem('cw-semcache-ate') || 0) > Date.now(); } catch {}
