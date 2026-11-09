@@ -1485,3 +1485,4 @@ Feito: tabela.js — o total saiu da linha dentro da tabela e virou faixa acima 
 - Causa: o Firestore se desliga sozinho quando o banco do navegador (IndexedDB, cache offline) quebra. EFCwork e EFClaudian ficam no mesmo endereço (eliasgrigori.github.io), mesmo projeto Firebase e mesma versão (10.12.0), e dividem esse cache. Nenhum código do app chamava terminate().
 - Conserto (base.js reparaCache, casca.js csTerminado/csPodeReparar): ao detectar o erro, apaga só a cópia local do cache e recarrega, mantendo o login; na 2ª vez seguida abre sem cache por 1 dia (online normal); também vale para qualquer gravação que dê esse erro (unhandledrejection). Se não der, a mensagem pede para fechar todas as abas do EFCwork e do EFClaudian. Nada da nuvem é apagado.
 - Testes: t_v041 28 ok, t_v047 52 ok, t_v049 43 ok depois do conserto.
+- Publicado no GitHub em 09/11/2026: v0.4.9, commit 5db7ac1 (autorizado 08:29: "pode publicar ela e essa tbm").
