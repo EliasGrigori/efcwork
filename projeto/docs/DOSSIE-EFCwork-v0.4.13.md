@@ -1554,3 +1554,4 @@ Feito: tabela.js — o total saiu da linha dentro da tabela e virou faixa acima 
 - Suíte completa EFCwork: 789 ok, 20 suítes, 0 falha (docs/suite-v0.4.13.log).
 - 09/11 14:15 — Elias enviou suite-v2.102.59.log (4741 ok, 0 problema). Kit de testes do EFClaudian ainda pendente.
 - 09/11 15:07 — Elias aprovou os 3 itens (v0.4.13 e EFClaudian v2.102.60) e autorizou: 'pode lançar no github e iniciar a prx etapa'.
+- 09/11 15:10 — Publicadas: EFCwork v0.4.13 (commit 53e4ad4) e EFClaudian v2.102.60 (commit b56739b). Às 15:13 o GitHub Pages ainda servia 0.4.12/v2.102.59 (atualização leva alguns minutos).
