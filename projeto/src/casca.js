@@ -14,7 +14,7 @@ const AREAS = [
   { id: 'almox', nome: 'Almoxarifado', ic: 'caixa', versao: 'v0.3', parcial: 'consultar e lançar prontos aqui; cadastro de material, kits, fotos e inventário seguem no EFClaudian', abas: [{ id: 'painel', nome: 'Painel' }, { id: 'materiais', nome: 'Materiais' }, { id: 'movimentacoes', nome: 'Movimentações' }, { id: 'solicitacoes', nome: 'Solicitações' }, { id: 'equipamentos', nome: 'Equipamentos' }, { id: 'contagem', nome: 'Contagem', oculta: true, pai: () => typeof cgDoEq === 'function' && cgDoEq() ? 'equipamentos' : 'materiais' }, { id: 'calibracao', nome: 'Calibração', oculta: true, pai: 'equipamentos' }] },
   { id: 'qualidade', nome: 'Qualidade', ic: 'escudo', versao: 'v0.7', abas: [{ id: 'nc', nome: 'Não conformidades' }, { id: 'analise', nome: 'Análise de problemas' }, { id: 'bugs', nome: 'Bugs e sugestões' }] },
   { id: 'relatorios', nome: 'Relatórios', ic: 'graf', versao: 'v0.8', grupo: 'Análise', abas: [] },
-  { id: 'adm', nome: 'Administração', ic: 'eng', rodape: true, abas: [{ id: 'empresa', nome: 'Empresa' }, { id: 'aparencia', nome: 'Aparência' }, { id: 'sobre', nome: 'Sobre' }] }
+  { id: 'adm', nome: 'Administração', ic: 'eng', rodape: true, abas: [{ id: 'empresa', nome: 'Empresa' }, { id: 'aparencia', nome: 'Aparência' }, { id: 'atividade', nome: 'Atividade', get negada() { return !isPrincipal(S.user); } }, { id: 'sobre', nome: 'Sobre' }] }
 ];
 const csArea = id => AREAS.find(a => a.id === id) || AREAS[0];
 
@@ -32,13 +32,19 @@ try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () =
 /* ---------- rotas ---------- */
 function csLeRota() {
   const p = String(location.hash || '').replace(/^#\/?/, '').split(/[/?]/).filter(Boolean);
-  let a = AREAS.find(x => x.id === p[0]) ? p[0] : 'inicio';
+  /* Tela sem autorização some (pedido do Elias, 09/11): não aparece no menu, nas abas nem na busca, e abrir pelo endereço cai na primeira tela liberada. */
+  const livre = x => !S.user || !x.negada;
+  let a = AREAS.find(x => x.id === p[0]) ? p[0] : 'inicio', neg = false;
+  if (!livre(csArea(a))) { a = 'inicio'; neg = true; }
   const ar = csArea(a);
-  let aba = p[1] && ar.abas.some(x => x.id === p[1]) ? p[1] : (ar.abas[0] ? ar.abas[0].id : '');
-  return { area: a, aba: aba, id: p[2] ? decodeURIComponent(p[2]) : '' };
+  let aba = p[1] && ar.abas.some(x => x.id === p[1]) ? p[1] : '';
+  if (aba && !livre(ar.abas.find(x => x.id === aba))) { aba = ''; neg = true; }
+  if (!aba) { const f = ar.abas.find(livre); aba = f ? f.id : ''; }
+  return { area: a, aba: aba, id: neg ? '' : (p[2] ? decodeURIComponent(p[2]) : ''), neg: neg };
 }
+function csAcertaHash() { if (S.rota.neg) { S.rota.neg = false; try { history.replaceState(null, '', '#/' + S.rota.area + (S.rota.aba ? '/' + S.rota.aba : '')); } catch {} } }
 function ir(area, aba) { const h = '#/' + area + (aba ? '/' + aba : ''); if (location.hash !== h) location.hash = h; else render(); }
-window.addEventListener('hashchange', () => { S.rota = csLeRota(); csUso(); csFechaMenu(); S.camadas = S.camadas.filter(c => c.nome !== 'menu'); if (S._gvNav) S._gvNav = false; else { S.gv = null; S.gvForm = false; S.fm = null; S._alSel = null; S.camadas = []; const g = $('#gv'); if (g) g.remove(); document.body.classList.remove('gv-aberta'); } render(); try { window.scrollTo(0, 0); } catch {} });
+window.addEventListener('hashchange', () => { S.rota = csLeRota(); csAcertaHash(); csUso(); csFechaMenu(); S.camadas = S.camadas.filter(c => c.nome !== 'menu'); if (S._gvNav) S._gvNav = false; else { S.gv = null; S.gvForm = false; S.fm = null; S._alSel = null; S.camadas = []; const g = $('#gv'); if (g) g.remove(); document.body.classList.remove('gv-aberta'); } render(); try { window.scrollTo(0, 0); } catch {} });
 
 /* ---------- camadas (pedido do Elias, 05/11): cada coisa aberta por cima — gaveta, formulário, lista de escolher, busca, menu do celular —
    é uma camada. Esc, o X e o voltar do celular fecham SÓ a de cima. Formulário com algo preenchido pergunta antes de descartar. ---------- */
@@ -98,7 +104,7 @@ function csEmpresaBloco() {
 function csLado() {
   const at = S.rota.area; let h = '<aside class="cs-lado" id="cs-lado" aria-label="Menu">' + csMarca() + csEmpresaBloco() + '<nav class="cs-nav">';
   let grupo = '';
-  AREAS.filter(a => !a.rodape).forEach(a => {
+  AREAS.filter(a => !a.rodape && !a.negada).forEach(a => {
     if (a.grupo && a.grupo !== grupo) { grupo = a.grupo; h += '<div class="cs-gh">' + esc(grupo) + '</div>'; }
     h += '<a class="cs-it' + (a.id === at ? ' on' : '') + '" href="#/' + a.id + '"' + (a.id === at ? ' aria-current="page"' : '') + '>' + ic(a.ic) + '<span>' + esc(a.nome) + '</span></a>';
   });
@@ -121,7 +127,7 @@ function cabecalho(o) {
   const cam = (o.caminho || [ar.nome].concat(o.abaNome ? [o.abaNome] : [])).map((x, k, l) => k < l.length - 1 ? '<b>' + esc(x) + '</b>' : esc(x)).join(' / ');
   let h = '<div class="cs-ph"><div class="cs-bc">' + cam + '</div><div class="cs-phr"><div class="cs-pht">' + (o.aoLado ? '<div class="cs-ht"><h1>' + esc(o.titulo) + '</h1>' + o.aoLado + '</div>' : '<h1>' + esc(o.titulo) + '</h1>') + (o.meta && o.meta.length ? '<div class="cs-meta">' + o.meta.join('') + '</div>' : '') + '</div>' + (o.acoes ? '<div class="cs-acts">' + o.acoes + '</div>' : '') + '</div></div>';
   const atual = ar.abas.find(t => t.id === S.rota.aba), marca = atual && atual.oculta ? (typeof atual.pai === 'function' ? atual.pai() : atual.pai) : S.rota.aba;
-  if (ar.abas.length > 1 && !o.semAbas) h += '<nav class="cs-abas" aria-label="Abas de ' + esc(ar.nome) + '">' + ar.abas.filter(t => !t.oculta).map(t => '<a href="#/' + ar.id + '/' + t.id + '"' + (t.id === marca ? ' class="on"' + (t.id === S.rota.aba ? ' aria-current="page"' : '') : '') + '>' + esc(t.nome) + '</a>').join('') + '</nav>';
+  if (ar.abas.length > 1 && !o.semAbas) h += '<nav class="cs-abas" aria-label="Abas de ' + esc(ar.nome) + '">' + ar.abas.filter(t => !t.oculta && !t.negada).map(t => '<a href="#/' + ar.id + '/' + t.id + '"' + (t.id === marca ? ' class="on"' + (t.id === S.rota.aba ? ' aria-current="page"' : '') : '') + '>' + esc(t.nome) + '</a>').join('') + '</nav>';
   return h;
 }
 const metaPl = (txt, tipo, ico) => '<span class="cs-pl' + (tipo ? ' ' + tipo : '') + '">' + (ico ? ic(ico) : '') + esc(txt) + '</span>';
@@ -184,7 +190,7 @@ async function csCarregaUsuario(uidAtual) {
   csOuve('sv2_cfg', l => { const e = l.find(x => x.id === 'empresa'); S.empresa = e || null; S.cfgAlm = l.find(x => x.id === 'almox') || null; S.cfgCol = l.find(x => x.id === 'coletas') || null; S.cfgEntrar = l.find(x => x.id === 'entrar') || null; enGuardaCache(); render(); });
   csOuve('sv2_tarefas', l => { S.tarefas = l; if (S.rota.area === 'inicio') render(); });
   CS_CARGAS.forEach(f => { try { f(); } catch (e) { console.error(e); } });
-  csUso(); render();
+  S.rota = csLeRota(); csAcertaHash(); csUso(); render();
 }
 async function csIniciar() {
   S.rota = csLeRota();

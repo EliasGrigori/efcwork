@@ -337,3 +337,8 @@ Reprogramar área (novo dia/coletor sem desprogramar),Coletas,must,sim,sim,Colet
 Novo plano de coleta (novo rodízio),Coletas,must,sim,sim,Coletas › Programação,v0.4.9
 Ordenar em botão único (padrão, A-Z, Z-A),Tabelas,should,sim,sim,Todas as tabelas,v0.4.9
 Total em linha própria quando a coluna fica sob os ícones,Tabelas,should,nao,sim,Todas as tabelas com total,v0.4.13
+Tela de Atividade (quem fez o quê): linha do tempo por dia,Administração,should,nao,sim,Administração › Atividade (só Principal),v0.4.14
+Gráfico de colunas dos últimos 30 dias de atividade,Administração,could,nao,sim,Administração › Atividade,v0.4.14
+Filtro único (período, pessoa, área, app) na atividade,Administração,should,nao,sim,Administração › Atividade,v0.4.14
+Detalhe do registro com antes e depois na própria linha,Administração,should,nao,sim,Administração › Atividade,v0.4.14
+Atividade filtrada em planilha e impressão,Administração,could,nao,sim,Administração › Atividade,v0.4.14

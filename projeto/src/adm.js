@@ -79,9 +79,9 @@ function admSobre() {
   return '<section class="pn adm-uma"><div class="hd"><h3>Sobre</h3></div><dl class="adm-dl">' + l.map(x => '<dt>' + esc(x[0]) + '</dt><dd>' + esc(x[1]) + '</dd>').join('') + '</dl></section>';
 }
 TELAS.adm = function (aba) {
-  const t = { empresa: 'Empresa', aparencia: 'Aparência', sobre: 'Sobre' }[aba] || 'Empresa';
-  return cabecalho({ titulo: t, abaNome: t, meta: aba === 'empresa' ? [metaPl(isPrincipal(S.user) ? 'você pode alterar' : 'somente leitura', isPrincipal(S.user) ? 'ok' : '', 'info')] : [] }) +
-    (aba === 'aparencia' ? admAparencia() : aba === 'sobre' ? admSobre() : admEmpresa());
+  const t = { empresa: 'Empresa', aparencia: 'Aparência', atividade: 'Atividade', sobre: 'Sobre' }[aba] || 'Empresa';
+  return cabecalho({ titulo: t, abaNome: t, meta: aba === 'empresa' ? [metaPl(isPrincipal(S.user) ? 'você pode alterar' : 'somente leitura', isPrincipal(S.user) ? 'ok' : '', 'info')] : aba === 'atividade' ? [metaPl('só o Principal vê', '', 'cadeado')] : [] }) +
+    (aba === 'aparencia' ? admAparencia() : aba === 'sobre' ? admSobre() : aba === 'atividade' ? atTela() : admEmpresa());
 };
 
 /* logo: reduz no aparelho antes de guardar (máx. 256 px) */

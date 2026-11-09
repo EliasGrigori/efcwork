@@ -999,6 +999,55 @@ body:has(#gv) .pp-bar{display:none}
 .ar-pl{border-top:1px solid var(--bd)}
 .ar-pl ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;color:var(--tx2)}
 
+/* ===== atividade.css ===== */
+/* EFCwork · atividade.css — Prefixo: at- (Administração › Atividade) */
+.at-gr{margin:0 0 14px}
+.at-cols{display:flex;align-items:flex-end;gap:3px;height:76px;padding:10px 12px 0;border:1px solid var(--bd);border-radius:var(--r);background:var(--bg1);box-sizing:border-box}
+.at-cols i{flex:1;min-width:0;background:var(--bd2);border-radius:3px 3px 0 0}
+.at-cols i.rec{background:var(--ouro)}
+.at-cols i.vz{opacity:.55}
+.at-gr figcaption{display:flex;justify-content:space-between;gap:8px;color:var(--tx3);font-size:13px;margin:6px 2px 0}
+.at-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 12px}
+.at-fl{display:inline-flex;align-items:center;gap:8px;height:var(--btn);padding:0 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg1);color:var(--tx);font:600 14px var(--f);cursor:pointer;max-width:100%}
+.at-fl small{color:var(--tx2);font-weight:500;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.at-fl .ic{width:18px;height:18px;flex:none}
+.at-fp{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px 12px;padding:12px;margin:0 0 12px;border:1px solid var(--bd);border-radius:var(--r);background:var(--bg1)}
+.at-fp[hidden]{display:none}
+.at-dia{font:600 13px var(--f);color:var(--tx2);margin:16px 0 6px;display:flex;gap:10px;align-items:center}
+.at-dia::after{content:'';flex:1;border-top:1px solid var(--bd)}
+.at-tl{border:1px solid var(--bd);border-radius:10px;background:var(--bg1);overflow:hidden}
+.at-ev{border-top:1px solid var(--bd)}.at-ev:first-child{border-top:0}
+.at-ev.ab{background:var(--bg2)}
+.at-li{display:grid;grid-template-columns:48px 28px minmax(0,1fr) auto 18px;gap:12px;align-items:center;width:100%;min-height:52px;padding:8px 14px;border:0;background:none;color:var(--tx);font:inherit;text-align:left;cursor:pointer}
+.at-li:hover{background:var(--bg2)}
+.at-h{color:var(--tx2);font-variant-numeric:tabular-nums}
+.at-ini{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--bg2);color:var(--tx2);font:700 12px var(--f)}
+.at-ev.ab .at-ini{background:var(--bg1)}
+.at-t{min-width:0}.at-t b{font-weight:600}
+.at-t small{display:block;color:var(--tx2);font-size:13px;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.at-s{width:16px;height:16px;color:var(--tx3);transition:transform .15s}
+.at-ev.ab .at-s{transform:rotate(180deg)}
+.at-det{padding:4px 16px 14px 102px}
+.at-det dl{display:grid;grid-template-columns:120px minmax(0,1fr);gap:6px 14px;margin:0}
+.at-det dt{color:var(--tx3)}.at-det dd{margin:0;font-weight:500;overflow-wrap:anywhere}
+.at-det .at-h{display:block;font:600 13px var(--f);color:var(--tx2);margin:12px 0 4px}
+.at-dif{width:100%;border-collapse:collapse;font-size:14px}
+.at-dif th{text-align:left;color:var(--tx2);font-weight:600;padding:6px 8px;border-bottom:1px solid var(--bd)}
+.at-dif td{padding:6px 8px;border-bottom:1px solid var(--bd);overflow-wrap:anywhere}
+.at-dif td.a{color:var(--tx2);text-decoration:line-through;text-decoration-color:var(--tx3)}.at-dif td.d{font-weight:600}
+.at-mais{display:flex;justify-content:center;margin:14px 0}
+@media(max-width:899px){.at-fp{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:599px){
+  .at-fp{grid-template-columns:1fr}
+  .at-fl small{display:none}
+  .at-li{grid-template-columns:42px minmax(0,1fr) 16px;gap:8px;padding:10px 12px;min-height:56px}
+  .at-li .at-ini,.at-li .pill{display:none}
+  .at-t{white-space:normal}
+  .at-det{padding:4px 12px 12px}
+  .at-det dl{grid-template-columns:1fr;gap:0}.at-det dt{margin-top:8px}
+  .at-bar .bt:not(.ic-so){flex:1}
+}
+
 /* ===== adm.css ===== */
 /* EFCwork · adm.css — Prefixo: adm- */
 .adm-gr{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:16px;align-items:start}
@@ -1028,7 +1077,7 @@ body:has(#gv) .pp-bar{display:none}
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.4.13';
+const VERSAO = '0.4.14';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -1410,7 +1459,7 @@ const AREAS = [
   { id: 'almox', nome: 'Almoxarifado', ic: 'caixa', versao: 'v0.3', parcial: 'consultar e lançar prontos aqui; cadastro de material, kits, fotos e inventário seguem no EFClaudian', abas: [{ id: 'painel', nome: 'Painel' }, { id: 'materiais', nome: 'Materiais' }, { id: 'movimentacoes', nome: 'Movimentações' }, { id: 'solicitacoes', nome: 'Solicitações' }, { id: 'equipamentos', nome: 'Equipamentos' }, { id: 'contagem', nome: 'Contagem', oculta: true, pai: () => typeof cgDoEq === 'function' && cgDoEq() ? 'equipamentos' : 'materiais' }, { id: 'calibracao', nome: 'Calibração', oculta: true, pai: 'equipamentos' }] },
   { id: 'qualidade', nome: 'Qualidade', ic: 'escudo', versao: 'v0.7', abas: [{ id: 'nc', nome: 'Não conformidades' }, { id: 'analise', nome: 'Análise de problemas' }, { id: 'bugs', nome: 'Bugs e sugestões' }] },
   { id: 'relatorios', nome: 'Relatórios', ic: 'graf', versao: 'v0.8', grupo: 'Análise', abas: [] },
-  { id: 'adm', nome: 'Administração', ic: 'eng', rodape: true, abas: [{ id: 'empresa', nome: 'Empresa' }, { id: 'aparencia', nome: 'Aparência' }, { id: 'sobre', nome: 'Sobre' }] }
+  { id: 'adm', nome: 'Administração', ic: 'eng', rodape: true, abas: [{ id: 'empresa', nome: 'Empresa' }, { id: 'aparencia', nome: 'Aparência' }, { id: 'atividade', nome: 'Atividade', get negada() { return !isPrincipal(S.user); } }, { id: 'sobre', nome: 'Sobre' }] }
 ];
 const csArea = id => AREAS.find(a => a.id === id) || AREAS[0];
 
@@ -1428,13 +1477,19 @@ try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () =
 /* ---------- rotas ---------- */
 function csLeRota() {
   const p = String(location.hash || '').replace(/^#\/?/, '').split(/[/?]/).filter(Boolean);
-  let a = AREAS.find(x => x.id === p[0]) ? p[0] : 'inicio';
+  /* Tela sem autorização some (pedido do Elias, 09/11): não aparece no menu, nas abas nem na busca, e abrir pelo endereço cai na primeira tela liberada. */
+  const livre = x => !S.user || !x.negada;
+  let a = AREAS.find(x => x.id === p[0]) ? p[0] : 'inicio', neg = false;
+  if (!livre(csArea(a))) { a = 'inicio'; neg = true; }
   const ar = csArea(a);
-  let aba = p[1] && ar.abas.some(x => x.id === p[1]) ? p[1] : (ar.abas[0] ? ar.abas[0].id : '');
-  return { area: a, aba: aba, id: p[2] ? decodeURIComponent(p[2]) : '' };
+  let aba = p[1] && ar.abas.some(x => x.id === p[1]) ? p[1] : '';
+  if (aba && !livre(ar.abas.find(x => x.id === aba))) { aba = ''; neg = true; }
+  if (!aba) { const f = ar.abas.find(livre); aba = f ? f.id : ''; }
+  return { area: a, aba: aba, id: neg ? '' : (p[2] ? decodeURIComponent(p[2]) : ''), neg: neg };
 }
+function csAcertaHash() { if (S.rota.neg) { S.rota.neg = false; try { history.replaceState(null, '', '#/' + S.rota.area + (S.rota.aba ? '/' + S.rota.aba : '')); } catch {} } }
 function ir(area, aba) { const h = '#/' + area + (aba ? '/' + aba : ''); if (location.hash !== h) location.hash = h; else render(); }
-window.addEventListener('hashchange', () => { S.rota = csLeRota(); csUso(); csFechaMenu(); S.camadas = S.camadas.filter(c => c.nome !== 'menu'); if (S._gvNav) S._gvNav = false; else { S.gv = null; S.gvForm = false; S.fm = null; S._alSel = null; S.camadas = []; const g = $('#gv'); if (g) g.remove(); document.body.classList.remove('gv-aberta'); } render(); try { window.scrollTo(0, 0); } catch {} });
+window.addEventListener('hashchange', () => { S.rota = csLeRota(); csAcertaHash(); csUso(); csFechaMenu(); S.camadas = S.camadas.filter(c => c.nome !== 'menu'); if (S._gvNav) S._gvNav = false; else { S.gv = null; S.gvForm = false; S.fm = null; S._alSel = null; S.camadas = []; const g = $('#gv'); if (g) g.remove(); document.body.classList.remove('gv-aberta'); } render(); try { window.scrollTo(0, 0); } catch {} });
 
 /* ---------- camadas (pedido do Elias, 05/11): cada coisa aberta por cima — gaveta, formulário, lista de escolher, busca, menu do celular —
    é uma camada. Esc, o X e o voltar do celular fecham SÓ a de cima. Formulário com algo preenchido pergunta antes de descartar. ---------- */
@@ -1494,7 +1549,7 @@ function csEmpresaBloco() {
 function csLado() {
   const at = S.rota.area; let h = '<aside class="cs-lado" id="cs-lado" aria-label="Menu">' + csMarca() + csEmpresaBloco() + '<nav class="cs-nav">';
   let grupo = '';
-  AREAS.filter(a => !a.rodape).forEach(a => {
+  AREAS.filter(a => !a.rodape && !a.negada).forEach(a => {
     if (a.grupo && a.grupo !== grupo) { grupo = a.grupo; h += '<div class="cs-gh">' + esc(grupo) + '</div>'; }
     h += '<a class="cs-it' + (a.id === at ? ' on' : '') + '" href="#/' + a.id + '"' + (a.id === at ? ' aria-current="page"' : '') + '>' + ic(a.ic) + '<span>' + esc(a.nome) + '</span></a>';
   });
@@ -1517,7 +1572,7 @@ function cabecalho(o) {
   const cam = (o.caminho || [ar.nome].concat(o.abaNome ? [o.abaNome] : [])).map((x, k, l) => k < l.length - 1 ? '<b>' + esc(x) + '</b>' : esc(x)).join(' / ');
   let h = '<div class="cs-ph"><div class="cs-bc">' + cam + '</div><div class="cs-phr"><div class="cs-pht">' + (o.aoLado ? '<div class="cs-ht"><h1>' + esc(o.titulo) + '</h1>' + o.aoLado + '</div>' : '<h1>' + esc(o.titulo) + '</h1>') + (o.meta && o.meta.length ? '<div class="cs-meta">' + o.meta.join('') + '</div>' : '') + '</div>' + (o.acoes ? '<div class="cs-acts">' + o.acoes + '</div>' : '') + '</div></div>';
   const atual = ar.abas.find(t => t.id === S.rota.aba), marca = atual && atual.oculta ? (typeof atual.pai === 'function' ? atual.pai() : atual.pai) : S.rota.aba;
-  if (ar.abas.length > 1 && !o.semAbas) h += '<nav class="cs-abas" aria-label="Abas de ' + esc(ar.nome) + '">' + ar.abas.filter(t => !t.oculta).map(t => '<a href="#/' + ar.id + '/' + t.id + '"' + (t.id === marca ? ' class="on"' + (t.id === S.rota.aba ? ' aria-current="page"' : '') : '') + '>' + esc(t.nome) + '</a>').join('') + '</nav>';
+  if (ar.abas.length > 1 && !o.semAbas) h += '<nav class="cs-abas" aria-label="Abas de ' + esc(ar.nome) + '">' + ar.abas.filter(t => !t.oculta && !t.negada).map(t => '<a href="#/' + ar.id + '/' + t.id + '"' + (t.id === marca ? ' class="on"' + (t.id === S.rota.aba ? ' aria-current="page"' : '') : '') + '>' + esc(t.nome) + '</a>').join('') + '</nav>';
   return h;
 }
 const metaPl = (txt, tipo, ico) => '<span class="cs-pl' + (tipo ? ' ' + tipo : '') + '">' + (ico ? ic(ico) : '') + esc(txt) + '</span>';
@@ -1580,7 +1635,7 @@ async function csCarregaUsuario(uidAtual) {
   csOuve('sv2_cfg', l => { const e = l.find(x => x.id === 'empresa'); S.empresa = e || null; S.cfgAlm = l.find(x => x.id === 'almox') || null; S.cfgCol = l.find(x => x.id === 'coletas') || null; S.cfgEntrar = l.find(x => x.id === 'entrar') || null; enGuardaCache(); render(); });
   csOuve('sv2_tarefas', l => { S.tarefas = l; if (S.rota.area === 'inicio') render(); });
   CS_CARGAS.forEach(f => { try { f(); } catch (e) { console.error(e); } });
-  csUso(); render();
+  S.rota = csLeRota(); csAcertaHash(); csUso(); render();
 }
 async function csIniciar() {
   S.rota = csLeRota();
@@ -4159,7 +4214,7 @@ const bgNorm = s => String(s == null ? '' : s).normalize('NFD').replace(/[̀-ͯ]
 function bgCasa(q, txt) { const pal = bgNorm(q).split(/\s+/).filter(Boolean), t = bgNorm(txt); return pal.length > 0 && pal.every(p => t.indexOf(p) >= 0); }
 BG_FONTES.push(q => {
   const r = [];
-  AREAS.forEach(a => { (a.abas.length ? a.abas : [{ id: '', nome: a.nome }]).forEach(t => { if (bgCasa(q, a.nome + ' ' + t.nome)) r.push({ grupo: 'Telas', nome: t.nome, sub: t.id ? a.nome : 'Área', ico: a.ic, abrir: () => ir(a.id, t.id) }); }); });
+  AREAS.forEach(a => { (a.abas.length ? a.abas : [{ id: '', nome: a.nome }]).forEach(t => { if (!a.negada && !t.negada && bgCasa(q, a.nome + ' ' + t.nome)) r.push({ grupo: 'Telas', nome: t.nome, sub: t.id ? a.nome : 'Área', ico: a.ic, abrir: () => ir(a.id, t.id) }); }); });
   return r;
 });
 BG_FONTES.push(q => {
@@ -5648,6 +5703,172 @@ function arEmBreve(ar) {
     (AR_PLANO[ar.id] ? '<div class="cpo ar-pl"><p class="ini-sub">O que vem aqui</p><ul>' + AR_PLANO[ar.id].map(x => '<li>' + esc(x) + '</li>').join('') + '</ul></div>' : '') + '</section>';
 }
 
+/* ===== atividade.js ===== */
+/* EFCwork · atividade.js — Administração › Atividade (v0.4.14)
+   Mostra o registro de tudo o que cada pessoa fez (sv2_audit, o mesmo dos dois apps), só para o Principal.
+   Modelo aprovado em 09/11: linha do tempo por dia + gráfico de colunas dos últimos 30 dias + filtro único recolhível.
+   A linha abre o detalhe no próprio lugar (sem gaveta). Só leitura: nada aqui grava no Firebase.
+   Prefixo: at- */
+
+const AT_LIM = 100;
+S.atFiltro = { pessoa: '', area: '', app: '', dias: '30' };
+S.atAberto = false; S.atLinha = null; S.atLimite = AT_LIM; S.audit = [];
+
+CS_CARGAS.push(() => {
+  if (!isPrincipal(S.user)) return;
+  csOuve('sv2_audit', l => { S.audit = l || []; if (S.rota.area === 'adm' && S.rota.aba === 'atividade') render(); }, { order: 'ts', limit: 1000 });
+});
+
+/* ---------- como cada registro é mostrado ---------- */
+const AT_ACOES = {
+  criar_coleta: 'Criou coleta', envio_coleta: 'Envio', corrigir_os: 'Corrigiu O.S', programar_plano: 'Programou', desprogramar_plano: 'Desprogramou',
+  criar_rodizio: 'Novo plano', alterar_rodizio: 'Alterou plano', encerrar_rodizio: 'Encerrou plano', recoleta_rodizio: 'Recoleta',
+  criar_item_almox: 'Novo material', editar_item_almox: 'Editou material', reativar_item_almox: 'Reativou material', desativar_item_almox: 'Desativou material',
+  entrada_almox: 'Entrada', saida_almox: 'Saída', ajuste_almox: 'Ajuste', anular_mov_almox: 'Anulou', corrigir_mov_almox: 'Corrigiu',
+  abrir_frasco_almox: 'Abriu frasco', fim_frasco_almox: 'Frasco acabou', critico_confirmar: 'Confirmou saída crítica', critico_nao_confere: 'Saída crítica não confere',
+  solicitacao_almox: 'Solicitação', cancelar_solicitacao_almox: 'Cancelou solicitação',
+  calibracao_solicitacao: 'Solicitou calibração', calibracao_cotacao: 'Cotação', calibracao_agenda: 'Agendou calibração', calibracao_realizada: 'Calibração feita',
+  calibracao_compra: 'Compra', calibracao_cancelar: 'Cancelou calibração', equip_calibracao: 'Calibrou equipamento', equip_inventario: 'Inventário do equipamento',
+  inventario_abrir: 'Abriu inventário', inventario_recontar: 'Pediu recontagem', inventario_concluir: 'Concluiu inventário', inventario_cancelar: 'Cancelou inventário',
+  pedir_autorizacao: 'Pediu autorização', confirmar_alerta: 'Confirmou aviso', imprimir: 'Imprimiu'
+};
+function atAcao(a) { a = String(a || ''); if (AT_ACOES[a]) return AT_ACOES[a]; const t = a.replace(/^equip_/, '').replace(/_/g, ' ').trim(); return t ? t.charAt(0).toUpperCase() + t.slice(1) : 'Ação'; }
+function atArea(r) {
+  const e = String(r.entidade || '');
+  if (/^almox|^lg_/.test(e)) return 'Almoxarifado';
+  if (/^(coleta|rodizio|plano_coleta|prog|agua)/.test(e)) return 'Coletas';
+  if (/^(rnc|nc|apont|analise|bug)/.test(e)) return 'Qualidade';
+  if (/^(doc|lanc|caixa|cloro)/.test(e)) return 'Documentos';
+  if (/^(aprov|notif)/.test(e)) return 'Avisos';
+  return 'Outros';
+}
+const atApp = r => { const v = String(r.versao || '').trim().split(/\s+/)[0]; return v || 'EFClaudian'; };
+const atPerfil = p => ({ principal: 'Administrador', principal_temp: 'Administrador', secundario: 'Líder', visitante: 'Visitante', colaborador: 'Colaborador' }[p] || (p || ''));
+function atCor(a) {
+  a = String(a || '');
+  if (/critico|vencid/.test(a)) return 'cr';
+  if (/cancel|desprog|anul|corrig|desativ|nao_confere|encerr/.test(a)) return 'wa';
+  if (/concluir|conclu|realizada|confirmar|reativ/.test(a)) return 'ok';
+  return '';
+}
+const atIni = n => String(n || '?').trim().split(/\s+/).map(x => x[0]).slice(0, 2).join('').toUpperCase();
+const atDia = iso => { const d = new Date(iso); if (isNaN(d)) return ''; return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+const atHora = iso => { const d = new Date(iso); return isNaN(d) ? '' : String(d.toTimeString()).slice(0, 5); };
+function atDiaTxt(dia) { const h = hojeISO(); if (dia === h) return 'Hoje'; if (dia === addDias(h, -1)) return 'Ontem'; return fmtD(dia); }
+const atId = (r, i) => String(r.id || ('i' + i));
+
+/* ---------- filtro ---------- */
+const AT_PERIODOS = [['7', 'Últimos 7 dias'], ['30', 'Últimos 30 dias'], ['90', 'Últimos 90 dias'], ['0', 'Todo o período']];
+function atFiltrar(ignoraPeriodo) {
+  const f = S.atFiltro, corte = !ignoraPeriodo && f.dias !== '0' ? addDias(hojeISO(), -(Number(f.dias) - 1)) : '';
+  return (S.audit || []).filter(r => r.ts && (!f.pessoa || r.userName === f.pessoa) && (!f.area || atArea(r) === f.area) && (!f.app || atApp(r) === f.app) && (!corte || atDia(r.ts) >= corte));
+}
+const atTemFiltro = () => { const f = S.atFiltro; return !!(f.pessoa || f.area || f.app || f.dias !== '30'); };
+function atResumo() {
+  const f = S.atFiltro, p = [(AT_PERIODOS.find(x => x[0] === f.dias) || AT_PERIODOS[1])[1].toLowerCase()];
+  if (f.pessoa) p.push(f.pessoa.split(' ')[0]); if (f.area) p.push(f.area); if (f.app) p.push(f.app);
+  return p.length > 1 ? p.join(' · ') : p[0] + ' · todos';
+}
+
+/* ---------- gráfico de colunas (últimos 30 dias) ---------- */
+function atGrafico() {
+  const l = atFiltrar(true), hoje = hojeISO(), cont = {}; l.forEach(r => { const d = atDia(r.ts); cont[d] = (cont[d] || 0) + 1; });
+  const dias = []; for (let i = 29; i >= 0; i--) dias.push(addDias(hoje, -i));
+  const max = Math.max(1, ...dias.map(d => cont[d] || 0)), total = dias.reduce((s, d) => s + (cont[d] || 0), 0);
+  const pico = dias.reduce((m, d) => (cont[d] || 0) >= (cont[m] || 0) ? d : m, dias[0]);
+  return '<figure class="at-gr" aria-label="Registros por dia nos últimos 30 dias"><div class="at-cols" role="img" aria-label="Gráfico de colunas: registros por dia nos últimos 30 dias">' +
+    dias.map((d, i) => { const n = cont[d] || 0; return '<i class="' + (i >= 23 ? 'rec' : '') + (n ? '' : ' vz') + '" style="height:' + (n ? Math.max(8, Math.round(n / max * 100)) : 4) + '%" title="' + esc(atDiaTxt(d) + ': ' + n + (n === 1 ? ' registro' : ' registros')) + '"></i>'; }).join('') + '</div>' +
+    '<figcaption><span>30 dias atrás</span><span>' + (total ? 'mais movimento: ' + esc(atDiaTxt(pico)) + ' (' + cont[pico] + ')' : 'sem registros nestes 30 dias') + '</span><span>hoje</span></figcaption></figure>';
+}
+
+/* ---------- detalhe da linha (abre no próprio lugar) ---------- */
+function atValor(v) {
+  if (v == null || v === '') return '—'; if (typeof v === 'boolean') return v ? 'Sim' : 'Não';
+  if (typeof v === 'number') return numBR(v); if (typeof v === 'object') return '';
+  const s = String(v); if (/^\d{4}-\d{2}-\d{2}T/.test(s)) return fmtDT(s); if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return fmtD(s);
+  return s.length > 90 ? s.slice(0, 90) + '…' : s;
+}
+function atMudou(r) {
+  const a = r.antes && typeof r.antes === 'object' ? r.antes : {}, d = r.depois && typeof r.depois === 'object' ? r.depois : {};
+  const ks = Array.from(new Set(Object.keys(a).concat(Object.keys(d)))).filter(k => !/^(id|criadoEm|criadoPor|marca|ts)$/.test(k) && atValor(a[k]) !== '' && atValor(d[k]) !== '' && atValor(a[k]) !== atValor(d[k])).slice(0, 14);
+  if (!ks.length) return '';
+  return '<p class="at-h">O que mudou</p><table class="at-dif"><thead><tr><th>Campo</th><th>Antes</th><th>Depois</th></tr></thead><tbody>' +
+    ks.map(k => '<tr><td>' + esc(k) + '</td><td class="a">' + esc(atValor(a[k])) + '</td><td class="d">' + esc(atValor(d[k])) + '</td></tr>').join('') + '</tbody></table>';
+}
+function atDetalhe(r) {
+  const l = [['Quem', (r.userName || '—') + (r.perfil ? ' · ' + atPerfil(r.perfil) : '')], ['Quando', fmtD(atDia(r.ts)) + ' às ' + atHora(r.ts)], ['App', r.versao || '—'], ['Onde', atArea(r) + (r.entidadeId ? ' · ' + r.entidadeId : '')],
+    ['Autorizado por', r.autorizadoPor && (r.autorizadoPor.nome || r.autorizadoPor.por) || '']];
+  return '<div class="at-det"><dl>' + l.filter(x => x[1]).map(x => '<dt>' + esc(x[0]) + '</dt><dd>' + esc(x[1]) + '</dd>').join('') + '</dl>' + atMudou(r) + '</div>';
+}
+
+/* ---------- tela ---------- */
+function atLinhas(l) {
+  let h = '', dia = '', aberto = false;
+  l.slice(0, S.atLimite).forEach((r, i) => {
+    const d = atDia(r.ts), id = atId(r, i), ab = S.atLinha === id;
+    if (d !== dia) { if (aberto) h += '</div>'; dia = d; aberto = true; h += '<div class="at-dia">' + esc(atDiaTxt(d)) + '</div><div class="at-tl">'; }
+    h += '<div class="at-ev' + (ab ? ' ab' : '') + '"><button type="button" class="at-li" data-act="at-linha" data-id="' + esc(id) + '" aria-expanded="' + ab + '">' +
+      '<span class="at-h">' + esc(atHora(r.ts)) + '</span><span class="at-ini" title="' + esc(r.userName || '') + '">' + esc(atIni(r.userName)) + '</span>' +
+      '<span class="at-t"><b>' + esc((r.userName || '—').split(' ')[0]) + '</b> ' + esc(r.resumo || atAcao(r.acao)) + '<small>' + esc(atArea(r) + (r.entidadeId ? ' · ' + r.entidadeId : '') + ' · ' + atApp(r)) + '</small></span>' +
+      '<span class="pill ' + atCor(r.acao) + '">' + esc(atAcao(r.acao)) + '</span>' + ic('seta', 'at-s') + '</button>' + (ab ? atDetalhe(r) : '') + '</div>';
+  });
+  if (aberto) h += '</div>';
+  return h;
+}
+function atFiltroHTML() {
+  const f = S.atFiltro, pessoas = Array.from(new Set((S.audit || []).map(r => r.userName).filter(Boolean))).sort(cmpTxt), areas = Array.from(new Set((S.audit || []).map(atArea))).sort(cmpTxt), apps = Array.from(new Set((S.audit || []).map(atApp))).sort(cmpTxt);
+  const todos = t => [['', t]];
+  return '<div class="at-fp"' + (S.atAberto ? '' : ' hidden') + '><label class="cp">Período' + ddHTML('at:dias', f.dias, AT_PERIODOS) + '</label>' +
+    '<label class="cp">Pessoa' + ddHTML('at:pessoa', f.pessoa, todos('Todas').concat(pessoas.map(x => [x, x]))) + '</label>' +
+    '<label class="cp">Área' + ddHTML('at:area', f.area, todos('Todas').concat(areas.map(x => [x, x]))) + '</label>' +
+    '<label class="cp">App' + ddHTML('at:app', f.app, todos('Todos').concat(apps.map(x => [x, x]))) + '</label></div>';
+}
+function atTela() {
+  if (!isPrincipal(S.user)) return ''; /* a tela some para quem não é Principal (roteador); aqui é só uma segunda trava */
+  const l = atFiltrar(), tem = atTemFiltro();
+  return '<div class="at">' + atGrafico() +
+    '<div class="at-bar"><span class="tb-cont">' + l.length + (l.length === 1 ? ' registro' : ' registros') + '</span><span class="tb-sp"></span>' +
+    (tem ? '<button type="button" class="bt" data-act="at-limpa">Limpar filtro</button>' : '') +
+    '<button type="button" class="at-fl" data-act="at-filtro" aria-expanded="' + S.atAberto + '">' + ic('filtro') + '<b>Filtro</b><small>· ' + esc(atResumo()) + '</small></button>' +
+    '<button type="button" class="bt ic-so" data-act="at-xlsx" title="Baixar planilha (.xlsx)" aria-label="Baixar planilha (.xlsx)">' + ic('planilha') + '</button>' +
+    '<button type="button" class="bt ic-so" data-act="at-imp" title="Imprimir" aria-label="Imprimir">' + ic('impressora') + '</button></div>' + atFiltroHTML() +
+    (l.length ? atLinhas(l) + (l.length > S.atLimite ? '<div class="at-mais"><button type="button" class="bt" data-act="at-mais">Mostrar mais ' + Math.min(AT_LIM, l.length - S.atLimite) + ' de ' + (l.length - S.atLimite) + '</button></div>' : '') :
+      '<div class="pn"><div class="vazio"><b>' + ((S.audit || []).length ? 'Nada com este filtro' : 'Ainda não há atividade registrada') + '</b><span>' + ((S.audit || []).length ? 'Mude o período ou limpe o filtro.' : 'Quando alguém lançar, programar ou corrigir algo, aparece aqui.') + '</span></div></div>') + '</div>';
+}
+
+/* ---------- planilha e impressão (só do que está filtrado) ---------- */
+function atTexto() {
+  const l = atFiltrar();
+  return { cab: ['Data e hora', 'Quem', 'Perfil', 'App', 'Área', 'Ação', 'Registro', 'O que aconteceu', 'Autorizado por'],
+    linhas: l.map(r => [fmtD(atDia(r.ts)) + ' ' + atHora(r.ts), r.userName || '', atPerfil(r.perfil), r.versao || '', atArea(r), atAcao(r.acao), r.entidadeId || '', r.resumo || '', (r.autorizadoPor && (r.autorizadoPor.nome || r.autorizadoPor.por)) || '']) };
+}
+function atPlanilha() { const d = atTexto(), nome = APP_NOME + '-atividade-' + hojeISO() + '.xlsx'; plBaixar(plXlsx('Atividade', d.cab, d.linhas), nome); aviso('Planilha baixada: ' + nome); }
+function atImprimir() {
+  const d = atTexto(), e = S.empresa || {};
+  let p = $('#tb-imp'); if (!p) { p = document.createElement('div'); p.id = 'tb-imp'; document.body.appendChild(p); }
+  p.innerHTML = '<div class="imp-cab"><b>Atividade</b><span>' + esc(e.nome || '') + ' · ' + esc(fmtD(hojeISO())) + ' · ' + d.linhas.length + ' registros · ' + esc(atResumo()) + '</span></div><table><thead><tr>' + d.cab.map(c => '<th>' + esc(c) + '</th>').join('') + '</tr></thead><tbody>' +
+    d.linhas.map(l => '<tr>' + l.map(v => '<td>' + esc(v) + '</td>').join('') + '</tr>').join('') + '</tbody></table><div class="imp-pe">' + APP_APELIDO + '</div>';
+  document.body.classList.add('imprimindo'); setTimeout(() => { try { window.print(); } catch {} document.body.classList.remove('imprimindo'); }, 50);
+}
+
+/* ---------- eventos ---------- */
+DD_AO.at = (k, v) => { if (k in S.atFiltro) { S.atFiltro[k] = v; S.atLimite = AT_LIM; S.atLinha = null; render(); } };
+document.addEventListener('click', e => {
+  const t = e.target.closest && e.target.closest('[data-act^="at-"]'); if (!t) return;
+  const a = t.getAttribute('data-act');
+  if (a === 'at-linha') { const id = t.getAttribute('data-id'); S.atLinha = S.atLinha === id ? null : id; render(); }
+  else if (a === 'at-filtro') { S.atAberto = !S.atAberto; render(); }
+  else if (a === 'at-limpa') { S.atFiltro = { pessoa: '', area: '', app: '', dias: '30' }; S.atLimite = AT_LIM; S.atLinha = null; render(); }
+  else if (a === 'at-mais') { S.atLimite += AT_LIM; render(); }
+  else if (a === 'at-xlsx') atPlanilha();
+  else if (a === 'at-imp') atImprimir();
+});
+/* Esc fecha uma camada de cada vez: primeiro o detalhe aberto, depois o painel do filtro */
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape' || S.rota.area !== 'adm' || S.rota.aba !== 'atividade' || (S.camadas && S.camadas.length) || document.querySelector('.dd-l:not([hidden])')) return;
+  if (S.atLinha) { S.atLinha = null; render(); } else if (S.atAberto) { S.atAberto = false; render(); }
+});
+
 /* ===== adm.js ===== */
 /* EFCwork · adm.js — Administração: Empresa (nome, unidades, logo, tela de entrar — nada fixo no código), Aparência (tema) e Sobre. Prefixo: adm.
    A empresa fica em sv2_cfg/empresa (mesmo Firebase do EFClaudian). Só o Principal altera; os outros veem. */
@@ -5730,9 +5951,9 @@ function admSobre() {
   return '<section class="pn adm-uma"><div class="hd"><h3>Sobre</h3></div><dl class="adm-dl">' + l.map(x => '<dt>' + esc(x[0]) + '</dt><dd>' + esc(x[1]) + '</dd>').join('') + '</dl></section>';
 }
 TELAS.adm = function (aba) {
-  const t = { empresa: 'Empresa', aparencia: 'Aparência', sobre: 'Sobre' }[aba] || 'Empresa';
-  return cabecalho({ titulo: t, abaNome: t, meta: aba === 'empresa' ? [metaPl(isPrincipal(S.user) ? 'você pode alterar' : 'somente leitura', isPrincipal(S.user) ? 'ok' : '', 'info')] : [] }) +
-    (aba === 'aparencia' ? admAparencia() : aba === 'sobre' ? admSobre() : admEmpresa());
+  const t = { empresa: 'Empresa', aparencia: 'Aparência', atividade: 'Atividade', sobre: 'Sobre' }[aba] || 'Empresa';
+  return cabecalho({ titulo: t, abaNome: t, meta: aba === 'empresa' ? [metaPl(isPrincipal(S.user) ? 'você pode alterar' : 'somente leitura', isPrincipal(S.user) ? 'ok' : '', 'info')] : aba === 'atividade' ? [metaPl('só o Principal vê', '', 'cadeado')] : [] }) +
+    (aba === 'aparencia' ? admAparencia() : aba === 'sobre' ? admSobre() : aba === 'atividade' ? atTela() : admEmpresa());
 };
 
 /* logo: reduz no aparelho antes de guardar (máx. 256 px) */

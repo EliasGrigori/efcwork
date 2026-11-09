@@ -6,7 +6,7 @@ const bgNorm = s => String(s == null ? '' : s).normalize('NFD').replace(/[̀-ͯ]
 function bgCasa(q, txt) { const pal = bgNorm(q).split(/\s+/).filter(Boolean), t = bgNorm(txt); return pal.length > 0 && pal.every(p => t.indexOf(p) >= 0); }
 BG_FONTES.push(q => {
   const r = [];
-  AREAS.forEach(a => { (a.abas.length ? a.abas : [{ id: '', nome: a.nome }]).forEach(t => { if (bgCasa(q, a.nome + ' ' + t.nome)) r.push({ grupo: 'Telas', nome: t.nome, sub: t.id ? a.nome : 'Área', ico: a.ic, abrir: () => ir(a.id, t.id) }); }); });
+  AREAS.forEach(a => { (a.abas.length ? a.abas : [{ id: '', nome: a.nome }]).forEach(t => { if (!a.negada && !t.negada && bgCasa(q, a.nome + ' ' + t.nome)) r.push({ grupo: 'Telas', nome: t.nome, sub: t.id ? a.nome : 'Área', ico: a.ic, abrir: () => ir(a.id, t.id) }); }); });
   return r;
 });
 BG_FONTES.push(q => {
