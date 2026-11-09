@@ -83,7 +83,7 @@ async function semear(p) {
   await p.click('.tb-cab th[data-tbk="nome"] .tb-hm'); await p.waitForTimeout(150); await p.fill('[data-tbmnbusca]', 'agua'); await p.waitForTimeout(400);
   conf((await p.$$('.tb-t tbody tr')).length === 1 && /Água/.test(await p.textContent('.tb-t tbody')), 'busca da coluna Item sem acento acha "Água desmineralizada"');
   await p.fill('[data-tbmnbusca]', ''); await p.waitForTimeout(400); await p.keyboard.press('Escape'); await p.waitForTimeout(200);
-  await p.click('.tb-cab th:nth-child(5) .tb-hm'); await p.waitForTimeout(120); await p.click('[data-act="tb-odesc"]'); await p.waitForTimeout(150); await p.keyboard.press('Escape'); await p.waitForTimeout(200);
+  await p.click('.tb-cab th:nth-child(5) .tb-hm'); await p.waitForTimeout(120); await p.click('[data-act="tb-ociclo"]'); await p.waitForTimeout(100); await p.click('[data-act="tb-ociclo"]'); await p.waitForTimeout(150); await p.keyboard.press('Escape'); await p.waitForTimeout(200);
   conf((await p.textContent('.tb-t tbody tr:first-child td:nth-child(2)')).trim() === 'Água desmineralizada 1 L' && await p.$eval('.tb-t thead th:nth-child(5)', e => e.getAttribute('aria-sort')) === 'descending', 'ordenar por Utilizável (maior primeiro) pelo cabeçalho');
   await p.click('[data-act="tb-cols"]'); await p.waitForTimeout(100);
   await p.click('[data-tbcol="al-mat"][value="cod"]'); await p.waitForTimeout(150);

@@ -59,17 +59,18 @@ const cab = p => p.$$eval('.tb[data-tb="al-mat"] .tb-cab th', l => l.map(x => x.
 
   console.log('— Ordenar');
   await abre(p, 'nome');
-  conf(await p.isVisible('.tb-mn') && /De A a Z/.test(await p.textContent('.tb-mn')) && /Ordem padrão/.test(await p.textContent('.tb-mn')), 'menu abre com De A a Z, De Z a A e Ordem padrão');
+  conf(await p.isVisible('.tb-mn') && await p.isVisible('[data-act="tb-ociclo"]') && /Ordem padrão/.test(await p.textContent('.tb-mn')), 'menu abre com um botão único de ordenar (Ordem padrão)');
   conf(await p.evaluate(() => !Array.from(document.querySelectorAll('.tb-mn *')).some(e => getComputedStyle(e).textTransform === 'uppercase') && parseFloat(getComputedStyle(document.querySelector('.tb-mn-tr')).borderRadius) <= 10 && document.querySelector('.tb-mn-tr').offsetHeight >= 32), 'auditoria: sem maiúsculas de enfeite, Travar com cantos de 8 px e 34 px de altura');
-  await p.click('[data-act="tb-odesc"]'); await p.waitForTimeout(150);
-  conf((await linhas(p))[0] === 'velho' && await p.isVisible('.tb-cab th[data-tbk="nome"] .tb-mo'), 'De Z a A: "Reagente antigo" primeiro e símbolo de ordem no cabeçalho');
-  await p.click('[data-act="tb-oasc"]'); await p.waitForTimeout(150);
-  conf((await linhas(p))[0] === 'agua', 'De A a Z: "Água…" primeiro');
-  await p.click('[data-act="tb-opad"]'); await p.waitForTimeout(150);
-  conf(!(await p.$('.tb-cab th[data-tbk="nome"] .tb-mo')), 'Ordem padrão tira o símbolo');
+  const ci = async () => { await p.click('[data-act="tb-ociclo"]'); await p.waitForTimeout(150); };
+  await ci();
+  conf((await linhas(p))[0] === 'agua' && /De A a Z/.test(await p.textContent('.tb-mn-ci')), '1º toque: De A a Z, "Água…" primeiro');
+  await ci();
+  conf((await linhas(p))[0] === 'velho' && /De Z a A/.test(await p.textContent('.tb-mn-ci')) && await p.isVisible('.tb-cab th[data-tbk="nome"] .tb-mo'), '2º toque: De Z a A, "Reagente antigo" primeiro e símbolo no cabeçalho');
+  await ci();
+  conf(!(await p.$('.tb-cab th[data-tbk="nome"] .tb-mo')) && /Ordem padrão/.test(await p.textContent('.tb-mn-ci')), '3º toque: volta à ordem padrão e tira o símbolo');
   await fecha(p);
   conf(!(await p.$('.tb-mn')), 'Esc fecha o menu (uma camada)');
-  await abre(p, 'min'); conf(/Menor para o maior/.test(await p.textContent('.tb-mn')), 'coluna de número: "Menor para o maior"'); await fecha(p);
+  await abre(p, 'min'); conf(/menor para o maior/.test(await p.getAttribute('.tb-mn-ci', 'title')), 'coluna de número: o botão único diz "menor para o maior"'); await fecha(p);
 
   console.log('— Filtrar');
   await abre(p, 'loc');
@@ -101,10 +102,10 @@ const cab = p => p.$$eval('.tb[data-tb="al-mat"] .tb-cab th', l => l.map(x => x.
   const tot = async () => p.evaluate(() => { const tb = document.querySelector('.tb[data-tb="al-mat"]'), t = tb.querySelector('.tb-bar .tb-tots'), tv = t.querySelector('.tb-tv'), lb = t.querySelector('.tb-tl'), th = tb.querySelector('.tb-cab th[data-tbk="' + tv.getAttribute('data-k') + '"]'), a = tv.getBoundingClientRect(), c = th.getBoundingClientRect(), l = lb.getBoundingClientRect(), ic = tb.querySelector('[data-act="tb-cols"]').getBoundingClientRect(); return { txt: t.innerText.replace(/\s+/g, ' '), col: th.getAttribute('data-tbk'), alinhado: Math.abs(a.left - c.left) < 2 && Math.abs(a.right - c.right) < 2, rotulo: l.right <= a.left && a.left - l.right < 12, linha: Math.abs(a.top - ic.top) < 2, faixa: !!document.querySelector('.tb-totr') }; });
   let t0 = await tot();
   conf(t0.col === 'val' && t0.alinhado && t0.linha && !t0.faixa, 'total na barra dos ícones, exatamente acima da coluna Valor, sem faixa: ' + t0.txt);
-  conf(t0.rotulo && /Total/.test(t0.txt) && /6 itens/.test(t0.txt) && /R\$ 303,80/.test(t0.txt), 'quadradinho "Total · 6 itens" logo à esquerda do valor');
+  conf(t0.rotulo && /Total/.test(t0.txt) && !(await p.$('.tb-tl small')) && !/itens/.test(t0.txt) && /6 itens/.test(await p.$eval('.tb-tl', e => e.title)) && /R\$ 303,80/.test(t0.txt), 'quadradinho "Total" logo à esquerda do valor, sem texto embaixo (a contagem fica na dica)');
   await abre(p, 'loc'); await p.click('.tb-mn-li:has-text("Porta 02") input'); await p.waitForTimeout(200); await fecha(p);
   t0 = await tot();
-  conf(/do filtro · 4 itens/.test(t0.txt) && !/303,80/.test(t0.txt) && t0.alinhado, 'total segue o filtro da coluna e continua alinhado: ' + t0.txt);
+  conf(/4 itens/.test(await p.$eval('.tb-tl', e => e.title)) && /filtrado/.test(await p.$eval('.tb-tl', e => e.title)) && !/303,80/.test(t0.txt) && t0.alinhado, 'total segue o filtro da coluna e continua alinhado: ' + t0.txt);
   await abre(p, 'cod'); await p.click('[data-act="tb-mvdir"]'); await p.waitForTimeout(200); await fecha(p);
   t0 = await tot(); conf(t0.alinhado, 'mudando colunas de lugar, o total acompanha a coluna Valor');
   await abre(p, 'sit'); await p.click('[data-act="tb-mvesq"]'); await p.waitForTimeout(200); await fecha(p);
@@ -117,7 +118,7 @@ const cab = p => p.$$eval('.tb[data-tb="al-mat"] .tb-cab th', l => l.map(x => x.
   for (const k of ['cod', 'loc', 'sit']) { const r = await pos(k); conf(r.colado && r.aponta && r.cabe, 'menu da coluna ' + k + ': colado na coluna, pontinha apontando para ela e inteiro na tela'); }
   console.log('— Travar');
   await abre(p, 'loc'); await p.click('[data-act="tb-trava"]'); await p.waitForTimeout(150);
-  conf(await p.isVisible('.tb-mn-av') && await p.$eval('[data-tbmnbusca]', e => e.disabled) && await p.$eval('[data-act="tb-oasc"]', e => e.disabled), 'travada: aviso e controles bloqueados');
+  conf(await p.isVisible('.tb-mn-av') && await p.$eval('[data-tbmnbusca]', e => e.disabled) && await p.$eval('[data-act="tb-ociclo"]', e => e.disabled), 'travada: aviso e controles bloqueados');
   await fecha(p);
   conf(await p.isVisible('.tb-cab th[data-tbk="loc"] .tb-mt') && !(await p.$('[data-act="tb-limpa"]')), 'cadeado no cabeçalho; filtro travado não conta para o Limpar filtro');
   await abre(p, 'nome'); await p.fill('[data-tbmnbusca]', 'luva'); await p.waitForTimeout(400); await fecha(p); await p.click('[data-act="tb-limpa"]'); await p.waitForTimeout(400);
@@ -126,12 +127,12 @@ const cab = p => p.$$eval('.tb[data-tb="al-mat"] .tb-cab th', l => l.map(x => x.
   conf((await linhas(p)).length === 4 && await p.isVisible('.tb-cab th[data-tbk="loc"] .tb-mt'), 'travado continua depois de reabrir o app');
   await abre(p, 'loc'); await p.click('[data-act="tb-trava"]'); await p.waitForTimeout(150); await p.click('[data-act="tb-mnlimpa"]'); await p.waitForTimeout(150); await fecha(p);
   conf((await linhas(p)).length === 6 && await p.evaluate(() => localStorage.getItem('cw-tbtrava-al-mat') == null), 'destravar e limpar volta ao normal');
-  await abre(p, 'val'); await p.click('[data-act="tb-odesc"]'); await p.waitForTimeout(150); await p.click('[data-act="tb-trava"]'); await p.waitForTimeout(150); await fecha(p);
-  await abre(p, 'nome'); await p.click('[data-act="tb-oasc"]'); await p.waitForTimeout(250);
+  await abre(p, 'val'); await p.click('[data-act="tb-ociclo"]'); await p.waitForTimeout(100); await p.click('[data-act="tb-ociclo"]'); await p.waitForTimeout(150); await p.click('[data-act="tb-trava"]'); await p.waitForTimeout(150); await fecha(p);
+  await abre(p, 'nome'); await p.click('[data-act="tb-ociclo"]'); await p.waitForTimeout(250);
   conf((await linhas(p))[0] === 'gelo' && /travada na coluna Valor/.test(await p.textContent('body')), 'ordem travada em Valor: outra coluna avisa e não reordena');
   await fecha(p);
   await p.screenshot({ path: path.join(SHOTS, 'v048-pc-travada.png') });
-  await abre(p, 'val'); await p.click('[data-act="tb-trava"]'); await p.click('[data-act="tb-opad"]'); await p.waitForTimeout(150); await fecha(p);
+  await abre(p, 'val'); await p.click('[data-act="tb-trava"]'); await p.click('[data-act="tb-ociclo"]'); await p.waitForTimeout(150); await fecha(p);
 
   console.log('— Colunas');
   const c0 = await cab(p);
@@ -157,7 +158,7 @@ const cab = p => p.$$eval('.tb[data-tb="al-mat"] .tb-cab th', l => l.map(x => x.
   console.log('— Outras tabelas');
   await p.evaluate(() => { location.hash = '#/almox/movimentacoes'; }); await p.waitForTimeout(300);
   await p.click('.tb[data-tb="al-mov"] .tb-cab th[data-tbk="data"] .tb-hm'); await p.waitForTimeout(150);
-  conf(/Mais recente primeiro/.test(await p.textContent('.tb-mn')) && await p.isVisible('.tb-mn [data-dd="tbf:al-mov:per"]'), 'coluna de data: "Mais recente primeiro"; o filtro pronto Período mora nela');
+  conf(/mais recente primeiro/.test(await p.getAttribute('.tb-mn-ci', 'title')) && await p.isVisible('.tb-mn [data-dd="tbf:al-mov:per"]'), 'coluna de data: botão único com "mais recente primeiro"; o filtro pronto Período mora nela');
   await fecha(p);
 
   console.log('— Celular');

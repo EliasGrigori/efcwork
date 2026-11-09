@@ -54,26 +54,26 @@ function ppTela(id) {
     (f.length ? '<div class="pp-grade">' + f.map(chip).join('') + '</div>' : '<p class="pp-nada">Nenhuma área faltando neste período.</p>') +
     '<p class="pp-gh">Coletadas (' + c.length + ')</p>' + (c.length ? '<div class="pp-grade">' + c.map(chip).join('') + '</div>' : '<p class="pp-nada">Nenhuma coletada ainda.</p>')) +
     '</section>' +
-    (n && pode && aba === 'areas' ? '<div class="pp-bar" role="region" aria-label="Áreas marcadas"><span>' + n + ' marcada' + (n > 1 ? 's' : '') + '</span><button type="button" class="bt" data-act="pp-prog" data-id="' + esc(r.id) + '">Programar</button><button type="button" class="bt pr" data-act="pp-lanc" data-id="' + esc(r.id) + '">' + ic('ok') + 'Lançar coletadas</button><button type="button" class="bt ic-so" data-act="pp-limpa" data-id="' + esc(r.id) + '" aria-label="Limpar a seleção" title="Limpar a seleção">' + ic('x') + '</button></div>' : '');
+    (n && pode && aba === 'areas' ? '<div class="pp-bar" role="region" aria-label="Áreas marcadas"><span>' + n + ' marcada' + (n > 1 ? 's' : '') + '</span><button type="button" class="bt" data-act="pp-prog" data-id="' + esc(r.id) + '">' + (ar.filter(x => x.k !== 'c' && sel[x.a]).every(x => x.k === 'p' || x.k === 'x') ? 'Reprogramar' : 'Programar') + '</button>' + (ar.some(x => (x.k === 'p' || x.k === 'x') && sel[x.a]) ? '<button type="button" class="bt" data-act="pp-desprog" data-id="' + esc(r.id) + '">' + ic('lixo') + 'Desprogramar ' + ar.filter(x => (x.k === 'p' || x.k === 'x') && sel[x.a]).length + '</button>' : '') + '<button type="button" class="bt pr" data-act="pp-lanc" data-id="' + esc(r.id) + '">' + ic('ok') + 'Lançar coletadas</button><button type="button" class="bt ic-so" data-act="pp-limpa" data-id="' + esc(r.id) + '" aria-label="Limpar a seleção" title="Limpar a seleção">' + ic('x') + '</button></div>' : '');
 }
 
 /* ---------- Programar (v0.4.7: grava em sv2_rodizio.progs, igual ao EFClaudian; antes ia para sv2_prog) ---------- */
 function ppCtx(f) { const r = ppPlano(f.rid), p = r && ppPeriodo(r); return r && p ? { r: r, p: p, ar: ppAreas(r, p) } : null; }
 LC_FORM.ppprog = f => {
   const x = ppCtx(f); if (!x) return { titulo: 'Programar', corpo: lcAv('Plano não encontrado.', 'cr'), rodape: '' };
-  const livres = x.ar.filter(a => a.k === 'f'), ja = x.ar.filter(a => a.k === 'p' || a.k === 'x'), marc = livres.filter(a => f.sel[a.a]);
-  const pick = a => { const on = !!f.sel[a.a]; return '<button type="button" class="pp-ar f' + (on ? ' sel' : '') + '" data-act="pp-fck" data-id="' + esc(a.a) + '" aria-pressed="' + on + '">' + (on ? '<i class="pp-ok">' + ic('ok') + '</i>' : '') + '<b>' + esc(a.rot) + '</b></button>'; };
-  return { ico: 'mais', sub: (x.r.tipo || '') + ' · ' + (RZ_FREQ[x.r.freq] || '') + ' · ' + x.r.ano, titulo: 'Programar', corpo: lcMsg() +
+  const livres = x.ar.filter(a => a.k !== 'c'), marc = livres.filter(a => f.sel[a.a]), re = marc.filter(a => a.pr).length;
+  const pick = a => { const on = !!f.sel[a.a]; return '<button type="button" class="pp-ar ' + (a.pr ? a.k : 'f') + (on ? ' sel' : '') + '" data-act="pp-fck" data-id="' + esc(a.a) + '" aria-pressed="' + on + '" title="' + esc(a.a + (a.pr ? ', programada para ' + fmtD(a.d) : '')) + '">' + (on ? '<i class="pp-ok">' + ic('ok') + '</i>' : '') + '<b>' + esc(a.rot) + '</b>' + (a.pr && a.d ? '<small>' + fmtD(a.d).slice(0, 5) + '</small>' : '') + '</button>'; };
+  return { ico: 'mais', sub: (x.r.tipo || '') + ' · ' + (RZ_FREQ[x.r.freq] || '') + ' · ' + x.r.ano, titulo: re && re === marc.length ? 'Reprogramar' : 'Programar', corpo: lcMsg() +
     '<p class="gv-h">1 · Áreas · ' + marc.length + ' marcada(s)</p>' +
-    (livres.length ? '<div class="pp-grade pp-gv">' + livres.map(pick).join('') + '</div>' : '<p class="pp-nada">Todas as áreas que faltam já estão programadas.</p>') +
-    (ja.length ? '<p class="pp-nada pp-ja">Já programadas: ' + esc(ja.map(a => a.rot + ' ' + fmtD(a.d).slice(0, 5)).join(', ')) + '</p>' : '') +
+    (livres.length ? '<div class="pp-grade pp-gv">' + livres.map(pick).join('') + '</div>' : '<p class="pp-nada">Todas as áreas já foram coletadas neste período.</p>') +
+    (livres.some(a => a.pr) ? '<p class="pp-nada pp-ja">As que têm data já estão programadas: marque para mudar o dia, o prazo ou quem coleta.</p>' : '') +
     '<p class="gv-h">2 · Quando e quem</p><div class="fm-g">' + lcBl('Dia da coleta', lcData('data', f.data, true)) + lcBl('Prazo', lcData('prazo', f.prazo, true), 'opcional') + '</div>' +
     '<div class="fm-g">' + lcBl('Quem coleta', pgDdLivre('pgcol', f.col, pgEquipes().concat(S.users.map(u => u.nome))) + pgLivreIn(f, 'col', 'Ex.: Equipe A')) + lcBl('Observação', lcIn('obs', f.obs, ' placeholder="opcional"')) + '</div>',
-    rodape: lcPe('pp-prog-ok', marc.length ? 'Programar ' + marc.length + ' área(s)' : 'Programar') };
+    rodape: lcPe('pp-prog-ok', marc.length ? (re && re === marc.length ? 'Reprogramar ' : 'Programar ') + marc.length + ' área(s)' : 'Programar') };
 };
 async function ppProgOk() {
   const f = S.fm, x = f && ppCtx(f); if (!x || !coPode()) return;
-  const areas = x.ar.filter(a => a.k === 'f' && f.sel[a.a]); if (!areas.length) return lcErro('Marque pelo menos uma área.');
+  const areas = x.ar.filter(a => a.k !== 'c' && f.sel[a.a]); if (!areas.length) return lcErro('Marque pelo menos uma área.');
   if (!/^\d{4}-\d{2}-\d{2}$/.test(f.data || '')) return lcErro('Informe o dia da coleta.');
   if (f.data < x.p.ini || f.data > x.p.fim) return lcErro('O dia tem que estar dentro do período do plano (' + fmtD(x.p.ini) + ' a ' + fmtD(x.p.fim) + ').');
   if (f.prazo && f.prazo < f.data) return lcErro('O prazo não pode ser antes do dia da coleta.');
@@ -84,9 +84,10 @@ async function ppProgOk() {
   const pk = x.p.k, antes = {}, depois = {}, up = {};
   areas.forEach(a => { const g = { data: f.data, coletor: coletor, pontos: String(pgPontos(x.r.tipo, a.a) || ''), prof: '', estadio: '', por: S.user.nome, em: nowISO(), prazo: f.prazo || '', obs: String(f.obs || '').trim().toUpperCase() };
     if (x.r.progs && x.r.progs[pk] && x.r.progs[pk][a.a]) antes[a.a] = x.r.progs[pk][a.a]; depois[a.a] = g; up['progs.' + pk + '.' + a.a] = g; });
+  const ops = []; areas.forEach(a => { if (a.pr && !a.pr._rz && a.pr.id) { antes[a.a] = antes[a.a] || { id: a.pr.id, data: a.pr.data, coletor: a.pr.coletor }; ops.push(Data.col('sv2_prog').update(a.pr.id, { situacao: 'cancelada', canceladaMotivo: 'Reprogramada no plano', canceladaEm: nowISO(), canceladaPor: S.user.nome })); } });
   try {
-    await Data.col('sv2_rodizio').update(x.r.id, up);
-    Audit.log({ acao: 'programar_plano', entidade: 'rodizio', entidadeId: x.r.id, resumo: (x.r.nome || x.r.tipo) + ' · ' + x.p.nome + ': programou ' + areas.length + ' área(s) (' + areas.map(a => a.a).join(', ') + ')', antes: antes, depois: depois });
+    await Data.col('sv2_rodizio').update(x.r.id, up); await Promise.all(ops);
+    Audit.log({ acao: 'programar_plano', entidade: 'rodizio', entidadeId: x.r.id, resumo: (x.r.nome || x.r.tipo) + ' · ' + x.p.nome + ': ' + (Object.keys(antes).length ? 'reprogramou/programou ' : 'programou ') + areas.length + ' área(s) (' + areas.map(a => a.a).join(', ') + ')', antes: antes, depois: depois });
     const sel = ppSel(x.r.id); areas.forEach(a => { delete sel[a.a]; });
     lcFim(); aviso(areas.length + ' área(s) programada(s) para ' + fmtD(f.data) + '.');
   } catch (e) { lcErro(svErro(e)); }
@@ -312,6 +313,64 @@ async function ppRenova(rid) {
     aviso('Plano ' + nome + ' criado.'); return true; } catch (e) { aviso(svErro(e), 'erro'); return false; }
 }
 
+/* ---------- Desprogramar (v0.4.9, pedido de 09/11: antes só dava no EFClaudian) ---------- */
+function ppDesprograma(rid, areas, depois) {
+  const r = ppPlano(rid), p = r && ppPeriodo(r); if (!r || !p || !coPode()) return;
+  const ar = ppAreas(r, p).filter(x => (x.k === 'p' || x.k === 'x') && x.pr && areas.indexOf(x.a) >= 0); if (!ar.length) return;
+  const vai = async () => {
+    const pk = p.k, antes = {}, ops = []; const g = Object.assign({}, (r.progs && r.progs[pk]) || {}); let mexeu = false;
+    ar.forEach(x => { antes[x.a] = { data: x.pr.data, coletor: x.pr.coletor || '', prazo: x.pr.prazo || '' };
+      if (x.pr._rz) { delete g[x.a]; mexeu = true; } else if (x.pr.id) ops.push(Data.col('sv2_prog').update(x.pr.id, { situacao: 'cancelada', canceladaMotivo: 'Desprogramada', canceladaEm: nowISO(), canceladaPor: S.user.nome })); });
+    try {
+      if (mexeu) { const up = {}; up['progs.' + pk] = g; ops.push(Data.col('sv2_rodizio').update(r.id, up)); }
+      await Promise.all(ops);
+      Audit.log({ acao: 'desprogramar_plano', entidade: 'rodizio', entidadeId: r.id, resumo: (r.nome || r.tipo) + ' · ' + p.nome + ': desprogramou ' + ar.length + ' área(s) (' + ar.map(x => x.a).join(', ') + ')', antes: antes });
+      const sel = ppSel(r.id); ar.forEach(x => { delete sel[x.a]; });
+      aviso(ar.length === 1 ? ar[0].a + ' desprogramada.' : ar.length + ' áreas desprogramadas.'); if (depois) depois(); else render();
+    } catch (e) { aviso(svErro(e), 'erro'); }
+  };
+  csConfirma({ titulo: ar.length === 1 ? 'Desprogramar ' + ar[0].a + '?' : 'Desprogramar ' + ar.length + ' áreas?', texto: ar.map(x => x.a + ' (' + fmtD(x.pr.data).slice(0, 5) + ')').join(', ') + '. A área volta para "Faltam" e pode ser programada de novo. Nada que já foi coletado é apagado.', sim: 'Desprogramar', nao: 'Voltar' }, vai);
+}
+
+/* ---------- Novo plano de coleta (novo rodízio) ---------- */
+const ppTipos = () => { const n = (pgCfg().tipos || []).map(t => t.nome).filter(Boolean); return n.length ? n : Object.keys(PG_GERA); };
+const ppAnsDe = tipo => pgAnalises().filter(a => a.ativo !== false && pgGera(tipo).indexOf(a.tipo) >= 0).map(a => a.id);
+function ppNovoIni() {
+  const ano = Number(hojeISO().slice(0, 4)), tipo = ppTipos()[0] || '', ult = (S.rodizios || []).filter(r => r.tipo === tipo).sort((a, b) => Number(b.ano) - Number(a.ano))[0];
+  return { k: 'ppnovo', tipo: tipo, freq: ult ? ult.freq : 'S', ano: String(ano), inicio: '', prazo: '', areas: ult ? (ult.areas || []).slice() : [], ans: ult ? (ult.analiseIds || []).slice() : ppAnsDe(tipo), q: '' };
+}
+LC_FORM.ppnovo = f => {
+  const tipos = ppTipos(), anos = [-1, 0, 1].map(d => String(Number(hojeISO().slice(0, 4)) + d)), fr = Object.keys(RZ_FREQ);
+  const tal = pgTalhoes().filter(t => t.ativo !== false).map(t => t.codigo).concat(f.areas).filter(Boolean), todas = Array.from(new Set(tal)).sort(cmpTxt);
+  const an = pgAnalises().filter(a => pgGera(f.tipo).indexOf(a.tipo) >= 0 && (a.ativo !== false || f.ans.indexOf(a.id) >= 0));
+  const copia = (S.rodizios || []).slice().sort((a, b) => String(b.ano).localeCompare(String(a.ano)) || cmpTxt(a.tipo, b.tipo)).map(r => [r.id, (r.nome || r.tipo) + (r.ativo === false ? ' (desativado)' : '')]);
+  const lin = c => { const on = f.areas.indexOf(c) >= 0, t = pgTalhao(c), loc = t ? [t.cultura, t.pivo].filter(Boolean).join(', ') : ''; return '<button type="button" class="fm-pki pp-nv' + (on ? ' on' : '') + '" data-act="pp-nvar" data-id="' + esc(c) + '" data-busca="' + esc(tbNorm(c + ' ' + loc)) + '" aria-pressed="' + on + '"><i class="pp-nvk">' + (on ? ic('ok') : '') + '</i><b>' + esc(c) + '</b><small>' + esc(loc) + '</small></button>'; };
+  return { ico: 'mais', sub: 'Coletas · Programação', titulo: 'Novo plano de coleta', corpo: lcMsg() +
+    '<p class="gv-h">1 · O plano</p><div class="fm-g">' + lcBl('Tipo', ddHTML('lc:ppnvtipo', f.tipo, tipos.map(x => [x, x]))) + lcBl('Frequência', ddHTML('lc:ppnvfreq', f.freq, fr.map(k => [k, RZ_FREQ[k]]))) + '</div>' +
+    '<div class="fm-g">' + lcBl('Ano', ddHTML('lc:ppnvano', f.ano, anos.map(x => [x, x]))) + lcBl('Copiar áreas e análises de', ddHTML('lc:ppnvcp', '', [['', 'Não copiar']].concat(copia))) + '</div>' +
+    (f.freq === 'Q' || f.freq === 'U' ? '<div class="fm-g">' + lcBl(f.freq === 'Q' ? 'Primeira segunda-feira' : 'Início', lcData('inicio', f.inicio, true)) + (f.freq === 'U' ? lcBl('Prazo', lcData('prazo', f.prazo, true)) : '') + '</div>' : '') +
+    '<p class="gv-h">2 · Áreas · <span id="pp-nvn">' + f.areas.length + ' marcada(s)</span></p><div class="co-selb"><button type="button" class="bt lk" data-act="pp-nvtodas">Marcar todas</button><button type="button" class="bt lk" data-act="pp-nvlimpa">Limpar</button></div>' +
+    '<div class="fm-pk"><label class="tb-busca">' + ic('lupa') + '<input type="search" data-pk placeholder="Buscar talhão" aria-label="Buscar talhão"></label><div class="fm-pkl co-pkl">' + (todas.length ? todas.map(lin).join('') : '<p class="pp-nada">Nenhum talhão cadastrado (Coletas › Cadastros no EFClaudian).</p>') + '</div></div>' +
+    '<p class="gv-h">3 · Análises</p>' + (an.length ? '<div class="pp-lis">' + an.map(a => '<button type="button" class="fm-pki pp-nv' + (f.ans.indexOf(a.id) >= 0 ? ' on' : '') + '" data-act="pp-nvan" data-id="' + esc(a.id) + '" aria-pressed="' + (f.ans.indexOf(a.id) >= 0) + '"><i class="pp-nvk">' + (f.ans.indexOf(a.id) >= 0 ? ic('ok') : '') + '</i><b>' + esc(a.nome) + '</b><small>' + esc((CO_TXT[a.tipo] || a.tipo) + (a.lab ? ' · ' + a.lab : '')) + '</small></button>').join('') + '</div>' : '<p class="pp-nada">Nenhuma análise cadastrada para ' + esc(f.tipo) + '.</p>'),
+    rodape: lcPe('pp-novo-ok', 'Criar plano') };
+};
+async function ppNovoOk() {
+  const f = S.fm; if (!f || !ppSup()) return;
+  if (!f.tipo) return lcErro('Escolha o tipo.');
+  const nome = f.tipo + ' · ' + (RZ_FREQ[f.freq] || '') + ' · ' + f.ano;
+  if ((S.rodizios || []).some(r => r.ativo !== false && r.tipo === f.tipo && r.freq === f.freq && String(r.ano) === String(f.ano))) return lcErro('Já existe o plano "' + nome + '". Abra ele em Coletas › Programação (Ajustes) para mudar as áreas.');
+  if (!f.areas.length) return lcErro('Marque pelo menos uma área.');
+  if (!f.ans.length) return lcErro('Marque pelo menos uma análise.');
+  if (f.freq === 'Q' && !/^\d{4}-\d{2}-\d{2}$/.test(f.inicio || '')) return lcErro('Informe a primeira segunda-feira das quinzenas.');
+  if (f.freq === 'U') { if (!/^\d{4}-\d{2}-\d{2}$/.test(f.inicio || '') || !/^\d{4}-\d{2}-\d{2}$/.test(f.prazo || '')) return lcErro('Informe o início e o prazo da coleta única.'); if (f.prazo < f.inicio) return lcErro('O prazo não pode ser antes do início.'); }
+  if (!lcTravar()) return;
+  const o = { nome: nome, tipo: f.tipo, freq: f.freq, ano: String(f.ano), areas: f.areas.slice().sort(cmpTxt), analiseIds: f.ans.slice(), inicio: f.freq === 'Q' || f.freq === 'U' ? f.inicio : '', prazo: f.freq === 'U' ? f.prazo : '', ativo: true, fechados: {}, liberadas: {}, progs: {}, criadoEm: nowISO(), criadoPor: S.user.id, criadoPorNome: S.user.nome };
+  try { const id = await Data.col('sv2_rodizio').add(o);
+    Audit.log({ acao: 'criar_rodizio', entidade: 'rodizio', entidadeId: id, resumo: 'Criou o plano de coleta ' + nome + ' com ' + o.areas.length + ' áreas', depois: ppRet(o) });
+    lcFim(() => { aviso('Plano ' + nome + ' criado.'); location.hash = '#/coletas/plano/' + encodeURIComponent(id); });
+  } catch (e) { lcErro(svErro(e)); }
+}
+
 /* campos da aba Ajustes (fora da gaveta) */
 document.addEventListener('change', ev => {
   const t = ev.target; if (!t || !t.getAttribute) return; const e = S._ppEd; if (!e) return;
@@ -329,7 +388,15 @@ document.addEventListener('input', ev => {
 
 /* ---------- ações ---------- */
 DD_AO.lc = (function (ant) { return (k, v) => {
-  const f = S.fm; if (!f || ['ppprog', 'pplanc', 'pprec'].indexOf(f.k) < 0) return ant(k, v);
+  const f = S.fm;
+  if (f && f.k === 'ppnovo' && ['ppnvtipo', 'ppnvfreq', 'ppnvano', 'ppnvcp'].indexOf(k) >= 0) {
+    f.sujo = true; f.msg = '';
+    if (k === 'ppnvtipo' && v !== f.tipo) { f.tipo = v; f.ans = ppAnsDe(v); const ult = (S.rodizios || []).filter(r => r.tipo === v).sort((a, b) => Number(b.ano) - Number(a.ano))[0]; if (ult) { f.areas = (ult.areas || []).slice(); f.freq = ult.freq; if (ult.analiseIds && ult.analiseIds.length) f.ans = ult.analiseIds.slice(); } }
+    else if (k === 'ppnvfreq') f.freq = v; else if (k === 'ppnvano') f.ano = v;
+    else if (k === 'ppnvcp' && v) { const r = ppPlano(v); if (r) { f.areas = (r.areas || []).slice(); f.ans = (r.analiseIds || []).slice(); if (r.tipo !== f.tipo) { f.tipo = r.tipo; } if (r.freq) f.freq = r.freq; } }
+    gvDesenha(true); return;
+  }
+  if (!f || ['ppprog', 'pplanc', 'pprec'].indexOf(f.k) < 0) return ant(k, v);
   const mapa = { pgcol: 'col', pgprof: 'prof', pgest: 'est', pparea: 'area', ppmot: 'mot' }; if (!mapa[k]) return ant(k, v);
   f[mapa[k]] = v; f.sujo = true; f.msg = ''; gvDesenha(true);
   if (v === '__outro') { const i = $('#gv [data-fm="' + mapa[k] + 'Txt"]'); if (i) i.focus(); }
@@ -343,6 +410,13 @@ document.addEventListener('click', ev => {
   else if (a === 'pp-prog') { if (!coPode()) return; const sel = {}; ppMarcadas(id).forEach(k => { sel[k] = true; }); lcAbrir({ k: 'ppprog', rid: id, sel: sel, data: '', prazo: '', col: pgEquipes()[0] || '', obs: '' }); }
   else if (a === 'pp-fck' && f) { f.sel[id] = !f.sel[id]; f.sujo = true; f.msg = ''; gvDesenha(true); }
   else if (a === 'pp-prog-ok') ppProgOk();
+  else if (a === 'pp-desprog') ppDesprograma(id, ppMarcadas(id));
+  else if (a === 'pp-novo') { if (!ppSup()) return; lcAbrir(ppNovoIni()); }
+  else if (a === 'pp-novo-ok') ppNovoOk();
+  else if (a === 'pp-nvar' && f) { const i = f.areas.indexOf(id); if (i < 0) f.areas.push(id); else f.areas.splice(i, 1); f.sujo = true; f.msg = ''; const b = $('#gv .pp-nv[data-act="pp-nvar"][data-id="' + id.replace(/"/g, '') + '"]'); if (b) { b.classList.toggle('on', i < 0); b.setAttribute('aria-pressed', String(i < 0)); b.querySelector('.pp-nvk').innerHTML = i < 0 ? ic('ok') : ''; } const n = $('#pp-nvn'); if (n) n.textContent = f.areas.length + ' marcada(s)'; }
+  else if (a === 'pp-nvan' && f) { const i = f.ans.indexOf(id); if (i < 0) f.ans.push(id); else f.ans.splice(i, 1); f.sujo = true; f.msg = ''; const b = t; b.classList.toggle('on', i < 0); b.setAttribute('aria-pressed', String(i < 0)); b.querySelector('.pp-nvk').innerHTML = i < 0 ? ic('ok') : ''; }
+  else if (a === 'pp-nvtodas' && f) { $$('#gv .pp-nv[data-act="pp-nvar"]').forEach(b => { if (!b.hidden) { const c = b.getAttribute('data-id'); if (f.areas.indexOf(c) < 0) f.areas.push(c); } }); f.sujo = true; gvDesenha(true); }
+  else if (a === 'pp-nvlimpa' && f) { f.areas = []; f.sujo = true; gvDesenha(true); }
   else if (a === 'pp-lanc') { if (!coPode()) return; const sel = {}; ppMarcadas(id).forEach(k => { sel[k] = true; }); const x = ppCtx({ rid: id }); const ps = x ? ppAlvos(x, { sel: sel }) : []; const um = k => { const v = Array.from(new Set(ps.map(p => p[k] || ''))); return v.length === 1 ? v[0] : ''; };
     lcAbrir({ k: 'pplanc', rid: id, sel: sel, data: hojeISO(), col: um('coletor') || pgEquipes()[0] || '', prof: um('prof'), est: um('estadio') || pgEstadioSug(ps.filter(p => p.id)), obs: '' }); }
   else if (a === 'pp-lanc-ok') ppLancOk();

@@ -1,6 +1,6 @@
 /* EFCwork · programacao.js — Coletas › Programação (v0.4.4): tabela de programações e coletas, "Coletado" das programações
    pendentes e coleta avulsa. Regras portadas do EFClaudian v2.102.59 (pgSit, cdNovas, coletadoGravar, saveCol, rzBarrar).
-   Nova programação, editar/cancelar programação e Planos de coleta continuam no EFClaudian (v0.4.5 / v0.4.6).
+   Desprogramar e Novo plano de coleta chegaram na v0.4.9; editar a programação avulsa continua no EFClaudian.
    Nada da empresa fica no código: talhões, análises, laboratórios, tipos, fazendas e modelo de etiqueta vêm do Firebase
    (sv2_talhoes, sv2_analises, sv2_cfg/coletas). Prefixo: pg. */
 
@@ -250,7 +250,8 @@ const pgLegenda = () => '<span class="pg-lg"><button type="button" class="pg-i" 
 function pgAcoes() {
   const pode = coPode(), np = pgPendentes().length, semCad = !pgTalhoes().length || !pgAnalises().length;
   return (pode && !semCad ? '<button type="button" class="bt" data-act="pg-av">' + ic('mais') + 'Coleta avulsa</button>' + (np ? '<button type="button" class="bt pr" data-act="pg-cd">' + ic('ok') + 'Coletado</button>' : '') : '') +
-    '<a class="bt ic-so" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener" title="No EFClaudian: nova programação e planos de coleta" aria-label="Abrir o EFClaudian (nova programação e planos de coleta)">' + ic('externo') + '</a>';
+    (ppSup() && !semCad ? '<button type="button" class="bt" data-act="pp-novo">' + ic('mais') + 'Novo plano</button>' : '') +
+    '<a class="bt ic-so" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener" title="Abrir o EFClaudian" aria-label="Abrir o EFClaudian">' + ic('externo') + '</a>';
 }
 function pgAbre(id) {
   if (String(id).indexOf('c|') === 0) { const c = S.coletas.find(x => x.id === id.slice(2)); if (c) { S._pgSel = id; coAbre(c.id); } return; }
@@ -266,10 +267,24 @@ function pgAbre(id) {
         ['Programado por', [p.criadoPorNome, p.criadoEm ? fmtD(String(p.criadoEm).slice(0, 10)) : ''].filter(Boolean).join(' em ')],
         ['Coletada', p.coletadaEm ? fmtD(p.coletadaEm) + (p.coletadaPor ? ', lançada por ' + p.coletadaPor : '') : ''], ['Cancelada', p.situacao === 'cancelada' ? p.canceladaMotivo || 'sim' : '']]) +
         (cs.length ? '<p class="gv-h">Amostras</p><div class="gv-lotes">' + cs.map(c => { const s = coSit(c); return '<button type="button" class="gv-lote co-am" data-act="co-abre" data-id="' + esc(c.id) + '"><span><b>' + esc(CO_TXT[c.tipo] || c.tipo) + '</b> ' + esc(c.sigla || c.analiseNome || '') + '</span>' + alPill(s.txt, s.cor) + '</button>'; }).join('') + '</div>' : '') +
-        (st === 'pendente' ? '<p class="cg-ob">Editar ou cancelar a programação: no EFClaudian, por enquanto.</p>' : ''),
-      rodape: st === 'pendente' && coPode() ? '<button type="button" class="bt pr" data-act="pg-cd" data-id="' + esc(p.id) + '">' + ic('ok') + 'Coletado</button>' : '' };
+        (st === 'pendente' ? '<p class="cg-ob">Para tirar da programação, use a lixeira no canto de cima. Para mudar o dia ou quem coleta, desprograme e programe de novo (no plano, é só marcar a área e tocar em Reprogramar).</p>' : ''),
+      rodape: st === 'pendente' && coPode() ? '<button type="button" class="bt pr" data-act="pg-cd" data-id="' + esc(p.id) + '">' + ic('ok') + 'Coletado</button>' : '',
+      lixeira: st === 'pendente' && coPode() ? { act: 'pg-desprog', id: p.id, titulo: 'Desprogramar' } : null };
   });
   render();
+}
+
+/* ---------- Desprogramar (v0.4.9) ---------- */
+function pgDesprograma(id) {
+  const p = pgTodas().find(x => x.id === id); if (!p || !coPode() || pgSit(p) !== 'pendente') return;
+  csConfirma({ titulo: 'Desprogramar ' + p.talhao + '?', texto: (p.tipo || '') + ' · ' + p.talhao + (p.data ? ' · ' + fmtD(p.data) : '') + '. ' + (p._rz ? 'A área volta para "Faltam" no plano e pode ser programada de novo.' : 'A programação fica na lista como cancelada.') + ' Nada que já foi coletado é apagado.', sim: 'Desprogramar', nao: 'Voltar' }, async () => {
+    try {
+      if (p._rz) { const z = p._rz, g = Object.assign({}, (z.r.progs && z.r.progs[z.p.k]) || {}); delete g[z.a]; const up = {}; up['progs.' + z.p.k] = g; await Data.col('sv2_rodizio').update(z.r.id, up); }
+      else await Data.col('sv2_prog').update(p.id, { situacao: 'cancelada', canceladaMotivo: 'Desprogramada', canceladaEm: nowISO(), canceladaPor: S.user.nome });
+      Audit.log({ acao: p._rz ? 'desprogramar_plano' : 'cancelar_programacao', entidade: p._rz ? 'rodizio' : 'programacao', entidadeId: p._rz ? p._rz.r.id : p.id, resumo: 'Desprogramou ' + (p.tipo || '') + ' ' + p.talhao + (p.data ? ' (' + fmtD(p.data) + ')' : ''), antes: { data: p.data, coletor: p.coletor || '', prazo: p.prazo || '' } });
+      aviso(p.talhao + ' desprogramada.'); if (S.gv) gvFechar();
+    } catch (e) { aviso(svErro(e), 'erro'); }
+  });
 }
 
 /* ---------- Coletado (uma ou várias programações) ---------- */
@@ -296,7 +311,7 @@ LC_FORM.pgcd = f => {
     '<div class="co-selb"><button type="button" class="bt lk" data-act="pg-todas">Marcar as ' + l.length + '</button><button type="button" class="bt lk" data-act="pg-limpa">Limpar</button></div>' +
     (l.length > 6 ? '<div class="fm-pk"><label class="tb-busca">' + ic('lupa') + '<input type="search" data-pk data-pgq value="' + esc(f.q || '') + '" placeholder="Buscar talhão ou tipo" aria-label="Buscar talhão ou tipo"></label>' : '<div class="fm-pk">') + '<div class="fm-pkl co-pkl">' + l.map(p => { const on = !!f.sel[p.id], bu = tbNorm([p.talhao, p.tipo].join(' ')), q = tbNorm(f.q || '').trim(), vis = !q || q.split(/\s+/).every(w => bu.indexOf(w) >= 0); return '<button type="button" class="fm-pki cb-ck' + (on ? ' on' : '') + '" data-act="pg-ck" data-id="' + esc(p.id) + '" aria-pressed="' + on + '" data-busca="' + esc(bu) + '"' + (vis ? '' : ' hidden') + '><span class="cb-box">' + (on ? ic('ok') : '') + '</span><span class="pg-cdi"><b>' + esc(p.talhao) + '</b><small>' + esc([p.tipo, p.data ? pgDiaTxt(p.data) : 'sem dia definido'].join(' · ')) + '</small></span>' + (p.data ? alPill(pgQuando(p).txt, pgQuando(p).cor) : '') + '</button>'; }).join('') + '</div><p class="tb-nada fm-pkv" hidden>Nada encontrado.</p></div>' +
     (ps.length ? pgResumo(ps) : '') +
-    '<p class="gv-h">2 · Quando e quem</p><div class="fm-g">' + lcBl('Data da coleta', lcData('data', f.data), 'pode ser de dias atrás') + lcBl('Coletores', pgDdLivre('pgcol', f.col, pgEquipes().concat(S.users.map(u => u.nome))) + pgLivreIn(f, 'col', 'Ex.: Equipe A')) + '</div>' +
+    '<p class="gv-h">2 · Quando e quem</p><div class="fm-g">' + lcBl('Data da coleta', lcData('data', f.data)) + lcBl('Coletores', pgDdLivre('pgcol', f.col, pgEquipes().concat(S.users.map(u => u.nome))) + pgLivreIn(f, 'col', 'Ex.: Equipe A')) + '</div>' +
     '<p class="gv-h">3 · Campo</p><div class="fm-g">' + (prof ? lcBl('Profundidade', pgDdLivre('pgprof', f.prof, profs.concat(pgProfsTodas()).concat(['N/A']), 'Outra (digitar)') + pgLivreIn(f, 'prof', 'Ex.: 40-60'), 'solo e raiz') : '') +
       (est ? lcBl('Estádio', pgDdLivre('pgest', f.est, PG_ESTADIOS) + pgLivreIn(f, 'est', 'Ex.: PÓS-COLHEITA')) : '') + '</div>' +
     lcBl('Observação', lcIn('obs', f.obs, ' placeholder="opcional"')),
@@ -402,6 +417,7 @@ document.addEventListener('change', e => { const t = e.target, f = S.fm; if (!t 
 document.addEventListener('click', ev => {
   const t = ev.target.closest && ev.target.closest('[data-act^="pg-"]'); if (!t) return;
   const a = t.getAttribute('data-act'), id = t.getAttribute('data-id'), f = S.fm, vol = S.gv && !S.gvForm ? S.gv : null, volta = vol ? () => gvAbrir(vol) : null;
+  if (a === 'pg-desprog') { pgDesprograma(id); return; }
   if (a === 'pg-cd') { if (!coPode()) return; const sel = {}; if (id) sel[id] = true; const ps = pgPendentes().filter(p => sel[p.id]); const um = k => { const v = Array.from(new Set(ps.map(p => p[k] || ''))); return v.length === 1 ? v[0] : ''; };
     lcAbrir({ k: 'pgcd', sel: sel, data: hojeISO(), col: um('coletor') || pgEquipes()[0] || '', prof: um('prof'), est: um('estadio') || pgEstadioSug(ps), obs: '' }, volta); }
   else if (a === 'pg-ck' && f) { f.sel[id] = !f.sel[id]; f.sujo = true; gvDesenha(true); }

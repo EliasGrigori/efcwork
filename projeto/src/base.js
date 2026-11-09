@@ -1,7 +1,7 @@
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.4.8';
+const VERSAO = '0.4.9';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -290,7 +290,9 @@ const Data = (function () {
       appCheckLigar(); /* v2.88.0: antes do Firestore e do login */
       fdb = firebase.firestore(); fauth = firebase.auth(); try { fauth.languageCode = 'pt'; } catch (e) {}
       try { await fauth.setPersistence(firebase.auth.Auth.Persistence.LOCAL); } catch (e) { try { await fauth.setPersistence(firebase.auth.Auth.Persistence.SESSION); S._authSessao = true; } catch {} } /* v2.76.0: o aparelho guarda a sessão; ao abrir, o app pede a senha (funciona sem internet). v2.102.9: se não der, guarda na aba */
-      try { await fdb.enablePersistence({ synchronizeTabs: true }); } catch (e) { console.warn('Sem cache offline:', e.code); S._semCache = (e && (e.name === 'QuotaExceededError' ? 22 : e.code)) || 'erro'; } /* v2.84.0: avisa na tela */
+      /* v0.4.9: se o cache do aparelho quebrou duas vezes seguidas, abre sem ele por 1 dia (o app funciona online normalmente) */
+      let semCache = false; try { semCache = Number(localStorage.getItem('cw-semcache-ate') || 0) > Date.now(); } catch {}
+      if (semCache) S._semCache = 'desligado'; else try { await fdb.enablePersistence({ synchronizeTabs: true }); } catch (e) { console.warn('Sem cache offline:', e.code); S._semCache = (e && (e.name === 'QuotaExceededError' ? 22 : e.code)) || 'erro'; } /* v2.84.0: avisa na tela */
       try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().then(v => { S._persistido = !!v; }).catch(() => {}); } catch {} /* v2.102.9: pede ao navegador para não apagar o cache sozinho */
     },
     async setupDone() {
@@ -316,6 +318,16 @@ const Data = (function () {
     /* v2.102.9 (Nº 28 / 32.4): a nuvem confirmou tudo o que foi lançado neste aparelho? (sem internet: não, depois de ms) */
     async semPendentes(ms) { if (DEMO || !fdb) return true; try { return await Promise.race([fdb.waitForPendingWrites().then(() => true), new Promise(r => setTimeout(() => r(false), ms || 2500))]); } catch (e) { return false; } },
     /* apaga só a CÓPIA da nuvem guardada neste navegador (cache offline). Depois disso a página precisa recarregar. */
+    /* v0.4.9 (09/11: "The client has already been terminated" ao entrar): o Firestore se desliga sozinho quando o banco do
+       navegador (IndexedDB) quebra. Conserto: apaga só a cópia da nuvem guardada no aparelho e recarrega; o login continua.
+       Na 2ª vez seguida, abre sem cache por 1 dia. Nada da nuvem é apagado. */
+    async reparaCache() {
+      if (DEMO || !fdb) return;
+      let n = 0; try { n = Number(sessionStorage.getItem('cw-reparou') || 0); sessionStorage.setItem('cw-reparou', String(n + 1)); } catch {}
+      if (n >= 1) { try { localStorage.setItem('cw-semcache-ate', String(Date.now() + 864e5)); } catch {} }
+      try { await fdb.terminate(); } catch {} try { await fdb.clearPersistence(); } catch (e) { console.warn('clearPersistence', e); }
+      location.reload();
+    },
     async limparCache() { if (DEMO || !fdb) return false; try { await fdb.terminate(); } catch {} await fdb.clearPersistence(); return true; },
     /* v2.85.0: várias gravações juntas — ou entram todas, ou nenhuma (lote do Firestore; funciona sem internet) */
     novoId(name) { return DEMO || !fdb ? uid() : fdb.collection(name).doc().id; },

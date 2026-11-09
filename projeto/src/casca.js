@@ -165,17 +165,22 @@ async function csSair() {
   S.user = null; S.gv = null; S.gvForm = false; S.fm = null; S.camadas = []; S.users = []; S.notifs = []; S.aprov = []; { const g = $('#gv'); if (g) g.remove(); } S._desl.forEach(f => { try { f(); } catch {} }); S._desl = []; location.hash = '#/inicio'; render();
 }
 function csOuve(col, cb, o) { const off = Data.col(col).watch(cb, o); S._desl.push(off); return off; }
+/* v0.4.9: Firestore desligado (cache do aparelho quebrado) — repara sozinho uma vez por sessão (até 2 tentativas) */
+const csTerminado = e => /already been terminated|client has been terminated|IndexedDB|INTERNAL ASSERTION/i.test(String((e && (e.message || e.code)) || e || ''));
+function csPodeReparar() { try { return Number(sessionStorage.getItem('cw-reparou') || 0) < 2; } catch { return false; } }
+window.addEventListener('unhandledrejection', ev => { if (!DEMO && csTerminado(ev.reason) && csPodeReparar()) { aviso('Consertando o cache do aparelho…'); Data.reparaCache(); } });
 async function csCarregaUsuario(uidAtual) {
   S._desl.forEach(f => { try { f(); } catch {} }); S._desl = [];
   if (!uidAtual) { S.user = null; S.pronto = true; render(); return; }
   let u = null, erro = null; try { u = await Data.col('sv2_users').get(uidAtual); } catch (e) { console.error(e); erro = e; }
+  if (erro && csTerminado(erro) && csPodeReparar()) { S.pronto = false; S._erroEntrar = ''; render(); Data.reparaCache(); return; }
   if (!u || u.ativo === false || u.bloqueado) {
     try { await Data.auth.signOut(); } catch {}
     /* v0.4.1: diferencia "não achou o perfil" de "não conseguiu ler" (antes, um erro de leitura aparecia como "sem perfil") */
-    S.user = null; S.pronto = true; S._erroEntrar = erro ? 'A senha está certa, mas não deu para ler o seu perfil (' + svErro(erro) + '). Tente de novo; se continuar, avise o administrador.'
+    S.user = null; S.pronto = true; S._erroEntrar = erro ? (csTerminado(erro) ? 'A senha está certa, mas o cache deste aparelho travou. Feche todas as abas do EFCwork e do EFClaudian e abra de novo; se continuar, avise o administrador.' : 'A senha está certa, mas não deu para ler o seu perfil (' + svErro(erro) + '). Tente de novo; se continuar, avise o administrador.')
       : !u ? 'A senha está certa, mas este acesso não tem perfil no app. Confira se digitou o seu login ou o e-mail completo (com @), igual ao do EFClaudian.' : 'Este acesso está bloqueado. Fale com o administrador.'; render(); return;
   }
-  S.user = Object.assign({ id: uidAtual }, u); S.pronto = true; S._erroEntrar = '';
+  S.user = Object.assign({ id: uidAtual }, u); S.pronto = true; S._erroEntrar = ''; try { sessionStorage.removeItem('cw-reparou'); } catch {}
   csOuve('sv2_cfg', l => { const e = l.find(x => x.id === 'empresa'); S.empresa = e || null; S.cfgAlm = l.find(x => x.id === 'almox') || null; S.cfgCol = l.find(x => x.id === 'coletas') || null; S.cfgEntrar = l.find(x => x.id === 'entrar') || null; enGuardaCache(); render(); });
   csOuve('sv2_tarefas', l => { S.tarefas = l; if (S.rota.area === 'inicio') render(); });
   CS_CARGAS.forEach(f => { try { f(); } catch (e) { console.error(e); } });

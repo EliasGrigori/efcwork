@@ -317,8 +317,8 @@ body.dd-arrastando{cursor:grabbing;-webkit-user-select:none;user-select:none}
 .tb-bar{position:relative}
 .tb-tots{position:absolute;left:0;top:0;height:var(--btn);pointer-events:none}
 .tb-tots>span{position:absolute;top:0;height:var(--btn);box-sizing:border-box;pointer-events:auto;border-radius:8px}
-.tb-tl{display:flex;flex-direction:column;justify-content:center;align-items:flex-end;padding:0 10px;border:1px solid var(--bd);background:var(--bg1);line-height:1.1;white-space:nowrap}
-.tb-tl b{font-size:13px;color:var(--tx);font-weight:700}.tb-tl small{font-size:11.5px;color:var(--tx3)}
+.tb-tl{display:flex;align-items:center;justify-content:center;padding:0 12px;border:1px solid var(--bd);background:var(--bg1);white-space:nowrap}
+.tb-tl b{font-size:14px;color:var(--tx);font-weight:700}
 .tb-tv{display:flex;align-items:center;justify-content:flex-end;padding:0 12px;border:1px solid color-mix(in srgb,var(--a) 40%,var(--bd));background:color-mix(in srgb,var(--a) 8%,var(--bg1));white-space:nowrap}
 .tb-tv b{font-size:15px;font-variant-numeric:tabular-nums;color:var(--tx);font-weight:700}
 .tb-tots.tb-tots-fluxo{position:static;display:flex;gap:6px;height:auto;order:0}
@@ -402,6 +402,11 @@ body.tb-arrastando,body.tb-arrastando *{cursor:grabbing!important;user-select:no
 .tb-mn.tb-mn-folha .tb-mn-o,.tb-mn.tb-mn-folha .tb-mn-li,.tb-mn.tb-mn-folha .tb-mn-tr,.tb-mn.tb-mn-folha .tb-mn-bs,.tb-mn.tb-mn-folha .tb-mn-nr label{min-height:44px;height:auto}
 .tb-mn.tb-mn-folha .tb-mn-mv .bt{height:44px;width:44px}
 .tb-mn.tb-mn-cima .tb-mn-pt{top:auto;bottom:-6px;transform:rotate(225deg)}
+
+/* botão único de ordenar (v0.4.9): cada toque troca padrão → crescente → decrescente */
+.tb-mn-ci em{font-style:normal;font-size:12px;color:var(--tx3)}
+.tb-mn-ci{min-height:40px}
+.tb-mn-fundo{position:fixed;inset:0;z-index:59;background:rgba(20,16,8,.38)}
 
 /* ===== almox.css ===== */
 /* EFCwork · almox.css — Prefixo: al- */
@@ -815,6 +820,9 @@ div.cb-hc{cursor:default}
 /* v0.4.6: o cartão abre a página do plano */
 a.pg-pl{color:inherit;text-decoration:none;cursor:pointer;transition:border-color .15s}a.pg-pl:hover{border-color:var(--bd2)}a.pg-pl:focus-visible{outline:2px solid var(--a);outline-offset:2px}
 
+/* v0.4.9: Data e Coletores na mesma linha (o aviso "pode ser de dias atrás" saiu do rótulo, que quebrava em 2 linhas e empurrava a data) */
+#gv .fm-g{align-items:start}
+
 /* ===== plano.css ===== */
 /* v0.4.6 · página do plano (prefixo pp) */
 .pp{padding-bottom:84px}
@@ -865,6 +873,13 @@ body:has(#gv) .pp-bar{display:none}
 .pp-tb th{font-size:12.5px;color:var(--tx2);font-weight:700;background:var(--bg0)}.pp-tb .l{text-align:left}.pp-tb small{display:block;color:var(--tx3);font-size:12px}
 .pp-ar{position:relative}.pp-rc{position:absolute;top:3px;left:4px;display:grid;place-items:center;width:12px;height:12px;color:var(--aTx)}.pp-rc .ic{width:11px;height:11px}
 @media (max-width:820px){.pp-aj{grid-template-columns:1fr}.pp-nums{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* v0.4.9: novo plano (gaveta) */
+.pp-nv{display:flex;align-items:center;gap:10px;width:100%;text-align:left}
+.pp-nv .pp-nvk{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;flex-shrink:0;border:1.5px solid var(--bd2);border-radius:5px;background:var(--bg0);color:var(--aT)}
+.pp-nv.on .pp-nvk{background:var(--a);border-color:var(--a)}.pp-nv .pp-nvk .ic{width:12px;height:12px}
+.pp-nv b{font-weight:600}.pp-nv small{margin-left:auto;color:var(--tx3);font-size:12.5px;text-align:right}
+#gv .pp-lis{display:flex;flex-direction:column;gap:4px}
 
 /* ===== entrar.css ===== */
 /* EFCwork · entrar.css — tela de entrar com a garota-propaganda (v0.4.2). Prefixo: en-
@@ -1009,7 +1024,7 @@ body:has(#gv) .pp-bar{display:none}
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.4.8';
+const VERSAO = '0.4.9';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -1298,7 +1313,9 @@ const Data = (function () {
       appCheckLigar(); /* v2.88.0: antes do Firestore e do login */
       fdb = firebase.firestore(); fauth = firebase.auth(); try { fauth.languageCode = 'pt'; } catch (e) {}
       try { await fauth.setPersistence(firebase.auth.Auth.Persistence.LOCAL); } catch (e) { try { await fauth.setPersistence(firebase.auth.Auth.Persistence.SESSION); S._authSessao = true; } catch {} } /* v2.76.0: o aparelho guarda a sessão; ao abrir, o app pede a senha (funciona sem internet). v2.102.9: se não der, guarda na aba */
-      try { await fdb.enablePersistence({ synchronizeTabs: true }); } catch (e) { console.warn('Sem cache offline:', e.code); S._semCache = (e && (e.name === 'QuotaExceededError' ? 22 : e.code)) || 'erro'; } /* v2.84.0: avisa na tela */
+      /* v0.4.9: se o cache do aparelho quebrou duas vezes seguidas, abre sem ele por 1 dia (o app funciona online normalmente) */
+      let semCache = false; try { semCache = Number(localStorage.getItem('cw-semcache-ate') || 0) > Date.now(); } catch {}
+      if (semCache) S._semCache = 'desligado'; else try { await fdb.enablePersistence({ synchronizeTabs: true }); } catch (e) { console.warn('Sem cache offline:', e.code); S._semCache = (e && (e.name === 'QuotaExceededError' ? 22 : e.code)) || 'erro'; } /* v2.84.0: avisa na tela */
       try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().then(v => { S._persistido = !!v; }).catch(() => {}); } catch {} /* v2.102.9: pede ao navegador para não apagar o cache sozinho */
     },
     async setupDone() {
@@ -1324,6 +1341,16 @@ const Data = (function () {
     /* v2.102.9 (Nº 28 / 32.4): a nuvem confirmou tudo o que foi lançado neste aparelho? (sem internet: não, depois de ms) */
     async semPendentes(ms) { if (DEMO || !fdb) return true; try { return await Promise.race([fdb.waitForPendingWrites().then(() => true), new Promise(r => setTimeout(() => r(false), ms || 2500))]); } catch (e) { return false; } },
     /* apaga só a CÓPIA da nuvem guardada neste navegador (cache offline). Depois disso a página precisa recarregar. */
+    /* v0.4.9 (09/11: "The client has already been terminated" ao entrar): o Firestore se desliga sozinho quando o banco do
+       navegador (IndexedDB) quebra. Conserto: apaga só a cópia da nuvem guardada no aparelho e recarrega; o login continua.
+       Na 2ª vez seguida, abre sem cache por 1 dia. Nada da nuvem é apagado. */
+    async reparaCache() {
+      if (DEMO || !fdb) return;
+      let n = 0; try { n = Number(sessionStorage.getItem('cw-reparou') || 0); sessionStorage.setItem('cw-reparou', String(n + 1)); } catch {}
+      if (n >= 1) { try { localStorage.setItem('cw-semcache-ate', String(Date.now() + 864e5)); } catch {} }
+      try { await fdb.terminate(); } catch {} try { await fdb.clearPersistence(); } catch (e) { console.warn('clearPersistence', e); }
+      location.reload();
+    },
     async limparCache() { if (DEMO || !fdb) return false; try { await fdb.terminate(); } catch {} await fdb.clearPersistence(); return true; },
     /* v2.85.0: várias gravações juntas — ou entram todas, ou nenhuma (lote do Firestore; funciona sem internet) */
     novoId(name) { return DEMO || !fdb ? uid() : fdb.collection(name).doc().id; },
@@ -1515,17 +1542,22 @@ async function csSair() {
   S.user = null; S.gv = null; S.gvForm = false; S.fm = null; S.camadas = []; S.users = []; S.notifs = []; S.aprov = []; { const g = $('#gv'); if (g) g.remove(); } S._desl.forEach(f => { try { f(); } catch {} }); S._desl = []; location.hash = '#/inicio'; render();
 }
 function csOuve(col, cb, o) { const off = Data.col(col).watch(cb, o); S._desl.push(off); return off; }
+/* v0.4.9: Firestore desligado (cache do aparelho quebrado) — repara sozinho uma vez por sessão (até 2 tentativas) */
+const csTerminado = e => /already been terminated|client has been terminated|IndexedDB|INTERNAL ASSERTION/i.test(String((e && (e.message || e.code)) || e || ''));
+function csPodeReparar() { try { return Number(sessionStorage.getItem('cw-reparou') || 0) < 2; } catch { return false; } }
+window.addEventListener('unhandledrejection', ev => { if (!DEMO && csTerminado(ev.reason) && csPodeReparar()) { aviso('Consertando o cache do aparelho…'); Data.reparaCache(); } });
 async function csCarregaUsuario(uidAtual) {
   S._desl.forEach(f => { try { f(); } catch {} }); S._desl = [];
   if (!uidAtual) { S.user = null; S.pronto = true; render(); return; }
   let u = null, erro = null; try { u = await Data.col('sv2_users').get(uidAtual); } catch (e) { console.error(e); erro = e; }
+  if (erro && csTerminado(erro) && csPodeReparar()) { S.pronto = false; S._erroEntrar = ''; render(); Data.reparaCache(); return; }
   if (!u || u.ativo === false || u.bloqueado) {
     try { await Data.auth.signOut(); } catch {}
     /* v0.4.1: diferencia "não achou o perfil" de "não conseguiu ler" (antes, um erro de leitura aparecia como "sem perfil") */
-    S.user = null; S.pronto = true; S._erroEntrar = erro ? 'A senha está certa, mas não deu para ler o seu perfil (' + svErro(erro) + '). Tente de novo; se continuar, avise o administrador.'
+    S.user = null; S.pronto = true; S._erroEntrar = erro ? (csTerminado(erro) ? 'A senha está certa, mas o cache deste aparelho travou. Feche todas as abas do EFCwork e do EFClaudian e abra de novo; se continuar, avise o administrador.' : 'A senha está certa, mas não deu para ler o seu perfil (' + svErro(erro) + '). Tente de novo; se continuar, avise o administrador.')
       : !u ? 'A senha está certa, mas este acesso não tem perfil no app. Confira se digitou o seu login ou o e-mail completo (com @), igual ao do EFClaudian.' : 'Este acesso está bloqueado. Fale com o administrador.'; render(); return;
   }
-  S.user = Object.assign({ id: uidAtual }, u); S.pronto = true; S._erroEntrar = '';
+  S.user = Object.assign({ id: uidAtual }, u); S.pronto = true; S._erroEntrar = ''; try { sessionStorage.removeItem('cw-reparou'); } catch {}
   csOuve('sv2_cfg', l => { const e = l.find(x => x.id === 'empresa'); S.empresa = e || null; S.cfgAlm = l.find(x => x.id === 'almox') || null; S.cfgCol = l.find(x => x.id === 'coletas') || null; S.cfgEntrar = l.find(x => x.id === 'entrar') || null; enGuardaCache(); render(); });
   csOuve('sv2_tarefas', l => { S.tarefas = l; if (S.rota.area === 'inicio') render(); });
   CS_CARGAS.forEach(f => { try { f(); } catch (e) { console.error(e); } });
@@ -1812,20 +1844,22 @@ function tbTemFiltroSolto(cfg) { const st = tbEstado(cfg.id); return !!st.busca 
    e à esquerda vai "Total · N itens". As posições são medidas na tela (tbAlinhaTot); se não couber, ficam em sequência. */
 function tbTotal(cfg, cols, todas, filtrado) {
   const cs = cols.filter(c => c.total); if (!cs.length) return '';
-  return '<div class="tb-tots" data-tbtot="' + esc(cfg.id) + '"><span class="tb-tl" title="' + (filtrado ? 'Soma só do que está filtrado' : 'Soma de toda a lista') + '"><b>Total</b><small>' + (filtrado ? 'do filtro · ' : '') + todas.length + ' ' + esc(cfg.unidade || 'registros') + '</small></span>' +
+  return '<div class="tb-tots" data-tbtot="' + esc(cfg.id) + '"><span class="tb-tl" title="' + (filtrado ? 'Soma só do que está filtrado · ' : 'Soma de toda a lista · ') + todas.length + ' ' + esc(cfg.unidade || 'registros') + '"><b>Total</b></span>' +
     cs.map(c => { const v = typeof c.total === 'function' ? c.total(todas) : todas.reduce((s, r) => s + (Number(c.v(r)) || 0), 0); return '<span class="tb-tv" data-k="' + esc(c.k) + '" title="Total de ' + esc(c.rot) + '"><b>' + esc(c.fmtTotal ? c.fmtTotal(v) : numBR(v, c.dec)) + '</b></span>'; }).join('') + '</div>';
 }
+/* cada valor fica acima da sua coluna, na largura dela; se o número for maior que a coluna, a caixa cresce para a ESQUERDA (nunca por cima do rótulo "Total") */
 function tbAlinhaTot() {
   $$('.tb-tots').forEach(t => {
     const tb = t.closest('.tb'), bar = t.parentElement, br = bar.getBoundingClientRect(), tvs = Array.from(t.querySelectorAll('.tb-tv')), lb = t.querySelector('.tb-tl');
-    t.classList.remove('tb-tots-fluxo'); t.style.width = br.width + 'px';
-    let ok = innerWidth >= 600, min = 1e9;
-    tvs.forEach(v => { const th = tb.querySelector('.tb-cab th[data-tbk="' + v.getAttribute('data-k') + '"]'); if (!th) { ok = false; return; } const r = th.getBoundingClientRect(); v.style.left = (r.left - br.left) + 'px'; v.style.width = r.width + 'px'; min = Math.min(min, r.left - br.left); });
-    if (ok) { lb.style.left = ''; lb.style.right = (br.width - min + 6) + 'px'; }
-    const esq = Array.from(bar.children).filter(x => x !== t && !x.classList.contains('tb-sp') && x.getBoundingClientRect().right < br.left + min).reduce((m, x) => Math.max(m, x.getBoundingClientRect().right - br.left), 0);
+    t.classList.remove('tb-tots-fluxo'); t.style.width = br.width + 'px'; lb.style.right = '';
+    tvs.forEach(v => { v.style.left = ''; v.style.width = 'auto'; });
+    let ok = innerWidth >= 600, min = 1e9, max = 0;
+    tvs.forEach(v => { const th = tb.querySelector('thead th[data-tbk="' + v.getAttribute('data-k') + '"]'); if (!th) { ok = false; return; }
+      const r = th.getBoundingClientRect(), w = Math.max(r.width, v.offsetWidth), x = r.right - br.left - w; v.style.width = w + 'px'; v.style.left = x + 'px'; min = Math.min(min, x); max = Math.max(max, x + w); });
+    if (ok) lb.style.right = (br.width - min + 6) + 'px';
+    const esq = Array.from(bar.children).filter(x => x !== t && !x.classList.contains('tb-sp') && x.getBoundingClientRect().width && x.getBoundingClientRect().right <= br.left + min).reduce((m, x) => Math.max(m, x.getBoundingClientRect().right - br.left), 0);
     const dir = Array.from(bar.querySelectorAll('.ic-so')).reduce((m, x) => Math.min(m, x.getBoundingClientRect().left - br.left), br.width);
-    const ll = ok ? min - 6 - lb.offsetWidth : 0, rr = ok ? Math.max.apply(null, tvs.map(v => v.offsetLeft + v.offsetWidth)) : 0;
-    if (!ok || ll < esq + 8 || rr > dir - 8) { t.classList.add('tb-tots-fluxo'); t.style.width = ''; tvs.concat(lb).forEach(x => { x.style.left = ''; x.style.right = ''; x.style.width = ''; }); }
+    if (!ok || min - 6 - lb.offsetWidth < esq + 8 || max > dir - 8) { t.classList.add('tb-tots-fluxo'); t.style.width = ''; tvs.concat(lb).forEach(x => { x.style.left = ''; x.style.right = ''; x.style.width = ''; }); }
   });
 }
 addEventListener('resize', () => tbAlinhaTot()); addEventListener('scroll', e => { if (e.target && e.target.classList && e.target.classList.contains('tb-w')) tbAlinhaTot(); }, true);
@@ -1835,7 +1869,7 @@ function tbMarcas(cfg, c) {
 }
 function tbHTML(cfg) {
   TB[cfg.id] = cfg; const st = tbEstado(cfg.id), cols = tbVisiveis(cfg), todas = tbFiltrar(cfg), l = todas.slice(0, st.limite), fl = tbTemFiltro(cfg);
-  const chave = cfg.chave || (r => r.id), mn = S.tbMenu && S.tbMenu.id === cfg.id ? S.tbMenu.k : null;
+  const chave = cfg.chave || (r => r.id), mn = S.tbMenu && S.tbMenu.id === cfg.id && S.tbMenu.h === location.hash ? S.tbMenu.k : null;
   let h = '<div class="tb" data-tb="' + esc(cfg.id) + '"><div class="tb-bar">' +
     (tbTemFiltroSolto(cfg) ? '<button type="button" class="tb-limpa" data-act="tb-limpa" data-tb="' + esc(cfg.id) + '">' + ic('x') + '<span>Limpar filtro</span></button>' : '') +
     '<span class="tb-cont">' + todas.length + (todas.length !== (cfg.linhas || []).length ? ' de ' + (cfg.linhas || []).length : '') + ' ' + esc(cfg.unidade || 'registros') + '</span><span class="tb-sp"></span>' + tbTotal(cfg, cols, todas, fl) +
@@ -1854,7 +1888,7 @@ function tbHTML(cfg) {
   h += '</tbody></table></div>';
   h += '<div class="tb-pe"><span>Mostrando <b>' + l.length + '</b> de ' + todas.length + '</span>' + (cfg.rodape ? '<span>' + cfg.rodape(todas) + '</span>' : '') + (todas.length > l.length ? '<button type="button" class="bt" data-act="tb-mais" data-tb="' + esc(cfg.id) + '">Mostrar mais ' + Math.min(100, todas.length - l.length) + '</button>' : '') + '</div>';
   requestAnimationFrame(tbAlinhaTot);
-  if (mn) { h += tbMenuHTML(cfg, mn); requestAnimationFrame(tbPosMenu); }
+  if (mn) { h += (innerWidth < 600 ? '<div class="tb-mn-fundo" data-act="tb-mn-x"></div>' : '') + tbMenuHTML(cfg, mn); requestAnimationFrame(() => { tbPosMenu(); tbMnRestaura(); }); }
   return h + '</div>';
 }
 /* ---------- menu da coluna ---------- */
@@ -1873,7 +1907,7 @@ function tbMenuHTML(cfg, k) {
     '<i class="tb-mn-pt"></i><div class="tb-mn-cab"><div class="tb-mn-t"><b>' + esc(c.rot) + '</b><small>' + vals.reduce((q, x) => q + x.n, 0) + ' ' + esc(cfg.unidade || 'registros') + ' · ' + vals.length + (vals.length === 1 ? ' valor' : ' valores') + '</small></div>' +
     '<button type="button" class="tb-mn-tr' + (tr ? ' on' : '') + '" data-act="tb-trava" data-tb="' + id + '" data-k="' + esc(k) + '" aria-pressed="' + tr + '" title="' + (tr ? 'Destravar: volta a poder mudar e o Limpar filtro passa a valer' : 'Travar: a ordem e o filtro desta coluna ficam assim, mesmo ao sair do app, até você destravar') + '">' + ic('cadeado') + '<span>' + (tr ? 'Travada' : 'Travar') + '</span></button></div>' +
     (tr ? '<p class="tb-mn-av">' + ic('cadeado') + 'Travada. Destrave para mudar a ordem ou o filtro.</p>' : '') +
-    '<div class="tb-mn-corpo"><div class="tb-mn-g tb-mn-ord"><span class="tb-mn-h">Ordenar</span>' + lin('tb-oasc', 'ordAsc', nomes[0], o === 'asc') + lin('tb-odesc', 'ordDesc', nomes[1], o === 'desc') + lin('tb-opad', 'ordPad', 'Ordem padrão', !o) + '</div>';
+    '<div class="tb-mn-corpo"><div class="tb-mn-g tb-mn-ord"><span class="tb-mn-h">Ordenar</span>' + '<button type="button" class="tb-mn-o tb-mn-ci' + (o ? ' on' : '') + '" data-act="tb-ociclo" data-tb="' + id + '" data-k="' + esc(k) + '"' + dis + ' title="Cada toque troca: ordem padrão, ' + nomes[0].toLowerCase() + ', ' + nomes[1].toLowerCase() + '">' + ic(o === 'asc' ? 'ordAsc' : o === 'desc' ? 'ordDesc' : 'ordPad') + '<span>' + (o === 'asc' ? nomes[0] : o === 'desc' ? nomes[1] : 'Ordem padrão') + '</span><em>' + (o === 'asc' ? 'toque: inverte' : o === 'desc' ? 'toque: volta ao padrão' : 'toque: ordena') + '</em></button></div>';
   const pre = tbPresetsDe(cfg, k);
   if (pre.length) h += '<div class="tb-mn-g"><span class="tb-mn-h">Filtros prontos</span>' + pre.map(p => '<div class="tb-mn-pre' + (tr ? ' tb-mn-off' : '') + '">' + (pre.length > 1 || p.rot !== c.rot ? '<small>' + esc(p.rot) + '</small>' : '') + ddHTML('tbf:' + cfg.id + ':' + p.k, st.filtros[p.k] == null ? '' : st.filtros[p.k], [['', 'Todos']].concat(p.opcoes)) + '</div>').join('') + '</div>';
   h += '<div class="tb-mn-g tb-mn-fg"><span class="tb-mn-h">Filtrar</span><label class="tb-mn-bs">' + ic('lupa') + '<input type="search" data-tbmnbusca="' + id + '" data-k="' + esc(k) + '" value="' + esc(f.txt || '') + '" placeholder="Buscar em ' + esc(c.rot) + '" aria-label="Buscar em ' + esc(c.rot) + '"' + dis + '></label>';
@@ -1886,13 +1920,14 @@ function tbMenuHTML(cfg, k) {
     '<button type="button" class="bt lk" data-act="tb-mnlimpa" data-tb="' + id + '" data-k="' + esc(k) + '"' + (tbColFiltrada(cfg, k) && !tr ? '' : ' disabled') + '>Limpar esta coluna</button></div></div>';
   return h;
 }
+/* a rolagem da lista do menu é guardada quando o usuário rola e devolvida só depois de redesenhar (antes, cada rolagem a devolvia ao ponto antigo e a lista "travava") */
+function tbMnRestaura() { const m = document.querySelector('.tb-mn'); if (!m) return; const l = m.querySelector('.tb-mn-l'), cp = m.querySelector('.tb-mn-corpo'); if (cp && S._tbMnCorpo) cp.scrollTop = S._tbMnCorpo; if (l && S._tbMnScroll) l.scrollTop = S._tbMnScroll; }
 function tbRolador(el) { for (let e = el.parentElement; e && e !== document.body; e = e.parentElement) { const o = getComputedStyle(e).overflowY; if ((o === 'auto' || o === 'scroll') && e.scrollHeight > e.clientHeight) return e; } return document.scrollingElement || document.documentElement; }
 /* o menu nasce embaixo da própria coluna, com a pontinha apontando para ela; se faltar espaço embaixo, a página sobe um pouco (pedido de 08/11 15:00) */
 function tbPosMenu() {
   const m = document.querySelector('.tb-mn'); if (!m) return;
   const meio = m.querySelector('[data-meio]'); if (meio) meio.indeterminate = true;
   const th = document.querySelector('.tb[data-tb="' + m.getAttribute('data-tbmn') + '"] th[data-tbk="' + m.getAttribute('data-k') + '"]');
-  const l = m.querySelector('.tb-mn-l'); if (l && S._tbMnScroll) l.scrollTop = S._tbMnScroll; const cp = m.querySelector('.tb-mn-corpo'); if (cp && S._tbMnCorpo) cp.scrollTop = S._tbMnCorpo;
   if (!th || innerWidth < 600) { m.classList.add('tb-mn-folha'); return; }
   m.classList.remove('tb-mn-folha'); m.style.maxHeight = '';
   let r = th.getBoundingClientRect(); const w = m.offsetWidth, hh = Math.min(m.scrollHeight, 640);
@@ -1905,14 +1940,22 @@ function tbPosMenu() {
   m.style.left = x + 'px'; m.style.top = y + 'px'; m.style.maxHeight = Math.max(200, alt) + 'px';
   m.style.setProperty('--tb-pt', Math.max(14, Math.min(w - 14, r.left + Math.min(r.width, 160) / 2 - x)) + 'px');
 }
-addEventListener('resize', tbPosMenu); addEventListener('scroll', () => { if (S.tbMenu) tbPosMenu(); }, true);
+addEventListener('resize', tbPosMenu); addEventListener('scroll', e => {
+  if (!S.tbMenu) return; const t = e.target;
+  if (t && t.classList && t.closest && t.closest('.tb-mn')) { if (t.classList.contains('tb-mn-l')) S._tbMnScroll = t.scrollTop; else if (t.classList.contains('tb-mn-corpo')) S._tbMnCorpo = t.scrollTop; return; }
+  tbPosMenu();
+}, true);
 function tbMenuAbre(id, k) {
   if (S.tbMenu && S.tbMenu.id === id && S.tbMenu.k === k) { tbMenuFecha(); return; }
-  const ja = !!S.tbMenu; S.tbMenu = { id: id, k: k }; S._tbMnScroll = 0; S._tbMnCorpo = 0; S._tbMnRolou = false;
-  if (!ja) csCamadaAbre('tbmn', () => { S.tbMenu = null; render(); });
+  const ja = !!S.tbMenu; S.tbMenu = { id: id, k: k, h: location.hash }; S._tbMnScroll = 0; S._tbMnCorpo = 0; S._tbMnRolou = false;
+  /* no celular o menu é uma folha com camada do "voltar"; no computador não usa o histórico (era ele que engolia o 1º toque ao trocar de aba) */
+  if (!ja && innerWidth < 600) { S._tbMnCam = true; csCamadaAbre('tbmn', () => { S._tbMnCam = false; S.tbMenu = null; render(); }); }
   render(); setTimeout(() => { const i = document.querySelector('.tb-mn [data-tbmnbusca]'); if (i && innerWidth >= 600 && !i.disabled) i.focus(); }, 30);
 }
-function tbMenuFecha() { if (!S.tbMenu) return; if (S.camadas.length && S.camadas[S.camadas.length - 1].nome === 'tbmn') csVolta(); else { S.tbMenu = null; render(); } }
+function tbMenuFecha() { if (!S.tbMenu) return; if (S._tbMnCam && S.camadas.length && S.camadas[S.camadas.length - 1].nome === 'tbmn') csVolta(); else { S.tbMenu = null; S._tbMnCam = false; render(); } }
+/* toque fora (computador): some com o menu sem redesenhar a tela nem mexer no histórico; o toque segue para o que foi tocado */
+function tbMenuFechaSolto() { const m = document.querySelector('.tb-mn'); if (m) m.remove(); $$('th.tb-ab').forEach(x => x.classList.remove('tb-ab')); $$('.tb-hm[aria-expanded="true"]').forEach(x => x.setAttribute('aria-expanded', 'false')); S.tbMenu = null; }
+window.addEventListener('hashchange', () => { if (S.tbMenu) { S.tbMenu = null; S._tbMnCam = false; S.camadas = S.camadas.filter(c => c.nome !== 'tbmn'); } });
 function tbMuda(id, fn) { const st = tbEstado(id); fn(st); st.limite = 100; tbSalvaTrava(id); render(); }
 function tbMove(id, k, alvo, depois) {
   const cfg = TB[id], st = tbEstado(id); let o = tbOrdenadas(cfg).map(c => c.k).filter(x => x !== k);
@@ -2072,7 +2115,7 @@ document.addEventListener('change', e => {
 });
 document.addEventListener('click', e => {
   const t = e.target.closest && e.target.closest('[data-act]');
-  if (S.tbMenu && !(e.target.closest && (e.target.closest('.tb-mn') || e.target.closest('[data-act="tb-menu"]')))) { tbMenuFecha(); return; }
+  if (S.tbMenu && !S._tbMnCam && !(e.target.closest && (e.target.closest('.tb-mn') || e.target.closest('[data-act="tb-menu"]')))) tbMenuFechaSolto();
   if (!t || !/^(tb-|dd-|gv-)/.test(t.getAttribute('data-act'))) { if (!(e.target.closest && e.target.closest('.dd'))) ddFecha(); return; }
   const a = t.getAttribute('data-act'), id = t.getAttribute('data-tb');
   if (a === 'dd-abre') { const l = t.nextElementSibling, ab = l.hidden; ddFecha(); l.hidden = !ab; t.setAttribute('aria-expanded', String(ab)); if (ab) { const s = l.querySelector('[aria-selected="true"]') || l.querySelector('li'); if (s) s.focus(); } return; }
@@ -2085,7 +2128,9 @@ document.addEventListener('click', e => {
   if (a === 'gv-fecha') { gvFechar(); return; }
   const st = id ? tbEstado(id) : null;
   const k = t.getAttribute('data-k'), cfg = id ? TB[id] : null;
-  if (a === 'tb-menu') { if (S._tbEngole) return; tbMenuAbre(id, k); }
+  if (a === 'tb-mn-x') tbMenuFecha();
+  else if (a === 'tb-menu') { if (S._tbEngole) return; tbMenuAbre(id, k); }
+  else if (a === 'tb-ociclo') { const at = st.ordem && st.ordem.k === k ? st.ordem.dir : ''; if (st.ordem && st.ordem.k !== k && st.trava[st.ordem.k]) { aviso('A ordem está travada na coluna ' + (cfg.cols.find(c => c.k === st.ordem.k) || {}).rot + '. Destrave lá para ordenar por esta.'); return; } tbMuda(id, s => { s.ordem = !at ? { k: k, dir: 'asc' } : at === 'asc' ? { k: k, dir: 'desc' } : null; }); }
   else if (a === 'tb-oasc' || a === 'tb-odesc') { if (st.ordem && st.ordem.k !== k && st.trava[st.ordem.k]) { aviso('A ordem está travada na coluna ' + (cfg.cols.find(c => c.k === st.ordem.k) || {}).rot + '. Destrave lá para ordenar por esta.'); return; } tbMuda(id, s => { s.ordem = { k: k, dir: a === 'tb-oasc' ? 'asc' : 'desc' }; }); }
   else if (a === 'tb-opad') tbMuda(id, s => { if (s.ordem && s.ordem.k === k) s.ordem = null; });
   else if (a === 'tb-trava') tbMuda(id, s => { if (s.trava[k]) delete s.trava[k]; else s.trava[k] = true; });
@@ -4535,7 +4580,7 @@ BG_FONTES.push(q => {
 /* ===== programacao.js ===== */
 /* EFCwork · programacao.js — Coletas › Programação (v0.4.4): tabela de programações e coletas, "Coletado" das programações
    pendentes e coleta avulsa. Regras portadas do EFClaudian v2.102.59 (pgSit, cdNovas, coletadoGravar, saveCol, rzBarrar).
-   Nova programação, editar/cancelar programação e Planos de coleta continuam no EFClaudian (v0.4.5 / v0.4.6).
+   Desprogramar e Novo plano de coleta chegaram na v0.4.9; editar a programação avulsa continua no EFClaudian.
    Nada da empresa fica no código: talhões, análises, laboratórios, tipos, fazendas e modelo de etiqueta vêm do Firebase
    (sv2_talhoes, sv2_analises, sv2_cfg/coletas). Prefixo: pg. */
 
@@ -4785,7 +4830,8 @@ const pgLegenda = () => '<span class="pg-lg"><button type="button" class="pg-i" 
 function pgAcoes() {
   const pode = coPode(), np = pgPendentes().length, semCad = !pgTalhoes().length || !pgAnalises().length;
   return (pode && !semCad ? '<button type="button" class="bt" data-act="pg-av">' + ic('mais') + 'Coleta avulsa</button>' + (np ? '<button type="button" class="bt pr" data-act="pg-cd">' + ic('ok') + 'Coletado</button>' : '') : '') +
-    '<a class="bt ic-so" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener" title="No EFClaudian: nova programação e planos de coleta" aria-label="Abrir o EFClaudian (nova programação e planos de coleta)">' + ic('externo') + '</a>';
+    (ppSup() && !semCad ? '<button type="button" class="bt" data-act="pp-novo">' + ic('mais') + 'Novo plano</button>' : '') +
+    '<a class="bt ic-so" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener" title="Abrir o EFClaudian" aria-label="Abrir o EFClaudian">' + ic('externo') + '</a>';
 }
 function pgAbre(id) {
   if (String(id).indexOf('c|') === 0) { const c = S.coletas.find(x => x.id === id.slice(2)); if (c) { S._pgSel = id; coAbre(c.id); } return; }
@@ -4801,10 +4847,24 @@ function pgAbre(id) {
         ['Programado por', [p.criadoPorNome, p.criadoEm ? fmtD(String(p.criadoEm).slice(0, 10)) : ''].filter(Boolean).join(' em ')],
         ['Coletada', p.coletadaEm ? fmtD(p.coletadaEm) + (p.coletadaPor ? ', lançada por ' + p.coletadaPor : '') : ''], ['Cancelada', p.situacao === 'cancelada' ? p.canceladaMotivo || 'sim' : '']]) +
         (cs.length ? '<p class="gv-h">Amostras</p><div class="gv-lotes">' + cs.map(c => { const s = coSit(c); return '<button type="button" class="gv-lote co-am" data-act="co-abre" data-id="' + esc(c.id) + '"><span><b>' + esc(CO_TXT[c.tipo] || c.tipo) + '</b> ' + esc(c.sigla || c.analiseNome || '') + '</span>' + alPill(s.txt, s.cor) + '</button>'; }).join('') + '</div>' : '') +
-        (st === 'pendente' ? '<p class="cg-ob">Editar ou cancelar a programação: no EFClaudian, por enquanto.</p>' : ''),
-      rodape: st === 'pendente' && coPode() ? '<button type="button" class="bt pr" data-act="pg-cd" data-id="' + esc(p.id) + '">' + ic('ok') + 'Coletado</button>' : '' };
+        (st === 'pendente' ? '<p class="cg-ob">Para tirar da programação, use a lixeira no canto de cima. Para mudar o dia ou quem coleta, desprograme e programe de novo (no plano, é só marcar a área e tocar em Reprogramar).</p>' : ''),
+      rodape: st === 'pendente' && coPode() ? '<button type="button" class="bt pr" data-act="pg-cd" data-id="' + esc(p.id) + '">' + ic('ok') + 'Coletado</button>' : '',
+      lixeira: st === 'pendente' && coPode() ? { act: 'pg-desprog', id: p.id, titulo: 'Desprogramar' } : null };
   });
   render();
+}
+
+/* ---------- Desprogramar (v0.4.9) ---------- */
+function pgDesprograma(id) {
+  const p = pgTodas().find(x => x.id === id); if (!p || !coPode() || pgSit(p) !== 'pendente') return;
+  csConfirma({ titulo: 'Desprogramar ' + p.talhao + '?', texto: (p.tipo || '') + ' · ' + p.talhao + (p.data ? ' · ' + fmtD(p.data) : '') + '. ' + (p._rz ? 'A área volta para "Faltam" no plano e pode ser programada de novo.' : 'A programação fica na lista como cancelada.') + ' Nada que já foi coletado é apagado.', sim: 'Desprogramar', nao: 'Voltar' }, async () => {
+    try {
+      if (p._rz) { const z = p._rz, g = Object.assign({}, (z.r.progs && z.r.progs[z.p.k]) || {}); delete g[z.a]; const up = {}; up['progs.' + z.p.k] = g; await Data.col('sv2_rodizio').update(z.r.id, up); }
+      else await Data.col('sv2_prog').update(p.id, { situacao: 'cancelada', canceladaMotivo: 'Desprogramada', canceladaEm: nowISO(), canceladaPor: S.user.nome });
+      Audit.log({ acao: p._rz ? 'desprogramar_plano' : 'cancelar_programacao', entidade: p._rz ? 'rodizio' : 'programacao', entidadeId: p._rz ? p._rz.r.id : p.id, resumo: 'Desprogramou ' + (p.tipo || '') + ' ' + p.talhao + (p.data ? ' (' + fmtD(p.data) + ')' : ''), antes: { data: p.data, coletor: p.coletor || '', prazo: p.prazo || '' } });
+      aviso(p.talhao + ' desprogramada.'); if (S.gv) gvFechar();
+    } catch (e) { aviso(svErro(e), 'erro'); }
+  });
 }
 
 /* ---------- Coletado (uma ou várias programações) ---------- */
@@ -4831,7 +4891,7 @@ LC_FORM.pgcd = f => {
     '<div class="co-selb"><button type="button" class="bt lk" data-act="pg-todas">Marcar as ' + l.length + '</button><button type="button" class="bt lk" data-act="pg-limpa">Limpar</button></div>' +
     (l.length > 6 ? '<div class="fm-pk"><label class="tb-busca">' + ic('lupa') + '<input type="search" data-pk data-pgq value="' + esc(f.q || '') + '" placeholder="Buscar talhão ou tipo" aria-label="Buscar talhão ou tipo"></label>' : '<div class="fm-pk">') + '<div class="fm-pkl co-pkl">' + l.map(p => { const on = !!f.sel[p.id], bu = tbNorm([p.talhao, p.tipo].join(' ')), q = tbNorm(f.q || '').trim(), vis = !q || q.split(/\s+/).every(w => bu.indexOf(w) >= 0); return '<button type="button" class="fm-pki cb-ck' + (on ? ' on' : '') + '" data-act="pg-ck" data-id="' + esc(p.id) + '" aria-pressed="' + on + '" data-busca="' + esc(bu) + '"' + (vis ? '' : ' hidden') + '><span class="cb-box">' + (on ? ic('ok') : '') + '</span><span class="pg-cdi"><b>' + esc(p.talhao) + '</b><small>' + esc([p.tipo, p.data ? pgDiaTxt(p.data) : 'sem dia definido'].join(' · ')) + '</small></span>' + (p.data ? alPill(pgQuando(p).txt, pgQuando(p).cor) : '') + '</button>'; }).join('') + '</div><p class="tb-nada fm-pkv" hidden>Nada encontrado.</p></div>' +
     (ps.length ? pgResumo(ps) : '') +
-    '<p class="gv-h">2 · Quando e quem</p><div class="fm-g">' + lcBl('Data da coleta', lcData('data', f.data), 'pode ser de dias atrás') + lcBl('Coletores', pgDdLivre('pgcol', f.col, pgEquipes().concat(S.users.map(u => u.nome))) + pgLivreIn(f, 'col', 'Ex.: Equipe A')) + '</div>' +
+    '<p class="gv-h">2 · Quando e quem</p><div class="fm-g">' + lcBl('Data da coleta', lcData('data', f.data)) + lcBl('Coletores', pgDdLivre('pgcol', f.col, pgEquipes().concat(S.users.map(u => u.nome))) + pgLivreIn(f, 'col', 'Ex.: Equipe A')) + '</div>' +
     '<p class="gv-h">3 · Campo</p><div class="fm-g">' + (prof ? lcBl('Profundidade', pgDdLivre('pgprof', f.prof, profs.concat(pgProfsTodas()).concat(['N/A']), 'Outra (digitar)') + pgLivreIn(f, 'prof', 'Ex.: 40-60'), 'solo e raiz') : '') +
       (est ? lcBl('Estádio', pgDdLivre('pgest', f.est, PG_ESTADIOS) + pgLivreIn(f, 'est', 'Ex.: PÓS-COLHEITA')) : '') + '</div>' +
     lcBl('Observação', lcIn('obs', f.obs, ' placeholder="opcional"')),
@@ -4937,6 +4997,7 @@ document.addEventListener('change', e => { const t = e.target, f = S.fm; if (!t 
 document.addEventListener('click', ev => {
   const t = ev.target.closest && ev.target.closest('[data-act^="pg-"]'); if (!t) return;
   const a = t.getAttribute('data-act'), id = t.getAttribute('data-id'), f = S.fm, vol = S.gv && !S.gvForm ? S.gv : null, volta = vol ? () => gvAbrir(vol) : null;
+  if (a === 'pg-desprog') { pgDesprograma(id); return; }
   if (a === 'pg-cd') { if (!coPode()) return; const sel = {}; if (id) sel[id] = true; const ps = pgPendentes().filter(p => sel[p.id]); const um = k => { const v = Array.from(new Set(ps.map(p => p[k] || ''))); return v.length === 1 ? v[0] : ''; };
     lcAbrir({ k: 'pgcd', sel: sel, data: hojeISO(), col: um('coletor') || pgEquipes()[0] || '', prof: um('prof'), est: um('estadio') || pgEstadioSug(ps), obs: '' }, volta); }
   else if (a === 'pg-ck' && f) { f.sel[id] = !f.sel[id]; f.sujo = true; gvDesenha(true); }
@@ -5006,26 +5067,26 @@ function ppTela(id) {
     (f.length ? '<div class="pp-grade">' + f.map(chip).join('') + '</div>' : '<p class="pp-nada">Nenhuma área faltando neste período.</p>') +
     '<p class="pp-gh">Coletadas (' + c.length + ')</p>' + (c.length ? '<div class="pp-grade">' + c.map(chip).join('') + '</div>' : '<p class="pp-nada">Nenhuma coletada ainda.</p>')) +
     '</section>' +
-    (n && pode && aba === 'areas' ? '<div class="pp-bar" role="region" aria-label="Áreas marcadas"><span>' + n + ' marcada' + (n > 1 ? 's' : '') + '</span><button type="button" class="bt" data-act="pp-prog" data-id="' + esc(r.id) + '">Programar</button><button type="button" class="bt pr" data-act="pp-lanc" data-id="' + esc(r.id) + '">' + ic('ok') + 'Lançar coletadas</button><button type="button" class="bt ic-so" data-act="pp-limpa" data-id="' + esc(r.id) + '" aria-label="Limpar a seleção" title="Limpar a seleção">' + ic('x') + '</button></div>' : '');
+    (n && pode && aba === 'areas' ? '<div class="pp-bar" role="region" aria-label="Áreas marcadas"><span>' + n + ' marcada' + (n > 1 ? 's' : '') + '</span><button type="button" class="bt" data-act="pp-prog" data-id="' + esc(r.id) + '">' + (ar.filter(x => x.k !== 'c' && sel[x.a]).every(x => x.k === 'p' || x.k === 'x') ? 'Reprogramar' : 'Programar') + '</button>' + (ar.some(x => (x.k === 'p' || x.k === 'x') && sel[x.a]) ? '<button type="button" class="bt" data-act="pp-desprog" data-id="' + esc(r.id) + '">' + ic('lixo') + 'Desprogramar ' + ar.filter(x => (x.k === 'p' || x.k === 'x') && sel[x.a]).length + '</button>' : '') + '<button type="button" class="bt pr" data-act="pp-lanc" data-id="' + esc(r.id) + '">' + ic('ok') + 'Lançar coletadas</button><button type="button" class="bt ic-so" data-act="pp-limpa" data-id="' + esc(r.id) + '" aria-label="Limpar a seleção" title="Limpar a seleção">' + ic('x') + '</button></div>' : '');
 }
 
 /* ---------- Programar (v0.4.7: grava em sv2_rodizio.progs, igual ao EFClaudian; antes ia para sv2_prog) ---------- */
 function ppCtx(f) { const r = ppPlano(f.rid), p = r && ppPeriodo(r); return r && p ? { r: r, p: p, ar: ppAreas(r, p) } : null; }
 LC_FORM.ppprog = f => {
   const x = ppCtx(f); if (!x) return { titulo: 'Programar', corpo: lcAv('Plano não encontrado.', 'cr'), rodape: '' };
-  const livres = x.ar.filter(a => a.k === 'f'), ja = x.ar.filter(a => a.k === 'p' || a.k === 'x'), marc = livres.filter(a => f.sel[a.a]);
-  const pick = a => { const on = !!f.sel[a.a]; return '<button type="button" class="pp-ar f' + (on ? ' sel' : '') + '" data-act="pp-fck" data-id="' + esc(a.a) + '" aria-pressed="' + on + '">' + (on ? '<i class="pp-ok">' + ic('ok') + '</i>' : '') + '<b>' + esc(a.rot) + '</b></button>'; };
-  return { ico: 'mais', sub: (x.r.tipo || '') + ' · ' + (RZ_FREQ[x.r.freq] || '') + ' · ' + x.r.ano, titulo: 'Programar', corpo: lcMsg() +
+  const livres = x.ar.filter(a => a.k !== 'c'), marc = livres.filter(a => f.sel[a.a]), re = marc.filter(a => a.pr).length;
+  const pick = a => { const on = !!f.sel[a.a]; return '<button type="button" class="pp-ar ' + (a.pr ? a.k : 'f') + (on ? ' sel' : '') + '" data-act="pp-fck" data-id="' + esc(a.a) + '" aria-pressed="' + on + '" title="' + esc(a.a + (a.pr ? ', programada para ' + fmtD(a.d) : '')) + '">' + (on ? '<i class="pp-ok">' + ic('ok') + '</i>' : '') + '<b>' + esc(a.rot) + '</b>' + (a.pr && a.d ? '<small>' + fmtD(a.d).slice(0, 5) + '</small>' : '') + '</button>'; };
+  return { ico: 'mais', sub: (x.r.tipo || '') + ' · ' + (RZ_FREQ[x.r.freq] || '') + ' · ' + x.r.ano, titulo: re && re === marc.length ? 'Reprogramar' : 'Programar', corpo: lcMsg() +
     '<p class="gv-h">1 · Áreas · ' + marc.length + ' marcada(s)</p>' +
-    (livres.length ? '<div class="pp-grade pp-gv">' + livres.map(pick).join('') + '</div>' : '<p class="pp-nada">Todas as áreas que faltam já estão programadas.</p>') +
-    (ja.length ? '<p class="pp-nada pp-ja">Já programadas: ' + esc(ja.map(a => a.rot + ' ' + fmtD(a.d).slice(0, 5)).join(', ')) + '</p>' : '') +
+    (livres.length ? '<div class="pp-grade pp-gv">' + livres.map(pick).join('') + '</div>' : '<p class="pp-nada">Todas as áreas já foram coletadas neste período.</p>') +
+    (livres.some(a => a.pr) ? '<p class="pp-nada pp-ja">As que têm data já estão programadas: marque para mudar o dia, o prazo ou quem coleta.</p>' : '') +
     '<p class="gv-h">2 · Quando e quem</p><div class="fm-g">' + lcBl('Dia da coleta', lcData('data', f.data, true)) + lcBl('Prazo', lcData('prazo', f.prazo, true), 'opcional') + '</div>' +
     '<div class="fm-g">' + lcBl('Quem coleta', pgDdLivre('pgcol', f.col, pgEquipes().concat(S.users.map(u => u.nome))) + pgLivreIn(f, 'col', 'Ex.: Equipe A')) + lcBl('Observação', lcIn('obs', f.obs, ' placeholder="opcional"')) + '</div>',
-    rodape: lcPe('pp-prog-ok', marc.length ? 'Programar ' + marc.length + ' área(s)' : 'Programar') };
+    rodape: lcPe('pp-prog-ok', marc.length ? (re && re === marc.length ? 'Reprogramar ' : 'Programar ') + marc.length + ' área(s)' : 'Programar') };
 };
 async function ppProgOk() {
   const f = S.fm, x = f && ppCtx(f); if (!x || !coPode()) return;
-  const areas = x.ar.filter(a => a.k === 'f' && f.sel[a.a]); if (!areas.length) return lcErro('Marque pelo menos uma área.');
+  const areas = x.ar.filter(a => a.k !== 'c' && f.sel[a.a]); if (!areas.length) return lcErro('Marque pelo menos uma área.');
   if (!/^\d{4}-\d{2}-\d{2}$/.test(f.data || '')) return lcErro('Informe o dia da coleta.');
   if (f.data < x.p.ini || f.data > x.p.fim) return lcErro('O dia tem que estar dentro do período do plano (' + fmtD(x.p.ini) + ' a ' + fmtD(x.p.fim) + ').');
   if (f.prazo && f.prazo < f.data) return lcErro('O prazo não pode ser antes do dia da coleta.');
@@ -5036,9 +5097,10 @@ async function ppProgOk() {
   const pk = x.p.k, antes = {}, depois = {}, up = {};
   areas.forEach(a => { const g = { data: f.data, coletor: coletor, pontos: String(pgPontos(x.r.tipo, a.a) || ''), prof: '', estadio: '', por: S.user.nome, em: nowISO(), prazo: f.prazo || '', obs: String(f.obs || '').trim().toUpperCase() };
     if (x.r.progs && x.r.progs[pk] && x.r.progs[pk][a.a]) antes[a.a] = x.r.progs[pk][a.a]; depois[a.a] = g; up['progs.' + pk + '.' + a.a] = g; });
+  const ops = []; areas.forEach(a => { if (a.pr && !a.pr._rz && a.pr.id) { antes[a.a] = antes[a.a] || { id: a.pr.id, data: a.pr.data, coletor: a.pr.coletor }; ops.push(Data.col('sv2_prog').update(a.pr.id, { situacao: 'cancelada', canceladaMotivo: 'Reprogramada no plano', canceladaEm: nowISO(), canceladaPor: S.user.nome })); } });
   try {
-    await Data.col('sv2_rodizio').update(x.r.id, up);
-    Audit.log({ acao: 'programar_plano', entidade: 'rodizio', entidadeId: x.r.id, resumo: (x.r.nome || x.r.tipo) + ' · ' + x.p.nome + ': programou ' + areas.length + ' área(s) (' + areas.map(a => a.a).join(', ') + ')', antes: antes, depois: depois });
+    await Data.col('sv2_rodizio').update(x.r.id, up); await Promise.all(ops);
+    Audit.log({ acao: 'programar_plano', entidade: 'rodizio', entidadeId: x.r.id, resumo: (x.r.nome || x.r.tipo) + ' · ' + x.p.nome + ': ' + (Object.keys(antes).length ? 'reprogramou/programou ' : 'programou ') + areas.length + ' área(s) (' + areas.map(a => a.a).join(', ') + ')', antes: antes, depois: depois });
     const sel = ppSel(x.r.id); areas.forEach(a => { delete sel[a.a]; });
     lcFim(); aviso(areas.length + ' área(s) programada(s) para ' + fmtD(f.data) + '.');
   } catch (e) { lcErro(svErro(e)); }
@@ -5264,6 +5326,64 @@ async function ppRenova(rid) {
     aviso('Plano ' + nome + ' criado.'); return true; } catch (e) { aviso(svErro(e), 'erro'); return false; }
 }
 
+/* ---------- Desprogramar (v0.4.9, pedido de 09/11: antes só dava no EFClaudian) ---------- */
+function ppDesprograma(rid, areas, depois) {
+  const r = ppPlano(rid), p = r && ppPeriodo(r); if (!r || !p || !coPode()) return;
+  const ar = ppAreas(r, p).filter(x => (x.k === 'p' || x.k === 'x') && x.pr && areas.indexOf(x.a) >= 0); if (!ar.length) return;
+  const vai = async () => {
+    const pk = p.k, antes = {}, ops = []; const g = Object.assign({}, (r.progs && r.progs[pk]) || {}); let mexeu = false;
+    ar.forEach(x => { antes[x.a] = { data: x.pr.data, coletor: x.pr.coletor || '', prazo: x.pr.prazo || '' };
+      if (x.pr._rz) { delete g[x.a]; mexeu = true; } else if (x.pr.id) ops.push(Data.col('sv2_prog').update(x.pr.id, { situacao: 'cancelada', canceladaMotivo: 'Desprogramada', canceladaEm: nowISO(), canceladaPor: S.user.nome })); });
+    try {
+      if (mexeu) { const up = {}; up['progs.' + pk] = g; ops.push(Data.col('sv2_rodizio').update(r.id, up)); }
+      await Promise.all(ops);
+      Audit.log({ acao: 'desprogramar_plano', entidade: 'rodizio', entidadeId: r.id, resumo: (r.nome || r.tipo) + ' · ' + p.nome + ': desprogramou ' + ar.length + ' área(s) (' + ar.map(x => x.a).join(', ') + ')', antes: antes });
+      const sel = ppSel(r.id); ar.forEach(x => { delete sel[x.a]; });
+      aviso(ar.length === 1 ? ar[0].a + ' desprogramada.' : ar.length + ' áreas desprogramadas.'); if (depois) depois(); else render();
+    } catch (e) { aviso(svErro(e), 'erro'); }
+  };
+  csConfirma({ titulo: ar.length === 1 ? 'Desprogramar ' + ar[0].a + '?' : 'Desprogramar ' + ar.length + ' áreas?', texto: ar.map(x => x.a + ' (' + fmtD(x.pr.data).slice(0, 5) + ')').join(', ') + '. A área volta para "Faltam" e pode ser programada de novo. Nada que já foi coletado é apagado.', sim: 'Desprogramar', nao: 'Voltar' }, vai);
+}
+
+/* ---------- Novo plano de coleta (novo rodízio) ---------- */
+const ppTipos = () => { const n = (pgCfg().tipos || []).map(t => t.nome).filter(Boolean); return n.length ? n : Object.keys(PG_GERA); };
+const ppAnsDe = tipo => pgAnalises().filter(a => a.ativo !== false && pgGera(tipo).indexOf(a.tipo) >= 0).map(a => a.id);
+function ppNovoIni() {
+  const ano = Number(hojeISO().slice(0, 4)), tipo = ppTipos()[0] || '', ult = (S.rodizios || []).filter(r => r.tipo === tipo).sort((a, b) => Number(b.ano) - Number(a.ano))[0];
+  return { k: 'ppnovo', tipo: tipo, freq: ult ? ult.freq : 'S', ano: String(ano), inicio: '', prazo: '', areas: ult ? (ult.areas || []).slice() : [], ans: ult ? (ult.analiseIds || []).slice() : ppAnsDe(tipo), q: '' };
+}
+LC_FORM.ppnovo = f => {
+  const tipos = ppTipos(), anos = [-1, 0, 1].map(d => String(Number(hojeISO().slice(0, 4)) + d)), fr = Object.keys(RZ_FREQ);
+  const tal = pgTalhoes().filter(t => t.ativo !== false).map(t => t.codigo).concat(f.areas).filter(Boolean), todas = Array.from(new Set(tal)).sort(cmpTxt);
+  const an = pgAnalises().filter(a => pgGera(f.tipo).indexOf(a.tipo) >= 0 && (a.ativo !== false || f.ans.indexOf(a.id) >= 0));
+  const copia = (S.rodizios || []).slice().sort((a, b) => String(b.ano).localeCompare(String(a.ano)) || cmpTxt(a.tipo, b.tipo)).map(r => [r.id, (r.nome || r.tipo) + (r.ativo === false ? ' (desativado)' : '')]);
+  const lin = c => { const on = f.areas.indexOf(c) >= 0, t = pgTalhao(c), loc = t ? [t.cultura, t.pivo].filter(Boolean).join(', ') : ''; return '<button type="button" class="fm-pki pp-nv' + (on ? ' on' : '') + '" data-act="pp-nvar" data-id="' + esc(c) + '" data-busca="' + esc(tbNorm(c + ' ' + loc)) + '" aria-pressed="' + on + '"><i class="pp-nvk">' + (on ? ic('ok') : '') + '</i><b>' + esc(c) + '</b><small>' + esc(loc) + '</small></button>'; };
+  return { ico: 'mais', sub: 'Coletas · Programação', titulo: 'Novo plano de coleta', corpo: lcMsg() +
+    '<p class="gv-h">1 · O plano</p><div class="fm-g">' + lcBl('Tipo', ddHTML('lc:ppnvtipo', f.tipo, tipos.map(x => [x, x]))) + lcBl('Frequência', ddHTML('lc:ppnvfreq', f.freq, fr.map(k => [k, RZ_FREQ[k]]))) + '</div>' +
+    '<div class="fm-g">' + lcBl('Ano', ddHTML('lc:ppnvano', f.ano, anos.map(x => [x, x]))) + lcBl('Copiar áreas e análises de', ddHTML('lc:ppnvcp', '', [['', 'Não copiar']].concat(copia))) + '</div>' +
+    (f.freq === 'Q' || f.freq === 'U' ? '<div class="fm-g">' + lcBl(f.freq === 'Q' ? 'Primeira segunda-feira' : 'Início', lcData('inicio', f.inicio, true)) + (f.freq === 'U' ? lcBl('Prazo', lcData('prazo', f.prazo, true)) : '') + '</div>' : '') +
+    '<p class="gv-h">2 · Áreas · <span id="pp-nvn">' + f.areas.length + ' marcada(s)</span></p><div class="co-selb"><button type="button" class="bt lk" data-act="pp-nvtodas">Marcar todas</button><button type="button" class="bt lk" data-act="pp-nvlimpa">Limpar</button></div>' +
+    '<div class="fm-pk"><label class="tb-busca">' + ic('lupa') + '<input type="search" data-pk placeholder="Buscar talhão" aria-label="Buscar talhão"></label><div class="fm-pkl co-pkl">' + (todas.length ? todas.map(lin).join('') : '<p class="pp-nada">Nenhum talhão cadastrado (Coletas › Cadastros no EFClaudian).</p>') + '</div></div>' +
+    '<p class="gv-h">3 · Análises</p>' + (an.length ? '<div class="pp-lis">' + an.map(a => '<button type="button" class="fm-pki pp-nv' + (f.ans.indexOf(a.id) >= 0 ? ' on' : '') + '" data-act="pp-nvan" data-id="' + esc(a.id) + '" aria-pressed="' + (f.ans.indexOf(a.id) >= 0) + '"><i class="pp-nvk">' + (f.ans.indexOf(a.id) >= 0 ? ic('ok') : '') + '</i><b>' + esc(a.nome) + '</b><small>' + esc((CO_TXT[a.tipo] || a.tipo) + (a.lab ? ' · ' + a.lab : '')) + '</small></button>').join('') + '</div>' : '<p class="pp-nada">Nenhuma análise cadastrada para ' + esc(f.tipo) + '.</p>'),
+    rodape: lcPe('pp-novo-ok', 'Criar plano') };
+};
+async function ppNovoOk() {
+  const f = S.fm; if (!f || !ppSup()) return;
+  if (!f.tipo) return lcErro('Escolha o tipo.');
+  const nome = f.tipo + ' · ' + (RZ_FREQ[f.freq] || '') + ' · ' + f.ano;
+  if ((S.rodizios || []).some(r => r.ativo !== false && r.tipo === f.tipo && r.freq === f.freq && String(r.ano) === String(f.ano))) return lcErro('Já existe o plano "' + nome + '". Abra ele em Coletas › Programação (Ajustes) para mudar as áreas.');
+  if (!f.areas.length) return lcErro('Marque pelo menos uma área.');
+  if (!f.ans.length) return lcErro('Marque pelo menos uma análise.');
+  if (f.freq === 'Q' && !/^\d{4}-\d{2}-\d{2}$/.test(f.inicio || '')) return lcErro('Informe a primeira segunda-feira das quinzenas.');
+  if (f.freq === 'U') { if (!/^\d{4}-\d{2}-\d{2}$/.test(f.inicio || '') || !/^\d{4}-\d{2}-\d{2}$/.test(f.prazo || '')) return lcErro('Informe o início e o prazo da coleta única.'); if (f.prazo < f.inicio) return lcErro('O prazo não pode ser antes do início.'); }
+  if (!lcTravar()) return;
+  const o = { nome: nome, tipo: f.tipo, freq: f.freq, ano: String(f.ano), areas: f.areas.slice().sort(cmpTxt), analiseIds: f.ans.slice(), inicio: f.freq === 'Q' || f.freq === 'U' ? f.inicio : '', prazo: f.freq === 'U' ? f.prazo : '', ativo: true, fechados: {}, liberadas: {}, progs: {}, criadoEm: nowISO(), criadoPor: S.user.id, criadoPorNome: S.user.nome };
+  try { const id = await Data.col('sv2_rodizio').add(o);
+    Audit.log({ acao: 'criar_rodizio', entidade: 'rodizio', entidadeId: id, resumo: 'Criou o plano de coleta ' + nome + ' com ' + o.areas.length + ' áreas', depois: ppRet(o) });
+    lcFim(() => { aviso('Plano ' + nome + ' criado.'); location.hash = '#/coletas/plano/' + encodeURIComponent(id); });
+  } catch (e) { lcErro(svErro(e)); }
+}
+
 /* campos da aba Ajustes (fora da gaveta) */
 document.addEventListener('change', ev => {
   const t = ev.target; if (!t || !t.getAttribute) return; const e = S._ppEd; if (!e) return;
@@ -5281,7 +5401,15 @@ document.addEventListener('input', ev => {
 
 /* ---------- ações ---------- */
 DD_AO.lc = (function (ant) { return (k, v) => {
-  const f = S.fm; if (!f || ['ppprog', 'pplanc', 'pprec'].indexOf(f.k) < 0) return ant(k, v);
+  const f = S.fm;
+  if (f && f.k === 'ppnovo' && ['ppnvtipo', 'ppnvfreq', 'ppnvano', 'ppnvcp'].indexOf(k) >= 0) {
+    f.sujo = true; f.msg = '';
+    if (k === 'ppnvtipo' && v !== f.tipo) { f.tipo = v; f.ans = ppAnsDe(v); const ult = (S.rodizios || []).filter(r => r.tipo === v).sort((a, b) => Number(b.ano) - Number(a.ano))[0]; if (ult) { f.areas = (ult.areas || []).slice(); f.freq = ult.freq; if (ult.analiseIds && ult.analiseIds.length) f.ans = ult.analiseIds.slice(); } }
+    else if (k === 'ppnvfreq') f.freq = v; else if (k === 'ppnvano') f.ano = v;
+    else if (k === 'ppnvcp' && v) { const r = ppPlano(v); if (r) { f.areas = (r.areas || []).slice(); f.ans = (r.analiseIds || []).slice(); if (r.tipo !== f.tipo) { f.tipo = r.tipo; } if (r.freq) f.freq = r.freq; } }
+    gvDesenha(true); return;
+  }
+  if (!f || ['ppprog', 'pplanc', 'pprec'].indexOf(f.k) < 0) return ant(k, v);
   const mapa = { pgcol: 'col', pgprof: 'prof', pgest: 'est', pparea: 'area', ppmot: 'mot' }; if (!mapa[k]) return ant(k, v);
   f[mapa[k]] = v; f.sujo = true; f.msg = ''; gvDesenha(true);
   if (v === '__outro') { const i = $('#gv [data-fm="' + mapa[k] + 'Txt"]'); if (i) i.focus(); }
@@ -5295,6 +5423,13 @@ document.addEventListener('click', ev => {
   else if (a === 'pp-prog') { if (!coPode()) return; const sel = {}; ppMarcadas(id).forEach(k => { sel[k] = true; }); lcAbrir({ k: 'ppprog', rid: id, sel: sel, data: '', prazo: '', col: pgEquipes()[0] || '', obs: '' }); }
   else if (a === 'pp-fck' && f) { f.sel[id] = !f.sel[id]; f.sujo = true; f.msg = ''; gvDesenha(true); }
   else if (a === 'pp-prog-ok') ppProgOk();
+  else if (a === 'pp-desprog') ppDesprograma(id, ppMarcadas(id));
+  else if (a === 'pp-novo') { if (!ppSup()) return; lcAbrir(ppNovoIni()); }
+  else if (a === 'pp-novo-ok') ppNovoOk();
+  else if (a === 'pp-nvar' && f) { const i = f.areas.indexOf(id); if (i < 0) f.areas.push(id); else f.areas.splice(i, 1); f.sujo = true; f.msg = ''; const b = $('#gv .pp-nv[data-act="pp-nvar"][data-id="' + id.replace(/"/g, '') + '"]'); if (b) { b.classList.toggle('on', i < 0); b.setAttribute('aria-pressed', String(i < 0)); b.querySelector('.pp-nvk').innerHTML = i < 0 ? ic('ok') : ''; } const n = $('#pp-nvn'); if (n) n.textContent = f.areas.length + ' marcada(s)'; }
+  else if (a === 'pp-nvan' && f) { const i = f.ans.indexOf(id); if (i < 0) f.ans.push(id); else f.ans.splice(i, 1); f.sujo = true; f.msg = ''; const b = t; b.classList.toggle('on', i < 0); b.setAttribute('aria-pressed', String(i < 0)); b.querySelector('.pp-nvk').innerHTML = i < 0 ? ic('ok') : ''; }
+  else if (a === 'pp-nvtodas' && f) { $$('#gv .pp-nv[data-act="pp-nvar"]').forEach(b => { if (!b.hidden) { const c = b.getAttribute('data-id'); if (f.areas.indexOf(c) < 0) f.areas.push(c); } }); f.sujo = true; gvDesenha(true); }
+  else if (a === 'pp-nvlimpa' && f) { f.areas = []; f.sujo = true; gvDesenha(true); }
   else if (a === 'pp-lanc') { if (!coPode()) return; const sel = {}; ppMarcadas(id).forEach(k => { sel[k] = true; }); const x = ppCtx({ rid: id }); const ps = x ? ppAlvos(x, { sel: sel }) : []; const um = k => { const v = Array.from(new Set(ps.map(p => p[k] || ''))); return v.length === 1 ? v[0] : ''; };
     lcAbrir({ k: 'pplanc', rid: id, sel: sel, data: hojeISO(), col: um('coletor') || pgEquipes()[0] || '', prof: um('prof'), est: um('estadio') || pgEstadioSug(ps.filter(p => p.id)), obs: '' }); }
   else if (a === 'pp-lanc-ok') ppLancOk();

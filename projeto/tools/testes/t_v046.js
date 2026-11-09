@@ -83,7 +83,7 @@ async function primeiro(p) {
   await p.click('.pp-bar [data-act="pp-prog"]'); await p.waitForTimeout(400);
   conf(await p.evaluate(() => /Programar/.test(document.querySelector('#gv').textContent) && document.querySelectorAll('#gv .pp-ar.sel').length === 2), 'Programar abre na gaveta com as 2 áreas marcadas');
   conf(await p.evaluate(() => getComputedStyle(document.querySelector('.pp-bar')).display === 'none'), 'com a gaveta aberta a barra de seleção some');
-  conf(await p.evaluate(() => /RU11 \d\d\/\d\d/.test(document.querySelector('#gv .pp-ja').textContent)), 'mostra a já programada (RU11) fora da escolha');
+  conf(await p.evaluate(() => Array.from(document.querySelectorAll('#gv .pp-ar.p')).some(e => /RU11/.test(e.textContent) && /\d\d\/\d\d/.test(e.textContent) && !e.classList.contains('sel'))), 'a já programada (RU11) aparece na escolha com o dia dela, desmarcada (dá para marcar e reprogramar — v0.4.9)');
   await p.fill('#gv [data-fm="data"]', (new Date().getFullYear() + 1) + '-01-10'); await p.click('#gv [data-act="pp-prog-ok"]'); await p.waitForTimeout(300);
   conf(await p.evaluate(() => /dentro do período/.test(document.querySelector('#gv .fm-msg').textContent)), 'dia fora do período: avisa e não grava');
   const dia = await p.evaluate(() => addDias(hojeISO(), 3) <= hojeISO().slice(0, 4) + '-12-31' ? addDias(hojeISO(), 3) : hojeISO());

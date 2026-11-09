@@ -332,3 +332,7 @@ Travar ordem e filtro da coluna,Tabelas,should,sim,sim,Todas as tabelas,v0.4.8
 Arrastar colunas para reorganizar,Tabelas,should,sim,sim,Todas as tabelas,v0.4.8
 Faixa do total alinhada às colunas,Tabelas,should,sim,sim,Todas as tabelas,v0.4.8
 Limpar filtro no lugar do botão Filtro,Tabelas,should,sim,sim,Todas as tabelas,v0.4.8
+Desprogramar área no plano e na Programação,Coletas,must,sim,sim,Coletas › Programação,v0.4.9
+Reprogramar área (novo dia/coletor sem desprogramar),Coletas,must,sim,sim,Coletas › Programação,v0.4.9
+Novo plano de coleta (novo rodízio),Coletas,must,sim,sim,Coletas › Programação,v0.4.9
+Ordenar em botão único (padrão, A-Z, Z-A),Tabelas,should,sim,sim,Todas as tabelas,v0.4.9

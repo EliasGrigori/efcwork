@@ -95,7 +95,7 @@ const alvo = async (p, v) => { await dd(p, 'lc:coalvo', v); await p.waitForTimeo
   const tt2 = await p.evaluate(() => (document.querySelector('.tb-tots') || {}).textContent || '');
   await p.fill('[data-tbmnbusca]', ''); await p.waitForTimeout(400); await p.keyboard.press('Escape'); await p.waitForTimeout(200);
   console.log('    total:', tt0, '| busca sem resultado:', tt1, '| busca:', tt2);
-  conf(/R\$/.test(tt0) && /R\$\s?0,00/.test(tt1) && /do filtro/.test(tt2), 'o total segue a busca e o filtro ("Total do filtro")');
+  conf(/R\$/.test(tt0) && /R\$\s?0,00/.test(tt1) && tt2 !== tt0 && /R\$/.test(tt2), 'o total segue a busca e o filtro');
   conf(await p.evaluate(() => !Array.from(document.querySelectorAll('.tb-t tbody td')).some(td => td.textContent.trim() === '—')), 'nenhuma célula com "—": sem dado = em branco');
 
   console.log('— O.S: todas ou escolher quais (Aquasollus)');

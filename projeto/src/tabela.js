@@ -72,20 +72,22 @@ function tbTemFiltroSolto(cfg) { const st = tbEstado(cfg.id); return !!st.busca 
    e à esquerda vai "Total · N itens". As posições são medidas na tela (tbAlinhaTot); se não couber, ficam em sequência. */
 function tbTotal(cfg, cols, todas, filtrado) {
   const cs = cols.filter(c => c.total); if (!cs.length) return '';
-  return '<div class="tb-tots" data-tbtot="' + esc(cfg.id) + '"><span class="tb-tl" title="' + (filtrado ? 'Soma só do que está filtrado' : 'Soma de toda a lista') + '"><b>Total</b><small>' + (filtrado ? 'do filtro · ' : '') + todas.length + ' ' + esc(cfg.unidade || 'registros') + '</small></span>' +
+  return '<div class="tb-tots" data-tbtot="' + esc(cfg.id) + '"><span class="tb-tl" title="' + (filtrado ? 'Soma só do que está filtrado · ' : 'Soma de toda a lista · ') + todas.length + ' ' + esc(cfg.unidade || 'registros') + '"><b>Total</b></span>' +
     cs.map(c => { const v = typeof c.total === 'function' ? c.total(todas) : todas.reduce((s, r) => s + (Number(c.v(r)) || 0), 0); return '<span class="tb-tv" data-k="' + esc(c.k) + '" title="Total de ' + esc(c.rot) + '"><b>' + esc(c.fmtTotal ? c.fmtTotal(v) : numBR(v, c.dec)) + '</b></span>'; }).join('') + '</div>';
 }
+/* cada valor fica acima da sua coluna, na largura dela; se o número for maior que a coluna, a caixa cresce para a ESQUERDA (nunca por cima do rótulo "Total") */
 function tbAlinhaTot() {
   $$('.tb-tots').forEach(t => {
     const tb = t.closest('.tb'), bar = t.parentElement, br = bar.getBoundingClientRect(), tvs = Array.from(t.querySelectorAll('.tb-tv')), lb = t.querySelector('.tb-tl');
-    t.classList.remove('tb-tots-fluxo'); t.style.width = br.width + 'px';
-    let ok = innerWidth >= 600, min = 1e9;
-    tvs.forEach(v => { const th = tb.querySelector('.tb-cab th[data-tbk="' + v.getAttribute('data-k') + '"]'); if (!th) { ok = false; return; } const r = th.getBoundingClientRect(); v.style.left = (r.left - br.left) + 'px'; v.style.width = r.width + 'px'; min = Math.min(min, r.left - br.left); });
-    if (ok) { lb.style.left = ''; lb.style.right = (br.width - min + 6) + 'px'; }
-    const esq = Array.from(bar.children).filter(x => x !== t && !x.classList.contains('tb-sp') && x.getBoundingClientRect().right < br.left + min).reduce((m, x) => Math.max(m, x.getBoundingClientRect().right - br.left), 0);
+    t.classList.remove('tb-tots-fluxo'); t.style.width = br.width + 'px'; lb.style.right = '';
+    tvs.forEach(v => { v.style.left = ''; v.style.width = 'auto'; });
+    let ok = innerWidth >= 600, min = 1e9, max = 0;
+    tvs.forEach(v => { const th = tb.querySelector('thead th[data-tbk="' + v.getAttribute('data-k') + '"]'); if (!th) { ok = false; return; }
+      const r = th.getBoundingClientRect(), w = Math.max(r.width, v.offsetWidth), x = r.right - br.left - w; v.style.width = w + 'px'; v.style.left = x + 'px'; min = Math.min(min, x); max = Math.max(max, x + w); });
+    if (ok) lb.style.right = (br.width - min + 6) + 'px';
+    const esq = Array.from(bar.children).filter(x => x !== t && !x.classList.contains('tb-sp') && x.getBoundingClientRect().width && x.getBoundingClientRect().right <= br.left + min).reduce((m, x) => Math.max(m, x.getBoundingClientRect().right - br.left), 0);
     const dir = Array.from(bar.querySelectorAll('.ic-so')).reduce((m, x) => Math.min(m, x.getBoundingClientRect().left - br.left), br.width);
-    const ll = ok ? min - 6 - lb.offsetWidth : 0, rr = ok ? Math.max.apply(null, tvs.map(v => v.offsetLeft + v.offsetWidth)) : 0;
-    if (!ok || ll < esq + 8 || rr > dir - 8) { t.classList.add('tb-tots-fluxo'); t.style.width = ''; tvs.concat(lb).forEach(x => { x.style.left = ''; x.style.right = ''; x.style.width = ''; }); }
+    if (!ok || min - 6 - lb.offsetWidth < esq + 8 || max > dir - 8) { t.classList.add('tb-tots-fluxo'); t.style.width = ''; tvs.concat(lb).forEach(x => { x.style.left = ''; x.style.right = ''; x.style.width = ''; }); }
   });
 }
 addEventListener('resize', () => tbAlinhaTot()); addEventListener('scroll', e => { if (e.target && e.target.classList && e.target.classList.contains('tb-w')) tbAlinhaTot(); }, true);
@@ -95,7 +97,7 @@ function tbMarcas(cfg, c) {
 }
 function tbHTML(cfg) {
   TB[cfg.id] = cfg; const st = tbEstado(cfg.id), cols = tbVisiveis(cfg), todas = tbFiltrar(cfg), l = todas.slice(0, st.limite), fl = tbTemFiltro(cfg);
-  const chave = cfg.chave || (r => r.id), mn = S.tbMenu && S.tbMenu.id === cfg.id ? S.tbMenu.k : null;
+  const chave = cfg.chave || (r => r.id), mn = S.tbMenu && S.tbMenu.id === cfg.id && S.tbMenu.h === location.hash ? S.tbMenu.k : null;
   let h = '<div class="tb" data-tb="' + esc(cfg.id) + '"><div class="tb-bar">' +
     (tbTemFiltroSolto(cfg) ? '<button type="button" class="tb-limpa" data-act="tb-limpa" data-tb="' + esc(cfg.id) + '">' + ic('x') + '<span>Limpar filtro</span></button>' : '') +
     '<span class="tb-cont">' + todas.length + (todas.length !== (cfg.linhas || []).length ? ' de ' + (cfg.linhas || []).length : '') + ' ' + esc(cfg.unidade || 'registros') + '</span><span class="tb-sp"></span>' + tbTotal(cfg, cols, todas, fl) +
@@ -114,7 +116,7 @@ function tbHTML(cfg) {
   h += '</tbody></table></div>';
   h += '<div class="tb-pe"><span>Mostrando <b>' + l.length + '</b> de ' + todas.length + '</span>' + (cfg.rodape ? '<span>' + cfg.rodape(todas) + '</span>' : '') + (todas.length > l.length ? '<button type="button" class="bt" data-act="tb-mais" data-tb="' + esc(cfg.id) + '">Mostrar mais ' + Math.min(100, todas.length - l.length) + '</button>' : '') + '</div>';
   requestAnimationFrame(tbAlinhaTot);
-  if (mn) { h += tbMenuHTML(cfg, mn); requestAnimationFrame(tbPosMenu); }
+  if (mn) { h += (innerWidth < 600 ? '<div class="tb-mn-fundo" data-act="tb-mn-x"></div>' : '') + tbMenuHTML(cfg, mn); requestAnimationFrame(() => { tbPosMenu(); tbMnRestaura(); }); }
   return h + '</div>';
 }
 /* ---------- menu da coluna ---------- */
@@ -133,7 +135,7 @@ function tbMenuHTML(cfg, k) {
     '<i class="tb-mn-pt"></i><div class="tb-mn-cab"><div class="tb-mn-t"><b>' + esc(c.rot) + '</b><small>' + vals.reduce((q, x) => q + x.n, 0) + ' ' + esc(cfg.unidade || 'registros') + ' · ' + vals.length + (vals.length === 1 ? ' valor' : ' valores') + '</small></div>' +
     '<button type="button" class="tb-mn-tr' + (tr ? ' on' : '') + '" data-act="tb-trava" data-tb="' + id + '" data-k="' + esc(k) + '" aria-pressed="' + tr + '" title="' + (tr ? 'Destravar: volta a poder mudar e o Limpar filtro passa a valer' : 'Travar: a ordem e o filtro desta coluna ficam assim, mesmo ao sair do app, até você destravar') + '">' + ic('cadeado') + '<span>' + (tr ? 'Travada' : 'Travar') + '</span></button></div>' +
     (tr ? '<p class="tb-mn-av">' + ic('cadeado') + 'Travada. Destrave para mudar a ordem ou o filtro.</p>' : '') +
-    '<div class="tb-mn-corpo"><div class="tb-mn-g tb-mn-ord"><span class="tb-mn-h">Ordenar</span>' + lin('tb-oasc', 'ordAsc', nomes[0], o === 'asc') + lin('tb-odesc', 'ordDesc', nomes[1], o === 'desc') + lin('tb-opad', 'ordPad', 'Ordem padrão', !o) + '</div>';
+    '<div class="tb-mn-corpo"><div class="tb-mn-g tb-mn-ord"><span class="tb-mn-h">Ordenar</span>' + '<button type="button" class="tb-mn-o tb-mn-ci' + (o ? ' on' : '') + '" data-act="tb-ociclo" data-tb="' + id + '" data-k="' + esc(k) + '"' + dis + ' title="Cada toque troca: ordem padrão, ' + nomes[0].toLowerCase() + ', ' + nomes[1].toLowerCase() + '">' + ic(o === 'asc' ? 'ordAsc' : o === 'desc' ? 'ordDesc' : 'ordPad') + '<span>' + (o === 'asc' ? nomes[0] : o === 'desc' ? nomes[1] : 'Ordem padrão') + '</span><em>' + (o === 'asc' ? 'toque: inverte' : o === 'desc' ? 'toque: volta ao padrão' : 'toque: ordena') + '</em></button></div>';
   const pre = tbPresetsDe(cfg, k);
   if (pre.length) h += '<div class="tb-mn-g"><span class="tb-mn-h">Filtros prontos</span>' + pre.map(p => '<div class="tb-mn-pre' + (tr ? ' tb-mn-off' : '') + '">' + (pre.length > 1 || p.rot !== c.rot ? '<small>' + esc(p.rot) + '</small>' : '') + ddHTML('tbf:' + cfg.id + ':' + p.k, st.filtros[p.k] == null ? '' : st.filtros[p.k], [['', 'Todos']].concat(p.opcoes)) + '</div>').join('') + '</div>';
   h += '<div class="tb-mn-g tb-mn-fg"><span class="tb-mn-h">Filtrar</span><label class="tb-mn-bs">' + ic('lupa') + '<input type="search" data-tbmnbusca="' + id + '" data-k="' + esc(k) + '" value="' + esc(f.txt || '') + '" placeholder="Buscar em ' + esc(c.rot) + '" aria-label="Buscar em ' + esc(c.rot) + '"' + dis + '></label>';
@@ -146,13 +148,14 @@ function tbMenuHTML(cfg, k) {
     '<button type="button" class="bt lk" data-act="tb-mnlimpa" data-tb="' + id + '" data-k="' + esc(k) + '"' + (tbColFiltrada(cfg, k) && !tr ? '' : ' disabled') + '>Limpar esta coluna</button></div></div>';
   return h;
 }
+/* a rolagem da lista do menu é guardada quando o usuário rola e devolvida só depois de redesenhar (antes, cada rolagem a devolvia ao ponto antigo e a lista "travava") */
+function tbMnRestaura() { const m = document.querySelector('.tb-mn'); if (!m) return; const l = m.querySelector('.tb-mn-l'), cp = m.querySelector('.tb-mn-corpo'); if (cp && S._tbMnCorpo) cp.scrollTop = S._tbMnCorpo; if (l && S._tbMnScroll) l.scrollTop = S._tbMnScroll; }
 function tbRolador(el) { for (let e = el.parentElement; e && e !== document.body; e = e.parentElement) { const o = getComputedStyle(e).overflowY; if ((o === 'auto' || o === 'scroll') && e.scrollHeight > e.clientHeight) return e; } return document.scrollingElement || document.documentElement; }
 /* o menu nasce embaixo da própria coluna, com a pontinha apontando para ela; se faltar espaço embaixo, a página sobe um pouco (pedido de 08/11 15:00) */
 function tbPosMenu() {
   const m = document.querySelector('.tb-mn'); if (!m) return;
   const meio = m.querySelector('[data-meio]'); if (meio) meio.indeterminate = true;
   const th = document.querySelector('.tb[data-tb="' + m.getAttribute('data-tbmn') + '"] th[data-tbk="' + m.getAttribute('data-k') + '"]');
-  const l = m.querySelector('.tb-mn-l'); if (l && S._tbMnScroll) l.scrollTop = S._tbMnScroll; const cp = m.querySelector('.tb-mn-corpo'); if (cp && S._tbMnCorpo) cp.scrollTop = S._tbMnCorpo;
   if (!th || innerWidth < 600) { m.classList.add('tb-mn-folha'); return; }
   m.classList.remove('tb-mn-folha'); m.style.maxHeight = '';
   let r = th.getBoundingClientRect(); const w = m.offsetWidth, hh = Math.min(m.scrollHeight, 640);
@@ -165,14 +168,22 @@ function tbPosMenu() {
   m.style.left = x + 'px'; m.style.top = y + 'px'; m.style.maxHeight = Math.max(200, alt) + 'px';
   m.style.setProperty('--tb-pt', Math.max(14, Math.min(w - 14, r.left + Math.min(r.width, 160) / 2 - x)) + 'px');
 }
-addEventListener('resize', tbPosMenu); addEventListener('scroll', () => { if (S.tbMenu) tbPosMenu(); }, true);
+addEventListener('resize', tbPosMenu); addEventListener('scroll', e => {
+  if (!S.tbMenu) return; const t = e.target;
+  if (t && t.classList && t.closest && t.closest('.tb-mn')) { if (t.classList.contains('tb-mn-l')) S._tbMnScroll = t.scrollTop; else if (t.classList.contains('tb-mn-corpo')) S._tbMnCorpo = t.scrollTop; return; }
+  tbPosMenu();
+}, true);
 function tbMenuAbre(id, k) {
   if (S.tbMenu && S.tbMenu.id === id && S.tbMenu.k === k) { tbMenuFecha(); return; }
-  const ja = !!S.tbMenu; S.tbMenu = { id: id, k: k }; S._tbMnScroll = 0; S._tbMnCorpo = 0; S._tbMnRolou = false;
-  if (!ja) csCamadaAbre('tbmn', () => { S.tbMenu = null; render(); });
+  const ja = !!S.tbMenu; S.tbMenu = { id: id, k: k, h: location.hash }; S._tbMnScroll = 0; S._tbMnCorpo = 0; S._tbMnRolou = false;
+  /* no celular o menu é uma folha com camada do "voltar"; no computador não usa o histórico (era ele que engolia o 1º toque ao trocar de aba) */
+  if (!ja && innerWidth < 600) { S._tbMnCam = true; csCamadaAbre('tbmn', () => { S._tbMnCam = false; S.tbMenu = null; render(); }); }
   render(); setTimeout(() => { const i = document.querySelector('.tb-mn [data-tbmnbusca]'); if (i && innerWidth >= 600 && !i.disabled) i.focus(); }, 30);
 }
-function tbMenuFecha() { if (!S.tbMenu) return; if (S.camadas.length && S.camadas[S.camadas.length - 1].nome === 'tbmn') csVolta(); else { S.tbMenu = null; render(); } }
+function tbMenuFecha() { if (!S.tbMenu) return; if (S._tbMnCam && S.camadas.length && S.camadas[S.camadas.length - 1].nome === 'tbmn') csVolta(); else { S.tbMenu = null; S._tbMnCam = false; render(); } }
+/* toque fora (computador): some com o menu sem redesenhar a tela nem mexer no histórico; o toque segue para o que foi tocado */
+function tbMenuFechaSolto() { const m = document.querySelector('.tb-mn'); if (m) m.remove(); $$('th.tb-ab').forEach(x => x.classList.remove('tb-ab')); $$('.tb-hm[aria-expanded="true"]').forEach(x => x.setAttribute('aria-expanded', 'false')); S.tbMenu = null; }
+window.addEventListener('hashchange', () => { if (S.tbMenu) { S.tbMenu = null; S._tbMnCam = false; S.camadas = S.camadas.filter(c => c.nome !== 'tbmn'); } });
 function tbMuda(id, fn) { const st = tbEstado(id); fn(st); st.limite = 100; tbSalvaTrava(id); render(); }
 function tbMove(id, k, alvo, depois) {
   const cfg = TB[id], st = tbEstado(id); let o = tbOrdenadas(cfg).map(c => c.k).filter(x => x !== k);
@@ -332,7 +343,7 @@ document.addEventListener('change', e => {
 });
 document.addEventListener('click', e => {
   const t = e.target.closest && e.target.closest('[data-act]');
-  if (S.tbMenu && !(e.target.closest && (e.target.closest('.tb-mn') || e.target.closest('[data-act="tb-menu"]')))) { tbMenuFecha(); return; }
+  if (S.tbMenu && !S._tbMnCam && !(e.target.closest && (e.target.closest('.tb-mn') || e.target.closest('[data-act="tb-menu"]')))) tbMenuFechaSolto();
   if (!t || !/^(tb-|dd-|gv-)/.test(t.getAttribute('data-act'))) { if (!(e.target.closest && e.target.closest('.dd'))) ddFecha(); return; }
   const a = t.getAttribute('data-act'), id = t.getAttribute('data-tb');
   if (a === 'dd-abre') { const l = t.nextElementSibling, ab = l.hidden; ddFecha(); l.hidden = !ab; t.setAttribute('aria-expanded', String(ab)); if (ab) { const s = l.querySelector('[aria-selected="true"]') || l.querySelector('li'); if (s) s.focus(); } return; }
@@ -345,7 +356,9 @@ document.addEventListener('click', e => {
   if (a === 'gv-fecha') { gvFechar(); return; }
   const st = id ? tbEstado(id) : null;
   const k = t.getAttribute('data-k'), cfg = id ? TB[id] : null;
-  if (a === 'tb-menu') { if (S._tbEngole) return; tbMenuAbre(id, k); }
+  if (a === 'tb-mn-x') tbMenuFecha();
+  else if (a === 'tb-menu') { if (S._tbEngole) return; tbMenuAbre(id, k); }
+  else if (a === 'tb-ociclo') { const at = st.ordem && st.ordem.k === k ? st.ordem.dir : ''; if (st.ordem && st.ordem.k !== k && st.trava[st.ordem.k]) { aviso('A ordem está travada na coluna ' + (cfg.cols.find(c => c.k === st.ordem.k) || {}).rot + '. Destrave lá para ordenar por esta.'); return; } tbMuda(id, s => { s.ordem = !at ? { k: k, dir: 'asc' } : at === 'asc' ? { k: k, dir: 'desc' } : null; }); }
   else if (a === 'tb-oasc' || a === 'tb-odesc') { if (st.ordem && st.ordem.k !== k && st.trava[st.ordem.k]) { aviso('A ordem está travada na coluna ' + (cfg.cols.find(c => c.k === st.ordem.k) || {}).rot + '. Destrave lá para ordenar por esta.'); return; } tbMuda(id, s => { s.ordem = { k: k, dir: a === 'tb-oasc' ? 'asc' : 'desc' }; }); }
   else if (a === 'tb-opad') tbMuda(id, s => { if (s.ordem && s.ordem.k === k) s.ordem = null; });
   else if (a === 'tb-trava') tbMuda(id, s => { if (s.trava[k]) delete s.trava[k]; else s.trava[k] = true; });
