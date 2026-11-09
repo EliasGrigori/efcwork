@@ -79,7 +79,7 @@ function tbTotal(cfg, cols, todas, filtrado) {
 function tbAlinhaTot() {
   $$('.tb-tots').forEach(t => {
     const tb = t.closest('.tb'), bar = t.parentElement, br = bar.getBoundingClientRect(), tvs = Array.from(t.querySelectorAll('.tb-tv')), lb = t.querySelector('.tb-tl');
-    t.classList.remove('tb-tots-fluxo'); t.style.width = br.width + 'px'; lb.style.right = '';
+    t.classList.remove('tb-tots-fluxo', 'tb-tots-linha'); t.style.top = ''; bar.style.paddingBottom = ''; t.style.width = br.width + 'px'; lb.style.right = '';
     tvs.forEach(v => { v.style.left = ''; v.style.width = 'auto'; });
     let ok = innerWidth >= 600, min = 1e9, max = 0;
     tvs.forEach(v => { const th = tb.querySelector('thead th[data-tbk="' + v.getAttribute('data-k') + '"]'); if (!th) { ok = false; return; }
@@ -87,6 +87,9 @@ function tbAlinhaTot() {
     if (ok) lb.style.right = (br.width - min + 6) + 'px';
     const esq = Array.from(bar.children).filter(x => x !== t && !x.classList.contains('tb-sp') && x.getBoundingClientRect().width && x.getBoundingClientRect().right <= br.left + min).reduce((m, x) => Math.max(m, x.getBoundingClientRect().right - br.left), 0);
     const dir = Array.from(bar.querySelectorAll('.ic-so')).reduce((m, x) => Math.min(m, x.getBoundingClientRect().left - br.left), br.width);
+    /* v0.4.13: se a coluna do total fica embaixo dos ícones (telas de 1280–1366 px), o total desce para uma linha só dele,
+       logo acima do cabeçalho, ainda em cima da sua coluna; só fica em sequência se nem assim couber */
+    if (ok && max > dir - 8 && max <= br.width + 1 && min - 6 - lb.offsetWidth >= 0) { const h = bar.offsetHeight; t.classList.add('tb-tots-linha'); bar.style.paddingBottom = 'calc(var(--btn) + 8px)'; t.style.top = (h + 8) + 'px'; return; }
     if (!ok || min - 6 - lb.offsetWidth < esq + 8 || max > dir - 8) { t.classList.add('tb-tots-fluxo'); t.style.width = ''; tvs.concat(lb).forEach(x => { x.style.left = ''; x.style.right = ''; x.style.width = ''; }); }
   });
 }

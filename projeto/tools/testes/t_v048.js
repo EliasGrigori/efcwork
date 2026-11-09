@@ -109,8 +109,10 @@ const cab = p => p.$$eval('.tb[data-tb="al-mat"] .tb-cab th', l => l.map(x => x.
   await abre(p, 'cod'); await p.click('[data-act="tb-mvdir"]'); await p.waitForTimeout(200); await fecha(p);
   t0 = await tot(); conf(t0.alinhado, 'mudando colunas de lugar, o total acompanha a coluna Valor');
   await abre(p, 'sit'); await p.click('[data-act="tb-mvesq"]'); await p.waitForTimeout(200); await fecha(p);
-  const fl = await p.evaluate(() => { const t = document.querySelector('.tb[data-tb="al-mat"] .tb-tots'), r = t.getBoundingClientRect(), ic = document.querySelector('.tb[data-tb="al-mat"] [data-act="tb-cols"]').getBoundingClientRect(); return t.classList.contains('tb-tots-fluxo') && r.right <= ic.left; });
-  conf(fl, 'Valor na última coluna (embaixo dos ícones): o total fica em sequência, logo antes dos ícones');
+  /* v0.4.13: antes ia para a sequência; agora desce para uma linha própria, ainda em cima da coluna */
+  const fl = await p.evaluate(() => { const tb = document.querySelector('.tb[data-tb="al-mat"]'), t = tb.querySelector('.tb-tots'), v = t.querySelector('.tb-tv').getBoundingClientRect(), th = tb.querySelector('.tb-cab th[data-tbk="val"]').getBoundingClientRect(), ic = tb.querySelector('[data-act="tb-cols"]').getBoundingClientRect();
+    return t.classList.contains('tb-tots-fluxo') ? v.right <= ic.left : (t.classList.contains('tb-tots-linha') && Math.abs(v.right - th.right) < 2 && v.top >= ic.bottom); });
+  conf(fl, 'Valor na última coluna (embaixo dos ícones): o total desce para uma linha própria em cima da coluna (ou, se nem assim couber, fica em sequência)');
   await p.evaluate(() => { localStorage.removeItem('cw-tbord-al-mat'); S.tb['al-mat'].colOrd = []; render(); }); await p.waitForTimeout(200);
 
   console.log('— Menu nasce da coluna');
