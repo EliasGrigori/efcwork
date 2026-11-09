@@ -342,3 +342,10 @@ Gráfico de colunas dos últimos 30 dias de atividade,Administração,could,nao,
 Filtro único (período, pessoa, área, app) na atividade,Administração,should,nao,sim,Administração › Atividade,v0.4.14
 Detalhe do registro com antes e depois na própria linha,Administração,should,nao,sim,Administração › Atividade,v0.4.14
 Atividade filtrada em planilha e impressão,Administração,could,nao,sim,Administração › Atividade,v0.4.14
+Documentos com grupos Formulários e Regulatórios em ordem alfabética,Documentos,must,nao,sim,Documentos › Documentos,v0.5.0
+Mover documento de grupo,Documentos,should,nao,sim,Gaveta do documento,v0.5.0
+Calendário do mês de vencimentos,Documentos,should,nao,sim,Documentos e Caixas d’água,v0.5.0
+Lançar entrega e limpeza,Documentos,must,sim,sim,Gaveta do documento/caixa,v0.5.0
+Cadastro e desativação de documentos e caixas,Documentos,must,sim,sim,Documentos,v0.5.0
+Histórico de lançamentos com correção por pedido,Documentos,must,sim,sim,Documentos › Histórico,v0.5.0
+Data e hora no horário do aparelho,Geral,must,sim,sim,Todas as telas,v0.5.0

@@ -47,6 +47,8 @@ function tbFiltrar(cfg, o) {
     const c = cfg.cols.find(x => x.k === st.ordem.k);
     if (c) { const s = st.ordem.dir === 'desc' ? -1 : 1; l = l.slice().sort((a, b) => { const x = c.v(a), y = c.v(b); if (typeof x === 'number' && typeof y === 'number') return (x - y) * s; return String(x == null ? '' : x).localeCompare(String(y == null ? '' : y), 'pt-BR', { numeric: true }) * s; }); }
   }
+  /* v0.5 (pedido de 09/11 18:25): grupos separados (ex.: Formulários e Regulatórios); a ordem escolhida vale dentro de cada grupo */
+  if (cfg.grupos && !o.semOrdem) { const ord = cfg.grupos.ordem.map(x => x[0]), gi = r => { const i = ord.indexOf(cfg.grupos.v(r)); return i < 0 ? ord.length : i; }; l = l.slice().sort((a, b) => gi(a) - gi(b)); }
   return l;
 }
 function tbOrdenadas(cfg) {
@@ -103,7 +105,7 @@ function tbHTML(cfg) {
   const chave = cfg.chave || (r => r.id), mn = S.tbMenu && S.tbMenu.id === cfg.id && S.tbMenu.h === location.hash ? S.tbMenu.k : null;
   let h = '<div class="tb" data-tb="' + esc(cfg.id) + '"><div class="tb-bar">' +
     (tbTemFiltroSolto(cfg) ? '<button type="button" class="tb-limpa" data-act="tb-limpa" data-tb="' + esc(cfg.id) + '">' + ic('x') + '<span>Limpar filtro</span></button>' : '') +
-    '<span class="tb-cont">' + todas.length + (todas.length !== (cfg.linhas || []).length ? ' de ' + (cfg.linhas || []).length : '') + ' ' + esc(cfg.unidade || 'registros') + '</span><span class="tb-sp"></span>' + tbTotal(cfg, cols, todas, fl) +
+    (cfg.aEsquerda ? cfg.aEsquerda(todas) : '<span class="tb-cont">' + todas.length + (todas.length !== (cfg.linhas || []).length ? ' de ' + (cfg.linhas || []).length : '') + ' ' + esc(cfg.unidade || 'registros') + '</span>') + '<span class="tb-sp"></span>' + tbTotal(cfg, cols, todas, fl) +
     '<button type="button" class="bt ic-so" data-act="tb-cols" data-tb="' + esc(cfg.id) + '" title="Escolher colunas" aria-label="Escolher colunas">' + ic('colunas') + '</button>' +
     '<button type="button" class="bt ic-so" data-act="tb-xlsx" data-tb="' + esc(cfg.id) + '" title="Baixar planilha (.xlsx)" aria-label="Baixar planilha (.xlsx)">' + ic('planilha') + '</button>' +
     '<button type="button" class="bt ic-so" data-act="tb-imp" data-tb="' + esc(cfg.id) + '" title="Imprimir" aria-label="Imprimir">' + ic('impressora') + '</button></div>';
@@ -115,12 +117,19 @@ function tbHTML(cfg) {
       '<button type="button" class="tb-hm' + (mk ? ' on' : '') + '" data-act="tb-menu" data-tb="' + esc(cfg.id) + '" data-k="' + esc(c.k) + '" aria-haspopup="dialog" aria-expanded="' + ab + '" aria-label="Opções da coluna ' + esc(c.rot) + '">' + (mk || '') + '<i class="tb-hv">' + ic('abre') + '</i></button></div></th>';
   }).join('') + '</tr></thead><tbody>';
   if (!l.length) h += '<tr><td colspan="' + cols.length + '" class="tb-vz">' + esc(cfg.vazio || 'Nada encontrado.') + '</td></tr>';
-  else h += l.map(r => { const id = chave(r); return '<tr' + (cfg.aoClicar ? ' data-act="tb-lin" data-tb="' + esc(cfg.id) + '" data-id="' + esc(id) + '" tabindex="0"' : '') + (cfg.selecionado === id ? ' class="sel"' : '') + '>' + cols.map(c => '<td class="' + (c.tipo === 'num' ? 'n' : '') + (c.cls ? ' ' + c.cls : '') + '"' + (c.titulo ? ' title="' + esc(c.titulo(r)) + '"' : '') + '>' + tbFmt(c, r) + '</td>').join('') + '</tr>'; }).join('');
+  else h += l.map((r, n) => { const id = chave(r); return tbGrupoLinha(cfg, todas, l, n, cols.length) + '<tr' + (cfg.aoClicar ? ' data-act="tb-lin" data-tb="' + esc(cfg.id) + '" data-id="' + esc(id) + '" tabindex="0"' : '') + (cfg.selecionado === id ? ' class="sel"' : '') + '>' + cols.map(c => '<td class="' + (c.tipo === 'num' ? 'n' : '') + (c.cls ? ' ' + c.cls : '') + '"' + (c.titulo ? ' title="' + esc(c.titulo(r)) + '"' : '') + '>' + tbFmt(c, r) + '</td>').join('') + '</tr>'; }).join('');
   h += '</tbody></table></div>';
   h += '<div class="tb-pe"><span>Mostrando <b>' + l.length + '</b> de ' + todas.length + '</span>' + (cfg.rodape ? '<span>' + cfg.rodape(todas) + '</span>' : '') + (todas.length > l.length ? '<button type="button" class="bt" data-act="tb-mais" data-tb="' + esc(cfg.id) + '">Mostrar mais ' + Math.min(100, todas.length - l.length) + '</button>' : '') + '</div>';
   requestAnimationFrame(tbAlinhaTot);
   if (mn) { h += (innerWidth < 600 ? '<div class="tb-mn-fundo" data-act="tb-mn-x"></div>' : '') + tbMenuHTML(cfg, mn); requestAnimationFrame(() => { tbPosMenu(); tbMnRestaura(); }); }
   return h + '</div>';
+}
+/* cabeçalho do grupo (v0.5): aparece antes da primeira linha de cada grupo, com o nome e quantos há nele */
+function tbGrupoLinha(cfg, todas, l, n, ncol) {
+  const g = cfg.grupos; if (!g) return '';
+  const k = g.v(l[n]); if (n > 0 && g.v(l[n - 1]) === k) return '';
+  const par = g.ordem.find(x => x[0] === k), rot = par ? par[1] : ''; if (!rot) return '';
+  return '<tr class="tb-gr"><td colspan="' + ncol + '"><b>' + esc(rot) + '</b><span>' + todas.filter(r => g.v(r) === k).length + '</span></td></tr>';
 }
 /* ---------- menu da coluna ---------- */
 function tbValores(cfg, c) {

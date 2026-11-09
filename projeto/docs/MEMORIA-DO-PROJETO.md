@@ -121,3 +121,7 @@ v0.2 Almoxarifado consulta + tabela padrão + busca · v0.3 Almoxarifado lançam
 
 - v0.4.14 (09/11/2026, aguardando aprovação): aba Administração › Atividade (só Principal): colunas dos 30 dias + linha do tempo por dia + filtro único + planilha/impressora. Detalhe inline (a gaveta foi reprovada). Aprovada 09/11 17:32 com regra geral: tela sem autorização some (menu, abas, busca e endereço direto; sem tela de aviso). Suíte 830 ok, 21 suítes, 0 falha.
 - v0.4.14 publicada em 09/11/2026 (commit ec7a468).
+- 09/11/2026: v0.5 Documentos em modelos (5 opções, página enviada). Triagem dos 28 itens de Bugs e sugestões do EFClaudian em TRIAGEM-BUGS-SUGESTOES-2026-11-09.md (10 feitos, 2 fechados, 17 faltam).
+- 09/11/2026 17:59: decisão do Elias — sem versões novas do EFClaudian (fica na v2.102.60); todos os pendentes de Bugs e sugestões vão para o EFCwork, cada um com a sua área (ver TRIAGEM).
+- v0.5.0 (09/11/2026, aguardando aprovação): área Documentos (Documentos com grupos Formulários/Regulatórios em ordem alfabética e mover de grupo; Tabela | Calendário; gaveta e Lançar entrega; Caixas d’água; Histórico com correção). Tabela padrão ganhou grupos e aEsquerda. fmtDT corrigida (data local). Suíte 891 ok, 22 suítes.
+- v0.5.0 aprovada 09/11/2026 19:10 (6/6) e publicada em 09/11/2026 com "pode publicar".

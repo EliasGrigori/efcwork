@@ -1584,3 +1584,4 @@ Feito: tabela.js — o total saiu da linha dentro da tabela e virou faixa acima 
 - Teste: t_v0414.js 41 ok (não Principal: sem aba, endereço direto vai para Empresa e o endereço vira #/adm/empresa, sem aviso, busca não oferece, volta a aparecer como Principal). Suíte completa: 830 ok, 21 suítes, 0 falha.
 - ROTEIRO do Grok: bloco E atualizado (a tela some em vez de aviso).
 - Publicado no GitHub em 09/11/2026: v0.4.14, commit ec7a468 (autorizado por "já publica", 09/11 17:32). Pages leva alguns minutos para atualizar.
+- 09/11 17:4x — Conferência do site: o GitHub (raw) já tem a 0.4.13/0.4.14, mas o Pages ainda respondia sw.js 0.4.12 (também às 15:25, antes). Página Actions não pôde ser lida (limite). Pendente: Elias conferir Actions/Settings › Pages e Opções › Sobre.

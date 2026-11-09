@@ -26,7 +26,8 @@ function validaData(v) {
   if (v < '2000-01-01') return 'Data inválida.';
   return '';
 }
-const fmtDT = iso => iso ? fmtD(iso) + ' ' + String(new Date(iso).toTimeString()).slice(0, 5) : '—';
+/* v0.5: data e hora no horário do aparelho (antes a data saía em UTC e a hora local: 21:52 de 08/11 aparecia como 09/11) */
+const fmtDT = iso => { if (!iso) return '—'; const d = new Date(iso); if (isNaN(d)) return '—'; return pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear() + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()); };
 const svErro = e => /permission/i.test((e && (e.code || e.message)) || '') ? 'O Firebase não deixou gravar (permissão).' : (e && e.code === 'unavailable') ? 'Sem conexão: tente de novo.' : 'Não foi possível gravar: ' + ((e && (e.message || e.code)) || 'erro');
 
 /* ---------- auditoria (o histórico de cada registro) ---------- */
