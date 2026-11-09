@@ -1529,3 +1529,4 @@ Feito: tabela.js — o total saiu da linha dentro da tabela e virou faixa acima 
 - Suíte completa: 779 ok, 19 suítes, 0 falha (docs/suite-v0.4.11.log).
 - 09/11 11:00 — Respostas v0.4.11: 1 e 2 Aprovados. Publicação aguardando "pode publicar".
 - 09/11 11:03 — "pode publicar": v0.4.11 publicada.
+- Publicado no GitHub em 09/11/2026 11:03: v0.4.11, commit ac7ac8a (no ar às ~11:08; conferido: App Check ligado e leitura do Firebase ok).
