@@ -120,3 +120,4 @@ v0.2 Almoxarifado consulta + tabela padrão + busca · v0.3 Almoxarifado lançam
 - Publicado no GitHub em 08/11/2026 15:43: v0.4.8, commit 36cda94 (autorizado por "pode iniciar" depois da aprovação 15:37).
 
 - v0.4.14 (09/11/2026, aguardando aprovação): aba Administração › Atividade (só Principal): colunas dos 30 dias + linha do tempo por dia + filtro único + planilha/impressora. Detalhe inline (a gaveta foi reprovada). Aprovada 09/11 17:32 com regra geral: tela sem autorização some (menu, abas, busca e endereço direto; sem tela de aviso). Suíte 830 ok, 21 suítes, 0 falha.
+- v0.4.14 publicada em 09/11/2026 (commit ec7a468).
