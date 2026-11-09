@@ -1,0 +1,39 @@
+== tools/testes/t_v010.js
+t_v010: 41 ok · 0 falha(s)
+== tools/testes/t_v020.js
+t_v020: 49 ok · 0 falha(s)
+== tools/testes/t_v030.js
+t_v030: 62 ok · 0 falha(s)
+== tools/testes/t_v031.js
+t_v031: 49 ok · 0 falha(s)
+== tools/testes/t_v032.js
+t_v032: 48 ok · 0 falha(s)
+== tools/testes/t_v033.js
+t_v033: 39 ok · 0 falha(s)
+== tools/testes/t_v034.js
+t_v034: 48 ok · 0 falha(s)
+== tools/testes/t_v035.js
+t_v035: 35 ok · 0 falha(s)
+== tools/testes/t_v036.js
+t_v036: 31 ok · 0 falha(s)
+== tools/testes/t_v040.js
+t_v040: 45 ok · 0 falha(s)
+== tools/testes/t_v041.js
+t_v041: 28 ok · 0 falha(s)
+== tools/testes/t_v0410.js
+12 ok, 0 falha(s)
+== tools/testes/t_v042.js
+t_v042: 36 ok · 0 falha(s)
+== tools/testes/t_v044.js
+t_v044: 35 ok · 0 falha(s)
+== tools/testes/t_v045.js
+t_v045: 39 ok · 0 falha(s)
+== tools/testes/t_v046.js
+t_v046: 40 ok · 0 falha(s)
+== tools/testes/t_v047.js
+t_v047: 52 ok · 0 falha(s)
+== tools/testes/t_v048.js
+47 ok, 0 falha(s)
+== tools/testes/t_v049.js
+43 ok, 0 falha(s)
+Total: 779 ok, 19 suítes, 0 falha

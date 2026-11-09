@@ -7,7 +7,8 @@ const TELA = ['./', './manifest.webmanifest', './icon-192.png', './icon-512.png'
 const FORA = [
   'https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js',
   'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js',
-  'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js'
+  'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js',
+  'https://www.gstatic.com/firebasejs/10.12.0/firebase-app-check-compat.js'
 ];
 const ESPERA_REDE_MS = 3500;
 

@@ -44,9 +44,9 @@ async function primeiro(p) {
 }
 
 const mock = `window.firebase=window.firebase||(function(){const apps=[];const log=window.__fb=[];
-function mkApp(c,n){const a={name:n||'[DEFAULT]',firestore(){log.push('firestore:'+a.name);return {enablePersistence:async()=>{log.push('persist:'+a.name)},collection(){return {doc(){return {get:async()=>({exists:false}),onSnapshot(){return ()=>{}}}},onSnapshot(){return ()=>{}},where(){return this}}},terminate:async()=>{},clearPersistence:async()=>{}}},auth(){log.push('auth:'+a.name);return {setPersistence:async()=>{},onAuthStateChanged(cb){setTimeout(()=>cb(null),10);return ()=>{}},currentUser:null}}};apps.push(a);return a}
+function mkApp(c,n){const a={name:n||'[DEFAULT]',appCheck(){log.push('appcheck:'+a.name);return {activate(p,t){log.push('activate:'+a.name)}}},firestore(){log.push('firestore:'+a.name);return {enablePersistence:async()=>{log.push('persist:'+a.name)},collection(){return {doc(){return {get:async()=>({exists:false}),onSnapshot(){return ()=>{}}}},onSnapshot(){return ()=>{}},where(){return this}}},terminate:async()=>{},clearPersistence:async()=>{}}},auth(){log.push('auth:'+a.name);return {setPersistence:async()=>{},onAuthStateChanged(cb){setTimeout(()=>cb(null),10);return ()=>{}},currentUser:null}}};apps.push(a);return a}
 const f={apps,initializeApp(c,n){log.push('init:'+(n||'[DEFAULT]'));return mkApp(c,n)},firestore(){log.push('firestore:DEFAULT!');return mkApp().firestore()},auth(){log.push('auth:DEFAULT!');return mkApp().auth()}};
-f.auth.Auth={Persistence:{LOCAL:'l',SESSION:'s'}};f.firestore.FieldValue={serverTimestamp(){return 0}};return f})();`;
+f.auth.Auth={Persistence:{LOCAL:'l',SESSION:'s'}};f.firestore.FieldValue={serverTimestamp(){return 0}};f.appCheck=function(){return {activate(){}}};f.appCheck.ReCaptchaEnterpriseProvider=function(k){log.push('appcheck-key:'+k)};return f})();`;
 
 (async () => {
   const b = await chromium.launch();
@@ -80,6 +80,15 @@ f.auth.Auth={Persistence:{LOCAL:'l',SESSION:'s'}};f.firestore.FieldValue={server
   await p.setViewportSize({ width: 1366, height: 860 }); await p.waitForTimeout(300);
   const h3 = await p.evaluate(() => Array.from(document.querySelectorAll('#gv .fm-c .dd-b')).map(e => e.offsetHeight));
   conf(h3.every(x => x === 34), 'no PC os campos continuam com 34 px');
+  console.log('— Menu da coluna: clicar fora numa linha só fecha o menu (retorno do Grok B7)');
+  await p.evaluate(async () => { const C = Data.col.bind(Data); for (const [id, n, l] of [['u1', 'Luva M', 'Porta 12'], ['u2', 'Fita dupla', 'Porta 11'], ['u3', 'Gelo gel', 'Geladeira'], ['u4', 'Água 1 L', 'Porta 02']]) await C('sv2_alm_itens').set(id, { nome: n, codigo: id, un: 'Un', min: 1, local: l, ativo: true }); });
+  await p.evaluate(() => { location.hash = '#/almox/materiais'; }); await p.waitForTimeout(500);
+  await p.click('.tb[data-tb="al-mat"] .tb-cab th[data-tbk="loc"] .tb-hm'); await p.waitForTimeout(200);
+  await p.click('.tb[data-tb="al-mat"] tbody tr[data-id] >> nth=2', { position: { x: 5, y: 10 } }); await p.waitForTimeout(400);
+  conf(!(await p.$('.tb-mn')) && !(await p.$('#gv .gv-c, #gv [data-act="gv-fecha"]')), 'clicar numa linha com o menu aberto fecha o menu e não abre a gaveta da linha');
+  await p.click('.tb[data-tb="al-mat"] tbody tr[data-id] >> nth=2', { position: { x: 5, y: 10 } }); await p.waitForTimeout(400);
+  conf(!!(await p.$('#gv [data-act="gv-fecha"]')), 'sem menu aberto, a linha abre a gaveta normalmente');
+  await p.keyboard.press('Escape'); await p.waitForTimeout(300);
   console.log('— Login e cache separados do EFClaudian (Firebase simulado)');
   { const q = await b.newPage(); const er2 = [];
     q.on('pageerror', e => er2.push(String(e)));
@@ -88,6 +97,7 @@ f.auth.Auth={Persistence:{LOCAL:'l',SESSION:'s'}};f.firestore.FieldValue={server
     const lg = await q.evaluate(() => window.__fb || []);
     console.log('   ', lg.join(' '));
     conf(lg.indexOf('init:efcwork') >= 0 && lg.indexOf('init:[DEFAULT]') < 0 && !lg.some(x => /DEFAULT!/.test(x)) && lg.indexOf('persist:efcwork') >= 0, 'o EFCwork usa um app do Firebase só dele (login e cache não se misturam com o EFClaudian)');
+    conf(lg.indexOf('activate:efcwork') >= 0 && lg.indexOf('activate:efcwork') < lg.indexOf('firestore:efcwork') && lg.some(x => /^appcheck-key:6Ld/.test(x)), 'App Check ligado no app do EFCwork antes do Firestore (o Firebase exige)');
     conf(er2.length === 0, 'sem erros com o Firebase simulado'); await q.close(); }
   conf(erros.length === 0, 'sem erros no console' + (erros.length ? ': ' + erros.slice(0, 2).join(' | ') : ''));
   console.log('\n' + ok + ' ok, ' + falhas + ' falha(s)');

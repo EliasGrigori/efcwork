@@ -1,7 +1,7 @@
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.4.10';
+const VERSAO = '0.4.11';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -16,7 +16,18 @@ const FIREBASE_CONFIG = {
   appId: '1:1043678730602:web:6e03bf65fd892f9782ad13'
 };
 const fbConfigAtual = () => FIREBASE_CONFIG;
-const appCheckLigar = () => false; /* o EFClaudian deixa o App Check desligado na prática; aqui ele não é carregado */
+/* v0.4.11 (09/11): App Check igual ao EFClaudian (reCAPTCHA Enterprise, chave pública do site). O Firebase do projeto principal
+   está exigindo App Check no Firestore: sem ele o EFCwork entrava com a senha certa mas o banco recusava tudo ("permissão").
+   Liga no app 'efcwork' antes do Firestore. Na demonstração não liga. Qualquer falha não impede o app. */
+const APPCHECK_CHAVE = '6LdLDeYtAAAAADNuye_RKI1MROdCo56DGI31jDS-';
+function appCheckLigar(app) {
+  S._appCheck = 'desligado';
+  try {
+    if (DEMO || !app || !APPCHECK_CHAVE || !firebase.appCheck || !firebase.appCheck.ReCaptchaEnterpriseProvider) return false;
+    app.appCheck().activate(new firebase.appCheck.ReCaptchaEnterpriseProvider(APPCHECK_CHAVE), true);
+    S._appCheck = 'ligado'; return true;
+  } catch (e) { console.warn('App Check:', e && (e.code || e.message)); S._appCheck = 'erro'; return false; }
+}
 function storeAvisoCheio() { try { aviso('O armazenamento deste navegador está cheio. Libere espaço para o app guardar os dados.', 'erro'); } catch {} }
 
 const Store = (function () {
@@ -255,7 +266,7 @@ const Data = (function () {
         Store.set('sv2demo_auth', JSON.stringify(a));
         return id;
       }
-      const sec = firebase.apps.find(x => x.name === 'sec') || firebase.initializeApp(fbConfigAtual(), 'sec');
+      let sec = firebase.apps.find(x => x.name === 'sec'); if (!sec) { sec = firebase.initializeApp(fbConfigAtual(), 'sec'); appCheckLigar(sec); }
       const c = await sec.auth().createUserWithEmailAndPassword(emailInterno || emailOf(login), senha);
       await sec.auth().signOut();
       return c.user.uid;
@@ -291,7 +302,7 @@ const Data = (function () {
          quebrava o outro ("The client has already been terminated"). Com o nome 'efcwork', cada app tem o seu login e o seu cache.
          Os dados na nuvem são os mesmos. Efeito colateral: na 1ª abertura da v0.4.10 é preciso entrar de novo. */
       const app = firebase.apps.find(x => x.name === 'efcwork') || firebase.initializeApp(fbConfigAtual(), 'efcwork');
-      appCheckLigar(); /* v2.88.0: antes do Firestore e do login */
+      appCheckLigar(app); /* antes do Firestore e do login */
       fdb = app.firestore(); fauth = app.auth(); try { fauth.languageCode = 'pt'; } catch (e) {}
       try { await fauth.setPersistence(firebase.auth.Auth.Persistence.LOCAL); } catch (e) { try { await fauth.setPersistence(firebase.auth.Auth.Persistence.SESSION); S._authSessao = true; } catch {} } /* v2.76.0: o aparelho guarda a sessão; ao abrir, o app pede a senha (funciona sem internet). v2.102.9: se não der, guarda na aba */
       /* v0.4.9: se o cache do aparelho quebrou duas vezes seguidas, abre sem ele por 1 dia (o app funciona online normalmente) */

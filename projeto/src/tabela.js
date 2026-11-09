@@ -343,7 +343,7 @@ document.addEventListener('change', e => {
 });
 document.addEventListener('click', e => {
   const t = e.target.closest && e.target.closest('[data-act]');
-  if (S.tbMenu && !S._tbMnCam && !(e.target.closest && (e.target.closest('.tb-mn') || e.target.closest('[data-act="tb-menu"]')))) tbMenuFechaSolto();
+  if (S.tbMenu && !S._tbMnCam && !(e.target.closest && (e.target.closest('.tb-mn') || e.target.closest('[data-act="tb-menu"]')))) { const linha = e.target.closest && e.target.closest('tr[data-act="tb-lin"]'); tbMenuFechaSolto(); if (linha) return; /* v0.4.11 (Grok B7): clicar fora numa linha só fecha o menu, não abre a linha */ }
   if (!t || !/^(tb-|dd-|gv-)/.test(t.getAttribute('data-act'))) { if (!(e.target.closest && e.target.closest('.dd'))) ddFecha(); return; }
   const a = t.getAttribute('data-act'), id = t.getAttribute('data-tb');
   if (a === 'dd-abre') { const l = t.nextElementSibling, ab = l.hidden; ddFecha(); l.hidden = !ab; t.setAttribute('aria-expanded', String(ab)); if (ab) { const s = l.querySelector('[aria-selected="true"]') || l.querySelector('li'); if (s) s.focus(); } return; }
