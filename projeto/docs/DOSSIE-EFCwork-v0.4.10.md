@@ -1502,3 +1502,4 @@ Feito: tabela.js — o total saiu da linha dentro da tabela e virou faixa acima 
 - 09/11 09:20 — Respostas v0.4.10: 1, 2 e 3 Aprovados. Publicação aguardando "pode publicar".
 - 09/11 09:20 — Elias pediu os roteiros do Grok sem retorno: enviados v0.4.7, v0.4.8, v0.4.9 e v0.4.10 (último retorno do Grok cobriu v0.1.0–v0.4.6, em 08/11 08:10).
 - 09/11 09:21 — "pode publicar": v0.4.10 publicada.
+- Publicado no GitHub em 09/11/2026 09:21: v0.4.10, commit e4c032a.
