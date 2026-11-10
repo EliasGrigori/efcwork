@@ -349,3 +349,5 @@ Lançar entrega e limpeza,Documentos,must,sim,sim,Gaveta do documento/caixa,v0.5
 Cadastro e desativação de documentos e caixas,Documentos,must,sim,sim,Documentos,v0.5.0
 Histórico de lançamentos com correção por pedido,Documentos,must,sim,sim,Documentos › Histórico,v0.5.0
 Data e hora no horário do aparelho,Geral,must,sim,sim,Todas as telas,v0.5.0
+Toque no fundo do menu da coluna segue para o botão da página (celular),Geral,must,sim,sim,Tabelas no celular,v0.5.1
+Tela de entrar não vira Primeiro acesso quando a nuvem não responde,Geral,must,sim,sim,Entrar,v0.5.1

@@ -189,9 +189,15 @@ function tbMenuAbre(id, k) {
   if (S.tbMenu && S.tbMenu.id === id && S.tbMenu.k === k) { tbMenuFecha(); return; }
   const ja = !!S.tbMenu; S.tbMenu = { id: id, k: k, h: location.hash }; S._tbMnScroll = 0; S._tbMnCorpo = 0; S._tbMnRolou = false;
   /* no celular o menu é uma folha com camada do "voltar"; no computador não usa o histórico (era ele que engolia o 1º toque ao trocar de aba) */
-  if (!ja && innerWidth < 600) { S._tbMnCam = true; csCamadaAbre('tbmn', () => { S._tbMnCam = false; S.tbMenu = null; render(); }); }
+  if (!ja && innerWidth < 600) { S._tbMnCam = true; csCamadaAbre('tbmn', () => { S._tbMnCam = false; S.tbMenu = null; render(); tbMnRepassa(); }); }
   render(); setTimeout(() => { const i = document.querySelector('.tb-mn [data-tbmnbusca]'); if (i && innerWidth >= 600 && !i.disabled) i.focus(); }, 30);
 }
+/* v0.5.1 (Grok v0.4.11 A2): no celular, tocar no fundo escuro fecha a folha e o mesmo toque segue para o botão ou a aba que estava embaixo
+   (linha da tabela não: só fecha, como no computador). Só botões e abas do conteúdo da página: a barra de cima (busca, tema, sino),
+   o menu de baixo e campos de digitar não recebem o toque (tocar ali só fecha a folha, sem abrir teclado nem busca por engano) */
+const TB_REPASSA = 'button, a[href], [role="tab"], [data-act]';
+function tbMnAlvo(x, y) { const el = document.elementFromPoint(x, y), b = el && el.closest && el.closest(TB_REPASSA); if (!b || !b.closest('.cs-ct') || b.closest('tr[data-act="tb-lin"]') || b.closest('.tb-mn') || b.classList.contains('tb-mn-fundo') || b.disabled) return null; return b; }
+function tbMnRepassa() { const p = S._tbMnPt; S._tbMnPt = null; if (!p) return; requestAnimationFrame(() => { const b = tbMnAlvo(p.x, p.y); if (b) b.click(); }); }
 function tbMenuFecha() { if (!S.tbMenu) return; if (S._tbMnCam && S.camadas.length && S.camadas[S.camadas.length - 1].nome === 'tbmn') csVolta(); else { S.tbMenu = null; S._tbMnCam = false; render(); } }
 /* toque fora (computador): some com o menu sem redesenhar a tela nem mexer no histórico; o toque segue para o que foi tocado */
 function tbMenuFechaSolto() { const m = document.querySelector('.tb-mn'); if (m) m.remove(); $$('th.tb-ab').forEach(x => x.classList.remove('tb-ab')); $$('.tb-hm[aria-expanded="true"]').forEach(x => x.setAttribute('aria-expanded', 'false')); S.tbMenu = null; }
@@ -368,7 +374,10 @@ document.addEventListener('click', e => {
   if (a === 'gv-fecha') { gvFechar(); return; }
   const st = id ? tbEstado(id) : null;
   const k = t.getAttribute('data-k'), cfg = id ? TB[id] : null;
-  if (a === 'tb-mn-x') tbMenuFecha();
+  if (a === 'tb-mn-x') {
+    if (t.classList.contains('tb-mn-fundo') && e.clientX != null) { t.style.pointerEvents = 'none'; const b = tbMnAlvo(e.clientX, e.clientY); t.style.pointerEvents = ''; S._tbMnPt = b ? { x: e.clientX, y: e.clientY } : null; }
+    tbMenuFecha(); if (!S._tbMnCam) tbMnRepassa();
+  }
   else if (a === 'tb-menu') { if (S._tbEngole) return; tbMenuAbre(id, k); }
   else if (a === 'tb-ociclo') { const at = st.ordem && st.ordem.k === k ? st.ordem.dir : ''; if (st.ordem && st.ordem.k !== k && st.trava[st.ordem.k]) { aviso('A ordem está travada na coluna ' + (cfg.cols.find(c => c.k === st.ordem.k) || {}).rot + '. Destrave lá para ordenar por esta.'); return; } tbMuda(id, s => { s.ordem = !at ? { k: k, dir: 'asc' } : at === 'asc' ? { k: k, dir: 'desc' } : null; }); }
   else if (a === 'tb-oasc' || a === 'tb-odesc') { if (st.ordem && st.ordem.k !== k && st.trava[st.ordem.k]) { aviso('A ordem está travada na coluna ' + (cfg.cols.find(c => c.k === st.ordem.k) || {}).rot + '. Destrave lá para ordenar por esta.'); return; } tbMuda(id, s => { s.ordem = { k: k, dir: a === 'tb-oasc' ? 'asc' : 'desc' }; }); }

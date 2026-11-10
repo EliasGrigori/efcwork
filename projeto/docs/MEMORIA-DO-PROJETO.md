@@ -125,3 +125,6 @@ v0.2 Almoxarifado consulta + tabela padrão + busca · v0.3 Almoxarifado lançam
 - 09/11/2026 17:59: decisão do Elias — sem versões novas do EFClaudian (fica na v2.102.60); todos os pendentes de Bugs e sugestões vão para o EFCwork, cada um com a sua área (ver TRIAGEM).
 - v0.5.0 (09/11/2026, aguardando aprovação): área Documentos (Documentos com grupos Formulários/Regulatórios em ordem alfabética e mover de grupo; Tabela | Calendário; gaveta e Lançar entrega; Caixas d’água; Histórico com correção). Tabela padrão ganhou grupos e aEsquerda. fmtDT corrigida (data local). Suíte 891 ok, 22 suítes.
 - v0.5.0 aprovada 09/11/2026 19:10 (6/6) e publicada em 09/11/2026 com "pode publicar".
+- Retorno do Grok v0.4.11 (09/11 21:06): 14 itens, 9 OK · 1 FALHOU (A2 celular: 1º toque só fechava o menu) · 1 PARCIAL (selo reCAPTCHA escondido, como previsto) · 3 NÃO TESTADO (login real). Achado: navegador novo abria "Primeiro acesso" quando a leitura do setup falhava.
+- v0.5.1 (09/11/2026, aguardando aprovação): toque no fundo do menu da coluna (celular) já faz a ação do botão/aba da página (linha, barra de cima, menu de baixo e campos só fecham); leitura do setup que falha mostra o Entrar, nunca o Primeiro acesso. Suíte 916 ok, 23 suítes.
+- v0.5.1 aprovada 09/11/2026 22:14 (2/2) e publicada com "pode publicar".

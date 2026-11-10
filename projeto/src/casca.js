@@ -195,7 +195,9 @@ async function csCarregaUsuario(uidAtual) {
 async function csIniciar() {
   S.rota = csLeRota();
   try { await Data.init(); } catch (e) { console.error(e); S.pronto = true; S._erroEntrar = 'Não foi possível carregar o Firebase. Confira a internet e abra de novo.'; render(); return; }
-  try { S._setup = await Data.setupDone(); } catch (e) { S._setup = Store.get('sv2-setup') === '1'; }
+  /* v0.5.1 (Grok v0.4.11 B1): se a leitura falhar (App Check, permissão, sem internet), mostra o Entrar. O "Primeiro acesso"
+     só aparece quando a nuvem respondeu que não existe nenhum Administrador (ou na demonstração nova). */
+  try { S._setup = await Data.setupDone(); } catch (e) { S._setup = DEMO ? Store.get('sv2demo_setup') === '1' : true; }
   try { S._descon = Data.conexao(v => { S.conexao = v; }); } catch {}
   Data.auth.onChange(id => { csCarregaUsuario(id); });
   if (DEMO && !Store.get('sv2demo_session')) { S.pronto = true; render(); }
