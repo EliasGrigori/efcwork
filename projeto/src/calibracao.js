@@ -55,6 +55,31 @@ function cbPassos(c, mini) {
   if (mini) return '<ol class="cb-mini" aria-label="Etapas">' + es.map(x => '<li class="' + (x.feito ? 'ok' : x.atual ? 'at' : '') + '" title="' + esc(x.nome + (x.data ? ' · ' + fmtD(x.data) : '')) + '"><i></i><span>' + esc(x.nome) + '</span></li>').join('') + '</ol>';
   return tlFluido(c.id, es);}
 
+/* ======================= lembrete de calibração (v0.4.15, Nº 27, aprovado em 14/10) =======================
+   2 meses antes do vencimento (aviso) e 7 dias antes (aviso). Vai ao sino dos Líderes ★ e do Administrador e, se o equipamento tiver
+   responsável cadastrado (responsavelId), a ele também. Cada aviso uma vez por vencimento: o código do aviso é fixo
+   (cal-equipamento-data-etapa), então abrir o app de novo, em outro aparelho ou em duas pessoas ao mesmo tempo não duplica.
+   Quem gera é o primeiro Líder ★/Administrador que abre o app depois que a janela abre. Vencida: não avisa (a tela já mostra). */
+const CB_LEMB = { m2: 60, d7: 7 };
+async function cbLembretes() {
+  if (!S.user || !isSup(S.user) || !S.almCarregado || !(S.users || []).length || S._cbLemb) return;
+  S._cbLemb = true; const feitos = (S._cbLembOk = S._cbLembOk || {});
+  try {
+    for (const e of (S.almEq || [])) {
+      const sit = eqCalSit(e); if (sit !== 'avencer' && sit !== 'ok') continue;
+      const prox = eqProxima(e), dias = eqDiasCal(e); if (!prox || dias == null || dias < 0 || dias > CB_LEMB.m2) continue;
+      const etapa = dias <= CB_LEMB.d7 ? 'd7' : 'm2', id = 'cal-' + e.id + '-' + prox + '-' + etapa; if (feitos[id]) continue;
+      if (await Data.col('sv2_notifs').get(id)) { feitos[id] = 1; continue; }
+      const txt = eqNomeC(e) + ': a calibração vence em ' + fmtD(prox) + ' (' + (dias === 0 ? 'hoje' : dias === 1 ? 'amanhã' : 'em ' + dias + ' dias') + '). ' + (etapa === 'd7' ? 'Falta 1 semana: peça ou confirme o agendamento.' : 'Faltam 2 meses: já dá para pedir a cotação.') + ' Almoxarifado › Calibração.';
+      const base = { ts: nowISO(), nivel: 'aviso', titulo: 'Calibração ' + (etapa === 'd7' ? 'vence em 7 dias' : 'vence em 2 meses') + ': ' + eqNomeC(e), texto: txt, origem: 'Sistema', refTipo: 'equip', refId: e.id, lidaPor: {}, confirmadaPor: {} };
+      await Data.col('sv2_notifs').set(id, Object.assign({}, base, { para: 'superiores', dest: notifDest('superiores') }));
+      const r = e.responsavelId; if (r && (S.users || []).some(u => u.id === r && u.ativo !== false)) await Data.col('sv2_notifs').set(id + '-r', Object.assign({}, base, { para: [r], dest: notifDest([r]) }));
+      feitos[id] = 1;
+    }
+  } catch (er) { console.warn('lembrete de calibração:', er && (er.code || er.message)); }
+  S._cbLemb = false;
+}
+
 /* ======================= tela (Equipamentos › Calibração) ======================= */
 function cbTela() {
   const ab = cbAbertas(), todas = S.almCal.slice().sort((a, b) => String(b.numero).localeCompare(String(a.numero)));

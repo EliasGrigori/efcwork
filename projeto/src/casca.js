@@ -44,7 +44,7 @@ function csLeRota() {
 }
 function csAcertaHash() { if (S.rota.neg) { S.rota.neg = false; try { history.replaceState(null, '', '#/' + S.rota.area + (S.rota.aba ? '/' + S.rota.aba : '')); } catch {} } }
 function ir(area, aba) { const h = '#/' + area + (aba ? '/' + aba : ''); if (location.hash !== h) location.hash = h; else render(); }
-window.addEventListener('hashchange', () => { S.rota = csLeRota(); csAcertaHash(); csUso(); csFechaMenu(); S.camadas = S.camadas.filter(c => c.nome !== 'menu'); if (S._gvNav) S._gvNav = false; else { S.gv = null; S.gvForm = false; S.fm = null; S._alSel = null; S.camadas = []; const g = $('#gv'); if (g) g.remove(); document.body.classList.remove('gv-aberta'); } render(); try { window.scrollTo(0, 0); } catch {} });
+window.addEventListener('hashchange', () => { S.rota = csLeRota(); csAcertaHash(); csUso(); csFechaMenu(); S._menuFlut = false; S.camadas = S.camadas.filter(c => c.nome !== 'menu' && c.nome !== 'menuflut'); if (S._gvNav) S._gvNav = false; else { S.gv = null; S.gvForm = false; S.fm = null; S._alSel = null; S.camadas = []; const g = $('#gv'); if (g) g.remove(); document.body.classList.remove('gv-aberta'); } render(); try { window.scrollTo(0, 0); } catch {} });
 
 /* ---------- camadas (pedido do Elias, 05/11): cada coisa aberta por cima — gaveta, formulário, lista de escolher, busca, menu do celular —
    é uma camada. Esc, o X e o voltar do celular fecham SÓ a de cima. Formulário com algo preenchido pergunta antes de descartar. ---------- */
@@ -101,12 +101,54 @@ function csEmpresaBloco() {
   const e = S.empresa || {}, un = (e.unidades || []), u = Store.get('cw-unidade') || (un[0] || '');
   return '<button type="button" class="cs-emp" data-act="cs-emp" title="Empresa e unidade"><span><b>' + esc(e.nome || 'Sua empresa') + '</b><small>' + esc(un.length ? u : 'Configure em Administração') + '</small></span>' + ic('seta') + '</button>';
 }
+/* ---------- menu lateral retrátil (v0.5.3, Nº 48; aprovado 10/11: 3 estados + OPÇÃO 4 "botão que alterna") ----------
+   Só no computador (≥ 900 px). Aberto → Só ícones → Recolhido, um toque no botão do topo do menu (os 3 pontinhos mostram onde está).
+   Recolhido: sobra o puxador dourado no meio da borda esquerda; passar o mouse ele cresce, clicar abre o menu por cima da tela.
+   Com o menu aberto por cima, o mesmo botão fixa o menu aberto de novo. A escolha fica gravada neste aparelho (cw-menu).
+   As animações só rodam quando algo muda (nunca a cada desenho da tela) e somem com "reduzir movimento" do sistema. */
+const CS_MENU = ['aberto', 'icones', 'recolhido'];
+function csMenuEst() { const v = Store.get('cw-menu'); return CS_MENU.includes(v) ? v : 'aberto'; }
+function csPuxForma() { const v = Store.get('cw-pux'); return ['pa', 'pb', 'pc'].includes(v) ? v : 'pa'; }
+function csMenuClasse() { const m = csMenuEst(); return m === 'icones' ? ' m-ic' : m === 'recolhido' ? ' m-rc' + (S._menuFlut ? ' flut' : '') : ''; }
+function csMenuAltDica() { const m = csMenuEst(); return m === 'aberto' ? 'Mostrar só os ícones' : m === 'icones' ? 'Recolher o menu' : 'Fixar o menu aberto'; }
+function csMenuAlt() {
+  const m = csMenuEst(), k = CS_MENU.indexOf(m), d = csMenuAltDica();
+  return '<div class="cs-alt"><span class="cs-pts" aria-hidden="true">' + CS_MENU.map((x, i) => '<i' + (i === k ? ' class="on"' : '') + '></i>').join('') + '</span>' +
+    '<button type="button" class="bt ic-so cs-altb" data-act="cs-alterna" title="' + esc(d) + '" aria-label="' + esc(d) + '">' + ic('recolhe') + '</button></div>';
+}
+function csPux() { return '<button type="button" class="cs-pux ' + csPuxForma() + (S._puxEntra ? ' entra' : '') + '" data-act="cs-pux" title="Abrir o menu" aria-label="Abrir o menu"><span class="cs-pux-g" aria-hidden="true"></span>' + ic('seta') + '</button>'; }
+function csMenuAplica(novo) {
+  const app = $('.cs-app'), ant = csMenuEst(); Store.set('cw-menu', novo);
+  if (!app) { render(); return; }
+  if (S._menuFlut) { S._menuFlut = false; S.camadas = S.camadas.filter(c => c.nome !== 'menuflut'); }
+  app.classList.remove('m-ic', 'm-rc', 'flut', 'abrindo');
+  if (novo === 'icones') app.classList.add('m-ic'); else if (novo === 'recolhido') app.classList.add('m-rc');
+  const alt = app.querySelector('.cs-alt'); if (alt) alt.outerHTML = csMenuAlt(); /* sem redesenhar a tela, para a transição correr */
+  const px = app.querySelector('.cs-pux'); if (px && novo === 'recolhido') { px.classList.remove('entra'); void px.offsetWidth; px.classList.add('entra'); }
+  if (ant === 'recolhido' && novo !== 'recolhido') { app.classList.add('fixando'); }
+  setTimeout(() => { app.classList.remove('fixando'); try { tbAlinhaTot(); } catch {} }, 450);
+}
+function csMenuAlterna() {
+  const m = csMenuEst();
+  if (m === 'recolhido') { if (S._menuFlut && csTemCamada('menuflut')) { const app = $('.cs-app'); if (app) app.classList.add('fixando'); csCamadaSaiu('menuflut', () => csMenuAplica('aberto')); } else csMenuAplica('aberto'); return; }
+  csMenuAplica(m === 'aberto' ? 'icones' : 'recolhido');
+}
+function csMenuFlutAbre() {
+  const app = $('.cs-app'); if (!app || S._menuFlut) return;
+  S._menuFlut = true; app.classList.add('flut', 'abrindo'); setTimeout(() => app.classList.remove('abrindo'), 700);
+  csCamadaAbre('menuflut', csMenuFlutFecha);
+}
+function csMenuFlutFecha() {
+  S._menuFlut = false; const app = $('.cs-app'); if (!app) return;
+  app.classList.remove('flut', 'abrindo');
+  const px = app.querySelector('.cs-pux'); if (px) { px.classList.remove('entra'); void px.offsetWidth; px.classList.add('entra'); }
+}
 function csLado() {
-  const at = S.rota.area; let h = '<aside class="cs-lado" id="cs-lado" aria-label="Menu">' + csMarca() + csEmpresaBloco() + '<nav class="cs-nav">';
-  let grupo = '';
+  const at = S.rota.area; let h = '<aside class="cs-lado" id="cs-lado" aria-label="Menu"><div class="cs-topl">' + csMarca() + csMenuAlt() + '</div>' + csEmpresaBloco() + '<nav class="cs-nav">';
+  let grupo = '', n = 0;
   AREAS.filter(a => !a.rodape && !a.negada).forEach(a => {
     if (a.grupo && a.grupo !== grupo) { grupo = a.grupo; h += '<div class="cs-gh">' + esc(grupo) + '</div>'; }
-    h += '<a class="cs-it' + (a.id === at ? ' on' : '') + '" href="#/' + a.id + '"' + (a.id === at ? ' aria-current="page"' : '') + '>' + ic(a.ic) + '<span>' + esc(a.nome) + '</span></a>';
+    h += '<a class="cs-it' + (a.id === at ? ' on' : '') + '" style="--i:' + (n++) + '" href="#/' + a.id + '"' + (a.id === at ? ' aria-current="page"' : '') + '>' + ic(a.ic) + '<span>' + esc(a.nome) + '</span></a>';
   });
   const adm = csArea('adm'), u = S.user || {};
   h += '</nav><div class="cs-pe"><a class="cs-it' + (at === 'adm' ? ' on' : '') + '" href="#/adm">' + ic(adm.ic) + '<span>' + adm.nome + '</span></a>' +
@@ -114,8 +156,25 @@ function csLado() {
     '<div class="cs-cw"><span>' + APP_APELIDO + '</span><span>v' + VERSAO + (DEMO ? ' · demonstração' : '') + '</span></div></div></aside>';
   return h;
 }
+/* gaveta da nuvem (Nº 46): situação, hora da última leitura e o botão que força a releitura do servidor */
+function csNuvemGaveta() {
+  const off = S.conexao === false, r = S._nuvemRes, ocu = !!S._nuvemOcupada, hora = S._nuvemEm ? new Date(S._nuvemEm).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '';
+  const c = '<div class="nv"><div class="nv-st' + (off ? ' off' : '') + '">' + ic('nuvem') + '<span><b>' + (off ? 'Sem internet' : 'Sincronizado') + '</b><small>' + (off ? 'O que você lançar fica guardado no aparelho e sobe quando a internet voltar.' : 'O app recebe as mudanças da nuvem sozinho.') + '</small></span></div>' +
+    '<p class="nv-t">Se uma tela parecer desatualizada (por exemplo, outra pessoa lançou e ainda não apareceu aqui), toque em <b>Atualizar agora</b>: o app lê tudo de novo direto do servidor.</p>' +
+    (hora ? '<p class="nv-u">Última leitura da nuvem: ' + hora + '</p>' : '') +
+    (r ? '<p class="nv-r ' + (r.ok ? 'ok' : 'er') + '" role="status">' + ic(r.ok ? 'ok' : 'excl') + '<span>' + (r.ok ? 'Atualizado às ' + esc(r.hora) + ' · ' + r.n + ' listas lidas do servidor.' : 'Não deu para atualizar' + (r.falhas && r.n ? ' (' + r.falhas + ' de ' + r.n + ' listas sem resposta)' : '') + '. Confira a internet e tente de novo.') + '</span></p>' : '') + '</div>';
+  return { ico: 'nuvem', sub: 'Mesma nuvem do EFClaudian', titulo: 'Nuvem', corpo: c,
+    rodape: '<button type="button" class="bt pr" data-act="cs-nuvem-atu"' + (ocu ? ' disabled' : '') + '>' + ic('gira') + (ocu ? 'Lendo da nuvem…' : 'Atualizar agora') + '</button>' };
+}
+async function csNuvemAtualiza() {
+  if (S._nuvemOcupada) return; S._nuvemOcupada = true; if (S.gv === csNuvemGaveta) gvDesenha(true);
+  let r; try { r = await Data.atualizar(); } catch (e) { r = { ok: false, n: 0, falhas: 1 }; }
+  S._nuvemOcupada = false; const h = new Date(); r.hora = h.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }); S._nuvemRes = r; if (r.ok) S._nuvemEm = h.toISOString();
+  if (S.gv === csNuvemGaveta) gvDesenha(true);
+}
 function csTopo() {
-  const t = csTema(), con = DEMO ? '<span class="cs-sync">Demonstração</span>' : S.conexao === false ? '<span class="cs-sync off"><i></i>Sem internet · guardando no aparelho</span>' : '<span class="cs-sync"><i></i>Sincronizado</span>';
+  /* v0.4.15 (Nº 46): o aviso da nuvem virou botão; abre a gaveta com "Atualizar agora". No celular fica só o ícone (cor = situação) */
+  const off = S.conexao === false, t = csTema(), con = DEMO ? '<span class="cs-sync">Demonstração</span>' : '<button type="button" class="cs-sync' + (off ? ' off' : '') + '" data-act="cs-nuvem" aria-label="Nuvem: ' + (off ? 'sem internet' : 'sincronizado') + '. Abrir" title="Nuvem · atualizar agora">' + ic('nuvem') + '<i></i><span>' + (off ? 'Sem internet · guardando no aparelho' : 'Sincronizado') + '</span></button>';
   return '<header class="cs-topo"><button type="button" class="bt ic-so cs-so-cel" data-act="cs-menu" aria-label="Abrir menu">' + ic('menu') + '</button>' +
     '<button type="button" class="cs-busca" data-act="cs-busca" aria-label="Buscar (tecla /)">' + ic('lupa') + '<span>Buscar documento, material, coleta…</span><kbd>/</kbd></button><span class="cs-sp"></span>' + con +
     '<button type="button" class="bt ic-so" data-act="cs-tema" aria-label="' + (t === 'escuro' ? 'Usar tema claro' : 'Usar tema escuro') + '" title="' + (t === 'escuro' ? 'Tema claro' : 'Tema escuro') + '">' + ic(t === 'escuro' ? 'sol' : 'lua') + '</button>' +
@@ -146,8 +205,9 @@ function render() {
   let corpo = '';
   try { corpo = f ? f(S.rota.aba) : arEmBreve(ar); } catch (e) { console.error(e); corpo = '<div class="pn"><div class="vazio"><b>Esta tela deu erro ao abrir.</b><span>' + esc(e && e.message || e) + '</span></div></div>'; }
   const foco = document.activeElement && document.activeElement.getAttribute && document.activeElement.getAttribute('data-foco'), sel = foco ? [document.activeElement.selectionStart, document.activeElement.selectionEnd] : null;
-  app.innerHTML = '<div class="cs-app">' + csLado() + '<div class="cs-fundo" data-act="cs-fecha"></div><main class="cs-main" id="conteudo">' + csTopo() + '<div class="cs-ct">' + corpo + '</div><footer class="cs-rod">' + APP_APELIDO + ' · ' + esc((S.empresa && S.empresa.nome) || 'Sua empresa') + '</footer></main>' + csBaixo() + '</div>';
+  app.innerHTML = '<div class="cs-app' + csMenuClasse() + '">' + csLado() + csPux() + '<div class="cs-fundo" data-act="cs-fecha"></div><main class="cs-main" id="conteudo">' + csTopo() + '<div class="cs-ct">' + corpo + '</div><footer class="cs-rod">' + APP_APELIDO + ' · ' + esc((S.empresa && S.empresa.nome) || 'Sua empresa') + '</footer></main>' + csBaixo() + '</div>';
   const dep = TELAS[ar.id + ':depois']; if (dep) { try { dep(S.rota.aba); } catch (e) { console.error(e); } }
+  S._puxEntra = false;
   try { gvDesenha(); } catch (e) { console.error(e); }
   if (foco) { const el = document.querySelector('[data-foco="' + foco.replace(/"/g, '') + '"]'); if (el) { el.focus({ preventScroll: true }); try { el.setSelectionRange(sel[0], sel[1]); } catch {} } } /* quem estava digitando continua no mesmo campo */
 }
@@ -160,9 +220,13 @@ document.addEventListener('click', e => {
   if (a === 'cs-tema') csTrocaTema(csTema() === 'escuro' ? 'claro' : 'escuro');
   else if (a === 'cs-menu') { const x = $('.cs-app'); if (!x) return; if (x.classList.contains('menu-aberto')) csVolta(); else { x.classList.add('menu-aberto'); csCamadaAbre('menu', csFechaMenu); } }
   else if (a === 'cs-fecha') csVolta();
+  else if (a === 'cs-alterna') csMenuAlterna();
+  else if (a === 'cs-pux') csMenuFlutAbre();
   else if (a === 'cs-sair') csSair();
   else if (a === 'cs-emp') ir('adm', 'empresa');
   else if (a === 'cs-sino') snAbrir();
+  else if (a === 'cs-nuvem') { S._nuvemRes = null; gvAbrir(csNuvemGaveta); }
+  else if (a === 'cs-nuvem-atu') csNuvemAtualiza();
 });
 
 /* ---------- sessão ---------- */
@@ -198,7 +262,7 @@ async function csIniciar() {
   /* v0.5.1 (Grok v0.4.11 B1): se a leitura falhar (App Check, permissão, sem internet), mostra o Entrar. O "Primeiro acesso"
      só aparece quando a nuvem respondeu que não existe nenhum Administrador (ou na demonstração nova). */
   try { S._setup = await Data.setupDone(); } catch (e) { S._setup = DEMO ? Store.get('sv2demo_setup') === '1' : true; }
-  try { S._descon = Data.conexao(v => { S.conexao = v; }); } catch {}
+  try { S._descon = Data.conexao(v => { const mudou = S.conexao !== v; S.conexao = v; if (v === true) S._nuvemEm = new Date().toISOString(); if (mudou) { const b = $('.cs-sync'); if (b) { const n = document.createElement('div'); n.innerHTML = csTopo(); const novo = n.querySelector('.cs-sync'); if (novo) b.replaceWith(novo); } if (S.gv === csNuvemGaveta) gvDesenha(true); } }); } catch {}
   Data.auth.onChange(id => { csCarregaUsuario(id); });
   if (DEMO && !Store.get('sv2demo_session')) { S.pronto = true; render(); }
 }

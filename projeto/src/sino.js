@@ -65,6 +65,7 @@ document.addEventListener('click', async e => {
   else if (a === 'sn-ver') { const x = $('#sn-toast'); if (x) x.remove(); snAbrir(); }
   else if (a === 'sn-abre') {
     const n = S.notifs.find(x => x.id === id); if (!n) return; Notif.read(n.id);
+    if (n.refTipo === 'equip' && n.refId && alVe() && S.almEq.some(q => q.id === n.refId)) { S._gvNav = true; ir('almox', 'equipamentos'); alAbreEq(n.refId); return; }
     if (n.refTipo === 'alm_mov' && n.refId && alVe() && S.almMov.some(m => m.id === n.refId)) { S._gvNav = true; ir('almox', 'movimentacoes'); alAbreMov(n.refId); }
   }
 });

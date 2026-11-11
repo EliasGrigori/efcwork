@@ -1,0 +1,68 @@
+/* EFCwork · suíte da v0.5.3 — menu lateral retrátil (Nº 48, OPÇÃO 4 aprovada em 10/11) e Total na linha dos ícones.
+   Dados fictícios. Uso: node tools/testes/t_v053.js */
+const { chromium } = require('playwright'); const path = require('path');
+const RAIZ = path.resolve(__dirname, '..', '..'), URL = 'file://' + path.join(RAIZ, 'dist', 'index.html') + '?demo=1';
+let ok = 0, falhas = 0; const conf = (c, m) => { if (c) { ok++; console.log('  ok  ' + m); } else { falhas++; console.log('  FALHA  ' + m); } };
+(async () => {
+  const b = await chromium.launch();
+  const mk = async (w, o = {}) => { const p = await (await b.newContext(Object.assign({ viewport: { width: w, height: 800 }, hasTouch: w < 600, isMobile: w < 600 }, o))).newPage(); p._er = []; p.on('pageerror', e => p._er.push(String(e))); await p.route(/gstatic|fonts\.g/, r => r.abort());
+    await p.goto(URL); await p.waitForTimeout(400); await p.fill('#en-nome', 'Joana Silva'); await p.fill('#en-login', 'joana.silva'); await p.fill('#en-senha', 'senha1234'); await p.fill('#en-senha2', 'senha1234');
+    await p.evaluate(() => document.querySelector('[data-form="en-primeiro"] button[type=submit]').click()); await p.waitForTimeout(800);
+    await p.evaluate(async () => { for (let i = 0; i < 6; i++) await Data.col('sv2_alm_itens').set('u' + i, { nome: 'Material ' + i, codigo: 'M' + i, un: 'Un', min: 2, local: 'Porta ' + i, ativo: true }); location.hash = '#/almox/materiais'; }); await p.waitForTimeout(700); return p; };
+  const est = p => p.evaluate(() => ({ cls: document.querySelector('.cs-app').className, menu: Store.get('cw-menu'), lado: Math.round(document.querySelector('.cs-lado').getBoundingClientRect().right), main: Math.round(document.querySelector('.cs-main').getBoundingClientRect().width), pux: getComputedStyle(document.querySelector('.cs-pux')).display, cam: S.camadas.length, pts: [...document.querySelectorAll('.cs-pts i')].findIndex(i => i.classList.contains('on')), dica: document.querySelector('[data-act="cs-alterna"]').title }));
+  console.log('PC 1280 — os 3 estados com o botão que alterna:');
+  let p = await mk(1280), s = await est(p);
+  conf(!/m-ic|m-rc/.test(s.cls) && s.lado >= 230 && s.pts === 0 && s.dica === 'Mostrar só os ícones' && s.pux === 'none', 'começa aberto (240 px), 1º pontinho aceso, sem puxador');
+  await p.click('[data-act="cs-alterna"]'); await p.waitForTimeout(500); s = await est(p);
+  conf(/m-ic/.test(s.cls) && s.lado <= 72 && s.pts === 1 && s.menu === 'icones' && s.dica === 'Recolher o menu', 'um clique: só ícones (68 px), 2º pontinho, gravado neste aparelho');
+  conf(await p.evaluate(() => { const sp = document.querySelector('.cs-it span'); return getComputedStyle(sp).position === 'absolute' && getComputedStyle(sp).opacity === '0'; }), 'só ícones: o nome some e vira etiqueta');
+  await p.hover('.cs-nav .cs-it:nth-of-type(2)'); await p.waitForTimeout(300);
+  conf(await p.evaluate(() => getComputedStyle(document.querySelectorAll('.cs-nav .cs-it')[1].querySelector('span')).opacity === '1'), 'passar o mouse no ícone mostra o nome da área');
+  await p.click('[data-act="cs-alterna"]'); await p.waitForTimeout(800); s = await est(p);
+  conf(/m-rc/.test(s.cls) && s.lado <= 1 && s.menu === 'recolhido' && s.pux === 'flex' && s.dica === 'Fixar o menu aberto', 'outro clique: recolhido, menu fora da tela e o puxador aparece');
+  conf(s.main >= 1270, 'recolhido: o conteúdo usa a largura toda (' + s.main + ' px)');
+  await p.reload(); await p.waitForTimeout(900); s = await est(p);
+  conf(/m-rc/.test(s.cls) && s.pux === 'flex', 'recarregar a página mantém recolhido');
+  const pw = async () => p.evaluate(() => Math.round(document.querySelector('.cs-pux').getBoundingClientRect().width));
+  const w0 = await pw(); await p.mouse.move(4, 400); await p.waitForTimeout(700); const w1 = await pw();
+  conf(w0 <= 10 && w1 >= 26, 'puxador fino (' + w0 + ' px) cresce ao passar o mouse (' + w1 + ' px)');
+  await p.mouse.click(8, 400); await p.waitForTimeout(800); s = await est(p);
+  conf(/flut/.test(s.cls) && s.lado >= 230 && s.cam === 1 && s.main >= 1270, 'clicar no puxador abre o menu por cima (sem empurrar o conteúdo), 1 camada');
+  await p.keyboard.press('Escape'); await p.waitForTimeout(600); s = await est(p);
+  conf(!/flut/.test(s.cls) && /m-rc/.test(s.cls) && s.cam === 0 && s.pux === 'flex', 'Esc fecha só o menu por cima; continua recolhido');
+  await p.waitForTimeout(900); await p.mouse.move(4, 400); await p.waitForTimeout(500); await p.mouse.click(8, 400); await p.waitForTimeout(800); await p.mouse.click(900, 500); await p.waitForTimeout(600); s = await est(p);
+  conf(!/flut/.test(s.cls) && s.cam === 0, 'clicar fora fecha o menu por cima');
+  await p.waitForTimeout(900); await p.mouse.move(4, 400); await p.waitForTimeout(500); await p.mouse.click(8, 400); await p.waitForTimeout(800); await p.click('.cs-lado a[href="#/documentos"]'); await p.waitForTimeout(700); s = await est(p);
+  conf(!/flut/.test(s.cls) && /m-rc/.test(s.cls) && /#\/documentos/.test(await p.evaluate(() => location.hash)), 'escolher uma área no menu por cima abre a área e o menu recolhe de novo');
+  await p.waitForTimeout(900); await p.mouse.move(4, 400); await p.waitForTimeout(500); await p.mouse.click(8, 400); await p.waitForTimeout(800); await p.click('.cs-lado [data-act="cs-alterna"]'); await p.waitForTimeout(800); s = await est(p);
+  conf(!/m-rc|m-ic|flut/.test(s.cls) && s.menu === 'aberto' && s.cam === 0 && s.lado >= 230 && /#\/documentos/.test(await p.evaluate(() => location.hash)), 'no menu por cima, o botão fixa o menu aberto de novo (sem voltar de tela)');
+  conf(p._er.length === 0, 'sem erros no console' + (p._er[0] ? ': ' + p._er[0] : ''));
+  console.log('Formas do puxador (A, B, C) e tema escuro:');
+  await p.evaluate(() => { Store.set('cw-menu', 'recolhido'); }); 
+  for (const f of ['pa', 'pb', 'pc']) { await p.evaluate(f => { Store.set('cw-pux', f); render(); }, f); await p.mouse.move(700, 400); await p.waitForTimeout(500);
+    conf(await p.evaluate(f => { const x = document.querySelector('.cs-pux'); return x.classList.contains(f) && getComputedStyle(x).display === 'flex'; }, f), 'forma ' + f + ' aparece'); }
+  await p.evaluate(() => { document.documentElement.setAttribute('data-tema', 'escuro'); Store.set('cw-menu', 'icones'); render(); }); await p.waitForTimeout(300);
+  conf(await p.evaluate(() => document.querySelector('.cs-lado').getBoundingClientRect().width <= 72), 'escuro + só ícones ok');
+  await p.close();
+  console.log('Animações: só quando muda e respeitando "reduzir movimento":');
+  p = await mk(1280, { reducedMotion: 'reduce' });
+  await p.click('[data-act="cs-alterna"]'); await p.click('[data-act="cs-alterna"]'); await p.waitForTimeout(200);
+  conf(await p.evaluate(() => getComputedStyle(document.querySelector('.cs-pux')).animationName === 'none'), 'com "reduzir movimento" o puxador não anima');
+  await p.close(); p = await mk(1280);
+  await p.evaluate(() => Store.set('cw-menu', 'recolhido')); await p.evaluate(() => render()); await p.waitForTimeout(100);
+  conf(await p.evaluate(() => !document.querySelector('.cs-pux').classList.contains('entra')), 'redesenhar a tela não repete a animação do puxador');
+  await p.close();
+  console.log('Celular (390): nada muda');
+  p = await mk(390);
+  await p.evaluate(() => { Store.set('cw-menu', 'recolhido'); render(); }); await p.waitForTimeout(300);
+  conf(await p.evaluate(() => getComputedStyle(document.querySelector('.cs-alt')).display === 'none' && getComputedStyle(document.querySelector('.cs-pux')).display === 'none'), 'no celular não há botão de alternar nem puxador');
+  await p.tap('.cs-topo [data-act="cs-menu"]'); await p.waitForTimeout(400);
+  conf(await p.evaluate(() => document.querySelector('.cs-app').classList.contains('menu-aberto') && document.querySelector('.cs-lado').getBoundingClientRect().left >= -1), 'o ☰ continua abrindo o menu como gaveta');
+  conf(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'sem rolar de lado');
+  await p.close();
+  console.log('Total na linha dos ícones (Elias, 10/11):');
+  for (const w of [1180, 1280, 1366]) { p = await mk(w);
+    const m = await p.evaluate(() => { const t = document.querySelector('.tb-tots'); if (!t) return null; const tv = t.querySelector('.tb-tv').getBoundingClientRect(), ic = document.querySelector('.tb-bar .ic-so').getBoundingClientRect(); return { linha: t.classList.contains('tb-tots-linha'), mesma: Math.abs(tv.top - ic.top) < 2, pb: t.parentElement.style.paddingBottom }; });
+    conf(m && !m.linha && m.mesma && !m.pb, w + ' px: Total na mesma linha dos ícones, sem linha extra'); await p.close(); }
+  console.log('\n' + ok + ' ok, ' + falhas + ' falha(s)'); await b.close(); process.exit(falhas ? 1 : 0);
+})();

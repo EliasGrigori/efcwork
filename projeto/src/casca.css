@@ -33,6 +33,23 @@
 .cs-busca kbd{font-family:var(--f);font-size:12px;border:1px solid var(--bd2);border-bottom-width:2px;border-radius:4px;padding:0 5px;color:var(--tx2)}
 .cs-sp{flex:1}
 .cs-sync{font-size:13px;color:var(--ok);display:flex;align-items:center;gap:6px;white-space:nowrap}
+button.cs-sync{border:1px solid transparent;background:transparent;border-radius:var(--rs);height:var(--btn);padding:0 10px;font:inherit;font-size:13px;cursor:pointer}
+button.cs-sync:hover{background:var(--bg2);border-color:var(--bd)}
+button.cs-sync:focus-visible{outline:2px solid var(--a);outline-offset:1px}
+.cs-sync>.ic{display:none;width:20px;height:20px}
+.nv{display:flex;flex-direction:column;gap:12px}
+.nv-st{display:flex;gap:12px;align-items:flex-start;padding:12px;border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg0);color:var(--ok)}
+.nv-st.off{color:var(--wa)}
+.nv-st .ic{width:22px;height:22px;flex:none;margin-top:1px}
+.nv-st span{display:flex;flex-direction:column;gap:2px;min-width:0}
+.nv-st b{font-weight:600;color:var(--tx)}
+.nv-st small{font-size:14px;color:var(--tx2)}
+.nv-t{margin:0;font-size:15px;color:var(--tx2);line-height:1.5}
+.nv-u{margin:0;font-size:13px;color:var(--tx3)}
+.nv-r{margin:0;display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border:1px solid var(--bd);border-radius:var(--rs);font-size:14px}
+.nv-r .ic{width:18px;height:18px;flex:none;margin-top:1px}
+.nv-r.ok{color:var(--ok)}.nv-r.er{color:var(--cr)}
+.nv-r span{color:var(--tx)}
 .cs-sync i{width:7px;height:7px;border-radius:50%;background:var(--ok);display:inline-block}
 .cs-sync.off{color:var(--wa)}.cs-sync.off i{background:var(--wa)}
 .cs-ct{flex:1;padding:20px 20px 28px;display:flex;flex-direction:column;gap:16px;width:100%}
@@ -71,7 +88,11 @@
   .cs-so-cel{display:inline-flex}
   .cs-topo{padding:0 12px;gap:8px}
   .cs-busca{width:auto;flex:1;min-width:0}
-  .cs-busca kbd,.cs-sync{display:none}
+  .cs-busca kbd{display:none}
+  span.cs-sync{display:none}
+  button.cs-sync{width:var(--btn);padding:0;justify-content:center;position:relative}
+  button.cs-sync>.ic{display:block}button.cs-sync>span,button.cs-sync>i{display:none}
+
   .cs-sp{display:none}
   .cs-ct{padding:16px 16px 20px}
   .cs-ph h1{font-size:25px}
@@ -93,3 +114,87 @@
 .cs-ht{display:flex;align-items:center;gap:10px}.cs-ht .pg-lg{margin-bottom:8px}
 /* v0.4.6: com ícone ao lado do título (Programação, plano), os botões ficam na linha do título também quando há situação embaixo */
 @media(min-width:900px){.cs-phr:has(.cs-ht){align-items:flex-start}.cs-phr:has(.cs-ht) .cs-acts{margin-top:4px}}
+
+/* ===== menu lateral retrátil (v0.5.3, Nº 48) — só no computador ===== */
+.cs-topl{display:flex;align-items:flex-start;justify-content:space-between;gap:6px}
+.cs-topl .cs-marca{min-width:0}
+.cs-alt{display:none;align-items:center;gap:6px;flex:none;padding-top:3px}
+.cs-pts{display:flex;gap:3px;align-items:center}
+.cs-pts i{width:5px;height:5px;border-radius:3px;background:var(--sbBd);transition:width .3s cubic-bezier(.34,1.56,.64,1),background .2s}
+.cs-pts i.on{width:13px;background:var(--a)}
+.cs-altb{width:32px;height:32px;min-height:32px;border-color:transparent;background:transparent;color:inherit;opacity:.7}
+.cs-altb:hover{opacity:1;background:var(--bg2);border-color:var(--sbBd)}
+.cs-altb .ic{width:17px;height:17px;transition:transform .35s cubic-bezier(.34,1.4,.64,1)}
+.cs-pux{display:none}
+@media(min-width:900px){
+  .cs-alt{display:flex}
+  .cs-app{transition:grid-template-columns .34s cubic-bezier(.3,.9,.3,1)}
+  .cs-main{grid-column:2;grid-row:1} /* o conteúdo fica sempre na 2ª coluna, mesmo com o menu fora do fluxo (recolhido) */
+  .cs-topl .cs-nm{min-width:0}.cs-topl .cs-nm span{white-space:nowrap}
+  .cs-topl .cs-marca{gap:8px;padding-right:0}
+  .cs-it span,.cs-nm,.cs-emp,.cs-ust,.cs-cw,.cs-gh{transition:opacity .2s}
+  /* --- só ícones --- */
+  .cs-app.m-ic{grid-template-columns:68px minmax(0,1fr)}
+  .m-ic .cs-lado{padding:14px 10px;overflow:visible}
+  .m-ic .cs-topl{flex-direction:column;align-items:center;gap:10px}
+  .m-ic .cs-marca{padding:2px 0 4px;justify-content:center}
+  .m-ic .cs-nm,.m-ic .cs-emp,.m-ic .cs-ust,.m-ic .cs-cw{display:none}
+  .m-ic .cs-alt{flex-direction:column;gap:6px;padding:0 0 6px}
+  .m-ic .cs-altb .ic{transform:none}
+  .m-ic .cs-gh{font-size:0;padding:0;height:1px;background:var(--sbBd);margin:8px 6px}
+  .m-ic .cs-it{justify-content:center;padding:0;width:48px;margin:0 auto}
+  .m-ic .cs-it.on::before{left:-10px}
+  /* o nome vira etiqueta ao passar o mouse */
+  .m-ic .cs-it span{position:absolute;left:calc(100% + 10px);top:50%;transform:translate(-4px,-50%);background:var(--tx);color:var(--bg1);font-size:13px;font-weight:500;padding:6px 10px;border-radius:7px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s,transform .2s;z-index:40;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+  .m-ic .cs-it:hover span,.m-ic .cs-it:focus-visible span{opacity:1;transform:translate(0,-50%)}
+  .m-ic .cs-us{flex-direction:column;padding:0;gap:6px}
+  /* --- recolhido --- */
+  .cs-app.m-rc{grid-template-columns:0px minmax(0,1fr)}
+  .m-rc .cs-lado{position:fixed;left:0;top:0;bottom:0;width:240px;transform:translateX(-104%);transition:transform .3s cubic-bezier(.4,0,.2,1),box-shadow .3s;z-index:30}
+  .m-rc .cs-altb .ic{transform:rotate(180deg)}
+  .m-rc.flut .cs-lado{transform:none;box-shadow:0 20px 60px rgba(40,28,6,.30),0 2px 8px rgba(40,28,6,.12)}
+  .m-rc.flut .cs-fundo{display:block;position:fixed;inset:0;z-index:29;background:rgba(28,20,6,.16);animation:cs-fd .3s ease both}
+  .m-rc.abrindo .cs-lado{animation:cs-lado-entra .55s cubic-bezier(.22,1.25,.36,1) both}
+  .m-rc.abrindo .cs-it,.m-rc.abrindo .cs-gh,.m-rc.abrindo .cs-emp,.m-rc.abrindo .cs-pe{animation:cs-it-entra .38s cubic-bezier(.2,.8,.3,1) both;animation-delay:calc(var(--i,6) * 24ms + 120ms)}
+  .m-rc.abrindo .cs-emp{--i:0}.m-rc.abrindo .cs-pe{--i:9}
+  .m-rc.fixando .cs-lado,.cs-app.fixando .cs-lado{transition:none}
+  /* --- puxador --- */
+  .m-rc .cs-pux{display:flex;position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:28;border:0;padding:0;cursor:pointer;align-items:center;justify-content:center;color:#1c1406;overflow:hidden;
+    background:var(--ouro);
+    transition:width .42s cubic-bezier(.34,1.56,.64,1),height .42s cubic-bezier(.34,1.56,.64,1),border-radius .3s,box-shadow .3s,opacity .2s}
+  .m-rc.flut .cs-pux{opacity:0;pointer-events:none;transform:translate(-100%,-50%);transition:opacity .15s,transform .2s}
+  .cs-pux .ic{width:18px;height:18px;stroke-width:2.4;opacity:0;transform:translateX(-6px);transition:opacity .2s .08s,transform .3s .08s;position:relative;z-index:1}
+  .cs-pux:hover .ic,.cs-pux:focus-visible .ic{opacity:1;transform:none;animation:cs-pux-seta 1.1s ease-in-out .4s infinite}
+  .cs-pux:focus-visible{outline:2px solid var(--a);outline-offset:2px}
+  .cs-pux:active{filter:brightness(.95)}
+  /* brilho que passa (chamativo, mas só de vez em quando) */
+  .cs-pux::after{content:"";position:absolute;left:0;right:0;top:-60%;height:45%;background:linear-gradient(180deg,transparent,rgba(255,255,255,.75),transparent);animation:cs-pux-brilho 5.5s ease-in-out 1.2s infinite;pointer-events:none}
+  .cs-pux-g{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;opacity:0;transition:opacity .2s}
+  .cs-pux.entra{animation:cs-pux-entra .75s cubic-bezier(.22,1.3,.36,1) both}
+  /* forma A — lingueta (aba que sai da borda) */
+  .cs-pux.pa{width:8px;height:72px;border-radius:0 9px 9px 0;box-shadow:0 0 0 1px rgba(154,113,40,.28),0 6px 18px rgba(154,113,40,.38)}
+  .cs-pux.pa:hover,.cs-pux.pa:focus-visible{width:30px;height:118px;border-radius:0 14px 14px 0;box-shadow:0 0 0 1px rgba(154,113,40,.35),0 10px 28px rgba(154,113,40,.45)}
+  /* forma B — meia-lua com a seta sempre visível */
+  .cs-pux.pb{width:16px;height:48px;border-radius:0 24px 24px 0;box-shadow:0 0 0 1px rgba(154,113,40,.28),0 6px 18px rgba(154,113,40,.38)}
+  .cs-pux.pb .ic{opacity:.85;transform:translateX(-2px);width:14px;height:14px}
+  .cs-pux.pb:hover,.cs-pux.pb:focus-visible{width:34px;height:76px;border-radius:0 38px 38px 0}
+  .cs-pux.pb:hover .ic{width:18px;height:18px}
+  /* forma C — fio de luz com um ponto, que vira aba */
+  .cs-pux.pc{width:4px;height:120px;border-radius:0 3px 3px 0;box-shadow:0 0 10px 1px rgba(217,180,106,.75)}
+  .cs-pux.pc .cs-pux-g{opacity:1}
+  .cs-pux.pc .cs-pux-g::before{content:"";width:10px;height:10px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff7dc,#d9b46a 60%,#9a7128);box-shadow:0 0 0 3px rgba(217,180,106,.35);transform:translateX(3px);animation:cs-pux-pulso 2.6s ease-in-out infinite}
+  .cs-pux.pc{overflow:visible}
+  .cs-pux.pc:hover,.cs-pux.pc:focus-visible{width:30px;height:118px;border-radius:0 14px 14px 0;overflow:hidden}
+  .cs-pux.pc:hover .cs-pux-g{opacity:0}
+}
+@keyframes cs-fd{from{opacity:0}to{opacity:1}}
+@keyframes cs-lado-entra{0%{transform:translateX(-104%)}100%{transform:none}}
+@keyframes cs-it-entra{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
+@keyframes cs-pux-entra{0%{transform:translate(-110%,-50%) scaleY(.35);opacity:0}45%{transform:translate(0,-50%) scaleY(1.18);opacity:1}68%{transform:translate(0,-50%) scaleY(.92)}84%{transform:translate(0,-50%) scaleY(1.04)}100%{transform:translate(0,-50%) scaleY(1)}}
+@keyframes cs-pux-brilho{0%,78%{top:-60%}100%{top:120%}}
+@keyframes cs-pux-seta{0%,100%{transform:translateX(0)}50%{transform:translateX(3px)}}
+@keyframes cs-pux-pulso{0%,100%{box-shadow:0 0 0 3px rgba(217,180,106,.35)}50%{box-shadow:0 0 0 7px rgba(217,180,106,0)}}
+@media(prefers-reduced-motion:reduce){
+  .cs-app,.cs-pux,.cs-pux .ic,.cs-pts i,.m-rc .cs-lado,.cs-altb .ic{transition:none!important}
+  .cs-pux::after,.cs-pux.entra,.m-rc.abrindo .cs-lado,.m-rc.abrindo .cs-it,.m-rc.abrindo .cs-gh,.m-rc.abrindo .cs-emp,.m-rc.abrindo .cs-pe,.cs-pux:hover .ic,.cs-pux.pc .cs-pux-g::before,.m-rc.flut .cs-fundo{animation:none!important}
+}

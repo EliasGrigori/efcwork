@@ -89,9 +89,8 @@ function tbAlinhaTot() {
     if (ok) lb.style.right = (br.width - min + 6) + 'px';
     const esq = Array.from(bar.children).filter(x => x !== t && !x.classList.contains('tb-sp') && x.getBoundingClientRect().width && x.getBoundingClientRect().right <= br.left + min).reduce((m, x) => Math.max(m, x.getBoundingClientRect().right - br.left), 0);
     const dir = Array.from(bar.querySelectorAll('.ic-so')).reduce((m, x) => Math.min(m, x.getBoundingClientRect().left - br.left), br.width);
-    /* v0.4.13: se a coluna do total fica embaixo dos ícones (telas de 1280–1366 px), o total desce para uma linha só dele,
-       logo acima do cabeçalho, ainda em cima da sua coluna; só fica em sequência se nem assim couber */
-    if (ok && max > dir - 8 && max <= br.width + 1 && min - 6 - lb.offsetWidth >= 0) { const h = bar.offsetHeight; t.classList.add('tb-tots-linha'); bar.style.paddingBottom = 'calc(var(--btn) + 8px)'; t.style.top = (h + 8) + 'px'; return; }
+    /* v0.5.3 (Elias, 10/11: "espaço muito grande entre a tabela e o painel; o total deve estar no mesmo nível dos botões"):
+       acabou a linha própria da v0.4.13. Se a coluna do total fica embaixo dos ícones, o total fica na MESMA linha, logo antes deles. */
     if (!ok || min - 6 - lb.offsetWidth < esq + 8 || max > dir - 8) { t.classList.add('tb-tots-fluxo'); t.style.width = ''; tvs.concat(lb).forEach(x => { x.style.left = ''; x.style.right = ''; x.style.width = ''; }); }
   });
 }

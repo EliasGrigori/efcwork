@@ -351,3 +351,10 @@ Histórico de lançamentos com correção por pedido,Documentos,must,sim,sim,Doc
 Data e hora no horário do aparelho,Geral,must,sim,sim,Todas as telas,v0.5.0
 Toque no fundo do menu da coluna segue para o botão da página (celular),Geral,must,sim,sim,Tabelas no celular,v0.5.1
 Tela de entrar não vira Primeiro acesso quando a nuvem não responde,Geral,must,sim,sim,Entrar,v0.5.1
+Gaveta da nuvem com Atualizar agora,Geral,must,sim,sim,Topo,v0.5.2
+Lembrete de calibração (2 meses e 7 dias) no sino,Almoxarifado,must,sim,sim,Equipamentos,v0.5.2
+Selo Vence em N dias (60 dias),Almoxarifado,should,sim,sim,Equipamentos,v0.5.2
+Checagem de esc() na suíte,Geral,must,sim,sim,Suíte,v0.5.2
+Menu lateral retrátil: aberto / só ícones / recolhido (botão que alterna),Geral,must,sim,sim,Menu,v0.5.3
+Puxador animado com menu por cima (camada),Geral,should,sim,sim,Menu,v0.5.3
+Total da tabela na mesma linha dos botões,Geral,must,sim,sim,Tabelas,v0.5.3

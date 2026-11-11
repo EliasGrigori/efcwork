@@ -1,4 +1,4 @@
-/* EFCwork · suíte da v0.4.13 — total de Amostras em cima da coluna também em 1280–1366 px (linha própria quando a coluna fica embaixo dos ícones).
+/* EFCwork · suíte da v0.4.13 — total de Amostras em cima da coluna também em 1280–1366 px (linha própria quando a coluna fica embaixo dos ícones). v0.5.3: a linha própria acabou; o total fica na linha dos ícones.
    Uso: node tools/testes/t_v0413.js */
 const { chromium } = require('playwright');
 const path = require('path');
@@ -22,17 +22,17 @@ const mede = p => p.evaluate(() => { const t = document.querySelector('.tb-tots'
   const b = await chromium.launch();
   console.log('1366 px, colunas largas (caso do Grok):');
   let p = await abre(b, 1366, true), m = await mede(p);
-  conf(!m.fluxo, 'o total não cai mais em sequência');
-  conf(m.linha, 'a coluna Valor fica embaixo dos ícones, então o total desce para uma linha só dele');
-  conf(m.direita, 'o valor termina exatamente na borda direita da coluna Valor');
-  conf(m.semIcone && m.acimaCab && m.rotulo, 'não encosta nos ícones, fica acima do cabeçalho e o rótulo "Total" à esquerda');
+  /* v0.5.3 (Elias, 10/11): sem linha própria; a coluna Valor fica embaixo dos ícones, então o total fica na linha dos ícones, antes deles */
+  conf(!m.linha, 'não existe mais a linha própria do total (decisão de 10/11)');
+  conf(m.fluxo && m.semIcone && m.mesmaLinhaIcones, 'o total fica na mesma linha dos ícones, logo antes deles, sem encostar');
+  conf(m.acimaCab, 'continua acima do cabeçalho');
   await p.screenshot({ path: path.join(RAIZ, 'tools', 'testes', 'telas', 'v0413-1366-largo.png'), clip: { x: 240, y: 230, width: 1126, height: 140 } });
   console.log('1366 px, colunas normais:');
   p = await abre(b, 1366, false); m = await mede(p);
   conf(!m.fluxo && !m.linha && m.direita && m.mesmaLinhaIcones, 'cabe na linha dos ícones: continua como antes');
   console.log('1280 px:');
   p = await abre(b, 1280, false); m = await mede(p);
-  conf(m.linha && m.direita && m.semIcone, 'em 1280 px também fica em cima da coluna, na linha própria');
+  conf(!m.linha && m.semIcone && m.mesmaLinhaIcones, 'em 1280 px o total fica na linha dos ícones (sem linha própria)');
   await p.screenshot({ path: path.join(RAIZ, 'tools', 'testes', 'telas', 'v0413-1280.png'), clip: { x: 240, y: 230, width: 1040, height: 140 } });
   console.log('1600 px:');
   p = await abre(b, 1600, true); m = await mede(p);

@@ -1,7 +1,7 @@
 /* EFCwork · almox.js — Almoxarifado (v0.2: consulta; v0.3: os botões de lançar chamam lanca.js). Painel, Materiais, Movimentações, Solicitações e Equipamentos com a tabela padrão e a gaveta.
    Prefixo: al (materiais) e eq (equipamentos). Os cálculos de saldo por lote vieram do EFClaudian v2.102.59 sem mudança (alIdx, alSit…),
    para os números baterem com os do EFClaudian. Lê sv2_alm_itens, sv2_alm_mov, sv2_alm_sol, sv2_alm_equip. Os lançamentos ficam em lanca.js. */
-const ALM_VENCE_DIAS = 30, EQ_AVENCER = 40, ALM_MOV_LIM = 10000;
+const ALM_VENCE_DIAS = 30, EQ_AVENCER = 60, ALM_MOV_LIM = 10000;
 const AL_TIPO = { inicial: 'Conferência inicial', entrada: 'Entrada', saida: 'Saída', ajuste: 'Ajuste', abrir: 'Frasco aberto', fim: 'Frasco terminou' };
 const AL_SOL_ST = { pendente: ['Pendente', 'wa'], atendida: ['Atendida', 'ok'], cancelada: ['Cancelada', ''] };
 const EQ_SIT = { ativo: ['Em uso', 'ok'], restricao: ['Uso com restrição', 'wa'], manutencao: ['Em manutenção', 'wa'], armazenado: ['Armazenado', ''], baixa: ['Baixado', ''] };
@@ -73,6 +73,9 @@ function eqCalSit(e) {
   const p = eqProxima(e), h = hojeISO();
   return p < h ? 'vencida' : p <= addDias(h, EQ_AVENCER) ? 'avencer' : 'ok';
 }
+/* v0.4.15 (Nº 27): a partir dos 2 meses o selo diz quantos dias faltam */
+const eqDiasCal = e => { const p = eqProxima(e); return p ? Math.round((new Date(p + 'T12:00:00') - new Date(hojeISO() + 'T12:00:00')) / 864e5) : null; };
+const eqCalRot = (e, c) => c === 'avencer' && eqDiasCal(e) != null ? 'Vence em ' + eqDiasCal(e) + (eqDiasCal(e) === 1 ? ' dia' : ' dias') : EQ_CAL[c][0];
 function eqLocal(e) {
   if (e.tipo === 'qtd') return Object.keys(e.qtdLocal || {}).filter(k => Number(e.qtdLocal[k])).map(k => k + ' ' + e.qtdLocal[k]).join(' · ') || '—';
   return [e.local, e.posicao].filter(Boolean).join(' · ') + (e.transito ? ' · em trânsito' : '') || '—';
@@ -86,7 +89,7 @@ CS_CARGAS.push(() => {
   csOuve('sv2_alm_itens', l => { S.almItens = l; re(); });
   csOuve('sv2_alm_mov', l => { S.almMov = l; S.almErro = ''; re(); }, { order: 'criadoEm', limit: ALM_MOV_LIM, onError: e => { S.almErro = 'Não foi possível carregar as movimentações (' + ((e && e.code) || 'erro') + '). Os saldos podem estar errados.'; re(); } });
   csOuve('sv2_alm_sol', l => { S.almSol = l; re(); }, { order: 'criadoEm', limit: 3000 });
-  csOuve('sv2_alm_equip', l => { S.almEq = l; re(); });
+  csOuve('sv2_alm_equip', l => { S.almEq = l; re(); setTimeout(() => { if (typeof cbLembretes === 'function') cbLembretes(); }, 2500); });
 });
 
 /* ---------- telas ---------- */
@@ -126,7 +129,7 @@ function alPainel() {
     (topL.length ? topL.map(id => { const i = alItem(id); return '<div class="li"><span class="tx"><b>' + esc(i ? i.nome : '(item removido)') + '</b></span><span class="num al-q">' + alQ(top[id]) + ' ' + esc(i ? i.un || '' : '') + '</span></div>'; }).join('') : '<div class="vazio"><span>Nenhuma saída este mês.</span></div>') + '</section>' +
     '<section class="pn"><div class="hd"><h3>Calibrações</h3><span class="sp"></span><a class="bt lk" href="#/almox/equipamentos">Ver equipamentos</a></div>' +
     (function () { const l = r.eqs.filter(e => ['vencida', 'sem', 'avencer'].indexOf(eqCalSit(e)) >= 0).sort((a, b) => String(eqProxima(a) || '0').localeCompare(String(eqProxima(b) || '0'))).slice(0, 5);
-      return l.length ? l.map(e => { const c = eqCalSit(e); return '<button type="button" class="li al-li" data-act="al-eq" data-id="' + esc(e.id) + '"><span class="tx"><b>' + esc(eqNomeC(e)) + '</b><small>' + (eqProxima(e) ? 'próxima ' + fmtD(eqProxima(e)) : 'sem data de calibração') + '</small></span>' + alPill(EQ_CAL[c][0], EQ_CAL[c][1]) + '</button>'; }).join('') : '<div class="vazio">' + ic('ok') + '<span>Nenhuma calibração vencida ou a vencer em ' + EQ_AVENCER + ' dias.</span></div>'; })() + '</section></div></div>';
+      return l.length ? l.map(e => { const c = eqCalSit(e); return '<button type="button" class="li al-li" data-act="al-eq" data-id="' + esc(e.id) + '"><span class="tx"><b>' + esc(eqNomeC(e)) + '</b><small>' + (eqProxima(e) ? 'próxima ' + fmtD(eqProxima(e)) : 'sem data de calibração') + '</small></span>' + alPill(eqCalRot(e, c), EQ_CAL[c][1]) + '</button>'; }).join('') : '<div class="vazio">' + ic('ok') + '<span>Nenhuma calibração vencida ou a vencer em ' + EQ_AVENCER + ' dias.</span></div>'; })() + '</section></div></div>';
   return h;
 }
 function alTabMateriais() {
@@ -198,7 +201,7 @@ function alTabEq() {
       { k: 'qtd', rot: 'Qtd', tipo: 'num', v: eqQtd },
       { k: 'sit', rot: 'Situação', v: e => (EQ_SIT[e.situacao] || EQ_SIT.ativo)[0], html: e => { const s = EQ_SIT[e.situacao] || EQ_SIT.ativo; return alPill(s[0], s[1]); } },
       { k: 'prox', rot: 'Próxima calibração', tipo: 'data', v: e => e.precisaCal ? eqProxima(e) : '' },
-      { k: 'cal', rot: 'Calibração', v: e => { const c = eqCalSit(e); return c ? EQ_CAL[c][0] : ''; }, html: e => { const c = eqCalSit(e); return c ? alPill(EQ_CAL[c][0], EQ_CAL[c][1]) : '<span class="tb-nada">não calibra</span>'; } }] });
+      { k: 'cal', rot: 'Calibração', v: e => { const c = eqCalSit(e); return c ? EQ_CAL[c][0] : ''; }, html: e => { const c = eqCalSit(e); return c ? alPill(eqCalRot(e, c), EQ_CAL[c][1]) : '<span class="tb-nada">não calibra</span>'; } }] });
 }
 TELAS.almox = function (aba) {
   if (!alVe()) return alSemAcesso();

@@ -172,8 +172,8 @@ function coFotoGet(id) { if (CO_FOTO[id]) return Promise.resolve(CO_FOTO[id]); r
 GV_DEPOIS.push(g => { $$('img[data-cofoto]', g).forEach(img => { if (img.getAttribute('src')) return; coFotoGet(img.getAttribute('data-cofoto')).then(u => { if (u) img.src = u; }); }); });
 function coFotoVer(id) {
   coFotoGet(id).then(u => {
-    if (!u) { aviso('Não foi possível abrir a foto.', 'erro'); return; }
-    const d = document.createElement('div'); d.id = 'co-fv'; d.className = 'co-fv'; d.innerHTML = '<img src="' + u + '" alt="Cupom dos Correios"><button type="button" class="bt ic-so" data-act="co-fv-x" aria-label="Fechar">' + ic('x') + '</button>';
+    if (!imgSrc(u)) { aviso('Não foi possível abrir a foto.', 'erro'); return; } /* v0.4.15 (Nº 31): o endereço da foto vem da nuvem; só imagem (data:image, blob, https) */
+    const d = document.createElement('div'); d.id = 'co-fv'; d.className = 'co-fv'; d.innerHTML = '<img src="' + imgSrc(u) + '" alt="Cupom dos Correios"><button type="button" class="bt ic-so" data-act="co-fv-x" aria-label="Fechar">' + ic('x') + '</button>';
     document.body.appendChild(d); csCamadaAbre('foto', () => { const x = $('#co-fv'); if (x) x.remove(); });
   });
 }
@@ -190,7 +190,7 @@ function coFotoReduz(arq) {
     r.readAsDataURL(arq);
   });
 }
-const coCupomBl = f => lcBl('Cupom dos Correios', (f.cupom ? '<div class="co-cupf"><img src="' + f.cupom + '" alt="Cupom"><button type="button" class="bt ic-so" data-act="co-cup-x" title="Tirar a foto" aria-label="Tirar a foto">' + ic('lixo') + '</button></div>' : f.cupomAtual ? '<div class="co-cupf"><img data-cofoto="' + esc(f.cupomAtual) + '" alt="Cupom atual"><small>atual · escolha outra para trocar</small></div>' : '') +
+const coCupomBl = f => lcBl('Cupom dos Correios', (imgSrc(f.cupom) ? '<div class="co-cupf"><img src="' + imgSrc(f.cupom) + '" alt="Cupom"><button type="button" class="bt ic-so" data-act="co-cup-x" title="Tirar a foto" aria-label="Tirar a foto">' + ic('lixo') + '</button></div>' : f.cupomAtual ? '<div class="co-cupf"><img data-cofoto="' + esc(f.cupomAtual) + '" alt="Cupom atual"><small>atual · escolha outra para trocar</small></div>' : '') +
   '<label class="bt co-file">' + ic('imagem') + (f.cupom || f.cupomAtual ? 'Trocar a foto' : 'Foto do cupom') + '<input type="file" accept="image/*" capture="environment" data-cofile hidden></label>', 'opcional');
 async function coGravaCupom(f, ids) {
   if (!f.cupom) return '';

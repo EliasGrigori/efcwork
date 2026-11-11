@@ -148,6 +148,23 @@ h1,h2,h3{font-family:var(--fh);font-weight:600;letter-spacing:-.01em;margin:0}
 .cs-busca kbd{font-family:var(--f);font-size:12px;border:1px solid var(--bd2);border-bottom-width:2px;border-radius:4px;padding:0 5px;color:var(--tx2)}
 .cs-sp{flex:1}
 .cs-sync{font-size:13px;color:var(--ok);display:flex;align-items:center;gap:6px;white-space:nowrap}
+button.cs-sync{border:1px solid transparent;background:transparent;border-radius:var(--rs);height:var(--btn);padding:0 10px;font:inherit;font-size:13px;cursor:pointer}
+button.cs-sync:hover{background:var(--bg2);border-color:var(--bd)}
+button.cs-sync:focus-visible{outline:2px solid var(--a);outline-offset:1px}
+.cs-sync>.ic{display:none;width:20px;height:20px}
+.nv{display:flex;flex-direction:column;gap:12px}
+.nv-st{display:flex;gap:12px;align-items:flex-start;padding:12px;border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg0);color:var(--ok)}
+.nv-st.off{color:var(--wa)}
+.nv-st .ic{width:22px;height:22px;flex:none;margin-top:1px}
+.nv-st span{display:flex;flex-direction:column;gap:2px;min-width:0}
+.nv-st b{font-weight:600;color:var(--tx)}
+.nv-st small{font-size:14px;color:var(--tx2)}
+.nv-t{margin:0;font-size:15px;color:var(--tx2);line-height:1.5}
+.nv-u{margin:0;font-size:13px;color:var(--tx3)}
+.nv-r{margin:0;display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border:1px solid var(--bd);border-radius:var(--rs);font-size:14px}
+.nv-r .ic{width:18px;height:18px;flex:none;margin-top:1px}
+.nv-r.ok{color:var(--ok)}.nv-r.er{color:var(--cr)}
+.nv-r span{color:var(--tx)}
 .cs-sync i{width:7px;height:7px;border-radius:50%;background:var(--ok);display:inline-block}
 .cs-sync.off{color:var(--wa)}.cs-sync.off i{background:var(--wa)}
 .cs-ct{flex:1;padding:20px 20px 28px;display:flex;flex-direction:column;gap:16px;width:100%}
@@ -186,7 +203,11 @@ h1,h2,h3{font-family:var(--fh);font-weight:600;letter-spacing:-.01em;margin:0}
   .cs-so-cel{display:inline-flex}
   .cs-topo{padding:0 12px;gap:8px}
   .cs-busca{width:auto;flex:1;min-width:0}
-  .cs-busca kbd,.cs-sync{display:none}
+  .cs-busca kbd{display:none}
+  span.cs-sync{display:none}
+  button.cs-sync{width:var(--btn);padding:0;justify-content:center;position:relative}
+  button.cs-sync>.ic{display:block}button.cs-sync>span,button.cs-sync>i{display:none}
+
   .cs-sp{display:none}
   .cs-ct{padding:16px 16px 20px}
   .cs-ph h1{font-size:25px}
@@ -208,6 +229,90 @@ h1,h2,h3{font-family:var(--fh);font-weight:600;letter-spacing:-.01em;margin:0}
 .cs-ht{display:flex;align-items:center;gap:10px}.cs-ht .pg-lg{margin-bottom:8px}
 /* v0.4.6: com ícone ao lado do título (Programação, plano), os botões ficam na linha do título também quando há situação embaixo */
 @media(min-width:900px){.cs-phr:has(.cs-ht){align-items:flex-start}.cs-phr:has(.cs-ht) .cs-acts{margin-top:4px}}
+
+/* ===== menu lateral retrátil (v0.5.3, Nº 48) — só no computador ===== */
+.cs-topl{display:flex;align-items:flex-start;justify-content:space-between;gap:6px}
+.cs-topl .cs-marca{min-width:0}
+.cs-alt{display:none;align-items:center;gap:6px;flex:none;padding-top:3px}
+.cs-pts{display:flex;gap:3px;align-items:center}
+.cs-pts i{width:5px;height:5px;border-radius:3px;background:var(--sbBd);transition:width .3s cubic-bezier(.34,1.56,.64,1),background .2s}
+.cs-pts i.on{width:13px;background:var(--a)}
+.cs-altb{width:32px;height:32px;min-height:32px;border-color:transparent;background:transparent;color:inherit;opacity:.7}
+.cs-altb:hover{opacity:1;background:var(--bg2);border-color:var(--sbBd)}
+.cs-altb .ic{width:17px;height:17px;transition:transform .35s cubic-bezier(.34,1.4,.64,1)}
+.cs-pux{display:none}
+@media(min-width:900px){
+  .cs-alt{display:flex}
+  .cs-app{transition:grid-template-columns .34s cubic-bezier(.3,.9,.3,1)}
+  .cs-main{grid-column:2;grid-row:1} /* o conteúdo fica sempre na 2ª coluna, mesmo com o menu fora do fluxo (recolhido) */
+  .cs-topl .cs-nm{min-width:0}.cs-topl .cs-nm span{white-space:nowrap}
+  .cs-topl .cs-marca{gap:8px;padding-right:0}
+  .cs-it span,.cs-nm,.cs-emp,.cs-ust,.cs-cw,.cs-gh{transition:opacity .2s}
+  /* --- só ícones --- */
+  .cs-app.m-ic{grid-template-columns:68px minmax(0,1fr)}
+  .m-ic .cs-lado{padding:14px 10px;overflow:visible}
+  .m-ic .cs-topl{flex-direction:column;align-items:center;gap:10px}
+  .m-ic .cs-marca{padding:2px 0 4px;justify-content:center}
+  .m-ic .cs-nm,.m-ic .cs-emp,.m-ic .cs-ust,.m-ic .cs-cw{display:none}
+  .m-ic .cs-alt{flex-direction:column;gap:6px;padding:0 0 6px}
+  .m-ic .cs-altb .ic{transform:none}
+  .m-ic .cs-gh{font-size:0;padding:0;height:1px;background:var(--sbBd);margin:8px 6px}
+  .m-ic .cs-it{justify-content:center;padding:0;width:48px;margin:0 auto}
+  .m-ic .cs-it.on::before{left:-10px}
+  /* o nome vira etiqueta ao passar o mouse */
+  .m-ic .cs-it span{position:absolute;left:calc(100% + 10px);top:50%;transform:translate(-4px,-50%);background:var(--tx);color:var(--bg1);font-size:13px;font-weight:500;padding:6px 10px;border-radius:7px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s,transform .2s;z-index:40;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+  .m-ic .cs-it:hover span,.m-ic .cs-it:focus-visible span{opacity:1;transform:translate(0,-50%)}
+  .m-ic .cs-us{flex-direction:column;padding:0;gap:6px}
+  /* --- recolhido --- */
+  .cs-app.m-rc{grid-template-columns:0px minmax(0,1fr)}
+  .m-rc .cs-lado{position:fixed;left:0;top:0;bottom:0;width:240px;transform:translateX(-104%);transition:transform .3s cubic-bezier(.4,0,.2,1),box-shadow .3s;z-index:30}
+  .m-rc .cs-altb .ic{transform:rotate(180deg)}
+  .m-rc.flut .cs-lado{transform:none;box-shadow:0 20px 60px rgba(40,28,6,.30),0 2px 8px rgba(40,28,6,.12)}
+  .m-rc.flut .cs-fundo{display:block;position:fixed;inset:0;z-index:29;background:rgba(28,20,6,.16);animation:cs-fd .3s ease both}
+  .m-rc.abrindo .cs-lado{animation:cs-lado-entra .55s cubic-bezier(.22,1.25,.36,1) both}
+  .m-rc.abrindo .cs-it,.m-rc.abrindo .cs-gh,.m-rc.abrindo .cs-emp,.m-rc.abrindo .cs-pe{animation:cs-it-entra .38s cubic-bezier(.2,.8,.3,1) both;animation-delay:calc(var(--i,6) * 24ms + 120ms)}
+  .m-rc.abrindo .cs-emp{--i:0}.m-rc.abrindo .cs-pe{--i:9}
+  .m-rc.fixando .cs-lado,.cs-app.fixando .cs-lado{transition:none}
+  /* --- puxador --- */
+  .m-rc .cs-pux{display:flex;position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:28;border:0;padding:0;cursor:pointer;align-items:center;justify-content:center;color:#1c1406;overflow:hidden;
+    background:var(--ouro);
+    transition:width .42s cubic-bezier(.34,1.56,.64,1),height .42s cubic-bezier(.34,1.56,.64,1),border-radius .3s,box-shadow .3s,opacity .2s}
+  .m-rc.flut .cs-pux{opacity:0;pointer-events:none;transform:translate(-100%,-50%);transition:opacity .15s,transform .2s}
+  .cs-pux .ic{width:18px;height:18px;stroke-width:2.4;opacity:0;transform:translateX(-6px);transition:opacity .2s .08s,transform .3s .08s;position:relative;z-index:1}
+  .cs-pux:hover .ic,.cs-pux:focus-visible .ic{opacity:1;transform:none;animation:cs-pux-seta 1.1s ease-in-out .4s infinite}
+  .cs-pux:focus-visible{outline:2px solid var(--a);outline-offset:2px}
+  .cs-pux:active{filter:brightness(.95)}
+  /* brilho que passa (chamativo, mas só de vez em quando) */
+  .cs-pux::after{content:"";position:absolute;left:0;right:0;top:-60%;height:45%;background:linear-gradient(180deg,transparent,rgba(255,255,255,.75),transparent);animation:cs-pux-brilho 5.5s ease-in-out 1.2s infinite;pointer-events:none}
+  .cs-pux-g{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;opacity:0;transition:opacity .2s}
+  .cs-pux.entra{animation:cs-pux-entra .75s cubic-bezier(.22,1.3,.36,1) both}
+  /* forma A — lingueta (aba que sai da borda) */
+  .cs-pux.pa{width:8px;height:72px;border-radius:0 9px 9px 0;box-shadow:0 0 0 1px rgba(154,113,40,.28),0 6px 18px rgba(154,113,40,.38)}
+  .cs-pux.pa:hover,.cs-pux.pa:focus-visible{width:30px;height:118px;border-radius:0 14px 14px 0;box-shadow:0 0 0 1px rgba(154,113,40,.35),0 10px 28px rgba(154,113,40,.45)}
+  /* forma B — meia-lua com a seta sempre visível */
+  .cs-pux.pb{width:16px;height:48px;border-radius:0 24px 24px 0;box-shadow:0 0 0 1px rgba(154,113,40,.28),0 6px 18px rgba(154,113,40,.38)}
+  .cs-pux.pb .ic{opacity:.85;transform:translateX(-2px);width:14px;height:14px}
+  .cs-pux.pb:hover,.cs-pux.pb:focus-visible{width:34px;height:76px;border-radius:0 38px 38px 0}
+  .cs-pux.pb:hover .ic{width:18px;height:18px}
+  /* forma C — fio de luz com um ponto, que vira aba */
+  .cs-pux.pc{width:4px;height:120px;border-radius:0 3px 3px 0;box-shadow:0 0 10px 1px rgba(217,180,106,.75)}
+  .cs-pux.pc .cs-pux-g{opacity:1}
+  .cs-pux.pc .cs-pux-g::before{content:"";width:10px;height:10px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff7dc,#d9b46a 60%,#9a7128);box-shadow:0 0 0 3px rgba(217,180,106,.35);transform:translateX(3px);animation:cs-pux-pulso 2.6s ease-in-out infinite}
+  .cs-pux.pc{overflow:visible}
+  .cs-pux.pc:hover,.cs-pux.pc:focus-visible{width:30px;height:118px;border-radius:0 14px 14px 0;overflow:hidden}
+  .cs-pux.pc:hover .cs-pux-g{opacity:0}
+}
+@keyframes cs-fd{from{opacity:0}to{opacity:1}}
+@keyframes cs-lado-entra{0%{transform:translateX(-104%)}100%{transform:none}}
+@keyframes cs-it-entra{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
+@keyframes cs-pux-entra{0%{transform:translate(-110%,-50%) scaleY(.35);opacity:0}45%{transform:translate(0,-50%) scaleY(1.18);opacity:1}68%{transform:translate(0,-50%) scaleY(.92)}84%{transform:translate(0,-50%) scaleY(1.04)}100%{transform:translate(0,-50%) scaleY(1)}}
+@keyframes cs-pux-brilho{0%,78%{top:-60%}100%{top:120%}}
+@keyframes cs-pux-seta{0%,100%{transform:translateX(0)}50%{transform:translateX(3px)}}
+@keyframes cs-pux-pulso{0%,100%{box-shadow:0 0 0 3px rgba(217,180,106,.35)}50%{box-shadow:0 0 0 7px rgba(217,180,106,0)}}
+@media(prefers-reduced-motion:reduce){
+  .cs-app,.cs-pux,.cs-pux .ic,.cs-pts i,.m-rc .cs-lado,.cs-altb .ic{transition:none!important}
+  .cs-pux::after,.cs-pux.entra,.m-rc.abrindo .cs-lado,.m-rc.abrindo .cs-it,.m-rc.abrindo .cs-gh,.m-rc.abrindo .cs-emp,.m-rc.abrindo .cs-pe,.cs-pux:hover .ic,.cs-pux.pc .cs-pux-g::before,.m-rc.flut .cs-fundo{animation:none!important}
+}
 
 /* ===== tabela.css ===== */
 /* EFCwork · tabela.css — tabela padrão, janela retrátil, gaveta e impressão. Prefixos: tb-, dd-, gv- */
@@ -408,6 +513,7 @@ body.tb-arrastando,body.tb-arrastando *{cursor:grabbing!important;user-select:no
 .tb-mn-ci em{font-style:normal;font-size:12px;color:var(--tx3)}
 .tb-mn-ci{min-height:40px}
 .tb-mn-fundo{position:fixed;inset:0;z-index:59;background:rgba(20,16,8,.38)}
+.tb-mn-pe .bt{border-radius:8px} /* v0.4.15 (Grok v0.4.12 A1): rodapé do menu com o mesmo canto de 8 px */
 
 /* ===== almox.css ===== */
 /* EFCwork · almox.css — Prefixo: al- */
@@ -1118,7 +1224,7 @@ body:has(#gv) .pp-bar{display:none}
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.5.1';
+const VERSAO = '0.5.3';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -1234,8 +1340,9 @@ const ICS = {
   graf: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
   eng: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>',
   lupa: '<circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/>',
+  nuvem: '<path d="M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 9.5a4.25 4.25 0 0 1-.5 8.5z"/>', gira: '<path d="M20 12a8 8 0 1 1-2.6-5.9M20 4v4.5h-4.5"/>',
   sino: '<path d="M6 16v-5a6 6 0 1 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/>',
-  cadeado: '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>', mais: '<path d="M12 5v14M5 12h14"/>', menos: '<path d="M5 12h14"/>', recontar: '<path d="M20 11a8 8 0 0 0-14.3-4.9L4 8M4 4v4h4M4 13a8 8 0 0 0 14.3 4.9L20 16M20 20v-4h-4"/>', entra: '<path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19h14"/>', sai: '<path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M5 19h14"/>', lapis: '<path d="M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17z"/><path d="M14.5 7.5l2 2"/>', ajuste: '<path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/>', x: '<path d="M6 6l12 12M18 6 6 18"/>', seta: '<path d="m9 6 6 6-6 6"/>', volta: '<path d="m15 6-6 6 6 6"/>',
+  recolhe: '<path d="m11 17-5-5 5-5M18 17l-5-5 5-5"/>', cadeado: '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>', mais: '<path d="M12 5v14M5 12h14"/>', menos: '<path d="M5 12h14"/>', recontar: '<path d="M20 11a8 8 0 0 0-14.3-4.9L4 8M4 4v4h4M4 13a8 8 0 0 0 14.3 4.9L20 16M20 20v-4h-4"/>', entra: '<path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19h14"/>', sai: '<path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M5 19h14"/>', lapis: '<path d="M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17z"/><path d="M14.5 7.5l2 2"/>', ajuste: '<path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/>', x: '<path d="M6 6l12 12M18 6 6 18"/>', seta: '<path d="m9 6 6 6-6 6"/>', volta: '<path d="m15 6-6 6 6 6"/>',
   broto: '<path d="M12 21v-8"/><path d="M12 13c0-4-3-6.5-7-6.5 0 4 3 6.5 7 6.5zM12 11c0-3.5 2.6-6 6.5-6 0 3.5-2.6 6-6.5 6z"/>',
   relogio: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>', excl: '<circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.2v.2"/>', alerta: '<path d="M12 3.5 2.8 19.5h18.4z"/><path d="M12 10v4.5M12 17.3v.2"/>',
   ok: '<path d="M5 12.5l4.5 4.5L19 7.5"/>', sair: '<path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/>', lua: '<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>',
@@ -1289,6 +1396,16 @@ const Data = (function () {
       return cache().then(x => { if (x !== undefined) return x; if (r.e) throw r.e; return srv(); });
     });
   }
+  /* v0.4.15 (Nº 46): consultas que estão sendo escutadas, para o botão "Atualizar agora" ler tudo de novo direto do servidor */
+  const QS_ATIVAS = [];
+  function fbQuery(name, o) {
+    let q = fdb.collection(name);
+    if (o.desde && o.order) q = q.where(o.order, '>=', o.desde);
+    if (o.contem) q = q.where(o.contem[0], 'array-contains', o.contem[1]); /* v2.89.0 */
+    if (o.order) q = q.orderBy(o.order, 'desc');
+    if (o.limit) q = q.limit(o.limit);
+    return q;
+  }
   function col(name) {
     if (DEMO) {
       return {
@@ -1311,12 +1428,9 @@ const Data = (function () {
     return {
       watch(cb, o) {
         o = o || {};
-        let q = fdb.collection(name);
-        if (o.desde && o.order) q = q.where(o.order, '>=', o.desde);
-        if (o.contem) q = q.where(o.contem[0], 'array-contains', o.contem[1]); /* v2.89.0 */
-        if (o.order) q = q.orderBy(o.order, 'desc');
-        if (o.limit) q = q.limit(o.limit);
-        return q.onSnapshot(s => cb(s.docs.map(d => Object.assign({ id: d.id }, d.data()))), e => { console.error(name, e); if (o.onError) o.onError(e); });
+        const q = fbQuery(name, o), reg = { name: name, o: o }; QS_ATIVAS.push(reg);
+        const off = q.onSnapshot(s => cb(s.docs.map(d => Object.assign({ id: d.id }, d.data()))), e => { console.error(name, e); if (o.onError) o.onError(e); });
+        return () => { const k = QS_ATIVAS.indexOf(reg); if (k >= 0) QS_ATIVAS.splice(k, 1); off(); };
       },
       add(obj) {
         const ref = fdb.collection(name).doc();
@@ -1433,6 +1547,16 @@ const Data = (function () {
       if (d) Store.set('sv2-setup', '1'); /* v2.84.0: o aparelho lembra (o login aparece na hora, mesmo sem internet) */
       return !!d;
     },
+    /* v0.4.15 (Nº 46, pedido do Elias 30/10: "um botão atualizar dentro da nuvem para forçar uma atualização"): lê de novo, direto do
+       servidor, tudo o que a tela está escutando. O que chegar atualiza o aparelho e as telas na hora. Sem resposta em 12 s = falha. */
+    async atualizar() {
+      if (DEMO) return { ok: true, n: 0, falhas: 0, demo: true };
+      if (!fdb) return { ok: false, n: 0, falhas: 1, motivo: 'sem nuvem' };
+      const qs = QS_ATIVAS.slice(); let falhas = 0, motivo = '';
+      const lim = ms => new Promise((_, rej) => setTimeout(() => rej(new Error('tempo')), ms));
+      await Promise.all(qs.map(r => Promise.race([fbQuery(r.name, r.o).get({ source: 'server' }), lim(12000)]).catch(e => { falhas++; motivo = motivo || (e && (e.code || e.message)) || ''; })));
+      return { ok: falhas === 0, n: qs.length, falhas: falhas, motivo: motivo };
+    },
     /* v2.84.0: a nuvem responde? (um documento pequeno, escutado com a marca "veio do aparelho") */
     conexao(cb) {
       if (DEMO || !fdb) return () => {};
@@ -1530,7 +1654,7 @@ function csLeRota() {
 }
 function csAcertaHash() { if (S.rota.neg) { S.rota.neg = false; try { history.replaceState(null, '', '#/' + S.rota.area + (S.rota.aba ? '/' + S.rota.aba : '')); } catch {} } }
 function ir(area, aba) { const h = '#/' + area + (aba ? '/' + aba : ''); if (location.hash !== h) location.hash = h; else render(); }
-window.addEventListener('hashchange', () => { S.rota = csLeRota(); csAcertaHash(); csUso(); csFechaMenu(); S.camadas = S.camadas.filter(c => c.nome !== 'menu'); if (S._gvNav) S._gvNav = false; else { S.gv = null; S.gvForm = false; S.fm = null; S._alSel = null; S.camadas = []; const g = $('#gv'); if (g) g.remove(); document.body.classList.remove('gv-aberta'); } render(); try { window.scrollTo(0, 0); } catch {} });
+window.addEventListener('hashchange', () => { S.rota = csLeRota(); csAcertaHash(); csUso(); csFechaMenu(); S._menuFlut = false; S.camadas = S.camadas.filter(c => c.nome !== 'menu' && c.nome !== 'menuflut'); if (S._gvNav) S._gvNav = false; else { S.gv = null; S.gvForm = false; S.fm = null; S._alSel = null; S.camadas = []; const g = $('#gv'); if (g) g.remove(); document.body.classList.remove('gv-aberta'); } render(); try { window.scrollTo(0, 0); } catch {} });
 
 /* ---------- camadas (pedido do Elias, 05/11): cada coisa aberta por cima — gaveta, formulário, lista de escolher, busca, menu do celular —
    é uma camada. Esc, o X e o voltar do celular fecham SÓ a de cima. Formulário com algo preenchido pergunta antes de descartar. ---------- */
@@ -1587,12 +1711,54 @@ function csEmpresaBloco() {
   const e = S.empresa || {}, un = (e.unidades || []), u = Store.get('cw-unidade') || (un[0] || '');
   return '<button type="button" class="cs-emp" data-act="cs-emp" title="Empresa e unidade"><span><b>' + esc(e.nome || 'Sua empresa') + '</b><small>' + esc(un.length ? u : 'Configure em Administração') + '</small></span>' + ic('seta') + '</button>';
 }
+/* ---------- menu lateral retrátil (v0.5.3, Nº 48; aprovado 10/11: 3 estados + OPÇÃO 4 "botão que alterna") ----------
+   Só no computador (≥ 900 px). Aberto → Só ícones → Recolhido, um toque no botão do topo do menu (os 3 pontinhos mostram onde está).
+   Recolhido: sobra o puxador dourado no meio da borda esquerda; passar o mouse ele cresce, clicar abre o menu por cima da tela.
+   Com o menu aberto por cima, o mesmo botão fixa o menu aberto de novo. A escolha fica gravada neste aparelho (cw-menu).
+   As animações só rodam quando algo muda (nunca a cada desenho da tela) e somem com "reduzir movimento" do sistema. */
+const CS_MENU = ['aberto', 'icones', 'recolhido'];
+function csMenuEst() { const v = Store.get('cw-menu'); return CS_MENU.includes(v) ? v : 'aberto'; }
+function csPuxForma() { const v = Store.get('cw-pux'); return ['pa', 'pb', 'pc'].includes(v) ? v : 'pa'; }
+function csMenuClasse() { const m = csMenuEst(); return m === 'icones' ? ' m-ic' : m === 'recolhido' ? ' m-rc' + (S._menuFlut ? ' flut' : '') : ''; }
+function csMenuAltDica() { const m = csMenuEst(); return m === 'aberto' ? 'Mostrar só os ícones' : m === 'icones' ? 'Recolher o menu' : 'Fixar o menu aberto'; }
+function csMenuAlt() {
+  const m = csMenuEst(), k = CS_MENU.indexOf(m), d = csMenuAltDica();
+  return '<div class="cs-alt"><span class="cs-pts" aria-hidden="true">' + CS_MENU.map((x, i) => '<i' + (i === k ? ' class="on"' : '') + '></i>').join('') + '</span>' +
+    '<button type="button" class="bt ic-so cs-altb" data-act="cs-alterna" title="' + esc(d) + '" aria-label="' + esc(d) + '">' + ic('recolhe') + '</button></div>';
+}
+function csPux() { return '<button type="button" class="cs-pux ' + csPuxForma() + (S._puxEntra ? ' entra' : '') + '" data-act="cs-pux" title="Abrir o menu" aria-label="Abrir o menu"><span class="cs-pux-g" aria-hidden="true"></span>' + ic('seta') + '</button>'; }
+function csMenuAplica(novo) {
+  const app = $('.cs-app'), ant = csMenuEst(); Store.set('cw-menu', novo);
+  if (!app) { render(); return; }
+  if (S._menuFlut) { S._menuFlut = false; S.camadas = S.camadas.filter(c => c.nome !== 'menuflut'); }
+  app.classList.remove('m-ic', 'm-rc', 'flut', 'abrindo');
+  if (novo === 'icones') app.classList.add('m-ic'); else if (novo === 'recolhido') app.classList.add('m-rc');
+  const alt = app.querySelector('.cs-alt'); if (alt) alt.outerHTML = csMenuAlt(); /* sem redesenhar a tela, para a transição correr */
+  const px = app.querySelector('.cs-pux'); if (px && novo === 'recolhido') { px.classList.remove('entra'); void px.offsetWidth; px.classList.add('entra'); }
+  if (ant === 'recolhido' && novo !== 'recolhido') { app.classList.add('fixando'); }
+  setTimeout(() => { app.classList.remove('fixando'); try { tbAlinhaTot(); } catch {} }, 450);
+}
+function csMenuAlterna() {
+  const m = csMenuEst();
+  if (m === 'recolhido') { if (S._menuFlut && csTemCamada('menuflut')) { const app = $('.cs-app'); if (app) app.classList.add('fixando'); csCamadaSaiu('menuflut', () => csMenuAplica('aberto')); } else csMenuAplica('aberto'); return; }
+  csMenuAplica(m === 'aberto' ? 'icones' : 'recolhido');
+}
+function csMenuFlutAbre() {
+  const app = $('.cs-app'); if (!app || S._menuFlut) return;
+  S._menuFlut = true; app.classList.add('flut', 'abrindo'); setTimeout(() => app.classList.remove('abrindo'), 700);
+  csCamadaAbre('menuflut', csMenuFlutFecha);
+}
+function csMenuFlutFecha() {
+  S._menuFlut = false; const app = $('.cs-app'); if (!app) return;
+  app.classList.remove('flut', 'abrindo');
+  const px = app.querySelector('.cs-pux'); if (px) { px.classList.remove('entra'); void px.offsetWidth; px.classList.add('entra'); }
+}
 function csLado() {
-  const at = S.rota.area; let h = '<aside class="cs-lado" id="cs-lado" aria-label="Menu">' + csMarca() + csEmpresaBloco() + '<nav class="cs-nav">';
-  let grupo = '';
+  const at = S.rota.area; let h = '<aside class="cs-lado" id="cs-lado" aria-label="Menu"><div class="cs-topl">' + csMarca() + csMenuAlt() + '</div>' + csEmpresaBloco() + '<nav class="cs-nav">';
+  let grupo = '', n = 0;
   AREAS.filter(a => !a.rodape && !a.negada).forEach(a => {
     if (a.grupo && a.grupo !== grupo) { grupo = a.grupo; h += '<div class="cs-gh">' + esc(grupo) + '</div>'; }
-    h += '<a class="cs-it' + (a.id === at ? ' on' : '') + '" href="#/' + a.id + '"' + (a.id === at ? ' aria-current="page"' : '') + '>' + ic(a.ic) + '<span>' + esc(a.nome) + '</span></a>';
+    h += '<a class="cs-it' + (a.id === at ? ' on' : '') + '" style="--i:' + (n++) + '" href="#/' + a.id + '"' + (a.id === at ? ' aria-current="page"' : '') + '>' + ic(a.ic) + '<span>' + esc(a.nome) + '</span></a>';
   });
   const adm = csArea('adm'), u = S.user || {};
   h += '</nav><div class="cs-pe"><a class="cs-it' + (at === 'adm' ? ' on' : '') + '" href="#/adm">' + ic(adm.ic) + '<span>' + adm.nome + '</span></a>' +
@@ -1600,8 +1766,25 @@ function csLado() {
     '<div class="cs-cw"><span>' + APP_APELIDO + '</span><span>v' + VERSAO + (DEMO ? ' · demonstração' : '') + '</span></div></div></aside>';
   return h;
 }
+/* gaveta da nuvem (Nº 46): situação, hora da última leitura e o botão que força a releitura do servidor */
+function csNuvemGaveta() {
+  const off = S.conexao === false, r = S._nuvemRes, ocu = !!S._nuvemOcupada, hora = S._nuvemEm ? new Date(S._nuvemEm).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '';
+  const c = '<div class="nv"><div class="nv-st' + (off ? ' off' : '') + '">' + ic('nuvem') + '<span><b>' + (off ? 'Sem internet' : 'Sincronizado') + '</b><small>' + (off ? 'O que você lançar fica guardado no aparelho e sobe quando a internet voltar.' : 'O app recebe as mudanças da nuvem sozinho.') + '</small></span></div>' +
+    '<p class="nv-t">Se uma tela parecer desatualizada (por exemplo, outra pessoa lançou e ainda não apareceu aqui), toque em <b>Atualizar agora</b>: o app lê tudo de novo direto do servidor.</p>' +
+    (hora ? '<p class="nv-u">Última leitura da nuvem: ' + hora + '</p>' : '') +
+    (r ? '<p class="nv-r ' + (r.ok ? 'ok' : 'er') + '" role="status">' + ic(r.ok ? 'ok' : 'excl') + '<span>' + (r.ok ? 'Atualizado às ' + esc(r.hora) + ' · ' + r.n + ' listas lidas do servidor.' : 'Não deu para atualizar' + (r.falhas && r.n ? ' (' + r.falhas + ' de ' + r.n + ' listas sem resposta)' : '') + '. Confira a internet e tente de novo.') + '</span></p>' : '') + '</div>';
+  return { ico: 'nuvem', sub: 'Mesma nuvem do EFClaudian', titulo: 'Nuvem', corpo: c,
+    rodape: '<button type="button" class="bt pr" data-act="cs-nuvem-atu"' + (ocu ? ' disabled' : '') + '>' + ic('gira') + (ocu ? 'Lendo da nuvem…' : 'Atualizar agora') + '</button>' };
+}
+async function csNuvemAtualiza() {
+  if (S._nuvemOcupada) return; S._nuvemOcupada = true; if (S.gv === csNuvemGaveta) gvDesenha(true);
+  let r; try { r = await Data.atualizar(); } catch (e) { r = { ok: false, n: 0, falhas: 1 }; }
+  S._nuvemOcupada = false; const h = new Date(); r.hora = h.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }); S._nuvemRes = r; if (r.ok) S._nuvemEm = h.toISOString();
+  if (S.gv === csNuvemGaveta) gvDesenha(true);
+}
 function csTopo() {
-  const t = csTema(), con = DEMO ? '<span class="cs-sync">Demonstração</span>' : S.conexao === false ? '<span class="cs-sync off"><i></i>Sem internet · guardando no aparelho</span>' : '<span class="cs-sync"><i></i>Sincronizado</span>';
+  /* v0.4.15 (Nº 46): o aviso da nuvem virou botão; abre a gaveta com "Atualizar agora". No celular fica só o ícone (cor = situação) */
+  const off = S.conexao === false, t = csTema(), con = DEMO ? '<span class="cs-sync">Demonstração</span>' : '<button type="button" class="cs-sync' + (off ? ' off' : '') + '" data-act="cs-nuvem" aria-label="Nuvem: ' + (off ? 'sem internet' : 'sincronizado') + '. Abrir" title="Nuvem · atualizar agora">' + ic('nuvem') + '<i></i><span>' + (off ? 'Sem internet · guardando no aparelho' : 'Sincronizado') + '</span></button>';
   return '<header class="cs-topo"><button type="button" class="bt ic-so cs-so-cel" data-act="cs-menu" aria-label="Abrir menu">' + ic('menu') + '</button>' +
     '<button type="button" class="cs-busca" data-act="cs-busca" aria-label="Buscar (tecla /)">' + ic('lupa') + '<span>Buscar documento, material, coleta…</span><kbd>/</kbd></button><span class="cs-sp"></span>' + con +
     '<button type="button" class="bt ic-so" data-act="cs-tema" aria-label="' + (t === 'escuro' ? 'Usar tema claro' : 'Usar tema escuro') + '" title="' + (t === 'escuro' ? 'Tema claro' : 'Tema escuro') + '">' + ic(t === 'escuro' ? 'sol' : 'lua') + '</button>' +
@@ -1632,8 +1815,9 @@ function render() {
   let corpo = '';
   try { corpo = f ? f(S.rota.aba) : arEmBreve(ar); } catch (e) { console.error(e); corpo = '<div class="pn"><div class="vazio"><b>Esta tela deu erro ao abrir.</b><span>' + esc(e && e.message || e) + '</span></div></div>'; }
   const foco = document.activeElement && document.activeElement.getAttribute && document.activeElement.getAttribute('data-foco'), sel = foco ? [document.activeElement.selectionStart, document.activeElement.selectionEnd] : null;
-  app.innerHTML = '<div class="cs-app">' + csLado() + '<div class="cs-fundo" data-act="cs-fecha"></div><main class="cs-main" id="conteudo">' + csTopo() + '<div class="cs-ct">' + corpo + '</div><footer class="cs-rod">' + APP_APELIDO + ' · ' + esc((S.empresa && S.empresa.nome) || 'Sua empresa') + '</footer></main>' + csBaixo() + '</div>';
+  app.innerHTML = '<div class="cs-app' + csMenuClasse() + '">' + csLado() + csPux() + '<div class="cs-fundo" data-act="cs-fecha"></div><main class="cs-main" id="conteudo">' + csTopo() + '<div class="cs-ct">' + corpo + '</div><footer class="cs-rod">' + APP_APELIDO + ' · ' + esc((S.empresa && S.empresa.nome) || 'Sua empresa') + '</footer></main>' + csBaixo() + '</div>';
   const dep = TELAS[ar.id + ':depois']; if (dep) { try { dep(S.rota.aba); } catch (e) { console.error(e); } }
+  S._puxEntra = false;
   try { gvDesenha(); } catch (e) { console.error(e); }
   if (foco) { const el = document.querySelector('[data-foco="' + foco.replace(/"/g, '') + '"]'); if (el) { el.focus({ preventScroll: true }); try { el.setSelectionRange(sel[0], sel[1]); } catch {} } } /* quem estava digitando continua no mesmo campo */
 }
@@ -1646,9 +1830,13 @@ document.addEventListener('click', e => {
   if (a === 'cs-tema') csTrocaTema(csTema() === 'escuro' ? 'claro' : 'escuro');
   else if (a === 'cs-menu') { const x = $('.cs-app'); if (!x) return; if (x.classList.contains('menu-aberto')) csVolta(); else { x.classList.add('menu-aberto'); csCamadaAbre('menu', csFechaMenu); } }
   else if (a === 'cs-fecha') csVolta();
+  else if (a === 'cs-alterna') csMenuAlterna();
+  else if (a === 'cs-pux') csMenuFlutAbre();
   else if (a === 'cs-sair') csSair();
   else if (a === 'cs-emp') ir('adm', 'empresa');
   else if (a === 'cs-sino') snAbrir();
+  else if (a === 'cs-nuvem') { S._nuvemRes = null; gvAbrir(csNuvemGaveta); }
+  else if (a === 'cs-nuvem-atu') csNuvemAtualiza();
 });
 
 /* ---------- sessão ---------- */
@@ -1684,7 +1872,7 @@ async function csIniciar() {
   /* v0.5.1 (Grok v0.4.11 B1): se a leitura falhar (App Check, permissão, sem internet), mostra o Entrar. O "Primeiro acesso"
      só aparece quando a nuvem respondeu que não existe nenhum Administrador (ou na demonstração nova). */
   try { S._setup = await Data.setupDone(); } catch (e) { S._setup = DEMO ? Store.get('sv2demo_setup') === '1' : true; }
-  try { S._descon = Data.conexao(v => { S.conexao = v; }); } catch {}
+  try { S._descon = Data.conexao(v => { const mudou = S.conexao !== v; S.conexao = v; if (v === true) S._nuvemEm = new Date().toISOString(); if (mudou) { const b = $('.cs-sync'); if (b) { const n = document.createElement('div'); n.innerHTML = csTopo(); const novo = n.querySelector('.cs-sync'); if (novo) b.replaceWith(novo); } if (S.gv === csNuvemGaveta) gvDesenha(true); } }); } catch {}
   Data.auth.onChange(id => { csCarregaUsuario(id); });
   if (DEMO && !Store.get('sv2demo_session')) { S.pronto = true; render(); }
 }
@@ -1979,9 +2167,8 @@ function tbAlinhaTot() {
     if (ok) lb.style.right = (br.width - min + 6) + 'px';
     const esq = Array.from(bar.children).filter(x => x !== t && !x.classList.contains('tb-sp') && x.getBoundingClientRect().width && x.getBoundingClientRect().right <= br.left + min).reduce((m, x) => Math.max(m, x.getBoundingClientRect().right - br.left), 0);
     const dir = Array.from(bar.querySelectorAll('.ic-so')).reduce((m, x) => Math.min(m, x.getBoundingClientRect().left - br.left), br.width);
-    /* v0.4.13: se a coluna do total fica embaixo dos ícones (telas de 1280–1366 px), o total desce para uma linha só dele,
-       logo acima do cabeçalho, ainda em cima da sua coluna; só fica em sequência se nem assim couber */
-    if (ok && max > dir - 8 && max <= br.width + 1 && min - 6 - lb.offsetWidth >= 0) { const h = bar.offsetHeight; t.classList.add('tb-tots-linha'); bar.style.paddingBottom = 'calc(var(--btn) + 8px)'; t.style.top = (h + 8) + 'px'; return; }
+    /* v0.5.3 (Elias, 10/11: "espaço muito grande entre a tabela e o painel; o total deve estar no mesmo nível dos botões"):
+       acabou a linha própria da v0.4.13. Se a coluna do total fica embaixo dos ícones, o total fica na MESMA linha, logo antes deles. */
     if (!ok || min - 6 - lb.offsetWidth < esq + 8 || max > dir - 8) { t.classList.add('tb-tots-fluxo'); t.style.width = ''; tvs.concat(lb).forEach(x => { x.style.left = ''; x.style.right = ''; x.style.width = ''; }); }
   });
 }
@@ -2292,7 +2479,7 @@ document.addEventListener('keydown', e => {
 /* EFCwork · almox.js — Almoxarifado (v0.2: consulta; v0.3: os botões de lançar chamam lanca.js). Painel, Materiais, Movimentações, Solicitações e Equipamentos com a tabela padrão e a gaveta.
    Prefixo: al (materiais) e eq (equipamentos). Os cálculos de saldo por lote vieram do EFClaudian v2.102.59 sem mudança (alIdx, alSit…),
    para os números baterem com os do EFClaudian. Lê sv2_alm_itens, sv2_alm_mov, sv2_alm_sol, sv2_alm_equip. Os lançamentos ficam em lanca.js. */
-const ALM_VENCE_DIAS = 30, EQ_AVENCER = 40, ALM_MOV_LIM = 10000;
+const ALM_VENCE_DIAS = 30, EQ_AVENCER = 60, ALM_MOV_LIM = 10000;
 const AL_TIPO = { inicial: 'Conferência inicial', entrada: 'Entrada', saida: 'Saída', ajuste: 'Ajuste', abrir: 'Frasco aberto', fim: 'Frasco terminou' };
 const AL_SOL_ST = { pendente: ['Pendente', 'wa'], atendida: ['Atendida', 'ok'], cancelada: ['Cancelada', ''] };
 const EQ_SIT = { ativo: ['Em uso', 'ok'], restricao: ['Uso com restrição', 'wa'], manutencao: ['Em manutenção', 'wa'], armazenado: ['Armazenado', ''], baixa: ['Baixado', ''] };
@@ -2364,6 +2551,9 @@ function eqCalSit(e) {
   const p = eqProxima(e), h = hojeISO();
   return p < h ? 'vencida' : p <= addDias(h, EQ_AVENCER) ? 'avencer' : 'ok';
 }
+/* v0.4.15 (Nº 27): a partir dos 2 meses o selo diz quantos dias faltam */
+const eqDiasCal = e => { const p = eqProxima(e); return p ? Math.round((new Date(p + 'T12:00:00') - new Date(hojeISO() + 'T12:00:00')) / 864e5) : null; };
+const eqCalRot = (e, c) => c === 'avencer' && eqDiasCal(e) != null ? 'Vence em ' + eqDiasCal(e) + (eqDiasCal(e) === 1 ? ' dia' : ' dias') : EQ_CAL[c][0];
 function eqLocal(e) {
   if (e.tipo === 'qtd') return Object.keys(e.qtdLocal || {}).filter(k => Number(e.qtdLocal[k])).map(k => k + ' ' + e.qtdLocal[k]).join(' · ') || '—';
   return [e.local, e.posicao].filter(Boolean).join(' · ') + (e.transito ? ' · em trânsito' : '') || '—';
@@ -2377,7 +2567,7 @@ CS_CARGAS.push(() => {
   csOuve('sv2_alm_itens', l => { S.almItens = l; re(); });
   csOuve('sv2_alm_mov', l => { S.almMov = l; S.almErro = ''; re(); }, { order: 'criadoEm', limit: ALM_MOV_LIM, onError: e => { S.almErro = 'Não foi possível carregar as movimentações (' + ((e && e.code) || 'erro') + '). Os saldos podem estar errados.'; re(); } });
   csOuve('sv2_alm_sol', l => { S.almSol = l; re(); }, { order: 'criadoEm', limit: 3000 });
-  csOuve('sv2_alm_equip', l => { S.almEq = l; re(); });
+  csOuve('sv2_alm_equip', l => { S.almEq = l; re(); setTimeout(() => { if (typeof cbLembretes === 'function') cbLembretes(); }, 2500); });
 });
 
 /* ---------- telas ---------- */
@@ -2417,7 +2607,7 @@ function alPainel() {
     (topL.length ? topL.map(id => { const i = alItem(id); return '<div class="li"><span class="tx"><b>' + esc(i ? i.nome : '(item removido)') + '</b></span><span class="num al-q">' + alQ(top[id]) + ' ' + esc(i ? i.un || '' : '') + '</span></div>'; }).join('') : '<div class="vazio"><span>Nenhuma saída este mês.</span></div>') + '</section>' +
     '<section class="pn"><div class="hd"><h3>Calibrações</h3><span class="sp"></span><a class="bt lk" href="#/almox/equipamentos">Ver equipamentos</a></div>' +
     (function () { const l = r.eqs.filter(e => ['vencida', 'sem', 'avencer'].indexOf(eqCalSit(e)) >= 0).sort((a, b) => String(eqProxima(a) || '0').localeCompare(String(eqProxima(b) || '0'))).slice(0, 5);
-      return l.length ? l.map(e => { const c = eqCalSit(e); return '<button type="button" class="li al-li" data-act="al-eq" data-id="' + esc(e.id) + '"><span class="tx"><b>' + esc(eqNomeC(e)) + '</b><small>' + (eqProxima(e) ? 'próxima ' + fmtD(eqProxima(e)) : 'sem data de calibração') + '</small></span>' + alPill(EQ_CAL[c][0], EQ_CAL[c][1]) + '</button>'; }).join('') : '<div class="vazio">' + ic('ok') + '<span>Nenhuma calibração vencida ou a vencer em ' + EQ_AVENCER + ' dias.</span></div>'; })() + '</section></div></div>';
+      return l.length ? l.map(e => { const c = eqCalSit(e); return '<button type="button" class="li al-li" data-act="al-eq" data-id="' + esc(e.id) + '"><span class="tx"><b>' + esc(eqNomeC(e)) + '</b><small>' + (eqProxima(e) ? 'próxima ' + fmtD(eqProxima(e)) : 'sem data de calibração') + '</small></span>' + alPill(eqCalRot(e, c), EQ_CAL[c][1]) + '</button>'; }).join('') : '<div class="vazio">' + ic('ok') + '<span>Nenhuma calibração vencida ou a vencer em ' + EQ_AVENCER + ' dias.</span></div>'; })() + '</section></div></div>';
   return h;
 }
 function alTabMateriais() {
@@ -2489,7 +2679,7 @@ function alTabEq() {
       { k: 'qtd', rot: 'Qtd', tipo: 'num', v: eqQtd },
       { k: 'sit', rot: 'Situação', v: e => (EQ_SIT[e.situacao] || EQ_SIT.ativo)[0], html: e => { const s = EQ_SIT[e.situacao] || EQ_SIT.ativo; return alPill(s[0], s[1]); } },
       { k: 'prox', rot: 'Próxima calibração', tipo: 'data', v: e => e.precisaCal ? eqProxima(e) : '' },
-      { k: 'cal', rot: 'Calibração', v: e => { const c = eqCalSit(e); return c ? EQ_CAL[c][0] : ''; }, html: e => { const c = eqCalSit(e); return c ? alPill(EQ_CAL[c][0], EQ_CAL[c][1]) : '<span class="tb-nada">não calibra</span>'; } }] });
+      { k: 'cal', rot: 'Calibração', v: e => { const c = eqCalSit(e); return c ? EQ_CAL[c][0] : ''; }, html: e => { const c = eqCalSit(e); return c ? alPill(eqCalRot(e, c), EQ_CAL[c][1]) : '<span class="tb-nada">não calibra</span>'; } }] });
 }
 TELAS.almox = function (aba) {
   if (!alVe()) return alSemAcesso();
@@ -3664,6 +3854,31 @@ function cbPassos(c, mini) {
   if (mini) return '<ol class="cb-mini" aria-label="Etapas">' + es.map(x => '<li class="' + (x.feito ? 'ok' : x.atual ? 'at' : '') + '" title="' + esc(x.nome + (x.data ? ' · ' + fmtD(x.data) : '')) + '"><i></i><span>' + esc(x.nome) + '</span></li>').join('') + '</ol>';
   return tlFluido(c.id, es);}
 
+/* ======================= lembrete de calibração (v0.4.15, Nº 27, aprovado em 14/10) =======================
+   2 meses antes do vencimento (aviso) e 7 dias antes (aviso). Vai ao sino dos Líderes ★ e do Administrador e, se o equipamento tiver
+   responsável cadastrado (responsavelId), a ele também. Cada aviso uma vez por vencimento: o código do aviso é fixo
+   (cal-equipamento-data-etapa), então abrir o app de novo, em outro aparelho ou em duas pessoas ao mesmo tempo não duplica.
+   Quem gera é o primeiro Líder ★/Administrador que abre o app depois que a janela abre. Vencida: não avisa (a tela já mostra). */
+const CB_LEMB = { m2: 60, d7: 7 };
+async function cbLembretes() {
+  if (!S.user || !isSup(S.user) || !S.almCarregado || !(S.users || []).length || S._cbLemb) return;
+  S._cbLemb = true; const feitos = (S._cbLembOk = S._cbLembOk || {});
+  try {
+    for (const e of (S.almEq || [])) {
+      const sit = eqCalSit(e); if (sit !== 'avencer' && sit !== 'ok') continue;
+      const prox = eqProxima(e), dias = eqDiasCal(e); if (!prox || dias == null || dias < 0 || dias > CB_LEMB.m2) continue;
+      const etapa = dias <= CB_LEMB.d7 ? 'd7' : 'm2', id = 'cal-' + e.id + '-' + prox + '-' + etapa; if (feitos[id]) continue;
+      if (await Data.col('sv2_notifs').get(id)) { feitos[id] = 1; continue; }
+      const txt = eqNomeC(e) + ': a calibração vence em ' + fmtD(prox) + ' (' + (dias === 0 ? 'hoje' : dias === 1 ? 'amanhã' : 'em ' + dias + ' dias') + '). ' + (etapa === 'd7' ? 'Falta 1 semana: peça ou confirme o agendamento.' : 'Faltam 2 meses: já dá para pedir a cotação.') + ' Almoxarifado › Calibração.';
+      const base = { ts: nowISO(), nivel: 'aviso', titulo: 'Calibração ' + (etapa === 'd7' ? 'vence em 7 dias' : 'vence em 2 meses') + ': ' + eqNomeC(e), texto: txt, origem: 'Sistema', refTipo: 'equip', refId: e.id, lidaPor: {}, confirmadaPor: {} };
+      await Data.col('sv2_notifs').set(id, Object.assign({}, base, { para: 'superiores', dest: notifDest('superiores') }));
+      const r = e.responsavelId; if (r && (S.users || []).some(u => u.id === r && u.ativo !== false)) await Data.col('sv2_notifs').set(id + '-r', Object.assign({}, base, { para: [r], dest: notifDest([r]) }));
+      feitos[id] = 1;
+    }
+  } catch (er) { console.warn('lembrete de calibração:', er && (er.code || er.message)); }
+  S._cbLemb = false;
+}
+
 /* ======================= tela (Equipamentos › Calibração) ======================= */
 function cbTela() {
   const ab = cbAbertas(), todas = S.almCal.slice().sort((a, b) => String(b.numero).localeCompare(String(a.numero)));
@@ -4263,6 +4478,7 @@ document.addEventListener('click', async e => {
   else if (a === 'sn-ver') { const x = $('#sn-toast'); if (x) x.remove(); snAbrir(); }
   else if (a === 'sn-abre') {
     const n = S.notifs.find(x => x.id === id); if (!n) return; Notif.read(n.id);
+    if (n.refTipo === 'equip' && n.refId && alVe() && S.almEq.some(q => q.id === n.refId)) { S._gvNav = true; ir('almox', 'equipamentos'); alAbreEq(n.refId); return; }
     if (n.refTipo === 'alm_mov' && n.refId && alVe() && S.almMov.some(m => m.id === n.refId)) { S._gvNav = true; ir('almox', 'movimentacoes'); alAbreMov(n.refId); }
   }
 });
@@ -4505,8 +4721,8 @@ function coFotoGet(id) { if (CO_FOTO[id]) return Promise.resolve(CO_FOTO[id]); r
 GV_DEPOIS.push(g => { $$('img[data-cofoto]', g).forEach(img => { if (img.getAttribute('src')) return; coFotoGet(img.getAttribute('data-cofoto')).then(u => { if (u) img.src = u; }); }); });
 function coFotoVer(id) {
   coFotoGet(id).then(u => {
-    if (!u) { aviso('Não foi possível abrir a foto.', 'erro'); return; }
-    const d = document.createElement('div'); d.id = 'co-fv'; d.className = 'co-fv'; d.innerHTML = '<img src="' + u + '" alt="Cupom dos Correios"><button type="button" class="bt ic-so" data-act="co-fv-x" aria-label="Fechar">' + ic('x') + '</button>';
+    if (!imgSrc(u)) { aviso('Não foi possível abrir a foto.', 'erro'); return; } /* v0.4.15 (Nº 31): o endereço da foto vem da nuvem; só imagem (data:image, blob, https) */
+    const d = document.createElement('div'); d.id = 'co-fv'; d.className = 'co-fv'; d.innerHTML = '<img src="' + imgSrc(u) + '" alt="Cupom dos Correios"><button type="button" class="bt ic-so" data-act="co-fv-x" aria-label="Fechar">' + ic('x') + '</button>';
     document.body.appendChild(d); csCamadaAbre('foto', () => { const x = $('#co-fv'); if (x) x.remove(); });
   });
 }
@@ -4523,7 +4739,7 @@ function coFotoReduz(arq) {
     r.readAsDataURL(arq);
   });
 }
-const coCupomBl = f => lcBl('Cupom dos Correios', (f.cupom ? '<div class="co-cupf"><img src="' + f.cupom + '" alt="Cupom"><button type="button" class="bt ic-so" data-act="co-cup-x" title="Tirar a foto" aria-label="Tirar a foto">' + ic('lixo') + '</button></div>' : f.cupomAtual ? '<div class="co-cupf"><img data-cofoto="' + esc(f.cupomAtual) + '" alt="Cupom atual"><small>atual · escolha outra para trocar</small></div>' : '') +
+const coCupomBl = f => lcBl('Cupom dos Correios', (imgSrc(f.cupom) ? '<div class="co-cupf"><img src="' + imgSrc(f.cupom) + '" alt="Cupom"><button type="button" class="bt ic-so" data-act="co-cup-x" title="Tirar a foto" aria-label="Tirar a foto">' + ic('lixo') + '</button></div>' : f.cupomAtual ? '<div class="co-cupf"><img data-cofoto="' + esc(f.cupomAtual) + '" alt="Cupom atual"><small>atual · escolha outra para trocar</small></div>' : '') +
   '<label class="bt co-file">' + ic('imagem') + (f.cupom || f.cupomAtual ? 'Trocar a foto' : 'Foto do cupom') + '<input type="file" accept="image/*" capture="environment" data-cofile hidden></label>', 'opcional');
 async function coGravaCupom(f, ids) {
   if (!f.cupom) return '';
@@ -6242,7 +6458,7 @@ function atTela() {
 function atTexto() {
   const l = atFiltrar();
   return { cab: ['Data e hora', 'Quem', 'Perfil', 'App', 'Área', 'Ação', 'Registro', 'O que aconteceu', 'Autorizado por'],
-    linhas: l.map(r => [fmtD(atDia(r.ts)) + ' ' + atHora(r.ts), r.userName || '', atPerfil(r.perfil), r.versao || '', atArea(r), atAcao(r.acao), r.entidadeId || '', r.resumo || '', (r.autorizadoPor && (r.autorizadoPor.nome || r.autorizadoPor.por)) || '']) };
+    linhas: l.map(r => [fmtD(atDia(r.ts)) + ' ' + atHora(r.ts), r.userName || '', atPerfil(r.perfil), atApp(r), atArea(r), atAcao(r.acao), r.entidadeId || '', r.resumo || '', (r.autorizadoPor && (r.autorizadoPor.nome || r.autorizadoPor.por)) || '']) };
 }
 function atPlanilha() { const d = atTexto(), nome = APP_NOME + '-atividade-' + hojeISO() + '.xlsx'; plBaixar(plXlsx('Atividade', d.cab, d.linhas), nome); aviso('Planilha baixada: ' + nome); }
 function atImprimir() {

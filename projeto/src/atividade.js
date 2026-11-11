@@ -134,7 +134,7 @@ function atTela() {
 function atTexto() {
   const l = atFiltrar();
   return { cab: ['Data e hora', 'Quem', 'Perfil', 'App', 'Área', 'Ação', 'Registro', 'O que aconteceu', 'Autorizado por'],
-    linhas: l.map(r => [fmtD(atDia(r.ts)) + ' ' + atHora(r.ts), r.userName || '', atPerfil(r.perfil), r.versao || '', atArea(r), atAcao(r.acao), r.entidadeId || '', r.resumo || '', (r.autorizadoPor && (r.autorizadoPor.nome || r.autorizadoPor.por)) || '']) };
+    linhas: l.map(r => [fmtD(atDia(r.ts)) + ' ' + atHora(r.ts), r.userName || '', atPerfil(r.perfil), atApp(r), atArea(r), atAcao(r.acao), r.entidadeId || '', r.resumo || '', (r.autorizadoPor && (r.autorizadoPor.nome || r.autorizadoPor.por)) || '']) };
 }
 function atPlanilha() { const d = atTexto(), nome = APP_NOME + '-atividade-' + hojeISO() + '.xlsx'; plBaixar(plXlsx('Atividade', d.cab, d.linhas), nome); aviso('Planilha baixada: ' + nome); }
 function atImprimir() {

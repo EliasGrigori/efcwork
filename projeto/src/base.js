@@ -1,7 +1,7 @@
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.5.1';
+const VERSAO = '0.5.3';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -117,8 +117,9 @@ const ICS = {
   graf: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
   eng: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>',
   lupa: '<circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/>',
+  nuvem: '<path d="M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 9.5a4.25 4.25 0 0 1-.5 8.5z"/>', gira: '<path d="M20 12a8 8 0 1 1-2.6-5.9M20 4v4.5h-4.5"/>',
   sino: '<path d="M6 16v-5a6 6 0 1 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/>',
-  cadeado: '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>', mais: '<path d="M12 5v14M5 12h14"/>', menos: '<path d="M5 12h14"/>', recontar: '<path d="M20 11a8 8 0 0 0-14.3-4.9L4 8M4 4v4h4M4 13a8 8 0 0 0 14.3 4.9L20 16M20 20v-4h-4"/>', entra: '<path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19h14"/>', sai: '<path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M5 19h14"/>', lapis: '<path d="M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17z"/><path d="M14.5 7.5l2 2"/>', ajuste: '<path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/>', x: '<path d="M6 6l12 12M18 6 6 18"/>', seta: '<path d="m9 6 6 6-6 6"/>', volta: '<path d="m15 6-6 6 6 6"/>',
+  recolhe: '<path d="m11 17-5-5 5-5M18 17l-5-5 5-5"/>', cadeado: '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>', mais: '<path d="M12 5v14M5 12h14"/>', menos: '<path d="M5 12h14"/>', recontar: '<path d="M20 11a8 8 0 0 0-14.3-4.9L4 8M4 4v4h4M4 13a8 8 0 0 0 14.3 4.9L20 16M20 20v-4h-4"/>', entra: '<path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19h14"/>', sai: '<path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M5 19h14"/>', lapis: '<path d="M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17z"/><path d="M14.5 7.5l2 2"/>', ajuste: '<path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/>', x: '<path d="M6 6l12 12M18 6 6 18"/>', seta: '<path d="m9 6 6 6-6 6"/>', volta: '<path d="m15 6-6 6 6 6"/>',
   broto: '<path d="M12 21v-8"/><path d="M12 13c0-4-3-6.5-7-6.5 0 4 3 6.5 7 6.5zM12 11c0-3.5 2.6-6 6.5-6 0 3.5-2.6 6-6.5 6z"/>',
   relogio: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>', excl: '<circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.2v.2"/>', alerta: '<path d="M12 3.5 2.8 19.5h18.4z"/><path d="M12 10v4.5M12 17.3v.2"/>',
   ok: '<path d="M5 12.5l4.5 4.5L19 7.5"/>', sair: '<path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/>', lua: '<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>',
@@ -172,6 +173,16 @@ const Data = (function () {
       return cache().then(x => { if (x !== undefined) return x; if (r.e) throw r.e; return srv(); });
     });
   }
+  /* v0.4.15 (Nº 46): consultas que estão sendo escutadas, para o botão "Atualizar agora" ler tudo de novo direto do servidor */
+  const QS_ATIVAS = [];
+  function fbQuery(name, o) {
+    let q = fdb.collection(name);
+    if (o.desde && o.order) q = q.where(o.order, '>=', o.desde);
+    if (o.contem) q = q.where(o.contem[0], 'array-contains', o.contem[1]); /* v2.89.0 */
+    if (o.order) q = q.orderBy(o.order, 'desc');
+    if (o.limit) q = q.limit(o.limit);
+    return q;
+  }
   function col(name) {
     if (DEMO) {
       return {
@@ -194,12 +205,9 @@ const Data = (function () {
     return {
       watch(cb, o) {
         o = o || {};
-        let q = fdb.collection(name);
-        if (o.desde && o.order) q = q.where(o.order, '>=', o.desde);
-        if (o.contem) q = q.where(o.contem[0], 'array-contains', o.contem[1]); /* v2.89.0 */
-        if (o.order) q = q.orderBy(o.order, 'desc');
-        if (o.limit) q = q.limit(o.limit);
-        return q.onSnapshot(s => cb(s.docs.map(d => Object.assign({ id: d.id }, d.data()))), e => { console.error(name, e); if (o.onError) o.onError(e); });
+        const q = fbQuery(name, o), reg = { name: name, o: o }; QS_ATIVAS.push(reg);
+        const off = q.onSnapshot(s => cb(s.docs.map(d => Object.assign({ id: d.id }, d.data()))), e => { console.error(name, e); if (o.onError) o.onError(e); });
+        return () => { const k = QS_ATIVAS.indexOf(reg); if (k >= 0) QS_ATIVAS.splice(k, 1); off(); };
       },
       add(obj) {
         const ref = fdb.collection(name).doc();
@@ -315,6 +323,16 @@ const Data = (function () {
       const d = await fbGet(fdb.collection('sv2_meta').doc('setup'));
       if (d) Store.set('sv2-setup', '1'); /* v2.84.0: o aparelho lembra (o login aparece na hora, mesmo sem internet) */
       return !!d;
+    },
+    /* v0.4.15 (Nº 46, pedido do Elias 30/10: "um botão atualizar dentro da nuvem para forçar uma atualização"): lê de novo, direto do
+       servidor, tudo o que a tela está escutando. O que chegar atualiza o aparelho e as telas na hora. Sem resposta em 12 s = falha. */
+    async atualizar() {
+      if (DEMO) return { ok: true, n: 0, falhas: 0, demo: true };
+      if (!fdb) return { ok: false, n: 0, falhas: 1, motivo: 'sem nuvem' };
+      const qs = QS_ATIVAS.slice(); let falhas = 0, motivo = '';
+      const lim = ms => new Promise((_, rej) => setTimeout(() => rej(new Error('tempo')), ms));
+      await Promise.all(qs.map(r => Promise.race([fbQuery(r.name, r.o).get({ source: 'server' }), lim(12000)]).catch(e => { falhas++; motivo = motivo || (e && (e.code || e.message)) || ''; })));
+      return { ok: falhas === 0, n: qs.length, falhas: falhas, motivo: motivo };
     },
     /* v2.84.0: a nuvem responde? (um documento pequeno, escutado com a marca "veio do aparelho") */
     conexao(cb) {

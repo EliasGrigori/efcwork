@@ -196,3 +196,4 @@ body.tb-arrastando,body.tb-arrastando *{cursor:grabbing!important;user-select:no
 .tb-mn-ci em{font-style:normal;font-size:12px;color:var(--tx3)}
 .tb-mn-ci{min-height:40px}
 .tb-mn-fundo{position:fixed;inset:0;z-index:59;background:rgba(20,16,8,.38)}
+.tb-mn-pe .bt{border-radius:8px} /* v0.4.15 (Grok v0.4.12 A1): rodapé do menu com o mesmo canto de 8 px */
