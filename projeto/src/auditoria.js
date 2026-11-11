@@ -8,7 +8,7 @@
    GUT no padrão do EFClaudian (G, U e T de 1 a 5, cada nota explicada; G × U × T; alto ≥ 48, médio ≥ 18; G = 5 nunca é
    baixo). Só o Líder ★, o Administrador ou o auditor da RNC registram e enviam. Nada se apaga: NC tirada e RNC cancelada
    ficam guardadas com o motivo. A apresentação (Nº 45) e o relatório estão em auapres.js. Plano de ação: v0.6.3. */
-Object.assign(S, { rnc: [], rncGut: [], _auFotos: {} });
+Object.assign(S, { rnc: [], rncGut: [], _auFotos: {}, _auFotoDoc: {} });
 const AU_AREAS = [['campo', 'Campo'], ['estrutura', 'Estrutura']];
 const AU_GRAV = { maior: ['Maior', 'cr'], media: ['Média', 'wa'], baixa: ['Baixa', ''] };
 const AU_RES = { resolvida: ['Resolvida', 'ok'], parcial: ['Parcial', 'wa'], nao: ['Não resolvida', 'cr'] };
@@ -84,11 +84,36 @@ const auGrava = (k, v) => { try { Store.set('cw-au-' + k, v); } catch {} };
 
 /* ---------- fotos (evidência da auditoria: não entram na regra dos 30 dias) ---------- */
 function auFotoGet(id) { if (S._auFotos[id] !== undefined && S._auFotos[id] !== '') return Promise.resolve(S._auFotos[id]);
-  S._auFotos[id] = ''; return Data.col('sv2_rnc_foto').get(id).then(d => { const u = (d && d.dataUrl) || ''; S._auFotos[id] = u; return u; }).catch(() => ''); }
+  S._auFotos[id] = ''; return Data.col('sv2_rnc_foto').get(id).then(d => { const u = (d && d.dataUrl) || ''; S._auFotos[id] = u; S._auFotoDoc[id] = { base: (d && d.base) || '', marcas: d && Array.isArray(d.marcas) ? d.marcas : [], marcadoPor: (d && d.marcadoPor) || '', marcadoEm: (d && d.marcadoEm) || '' }; return u; }).catch(() => ''); }
 function auFotosCarrega(raiz) { $$('img[data-aufoto]', raiz || document).forEach(im => { if (im.getAttribute('src')) return;
   auFotoGet(im.getAttribute('data-aufoto')).then(u => { if (u && imgSrc(u)) im.src = imgSrc(u); else { const q = im.parentNode; if (q && q.classList) q.classList.add('vz'); } }); }); }
 GV_DEPOIS.push(g => auFotosCarrega(g));
 const auFotoIMG = (id, cls) => '<img class="' + (cls || '') + '"' + (S._auFotos[id] && imgSrc(S._auFotos[id]) ? ' src="' + imgSrc(S._auFotos[id]) + '"' : ' data-aufoto="' + esc(id) + '"') + ' alt="Foto da NC">';
+/* v0.6.4: marcar no formulário (foto nova ou já gravada: a gravada vira um registro novo ao salvar, a anterior fica) */
+function auFotoMk(i) { const f = S.fm; if (!f) return; const x = (f.fotos || [])[i]; if (!x) return; const doc = x.id ? S._auFotoDoc[x.id] || {} : {}, src = x.url || S._auFotos[x.id]; if (!imgSrc(src)) return;
+  fedAbrir({ src: src, base: x.base || doc.base || src, marcas: x.marcas || doc.marcas || [], sub: (auDe(f.rid) || {}).numero || '' }).then(r => { if (!r || !S.fm || S.fm !== f) return;
+    f.fotos[i] = { url: r.img, base: r.base, marcas: r.marcas, mkPor: r.marcadoPor, mkEm: r.marcadoEm, subst: x.id || x.subst || '' }; f.sujo = true; gvDesenha(true); }); }
+function auFotoOnde(id) { for (const r of S.rnc) for (const n of (r.ncs || [])) { if ((n.fotosAntes || []).indexOf(id) >= 0) return { r: r, n: n, papel: 'antes', l: n.fotosAntes }; if (n.ret && (n.ret.fotosDepois || []).indexOf(id) >= 0) return { r: r, n: n, papel: 'depois', l: n.ret.fotosDepois }; } return null; }
+function auFotoAbrir(id) {
+  const u = S._auFotos[id]; if (!imgSrc(u)) return; const w = auFotoOnde(id), doc = S._auFotoDoc[id] || {};
+  const pode = !!w && auPode(w.r) && auSit(w.r) !== 'fechada';
+  fedVer({ src: u, base: doc.base, marcas: doc.marcas, marcadoPor: doc.marcadoPor, marcadoEm: doc.marcadoEm, titulo: w ? w.r.numero + ' · ' + auNum(w.n.n) + ' · foto ' + (w.l.indexOf(id) + 1) + ' de ' + w.l.length + (w.papel === 'depois' ? ' (depois)' : '') : 'Foto',
+    nome: w ? w.r.numero + '_' + auNum(w.n.n) + '_foto' + (w.l.indexOf(id) + 1) + '_' + w.papel : 'foto', marcar: pode ? () => auFotoMarcarGravada(id) : null });
+}
+function auFotoMarcarGravada(id) {
+  const w = auFotoOnde(id), doc = S._auFotoDoc[id] || {}, src = S._auFotos[id]; if (!w || !imgSrc(src)) return;
+  fedAbrir({ src: src, base: doc.base || src, marcas: doc.marcas || [], sub: w.r.numero + ' · ' + auNum(w.n.n) }).then(res => {
+    if (!res) return; const r = w.r, nid = uid(), ts = nowISO();
+    const o = { rncId: r.id, ncId: w.n.id, papel: w.papel, dataUrl: res.img, criadoEm: ts, porId: S.user.id, marcas: res.marcas, substitui: id };
+    if (res.marcas.length) Object.assign(o, { base: res.base, marcadoPor: res.marcadoPor, marcadoEm: res.marcadoEm });
+    S._auFotos[nid] = res.img; S._auFotoDoc[nid] = { base: o.base || '', marcas: o.marcas, marcadoPor: o.marcadoPor || '', marcadoEm: o.marcadoEm || '' };
+    const troca = l => (l || []).map(x => x === id ? nid : x);
+    const ncs = (r.ncs || []).map(y => y.id !== w.n.id ? y : w.papel === 'antes' ? Object.assign({}, y, { fotosAntes: troca(y.fotosAntes) }) : Object.assign({}, y, { ret: Object.assign({}, y.ret, { fotosDepois: troca(y.ret.fotosDepois) }) })); r.ncs = ncs;
+    Promise.all([Data.col('sv2_rnc_foto').set(nid, o), Data.col('sv2_rnc').update(r.id, { ncs: ncs, atualizadoEm: ts })]).then(() => aviso(res.marcas.length ? 'Marcas salvas. A foto anterior fica guardada.' : 'Marcas tiradas. A foto anterior fica guardada.')).catch(e => aviso(svErro(e), 'erro'));
+    Audit.log({ acao: 'rnc_foto_marcas', entidade: 'rnc', entidadeId: r.id, resumo: r.numero + ' · ' + auNum(w.n.n) + ': ' + (res.marcas.length ? res.marcas.length + ' marca(s) na foto' : 'marcas tiradas da foto') + ' (' + w.papel + ')' });
+    if (S.gv) gvDesenha(); if (S.auAp && !S.auAp.ed) auAprDesenha(); render();
+  });
+}
 function auFotoVer(id) { const u = S._auFotos[id]; if (!imgSrc(u)) return;
   const d = document.createElement('div'); d.id = 'au-fv'; d.className = 'co-fv'; d.innerHTML = '<img src="' + imgSrc(u) + '" alt="Foto da NC"><button type="button" class="bt ic-so" data-act="au-fv-x" aria-label="Fechar">' + ic('x') + '</button>';
   document.body.appendChild(d); csCamadaAbre('aufv', () => { const x = $('#au-fv'); if (x) x.remove(); }); }
@@ -221,7 +246,7 @@ function auNcEditar(rid, ncId) {
 }
 function auFotosBl(f) {
   const fs = f.fotos || [];
-  const th = fs.map((x, i) => '<span class="ap-ft">' + (x.id ? auFotoIMG(x.id) : '<img src="' + imgSrc(x.url) + '" alt="Foto ' + (i + 1) + '">') + '<button type="button" class="bt ic-so" data-act="au-foto-x" data-i="' + i + '" title="Tirar esta foto" aria-label="Tirar esta foto">' + ic('x') + '</button></span>').join('');
+  const th = fs.map((x, i) => '<span class="ap-ft">' + (x.id ? auFotoIMG(x.id) : '<img src="' + imgSrc(x.url) + '" alt="Foto ' + (i + 1) + '">') + fedMkBt('au-foto-mk', i, (x.marcas || (x.id && S._auFotoDoc[x.id] && S._auFotoDoc[x.id].marcas) || []).length) + '<button type="button" class="bt ic-so" data-act="au-foto-x" data-i="' + i + '" title="Tirar esta foto" aria-label="Tirar esta foto">' + ic('x') + '</button></span>').join('');
   const add = fs.length < AU_MAX_FOTOS ? '<label class="bt">' + ic('imagem') + (fs.length ? 'Mais uma' : 'Tirar foto') + '<input type="file" accept="image/*" capture="environment" data-aufoto-in hidden></label><label class="bt">Galeria<input type="file" accept="image/*" multiple data-aufoto-in hidden></label>' : '';
   return '<div class="ap-fot">' + th + add + '</div><small class="cl-nt">' + fs.length + ' de ' + AU_MAX_FOTOS + ' · ficam guardadas como evidência da auditoria. Fotografe o problema, não as pessoas.</small>';
 }
@@ -273,7 +298,10 @@ document.addEventListener('change', async e => {
 function auFotosGravar(fotos, rid, ncId, papel) {
   const ids = [], ps = [];
   (fotos || []).forEach(f => { if (f.id) { ids.push(f.id); return; } const id = uid(); S._auFotos[id] = f.url; ids.push(id);
-    ps.push(Data.col('sv2_rnc_foto').set(id, { rncId: rid, ncId: ncId, papel: papel, dataUrl: f.url, criadoEm: nowISO(), porId: S.user.id, marcas: [] })); });
+    const mk = f.base && (f.marcas || []).length, o = { rncId: rid, ncId: ncId, papel: papel, dataUrl: f.url, criadoEm: nowISO(), porId: S.user.id, marcas: mk ? f.marcas : [] };
+    if (mk) Object.assign(o, { base: f.base, marcadoPor: f.mkPor || S.user.nome, marcadoEm: f.mkEm || nowISO() }); if (f.subst) o.substitui = f.subst;
+    S._auFotoDoc[id] = { base: o.base || '', marcas: o.marcas, marcadoPor: o.marcadoPor || '', marcadoEm: o.marcadoEm || '' };
+    ps.push(Data.col('sv2_rnc_foto').set(id, o)); });
   return { ids: ids, ps: ps };
 }
 function auNcOk(prox) {
@@ -455,7 +483,8 @@ document.addEventListener('click', e => {
   else if (a === 'au-chip-add') auChipAdd(t.getAttribute('data-c'), t.getAttribute('data-t'));
   else if (a === 'au-chip-x' && f) { const c = t.getAttribute('data-c'), i = Number(t.getAttribute('data-i')); f[c] = (f[c] || []).filter((x, k) => k !== i); f.sujo = true; gvDesenha(true); }
   else if (a === 'au-foto-x' && f) { const i = Number(t.getAttribute('data-i')); f.fotos = (f.fotos || []).filter((x, k) => k !== i); f.sujo = true; gvDesenha(true); }
-  else if (a === 'au-foto-ver') auFotoVer(id);
+  else if (a === 'au-foto-ver') auFotoAbrir(id);
+  else if (a === 'au-foto-mk') auFotoMk(Number(t.getAttribute('data-i')));
   else if (a === 'au-fv-x') csVolta();
   else if (a === 'au-nc-tirar') { const p = String(id).split('|'); lcAbrir({ k: 'auTirar', rid: p[0], ncId: p[1], motivo: '' }, () => auNcAbre(p[0], p[1])); }
   else if (a === 'au-tirar-ok') auTirarOk();

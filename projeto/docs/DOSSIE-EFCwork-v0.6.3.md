@@ -172,3 +172,17 @@ Regras de `sv2_rnc_plano` (set pelo responsável pela resposta e pelo líder/aud
 
 ## Respostas do Elias (11/11 19:10)
 ITENS 1 a 9 **aprovados**. "Pode publicar e iniciar a próxima etapa" (v0.6.4).
+
+## Publicação e começo da v0.6.4 (11/11 19:1x)
+v0.6.3 publicada (commit 58514ca; index.html do GitHub conferido contra o testado; o PDF real da RNC continua fora do repositório).
+Estudo do EFClaudian para a v0.6.4: editor de foto (v2.22.0/v2.102.40: ferramentas c/s/t/b — círculo, seta, texto, borrar —, numerar, 5 cores, 3 grossuras, marcas em pixels da imagem {t, cor, esp, x1, y1, x2, y2, txt, n}; foto gravada com dataUrl + base + marcas; marcar uma foto gravada cria registro novo) e fluxograma (flux: [{id, k ini/et/dec/fim, t, sim, nao, vai, prob}], até 20 etapas, 60 letras).
+Enviados os modelos em aprovacao-efcwork-v0.6.4-modelos.html: editor (OPÇÕES 1 a 5: escura com ferramentas em cima, clara com tudo embaixo, painel ao lado, barra flutuante, janelas retráteis), ver grande com original/marcas (ITEM 1), fluxograma em lista × no desenho (A/B) e os itens de onde aparece, o que fica guardado (base + marcas + marcadoPor/marcadoEm), Borrar (LGPD) e o fluxograma na análise. Fonte: tools/modelos-v064.js.
+
+## Respostas do Elias aos modelos da v0.6.4 (11/11 19:29)
+- Editor de foto: OPÇÃO 1 aprovada "no modo celular, ferramentas ficam embaixo"; OPÇÃO 2 aprovada; OPÇÃO 3 aprovada no PC, "porém o retorno fica com as ferramentas lá em cima, no local vazio ao lado de Numerar" (o Desfazer sobe para a grade das ferramentas, no espaço vazio ao lado de Numerar); OPÇÕES 4 e 5 reprovadas.
+  Leitura (a confirmar com ele): PC = painel ao lado (OPÇÃO 3) com o Desfazer no espaço vazio ao lado de Numerar; celular = tela escura (OPÇÃO 1) com as ferramentas embaixo (como na OPÇÃO 2).
+- ITEM 1 (ver grande: com as marcas / original), ITEM 2 (onde o editor aparece), ITEM 3 (o que fica guardado, Nº 42), ITEM 4 (Borrar/LGPD) e ITEM 5 (fluxograma na análise) aprovados.
+- Fluxograma: OPÇÕES A e B reprovadas. Ele perguntou se dá para aproveitar o "Docs" para isso, com integração interna nativa pelo próprio Cwork; disse que pode haver a integração, mas está trabalhando nisso com outra IA e pode haver uma forma de comunicação para essa parte. → O fluxograma sai da v0.6.4 e espera essa integração.
+- Pedido novo: "a qualquer momento eu posso remover, editar, corrigir qualquer informação" (escopo a confirmar: só as marcas da foto ou regra geral do Administrador).
+- Pediu a sugestão de modelo e esforço antes de começar.
+- Ele respondeu só "pode iniciar" (19:30). Segui as respostas padrão que propus: (1) remover/editar/corrigir vale para as marcas da foto — qualquer marca pode ser tirada ou refeita a qualquer momento, guardando a original e o histórico; a regra geral do app não mudou; (2) celular com fundo escuro.

@@ -31,7 +31,7 @@
   --sh:0 1px 2px rgba(40,30,10,.06),0 4px 14px rgba(40,30,10,.05);
   --sb:#fffdf8;--sbTx:#2a2519;--sbBd:#e6dfcf;
   --ouro:linear-gradient(135deg,#f7df9e 0%,#d9b46a 42%,#b4862f 100%);
-  --r:10px;--rs:7px;--btn:36px;--row:40px;--onCr:#fff;--onOuro:#1c1406;
+  --fedBg:#12141c;--fedTx:#f2efe6;--fedBd:#33364a;--fedBt:#1f2230;--r:10px;--rs:7px;--btn:36px;--row:40px;--onCr:#fff;--onOuro:#1c1406;
   color-scheme:light
 }
 :root[data-tema="escuro"]{
@@ -932,6 +932,80 @@ div.cb-hc{cursor:default}
   .dc-gp{flex-wrap:wrap}
 }
 
+/* ===== fotoed.css ===== */
+/* Editor de foto e foto grande (v0.6.4): PC = foto à esquerda e painel à direita; celular = tela escura, ferramentas embaixo */
+body.fed-on{overflow:hidden}
+.fed{position:fixed;inset:0;z-index:85;display:flex;background:var(--fedBg);color:var(--fedTx)}
+.fed .bt{background:var(--fedBt);color:var(--fedTx);border-color:var(--fedBd)}
+.fed .bt.pr{background:var(--ouro);color:var(--onOuro);border-color:transparent}
+.fed-h{display:none;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--fedBd)}
+.fed-h b{flex:1;text-align:center;font-weight:600}
+.fed-pal{flex:1;min-width:0;min-height:0;display:flex;align-items:center;justify-content:center;padding:16px;position:relative}
+.fed-pal canvas,.fed-pal img{max-width:100%;max-height:100%;border-radius:6px;touch-action:none;display:block;cursor:crosshair}
+.fed-pal img{cursor:default}
+.fed-txt{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;width:min(420px,calc(100% - 32px));background:var(--fedBt);border:1px solid var(--fedBd);border-radius:10px;padding:8px}
+.fed-txt[hidden]{display:none}
+.fed-txt .fm-i,.fed-txt .bt{height:var(--btn)}
+.fed-pn{width:300px;flex:none;background:var(--bg1);color:var(--tx);border-left:1px solid var(--bd);display:flex;flex-direction:column;overflow:auto}
+.fed-pn .bt{background:var(--bg1);color:var(--tx);border-color:var(--bd2)}
+.fed-pn .bt.pr{background:var(--ouro);color:var(--onOuro)}
+.fed-cab{padding:16px 16px 4px}
+.fed-cab b{display:block;font-family:var(--fh);font-size:18px}
+.fed-cab small{color:var(--tx3);font-size:13px}
+.fed-pc{display:flex;flex-direction:column;gap:6px;padding:0 16px 16px;flex:1}
+.fed-pt{margin:10px 0 2px;font-size:13px;font-weight:600;color:var(--tx2)}
+.fed-fs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.fed-f{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;height:52px;border:1px solid var(--bd);border-radius:9px;background:var(--bg0);color:inherit;font:inherit;font-size:12.5px;cursor:pointer;min-width:0}
+.fed-f .ic{width:22px;height:22px}
+.fed-f.on{border-color:var(--a);box-shadow:0 0 0 1px var(--a) inset}
+.fed-f[disabled]{opacity:.4;cursor:default}
+.fed-ce.off{opacity:.4;pointer-events:none}
+.fed-cs,.fed-es{display:flex;gap:8px;flex-wrap:wrap}
+.fed-c{width:34px;height:34px;border-radius:50%;border:2px solid var(--bd2);cursor:pointer;flex:none}
+.fed-c.on{outline:3px solid var(--a);outline-offset:2px}
+.fed-e{width:44px;height:36px;border-radius:8px;border:1px solid var(--bd);background:var(--bg0);display:grid;place-items:center;cursor:pointer;color:var(--tx)}
+.fed-e span{display:block;width:22px;background:currentColor;border-radius:4px}
+.fed-e.on{border-color:var(--a)}
+.fed-ml{margin:0;padding:0 0 0 20px;font-size:13.5px;color:var(--tx2)}
+.fed-ml li{padding:1px 0}
+.fed-ml li span{display:inline-block;vertical-align:middle;max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fed-ml .bt{width:28px;height:28px;vertical-align:middle;margin-left:4px}
+.fed-d{color:var(--tx3);font-size:13px;margin-top:6px}
+.fed-pv{margin-top:auto;padding-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fed-mkb{position:absolute;left:3px;bottom:3px;display:inline-flex;align-items:center;gap:3px;height:24px;padding:0 6px;border:0;border-radius:6px;background:var(--bg1);color:var(--tx);font:inherit;font-size:11.5px;font-weight:600;cursor:pointer;box-shadow:var(--sh)}
+.fed-mkb .ic{width:12px;height:12px}
+.fed-v{flex-direction:column}
+.fed-v .fed-h{display:flex}
+.fed-v .fed-h b{text-align:left;order:0}
+.fed-v .fed-h [data-fv="x"]{order:5}
+.fed-tg{display:inline-flex;border:1px solid var(--fedBd);border-radius:8px;overflow:hidden}
+.fed-tg button{height:calc(var(--btn) - 2px);padding:0 12px;white-space:nowrap;background:none;border:0;color:inherit;font:inherit;font-size:14px;cursor:pointer}
+.fed-tg button.on{background:var(--fedBt);font-weight:600}
+.fed-rod{text-align:center;font-size:13px;opacity:.8;padding:8px 14px 14px}
+.cl-fp .fed-mkb{left:6px;bottom:6px}
+@media(max-width:899px){
+  .fed{flex-direction:column}
+  .fed-h{display:flex}
+  .fed-pal{padding:8px}
+  .fed-pn{width:auto;border-left:0;border-top:1px solid var(--fedBd);background:var(--fedBg);color:var(--fedTx);overflow:visible}
+  .fed-cab,.fed-pt,.fed-ml,.fed-mlt,.fed-pv,.fed-d{display:none}
+  .fed-pc{padding:10px 10px max(12px,env(safe-area-inset-bottom,0px));gap:10px;flex-direction:column-reverse}
+  .fed-fs{grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}
+  .fed-f{height:52px;background:var(--fedBt);border-color:var(--fedBd);font-size:11px}
+  .fed-ce{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap}
+  .fed-c{width:30px;height:30px}
+  .fed-e{background:var(--fedBt);border-color:var(--fedBd);color:var(--fedTx);width:40px}
+  .fed-v .fed-h{flex-wrap:wrap}
+  .fed-v .fed-h b{flex:1 1 calc(100% - 60px);order:0}
+  .fed-v .fed-h [data-fv="x"]{order:1}
+  .fed-v .fed-h .fed-tg,.fed-v .fed-h .bt:not([data-fv="x"]){order:2}
+  .fed-v .fed-h .fed-tg{flex:1}
+  .fed-v .fed-tg button{flex:1}
+  .fed-v .fed-bl{display:none}
+  .fed-v .fed-h .bt[data-fv="marcar"],.fed-v .fed-h .bt[data-fv="baixar"]{width:var(--btn);padding:0}
+  .fed-mkb{height:28px;font-size:12px}
+}
+
 /* ===== inspecoes.css ===== */
 /* Inspeções › Cloro (v0.6.0) — só tokens, sem cor escrita direta */
 /* tamanho TRAVADO = o mínimo do formato 5 por linha (114 px); com 1 a 4 locais não estica, alinha à esquerda */
@@ -1607,7 +1681,7 @@ body:has(#gv) .pp-bar{display:none}
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.6.3';
+const VERSAO = '0.6.4';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -5660,6 +5734,144 @@ BG_FONTES.push(q => {
   return d.concat(c);
 });
 
+/* ===== fotoed.js ===== */
+/* EFCwork · fotoed.js — editor de foto e foto grande (v0.6.4, Nº 42). Prefixo: fed.
+   Mesmo formato do EFClaudian (v2.22.0 / v2.102.40): a foto marcada é a que aparece e imprime; a original fica em "base" e as
+   marcas em "marcas" ([{ t: 'c'|'s'|'t'|'b', cor, esp, x1, y1, x2, y2, txt?, n? }] em pixels da imagem). Campos novos (o
+   EFClaudian só não mostra): marcadoPor, marcadoEm. Escolhas do Elias (11/11 19:29): no PC, a foto à esquerda e o painel à
+   direita (OPÇÃO 3), com o Desfazer na grade das ferramentas, ao lado de Numerar; no celular, tela escura com as ferramentas
+   embaixo. Qualquer marca pode ser tirada ou refeita a qualquer momento; a original nunca se perde. Borrar (LGPD): na foto
+   marcada fica borrado; a original só o Líder ★ e o Administrador veem e baixam. */
+const FED_CORES = [['#E53935', 'Vermelho'], ['#FFD600', 'Amarelo'], ['#1E88E5', 'Azul'], ['#FFFFFF', 'Branco'], ['#111111', 'Preto']];
+const FED_ESP = [['fina', 0.0045, 3, 0.034], ['media', 0.009, 6, 0.05], ['grossa', 0.016, 10, 0.07]];
+const FED_FERR = [['c', 'Círculo'], ['s', 'Seta'], ['t', 'Texto'], ['b', 'Borrar']];
+const FED_MAX = 1600;
+const FED_ICO = {
+  c: '<svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2"/></svg>',
+  s: '<svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><path d="M5 19L18 6M18 6h-7M18 6v7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+  t: '<svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><path d="M6 6h12M12 6v13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+  b: '<svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><path d="M5 5h4v4H5zM15 5h4v4h-4zM10 10h4v4h-4zM5 15h4v4H5zM15 15h4v4h-4z" fill="currentColor"/><path d="M10 5h4v4h-4zM5 10h4v4H5zM15 10h4v4h-4zM10 15h4v4h-4z" fill="currentColor" opacity=".45"/></svg>',
+  n: '<svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M11 9l2-1v8" fill="none" stroke="currentColor" stroke-width="2"/></svg>',
+  dl: '<svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  u: '<svg viewBox="0 0 24 24" class="ic" aria-hidden="true"><path d="M9 7L4 12l5 5M4 12h10a5 5 0 010 10h-2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
+};
+const fedTemBorrao = l => (l || []).some(m => m.t === 'b');
+const fedImg = url => new Promise((ok, erro) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => erro(new Error('Não deu para abrir a foto.')); i.src = url; });
+const fedEspD = e => FED_ESP.find(x => x[0] === e) || FED_ESP[1];
+const FED_COR_F = { '#E53935': ['vermelho', 'vermelha'], '#FFD600': ['amarelo', 'amarela'], '#1E88E5': ['azul', 'azul'], '#FFFFFF': ['branco', 'branca'], '#111111': ['preto', 'preta'] };
+const fedNomeM = m => m.t === 't' ? 'Texto “' + m.txt + '”' : m.t === 'b' ? 'Borrado' : (m.t === 'c' ? 'Círculo ' : 'Seta ') + ((FED_COR_F[m.cor] || ['', ''])[m.t === 's' ? 1 : 0]) + (m.n ? ' · ' + m.n : '');
+
+/* ---------- desenhar ---------- */
+function fedPintar(cx, img, l, W, H, prev) {
+  cx.clearRect(0, 0, W, H); cx.drawImage(img, 0, 0, W, H);
+  const todas = (l || []).concat(prev ? [prev] : []), M = Math.max(W, H);
+  todas.filter(m => m.t === 'b').forEach(m => fedBorrar(cx, img, m, W, H));
+  todas.filter(m => m.t !== 'b').forEach(m => {
+    const e = fedEspD(m.esp), g = Math.max(2, Math.round(e[1] * M));
+    cx.save(); cx.strokeStyle = m.cor; cx.fillStyle = m.cor; cx.lineWidth = g; cx.lineCap = 'round'; cx.lineJoin = 'round';
+    if (m.t === 'c') { cx.beginPath(); cx.ellipse((m.x1 + m.x2) / 2, (m.y1 + m.y2) / 2, Math.max(2, Math.abs(m.x2 - m.x1) / 2), Math.max(2, Math.abs(m.y2 - m.y1) / 2), 0, 0, Math.PI * 2); cx.stroke(); }
+    else if (m.t === 's') { const a = Math.atan2(m.y2 - m.y1, m.x2 - m.x1), k = g * 3.2; cx.beginPath(); cx.moveTo(m.x1, m.y1); cx.lineTo(m.x2, m.y2); cx.moveTo(m.x2, m.y2); cx.lineTo(m.x2 - k * Math.cos(a - 0.45), m.y2 - k * Math.sin(a - 0.45)); cx.moveTo(m.x2, m.y2); cx.lineTo(m.x2 - k * Math.cos(a + 0.45), m.y2 - k * Math.sin(a + 0.45)); cx.stroke(); }
+    else if (m.t === 't') { const fs = Math.round(M * e[3]); cx.font = '800 ' + fs + 'px system-ui, Arial, sans-serif'; cx.textBaseline = 'middle'; cx.lineWidth = Math.max(2, fs * 0.18); cx.strokeStyle = m.cor === '#FFFFFF' || m.cor === '#FFD600' ? '#111111' : '#FFFFFF'; cx.strokeText(m.txt, m.x1, m.y1); cx.fillText(m.txt, m.x1, m.y1); }
+    if (m.n && (m.t === 'c' || m.t === 's')) { const r = Math.max(14, M * 0.022), x = m.t === 'c' ? Math.min(m.x1, m.x2) + r * 0.6 : m.x1, y = m.t === 'c' ? Math.min(m.y1, m.y2) + r * 0.6 : m.y1;
+      cx.beginPath(); cx.arc(x, y, r, 0, Math.PI * 2); cx.fill(); cx.fillStyle = m.cor === '#FFFFFF' || m.cor === '#FFD600' ? '#111111' : '#FFFFFF'; cx.font = '800 ' + Math.round(r * 1.2) + 'px system-ui, Arial, sans-serif'; cx.textAlign = 'center'; cx.textBaseline = 'middle'; cx.fillText(String(m.n), x, y + 1); }
+    cx.restore(); });
+}
+function fedBorrar(cx, img, m, W, H) {
+  const x = Math.max(0, Math.min(m.x1, m.x2)), y = Math.max(0, Math.min(m.y1, m.y2)), w = Math.min(W - x, Math.abs(m.x2 - m.x1)), h = Math.min(H - y, Math.abs(m.y2 - m.y1)); if (w < 2 || h < 2) return;
+  const q = Math.max(6, Math.round(Math.max(W, H) / 70)), t = document.createElement('canvas'); t.width = Math.max(1, Math.round(w / q)); t.height = Math.max(1, Math.round(h / q));
+  const tc = t.getContext('2d'); tc.drawImage(img, x * img.naturalWidth / W, y * img.naturalHeight / H, w * img.naturalWidth / W, h * img.naturalHeight / H, 0, 0, t.width, t.height);
+  cx.save(); cx.imageSmoothingEnabled = false; cx.drawImage(t, 0, 0, t.width, t.height, x, y, w, h); cx.restore();
+}
+function fedJpeg(cv) { let q = 0.85, u = cv.toDataURL('image/jpeg', q); while (u.length > 380000 && q > 0.45) { q -= 0.08; u = cv.toDataURL('image/jpeg', q); } return u; }
+/* a foto com as marcas, sem abrir o editor (usada para refazer depois de tirar marcas) */
+async function fedRender(base, marcas) { if (!(marcas || []).length) return base; const img = await fedImg(base), k = Math.min(1, FED_MAX / Math.max(img.naturalWidth, img.naturalHeight)), cv = document.createElement('canvas');
+  cv.width = Math.round(img.naturalWidth * k); cv.height = Math.round(img.naturalHeight * k); fedPintar(cv.getContext('2d'), img, marcas, cv.width, cv.height); return fedJpeg(cv); }
+
+/* ---------- o editor ---------- */
+function fedAbrir(o) {
+  return new Promise(async resolve => {
+    const base = o.base || o.src; let img; try { img = await fedImg(base); } catch (e) { aviso(e.message, 'erro'); resolve(null); return; }
+    let pref = {}; try { pref = JSON.parse(Store.get('cw-marca') || '{}') || {}; } catch {}
+    const k = Math.min(1, FED_MAX / Math.max(img.naturalWidth, img.naturalHeight)), W = Math.round(img.naturalWidth * k), H = Math.round(img.naturalHeight * k);
+    const st = S.fed = { W: W, H: H, img: img, l: (o.marcas || []).map(m => Object.assign({}, m)), l0: JSON.stringify(o.marcas || []), prev: null, txt: null,
+      f: FED_FERR.some(x => x[0] === pref.f) ? pref.f : 'c', cor: FED_CORES.some(c => c[0] === pref.cor) ? pref.cor : FED_CORES[0][0], esp: FED_ESP.some(e => e[0] === pref.esp) ? pref.esp : 'media', num: !!pref.num, fim: resolve };
+    const d = document.createElement('div'); d.id = 'fed'; d.className = 'fed'; d.setAttribute('role', 'dialog'); d.setAttribute('aria-label', 'Marcar a foto');
+    d.innerHTML = '<div class="fed-h"><button type="button" class="bt" data-fed="sair">Cancelar</button><b>Marcar a foto</b><button type="button" class="bt pr" data-fed="ok">Pronto</button></div>' +
+      '<div class="fed-pal"><canvas width="' + W + '" height="' + H + '" aria-label="Foto para marcar"></canvas><div class="fed-txt" hidden><input class="fm-i" maxlength="40" placeholder="ex.: fio desencapado" enterkeyhint="done"><button type="button" class="bt pr" data-fed="txt-ok">Pôr</button><button type="button" class="bt ic-so" data-fed="txt-x" aria-label="Cancelar o texto">' + ic('x') + '</button></div></div>' +
+      '<aside class="fed-pn"><div class="fed-cab"><b>Marcar a foto</b><small>' + esc(o.sub || '') + '</small></div><div class="fed-pc"></div></aside>';
+    document.body.appendChild(d); document.body.classList.add('fed-on');
+    csCamadaAbre('fed', () => { if (!S.fed) return true; if (JSON.stringify(S.fed.l) !== S.fed.l0) { csConfirma({ titulo: 'Descartar as marcas?', texto: 'As marcas feitas agora serão perdidas. A foto continua como estava.', sim: 'Descartar', nao: 'Continuar marcando' }, () => { if (S.fed) S.fed.l0 = JSON.stringify(S.fed.l); csVolta(); }); return false; } fedFecha(null); return true; });
+    fedPainel(); fedDesenha(); fedLiga(d.querySelector('canvas'));
+  });
+}
+function fedPainel() {
+  const st = S.fed, p = $('#fed .fed-pc'); if (!st || !p) return;
+  const fb = (k, on, lab, act, dis) => '<button type="button" class="fed-f' + (on ? ' on' : '') + '" data-fed="' + act + '" data-v="' + k + '" aria-pressed="' + !!on + '"' + (dis ? ' disabled' : '') + '>' + FED_ICO[k] + '<span>' + lab + '</span></button>';
+  const sc = st.f === 'b';
+  p.innerHTML = '<p class="fed-pt">Ferramenta</p><div class="fed-fs">' + FED_FERR.map(x => fb(x[0], st.f === x[0], x[1], 'ferr')).join('') + fb('n', st.num, 'Numerar', 'num') + fb('u', false, 'Desfazer', 'desf', !st.l.length) + '</div>' +
+    '<div class="fed-ce' + (sc ? ' off' : '') + '"><p class="fed-pt">Cor</p><div class="fed-cs">' + FED_CORES.map(c => '<button type="button" class="fed-c' + (st.cor === c[0] ? ' on' : '') + '" data-fed="cor" data-v="' + c[0] + '" style="background:' + c[0] + '" aria-label="' + c[1] + '" title="' + c[1] + '"></button>').join('') + '</div>' +
+    '<p class="fed-pt">' + (st.f === 't' ? 'Tamanho' : 'Grossura') + '</p><div class="fed-es">' + FED_ESP.map(e => '<button type="button" class="fed-e' + (st.esp === e[0] ? ' on' : '') + '" data-fed="esp" data-v="' + e[0] + '" aria-label="' + (e[0] === 'media' ? 'média' : e[0]) + '"><span style="height:' + e[2] + 'px"></span></button>').join('') + '</div></div>' +
+    '<p class="fed-pt fed-mlt">Marcas · ' + st.l.length + '</p><ol class="fed-ml">' + st.l.map((m, i) => '<li><span>' + esc(fedNomeM(m)) + '</span><button type="button" class="bt ic-so" data-fed="tirar" data-v="' + i + '" aria-label="' + esc('Tirar: ' + fedNomeM(m)) + '">' + ic('x') + '</button></li>').join('') + '</ol>' +
+    '<small class="fed-d">' + esc(({ c: 'Arraste para desenhar o círculo', s: 'Arraste da cauda até a ponta da seta', t: 'Toque onde o texto começa', b: 'Arraste sobre o rosto, a placa ou o crachá' })[st.f]) + '</small>' +
+    '<div class="fed-pv"><button type="button" class="bt" data-fed="sair">Cancelar</button><button type="button" class="bt pr" data-fed="ok">Pronto</button></div>';
+}
+function fedDesenha() { const st = S.fed, cv = $('#fed canvas'); if (!st || !cv) return; fedPintar(cv.getContext('2d'), st.img, st.l, st.W, st.H, st.prev); }
+function fedLiga(cv) {
+  const st = S.fed; let ini = null;
+  const pt = e => { const r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left) * st.W / (r.width || 1), y: (e.clientY - r.top) * st.H / (r.height || 1) }; };
+  cv.addEventListener('pointerdown', e => { if (!S.fed) return; e.preventDefault(); const p = pt(e);
+    if (st.f === 't') { st.txt = p; const b = $('#fed .fed-txt'); b.hidden = false; const i = b.querySelector('input'); i.value = ''; setTimeout(() => i.focus(), 0); return; }
+    ini = p; try { cv.setPointerCapture(e.pointerId); } catch {} });
+  cv.addEventListener('pointermove', e => { if (!ini) return; const p = pt(e); st.prev = { t: st.f, cor: st.cor, esp: st.esp, x1: ini.x, y1: ini.y, x2: p.x, y2: p.y }; fedDesenha(); });
+  const fim = () => { if (!ini) return; const m = st.prev; ini = null; st.prev = null;
+    if (m && Math.hypot(m.x2 - m.x1, m.y2 - m.y1) > Math.max(st.W, st.H) * 0.02) { if (st.num && (m.t === 'c' || m.t === 's')) m.n = st.l.filter(x => x.n).reduce((a, x) => Math.max(a, x.n), 0) + 1; if (m.t === 'b') { delete m.cor; delete m.esp; } st.l.push(m); }
+    fedDesenha(); fedPainel(); };
+  cv.addEventListener('pointerup', fim); cv.addEventListener('pointercancel', fim);
+}
+function fedFecha(r) { const st = S.fed; S.fed = null; const d = $('#fed'); if (d) d.remove(); document.body.classList.remove('fed-on'); if (st) st.fim(r); }
+function fedPronto() {
+  const st = S.fed; if (!st) return; const cv = $('#fed canvas'); st.prev = null; fedDesenha();
+  const r = { img: st.l.length ? fedJpeg(cv) : st.img.src, base: st.img.src, marcas: st.l.map(m => Object.assign({}, m)), marcadoPor: S.user.nome, marcadoEm: nowISO() };
+  try { Store.set('cw-marca', JSON.stringify({ f: st.f, cor: st.cor, esp: st.esp, num: st.num })); } catch {}
+  st.l0 = JSON.stringify(st.l); csCamadaSaiu('fed'); fedFecha(r);
+}
+document.addEventListener('click', e => {
+  const t = e.target.closest && e.target.closest('[data-fed]'); if (!t || !S.fed) return; const st = S.fed, a = t.getAttribute('data-fed'), v = t.getAttribute('data-v');
+  if (a === 'ferr') { st.f = v; fedPainel(); }
+  else if (a === 'num') { st.num = !st.num; fedPainel(); }
+  else if (a === 'cor') { st.cor = v; fedPainel(); }
+  else if (a === 'esp') { st.esp = v; fedPainel(); }
+  else if (a === 'desf') { st.l.pop(); fedDesenha(); fedPainel(); }
+  else if (a === 'tirar') { st.l.splice(Number(v), 1); fedDesenha(); fedPainel(); }
+  else if (a === 'txt-ok') { const i = $('#fed .fed-txt input'), s = String(i.value || '').trim(); if (s && st.txt) st.l.push({ t: 't', cor: st.cor, esp: st.esp, x1: st.txt.x, y1: st.txt.y, x2: st.txt.x, y2: st.txt.y, txt: s }); st.txt = null; $('#fed .fed-txt').hidden = true; fedDesenha(); fedPainel(); }
+  else if (a === 'txt-x') { st.txt = null; $('#fed .fed-txt').hidden = true; }
+  else if (a === 'sair') csVolta();
+  else if (a === 'ok') fedPronto();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Enter' && S.fed && e.target && e.target.closest && e.target.closest('#fed .fed-txt')) { e.preventDefault(); const b = $('#fed [data-fed="txt-ok"]'); if (b) b.click(); } });
+
+/* ---------- a foto grande: com as marcas ou a original, quem marcou, marcar de novo, baixar ---------- */
+function fedVer(o) {
+  /* o: { src, base, marcas, marcadoPor, marcadoEm, titulo, nome, marcar: () => Promise|void } */
+  const temM = !!o.base && (o.marcas || []).length > 0, podeOrig = temM && (!fedTemBorrao(o.marcas) || isSup(S.user));
+  const v = { orig: false };
+  const d = document.createElement('div'); d.id = 'fed-v'; d.className = 'fed fed-v'; d.setAttribute('role', 'dialog'); d.setAttribute('aria-label', o.titulo || 'Foto');
+  const desenha = () => { const u = v.orig ? o.base : o.src;
+    d.innerHTML = '<div class="fed-h"><b>' + esc(o.titulo || 'Foto') + '</b>' + (podeOrig ? '<div class="fed-tg" role="group"><button type="button" class="' + (v.orig ? '' : 'on') + '" data-fv="m" aria-pressed="' + !v.orig + '">Com as marcas</button><button type="button" class="' + (v.orig ? 'on' : '') + '" data-fv="o" aria-pressed="' + v.orig + '">Original</button></div>' : '') +
+      (o.marcar ? '<button type="button" class="bt" data-fv="marcar" aria-label="' + (temM ? 'Marcas' : 'Marcar') + '">' + ic('lapis') + '<span class="fed-bl">' + (temM ? 'Marcas' : 'Marcar') + '</span></button>' : '') + '<button type="button" class="bt" data-fv="baixar" aria-label="Baixar">' + FED_ICO.dl + '<span class="fed-bl">Baixar</span></button><button type="button" class="bt ic-so" data-fv="x" aria-label="Fechar">' + ic('x') + '</button></div>' +
+      '<div class="fed-pal"><img src="' + imgSrc(u) + '" alt="' + esc(o.titulo || 'Foto') + '"></div>' +
+      '<div class="fed-rod">' + esc(temM ? (v.orig ? 'Original, sem as marcas' : (o.marcas.length === 1 ? '1 marca' : o.marcas.length + ' marcas')) + (o.marcadoPor ? ' · marcada por ' + o.marcadoPor + (o.marcadoEm ? ' em ' + fmtDT(o.marcadoEm) : '') : '') + ' · a original fica guardada' + (fedTemBorrao(o.marcas) && !isSup(S.user) ? ' (com parte borrada: só o líder vê a original)' : '') : 'Sem marcas') + '</div>'; };
+  desenha(); document.body.appendChild(d); document.body.classList.add('fed-on');
+  csCamadaAbre('fedv', () => { const x = $('#fed-v'); if (x) x.remove(); if (!$('#fed')) document.body.classList.remove('fed-on'); });
+  d.addEventListener('click', ev => { const b = ev.target.closest('[data-fv]'); if (!b) return; const a = b.getAttribute('data-fv');
+    if (a === 'm' || a === 'o') { v.orig = a === 'o'; desenha(); }
+    else if (a === 'x') csVolta();
+    else if (a === 'baixar') { const l = document.createElement('a'); l.href = imgSrc(v.orig ? o.base : o.src); l.download = String((o.nome || 'foto') + (v.orig ? '_original' : temM ? '_com-marcas' : '')).replace(/[^A-Za-z0-9_-]+/g, '-') + '.jpg'; document.body.appendChild(l); l.click(); l.remove(); }
+    else if (a === 'marcar') { csCamadaSaiu('fedv', () => o.marcar()); const x = $('#fed-v'); if (x) x.remove(); } });
+}
+/* botão "Marcar" sobre a miniatura (formulários) */
+const fedMkBt = (act, i, n) => '<button type="button" class="fed-mkb" data-act="' + act + '" data-i="' + i + '">' + ic('lapis') + (n ? 'Marcas · ' + n : 'Marcar') + '</button>';
+
 /* ===== inspecoes.js ===== */
 /* EFCwork · inspecoes.js — área Inspeções › Cloro (v0.6.0). Prefixo: cl.
    Mesmos dados e regras do EFClaudian v2.102.60 (Cloro, etapa 4 e seguintes): sv2_bebs (bebedouros), sv2_cloro (verificações),
@@ -5816,7 +6028,7 @@ function clEtapas(r) {
 }
 function clFotoHTML(id) {
   const f = S._clFotos[id];
-  if (f === undefined) { S._clFotos[id] = null; Data.col('sv2_cloro_foto').get(id).then(d => { S._clFotos[id] = d && imgSrc(d.img) ? d.img : ''; if (S.gv && S._clSel === id) gvDesenha(); }).catch(() => { S._clFotos[id] = ''; }); return '<p class="gv-h">Foto do clorímetro</p><div class="cl-ft vz">carregando…</div>'; }
+  if (f === undefined) { S._clFotos[id] = null; Data.col('sv2_cloro_foto').get(id).then(d => { S._clFotos[id] = d && imgSrc(d.img) ? d.img : ''; S._clFotoDoc = S._clFotoDoc || {}; S._clFotoDoc[id] = { base: (d && d.base) || '', marcas: d && Array.isArray(d.marcas) ? d.marcas : [], marcadoPor: (d && d.marcadoPor) || '', marcadoEm: (d && d.marcadoEm) || '' }; if (S.gv && S._clSel === id) gvDesenha(); }).catch(() => { S._clFotos[id] = ''; }); return '<p class="gv-h">Foto do clorímetro</p><div class="cl-ft vz">carregando…</div>'; }
   if (f === null) return '<p class="gv-h">Foto do clorímetro</p><div class="cl-ft vz">carregando…</div>';
   return f ? '<p class="gv-h">Foto do clorímetro</p><button type="button" class="cl-ft" data-act="cl-foto-ver" data-id="' + esc(id) + '"><img src="' + imgSrc(f) + '" alt="Foto do clorímetro"></button>' : '';
 }
@@ -5842,11 +6054,8 @@ function clAbre(id) {
   });
   render();
 }
-function clFotoVer(id) {
-  const u = S._clFotos[id]; if (!imgSrc(u)) return;
-  const d = document.createElement('div'); d.id = 'cl-fv'; d.className = 'co-fv'; d.innerHTML = '<img src="' + imgSrc(u) + '" alt="Foto do clorímetro"><button type="button" class="bt ic-so" data-act="cl-fv-x" aria-label="Fechar">' + ic('x') + '</button>';
-  document.body.appendChild(d); csCamadaAbre('clfv', () => { const x = $('#cl-fv'); if (x) x.remove(); });
-}
+function clFotoVer(id) { const u = S._clFotos[id]; if (!imgSrc(u)) return; const d = (S._clFotoDoc || {})[id] || {}; /* v0.6.4: com as marcas ou a original */
+  fedVer({ src: u, base: d.base, marcas: d.marcas, marcadoPor: d.marcadoPor, marcadoEm: d.marcadoEm, titulo: 'Foto do clorímetro', nome: 'cloro_' + id }); }
 
 /* ---------- formulário: nova verificação (gaveta em passos) ---------- */
 const clPasso = (n, t) => '<div class="cl-p"><i>' + n + '</i>' + esc(t) + '</div>';
@@ -5860,9 +6069,13 @@ function clPontos() {
   return [['', 'Escolha o ponto…']].concat(bebs.map(b => ['beb:' + b.id, clBebNome(b) + (b.situacao !== 'ativo' ? ' (pendente)' : '')])).concat([['novo', '+ Bebedouro fora da lista']]).concat(cxs.map(c => ['caixa:' + c.id, 'Caixa d’água ' + c.tag + (c.local ? ' — ' + c.local : '')]));
 }
 function clProxSug() { const h = hojeISO(), feitos = new Set(S.cloro.filter(r => r.data === h).map(r => r.pontoId)); const b = clBebAtivos().filter(x => !feitos.has(x.id)).sort((a, c) => cmpTxt(a.local || '', c.local || '') || cmpTxt(a.codigo, c.codigo))[0]; return b ? 'beb:' + b.id : ''; }
+/* v0.6.4: marcas da foto do clorímetro (a original em base) */
+const clMkDoc = f => f.fotoMk && f.fotoMk.marcas.length ? { base: f.fotoMk.base, marcas: f.fotoMk.marcas, marcadoPor: f.fotoMk.por, marcadoEm: f.fotoMk.em } : { marcas: [] };
+function clFotoMk() { const f = S.fm; if (!f || !imgSrc(f.foto)) return; const m = f.fotoMk;
+  fedAbrir({ src: f.foto, base: m ? m.base : f.foto, marcas: m ? m.marcas : [], sub: 'Foto do clorímetro' }).then(r => { if (!r || S.fm !== f) return; f.foto = r.img; f.fotoMk = r.marcas.length ? { base: r.base, marcas: r.marcas, por: r.marcadoPor, em: r.marcadoEm } : null; f.sujo = true; gvDesenha(true); }); }
 function clFotoBl(f, rot) {
   const tem = imgSrc(f.foto), env = (r, h) => r ? lcBl(r, h, '') : '<div class="fm-c">' + h + '</div>';
-  return env(rot, (tem ? '<div class="cl-fp"><img src="' + imgSrc(f.foto) + '" alt="Foto"><button type="button" class="bt ic-so" data-act="cl-foto-x" title="Tirar a foto" aria-label="Tirar a foto">' + ic('x') + '</button></div>' :
+  return env(rot, (tem ? '<div class="cl-fp"><img src="' + imgSrc(f.foto) + '" alt="Foto">' + fedMkBt('cl-foto-mk', 0, f.fotoMk ? f.fotoMk.marcas.length : 0) + '<button type="button" class="bt ic-so" data-act="cl-foto-x" title="Tirar a foto" aria-label="Tirar a foto">' + ic('x') + '</button></div>' :
     '<div class="cl-fb"><label class="bt">' + ic('imagem') + 'Tirar foto<input type="file" accept="image/*" capture="environment" data-clfoto="camera" hidden></label><label class="bt">Galeria<input type="file" accept="image/*" data-clfoto="galeria" hidden></label></div>') +
     '<small class="cl-nt">Fotografe o clorímetro ao lado da placa do bebedouro. Não fotografe pessoas.</small>' + (tem ? '' : lcIn('semFoto', f.semFoto, ' placeholder="Sem foto? diga o motivo (opcional)"')));
 }
@@ -5894,7 +6107,7 @@ document.addEventListener('change', e => {
   const t = e.target; if (!t || !t.getAttribute || !S.fm) return;
   if (t.getAttribute('data-fm') === 'fiz' && S.fm.k === 'clNova') { S.fm.fiz = t.checked ? '1' : '0'; gvDesenha(true); return; }
   const o = t.getAttribute('data-clfoto'); if (!o || !t.files || !t.files[0]) return;
-  coFotoReduz(t.files[0]).then(u => { if (!S.fm) return; S.fm.foto = u; S.fm.fotoOrigem = o; S.fm.sujo = true; gvDesenha(true); }).catch(er => lcErro(er.message || 'Não deu para ler a foto.'));
+  coFotoReduz(t.files[0]).then(u => { if (!S.fm) return; S.fm.foto = u; S.fm.fotoMk = null; S.fm.fotoOrigem = o; S.fm.sujo = true; gvDesenha(true); }).catch(er => lcErro(er.message || 'Não deu para ler a foto.'));
 });
 DD_AO.cl = (k, v) => { const f = S.fm; if (!f) return; f.sujo = true; f.msg = '';
   if (k === 'ponto') { if (v.indexOf('beb:') === 0) { const ab = clAbertoHoje(v.slice(4)); if (ab) { clRegraAberto(ab); return; } } f.ponto = v; }
@@ -5954,7 +6167,7 @@ async function clNovaOk() {
     const foto = tipo === 'beb' && imgSrc(f.foto) ? { img: f.foto, origem: f.fotoOrigem || 'camera' } : null;
     if (tipo === 'beb') o.foto = foto ? { st: 'pendente', origem: foto.origem } : { st: 'sem_foto', motivo: String(f.semFoto || '').trim() };
     const cid = await Data.col('sv2_cloro').add(o);
-    if (foto) { S._clFotos[cid] = foto.img; Data.col('sv2_cloro_foto').set(cid, { img: foto.img, ts: nowISO(), porId: S.user.id, origem: foto.origem }).catch(e => console.error('foto cloro', e)); }
+    if (foto) { S._clFotos[cid] = foto.img; Data.col('sv2_cloro_foto').set(cid, Object.assign({ img: foto.img, ts: nowISO(), porId: S.user.id, origem: foto.origem }, clMkDoc(f))).catch(e => console.error('foto cloro', e)); }
     Audit.log({ acao: 'verificar_cloro', entidade: 'cloro', entidadeId: cid, resumo: 'Cloro ' + o.pontoNome + ' (' + (o.local || 'sem local') + '): ' + ppm(v) + ' ppm — ' + clFaixaTxt(fx) + (dos != null ? ' · dosagem ' + dos + ' ml' : '') + (mot ? ' · motivo: ' + mot : '') + (temV2 ? ' · após ' + ppm(v2) : ''), depois: { ponto: o.pontoNome, valor: v, faixa: fx, situacao: sit } });
     const eu = Array.from(new Set(supsOf(S.user).concat([S.user.id])));
     if (fx === 'alto') Notif.send({ nivel: 'critico', titulo: 'Cloro ALTO: ' + o.pontoNome + ' com ' + ppm(v) + ' ppm', texto: (o.local || '') + ' · ' + fmtD(o.data) + ' ' + o.hora + ' · lançado por ' + S.user.nome + '. Acima de 2,00 ppm: nova verificação obrigatória.', para: eu, refTipo: 'cloro', refId: cid });
@@ -5997,7 +6210,7 @@ async function clRvOk() {
   rv.push(nv); const ok = clFaixa(v) === 'conforme';
   try {
     await Data.col('sv2_cloro').update(r.id, { reverif: rv, dosagemPendente: null, situacao: ok ? 'resolvido' : 'aberto' });
-    if (foto) Data.col('sv2_cloro_foto').set(r.id + '_rv' + (rv.length - 1), { img: foto.img, ts: nowISO(), porId: S.user.id, origem: foto.origem }).catch(e => console.error('foto rv', e));
+    if (foto) Data.col('sv2_cloro_foto').set(r.id + '_rv' + (rv.length - 1), Object.assign({ img: foto.img, ts: nowISO(), porId: S.user.id, origem: foto.origem }, clMkDoc(f))).catch(e => console.error('foto rv', e));
     Audit.log({ acao: 'reverificar_cloro', entidade: 'cloro', entidadeId: r.id, resumo: 'Nova verificação ' + r.pontoNome + ': ' + ppm(v) + ' ppm' + (dos != null ? ' após dosagem de ' + dos + ' ml' : '') + (ok ? ' — resolvido' : ' — ainda fora da faixa'), antes: { valor: clValorFinal(r) }, depois: { valor: v, dosagemMl: dos } });
     if (!ok && clFaixa(v) === 'alto') Notif.send({ nivel: 'critico', titulo: 'Cloro continua ALTO: ' + r.pontoNome, texto: ppm(v) + ' ppm na nova verificação.', para: Array.from(new Set(supsOf(S.user).concat([S.user.id]))), refTipo: 'cloro', refId: r.id });
     lcFim(); aviso(ok ? 'Resolvido: dentro da faixa.' : 'Ainda fora da faixa. Faça nova aplicação e meça de novo.', ok ? '' : 'erro');
@@ -6211,7 +6424,8 @@ document.addEventListener('click', e => {
   else if (a === 'cl-beb-lib') clBebDecide(id, true);
   else if (a === 'cl-beb-rec') clBebDecide(id, false);
   else if (a === 'cl-locais') clLocaisAbre();
-  else if (a === 'cl-foto-x') { if (S.fm) { S.fm.foto = ''; S.fm.sujo = true; gvDesenha(true); } }
+  else if (a === 'cl-foto-x') { if (S.fm) { S.fm.foto = ''; S.fm.fotoMk = null; S.fm.sujo = true; gvDesenha(true); } }
+  else if (a === 'cl-foto-mk') clFotoMk();
   else if (a === 'cl-foto-ver') clFotoVer(id);
   else if (a === 'cl-fv-x') csVolta();
 });
@@ -6233,7 +6447,7 @@ BG_FONTES.push(q => S.bebs.filter(b => bgCasa(q, [b.codigo, b.local, 'bebedouro 
    Regra nova e permanente dele: botões e campos lado a lado ficam alinhados em todas as telas.
    Ficam no EFClaudian por enquanto: marcar/editar a foto (v0.6.3), a análise de problema (5 Porquês, Ishikawa, plano de
    ação) e a aba que junta as NCs dos apontamentos com as das auditorias — ambas vêm na v0.6.2 com a Auditoria interna. */
-Object.assign(S, { apont: [], _apFotos: {} });
+Object.assign(S, { apont: [], _apFotos: {}, _apFotoDoc: {} });
 const AP_CATS = [['acidente', 'Risco de acidente', 'altura, máquina, piso escorregadio'], ['estrutura', 'Estrutura', 'inclui placas e sinalização'], ['residuos', 'Resíduos sólidos', 'lixo no chão, descarte errado'],
   ['higiene', 'Higiene / sanitização', 'banheiro, lavagem de mãos'], ['quimicos', 'Produtos químicos / insumos', 'embalagem, armazenamento, derrame'], ['epi', 'EPI', 'sem luva, bota ou proteção'], ['outro', 'Outro', '']];
 const AP_GRAV = [['baixa', 'Baixa', '', 'Entra no relatório de apontamentos.'], ['media', 'Média', 'wa', 'Entra no relatório de apontamentos.'],
@@ -6269,15 +6483,14 @@ const apHistMais = (a, txt) => (a.hist || []).concat([{ ts: nowISO(), porNome: S
 
 /* ---------- fotos: um documento por foto em sv2_fotos, carregadas quando aparecem ---------- */
 function apFotoGet(id) { if (S._apFotos[id] !== undefined) return Promise.resolve(S._apFotos[id]);
-  S._apFotos[id] = ''; return Data.col('sv2_fotos').get(id).then(d => { const u = (d && d.dataUrl) || ''; S._apFotos[id] = u; return u; }).catch(() => ''); }
+  S._apFotos[id] = ''; return Data.col('sv2_fotos').get(id).then(d => { const u = (d && d.dataUrl) || ''; S._apFotos[id] = u; S._apFotoDoc[id] = { base: (d && d.base) || '', marcas: d && Array.isArray(d.marcas) ? d.marcas : [], marcadoPor: (d && d.marcadoPor) || '', marcadoEm: (d && d.marcadoEm) || '' }; return u; }).catch(() => ''); }
 GV_DEPOIS.push(g => apFotosCarrega(g));
 function apFotosCarrega(raiz) { $$('img[data-apfoto]', raiz || document).forEach(im => { if (im.getAttribute('src')) return;
   apFotoGet(im.getAttribute('data-apfoto')).then(u => { if (u && imgSrc(u)) im.src = imgSrc(u); else { const q = im.closest('.ap-fi') || im.closest('.ap-cf'); if (q) q.classList.add('vz'); } }); }); }
 const apFotoIMG = (id, cls) => '<img class="' + (cls || '') + '"' + (S._apFotos[id] && imgSrc(S._apFotos[id]) ? ' src="' + imgSrc(S._apFotos[id]) + '"' : ' data-apfoto="' + esc(id) + '"') + ' alt="Foto do apontamento">';
 const apFotosVivas = a => (a.fotos || []).filter(f => !(a.fotosOff || {})[f]);
-function apFotoVer(id) { const u = S._apFotos[id]; if (!imgSrc(u)) return;
-  const d = document.createElement('div'); d.id = 'ap-fv'; d.className = 'co-fv'; d.innerHTML = '<img src="' + imgSrc(u) + '" alt="Foto do apontamento"><button type="button" class="bt ic-so" data-act="ap-fv-x" aria-label="Fechar">' + ic('x') + '</button>';
-  document.body.appendChild(d); csCamadaAbre('apfv', () => { const x = $('#ap-fv'); if (x) x.remove(); }); }
+function apFotoVer(id) { const u = S._apFotos[id]; if (!imgSrc(u)) return; const d = S._apFotoDoc[id] || {}; /* v0.6.4: foto grande com as marcas ou a original */
+  fedVer({ src: u, base: d.base, marcas: d.marcas, marcadoPor: d.marcadoPor, marcadoEm: d.marcadoEm, titulo: 'Foto do apontamento', nome: 'apontamento_' + id }); }
 /* LGPD: as fotos somem sozinhas AP_FOTO_DIAS depois de resolvido; o texto e o histórico ficam */
 const apFotoVence = a => !a.resolucao || apAberto(a) ? '' : addDias(clDiaLocal(a.resolucao.ts), AP_FOTO_DIAS);
 function apFotoPrazoTxt(a) {
@@ -6346,7 +6559,7 @@ function apGravBotoes(v) {
 }
 function apFotosBl(f) {
   const fs = f.fotos || [];
-  const th = fs.map((d, i) => '<span class="ap-ft"><img src="' + imgSrc(d) + '" alt="Foto ' + (i + 1) + '"><button type="button" class="bt ic-so" data-act="ap-foto-x" data-i="' + i + '" title="Tirar esta foto" aria-label="Tirar esta foto">' + ic('x') + '</button></span>').join('');
+  const th = fs.map((d, i) => '<span class="ap-ft"><img src="' + imgSrc(d) + '" alt="Foto ' + (i + 1) + '">' + fedMkBt('ap-foto-mk', i, ((f.mk || [])[i] || { marcas: [] }).marcas.length) + '<button type="button" class="bt ic-so" data-act="ap-foto-x" data-i="' + i + '" title="Tirar esta foto" aria-label="Tirar esta foto">' + ic('x') + '</button></span>').join('');
   const add = fs.length < AP_MAX_FOTOS ? '<label class="bt">' + ic('imagem') + (fs.length ? 'Mais uma' : 'Tirar foto') + '<input type="file" accept="image/*" capture="environment" data-apfoto-in hidden></label><label class="bt">Galeria<input type="file" accept="image/*" multiple data-apfoto-in hidden></label>' : '';
   return '<div class="ap-fot">' + th + add + '</div>' + '<small class="cl-nt">' + (fs.length >= AP_MAX_FOTOS ? 'Cabem no máximo ' + AP_MAX_FOTOS + ' fotos. ' : '') + 'Fotografe o problema, não o colaborador.</small>';
 }
@@ -6391,7 +6604,7 @@ async function apNovoOk() {
     hist: [{ ts: ts, porNome: u.nome, txt: 'Registrou como ' + g[1] + (ids.length ? ' com ' + ids.length + ' foto(s)' : ' sem foto') + (o_aud(f) ? ' · ' + o_aud(f) : '') }] };
   try {
     const id = await Data.col('sv2_apont').add(o);
-    fotos.forEach((d, i) => { S._apFotos[ids[i]] = d; Data.col('sv2_fotos').set(ids[i], { refTipo: 'apont', refId: id, papel: 'antes', dataUrl: d, criadoEm: ts, porId: u.id }).catch(er => console.error('foto apont', er)); });
+    fotos.forEach((d, i) => { S._apFotos[ids[i]] = d; Data.col('sv2_fotos').set(ids[i], Object.assign({ refTipo: 'apont', refId: id, papel: 'antes', dataUrl: d, criadoEm: ts, porId: u.id }, apMkDoc(f, i))).catch(er => console.error('foto apont', er)); });
     const sups = supsOf(u).filter(x => x !== u.id);
     const txt = (o.obs || 'Sem observação') + ' · por ' + u.nome + (o.comunicado ? ' · encarregado avisado' : ' · encarregado NÃO avisado');
     if (sups.length && f.grav === 'urgente') Notif.send({ nivel: 'critico', titulo: 'Apontamento URGENTE: ' + c[1] + ' — ' + setor, texto: txt, para: sups, refTipo: 'apont', refId: id });
@@ -6400,6 +6613,10 @@ async function apNovoOk() {
     lcFim(); aviso('Apontamento enviado.' + (f.grav === 'urgente' || f.grav === 'grave' ? ' O seu superior foi avisado.' : ''));
   } catch (e) { f._trava = 0; lcErro(svErro(e)); }
 }
+/* v0.6.4: marcas da foto (a original em base) */
+const apMkDoc = (f, i) => { const m = (f.mk || [])[i]; return m && m.marcas.length ? { base: m.base, marcas: m.marcas, marcadoPor: m.por, marcadoEm: m.em } : { marcas: [] }; };
+function apFotoMk(i) { const f = S.fm; if (!f) return; const cur = (f.fotos || [])[i], m = (f.mk || [])[i]; if (!imgSrc(cur)) return;
+  fedAbrir({ src: cur, base: m ? m.base : cur, marcas: m ? m.marcas : [], sub: 'Apontamento' }).then(r => { if (!r || S.fm !== f) return; f.fotos[i] = r.img; f.mk = f.mk || []; f.mk[i] = r.marcas.length ? { base: r.base, marcas: r.marcas, por: r.marcadoPor, em: r.marcadoEm } : null; f.sujo = true; gvDesenha(true); }); }
 const o_aud = f => f.orig === 'auditoria' ? 'auditoria interna: ' + String(f.audTxt || '').trim() : '';
 
 /* ---------- detalhe ---------- */
@@ -6461,7 +6678,7 @@ async function apResOk() {
   if (!apPodeCuidar()) return lcErro('Só o Líder ★ ou o Administrador resolve.');
   if (!lcTravar()) return;
   const ts = nowISO(), fotos = (f.fotos || []).slice(0, AP_MAX_FOTOS), ids = fotos.map(() => uid());
-  fotos.forEach((d, i) => { S._apFotos[ids[i]] = d; Data.col('sv2_fotos').set(ids[i], { refTipo: 'apont', refId: a.id, papel: 'depois', dataUrl: d, criadoEm: ts, porId: S.user.id }).catch(er => console.error(er)); });
+  fotos.forEach((d, i) => { S._apFotos[ids[i]] = d; Data.col('sv2_fotos').set(ids[i], Object.assign({ refTipo: 'apont', refId: a.id, papel: 'depois', dataUrl: d, criadoEm: ts, porId: S.user.id }, apMkDoc(f, i))).catch(er => console.error(er)); });
   const patch = { status: 'resolvido', resolucao: { texto: t, porId: S.user.id, porNome: S.user.nome, ts: ts }, fotosDepois: (a.fotosDepois || []).concat(ids), hist: apHistMais(a, 'Resolvido: ' + t + (ids.length ? ' (com ' + ids.length + ' foto(s) do depois)' : '')) };
   Audit.log({ acao: 'situacao_apontamento', entidade: 'apontamento', entidadeId: a.id, resumo: 'Resolveu o apontamento ' + apCat(a.categoria)[1] + ', ' + a.setor + ': ' + t, antes: { situacao: (AP_ST[a.status] || AP_ST.aberto)[0] }, depois: { situacao: 'Resolvido' } });
   if (a.porId !== S.user.id) Notif.send({ nivel: 'info', titulo: 'Seu apontamento foi resolvido', texto: apCat(a.categoria)[1] + ' — ' + a.setor + ': ' + t, para: [a.porId], refTipo: 'apont', refId: a.id }).catch(() => {});
@@ -6589,7 +6806,8 @@ document.addEventListener('click', e => {
   else if (a === 'ap-novo') { if (podeLancar(S.user)) lcAbrir({ k: 'apNovo', fotos: [], cat: '', setor: '', setorTxt: '', grav: '', com: '', orig: 'rotina', audTxt: '', obs: '', risco: '', recom: '' }); }
   else if (a === 'ap-novo-ok') apNovoOk();
   else if (a === 'ap-grav-pick') { const g = t.getAttribute('data-g'); if (S.fm) { if (S.fm.k === 'apNovo') S.fm.grav = g; else S.fm.nova = g; S.fm.sujo = true; S.fm.msg = ''; gvDesenha(true); } }
-  else if (a === 'ap-foto-x') { const i = Number(t.getAttribute('data-i')); if (S.fm) { S.fm.fotos = (S.fm.fotos || []).filter((x, k) => k !== i); S.fm.sujo = true; gvDesenha(true); } }
+  else if (a === 'ap-foto-x') { const i = Number(t.getAttribute('data-i')); if (S.fm) { S.fm.fotos = (S.fm.fotos || []).filter((x, k) => k !== i); S.fm.mk = (S.fm.mk || []).filter((x, k) => k !== i); S.fm.sujo = true; gvDesenha(true); } }
+  else if (a === 'ap-foto-mk') apFotoMk(Number(t.getAttribute('data-i')));
   else if (a === 'ap-foto-ver') apFotoVer(id);
   else if (a === 'ap-fv-x') csVolta();
   else if (a === 'ap-f-urg') { S.apF = 'urgentes'; render(); }
@@ -6625,7 +6843,7 @@ BG_FONTES.push(q => S.apont.filter(a => bgCasa(q, [apCat(a.categoria)[1], a.seto
    GUT no padrão do EFClaudian (G, U e T de 1 a 5, cada nota explicada; G × U × T; alto ≥ 48, médio ≥ 18; G = 5 nunca é
    baixo). Só o Líder ★, o Administrador ou o auditor da RNC registram e enviam. Nada se apaga: NC tirada e RNC cancelada
    ficam guardadas com o motivo. A apresentação (Nº 45) e o relatório estão em auapres.js. Plano de ação: v0.6.3. */
-Object.assign(S, { rnc: [], rncGut: [], _auFotos: {} });
+Object.assign(S, { rnc: [], rncGut: [], _auFotos: {}, _auFotoDoc: {} });
 const AU_AREAS = [['campo', 'Campo'], ['estrutura', 'Estrutura']];
 const AU_GRAV = { maior: ['Maior', 'cr'], media: ['Média', 'wa'], baixa: ['Baixa', ''] };
 const AU_RES = { resolvida: ['Resolvida', 'ok'], parcial: ['Parcial', 'wa'], nao: ['Não resolvida', 'cr'] };
@@ -6701,11 +6919,36 @@ const auGrava = (k, v) => { try { Store.set('cw-au-' + k, v); } catch {} };
 
 /* ---------- fotos (evidência da auditoria: não entram na regra dos 30 dias) ---------- */
 function auFotoGet(id) { if (S._auFotos[id] !== undefined && S._auFotos[id] !== '') return Promise.resolve(S._auFotos[id]);
-  S._auFotos[id] = ''; return Data.col('sv2_rnc_foto').get(id).then(d => { const u = (d && d.dataUrl) || ''; S._auFotos[id] = u; return u; }).catch(() => ''); }
+  S._auFotos[id] = ''; return Data.col('sv2_rnc_foto').get(id).then(d => { const u = (d && d.dataUrl) || ''; S._auFotos[id] = u; S._auFotoDoc[id] = { base: (d && d.base) || '', marcas: d && Array.isArray(d.marcas) ? d.marcas : [], marcadoPor: (d && d.marcadoPor) || '', marcadoEm: (d && d.marcadoEm) || '' }; return u; }).catch(() => ''); }
 function auFotosCarrega(raiz) { $$('img[data-aufoto]', raiz || document).forEach(im => { if (im.getAttribute('src')) return;
   auFotoGet(im.getAttribute('data-aufoto')).then(u => { if (u && imgSrc(u)) im.src = imgSrc(u); else { const q = im.parentNode; if (q && q.classList) q.classList.add('vz'); } }); }); }
 GV_DEPOIS.push(g => auFotosCarrega(g));
 const auFotoIMG = (id, cls) => '<img class="' + (cls || '') + '"' + (S._auFotos[id] && imgSrc(S._auFotos[id]) ? ' src="' + imgSrc(S._auFotos[id]) + '"' : ' data-aufoto="' + esc(id) + '"') + ' alt="Foto da NC">';
+/* v0.6.4: marcar no formulário (foto nova ou já gravada: a gravada vira um registro novo ao salvar, a anterior fica) */
+function auFotoMk(i) { const f = S.fm; if (!f) return; const x = (f.fotos || [])[i]; if (!x) return; const doc = x.id ? S._auFotoDoc[x.id] || {} : {}, src = x.url || S._auFotos[x.id]; if (!imgSrc(src)) return;
+  fedAbrir({ src: src, base: x.base || doc.base || src, marcas: x.marcas || doc.marcas || [], sub: (auDe(f.rid) || {}).numero || '' }).then(r => { if (!r || !S.fm || S.fm !== f) return;
+    f.fotos[i] = { url: r.img, base: r.base, marcas: r.marcas, mkPor: r.marcadoPor, mkEm: r.marcadoEm, subst: x.id || x.subst || '' }; f.sujo = true; gvDesenha(true); }); }
+function auFotoOnde(id) { for (const r of S.rnc) for (const n of (r.ncs || [])) { if ((n.fotosAntes || []).indexOf(id) >= 0) return { r: r, n: n, papel: 'antes', l: n.fotosAntes }; if (n.ret && (n.ret.fotosDepois || []).indexOf(id) >= 0) return { r: r, n: n, papel: 'depois', l: n.ret.fotosDepois }; } return null; }
+function auFotoAbrir(id) {
+  const u = S._auFotos[id]; if (!imgSrc(u)) return; const w = auFotoOnde(id), doc = S._auFotoDoc[id] || {};
+  const pode = !!w && auPode(w.r) && auSit(w.r) !== 'fechada';
+  fedVer({ src: u, base: doc.base, marcas: doc.marcas, marcadoPor: doc.marcadoPor, marcadoEm: doc.marcadoEm, titulo: w ? w.r.numero + ' · ' + auNum(w.n.n) + ' · foto ' + (w.l.indexOf(id) + 1) + ' de ' + w.l.length + (w.papel === 'depois' ? ' (depois)' : '') : 'Foto',
+    nome: w ? w.r.numero + '_' + auNum(w.n.n) + '_foto' + (w.l.indexOf(id) + 1) + '_' + w.papel : 'foto', marcar: pode ? () => auFotoMarcarGravada(id) : null });
+}
+function auFotoMarcarGravada(id) {
+  const w = auFotoOnde(id), doc = S._auFotoDoc[id] || {}, src = S._auFotos[id]; if (!w || !imgSrc(src)) return;
+  fedAbrir({ src: src, base: doc.base || src, marcas: doc.marcas || [], sub: w.r.numero + ' · ' + auNum(w.n.n) }).then(res => {
+    if (!res) return; const r = w.r, nid = uid(), ts = nowISO();
+    const o = { rncId: r.id, ncId: w.n.id, papel: w.papel, dataUrl: res.img, criadoEm: ts, porId: S.user.id, marcas: res.marcas, substitui: id };
+    if (res.marcas.length) Object.assign(o, { base: res.base, marcadoPor: res.marcadoPor, marcadoEm: res.marcadoEm });
+    S._auFotos[nid] = res.img; S._auFotoDoc[nid] = { base: o.base || '', marcas: o.marcas, marcadoPor: o.marcadoPor || '', marcadoEm: o.marcadoEm || '' };
+    const troca = l => (l || []).map(x => x === id ? nid : x);
+    const ncs = (r.ncs || []).map(y => y.id !== w.n.id ? y : w.papel === 'antes' ? Object.assign({}, y, { fotosAntes: troca(y.fotosAntes) }) : Object.assign({}, y, { ret: Object.assign({}, y.ret, { fotosDepois: troca(y.ret.fotosDepois) }) })); r.ncs = ncs;
+    Promise.all([Data.col('sv2_rnc_foto').set(nid, o), Data.col('sv2_rnc').update(r.id, { ncs: ncs, atualizadoEm: ts })]).then(() => aviso(res.marcas.length ? 'Marcas salvas. A foto anterior fica guardada.' : 'Marcas tiradas. A foto anterior fica guardada.')).catch(e => aviso(svErro(e), 'erro'));
+    Audit.log({ acao: 'rnc_foto_marcas', entidade: 'rnc', entidadeId: r.id, resumo: r.numero + ' · ' + auNum(w.n.n) + ': ' + (res.marcas.length ? res.marcas.length + ' marca(s) na foto' : 'marcas tiradas da foto') + ' (' + w.papel + ')' });
+    if (S.gv) gvDesenha(); if (S.auAp && !S.auAp.ed) auAprDesenha(); render();
+  });
+}
 function auFotoVer(id) { const u = S._auFotos[id]; if (!imgSrc(u)) return;
   const d = document.createElement('div'); d.id = 'au-fv'; d.className = 'co-fv'; d.innerHTML = '<img src="' + imgSrc(u) + '" alt="Foto da NC"><button type="button" class="bt ic-so" data-act="au-fv-x" aria-label="Fechar">' + ic('x') + '</button>';
   document.body.appendChild(d); csCamadaAbre('aufv', () => { const x = $('#au-fv'); if (x) x.remove(); }); }
@@ -6838,7 +7081,7 @@ function auNcEditar(rid, ncId) {
 }
 function auFotosBl(f) {
   const fs = f.fotos || [];
-  const th = fs.map((x, i) => '<span class="ap-ft">' + (x.id ? auFotoIMG(x.id) : '<img src="' + imgSrc(x.url) + '" alt="Foto ' + (i + 1) + '">') + '<button type="button" class="bt ic-so" data-act="au-foto-x" data-i="' + i + '" title="Tirar esta foto" aria-label="Tirar esta foto">' + ic('x') + '</button></span>').join('');
+  const th = fs.map((x, i) => '<span class="ap-ft">' + (x.id ? auFotoIMG(x.id) : '<img src="' + imgSrc(x.url) + '" alt="Foto ' + (i + 1) + '">') + fedMkBt('au-foto-mk', i, (x.marcas || (x.id && S._auFotoDoc[x.id] && S._auFotoDoc[x.id].marcas) || []).length) + '<button type="button" class="bt ic-so" data-act="au-foto-x" data-i="' + i + '" title="Tirar esta foto" aria-label="Tirar esta foto">' + ic('x') + '</button></span>').join('');
   const add = fs.length < AU_MAX_FOTOS ? '<label class="bt">' + ic('imagem') + (fs.length ? 'Mais uma' : 'Tirar foto') + '<input type="file" accept="image/*" capture="environment" data-aufoto-in hidden></label><label class="bt">Galeria<input type="file" accept="image/*" multiple data-aufoto-in hidden></label>' : '';
   return '<div class="ap-fot">' + th + add + '</div><small class="cl-nt">' + fs.length + ' de ' + AU_MAX_FOTOS + ' · ficam guardadas como evidência da auditoria. Fotografe o problema, não as pessoas.</small>';
 }
@@ -6890,7 +7133,10 @@ document.addEventListener('change', async e => {
 function auFotosGravar(fotos, rid, ncId, papel) {
   const ids = [], ps = [];
   (fotos || []).forEach(f => { if (f.id) { ids.push(f.id); return; } const id = uid(); S._auFotos[id] = f.url; ids.push(id);
-    ps.push(Data.col('sv2_rnc_foto').set(id, { rncId: rid, ncId: ncId, papel: papel, dataUrl: f.url, criadoEm: nowISO(), porId: S.user.id, marcas: [] })); });
+    const mk = f.base && (f.marcas || []).length, o = { rncId: rid, ncId: ncId, papel: papel, dataUrl: f.url, criadoEm: nowISO(), porId: S.user.id, marcas: mk ? f.marcas : [] };
+    if (mk) Object.assign(o, { base: f.base, marcadoPor: f.mkPor || S.user.nome, marcadoEm: f.mkEm || nowISO() }); if (f.subst) o.substitui = f.subst;
+    S._auFotoDoc[id] = { base: o.base || '', marcas: o.marcas, marcadoPor: o.marcadoPor || '', marcadoEm: o.marcadoEm || '' };
+    ps.push(Data.col('sv2_rnc_foto').set(id, o)); });
   return { ids: ids, ps: ps };
 }
 function auNcOk(prox) {
@@ -7072,7 +7318,8 @@ document.addEventListener('click', e => {
   else if (a === 'au-chip-add') auChipAdd(t.getAttribute('data-c'), t.getAttribute('data-t'));
   else if (a === 'au-chip-x' && f) { const c = t.getAttribute('data-c'), i = Number(t.getAttribute('data-i')); f[c] = (f[c] || []).filter((x, k) => k !== i); f.sujo = true; gvDesenha(true); }
   else if (a === 'au-foto-x' && f) { const i = Number(t.getAttribute('data-i')); f.fotos = (f.fotos || []).filter((x, k) => k !== i); f.sujo = true; gvDesenha(true); }
-  else if (a === 'au-foto-ver') auFotoVer(id);
+  else if (a === 'au-foto-ver') auFotoAbrir(id);
+  else if (a === 'au-foto-mk') auFotoMk(Number(t.getAttribute('data-i')));
   else if (a === 'au-fv-x') csVolta();
   else if (a === 'au-nc-tirar') { const p = String(id).split('|'); lcAbrir({ k: 'auTirar', rid: p[0], ncId: p[1], motivo: '' }, () => auNcAbre(p[0], p[1])); }
   else if (a === 'au-tirar-ok') auTirarOk();

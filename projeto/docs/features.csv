@@ -414,3 +414,8 @@ Texto da análise guardado no aparelho + aviso de conflito,Inspeções,should,si
 Análise de problemas (sv2_analise) de reclamação ou apontamento,Qualidade,must,sim,sim,Análise de problemas,v0.6.3
 Gaveta deslizando não afasta a tela no celular,Geral,must,não,sim,Casca,v0.6.3
 Fluxograma do processo na análise,Inspeções,could,sim,não,Auditoria interna,v0.6.4
+Editor de foto: círculo/seta/texto/borrar/numerar/cores/grossura/desfazer/tirar marca (Nº 42),Geral,must,sim,sim,Fotos,v0.6.4
+Original guardada + marcadoPor/marcadoEm em cada foto marcada,Geral,must,parcial,sim,Fotos,v0.6.4
+Foto grande com as marcas ou a original + baixar,Geral,must,sim,sim,Fotos,v0.6.4
+Original de foto borrada só para Líder/Administrador (LGPD),Geral,should,não,sim,Fotos,v0.6.4
+Marcar foto gravada da RNC até fechar (registro novo; anterior guardado),Inspeções,must,sim,sim,Auditoria interna,v0.6.4

@@ -153,7 +153,7 @@ function clEtapas(r) {
 }
 function clFotoHTML(id) {
   const f = S._clFotos[id];
-  if (f === undefined) { S._clFotos[id] = null; Data.col('sv2_cloro_foto').get(id).then(d => { S._clFotos[id] = d && imgSrc(d.img) ? d.img : ''; if (S.gv && S._clSel === id) gvDesenha(); }).catch(() => { S._clFotos[id] = ''; }); return '<p class="gv-h">Foto do clorímetro</p><div class="cl-ft vz">carregando…</div>'; }
+  if (f === undefined) { S._clFotos[id] = null; Data.col('sv2_cloro_foto').get(id).then(d => { S._clFotos[id] = d && imgSrc(d.img) ? d.img : ''; S._clFotoDoc = S._clFotoDoc || {}; S._clFotoDoc[id] = { base: (d && d.base) || '', marcas: d && Array.isArray(d.marcas) ? d.marcas : [], marcadoPor: (d && d.marcadoPor) || '', marcadoEm: (d && d.marcadoEm) || '' }; if (S.gv && S._clSel === id) gvDesenha(); }).catch(() => { S._clFotos[id] = ''; }); return '<p class="gv-h">Foto do clorímetro</p><div class="cl-ft vz">carregando…</div>'; }
   if (f === null) return '<p class="gv-h">Foto do clorímetro</p><div class="cl-ft vz">carregando…</div>';
   return f ? '<p class="gv-h">Foto do clorímetro</p><button type="button" class="cl-ft" data-act="cl-foto-ver" data-id="' + esc(id) + '"><img src="' + imgSrc(f) + '" alt="Foto do clorímetro"></button>' : '';
 }
@@ -179,11 +179,8 @@ function clAbre(id) {
   });
   render();
 }
-function clFotoVer(id) {
-  const u = S._clFotos[id]; if (!imgSrc(u)) return;
-  const d = document.createElement('div'); d.id = 'cl-fv'; d.className = 'co-fv'; d.innerHTML = '<img src="' + imgSrc(u) + '" alt="Foto do clorímetro"><button type="button" class="bt ic-so" data-act="cl-fv-x" aria-label="Fechar">' + ic('x') + '</button>';
-  document.body.appendChild(d); csCamadaAbre('clfv', () => { const x = $('#cl-fv'); if (x) x.remove(); });
-}
+function clFotoVer(id) { const u = S._clFotos[id]; if (!imgSrc(u)) return; const d = (S._clFotoDoc || {})[id] || {}; /* v0.6.4: com as marcas ou a original */
+  fedVer({ src: u, base: d.base, marcas: d.marcas, marcadoPor: d.marcadoPor, marcadoEm: d.marcadoEm, titulo: 'Foto do clorímetro', nome: 'cloro_' + id }); }
 
 /* ---------- formulário: nova verificação (gaveta em passos) ---------- */
 const clPasso = (n, t) => '<div class="cl-p"><i>' + n + '</i>' + esc(t) + '</div>';
@@ -197,9 +194,13 @@ function clPontos() {
   return [['', 'Escolha o ponto…']].concat(bebs.map(b => ['beb:' + b.id, clBebNome(b) + (b.situacao !== 'ativo' ? ' (pendente)' : '')])).concat([['novo', '+ Bebedouro fora da lista']]).concat(cxs.map(c => ['caixa:' + c.id, 'Caixa d’água ' + c.tag + (c.local ? ' — ' + c.local : '')]));
 }
 function clProxSug() { const h = hojeISO(), feitos = new Set(S.cloro.filter(r => r.data === h).map(r => r.pontoId)); const b = clBebAtivos().filter(x => !feitos.has(x.id)).sort((a, c) => cmpTxt(a.local || '', c.local || '') || cmpTxt(a.codigo, c.codigo))[0]; return b ? 'beb:' + b.id : ''; }
+/* v0.6.4: marcas da foto do clorímetro (a original em base) */
+const clMkDoc = f => f.fotoMk && f.fotoMk.marcas.length ? { base: f.fotoMk.base, marcas: f.fotoMk.marcas, marcadoPor: f.fotoMk.por, marcadoEm: f.fotoMk.em } : { marcas: [] };
+function clFotoMk() { const f = S.fm; if (!f || !imgSrc(f.foto)) return; const m = f.fotoMk;
+  fedAbrir({ src: f.foto, base: m ? m.base : f.foto, marcas: m ? m.marcas : [], sub: 'Foto do clorímetro' }).then(r => { if (!r || S.fm !== f) return; f.foto = r.img; f.fotoMk = r.marcas.length ? { base: r.base, marcas: r.marcas, por: r.marcadoPor, em: r.marcadoEm } : null; f.sujo = true; gvDesenha(true); }); }
 function clFotoBl(f, rot) {
   const tem = imgSrc(f.foto), env = (r, h) => r ? lcBl(r, h, '') : '<div class="fm-c">' + h + '</div>';
-  return env(rot, (tem ? '<div class="cl-fp"><img src="' + imgSrc(f.foto) + '" alt="Foto"><button type="button" class="bt ic-so" data-act="cl-foto-x" title="Tirar a foto" aria-label="Tirar a foto">' + ic('x') + '</button></div>' :
+  return env(rot, (tem ? '<div class="cl-fp"><img src="' + imgSrc(f.foto) + '" alt="Foto">' + fedMkBt('cl-foto-mk', 0, f.fotoMk ? f.fotoMk.marcas.length : 0) + '<button type="button" class="bt ic-so" data-act="cl-foto-x" title="Tirar a foto" aria-label="Tirar a foto">' + ic('x') + '</button></div>' :
     '<div class="cl-fb"><label class="bt">' + ic('imagem') + 'Tirar foto<input type="file" accept="image/*" capture="environment" data-clfoto="camera" hidden></label><label class="bt">Galeria<input type="file" accept="image/*" data-clfoto="galeria" hidden></label></div>') +
     '<small class="cl-nt">Fotografe o clorímetro ao lado da placa do bebedouro. Não fotografe pessoas.</small>' + (tem ? '' : lcIn('semFoto', f.semFoto, ' placeholder="Sem foto? diga o motivo (opcional)"')));
 }
@@ -231,7 +232,7 @@ document.addEventListener('change', e => {
   const t = e.target; if (!t || !t.getAttribute || !S.fm) return;
   if (t.getAttribute('data-fm') === 'fiz' && S.fm.k === 'clNova') { S.fm.fiz = t.checked ? '1' : '0'; gvDesenha(true); return; }
   const o = t.getAttribute('data-clfoto'); if (!o || !t.files || !t.files[0]) return;
-  coFotoReduz(t.files[0]).then(u => { if (!S.fm) return; S.fm.foto = u; S.fm.fotoOrigem = o; S.fm.sujo = true; gvDesenha(true); }).catch(er => lcErro(er.message || 'Não deu para ler a foto.'));
+  coFotoReduz(t.files[0]).then(u => { if (!S.fm) return; S.fm.foto = u; S.fm.fotoMk = null; S.fm.fotoOrigem = o; S.fm.sujo = true; gvDesenha(true); }).catch(er => lcErro(er.message || 'Não deu para ler a foto.'));
 });
 DD_AO.cl = (k, v) => { const f = S.fm; if (!f) return; f.sujo = true; f.msg = '';
   if (k === 'ponto') { if (v.indexOf('beb:') === 0) { const ab = clAbertoHoje(v.slice(4)); if (ab) { clRegraAberto(ab); return; } } f.ponto = v; }
@@ -291,7 +292,7 @@ async function clNovaOk() {
     const foto = tipo === 'beb' && imgSrc(f.foto) ? { img: f.foto, origem: f.fotoOrigem || 'camera' } : null;
     if (tipo === 'beb') o.foto = foto ? { st: 'pendente', origem: foto.origem } : { st: 'sem_foto', motivo: String(f.semFoto || '').trim() };
     const cid = await Data.col('sv2_cloro').add(o);
-    if (foto) { S._clFotos[cid] = foto.img; Data.col('sv2_cloro_foto').set(cid, { img: foto.img, ts: nowISO(), porId: S.user.id, origem: foto.origem }).catch(e => console.error('foto cloro', e)); }
+    if (foto) { S._clFotos[cid] = foto.img; Data.col('sv2_cloro_foto').set(cid, Object.assign({ img: foto.img, ts: nowISO(), porId: S.user.id, origem: foto.origem }, clMkDoc(f))).catch(e => console.error('foto cloro', e)); }
     Audit.log({ acao: 'verificar_cloro', entidade: 'cloro', entidadeId: cid, resumo: 'Cloro ' + o.pontoNome + ' (' + (o.local || 'sem local') + '): ' + ppm(v) + ' ppm — ' + clFaixaTxt(fx) + (dos != null ? ' · dosagem ' + dos + ' ml' : '') + (mot ? ' · motivo: ' + mot : '') + (temV2 ? ' · após ' + ppm(v2) : ''), depois: { ponto: o.pontoNome, valor: v, faixa: fx, situacao: sit } });
     const eu = Array.from(new Set(supsOf(S.user).concat([S.user.id])));
     if (fx === 'alto') Notif.send({ nivel: 'critico', titulo: 'Cloro ALTO: ' + o.pontoNome + ' com ' + ppm(v) + ' ppm', texto: (o.local || '') + ' · ' + fmtD(o.data) + ' ' + o.hora + ' · lançado por ' + S.user.nome + '. Acima de 2,00 ppm: nova verificação obrigatória.', para: eu, refTipo: 'cloro', refId: cid });
@@ -334,7 +335,7 @@ async function clRvOk() {
   rv.push(nv); const ok = clFaixa(v) === 'conforme';
   try {
     await Data.col('sv2_cloro').update(r.id, { reverif: rv, dosagemPendente: null, situacao: ok ? 'resolvido' : 'aberto' });
-    if (foto) Data.col('sv2_cloro_foto').set(r.id + '_rv' + (rv.length - 1), { img: foto.img, ts: nowISO(), porId: S.user.id, origem: foto.origem }).catch(e => console.error('foto rv', e));
+    if (foto) Data.col('sv2_cloro_foto').set(r.id + '_rv' + (rv.length - 1), Object.assign({ img: foto.img, ts: nowISO(), porId: S.user.id, origem: foto.origem }, clMkDoc(f))).catch(e => console.error('foto rv', e));
     Audit.log({ acao: 'reverificar_cloro', entidade: 'cloro', entidadeId: r.id, resumo: 'Nova verificação ' + r.pontoNome + ': ' + ppm(v) + ' ppm' + (dos != null ? ' após dosagem de ' + dos + ' ml' : '') + (ok ? ' — resolvido' : ' — ainda fora da faixa'), antes: { valor: clValorFinal(r) }, depois: { valor: v, dosagemMl: dos } });
     if (!ok && clFaixa(v) === 'alto') Notif.send({ nivel: 'critico', titulo: 'Cloro continua ALTO: ' + r.pontoNome, texto: ppm(v) + ' ppm na nova verificação.', para: Array.from(new Set(supsOf(S.user).concat([S.user.id]))), refTipo: 'cloro', refId: r.id });
     lcFim(); aviso(ok ? 'Resolvido: dentro da faixa.' : 'Ainda fora da faixa. Faça nova aplicação e meça de novo.', ok ? '' : 'erro');
@@ -548,7 +549,8 @@ document.addEventListener('click', e => {
   else if (a === 'cl-beb-lib') clBebDecide(id, true);
   else if (a === 'cl-beb-rec') clBebDecide(id, false);
   else if (a === 'cl-locais') clLocaisAbre();
-  else if (a === 'cl-foto-x') { if (S.fm) { S.fm.foto = ''; S.fm.sujo = true; gvDesenha(true); } }
+  else if (a === 'cl-foto-x') { if (S.fm) { S.fm.foto = ''; S.fm.fotoMk = null; S.fm.sujo = true; gvDesenha(true); } }
+  else if (a === 'cl-foto-mk') clFotoMk();
   else if (a === 'cl-foto-ver') clFotoVer(id);
   else if (a === 'cl-fv-x') csVolta();
 });

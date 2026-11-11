@@ -7,7 +7,7 @@
    Regra nova e permanente dele: botões e campos lado a lado ficam alinhados em todas as telas.
    Ficam no EFClaudian por enquanto: marcar/editar a foto (v0.6.3), a análise de problema (5 Porquês, Ishikawa, plano de
    ação) e a aba que junta as NCs dos apontamentos com as das auditorias — ambas vêm na v0.6.2 com a Auditoria interna. */
-Object.assign(S, { apont: [], _apFotos: {} });
+Object.assign(S, { apont: [], _apFotos: {}, _apFotoDoc: {} });
 const AP_CATS = [['acidente', 'Risco de acidente', 'altura, máquina, piso escorregadio'], ['estrutura', 'Estrutura', 'inclui placas e sinalização'], ['residuos', 'Resíduos sólidos', 'lixo no chão, descarte errado'],
   ['higiene', 'Higiene / sanitização', 'banheiro, lavagem de mãos'], ['quimicos', 'Produtos químicos / insumos', 'embalagem, armazenamento, derrame'], ['epi', 'EPI', 'sem luva, bota ou proteção'], ['outro', 'Outro', '']];
 const AP_GRAV = [['baixa', 'Baixa', '', 'Entra no relatório de apontamentos.'], ['media', 'Média', 'wa', 'Entra no relatório de apontamentos.'],
@@ -43,15 +43,14 @@ const apHistMais = (a, txt) => (a.hist || []).concat([{ ts: nowISO(), porNome: S
 
 /* ---------- fotos: um documento por foto em sv2_fotos, carregadas quando aparecem ---------- */
 function apFotoGet(id) { if (S._apFotos[id] !== undefined) return Promise.resolve(S._apFotos[id]);
-  S._apFotos[id] = ''; return Data.col('sv2_fotos').get(id).then(d => { const u = (d && d.dataUrl) || ''; S._apFotos[id] = u; return u; }).catch(() => ''); }
+  S._apFotos[id] = ''; return Data.col('sv2_fotos').get(id).then(d => { const u = (d && d.dataUrl) || ''; S._apFotos[id] = u; S._apFotoDoc[id] = { base: (d && d.base) || '', marcas: d && Array.isArray(d.marcas) ? d.marcas : [], marcadoPor: (d && d.marcadoPor) || '', marcadoEm: (d && d.marcadoEm) || '' }; return u; }).catch(() => ''); }
 GV_DEPOIS.push(g => apFotosCarrega(g));
 function apFotosCarrega(raiz) { $$('img[data-apfoto]', raiz || document).forEach(im => { if (im.getAttribute('src')) return;
   apFotoGet(im.getAttribute('data-apfoto')).then(u => { if (u && imgSrc(u)) im.src = imgSrc(u); else { const q = im.closest('.ap-fi') || im.closest('.ap-cf'); if (q) q.classList.add('vz'); } }); }); }
 const apFotoIMG = (id, cls) => '<img class="' + (cls || '') + '"' + (S._apFotos[id] && imgSrc(S._apFotos[id]) ? ' src="' + imgSrc(S._apFotos[id]) + '"' : ' data-apfoto="' + esc(id) + '"') + ' alt="Foto do apontamento">';
 const apFotosVivas = a => (a.fotos || []).filter(f => !(a.fotosOff || {})[f]);
-function apFotoVer(id) { const u = S._apFotos[id]; if (!imgSrc(u)) return;
-  const d = document.createElement('div'); d.id = 'ap-fv'; d.className = 'co-fv'; d.innerHTML = '<img src="' + imgSrc(u) + '" alt="Foto do apontamento"><button type="button" class="bt ic-so" data-act="ap-fv-x" aria-label="Fechar">' + ic('x') + '</button>';
-  document.body.appendChild(d); csCamadaAbre('apfv', () => { const x = $('#ap-fv'); if (x) x.remove(); }); }
+function apFotoVer(id) { const u = S._apFotos[id]; if (!imgSrc(u)) return; const d = S._apFotoDoc[id] || {}; /* v0.6.4: foto grande com as marcas ou a original */
+  fedVer({ src: u, base: d.base, marcas: d.marcas, marcadoPor: d.marcadoPor, marcadoEm: d.marcadoEm, titulo: 'Foto do apontamento', nome: 'apontamento_' + id }); }
 /* LGPD: as fotos somem sozinhas AP_FOTO_DIAS depois de resolvido; o texto e o histórico ficam */
 const apFotoVence = a => !a.resolucao || apAberto(a) ? '' : addDias(clDiaLocal(a.resolucao.ts), AP_FOTO_DIAS);
 function apFotoPrazoTxt(a) {
@@ -120,7 +119,7 @@ function apGravBotoes(v) {
 }
 function apFotosBl(f) {
   const fs = f.fotos || [];
-  const th = fs.map((d, i) => '<span class="ap-ft"><img src="' + imgSrc(d) + '" alt="Foto ' + (i + 1) + '"><button type="button" class="bt ic-so" data-act="ap-foto-x" data-i="' + i + '" title="Tirar esta foto" aria-label="Tirar esta foto">' + ic('x') + '</button></span>').join('');
+  const th = fs.map((d, i) => '<span class="ap-ft"><img src="' + imgSrc(d) + '" alt="Foto ' + (i + 1) + '">' + fedMkBt('ap-foto-mk', i, ((f.mk || [])[i] || { marcas: [] }).marcas.length) + '<button type="button" class="bt ic-so" data-act="ap-foto-x" data-i="' + i + '" title="Tirar esta foto" aria-label="Tirar esta foto">' + ic('x') + '</button></span>').join('');
   const add = fs.length < AP_MAX_FOTOS ? '<label class="bt">' + ic('imagem') + (fs.length ? 'Mais uma' : 'Tirar foto') + '<input type="file" accept="image/*" capture="environment" data-apfoto-in hidden></label><label class="bt">Galeria<input type="file" accept="image/*" multiple data-apfoto-in hidden></label>' : '';
   return '<div class="ap-fot">' + th + add + '</div>' + '<small class="cl-nt">' + (fs.length >= AP_MAX_FOTOS ? 'Cabem no máximo ' + AP_MAX_FOTOS + ' fotos. ' : '') + 'Fotografe o problema, não o colaborador.</small>';
 }
@@ -165,7 +164,7 @@ async function apNovoOk() {
     hist: [{ ts: ts, porNome: u.nome, txt: 'Registrou como ' + g[1] + (ids.length ? ' com ' + ids.length + ' foto(s)' : ' sem foto') + (o_aud(f) ? ' · ' + o_aud(f) : '') }] };
   try {
     const id = await Data.col('sv2_apont').add(o);
-    fotos.forEach((d, i) => { S._apFotos[ids[i]] = d; Data.col('sv2_fotos').set(ids[i], { refTipo: 'apont', refId: id, papel: 'antes', dataUrl: d, criadoEm: ts, porId: u.id }).catch(er => console.error('foto apont', er)); });
+    fotos.forEach((d, i) => { S._apFotos[ids[i]] = d; Data.col('sv2_fotos').set(ids[i], Object.assign({ refTipo: 'apont', refId: id, papel: 'antes', dataUrl: d, criadoEm: ts, porId: u.id }, apMkDoc(f, i))).catch(er => console.error('foto apont', er)); });
     const sups = supsOf(u).filter(x => x !== u.id);
     const txt = (o.obs || 'Sem observação') + ' · por ' + u.nome + (o.comunicado ? ' · encarregado avisado' : ' · encarregado NÃO avisado');
     if (sups.length && f.grav === 'urgente') Notif.send({ nivel: 'critico', titulo: 'Apontamento URGENTE: ' + c[1] + ' — ' + setor, texto: txt, para: sups, refTipo: 'apont', refId: id });
@@ -174,6 +173,10 @@ async function apNovoOk() {
     lcFim(); aviso('Apontamento enviado.' + (f.grav === 'urgente' || f.grav === 'grave' ? ' O seu superior foi avisado.' : ''));
   } catch (e) { f._trava = 0; lcErro(svErro(e)); }
 }
+/* v0.6.4: marcas da foto (a original em base) */
+const apMkDoc = (f, i) => { const m = (f.mk || [])[i]; return m && m.marcas.length ? { base: m.base, marcas: m.marcas, marcadoPor: m.por, marcadoEm: m.em } : { marcas: [] }; };
+function apFotoMk(i) { const f = S.fm; if (!f) return; const cur = (f.fotos || [])[i], m = (f.mk || [])[i]; if (!imgSrc(cur)) return;
+  fedAbrir({ src: cur, base: m ? m.base : cur, marcas: m ? m.marcas : [], sub: 'Apontamento' }).then(r => { if (!r || S.fm !== f) return; f.fotos[i] = r.img; f.mk = f.mk || []; f.mk[i] = r.marcas.length ? { base: r.base, marcas: r.marcas, por: r.marcadoPor, em: r.marcadoEm } : null; f.sujo = true; gvDesenha(true); }); }
 const o_aud = f => f.orig === 'auditoria' ? 'auditoria interna: ' + String(f.audTxt || '').trim() : '';
 
 /* ---------- detalhe ---------- */
@@ -235,7 +238,7 @@ async function apResOk() {
   if (!apPodeCuidar()) return lcErro('Só o Líder ★ ou o Administrador resolve.');
   if (!lcTravar()) return;
   const ts = nowISO(), fotos = (f.fotos || []).slice(0, AP_MAX_FOTOS), ids = fotos.map(() => uid());
-  fotos.forEach((d, i) => { S._apFotos[ids[i]] = d; Data.col('sv2_fotos').set(ids[i], { refTipo: 'apont', refId: a.id, papel: 'depois', dataUrl: d, criadoEm: ts, porId: S.user.id }).catch(er => console.error(er)); });
+  fotos.forEach((d, i) => { S._apFotos[ids[i]] = d; Data.col('sv2_fotos').set(ids[i], Object.assign({ refTipo: 'apont', refId: a.id, papel: 'depois', dataUrl: d, criadoEm: ts, porId: S.user.id }, apMkDoc(f, i))).catch(er => console.error(er)); });
   const patch = { status: 'resolvido', resolucao: { texto: t, porId: S.user.id, porNome: S.user.nome, ts: ts }, fotosDepois: (a.fotosDepois || []).concat(ids), hist: apHistMais(a, 'Resolvido: ' + t + (ids.length ? ' (com ' + ids.length + ' foto(s) do depois)' : '')) };
   Audit.log({ acao: 'situacao_apontamento', entidade: 'apontamento', entidadeId: a.id, resumo: 'Resolveu o apontamento ' + apCat(a.categoria)[1] + ', ' + a.setor + ': ' + t, antes: { situacao: (AP_ST[a.status] || AP_ST.aberto)[0] }, depois: { situacao: 'Resolvido' } });
   if (a.porId !== S.user.id) Notif.send({ nivel: 'info', titulo: 'Seu apontamento foi resolvido', texto: apCat(a.categoria)[1] + ' — ' + a.setor + ': ' + t, para: [a.porId], refTipo: 'apont', refId: a.id }).catch(() => {});
@@ -363,7 +366,8 @@ document.addEventListener('click', e => {
   else if (a === 'ap-novo') { if (podeLancar(S.user)) lcAbrir({ k: 'apNovo', fotos: [], cat: '', setor: '', setorTxt: '', grav: '', com: '', orig: 'rotina', audTxt: '', obs: '', risco: '', recom: '' }); }
   else if (a === 'ap-novo-ok') apNovoOk();
   else if (a === 'ap-grav-pick') { const g = t.getAttribute('data-g'); if (S.fm) { if (S.fm.k === 'apNovo') S.fm.grav = g; else S.fm.nova = g; S.fm.sujo = true; S.fm.msg = ''; gvDesenha(true); } }
-  else if (a === 'ap-foto-x') { const i = Number(t.getAttribute('data-i')); if (S.fm) { S.fm.fotos = (S.fm.fotos || []).filter((x, k) => k !== i); S.fm.sujo = true; gvDesenha(true); } }
+  else if (a === 'ap-foto-x') { const i = Number(t.getAttribute('data-i')); if (S.fm) { S.fm.fotos = (S.fm.fotos || []).filter((x, k) => k !== i); S.fm.mk = (S.fm.mk || []).filter((x, k) => k !== i); S.fm.sujo = true; gvDesenha(true); } }
+  else if (a === 'ap-foto-mk') apFotoMk(Number(t.getAttribute('data-i')));
   else if (a === 'ap-foto-ver') apFotoVer(id);
   else if (a === 'ap-fv-x') csVolta();
   else if (a === 'ap-f-urg') { S.apF = 'urgentes'; render(); }

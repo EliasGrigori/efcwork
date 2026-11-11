@@ -1,0 +1,127 @@
+/* EFCwork · suíte da v0.6.4 — editor de foto (Nº 42): marcar, original guardada, ver grande, Auditoria/Apontamentos/Cloro. ?demo=1
+   Uso: node tools/testes/t_v064.js */
+const { chromium } = require('playwright');
+const path = require('path'), fs = require('fs');
+const semear = require('./au_semente.js');
+const RAIZ = path.resolve(__dirname, '..', '..'), URL = 'file://' + path.join(RAIZ, 'dist', 'index.html') + '?demo=1';
+const TELAS = path.join(RAIZ, 'tools', 'testes', 'telas'); fs.mkdirSync(TELAS, { recursive: true });
+let ok = 0, falhas = 0;
+const conf = (c, msg) => { if (c) { ok++; console.log('  ok  ' + msg); } else { falhas++; console.log('  FALHA  ' + msg); } };
+const esp = (p, ms) => p.waitForTimeout(ms || 350);
+async function abre(b, w, h) {
+  const cel = w < 600, p = await (await b.newContext({ viewport: { width: w, height: h || 860 }, hasTouch: cel, isMobile: cel })).newPage(); p._er = [];
+  p.on('pageerror', e => p._er.push(String(e))); p.on('console', m => { if (m.type() === 'error' && !/gstatic|fonts|net::ERR/.test(m.text())) p._er.push(m.text()); });
+  await p.route(/gstatic|fonts\.g/, r => r.abort());
+  await p.goto(URL); await esp(p, 400);
+  await p.fill('#en-nome', 'Joana Silva'); await p.fill('#en-login', 'joana.silva'); await p.fill('#en-senha', 'senha1234'); await p.fill('#en-senha2', 'senha1234');
+  await p.click('[data-form="en-primeiro"] button[type=submit]'); await esp(p, 700);
+  await p.evaluate(() => { const c = document.createElement('canvas'); c.width = 800; c.height = 600; const x = c.getContext('2d'); const g = x.createLinearGradient(0, 0, 800, 600); g.addColorStop(0, '#9aa7b4'); g.addColorStop(1, '#5f6b77'); x.fillStyle = g; x.fillRect(0, 0, 800, 600); x.fillStyle = '#c9b48a'; x.fillRect(300, 200, 200, 160); window._FOTO = c.toDataURL('image/jpeg', 0.85); });
+  return p;
+}
+async function arrasta(p, x1, y1, x2, y2) { const r = await p.evaluate(() => { const b = document.querySelector('#fed canvas').getBoundingClientRect(); return [b.left, b.top, b.width, b.height]; });
+  await p.mouse.move(r[0] + r[2] * x1, r[1] + r[3] * y1); await p.mouse.down(); await p.mouse.move(r[0] + r[2] * (x1 + x2) / 2, r[1] + r[3] * (y1 + y2) / 2, { steps: 4 }); await p.mouse.move(r[0] + r[2] * x2, r[1] + r[3] * y2, { steps: 4 }); await p.mouse.up(); await esp(p, 150); }
+const ferr = (p, v) => p.click('#fed [data-fed="ferr"][data-v="' + v + '"]');
+
+(async () => {
+  const b = await chromium.launch();
+  const p = await abre(b, 1280);
+  await p.evaluate(() => { location.hash = '#/inspecoes/auditoria'; }); await esp(p, 300); await semear(p); await esp(p, 500);
+  console.log('Editor no registro da NC (PC):');
+  await p.click('.cs-acts [data-act="au-nova-nc"]'); await esp(p, 500);
+  await p.evaluate(() => { S.fm.fotos = [{ url: window._FOTO }]; gvDesenha(true); }); await esp(p, 200);
+  conf(/Marcar/.test(await p.textContent('#gv .ap-ft .fed-mkb')), 'cada miniatura tem o botão "Marcar"');
+  await p.click('#gv .ap-ft .fed-mkb'); await esp(p, 600);
+  conf(!!(await p.$('#fed canvas')) && await p.evaluate(() => S.camadas.slice(-1)[0].nome === 'fed'), 'o editor abre em tela cheia (uma camada)');
+  const grade = await p.evaluate(() => [...document.querySelectorAll('#fed .fed-fs .fed-f')].map(b => b.textContent.trim() + '@' + Math.round(b.getBoundingClientRect().top)));
+  conf(grade.length === 6 && /^Numerar@/.test(grade[4]) && /^Desfazer@/.test(grade[5]) && grade[4].split('@')[1] === grade[5].split('@')[1], 'PC: painel ao lado, Desfazer na grade das ferramentas, ao lado de Numerar (' + grade.map(x => x.split('@')[0]).join(', ') + ')');
+  conf(await p.evaluate(() => { const c = document.querySelector('#fed canvas').getBoundingClientRect(), pn = document.querySelector('#fed .fed-pn').getBoundingClientRect(); return pn.left >= c.right - 1 && pn.width === 300; }), 'PC: a foto à esquerda e o painel de 300 px à direita');
+  await arrasta(p, 0.35, 0.3, 0.65, 0.65);
+  await p.click('#fed [data-fed="num"]'); await ferr(p, 's'); await p.click('#fed [data-fed="cor"][data-v="#FFD600"]');
+  await arrasta(p, 0.1, 0.1, 0.35, 0.3);
+  await ferr(p, 't'); await arrasta(p, 0.6, 0.8, 0.6, 0.8);
+  conf(!(await p.$('#fed .fed-txt[hidden]')), 'Texto: tocar na foto abre o campo do texto');
+  await p.fill('#fed .fed-txt input', 'fio solto'); await p.press('#fed .fed-txt input', 'Enter'); await esp(p, 150);
+  await ferr(p, 'b'); await arrasta(p, 0.05, 0.7, 0.2, 0.95);
+  let st = await p.evaluate(() => S.fed.l.map(m => m.t + (m.n ? m.n : '') + (m.txt ? ':' + m.txt : '')).join(','));
+  conf(st === 'c,s1,t:fio solto,b', 'círculo, seta numerada, texto e borrado entram nas marcas (' + st + ')');
+  conf((await p.$$('#fed .fed-ml li')).length === 4 && /Marcas · 4/.test(await p.textContent('#fed .fed-mlt')), 'a lista das marcas mostra as 4');
+  await p.click('#fed .fed-ml li:first-child [data-fed="tirar"]'); await esp(p, 150);
+  conf(await p.evaluate(() => S.fed.l.length === 3 && S.fed.l[0].t === 's'), 'tirar qualquer marca pela lista (o círculo saiu)');
+  await p.click('#fed [data-fed="desf"]'); await esp(p, 150);
+  conf(await p.evaluate(() => S.fed.l.length === 2), 'Desfazer tira a última');
+  await p.screenshot({ path: path.join(TELAS, 'v064-pc-editor.png') });
+  await p.click('#fed .fed-pv [data-fed="ok"]'); await esp(p, 500);
+  const fo = await p.evaluate(() => { const x = S.fm.fotos[0]; return { b: x.base === window._FOTO, m: x.marcas.length, d: x.url !== x.base && /^data:image\/jpeg/.test(x.url), por: x.mkPor }; });
+  conf(!(await p.$('#fed')) && fo.b && fo.m === 2 && fo.d && fo.por === 'Joana Silva', 'Pronto: a foto do formulário passa a ser a marcada, com a original e as marcas guardadas');
+  conf(/Marcas · 2/.test(await p.textContent('#gv .ap-ft .fed-mkb')) && await p.evaluate(() => S.camadas.slice(-1)[0].nome === 'fm'), 'a miniatura mostra "Marcas · 2" e volta para o formulário');
+  await p.click('#gv .ap-ft .fed-mkb'); await esp(p, 500);
+  conf(await p.evaluate(() => S.fed.l.length === 2), 'abrir de novo continua as marcas');
+  await arrasta(p, 0.4, 0.4, 0.6, 0.6);
+  await p.keyboard.press('Escape'); await esp(p, 300);
+  conf(!!(await p.$('#cf')), 'Esc com marca nova pergunta antes de descartar');
+  await p.click('#cf [data-act="cf-sim"]'); await esp(p, 400);
+  conf(!(await p.$('#fed')) && await p.evaluate(() => S.fm.fotos[0].marcas.length === 2), 'descartar fecha o editor e a foto fica como estava');
+  await p.fill('#gv [data-fm="local"]', 'CBR 07'); await p.fill('#gv [data-fm="nc"]', 'Quadro elétrico aberto'); await p.click('#gv [data-act="au-grav-pick"][data-g="media"]'); await p.fill('#gv [data-fm="resp"]', 'Josineldo');
+  await p.evaluate(() => { S.fm.ciente = 'sim'; }); await p.click('#gv [data-act="au-nc-ok"]:not([data-prox])'); await esp(p, 900);
+  const nc = await p.evaluate(() => { const r = S.rnc.find(x => x.id === 'r1'); return r.ncs.find(n => n.local === 'CBR 07'); });
+  const doc = await p.evaluate(id => Data.col('sv2_rnc_foto').get(id), nc.fotosAntes[0]);
+  conf(doc && doc.base && doc.marcas.length === 2 && doc.marcadoPor === 'Joana Silva' && doc.marcadoEm && doc.dataUrl !== doc.base, 'gravado em sv2_rnc_foto: dataUrl (com marcas), base (original), marcas, marcadoPor e marcadoEm');
+
+  console.log('Ver grande e marcar a foto gravada:');
+  await p.evaluate(id => auNcAbre('r1', id), nc.id); await esp(p, 600);
+  await p.click('#gv .ap-fi'); await esp(p, 400);
+  conf(!!(await p.$('#fed-v')) && /2 marcas/.test(await p.textContent('#fed-v .fed-rod')) && /Joana Silva/.test(await p.textContent('#fed-v .fed-rod')), 'a foto grande mostra quantas marcas, quem marcou e quando');
+  await p.click('#fed-v [data-fv="o"]'); await esp(p, 200);
+  conf(await p.evaluate(() => document.querySelector('#fed-v img').src === S._auFotoDoc[Object.keys(S._auFotoDoc).find(k => S._auFotoDoc[k].marcas.length === 2)].base), 'a chave "Original" mostra a foto sem as marcas');
+  await p.click('#fed-v [data-fv="marcar"]'); await esp(p, 700);
+  conf(!!(await p.$('#fed canvas')) && await p.evaluate(() => S.fed.l.length === 2), '"Marcas" abre o editor com as marcas da foto gravada');
+  await p.click('#fed [data-fed="desf"]'); await p.click('#fed [data-fed="desf"]'); await p.click('#fed .fed-pv [data-fed="ok"]'); await esp(p, 800);
+  const nc2 = await p.evaluate(id => JSON.parse(JSON.stringify(S.rnc.find(x => x.id === 'r1').ncs.find(n => n.id === id))), nc.id);
+  const d2 = await p.evaluate(id => Data.col('sv2_rnc_foto').get(id), nc2.fotosAntes[0]), d1 = await p.evaluate(id => Data.col('sv2_rnc_foto').get(id), nc.fotosAntes[0]);
+  conf(nc2.fotosAntes[0] !== nc.fotosAntes[0] && d2.substitui === nc.fotosAntes[0] && d2.marcas.length === 0 && d2.dataUrl === doc.base && d1 && d1.marcas.length === 2, 'tirar todas as marcas grava um registro novo com a original; o anterior continua guardado');
+  await p.evaluate(() => { while (S.camadas.length) { try { S.camadas.pop().fechar(); } catch (e) {} } gvFecharSo(); }); await esp(p, 300);
+
+  console.log('Borrar (LGPD) e quem não é líder:');
+  await p.evaluate(async () => { await Data.col('sv2_rnc_foto').set('fb', { rncId: 'r1', ncId: 'n2', papel: 'antes', dataUrl: window._FOTO, base: window._FOTO, marcas: [{ t: 'b', x1: 10, y1: 10, x2: 100, y2: 100 }], marcadoPor: 'Joana Silva', marcadoEm: new Date().toISOString() });
+    const r = S.rnc.find(x => x.id === 'r1'); r.ncs.find(n => n.id === 'n2').fotosAntes = ['fb']; await auFotoGet('fb'); S.user.perfil = 'secundario'; S.user.estrela = false; auFotoAbrir('fb'); }); await esp(p, 400);
+  conf(!(await p.$('#fed-v [data-fv="o"]')) && /só o líder vê a original/.test(await p.textContent('#fed-v .fed-rod')), 'foto com parte borrada: quem não é líder não vê a original');
+  await p.evaluate(() => { csVolta(); S.user.perfil = 'principal'; }); await esp(p, 300);
+  await p.evaluate(() => auFotoAbrir('fb')); await esp(p, 300);
+  conf(!!(await p.$('#fed-v [data-fv="o"]')), 'o líder vê a chave "Original"');
+  await p.keyboard.press('Escape'); await esp(p, 300);
+  conf(!(await p.$('#fed-v')), 'Esc fecha a foto grande');
+
+  console.log('Apontamentos e Cloro:');
+  await p.evaluate(() => { location.hash = '#/inspecoes/apontamentos'; }); await esp(p, 500);
+  await p.click('[data-act="ap-novo"]'); await esp(p, 400);
+  await p.evaluate(() => { S.fm.fotos = [window._FOTO]; Object.assign(S.fm, { cat: 'estrutura', setor: 'Campo', grav: 'media', com: 'sim' }); gvDesenha(true); }); await esp(p, 200);
+  await p.click('#gv .ap-ft .fed-mkb'); await esp(p, 500); await arrasta(p, 0.3, 0.3, 0.6, 0.6); await p.click('#fed .fed-pv [data-fed="ok"]'); await esp(p, 400);
+  conf(await p.evaluate(() => S.fm.mk[0] && S.fm.mk[0].marcas.length === 1 && S.fm.fotos[0] !== window._FOTO), 'apontamento: marcar a foto antes de enviar');
+  await p.click('#gv [data-act="ap-novo-ok"]'); await esp(p, 900);
+  const af = await p.evaluate(async () => { const a = S.apont.slice(-1)[0] || S.apont[0], x = S.apont.find(y => (y.fotos || []).length); return Data.col('sv2_fotos').get(x.fotos[0]); });
+  conf(af && af.base && af.marcas.length === 1 && af.marcadoPor, 'gravado em sv2_fotos com a original e as marcas');
+  await p.evaluate(() => { location.hash = '#/inspecoes/cloro'; }); await esp(p, 400);
+  await p.evaluate(async () => { const a = new Date(Date.now() - 20 * 864e5).toISOString(); await Data.col('sv2_bebs').set('bx', { codigo: 'BR 50', local: 'Teste', situacao: 'ativo', ativoDesde: a, criadoEm: a, criadoPor: 'x' }); }); await esp(p, 300);
+  await p.click('[data-act="cl-nova"]'); await esp(p, 500);
+  await p.evaluate(() => { S.fm.ponto = 'beb:bx'; S.fm.valor = '1,0'; S.fm.foto = window._FOTO; gvDesenha(true); }); await esp(p, 200);
+  await p.click('#gv .cl-fp .fed-mkb'); await esp(p, 500); await ferr(p, 's'); await arrasta(p, 0.2, 0.2, 0.5, 0.5); await p.click('#fed .fed-pv [data-fed="ok"]'); await esp(p, 400);
+  await p.click('#gv [data-act="cl-nova-ok"]'); await esp(p, 900);
+  const cf = await p.evaluate(async () => { const r = S.cloro.find(x => x.pontoId === 'bx'); return r ? Data.col('sv2_cloro_foto').get(r.id) : null; });
+  conf(cf && cf.base && cf.marcas.length === 1 && cf.marcas[0].t === 's', 'cloro: a foto do clorímetro marcada, com a original guardada');
+  conf(p._er.length === 0, 'sem erros no console (PC)' + (p._er.length ? ': ' + p._er.slice(0, 2).join(' | ') : ''));
+
+  console.log('Celular 390:');
+  const c = await abre(b, 390, 844); await c.evaluate(() => { location.hash = '#/inspecoes/auditoria'; }); await esp(c, 300); await semear(c); await esp(c, 500);
+  await c.evaluate(() => { document.querySelector('.cs-acts [data-act="au-nova-nc"]').click(); }); await esp(c, 500);
+  await c.evaluate(() => { S.fm.fotos = [{ url: window._FOTO }]; gvDesenha(true); }); await esp(c, 200);
+  await c.evaluate(() => document.querySelector('#gv .ap-ft .fed-mkb').click()); await esp(c, 600);
+  const lay = await c.evaluate(() => { const cv = document.querySelector('#fed canvas').getBoundingClientRect(), fs = document.querySelector('#fed .fed-fs').getBoundingClientRect(), ce = document.querySelector('#fed .fed-ce').getBoundingClientRect(), h = document.querySelector('#fed .fed-h').getBoundingClientRect();
+    return { emb: fs.top > cv.bottom && fs.top > ce.top, h: h.height > 0, bg: getComputedStyle(document.querySelector('#fed')).backgroundColor, lin: [...document.querySelectorAll('#fed .fed-fs .fed-f')].every((b, i, l) => Math.round(b.getBoundingClientRect().top) === Math.round(l[0].getBoundingClientRect().top)), sw: document.documentElement.scrollWidth <= innerWidth && innerWidth === 390 }; });
+  conf(lay.emb && lay.h && lay.lin, 'celular: Cancelar/Pronto no alto, cores e grossura e, embaixo, as 6 ferramentas na mesma linha');
+  conf(/rgb\(18, 20, 28\)/.test(lay.bg), 'celular: tela escura (' + lay.bg + ')');
+  conf(lay.sw, 'celular: nada arrasta para o lado');
+  await c.screenshot({ path: path.join(TELAS, 'v064-cel-editor.png') });
+  conf(c._er.length === 0, 'sem erros no console (celular)' + (c._er.length ? ': ' + c._er.slice(0, 2).join(' | ') : ''));
+  await b.close();
+  console.log('\n' + ok + ' ok, ' + falhas + ' falhas'); process.exit(falhas ? 1 : 0);
+})();
