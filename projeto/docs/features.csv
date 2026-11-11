@@ -373,3 +373,17 @@ Liberar/recusar bebedouro pendente,Inspeções,must,sim,sim,Cloro,v0.6.0
 Pedir correção de verificação (Principal corrige direto),Inspeções,must,sim,sim,Cloro,v0.6.0
 Detalhe com linha do tempo da gota,Inspeções,should,não,sim,Cloro,v0.6.0 (pedido do Elias)
 Busca geral acha bebedouros,Inspeções,should,sim,sim,Cloro,v0.6.0
+Apontamentos: cartões com foto e selos,Inspeções,must,sim,sim,Apontamentos,v0.6.1
+Novo apontamento em passos com gravidade em botões,Inspeções,must,não,sim,Apontamentos,v0.6.1 (pedido do Elias)
+Até 5 fotos por apontamento (câmera e galeria),Inspeções,must,sim,sim,Apontamentos,v0.6.1
+Aviso ao superior: grave no sino e urgente crítico,Inspeções,must,sim,sim,Apontamentos,v0.6.1
+Detalhe com linha do tempo da gota e rodapé alinhado,Inspeções,must,não,sim,Apontamentos,v0.6.1 (pedido do Elias)
+Mudar a gravidade com motivo (a original fica riscada),Inspeções,must,sim,sim,Apontamentos,v0.6.1
+Resolver com o que foi feito e foto do depois,Inspeções,must,sim,sim,Apontamentos,v0.6.1
+Não procede e reabrir com motivo,Inspeções,must,sim,sim,Apontamentos,v0.6.1
+Abrir e fechar NC (responsável, prazo, ação, verificação),Inspeções,must,sim,sim,Apontamentos,v0.6.1
+Reincidência: mesmo setor e categoria em 30 dias,Inspeções,should,sim,sim,Apontamentos,v0.6.1
+Pareto dos apontamentos com poucos vitais,Inspeções,should,sim,sim,Apontamentos,v0.6.1
+Setores configuráveis (sv2_cfg/apont),Inspeções,should,sim,sim,Apontamentos,v0.6.1
+Fotos apagadas 30 dias depois de resolvido (LGPD),Inspeções,must,sim,sim,Apontamentos,v0.6.1
+Trava de tela afastada (zoom-out) no celular na suíte,Geral,must,não,sim,Suíte,v0.6.1

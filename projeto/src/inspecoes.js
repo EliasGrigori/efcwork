@@ -103,9 +103,8 @@ function clFaltas() {
 }
 
 /* ---------- tela ---------- */
-TELAS.inspecoes = function (aba) {
-  const ar = csArea('inspecoes');
-  if (aba !== 'cloro') return arEmBreve(ar);
+/* a tela do Cloro; quem distribui as abas da área é o apont.js (TELAS.inspecoes), carregado depois */
+function clTela() {
   const ativos = clBebAtivos(), hoje = hojeISO(), feitos = new Set(S.cloro.filter(r => r.pontoTipo === 'beb' && r.data === hoje).map(r => r.pontoId));
   const fHoje = ativos.filter(b => feitos.has(b.id)).length, pend = S.cloro.filter(r => r.pontoTipo === 'beb' && clAberto(r)).sort((a, b) => String(a.ts).localeCompare(String(b.ts))), faltas = clFaltas();
   const meta = ['<span>' + fHoje + ' de ' + ativos.length + ' verificados hoje</span>', pend.length ? metaPl(pend.length + ' em aberto', 'wa', 'alerta') : '', faltas.length ? metaPl(faltas.length + (faltas.length === 1 ? ' dia sem verificação' : ' dias sem verificação'), 'cr') : ''].filter(Boolean);
@@ -114,7 +113,7 @@ TELAS.inspecoes = function (aba) {
   if (!S.bebs.length) return h + '<section class="pn"><div class="vazio">' + ic('lista') + '<b>Nenhum bebedouro cadastrado.</b><span>O cadastro inicial dos bebedouros é feito pelo Principal no EFClaudian (Inspeções › Cloro).</span></div></section>';
   h += clGaugesHTML() + clAfazerHTML(pend, faltas);
   return h + clTabela();
-};
+}
 function clAfazerHTML(pend, faltas) {
   const bp = clPodeCad() ? S.bebs.filter(b => b.situacao === 'pendente') : [], pode = podeLancar(S.user), n = pend.length + faltas.length + bp.length;
   if (!n) return '';

@@ -171,7 +171,11 @@ const semear = (p, nLocais) => p.evaluate(async n => {
   await p.evaluate(p => { lcAbrir({ k: 'clNova', ponto: 'beb:b2', valor: '1,0', dos: '', v2: '', mot: '', med: '', obs: '', fiz: '0', foto: p, fotoOrigem: 'camera', semFoto: '' }); }, png); await esp(p, 400);
   conf(!!(await p.$('#gv .cl-fp img')), 'foto anexada aparece no passo da foto');
   await p.click('#gv [data-act="cl-nova-ok"]'); await esp(p, 800);
-  const cid = await p.evaluate(() => S.cloro.filter(r => r.pontoId === 'b2').sort((a, b) => b.ts.localeCompare(a.ts))[0].id);
+  const diag = await p.evaluate(() => ({ msg: (document.querySelector('#gv .fm-msg') || {}).textContent || '', cf: (document.querySelector('#cf') || {}).textContent || '' }));
+  if (diag.msg || diag.cf) console.log('    [diagnóstico] msg="' + diag.msg.trim() + '" confirma="' + diag.cf.trim().slice(0, 90) + '"');
+  /* a que acabou de ser lançada: é a única de b2 com foto pendente e lançada por quem está logado (o ts das semeadas é o horário cheio do dia, que de madrugada ainda está no futuro) */
+  const cid = await p.evaluate(() => (S.cloro.filter(r => r.pontoId === 'b2' && r.lancadoPor === S.user.id && r.foto && r.foto.st === 'pendente').sort((a, b) => String(b.lancadoEm || b.ts).localeCompare(String(a.lancadoEm || a.ts)))[0] || {}).id);
+  conf(!!cid, 'a verificação com foto foi lançada');
   conf(!!(await p.evaluate(id => Data.col('sv2_cloro_foto').get(id), cid)), 'a foto foi para sv2_cloro_foto, com o mesmo código da verificação');
   await p.evaluate(id => clAbre(id), cid); await esp(p, 800);
   conf(!!(await p.$('#gv .cl-ft img')), 'o detalhe mostra a foto');
@@ -190,7 +194,7 @@ const semear = (p, nLocais) => p.evaluate(async n => {
   const c = await abre(b, 390, 820); await semear(c, 7);
   await c.evaluate(() => { location.hash = '#/inspecoes/cloro'; }); await esp(c, 800);
   conf((await c.$$('.cl-gk')).length === 5, 'celular: 5 velocímetros em 2 colunas (o último ocupa a linha)');
-  conf(!(await c.evaluate(() => document.documentElement.scrollWidth > innerWidth)), 'celular: sem rolagem para o lado');
+  conf(!(await c.evaluate(() => document.documentElement.scrollWidth > innerWidth)) && await c.evaluate(() => innerWidth === 390), 'celular: sem rolagem para o lado e sem afastar a tela (innerWidth ' + (await c.evaluate(() => innerWidth)) + ' px)');
   await c.screenshot({ path: path.join(TELAS, 'v060-cel-cloro.png') });
   await c.tap('[data-act="cl-nova"]'); await esp(c, 600);
   await c.evaluate(() => { S.fm.ponto = 'beb:b5'; S.fm.valor = '0,1'; gvDesenha(true); }); await esp(c, 400);

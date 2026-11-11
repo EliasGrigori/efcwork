@@ -1730,3 +1730,24 @@ As coleções do cloro já existem e são as do EFClaudian — as regras precisa
 
 ## Fica para depois
 Marcar/editar a foto (v0.6.3, Nº 42: guarda a original e a editada), relatório impresso com carta de controle e histograma, "tratado", mudar a situação do bebedouro e conferir fotos — tudo isso continua no EFClaudian por enquanto.
+
+# v0.6.1 Apontamentos — modelos (10/11/2026, Opus 5)
+- Estudo do EFClaudian v2.102.60 (Apontamentos): coleções `sv2_apont` e `sv2_fotos` (papel antes | depois | marcada, uma foto por documento). Campos: data, hora, criadoEm, porId/porNome, origem (rotina | auditoria) + auditoria, categoria (7), setor, grav (baixa/media/grave/urgente), gravOrig + gravHist[], comunicado, obs, risco, recom, fotos[], fotosDepois[], fotosMarc{}, fotosOff{}, status (aberto/andamento/resolvido/nao_procede), resolucao, nc{responsavel, prazo, acao, fechada, verificacao}, hist[].
+- Regras: grave vai ao sino dos superiores, urgente é alerta crítico; o superior reclassifica com motivo e o que a pessoa marcou fica riscado; reincidência = mesmo setor + categoria nos 30 dias; NC nasce do apontamento (responsável, prazo, ação) e ao fechar exige como foi verificado; fotos apagadas N dias depois de resolvido (LGPD), mantendo texto e histórico; Pareto por categoria/setor; setores configuráveis.
+- Referências pesquisadas (apps de EHS e observação de segurança): foto como prova, alerta automático para o que é de alta prioridade, ação com dono e prazo, tempo médio até a correção, reincidência sinalizada.
+- Modelos entregues (aprovacao-efcwork-v0.6.1-modelos.html), montados dentro do app com 8 apontamentos de teste: OPÇÃO 1 cartões com foto, 2 tabela do EFCwork com miniatura, 3 colunas por gravidade, 4 por setor com reincidência, 5 o que está atrasado; OPÇÃO A gaveta em passos (como o Cloro) e B botões grandes (como hoje); ITEM 1 detalhe com a linha do tempo da gota; ITEM 2 escopo.
+- Aguardando as respostas do Elias.
+
+# Respostas do Elias aos modelos da v0.6.1 (11/11 00:00)
+- OPÇÃO 1 (cartões com foto) **Aprovada**. OPÇÕES 2, 3, 4 e 5 reprovadas.
+- OPÇÃO A (gaveta em passos) **Aprovada com melhoria**: "a gravidade pode ser os botões como na OPÇÃO B" — ou seja, a gaveta em passos fica, mas a gravidade usa os botões grandes (Baixa / Média / Grave / Urgente), não a janela retrátil. OPÇÃO B reprovada.
+- ITEM 1 (detalhe) **Aprovado com melhoria**: "alinhar botão Não procede / Mudar gravidade com Resolver, celular".
+- ITEM 2 (escopo) **Aprovado**.
+- **REGRA NOVA (permanente, vale para todas as telas, a Auditoria inclusive): botões e campos têm de ficar alinhados entre si** — mesma linha, mesma altura e mesma largura quando estão lado a lado, no PC e no celular. Junta-se ao alinhamento de Dosagem × Cloro depois pedido na v0.6.0 (classe .cl-fm2).
+- Ele ainda não escreveu "pode iniciar": a construção espera.
+
+# Retorno do Grok das v0.5.2 e v0.5.3 (recebido 11/11 00:13)
+24 passos: **20 OK, 0 FALHOU, 0 PARCIAL, 4 NÃO TESTADO** (precisam da conta real: v0.5.2 A1 e A4, sobre o botão da nuvem e o "Atualizar agora", que no modo demonstração não existem — não é defeito).
+Confirmado por ele: o selo "Vence em 46 dias" só nos 4 equipamentos dentro dos 60 dias; os 4 avisos de calibração no sino, sem duplicar ao recarregar (ids `cal-<equipamento>-2026-12-26-m2`); o aviso abre a gaveta do equipamento; colaborador comum não gera aviso nenhum; cantos de 8 px no rodapé do menu da coluna; a coluna App só com a versão (a impressão de 294 linhas caiu de 72 para 33 páginas); a foto do cupom abrindo na camada; o menu retrátil inteiro nos três estados, com o puxador, o menu por cima, Esc, "fixar o menu aberto", tema Escuro e "reduzir movimento"; o Total na mesma linha dos ícones em 1180, 1280 e 1366 px e inalterado no celular.
+Nada foi gravado no Firebase real e o código não foi alterado. Sem erros de JavaScript.
+Faltam os retornos do roteiro da v0.6.0 (Cloro) e, quando sair, o da v0.6.1.

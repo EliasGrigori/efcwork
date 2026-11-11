@@ -1,0 +1,64 @@
+/* Inspeções › Apontamentos (v0.6.1) — só tokens; botões e campos lado a lado sempre alinhados */
+.ap-bar{display:flex;align-items:center;gap:10px;margin:0 0 12px;flex-wrap:wrap}
+.ap-bar .dd{min-width:210px}
+.ap-bar .bt.cr{color:var(--cr);border-color:var(--cr)}
+.ap-cards{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+.ap-card{display:flex;gap:12px;align-items:center;width:100%;min-width:0;max-width:100%;text-align:left;background:var(--bg1);border:1px solid var(--bd);border-left:3px solid var(--bd);border-radius:var(--r);padding:10px 12px;box-shadow:var(--sh);font:inherit;color:inherit;cursor:pointer}
+.ap-card:hover{background:var(--row)}
+.ap-card.g-urgente,.ap-card.g-grave{border-left-color:var(--cr)}
+.ap-card.g-media{border-left-color:var(--wa)}
+:root[data-tema="escuro"] .ap-card{border-color:rgba(217,180,106,.16)}
+.ap-cf{width:64px;height:64px;border-radius:8px;flex:none;background:var(--bg2);overflow:hidden;display:grid;place-items:center}
+.ap-cf img{width:100%;height:100%;object-fit:cover;display:block}
+.ap-cf.vz .ic{width:20px;height:20px;color:var(--tx3)}
+.ap-ct{flex:1;min-width:0}
+.ap-ct>b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ap-cd{display:block;font-size:13px;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ap-ct>small{display:block;font-size:12px;color:var(--tx3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ap-cp{display:flex;gap:5px;flex-wrap:wrap;margin:4px 0 0}
+.pill.ap-risc{text-decoration:line-through;opacity:.75}
+/* gravidade em botões grandes (pedido do Elias na v0.6.1): todos do mesmo tamanho, na mesma linha */
+.ap-gb{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.ap-gbt{min-height:40px;padding:0 6px;border:1px solid var(--bd);border-radius:8px;background:var(--bg0);font:inherit;font-size:14px;color:var(--tx);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ap-gbt:hover{background:var(--bg2)}
+.ap-gbt.on{border-color:var(--a);background:var(--bg2);font-weight:600}
+.ap-gbt.g-grave.on,.ap-gbt.g-urgente.on{border-color:var(--cr);color:var(--cr)}
+.ap-gd{display:block;font-size:12px;color:var(--tx3);margin:6px 0 0}
+.ap-fot{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.ap-fot .bt{cursor:pointer}
+.ap-ft{position:relative;display:inline-block}
+.ap-ft img{width:72px;height:72px;border-radius:8px;object-fit:cover;display:block;border:1px solid var(--bd)}
+.ap-ft .bt{position:absolute;top:3px;right:3px;min-height:28px;height:28px;width:28px;padding:0;background:var(--bg1)}
+.ap-setx{min-height:160px;resize:vertical}
+.ap-gal{display:flex;gap:8px;flex-wrap:wrap}
+.ap-fi{padding:0;border:1px solid var(--bd);border-radius:8px;overflow:hidden;background:var(--bg2);cursor:zoom-in;width:110px;height:110px}
+.ap-fi img{width:100%;height:100%;object-fit:cover;display:block}
+.ap-fi.vz{cursor:default}
+.ap-hist{display:flex;flex-direction:column}
+.ap-hist>div{padding:7px 0;border-bottom:1px solid var(--bd);font-size:13px;color:var(--tx3)}
+.ap-hist>div:last-child{border-bottom:0}
+.ap-hist b{color:var(--tx2);font-weight:600}
+.ap-hist span{display:block;color:var(--tx)}
+/* rodapé do detalhe: botões alinhados, mesma altura e mesma largura (regra do Elias, 11/11) */
+.ap-pe{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:8px;width:100%}
+.ap-pe .bt{width:100%;min-width:0;justify-content:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ap-par{display:flex;flex-direction:column;gap:6px;margin:4px 0 10px}
+.ap-pl{display:grid;grid-template-columns:minmax(90px,1fr) minmax(0,2fr) auto auto;gap:8px;align-items:center;font-size:13px}
+.ap-pn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--tx2)}
+.ap-pb{display:block;height:14px;background:var(--bg2);border-radius:4px;overflow:hidden}
+.ap-pb i{display:block;height:100%;background:var(--bd2);border-radius:4px}
+.ap-pl.vit .ap-pb i{background:var(--a)}
+.ap-pl b{font-variant-numeric:tabular-nums}
+.ap-pl small{color:var(--tx3);min-width:34px;text-align:right}
+@media(max-width:899px){
+  .ap-card{padding:10px}
+  .ap-cf{width:56px;height:56px}
+  .ap-bar .dd{min-width:0;flex:1}
+  .ap-gb{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .ap-gbt{min-height:44px}
+  .ap-pe{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .ap-pe .bt{min-height:44px}
+  .ap-fi{width:96px;height:96px}
+  .ap-ft img{width:84px;height:84px}
+  .ap-ft .bt{min-height:36px;height:36px;width:36px;top:4px;right:4px}
+}
