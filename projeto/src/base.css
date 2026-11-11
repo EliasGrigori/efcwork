@@ -27,6 +27,8 @@
 }
 *{box-sizing:border-box}
 html,body{height:100%}
+/* v0.6.3: enquanto a gaveta desliza, ela não estica a página (no celular o aparelho afastava a tela) */
+html.gv-anim,html.gv-anim body{overflow-x:clip}
 body{margin:0;background:var(--bg0);color:var(--tx);font-family:var(--f);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased;padding-top:env(safe-area-inset-top,0px)}
 :root[data-tema="escuro"] body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(48% 38% at 92% -4%,rgba(232,196,119,.20),transparent 70%),radial-gradient(42% 36% at -6% 104%,rgba(120,96,200,.16),transparent 72%),repeating-linear-gradient(45deg,rgba(217,180,106,.028) 0 1px,transparent 1px 22px),repeating-linear-gradient(-45deg,rgba(217,180,106,.028) 0 1px,transparent 1px 22px)}
 #app{position:relative;z-index:1;min-height:100%}

@@ -126,7 +126,8 @@ async function auImprimir(r, modo, p) {
   await Promise.all(ids.map(auFotoGet));
   const im = id => imgSrc(S._auFotos[id]) ? '<img src="' + imgSrc(S._auFotos[id]) + '" alt="">' : '';
   const sit = auSit(r), cab = (t) => '<div class="au-ic"><b>' + esc(t) + '</b><span>' + esc([e.nome, r.numero, r.tipo].filter(Boolean).join(' · ')) + '</span></div>';
-  const folhaDe = {}; ls.forEach((n, i) => { folhaDe[n.id] = i + 2; });
+  const temAn = n => { const p = anPlano(n.id); return !!p && (anComecado(p) || !!p.contencao || !!p.efic); };
+  const folhaDe = {}, folhaAn = {}; let fo = 2; ls.forEach(n => { folhaDe[n.id] = fo++; if (temAn(n)) folhaAn[n.id] = fo++; });
   const porResp = auQuemRecebe(ls).map(x => { const l2 = ls.filter(n => auNorm(auResp(n)) === auNorm(x.nome)); return { nome: x.nome, n: l2.length, maior: l2.filter(n => n.grav === 'maior').length, media: l2.filter(n => n.grav === 'media').length, baixa: l2.filter(n => n.grav === 'baixa').length }; });
   const nums = [[ls.length, 'NCs'], [g('maior'), 'maior'], [g('media'), 'média'], [g('baixa'), 'baixa'], [auAltas(ls), 'prioridade alta']].concat(sit !== 'registro' ? [[ls.filter(n => n.ret && n.ret.res === 'resolvida').length, 'resolvidas']] : []);
   let h = '<section class="au-fl">' + cab(modo === 'resp' ? 'Não conformidades de ' + p : 'Relatório de não conformidades') +
@@ -141,9 +142,9 @@ async function auImprimir(r, modo, p) {
         ['Observação', n.obs || ''], ['Sugestão', n.sug || ''], ['Descrição do encarregado', n.encTxt || '']].filter(x => x[1]).map(x => '<span><small>' + esc(x[0]) + '</small>' + esc(x[1]) + '</span>').join('') + '</div>' +
       (fs.length ? '<div class="au-ifs n' + Math.min(fs.length, 4) + '">' + fs.map(im).join('') + '</div>' : '') +
       '<div class="au-ivs"><div><b>1ª visita · apontamento</b><span>' + esc(fmtD(r.data) + ' · ' + (r.auditorNome || '')) + '</span></div><div><b>2ª visita · retorno</b>' +
-      (n.ret ? '<span>' + esc(AU_RES[n.ret.res][0] + ' · ' + fmtD(n.ret.data || String(n.ret.ts).slice(0, 10)) + ' · ' + (n.ret.porNome || '')) + '</span><span>' + esc(n.ret.texto || '') + '</span>' + (dep.length ? '<div class="au-ifs n' + Math.min(dep.length, 4) + '">' + dep.map(im).join('') + '</div>' : '')
+      (n.ret ? '<span>' + esc(AU_RES[n.ret.res][0] + (n.ret.lib ? ' (liberada por ' + n.ret.lib.porNome + ': ' + n.ret.lib.motivo + ')' : '') + ' · ' + fmtD(n.ret.data || String(n.ret.ts).slice(0, 10)) + ' · ' + (n.ret.porNome || '')) + '</span><span>' + esc(n.ret.texto || '') + '</span>' + (dep.length ? '<div class="au-ifs n' + Math.min(dep.length, 4) + '">' + dep.map(im).join('') + '</div>' : '')
         : '<span class="au-ilin">Data: ____/____/______   Situação: (  ) Resolvida  (  ) Parcial  (  ) Não resolvida</span><span class="au-ilin">O que foi feito: ______________________________________________</span><span class="au-ilin">Assinatura: ______________________________</span>') +
-      '</div></div><div class="au-ipe">Folha ' + (i + 2) + '</div></section>'; }).join('');
+      '</div></div><div class="au-ipe">Folha ' + folhaDe[n.id] + '</div></section>' + (folhaAn[n.id] ? anFolha(anInfo({ t: 'nc', rid: r.id, ncId: n.id }), anPlano(n.id), folhaAn[n.id]) : ''); }).join('');
   if (modo !== 'resp') h += '<section class="au-fl au-fli">' + cab('Índice') + '<table class="au-itb"><thead><tr><th>NC</th><th>O que está errado</th><th>Local</th><th>Responsável</th><th>Gravidade</th><th>GUT</th>' + (sit !== 'registro' ? '<th>Retorno</th>' : '') + (modo === 'completo' ? '<th>Folha</th>' : '') + '</tr></thead><tbody>' +
     todas.map(n => { const gu = auGut(n.id); return '<tr><td>' + esc(auNum(n.n)) + '</td><td>' + esc(n.titulo ? n.titulo + ' · ' + n.nc : n.nc) + '</td><td>' + esc(n.local || '') + '</td><td>' + esc(auResp(n)) + '</td><td>' + esc((AU_GRAV[n.grav] || AU_GRAV.baixa)[0]) + '</td><td>' + esc(gu ? gu.gut + ' ' + AU_GUT_FX[gu.faixa][0] : '—') + '</td>' + (sit !== 'registro' ? '<td>' + esc(n.ret ? AU_RES[n.ret.res][0] : '—') + '</td>' : '') + (modo === 'completo' ? '<td>' + esc(folhaDe[n.id] || '') + '</td>' : '') + '</tr>'; }).join('') + '</tbody></table></section>';
   let d = $('#au-imp'); if (!d) { d = document.createElement('div'); d.id = 'au-imp'; document.body.appendChild(d); }

@@ -144,7 +144,7 @@ function auNcAquiBt(r, n, titulo, comResp) {
 function auLinha(r, n, a) {
   const f = (n.fotosAntes || [])[0], tit = String(n.titulo || '').trim(), extra = a === 'local' ? '' : a === 'resp' ? '' : ' · ' + auResp(n);
   return '<button type="button" class="au-nc g-' + esc(n.grav || 'baixa') + '" data-act="au-nc" data-id="' + esc(r.id) + '" data-nc="' + esc(n.id) + '"><span class="au-th' + (f ? '' : ' vz') + '">' + (f ? auFotoIMG(f) : ic('imagem')) + '</span><span class="au-nn">' + esc(auNum(n.n)) + '</span>' +
-    '<span class="tx">' + (tit ? '<b>' + esc(tit) + '</b> · ' : '') + esc(n.nc || '') + (extra ? '<small>' + esc(extra) + '</small>' : '') + '</span><span class="au-pl">' + auGravPill(n) + auGutPill(n) + auGut2Pill(n) + auRetPill(n) + '</span></button>';
+    '<span class="tx">' + (tit ? '<b>' + esc(tit) + '</b> · ' : '') + esc(n.nc || '') + (extra ? '<small>' + esc(extra) + '</small>' : '') + '</span><span class="au-pl">' + auGravPill(n) + auGutPill(n) + auGut2Pill(n) + (r.situacao === 'enviada' || r.situacao === 'fechada' ? anSelo({ t: 'nc', rid: r.id, ncId: n.id }) : '') + auRetPill(n) + '</span></button>';
 }
 DD_AO.au = (k, v) => { if (k === 'a' || k === 'o') { auGrava(k, v); render(); } else if (k === 'rnc') { S.auRid = v; render(); } };
 
@@ -167,6 +167,8 @@ function auNcAbre(rid, ncId) {
     let pe = '';
     if (pode && sit === 'registro') pe = '<button type="button" class="bt" data-act="au-nc-ed" data-id="' + esc(r.id) + '" data-nc="' + esc(n.id) + '">' + ic('lapis') + 'Corrigir</button>';
     else if (pode && (sit === 'retorno' || sit === 'pronta')) pe = '<button type="button" class="bt pr" data-act="au-conf" data-id="' + esc(r.id) + '" data-nc="' + esc(n.id) + '">' + (n.ret ? 'Mudar o retorno' : 'Conferir o retorno') + '</button>';
+    if (sit !== 'registro') { corpo = '<p class="gv-h">Análise</p><div class="an-lin"><span class="au-pl">' + anSelo({ t: 'nc', rid: r.id, ncId: n.id }) + '</span><span>' + esc('resp. ' + (anInfo({ t: 'nc', rid: r.id, ncId: n.id }) || { resp: {} }).resp.nome) + '</span></div>' + corpo;
+      pe = '<button type="button" class="bt" data-act="an-abrir" data-id="' + esc(r.id + '|' + n.id) + '">Análise</button>' + pe; }
     return { ico: 'lista', sub: r.numero + ' · ' + auAreaNome(n.area) + ' › ' + (n.local || ''), titulo: auNum(n.n) + (n.titulo ? ' · ' + n.titulo : ''), pill: auGravPill(n) + ' ' + auGutPill(n) + ' ' + auRetPill(n), corpo: corpo,
       lixeira: pode && sit === 'registro' ? { act: 'au-nc-tirar', id: r.id + '|' + n.id, titulo: 'Tirar esta NC' } : null, rodape: pe ? '<div class="ap-pe">' + pe + '</div>' : '' };
   });
@@ -366,7 +368,9 @@ LC_FORM.auConf = f => {
     apPasso(1, 'Foi resolvida?') + '<div class="ap-gb au-gb">' + Object.keys(AU_RES).map(k => '<button type="button" class="ap-gbt r-' + k + (f.res === k ? ' on' : '') + '" data-act="au-res-pick" data-g="' + k + '" aria-pressed="' + (f.res === k ? 'true' : 'false') + '">' + esc(AU_RES[k][0]) + '</button>').join('') + '</div>' +
     apPasso(2, 'Fotos do depois', 'até ' + AU_MAX_FOTOS + ' · opcional') + auFotosBl(f) +
     apPasso(3, 'O que foi feito', 'ou o que falta') + lcTx('texto', f.texto, 'ex.: placa recolocada e fixada') +
-    (x.trat === 'analise' ? lcAv('No EFClaudian esta NC pede a análise (5 Porquês e plano de ação) para ficar Resolvida. A análise chega ao EFCwork na v0.6.3.') : '');
+    (function () { const pend = anPend({ t: 'nc', rid: r.id, ncId: x.id }); if (!pend.length) return '<div class="an-lin"><span class="au-pl">' + anSelo({ t: 'nc', rid: r.id, ncId: x.id }) + '</span></div>';
+      return lcAv('<b>Para marcar Resolvida falta:</b> ' + esc(pend.join('; ')) + '.' + (isSup(S.user) ? ' Você pode liberar, com motivo.' : ' Sem isso, marque Parcial ou Não resolvida.'), 'wa') +
+        (isSup(S.user) && f.res === 'resolvida' ? lcBl('Motivo da liberação', lcIn('lib', f.lib, ' placeholder="ex.: ação feita fora do app; conferi no local"'), 'vai para o histórico e o relatório') : ''); })();
   return { ico: 'ok', sub: r.numero + ' · retorno · passo 4 de 5 · ' + (i + 1) + ' de ' + seq.length, titulo: 'Conferir a ' + auNum(x.n), corpo: c,
     rodape: lcPe('au-conf-ok', prox ? 'Salvar e ir para a ' + auNum(prox.n) : 'Salvar') };
 };
@@ -375,11 +379,16 @@ function auConfOk() {
   if (!auPode(r)) return lcErro('Só o Líder ★, o Administrador ou o auditor confere.');
   if (!f.res) return lcErro('Diga se foi resolvida, parcial ou não resolvida.');
   const t = String(f.texto || '').trim(); if (t.length < 3) return lcErro('Escreva o que foi feito (ou o que falta).');
+  const pend = f.res === 'resolvida' ? anPend({ t: 'nc', rid: r.id, ncId: x.id }) : []; let lib = null;
+  if (pend.length) { if (!isSup(S.user)) return lcErro('Não dá para marcar Resolvida: ' + pend.join('; ') + '. Marque Parcial ou Não resolvida, ou peça ao líder.');
+    const m = String(f.lib || '').trim(); if (m.length < 5) return lcErro('Para marcar Resolvida assim, escreva o motivo da liberação.');
+    lib = { motivo: m, porId: S.user.id, porNome: S.user.nome, pend: pend }; }
   if (!lcTravar()) return;
   const fo = auFotosGravar(f.fotos, r.id, x.id, 'depois'), ts = nowISO();
   const ret = { res: f.res, texto: t, fotosDepois: fo.ids, ts: ts, data: hojeISO(), porId: S.user.id, porNome: S.user.nome };
+  if (lib) ret.lib = lib;
   const ncs = (r.ncs || []).map(y => y.id === x.id ? Object.assign({}, y, { ret: ret, retHist: (y.retHist || []).concat(y.ret ? [y.ret] : []) }) : y); r.ncs = ncs;
-  Audit.log({ acao: 'rnc_conferir', entidade: 'rnc', entidadeId: r.id, resumo: r.numero + ' · ' + auNum(x.n) + ': ' + AU_RES[f.res][0] + ' — ' + t + (fo.ids.length ? ' · ' + fo.ids.length + ' foto(s) do depois' : ''), depois: ret });
+  Audit.log({ acao: 'rnc_conferir', entidade: 'rnc', entidadeId: r.id, resumo: r.numero + ' · ' + auNum(x.n) + ': ' + AU_RES[f.res][0] + ' — ' + t + (lib ? ' · LIBERADA por ' + S.user.nome + ' (' + lib.pend.join('; ') + '): ' + lib.motivo : '') + (fo.ids.length ? ' · ' + fo.ids.length + ' foto(s) do depois' : ''), depois: ret });
   const seq = auNcs(r), prox = seq.slice(seq.findIndex(y => y.id === x.id) + 1).find(y => !y.ret) || seq.find(y => !y.ret);
   lcGrava(fo.ps.concat([Data.col('sv2_rnc').update(r.id, { ncs: ncs, atualizadoEm: ts })]), auNum(x.n) + ': ' + AU_RES[f.res][0].toLowerCase() + '.' + (prox ? '' : ' Todas conferidas: falta fechar a RNC.'), prox ? () => auConfAbre(r.id, prox.id) : null);
 }

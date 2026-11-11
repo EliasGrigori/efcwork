@@ -139,3 +139,8 @@ Não adotado nesta versão: falta o Elias confirmar (avaliação acima). Continu
 
 ## Respostas do Elias (11/11 16:31)
 ITENS 1, 2, 3, 4, 5, 7, 8 e 9 **aprovados**. ITEM 6 (enviar, conferir o retorno e fechar) ficou **sem resposta** na página; publicado junto com o "pode publicar e iniciar a próxima etapa". A página da v0.6.1.1 não teve respostas copiadas; ela foi publicada dentro da v0.6.2 com o mesmo "pode publicar" (pergunta do ITEM 4, Pedir/Responder motivo no Cloro, continua em aberto — fica como está: só Encerrar com motivo).
+
+## v0.6.3 — começo (11/11 16:3x)
+Publicada a v0.6.2 (commit 409bb98; index.html do GitHub conferido contra o testado). O relatório real `referencia-RNC-2026-03-EFClaudian.pdf` **não** foi publicado (repositório público; fica só local).
+Estudo da análise do EFClaudian (sv2_rnc_plano: contencao, porques[5], causa, m6, outra{sim,quais}, ishi[{id,m,t,tirada}], ishiPri, flux, acoes[5W2H com st], rev, hist, respId/respHist; regras planoPede por risco, tratativa direta × com análise (trat, tratHist), PDCA, rascunho e conflito; sv2_analise para a Análise de problemas com efic).
+Enviados os modelos em aprovacao-efcwork-v0.6.3-modelos.html: 5 telas (gaveta em passos, tela com PDCA e abas, duas colunas, folha A3, uma pergunta por vez), Ishikawa desenhado × lista, 5W2H cartões × tabela, e os itens de regras, mudanças na auditoria, eficácia e escopo. Referência: relatório A3 (Toyota). Fonte dos modelos: tools/modelos-v063.js.

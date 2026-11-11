@@ -403,3 +403,14 @@ Prorrogar prazo e cancelar auditoria com motivo,Inspeções,should,sim,sim,Audit
 Relatório: completo / só o visual / folhas de um responsável,Inspeções,must,parcial,sim,Auditoria interna,v0.6.2
 Análise da NC (5 Porquês / Ishikawa / 5W2H),Inspeções,must,sim,não,Auditoria interna,v0.6.3
 Prazo da NC dos apontamentos conferido do jeito certo (dataOk),Inspeções,must,não,sim,Apontamentos,v0.6.2
+Análise da NC em 7 passos (sv2_rnc_plano),Inspeções,must,sim,sim,Auditoria interna,v0.6.3
+Ishikawa desenhado (espinha de peixe) com causa principal,Inspeções,must,sim,sim,Auditoria interna,v0.6.3
+Plano de ação 5W2H em cartões (concluir/cancelar com motivo),Inspeções,must,sim,sim,Auditoria interna,v0.6.3
+Regras por risco / tratativa direta x com análise / troca de responsável e tratamento,Inspeções,must,sim,sim,Auditoria interna,v0.6.3
+Eficácia da NC (efic) com reabertura quando não eficaz,Inspeções,should,não,sim,Auditoria interna,v0.6.3
+Conferência exige análise completa (liberação do líder com motivo),Inspeções,must,sim,sim,Auditoria interna,v0.6.3
+Folha da análise no relatório da RNC,Inspeções,should,sim,sim,Auditoria interna,v0.6.3
+Texto da análise guardado no aparelho + aviso de conflito,Inspeções,should,sim,sim,Auditoria interna,v0.6.3
+Análise de problemas (sv2_analise) de reclamação ou apontamento,Qualidade,must,sim,sim,Análise de problemas,v0.6.3
+Gaveta deslizando não afasta a tela no celular,Geral,must,não,sim,Casca,v0.6.3
+Fluxograma do processo na análise,Inspeções,could,sim,não,Auditoria interna,v0.6.4

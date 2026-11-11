@@ -187,7 +187,7 @@ const fecharTudo = async p => { for (let i = 0; i < 4; i++) { const n = await p.
   await p.click('#gv [data-act="au-conf-ok"]'); await esp(p);
   conf(/resolvida/i.test(await msg(p)), 'sem dizer se foi resolvida: avisa');
   for (let i = 0; i < 9; i++) {
-    await p.evaluate(i => { S.fm.res = i === 3 ? 'parcial' : 'resolvida'; S.fm.texto = 'feito no local ' + i; }, i);
+    await p.evaluate(i => { S.fm.res = i === 3 ? 'parcial' : 'resolvida'; S.fm.texto = 'feito no local ' + i; S.fm.lib = 'liberado no teste (sem análise)'; }, i);
     await p.click('#gv [data-act="au-conf-ok"]'); await esp(p, 700);
   }
   r = await rnc(p, 'r1');

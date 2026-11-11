@@ -23,7 +23,8 @@
 .au-nc .tx{flex:1;min-width:0;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .au-nc .tx b{font-weight:600}
 .au-nc .tx small{color:var(--tx3);font-size:13px}
-.au-pl{display:flex;gap:6px;flex:none;flex-wrap:wrap;justify-content:flex-end}
+.au-pl{display:flex;gap:6px;flex:0 1 auto;flex-wrap:wrap;justify-content:flex-end;max-width:52%}
+.au-nc .tx{min-width:160px}
 /* gaveta: gravidade, GUT, listas */
 .au-gb{grid-template-columns:repeat(3,minmax(0,1fr))}
 .ap-gbt.g-maior.on,.ap-gbt.r-nao.on{border-color:var(--cr);color:var(--cr)}
@@ -137,7 +138,8 @@ body.au-apr-on{overflow:hidden}
   .au-clh{padding:8px 12px 4px}
   .au-nc{flex-wrap:wrap;padding:8px 12px 8px 14px;row-gap:4px}
   .au-nc .tx{flex:1 1 100%;white-space:normal;order:5}
-  .au-pl{margin-left:auto}
+  .au-pl{margin-left:auto;max-width:none}
+  .au-nc .tx{min-width:0}
   .au-add{height:var(--btn);padding:0 12px}
   .au-apb{grid-template-columns:minmax(0,1fr);padding:14px 16px;gap:14px}
   .au-api h2{font-size:22px}

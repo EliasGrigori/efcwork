@@ -214,7 +214,7 @@ function apAbre(id) {
       '<button type="button" class="bt pr" data-act="ap-res" data-id="' + esc(a.id) + '">Resolver</button>';
     else if (sup && !ab) pe = '<button type="button" class="bt" data-act="ap-reabrir" data-id="' + esc(a.id) + '">Reabrir</button>';
     return { ico: 'lista', sub: (a.setor || '') + ' · ' + fmtD(a.data) + ' ' + (a.hora || '') + ' · por ' + (a.porNome || ''), titulo: c[1],
-      pill: apGravPill(a) + ' ' + apStPill(a) + ' ' + apNcPill(a), corpo: corpo, rodape: pe ? '<div class="ap-pe">' + pe + '</div>' : '' };
+      pill: apGravPill(a) + ' ' + apStPill(a) + ' ' + apNcPill(a), corpo: corpo, cabAcoes: (anpDoApont(a.id) || isSup(S.user)) && a.status !== 'nao_procede' ? '<button type="button" class="bt" data-act="anp-ap" data-id="' + esc(a.id) + '">' + (anpDoApont(a.id) ? esc(anpDoApont(a.id).numero) : 'Analisar') + '</button>' : '', rodape: pe ? '<div class="ap-pe">' + pe + '</div>' : '' };
   });
   render();
 }

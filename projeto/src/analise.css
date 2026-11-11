@@ -1,0 +1,82 @@
+/* Análise de problema (v0.6.3): gaveta em passos, Ishikawa desenhado, 5W2H em cartões — só tokens */
+.an-ncp{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.an-lin{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:8px 0;font-size:14px;min-height:var(--btn)}
+.an-lin small{color:var(--tx3);font-size:13px}
+.an-pdca{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:12px 0}
+.an-pdca>div{border:1px solid var(--bd);border-radius:var(--rs);padding:8px 10px;background:var(--bg1);min-width:0}
+.an-pdca i{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--bg2);font-style:normal;font-weight:600;font-size:12px;margin-right:6px;vertical-align:middle}
+.an-pdca i .ic{width:13px;height:13px}
+.an-pdca b{font-weight:600;font-size:14px}
+.an-pdca small{display:block;color:var(--tx3);font-size:12px;margin-top:2px}
+.an-pdca .ok i{background:var(--ok);color:var(--bg1)}
+.an-pdca .at{border-color:var(--a)}
+.an-pdca .at i{background:var(--a);color:var(--aT)}
+.an-pq{display:flex;flex-direction:column;gap:6px}
+.an-pq label{display:grid;grid-template-columns:88px minmax(0,1fr);gap:8px;align-items:center}
+.an-pq span{font-size:13px;font-weight:600;color:var(--tx2)}
+.an-fw{border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg0);padding:4px;margin:0 0 8px;overflow-x:auto;cursor:zoom-in}
+#gv .an-fw .an-fish{min-width:700px}
+.an-fv{position:fixed;inset:0;z-index:80;background:var(--bg0);display:flex;flex-direction:column;padding:16px;gap:10px}
+.an-fv .an-fish{flex:1;min-height:0;width:100%}
+.an-fv>div{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.an-acb{grid-template-columns:repeat(3,minmax(0,1fr))}
+.an-fish{width:100%;height:auto;display:block}
+.an-fish .esp{stroke:var(--tx2);stroke-width:3}
+.an-fish .cos{stroke:var(--bd2);stroke-width:2}
+.an-fish .cos.pri{stroke:var(--cr);stroke-width:2.5}
+.an-fish .cat{fill:var(--tx2);font-size:13px;font-weight:600}
+.an-fcs{display:flex;flex-direction:column;gap:3px;height:100%}
+.an-fcs.em{justify-content:flex-end}
+.an-fc{font-size:12px;line-height:1.25;color:var(--tx);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.an-fc.pri{color:var(--cr);font-weight:600}
+.an-fh{border:2px solid var(--cr);border-radius:8px;padding:8px;font-size:13px;font-weight:600;color:var(--tx);background:var(--bg1);height:100%;box-sizing:border-box;display:flex;align-items:center;overflow:hidden}
+.an-isc .au-chip{padding-left:4px}
+.an-isc .au-chip.pri{background:var(--crS);color:var(--cr)}
+.an-isc .au-chip .an-isp{display:block;width:auto;height:auto;border:0;background:none;font:inherit;color:inherit;cursor:pointer;text-align:left;padding:4px 6px;min-height:28px;border-radius:5px}
+.an-isp small{display:block;font-size:12px;color:var(--tx3)}
+.an-isa{grid-template-columns:minmax(0,1fr) auto}
+.an-isa .dd{grid-column:1/-1}
+.an-isa .dd-b{height:var(--btn)}
+.an-gb2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.an-oq{margin-top:8px}
+.an-ac{border:1px solid var(--bd);border-radius:var(--rs);padding:10px 12px;margin:0 0 8px;background:var(--bg0)}
+.an-ac.st-atrasada{border-color:var(--cr)}
+.an-act{display:flex;gap:8px;align-items:flex-start;justify-content:space-between;margin:0 0 6px}
+.an-act b{font-weight:600}
+.an-ack{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px 12px}
+.an-ack span{font-size:13px;min-width:0}
+.an-ack span.cr{color:var(--cr)}
+.an-ack i{display:block;font-style:normal;font-size:12px;color:var(--tx3)}
+.an-acn{margin:6px 0 0;font-size:13px;color:var(--tx2)}
+.an-acb{margin-top:8px}
+.an-add{margin:0 0 4px}
+.an-ef{border:1px solid var(--bd);border-radius:var(--rs);padding:8px 12px;font-size:14px;background:var(--bg0)}
+.an-ef.ok{border-color:var(--ok)}.an-ef.cr{border-color:var(--cr)}
+.an-ef span{display:block;color:var(--tx2);font-size:13px;margin-top:2px}
+.an-ol{margin:0 0 8px;padding-left:22px;font-size:14px}
+.an-ol li{margin:2px 0}
+/* Qualidade › Análise de problemas */
+.anp-li{display:flex;align-items:center;gap:10px;width:100%;padding:8px 16px;border:0;border-bottom:1px solid var(--bd);background:none;font:inherit;color:inherit;cursor:pointer;text-align:left;min-height:56px;min-width:0}
+.anp-li:last-child{border-bottom:0}
+.anp-li:hover{background:var(--row)}
+.anp-li .au-nn{width:62px}
+.anp-li .tx{flex:1;min-width:0}
+.anp-li .tx b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.anp-li .tx small{display:block;color:var(--tx3);font-size:13px}
+@media print{
+  .an-fl .au-itb td,.an-fl .au-itb th{white-space:normal!important;font-size:8.5pt}
+  .an-fl .au-itb{table-layout:fixed}
+  .an-ipq{margin:0 0 8pt}.an-ipq b{font-size:10pt}.an-ipq ol{margin:2pt 0 0 14pt;padding:0;font-size:9.5pt}
+  .an-ifish{border:.5pt solid #bbb;border-radius:3pt;margin:0 0 8pt}
+  .an-ifish .an-fish .esp{stroke:#333}.an-ifish .an-fish .cos{stroke:#999}.an-ifish .an-fish .cat{fill:#333}
+  .an-ifish .an-fc{color:#000}.an-ifish .an-fh{background:#fff;color:#000}
+}
+@media(max-width:899px){
+  .an-pdca{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .an-pq label{grid-template-columns:minmax(0,1fr);gap:2px}
+  .an-ack{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .anp-li{flex-wrap:wrap;padding:10px 12px}
+  .anp-li .au-pl{width:100%;justify-content:flex-start}
+}
+
+.an-isp small{text-align:left}
