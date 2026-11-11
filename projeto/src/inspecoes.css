@@ -1,0 +1,72 @@
+/* Inspeções › Cloro (v0.6.0) — só tokens, sem cor escrita direta */
+.cl-gs{display:grid;grid-template-columns:repeat(var(--n,5),minmax(0,1fr));gap:12px;margin:0 0 14px}
+.cl-gk{padding:12px 10px 10px;gap:0}
+.cl-gk .cl-g{width:100%;max-width:150px;height:auto;display:block}
+.cl-gk b.num{font-size:26px;margin-top:-2px}
+.cl-gk>span{font-size:14px;font-weight:600;color:var(--tx);margin-top:2px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cl-gk>small{font-size:13px;color:var(--tx3)}
+.cl-gk.wa b.num{color:var(--wa)}.cl-gk.cr b.num{color:var(--cr)}
+.cl-gt{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 8px;font-size:13px;color:var(--tx2)}
+.cl-af{margin:0 0 14px}
+.cl-li{width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--bd);font:inherit;color:inherit;cursor:pointer;min-height:48px}
+button.cl-li:hover{background:var(--row)}
+.cl-li .tx small{display:block;white-space:normal}
+.cl-dot{width:9px;height:9px;border-radius:50%;flex:none;background:var(--wa)}
+.cl-dot.cr{background:var(--cr)}
+.cl-li .bt{flex:none}
+/* gaveta: formulário em passos */
+.cl-p{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--tx2);margin:14px 0 6px}
+.cl-p:first-of-type{margin-top:2px}
+.cl-p i{font-style:normal;display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--bg2);color:var(--tx);font-size:12px}
+.cl-val{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:8px}
+.cl-vi{font-size:20px;font-weight:600;text-align:center}
+.cl-un{color:var(--tx3);font-size:14px}
+.cl-fxp{min-width:112px;display:flex;justify-content:flex-end}
+.cl-rgw{margin-top:8px}
+.cl-rg{position:relative;display:flex;height:8px;border-radius:5px;overflow:hidden;background:var(--bg2)}
+.cl-rg i{display:block;height:100%}
+.cl-rg i.b{background:var(--wa)}.cl-rg i.o{background:var(--ok)}.cl-rg i.a{flex:1;background:var(--cr)}
+.cl-rg em{position:absolute;top:-2px;bottom:-2px;width:3px;margin-left:-1.5px;background:var(--tx);border-radius:2px}
+.cl-rgl{position:relative;height:16px;font-size:12px;color:var(--tx3);margin-top:3px}
+.cl-rgl span{position:absolute;transform:translateX(-50%)}
+.cl-rgl span.fim{right:0;transform:none;left:auto}
+.cl-apl[hidden],.cl-aplc[hidden]{display:none}
+.cl-ck{display:flex;align-items:center;gap:8px;font-size:14px;margin:0 0 8px;cursor:pointer}
+.cl-ck input{accent-color:var(--a)}
+/* dosagem e cloro depois: mesma altura e mesma linha de base (pedido de 10/11) */
+.cl-fm2{align-items:end}
+.cl-fm2 .fm-c{min-width:0}
+.cl-fm2 .fm-i{width:100%;min-width:0;box-sizing:border-box;height:40px}
+.cl-fm2 .fm-r{min-height:18px;display:block}
+.cl-fb{display:flex;gap:8px;flex-wrap:wrap}
+.cl-fb .bt{cursor:pointer}
+.cl-fp{position:relative;display:inline-block;max-width:100%}
+.cl-fp img{display:block;max-width:100%;max-height:180px;border-radius:var(--rs);border:1px solid var(--bd)}
+.cl-fp .bt{position:absolute;top:6px;right:6px}
+.cl-nt{display:block;font-size:12px;color:var(--tx3);margin:6px 0}
+.cl-novo{margin:8px 0}
+/* detalhe */
+.cl-ft{display:block;width:100%;max-width:260px;padding:0;border:1px solid var(--bd);border-radius:var(--rs);overflow:hidden;background:var(--bg2);cursor:zoom-in}
+.cl-ft img{display:block;width:100%;height:auto}
+.cl-ft.vz{padding:18px;color:var(--tx3);font-size:13px;cursor:default;text-align:center}
+.cl-ul{display:flex;flex-direction:column;border:1px solid var(--bd);border-radius:var(--rs);overflow:hidden}
+.cl-ul button{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:8px 12px;background:none;border:0;border-bottom:1px solid var(--bd);font:inherit;color:inherit;cursor:pointer;text-align:left}
+.cl-ul button:last-child{border-bottom:0}
+.cl-ul button:hover{background:var(--row)}
+.cl-cr>div{padding:8px 0;border-bottom:1px solid var(--bd)}
+.cl-cr small{display:block;color:var(--tx3);font-size:13px}
+.cl-bl{display:flex;flex-direction:column}
+.cl-bi{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--bd);flex-wrap:wrap}
+.cl-bi .tx{flex:1;min-width:140px}
+.cl-bi .tx b{display:block;font-weight:600}
+.cl-bi .tx small{color:var(--tx3);font-size:13px}
+.cl-lc{display:flex;flex-direction:column;gap:8px;margin:0 0 12px}
+.cl-lc .tb-ck{display:flex}
+.cl-lc small{margin-left:auto;color:var(--tx3)}
+@media(max-width:899px){
+  .cl-gs{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .cl-gs .cl-gk:last-child:nth-child(odd){grid-column:1/-1}
+  .cl-gk b.num{font-size:24px}
+  .cl-fxp{min-width:0}
+  .cl-li{min-height:56px}
+}

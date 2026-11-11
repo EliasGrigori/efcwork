@@ -1,0 +1,81 @@
+=== t_html_seg.js
+  ok  nenhum <img src> recebe dado sem esc() ou imgSrc()
+erros de execução: 0
+=== t_v010.js
+
+t_v010: 41 ok · 0 falha(s)
+=== t_v020.js
+
+t_v020: 49 ok · 0 falha(s)
+=== t_v030.js
+
+t_v030: 62 ok · 0 falha(s)
+=== t_v031.js
+
+t_v031: 49 ok · 0 falha(s)
+=== t_v032.js
+
+t_v032: 48 ok · 0 falha(s)
+=== t_v033.js
+
+t_v033: 39 ok · 0 falha(s)
+=== t_v034
+
+t_v034: 48 ok · 0 falha(s)
+=== t_v035
+
+t_v035: 35 ok · 0 falha(s)
+=== t_v036
+
+t_v036: 31 ok · 0 falha(s)
+=== t_v040
+
+t_v040: 45 ok · 0 falha(s)
+=== t_v041
+
+t_v041: 28 ok · 0 falha(s)
+=== t_v042
+
+t_v042: 36 ok · 0 falha(s)
+=== t_v044
+
+t_v044: 35 ok · 0 falha(s)
+=== t_v045
+
+t_v045: 39 ok · 0 falha(s)
+=== t_v046
+
+t_v046: 40 ok · 0 falha(s)
+=== t_v047
+  ok  sem erro de JavaScript
+t_v047: 52 ok · 0 falha(s)
+=== t_v048
+
+47 ok, 0 falha(s)
+=== t_v049
+
+43 ok, 0 falha(s)
+=== t_v050
+
+61 ok, 0 falha(s)
+=== t_v051
+
+25 ok, 0 falha(s)
+=== t_v0410
+
+13 ok, 0 falha(s)
+=== t_v0413
+
+8 ok, 0 falha(s)
+=== t_v0414
+
+41 ok, 0 falha(s)
+=== t_v0415
+
+15 ok, 0 falha(s)
+=== t_v053
+
+26 ok, 0 falha(s)
+=== t_v060
+
+69 ok, 0 falha(s)

@@ -358,3 +358,18 @@ Checagem de esc() na suíte,Geral,must,sim,sim,Suíte,v0.5.2
 Menu lateral retrátil: aberto / só ícones / recolhido (botão que alterna),Geral,must,sim,sim,Menu,v0.5.3
 Puxador animado com menu por cima (camada),Geral,should,sim,sim,Menu,v0.5.3
 Total da tabela na mesma linha dos botões,Geral,must,sim,sim,Tabelas,v0.5.3
+Inspeções › Cloro: velocímetros por local (média da semana),Inspeções,must,sim,sim,Cloro,v0.6.0
+Escolher até 5 locais nos velocímetros (mais de 5 locais),Inspeções,should,não,sim,Cloro,v0.6.0 (pedido do Elias)
+Nova verificação em passos (ponto, resultado, foto, aplicação, registro),Inspeções,must,sim,sim,Cloro,v0.6.0
+Faixa e régua ao digitar o resultado,Inspeções,should,não,sim,Cloro,v0.6.0
+Dosagem e Cloro depois alinhados no formulário,Inspeções,must,não,sim,Cloro,v0.6.0 (pedido do Elias; repetir na Auditoria)
+Medir de novo e Só a aplicação,Inspeções,must,sim,sim,Cloro,v0.6.0
+Regra das 24 h: lembrete 4 h antes e bloqueio com aviso ao superior,Inspeções,must,sim,sim,Cloro,v0.6.0
+Encerrar verificação bloqueada com motivo (superior),Inspeções,must,sim,sim,Cloro,v0.6.0
+Foto do clorímetro (câmera e galeria) com aviso de LGPD,Inspeções,must,sim,sim,Cloro,v0.6.0
+Dias úteis sem verificação: lançar depois ou justificar (com aprovação),Inspeções,must,sim,sim,Cloro,v0.6.0
+Bebedouro novo digitado na hora (pendente de liberação),Inspeções,must,sim,sim,Cloro,v0.6.0
+Liberar/recusar bebedouro pendente,Inspeções,must,sim,sim,Cloro,v0.6.0
+Pedir correção de verificação (Principal corrige direto),Inspeções,must,sim,sim,Cloro,v0.6.0
+Detalhe com linha do tempo da gota,Inspeções,should,não,sim,Cloro,v0.6.0 (pedido do Elias)
+Busca geral acha bebedouros,Inspeções,should,sim,sim,Cloro,v0.6.0
