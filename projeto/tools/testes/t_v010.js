@@ -14,7 +14,7 @@ const conf = (c, msg) => { if (c) { ok++; console.log('  ok  ' + msg); } else { 
   await p.goto(URL); await p.waitForTimeout(500);
   const html = fs.readFileSync(path.join(RAIZ, 'dist', 'index.html'), 'utf8');
   conf(!/meri\s*pobo|fazenda matriz|russas|jaguaruana|limoeiro/i.test(html), 'nenhum nome da Meri Pobo fixo no código');
-  conf(/Cwork Quality/.test(html) && /const VERSAO = '0\.\d+\.\d+'/.test(html), 'apelido Cwork Quality e versão no arquivo');
+  conf(/Cwork Quality/.test(html) && /const VERSAO = '0\.\d+\.\d+(\.\d+)?'/.test(html), 'apelido Cwork Quality e versão no arquivo');
   /* primeiro acesso */
   conf(await p.isVisible('[data-form="en-primeiro"]'), 'sem Principal: aparece o primeiro acesso');
   conf(await p.isVisible('.en-caixa') && await p.isVisible('.en-arte'), 'tela de entrar tem a arte e o formulário (v0.4.2: garota-propaganda vem da Administração)');

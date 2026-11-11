@@ -1,7 +1,9 @@
 /* Inspeções › Cloro (v0.6.0) — só tokens, sem cor escrita direta */
-.cl-gs{display:grid;grid-template-columns:repeat(var(--n,5),minmax(0,1fr));gap:12px;margin:0 0 14px}
+/* tamanho TRAVADO = o mínimo do formato 5 por linha (114 px); com 1 a 4 locais não estica, alinha à esquerda */
+.cl-gs{display:flex;flex-wrap:wrap;justify-content:flex-start;gap:12px;margin:0 0 14px}
+.cl-gs .cl-gk{flex:0 0 114px;width:114px;min-width:0;box-sizing:border-box}
 .cl-gk{padding:12px 10px 10px;gap:0}
-.cl-gk .cl-g{width:100%;max-width:150px;height:auto;display:block}
+.cl-gk .cl-g{width:100%;max-width:100%;height:auto;display:block}
 .cl-gk b.num{font-size:26px;margin-top:-2px}
 .cl-gk>span{font-size:14px;font-weight:600;color:var(--tx);margin-top:2px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cl-gk>small{font-size:13px;color:var(--tx3)}
@@ -38,6 +40,8 @@ button.cl-li:hover{background:var(--row)}
 .cl-fm2 .fm-c{min-width:0}
 .cl-fm2 .fm-i{width:100%;min-width:0;box-sizing:border-box;height:40px}
 .cl-fm2 .fm-r{min-height:18px;display:block}
+/* v0.6.2: janela retrátil ao lado de um campo fica da mesma altura (regra do alinhamento de 11/11) */
+.cl-fm2 .dd-b{height:40px}
 .cl-fb{display:flex;gap:8px;flex-wrap:wrap}
 .cl-fb .bt{cursor:pointer}
 .cl-fp{position:relative;display:inline-block;max-width:100%}
@@ -64,8 +68,7 @@ button.cl-li:hover{background:var(--row)}
 .cl-lc .tb-ck{display:flex}
 .cl-lc small{margin-left:auto;color:var(--tx3)}
 @media(max-width:899px){
-  .cl-gs{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-  .cl-gs .cl-gk:last-child:nth-child(odd){grid-column:1/-1}
+  .cl-gs{gap:8px}
   .cl-gk b.num{font-size:24px}
   .cl-fxp{min-width:0}
   .cl-li{min-height:56px}

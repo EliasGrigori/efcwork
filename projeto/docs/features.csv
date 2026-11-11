@@ -387,3 +387,19 @@ Pareto dos apontamentos com poucos vitais,Inspeções,should,sim,sim,Apontamento
 Setores configuráveis (sv2_cfg/apont),Inspeções,should,sim,sim,Apontamentos,v0.6.1
 Fotos apagadas 30 dias depois de resolvido (LGPD),Inspeções,must,sim,sim,Apontamentos,v0.6.1
 Trava de tela afastada (zoom-out) no celular na suíte,Geral,must,não,sim,Suíte,v0.6.1
+Velocímetro do Cloro com tamanho travado (114 px),Inspeções,must,não,sim,Cloro,v0.6.1.1
+Passos da Nova verificação numerados sem pular,Inspeções,should,não,sim,Cloro,v0.6.1.1
+Aviso de resolvido ao lançar verificação dentro da faixa,Inspeções,should,não,sim,Cloro,v0.6.1.1
+Auditoria interna: tela tudo à mostra (responsável > local > NC),Inspeções,must,sim,sim,Auditoria interna,v0.6.2
+Agrupar (responsável/setor/local/achado) e ordenar dentro (local/prioridade/número),Inspeções,must,não,sim,Auditoria interna,v0.6.2
++ NC aqui com local e responsável do local,Inspeções,must,não,sim,Auditoria interna,v0.6.2
+Registrar NC em 5 passos com fotos (até 8) e até 5 leis,Inspeções,must,sim,sim,Auditoria interna,v0.6.2
+GUT no padrão do EFClaudian (sv2_rnc_gut),Inspeções,must,sim,sim,Auditoria interna,v0.6.2
+Nome curto do achado (titulo) e descrição do encarregado (encTxt),Inspeções,should,não,sim,Auditoria interna,v0.6.2
+Apresentação Nº 45: qualquer etapa / por pessoa / corrigir com histórico / 2ª GUT,Inspeções,must,parcial,sim,Auditoria interna,v0.6.2
+Enviar RNC com aviso no sino,Inspeções,must,sim,sim,Auditoria interna,v0.6.2
+Conferir o retorno uma a uma e fechar a RNC,Inspeções,must,sim,sim,Auditoria interna,v0.6.2
+Prorrogar prazo e cancelar auditoria com motivo,Inspeções,should,sim,sim,Auditoria interna,v0.6.2
+Relatório: completo / só o visual / folhas de um responsável,Inspeções,must,parcial,sim,Auditoria interna,v0.6.2
+Análise da NC (5 Porquês / Ishikawa / 5W2H),Inspeções,must,sim,não,Auditoria interna,v0.6.3
+Prazo da NC dos apontamentos conferido do jeito certo (dataOk),Inspeções,must,não,sim,Apontamentos,v0.6.2

@@ -42,3 +42,48 @@ v0.6.2: Auditoria interna/RNC, a análise de problema (5 Porquês, Ishikawa, pla
 ## Respostas do Elias (11/11 05:10)
 ITEM 1 (tela em cartões) Aprovado · ITEM 2 (gaveta em passos com a gravidade em botões) Aprovado · ITEM 3 (detalhe com a linha do tempo e o rodapé alinhado) Aprovado (respondido na conversa às 05:1x, estava em branco na página) · ITEM 4 (Pareto) Aprovado · ITEM 5 (regra do alinhamento e o defeito do zoom-out) Aprovado · ITEM 6 (escopo) Aprovado.
 Os 6 itens ficaram aprovados. A publicação espera o "pode publicar".
+
+# Retorno do Grok da v0.6.0 (recebido 11/11 07:40)
+**38 ok, 2 não, 0 não testado.** Ele conferiu no demo com o backup de 08/11 (4.839 registros) e com dados inventados para os prazos de 24 h e para mais de 5 locais; a versão do site e o zip do OneDrive têm o mesmo hash. Confirmados: velocímetros (ponteiro coerente, cor só fora da faixa, só número e nome embaixo, 5 por linha, escolher locais gravando no aparelho, 2 colunas no celular), A fazer, dias úteis sem verificação, perfis (comum não vê Liberar/Recusar), régua e faixa ao digitar, Dosagem × Cloro depois alinhados (185,5 px no PC e 172 px no celular), a regra do bebedouro em aberto, foto, linha do tempo da gota, 24 h com lembrete e bloqueio, encerrar, justificar e lançar retroativa (com pedido de aprovação para quem é comum), bebedouros, tabela com filtro/planilha/impressora, busca, correção (Administrador na hora, comum por pedido), temas e Esc.
+
+**Os dois "não":**
+1. **3.1 — a numeração dos passos pula de 3 para 5.** O passo "4 Aplicação" só aparece depois de digitar o resultado, então a gaveta mostra 1, 2, 3 e 5. Defeito meu: os números têm de ser recalculados conforme o que está à mostra.
+2. **3.8 — o aviso depois de lançar não diz que ficou resolvido.** Lançando 0,15 com dosagem e cloro depois dentro da faixa, a situação fica "Resolvido", mas o aviso é só "Verificação lançada." (no "Medir de novo" ele diz "Resolvido: dentro da faixa.").
+
+Ele apontou ainda uma diferença pequena fora da lista de "fica para depois": no EFClaudian o superior pode "Pedir motivo" e a pessoa "Responder motivo" numa bloqueada; aqui só existe Encerrar com o motivo.
+
+# Pedido do Elias (11/11 07:40)
+**O velocímetro tem de ter tamanho travado** — o tamanho mínimo definido para o formato 5/5 — e não adaptativo. Com 2 locais, hoje os cartões esticam e ficam enormes (print que ele mandou). Devem manter a largura do caso de 5 por linha e se alinhar à esquerda.
+Ele mandou também o relatório RNC-2026-03 impresso de verdade (42 NCs, 51 folhas, salvo em docs/referencia-RNC-2026-03-EFClaudian.pdf) e um print da trilha dos 5 passos do EFClaudian — material para a v0.6.2. Disse que vai explicar melhor.
+
+# Explicação do Elias sobre a Auditoria interna (11/11 07:47) — define a v0.6.2
+**Os 5 modelos de tela que mandei foram todos reprovados.** Ele quer o modelo do print que mandou: a trilha dos 5 passos do EFClaudian (números 1 a 5 em cima, com o que cada passo faz, e cada RNC com a barra de progresso mostrando onde está), passada pela auditoria do método (tokens do EFCwork, nada de roxo, sem cara de IA).
+
+**Como a auditoria dele funciona de verdade:**
+- **Uma RNC só por auditoria interna**, não várias — é uma inspeção completa da fazenda. Dá 40, 60, 70 NCs.
+- A inspeção segue a **rota dele, que não é padrão**: escritório → campo → packing house → campo → oficina → campo → almoxarifado → campo → ponto de apoio → campo → casa de bombas → campo → biofábrica → campo. Ele vai e volta ao campo o tempo todo.
+- **O problema maior: o mesmo achado se repete em vários lugares.** Placa caída, sacola no chão, mangueira descartada. Hoje ele precisa abrir um item novo para cada ocorrência, ou procurar o item já aberto no meio de 60-70 NCs para acrescentar — os dois jeitos atrapalham. Ele quer todas as sacolas num item só, sem ficar procurando.
+- Outra dificuldade: se ele nomeia o item "placas caídas" e descreve a não conformidade, o que fica no cabeçalho é a descrição — e aí, com 70 NCs, fica difícil achar qual é qual numa olhada rápida.
+- **O relatório tem "enchimento de linguiça"**: as primeiras páginas não interessam a ninguém; dá para apresentar só o visual — rosca, colunas, tabelas. Mas: "se for complicar demais, é melhor permanecer como está"; o relatório de hoje já atende bastante.
+- **A apresentação** continua como no EFClaudian, com três acréscimos: poder voltar à apresentação **depois de enviada**; **segregar por responsável** (porque ninguém tem tempo de esperar a vez); e corrigir tudo durante a apresentação (nome, texto, uma segunda pontuação, descrição do encarregado).
+Ele pediu um levantamento com ideias para o agrupamento das ocorrências repetidas.
+
+# Respostas do Elias aos modelos da v0.6.2 (11/11 08:55)
+OPÇÕES 1 a 5 (telas) **todas reprovadas** — vale o modelo do print dele: a trilha dos 5 passos. OPÇÃO A (registrar NC em passos) **aprovada**, com "a GUT pode usar o padrão do EFClaudian" (o bloco com as cinco notas e a explicação de cada uma, como lá). OPÇÃO B reprovada. ITEM 1 (apresentação, Nº 45) aprovado. ITEM 2 (**partir em v0.6.2 RNC / v0.6.3 plano de ação / v0.6.4 editor de foto**) aprovado. ITEM 3 (mesmos dados) aprovado.
+
+**Resposta dele sobre o responsável:** "placa de identificação da área é uma coisa, placa de identificação de uma prateleira é outra, sendo que cada setor tem seu responsável; se esse mesmo problema for numa casa de bombas é outro responsável." Ou seja: **o responsável vem do setor/local, não do achado** — então o responsável fica na ocorrência, e achados de nome parecido não podem ser juntados sozinhos pelo app; quem junta é ele.
+
+# Kit do Método Sabiá 2.0 — avaliação (11/11, rodado no EFCwork)
+Adotável. `medir-codigo.py`: 7.676 linhas em 48 arquivos, nenhum acima de 800 (dentro da meta). `varredura-sensivel.py`: 31 achados — o e-mail pessoal do Elias em 14 arquivos publicados em `projeto/docs/` (veio do registro do problema de login de 06/11) e a chave web do Firebase no `base.js` (não é vazamento: é pública por desenho, protegem-na as regras e o App Check; fica como exceção escrita). Ganhos: trava com código de erro, contraste, cantos, maiúsculas espaçadas, emoji, sombra com borda e a auditoria de rapidez com processador 4× mais lento. Ajustes necessários: metas do kit (botão 28 px no PC) trocadas pelas regras do Elias (36 no PC, 44 no toque); montar o `.config.json` com as ~20 telas do EFCwork; lista de exceções para os e-mails de documentação. Não substitui as 28 suítes (elas provam comportamento; o kit mede forma).
+
+# Correção de rumo da v0.6.2 (11/11 10:10 e 10:2x)
+Respostas: ITENS 1 a 4 **reprovados**, ITEM 5 (agrupar por responsável) aprovado, ITEM 6 reprovado com a pergunta "botões desse tamanho no PC estão de acordo com o padrão?", ITEM 7 aprovado com "completo, os índices podem ficar para o final, somente o gráfico em cima", ITEM 8 aprovado ("vamos caprichar").
+Perguntado o motivo, ele respondeu: **"na verdade não entendi foi nada ali; o que eu acho que pode atender é separar por responsável ou setor e eu ter a opção de ordenar dentro dele por local — tipo responsável Jackson, aí CBR 01, CBR 02, CBR 03…, e na CBR 01 ter os apontamentos lá dentro."**
+Ou seja: nada de item guarda-chuva nem de atalhos. O que ele quer é uma **árvore de três níveis: responsável (ou setor) → local → as NCs**, com seletor de agrupamento e de ordenação. Cada NC continua sendo uma NC do seu local; o "não ficar procurando" se resolve navegando até o local e usando o "+ NC aqui".
+Medição do ITEM 6: altura certa (36 px no PC, 44 no celular), mas "Anterior" e "Próxima" com **601 px de largura** no PC — esticados pelo grid de 1fr. Corrigido para o tamanho do conteúdo no PC, mantendo os dois iguais no celular.
+Enviados três jeitos da árvore (acordeão, duas colunas, tudo à mostra) em aprovacao-efcwork-v0.6.2-arvore.html.
+
+# Tela da v0.6.2 decidida (11/11 10:23)
+OPÇÃO 3 **aprovada**: tudo à mostra, sem abrir nada — cada responsável é um painel, com os locais dentro e todas as NCs visíveis; seletor de agrupamento (responsável, setor, local, achado) e de ordenação dentro (local, prioridade, número). "+ NC aqui" em cada local; apresentar e imprimir por responsável. OPÇÕES 1 (acordeão) e 2 (duas colunas) reprovadas.
+ITEM 4 aprovado (botões da apresentação do tamanho do texto no PC, dois iguais no celular). ITEM 5 aprovado (relatório: gráfico na folha 1, índices no fim, três jeitos de sair).
+Com isso a v0.6.2 está inteiramente definida: tela OPÇÃO 3 + registrar NC em passos com a GUT do EFClaudian + apresentação do Nº 45 + relatório. Falta a v0.6.1.1 antes dela.

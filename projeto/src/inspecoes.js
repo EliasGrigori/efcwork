@@ -214,7 +214,7 @@ LC_FORM.clNova = f => {
     ((fx === 'conforme' || fx === 'livre') ? '<label class="cl-ck"><input type="checkbox" data-fm="fiz"' + (f.fiz === '1' ? ' checked' : '') + '> Fiz aplicação de cloro</label>' : '') +
     '<div class="cl-aplc"' + (mostra ? '' : ' hidden') + '><div class="fm-g cl-fm2">' + lcBl('Dosagem (ml)', lcIn('dos', f.dos, ' inputmode="decimal"')) + lcBl('Cloro depois (ppm)', lcIn('v2', f.v2, ' inputmode="decimal" placeholder="pode lançar depois"')) + '</div>' +
     (fx === 'conforme' ? lcBl('Motivo da aplicação', lcIn('mot', f.mot, ' placeholder="recomendado: ex.: no limite, para não cair durante o dia"')) : '') + '</div></div>';
-  c += clPasso(caixa ? 4 : 5, 'Registro') + '<div class="fm-g cl-fm2">' + lcBl('Medido por', lcIn('med', f.med, ' placeholder="em branco = você"')) + lcBl('Observação', lcIn('obs', f.obs, ' placeholder="se for o caso"')) + '</div>';
+  c += clPasso((caixa ? 3 : 4) + (fx ? 1 : 0), 'Registro') + '<div class="fm-g cl-fm2">' + lcBl('Medido por', lcIn('med', f.med, ' placeholder="em branco = você"')) + lcBl('Observação', lcIn('obs', f.obs, ' placeholder="se for o caso"')) + '</div>';
   return { ico: 'lista', sub: 'Hoje · ' + pad(agora.getHours()) + ':' + pad(agora.getMinutes()) + ' · ' + S.user.nome, titulo: 'Nova verificação', corpo: c, rodape: lcPe('cl-nova-ok', 'Lançar') };
 };
 /* resultado digitado: atualiza a faixa, a régua e a aplicação sem redesenhar a gaveta (o cursor fica no campo) */
@@ -298,7 +298,7 @@ async function clNovaOk() {
     else if (fx === 'baixo' && sit === 'aberto') Notif.send({ nivel: 'aviso', titulo: 'Cloro baixo: ' + o.pontoNome + ' com ' + ppm(v) + ' ppm', texto: 'Aplicação obrigatória e nova verificação em até 24 h.', para: [S.user.id], refTipo: 'cloro', refId: cid });
     else if (fx === 'conforme' && sit === 'aberto' && fDepois === 'alto') Notif.send({ nivel: 'critico', titulo: 'Cloro ALTO depois da aplicação: ' + o.pontoNome + ' com ' + ppm(v2) + ' ppm', texto: (o.local || '') + ' · antes ' + ppm(v) + ' · dosagem ' + dos + ' ml · lançado por ' + S.user.nome + '. Nova verificação obrigatória.', para: eu, refTipo: 'cloro', refId: cid });
     else if (fx === 'conforme' && sit === 'aberto') Notif.send({ nivel: 'aviso', titulo: (temV2 ? 'Cloro baixo depois da aplicação: ' : 'Cloro aplicado: ') + o.pontoNome, texto: temV2 ? ppm(v2) + ' ppm. Nova verificação em até 24 h.' : dos + ' ml aplicados com ' + ppm(v) + ' ppm. Faça a nova verificação em até 24 h.', para: [S.user.id], refTipo: 'cloro', refId: cid });
-    lcFim(); aviso(sit === 'aberto' ? 'Lançado. Falta a nova verificação.' : 'Verificação lançada.');
+    lcFim(); aviso(sit === 'aberto' ? 'Lançado. Falta a nova verificação.' : sit === 'resolvido' ? 'Lançado. Resolvido: dentro da faixa.' : 'Verificação lançada.');
   } catch (e) { S.fm && (S.fm._trava = 0); lcErro(svErro(e)); }
 }
 

@@ -82,6 +82,7 @@ CS_CARGAS.push(() => setTimeout(apLimpaFotos, 4000));
 TELAS.inspecoes = function (aba) {
   const ar = csArea('inspecoes');
   if (aba === 'cloro') return clTela();
+  if (aba === 'auditoria') return auTela();
   if (aba !== 'apontamentos') return arEmBreve(ar);
   const u = S.user, f = S.apF || 'semana', seg = apSeg();
   const base = S.apont.slice().sort((a, b) => String(b.criadoEm).localeCompare(String(a.criadoEm)));
@@ -108,7 +109,7 @@ function apCard(a) {
     '<small>' + esc(fmtD(a.data) + ' ' + (a.hora || '') + ' · ' + (a.porNome || '') + ' · ' + (a.comunicado ? 'encarregado avisado' : 'encarregado não avisado')) + '</small></span>' + ic('seta') + '</button>';
 }
 /* depois de desenhar a tela, busca as fotos que ainda não estão na memória (o render é síncrono) */
-TELAS['inspecoes:depois'] = () => { try { apFotosCarrega(document); } catch (e) { console.error(e); } };
+TELAS['inspecoes:depois'] = () => { try { apFotosCarrega(document); auFotosCarrega(document); } catch (e) { console.error(e); } };
 DD_AO.ap = (k, v) => { if (k === 'f') { S.apF = v; render(); } else if (S.fm) { S.fm[k] = v; S.fm.sujo = true; S.fm.msg = ''; gvDesenha(true); } };
 
 /* ---------- novo apontamento: gaveta em passos, gravidade em botões (OPÇÃO A + melhoria) ---------- */
@@ -288,7 +289,8 @@ function apNCOk() {
   if (a.nc) return lcErro('Este apontamento já tem NC.');
   const resp = String(f.resp || '').trim(), prazo = String(f.prazo || ''), acao = String(f.acao || '').trim();
   if (resp.length < 2) return lcErro('Informe o responsável.');
-  if (!validaData(prazo)) return lcErro('Informe o prazo.');
+  if (!dataOk(prazo)) return lcErro('Informe o prazo.');
+  if (prazo < hojeISO()) return lcErro('O prazo não pode ser antes de hoje.');
   if (acao.length < 3) return lcErro('Escreva a ação corretiva.');
   if (!lcTravar()) return;
   const nc = { responsavel: resp, prazo: prazo, acao: acao, abertaPor: S.user.id, abertaPorNome: S.user.nome, ts: nowISO(), fechada: false };
