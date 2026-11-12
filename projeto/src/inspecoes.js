@@ -14,7 +14,7 @@ const CL_SIT_BEB = { ativo: ['Ativo', 'ok'], manutencao: ['Manutenção', 'wa'],
 const CL_CORR_CAMPOS = { data: 'Data', hora: 'Hora', valor: 'Cloro (ppm)', valorApos: 'Cloro depois (ppm)', dosagemUlt: 'Dosagem (ml)', medidoPor: 'Medido por', motivoAplicacao: 'Motivo da aplicação', obs: 'Observação' };
 
 CS_CARGAS.push(() => {
-  const re = () => { if (S.rota.area === 'inspecoes') render(); else if (S.gv) gvDesenha(); };
+  const re = () => { if (S.rota.area === 'inspecoes' || (S.rota.area === 'coletas' && S.rota.aba === 'agua')) render(); else if (S.gv) gvDesenha(); }; /* v0.6.5: a Água usa os bebedouros */
   csOuve('sv2_bebs', l => { S.bebs = l || []; re(); });
   csOuve('sv2_cloro', l => { S.cloro = l || []; re(); clint(); }, { order: 'ts', limit: 3000 });
   csOuve('sv2_cloro_falta', l => { const m = {}; (l || []).forEach(x => { m[x.id] = x; }); S.cloroFaltas = m; re(); });

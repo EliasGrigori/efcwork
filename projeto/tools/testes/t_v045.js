@@ -95,7 +95,7 @@ async function primeiro(p) {
   await p.click('#gv [data-act="pg-an"][data-id="a6"]'); await p.waitForTimeout(150);
   conf(await p.evaluate(() => /Solo completo \+ 1/.test(document.querySelector('#gv [data-act="pg-ans-abre"]').textContent)), 'marcar mais uma: o botão mostra "Solo completo + 1"');
   conf(await p.evaluate(() => { const g = Array.from(document.querySelectorAll('#gv .fm-g')); return g.length >= 3 && g.every(x => getComputedStyle(x).gridTemplateColumns.split(' ').length === 2); }), 'campos em 2 colunas no PC');
-  conf(await p.evaluate(() => document.querySelector('#gv .fm-c .dd-b').getBoundingClientRect().height <= 34), 'janela retrátil do formulário com 34 px');
+  conf(await p.evaluate(() => { const b = document.querySelector('#gv .fm-c .dd-b'), h = b.getBoundingClientRect().height, g = b.closest('.fm-g'), viz = g ? Array.from(g.querySelectorAll('.fm-i')).filter(e => e.offsetWidth && e.tagName !== 'TEXTAREA') : []; return viz.length ? viz.every(e => Math.abs(e.getBoundingClientRect().height - h) < 1) : h <= 34; }), 'janela retrátil do formulário: 34 px sozinha, a altura do campo ao lado quando lado a lado (v0.6.5 ITEM 10)');
   await p.click('#gv [data-dd="lc:pgtal"] .dd-b'); await p.waitForTimeout(150);
   conf(await p.evaluate(() => document.querySelector('#gv [data-dd="lc:pgtal"] .dd-l li').getBoundingClientRect().height <= 34), 'itens da lista com no máximo 34 px');
   await p.keyboard.press('Escape'); await p.evaluate(() => { if (S.fm) S.fm.sujo = false; }); await p.keyboard.press('Escape'); await p.waitForTimeout(300);

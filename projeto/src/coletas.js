@@ -5,7 +5,7 @@
    com aviso de atraso. Pedidos aprovados no rework (05/11 20:35).
    Lê e grava no MESMO formato do EFClaudian v2.102.59 (sv2_coletas, sv2_prog, sv2_cfg/coletas, sv2_aprov tipos envio_retro e corrigir_os).
    Campos novos (o EFClaudian ignora): rastreio, cupomFoto (id em sv2_fotos, com refTipo 'coleta_envio').
-   Fica no EFClaudian nesta versão: lançar coleta nova (Coletado), programação, plano de coleta, água, cadastros, fichas e etiquetas. */
+   Fica no EFClaudian nesta versão: lançar coleta nova (Coletado), programação, plano de coleta, cadastros (a água está em agua.js desde a v0.6.5), fichas e etiquetas. */
 Object.assign(S, { coletas: [], prog: [], colCarregado: false, cfgCol: S.cfgCol || null });
 const CO_MAT = [['SOLO', 'Solo'], ['NEMATOIDE', 'Nematoide'], ['FOLHA', 'Folha'], ['FRUTA', 'Fruta'], ['COMPOSTO', 'Composto']];
 const CO_TXT = { SOLO: 'Solo', NEMATOIDE: 'Nematoide', FOLHA: 'Folha', FRUTA: 'Fruta', COMPOSTO: 'Composto', AGUA: 'Água' };
@@ -65,12 +65,13 @@ function coResumo() { const a = coAtivas(), s = a.map(coSit); return { a: a, nao
 TELAS.coletas = function (aba) {
   if (!coVe()) return cabecalho({ titulo: 'Coletas' }) + '<section class="pn"><div class="vazio">' + ic('frasco') + '<b>Você não tem acesso às Coletas.</b><span>Peça ao administrador para marcar a atribuição Coletas no seu cadastro.</span></div></section>';
   const ar = csArea('coletas'), t = ar.abas.find(x => x.id === aba) || ar.abas[0], r = coResumo();
-  const ext = '<a class="bt ic-so" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener" title="No EFClaudian: nova programação, planos de coleta, água, fichas e etiquetas" aria-label="Abrir o EFClaudian (nova programação, planos de coleta, água, fichas e etiquetas)">' + ic('externo') + '</a>';
+  const ext = '<a class="bt ic-so" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener" title="No EFClaudian: nova programação, planos de coleta, fichas e etiquetas" aria-label="Abrir o EFClaudian (nova programação, planos de coleta, fichas e etiquetas)">' + ic('externo') + '</a>';
   const pl = (n, um, mais) => n + ' ' + (n === 1 ? um : mais);
   const meta = [r.naoenv ? metaPl(pl(r.naoenv, 'não enviada', 'não enviadas'), 'wa') : '', r.aguarda ? '<span>' + r.aguarda + ' aguardando laudo</span>' : '', r.atras ? metaPl(pl(r.atras, 'laudo atrasado', 'laudos atrasados'), 'cr', 'alerta') : ''].filter(Boolean);
   const acoes = (coPode() && r.naoenv ? '<button type="button" class="bt pr" data-act="co-env">' + ic('sai') + 'Enviar</button>' : '') + ext;
   if (t.id === 'cadastros') return cabecalho({ titulo: t.nome, abaNome: t.nome, meta: [metaPl('chega numa próxima versão', 'wa', 'relogio')], acoes: '<a class="bt pr" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener">' + ic('externo') + 'Usar no EFClaudian</a>' }) +
     '<section class="pn"><div class="vazio">' + ic('lista') + '<b>Talhões, análises, laboratórios e prazos continuam no EFClaudian por enquanto.</b><span>Os dados são os mesmos: o que for lançado lá aparece aqui na hora.</span></div></section>';
+  if (t.id === 'agua') return agTela(t); /* v0.6.5 (agua.js) */
   if (t.id === 'plano') { /* v0.4.6 (plano.js) */
     if (!S.colCarregado && !DEMO) return cabecalho({ caminho: ['Coletas', 'Programação', 'Plano'], titulo: 'Plano de coleta' }) + '<section class="pn"><div class="vazio">' + ic('relogio') + '<b>Carregando o plano…</b></div></section>';
     return ppTela(S.rota.id);

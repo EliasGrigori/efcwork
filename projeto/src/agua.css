@@ -1,0 +1,24 @@
+/* Coletas › Água (v0.6.5): caixas dos projetos e acompanhamento na gaveta (OPÇÃO 2) — só tokens */
+.ag-boxes{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin:0 0 12px}
+.ag-box{display:flex;flex-direction:column;gap:4px;border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg1);padding:12px 14px;min-width:0}
+.ag-box.wa{border-color:var(--wa)}.ag-box.cr{border-color:var(--cr)}
+.ag-bt{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.ag-bt b{font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ag-bq{font-size:15px}
+.ag-box small{color:var(--tx3);font-size:13px}
+.ag-box .bt{margin-top:6px;align-self:flex-start}
+.ag-pn{border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg1);margin:0 0 12px;overflow:hidden}
+.ag-l{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 14px;border-bottom:1px solid var(--bd);min-height:56px}
+.ag-l:last-child{border-bottom:0}
+.ag-t{display:flex;flex-direction:column;min-width:0}
+.ag-t b{font-weight:600}
+.ag-t small{color:var(--tx2);font-size:13px}
+.ag-t .cr{color:var(--cr)}.ag-t .wa{color:var(--wa)}
+.ag-nd{margin:0;padding:12px 14px;color:var(--tx2);font-size:14px}
+.ag-gv{border:0;margin:0}.ag-gv .ag-l{padding-left:0;padding-right:0}
+@media(max-width:899px){
+  .ag-l{flex-wrap:wrap;padding:10px 12px}
+  .ag-l .bt{width:100%}
+}
+.ag-dc{margin:0 0 8px;color:var(--tx2);font-size:13px;line-height:1.4}
+.fm-c.ag-al .dd-b{height:40px}

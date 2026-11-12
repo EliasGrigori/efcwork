@@ -5,7 +5,7 @@ Aba Coletas › Nematoide,Coletas,must,sim,nao,Coletas › Nematoide,
 Aba Coletas › Folha,Coletas,must,sim,nao,Coletas › Amostras (filtro Tipo),
 Aba Coletas › Fruta,Coletas,must,sim,nao,Coletas › Amostras (filtro Tipo),
 Aba Coletas › Composto,Coletas,must,sim,nao,Coletas › Amostras (filtro Tipo),
-Aba Coletas › Água,Coletas,must,sim,nao,Coletas › Amostras (filtro Tipo),
+Aba Coletas › Água,Coletas,must,sim,sim,Coletas › Água,v0.6.5 (ação corretiva e relatório v0.6.6; projetos v0.6.7)
 Aba Coletas › Lotes de envio,Coletas,must,sim,nao,Coletas › Envio,
 Aba Coletas › Etiquetas,Coletas,must,sim,nao,Coletas › Etiquetas,
 Aba Coletas › Cadastros,Coletas,must,sim,nao,Coletas › Cadastros,
@@ -101,9 +101,9 @@ Janela Remarcar coleta (openPjRem),Coletas,should,sim,nao,,rascunho automático;
 Janela Já há coleta remarcada à mão mais à frente (openPjRealinharPergunta),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
 Janela Pj Edit (openPjEdit),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
 Janela Pj Ponto (openPjPonto),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Nova coleta de água (openAguaNew),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Água · (openAguaDetail),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Prazos da água (openAgCfg),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Nova coleta de água (openAguaNew),Coletas,should,sim,sim,Coletas › Água · Nova coleta de água,rascunho automático; prioridade a revisar
+Janela Água · (openAguaDetail),Coletas,should,sim,sim,Coletas › Água · detalhe,rascunho automático; prioridade a revisar
+Janela Prazos da água (openAgCfg),Geral,should,sim,sim,Coletas › Água · Prazos da água,rascunho automático; prioridade a revisar
 Janela Ação corretiva (openAcaoNova),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
 Janela Ação corretiva · (openAcao),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
 Janela Relatório de água por local (openAgRel),Geral,should,sim,nao,,rascunho automático; prioridade a revisar

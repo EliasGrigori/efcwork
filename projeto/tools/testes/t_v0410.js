@@ -79,7 +79,8 @@ f.auth.Auth={Persistence:{LOCAL:'l',SESSION:'s'}};f.firestore.FieldValue={server
   await p.screenshot({ path: path.join(SHOTS, PRE + '-cel-coletado.png') });
   await p.setViewportSize({ width: 1366, height: 860 }); await p.waitForTimeout(300);
   const h3 = await p.evaluate(() => Array.from(document.querySelectorAll('#gv .fm-c .dd-b')).map(e => e.offsetHeight));
-  conf(h3.every(x => x === 34), 'no PC os campos continuam com 34 px');
+  const h3g = await p.evaluate(() => Array.from(document.querySelectorAll('#gv .fm-g')).map(g => Array.from(g.querySelectorAll('.dd-b, .fm-i')).filter(e => e.offsetWidth && e.tagName !== 'TEXTAREA').map(e => e.offsetHeight)).filter(l => l.length > 1));
+  conf(h3.every(x => x === 34 || x === 40) && h3g.every(l => l.every(x => x === l[0])), 'no PC as listas têm 34 px sozinhas e a altura do campo ao lado quando lado a lado (v0.6.5 ITEM 10) (' + JSON.stringify(h3g) + ')');
   console.log('— Menu da coluna: clicar fora numa linha só fecha o menu (retorno do Grok B7)');
   await p.evaluate(async () => { const C = Data.col.bind(Data); for (const [id, n, l] of [['u1', 'Luva M', 'Porta 12'], ['u2', 'Fita dupla', 'Porta 11'], ['u3', 'Gelo gel', 'Geladeira'], ['u4', 'Água 1 L', 'Porta 02']]) await C('sv2_alm_itens').set(id, { nome: n, codigo: id, un: 'Un', min: 1, local: l, ativo: true }); });
   await p.evaluate(() => { location.hash = '#/almox/materiais'; }); await p.waitForTimeout(500);

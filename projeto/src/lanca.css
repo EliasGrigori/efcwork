@@ -58,6 +58,7 @@ textarea.fm-i{height:auto;min-height:64px;padding:9px 12px;resize:vertical}
 
 /* v0.4.5: listas suspensas dos formulários menores */
 .fm-c .dd-b{height:34px;padding:0 10px;font-size:14px}
+.fm-g .fm-c .dd-b{height:40px} /* v0.6.5 ITEM 10: lado a lado com um campo, a mesma altura dele */
 .fm-c .dd-l{padding:3px;max-width:calc(100vw - 40px)}
 .fm-c .dd-l li{min-height:32px;padding:5px 9px;font-size:14px}
 
