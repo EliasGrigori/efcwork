@@ -419,3 +419,4 @@ Original guardada + marcadoPor/marcadoEm em cada foto marcada,Geral,must,parcial
 Foto grande com as marcas ou a original + baixar,Geral,must,sim,sim,Fotos,v0.6.4
 Original de foto borrada só para Líder/Administrador (LGPD),Geral,should,não,sim,Fotos,v0.6.4
 Marcar foto gravada da RNC até fechar (registro novo; anterior guardado),Inspeções,must,sim,sim,Auditoria interna,v0.6.4
+Varredura v0.6.8: dia local dos carimbos e pedido de autorização protegido,Geral,must,sim,sim,Geral,v0.6.8 base.js diaLocal; servicos.js Aprov.pedir

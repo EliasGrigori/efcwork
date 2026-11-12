@@ -96,7 +96,10 @@ const Notif = {
 /* ---------- pedidos ao superior (autorizações) ---------- */
 const APROV_APLICA = {}; /* APROV_APLICA[tipo] = async (payload, pedido) => … ; só os tipos com tela refeita aqui podem ser decididos no EFCwork */
 const Aprov = {
-  async pedir(p) {
+  async pedir(p) { /* v0.6.8 (varredura): se a gravação falhar, avisa e devolve null (antes falhava em silêncio, sem mensagem nenhuma) */
+    try { return await this._pedir(p); } catch (e) { console.error(e); aviso('Não deu para enviar o pedido: ' + svErro(e), 'erro'); if (S.fm && typeof lcErro === 'function') lcErro('Não deu para enviar o pedido. Confira a internet e tente de novo.'); return null; }
+  },
+  async _pedir(p) {
     const u = S.user; if (!u) return null;
     const para = semAusentes((Array.isArray(p.para) && p.para.length) ? p.para : supsOf(u));
     if (!para.length) { aviso('Você ainda não tem superior cadastrado. Fale com o Administrador.', 'erro'); return null; }

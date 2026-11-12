@@ -16,7 +16,7 @@ TELAS.inicio = function () {
   const lis = l.slice(0, 8).map(t => '<div class="li"><span class="ico' + (t._v ? ' ini-cr' : t._h ? ' ini-wa' : '') + '">' + ic(t._v ? 'alerta' : 'relogio') + '</span><span class="tx"><b>' + esc(t.titulo || '(sem título)') + '</b><small>' + (t.prazo ? 'prazo ' + fmtD(t.prazo) + (t.hora ? ' às ' + esc(t.hora) : '') : 'sem prazo') + '</small></span>' +
     '<span class="pill ' + (t._v ? 'cr' : t._h ? 'wa' : 'ok') + '">' + (t._v ? 'vencida' : t._h ? 'hoje' : 'no prazo') + '</span></div>').join('');
   const tarefas = '<section class="pn"><div class="hd"><h3>Minhas tarefas</h3><em>' + l.length + '</em><span class="sp"></span></div>' +
-    (l.length ? lis + (l.length > 8 ? '<div class="li"><span class="tx"><small>+ ' + (l.length - 8) + ' tarefas. A lista completa chega na v0.2; até lá, veja no EFClaudian.</small></span></div>' : '') :
+    (l.length ? lis + (l.length > 8 ? '<div class="li"><span class="tx"><small>+ ' + (l.length - 8) + ' tarefas. A lista completa está no EFClaudian.</small></span></div>' : '') :
       '<div class="vazio">' + ic('ok') + '<b>Nada pendente com o seu nome.</b><span>As tarefas que o EFClaudian atribuir a você aparecem aqui.</span></div>') + '</section>';
   /* voltar para / mais usadas */
   const o = csUsoLer(), atual = S.rota.area + (S.rota.aba ? '/' + S.rota.aba : '');

@@ -167,7 +167,7 @@ function dcAbreLanc(id) {
   S._dcSel = id; gvAbrir(() => {
     const l = S.lanc.find(x => x.id === id); if (!l) return null;
     const pend = dcCorrPend(l.id), hist = (l.historico || []).slice().reverse(), doc = l.alvoTipo !== 'caixa';
-    let c = gvCampos([[doc ? 'Preenchido em' : 'Limpeza em', fmtD(l.data)], doc ? ['Entregue por', l.entreguePor || '—'] : ['', ''], doc && (l.entreguePor || l.entregueEm) ? ['Entregue em', fmtD(l.entregueEm || String(l.ts || '').slice(0, 10)) + ' (automático)'] : ['', ''],
+    let c = gvCampos([[doc ? 'Preenchido em' : 'Limpeza em', fmtD(l.data)], doc ? ['Entregue por', l.entreguePor || '—'] : ['', ''], doc && (l.entreguePor || l.entregueEm) ? ['Entregue em', fmtD(l.entregueEm || diaLocal(l.ts)) + ' (automático)'] : ['', ''],
       ['Observação', l.obs || '—'], ['Lançado por', (l.lancadoPorNome || '—') + ' · ' + fmtDT(l.ts)]]);
     if (pend) c += lcAv('Correção pedida por ' + esc(pend.solicitanteNome) + ', aguardando ' + esc((pend.paraNomes || []).join(', ') || 'o superior') + '.', 'wa');
     if (hist.length) c += '<p class="gv-h">Correções aplicadas</p><div class="dc-cr">' + hist.map(x => '<div><b>' + esc(dcMudanca(x)) + '</b><small>Motivo: ' + esc(x.motivo || '—') + ' · pedido por ' + esc(x.pedidoPor || '—') + ' · aprovado por ' + esc(x.aprovadoPor || '—') + ' · ' + esc(fmtDT(x.ts)) + '</small></div>').join('') + '</div>';

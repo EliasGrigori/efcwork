@@ -81,6 +81,7 @@ button.cs-sync:focus-visible{outline:2px solid var(--a);outline-offset:1px}
 .cs-baixo{display:none}
 .cs-fundo{display:none}
 @media(max-width:899px){
+  .cs-busca{height:44px} .cp input,.cp select{height:44px} /* v0.6.8 (varredura): toque com 44 px */
   .cs-app{grid-template-columns:1fr}
   .cs-lado{position:fixed;left:0;top:0;bottom:0;width:min(290px,86vw);transform:translateX(-102%);transition:transform .2s;box-shadow:0 10px 40px rgba(0,0,0,.25);padding-top:max(14px,env(safe-area-inset-top,0px))}
   .menu-aberto .cs-lado{transform:none}

@@ -198,6 +198,7 @@ button.cs-sync:focus-visible{outline:2px solid var(--a);outline-offset:1px}
 .cs-baixo{display:none}
 .cs-fundo{display:none}
 @media(max-width:899px){
+  .cs-busca{height:44px} .cp input,.cp select{height:44px} /* v0.6.8 (varredura): toque com 44 px */
   .cs-app{grid-template-columns:1fr}
   .cs-lado{position:fixed;left:0;top:0;bottom:0;width:min(290px,86vw);transform:translateX(-102%);transition:transform .2s;box-shadow:0 10px 40px rgba(0,0,0,.25);padding-top:max(14px,env(safe-area-inset-top,0px))}
   .menu-aberto .cs-lado{transform:none}
@@ -1512,7 +1513,7 @@ body.au-apr-on{overflow:hidden}
 .pg-ar.x{border-color:var(--arXB);background:var(--arXF)}
 /* legenda: ícone "!" junto do subtítulo */
 .pg-lg{position:relative;display:inline-flex}
-.pg-i{width:22px;height:22px;padding:0;border:1px solid var(--bd2);border-radius:50%;background:var(--bg1);color:var(--tx2);display:inline-grid;place-items:center;cursor:help}
+.pg-i{position:relative;width:22px;height:22px;padding:0;border:1px solid var(--bd2);border-radius:50%;background:var(--bg1);color:var(--tx2);display:inline-grid;place-items:center;cursor:help}
 .pg-i .ic{width:14px;height:14px}
 .pg-leg{position:absolute;left:auto;right:0;top:calc(100% + 6px);z-index:30;display:none;flex-direction:column;gap:6px;padding:10px 12px;margin:0;background:var(--bg1);border:1px solid var(--bd2);border-radius:var(--rs);box-shadow:0 10px 30px rgba(0,0,0,.18);font-size:13px;color:var(--tx2);white-space:nowrap}
 .pg-lg:hover .pg-leg,.pg-lg:focus-within .pg-leg{display:flex}
@@ -1529,6 +1530,8 @@ a.pg-pl{color:inherit;text-decoration:none;cursor:pointer;transition:border-colo
 
 /* v0.4.9: Data e Coletores na mesma linha (o aviso "pode ser de dias atrás" saiu do rótulo, que quebrava em 2 linhas e empurrava a data) */
 #gv .fm-g{align-items:start}
+.pg-i::after{content:'';position:absolute;inset:-6px} /* v0.6.8: área de toque maior sem mudar o desenho */
+@media(max-width:899px){.pg-i::after{inset:-11px}}
 
 /* ===== plano.css ===== */
 /* v0.4.6 · página do plano (prefixo pp) */
@@ -1780,7 +1783,7 @@ body:has(#gv) .pp-bar{display:none}
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.6.7';
+const VERSAO = '0.6.8';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -1868,7 +1871,10 @@ const perfilLabel = u => !u ? '' : u.perfil === 'secundario' && u.estrela ? PERF
 const isPrincipal = u => !!u && (u.perfil === 'principal' || u.perfil === 'principal_temp');
 const DIAS = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'];
 const MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
-function fmtD(iso) { if (!iso) return '—'; const p = String(iso).slice(0, 10).split('-'); return p.length === 3 ? p[2] + '/' + p[1] + '/' + p[0] : '—'; }
+/* v0.6.8 (varredura): dia LOCAL de um registro. Os carimbos (criadoEm, ts…) são gravados em UTC; cortar os 10 primeiros caracteres dá o dia
+   seguinte para o que foi feito entre 21h e meia-noite (UTC−3). Data pura (AAAA-MM-DD) volta igual. */
+const diaLocal = ts => { const s = String(ts || ''); if (!s || /^\d{4}-\d{2}-\d{2}$/.test(s)) return s; const d = new Date(s); return isNaN(d) ? s.slice(0, 10) : d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); };
+function fmtD(iso) { if (!iso) return '—'; const p = diaLocal(iso).split('-'); return p.length === 3 ? p[2] + '/' + p[1] + '/' + p[0] : '—'; }
 function dataLonga(d) { d = d || new Date(); const s = DIAS[d.getDay()]; return s.charAt(0).toUpperCase() + s.slice(1) + ', ' + d.getDate() + ' de ' + MESES[d.getMonth()]; }
 function iniciais(nome) { const p = String(nome || '?').trim().split(/\s+/); return ((p[0] || '?').charAt(0) + (p.length > 1 ? p[p.length - 1].charAt(0) : '')).toUpperCase(); }
 
@@ -2173,9 +2179,9 @@ const CS_CARGAS = []; /* funções que cada área registra para começar a ouvir
 /* áreas do EFCwork (estrutura aprovada no Estudo do Rework, 05/11/2026). "versao" = quando a área é refeita aqui */
 const AREAS = [
   { id: 'inicio', nome: 'Início', ic: 'casa', abas: [] },
-  { id: 'coletas', nome: 'Coletas', ic: 'frasco', versao: 'v0.4', abas: [{ id: 'amostras', nome: 'Amostras' }, { id: 'agua', nome: 'Água' }, { id: 'programacao', nome: 'Programação' }, { id: 'envio', nome: 'Envio' }, { id: 'cadastros', nome: 'Cadastros' }, { id: 'plano', nome: 'Plano de coleta', oculta: true, pai: 'programacao' }] },
+  { id: 'coletas', nome: 'Coletas', ic: 'frasco', versao: 'v0.4', parcial: 'amostras, água, programação, envio e pontos de água prontos aqui; lançar coleta nova, fichas, etiquetas e os outros cadastros seguem no EFClaudian', abas: [{ id: 'amostras', nome: 'Amostras' }, { id: 'agua', nome: 'Água' }, { id: 'programacao', nome: 'Programação' }, { id: 'envio', nome: 'Envio' }, { id: 'cadastros', nome: 'Cadastros' }, { id: 'plano', nome: 'Plano de coleta', oculta: true, pai: 'programacao' }] },
   { id: 'rateios', nome: 'Rateios', ic: 'pizza', versao: 'v0.7', abas: [] },
-  { id: 'inspecoes', nome: 'Inspeções', ic: 'lista', versao: 'v0.6', abas: [{ id: 'cloro', nome: 'Cloro' }, { id: 'apontamentos', nome: 'Apontamentos' }, { id: 'auditoria', nome: 'Auditoria interna' }] },
+  { id: 'inspecoes', nome: 'Inspeções', ic: 'lista', versao: 'v0.6', parcial: 'cloro, apontamentos e auditoria interna prontos aqui', abas: [{ id: 'cloro', nome: 'Cloro' }, { id: 'apontamentos', nome: 'Apontamentos' }, { id: 'auditoria', nome: 'Auditoria interna' }] },
   { id: 'documentos', nome: 'Documentos', ic: 'doc', versao: 'v0.5', parcial: 'documentos, caixas d’água e histórico prontos aqui; o relatório de documentos segue no EFClaudian', abas: [{ id: 'documentos', nome: 'Documentos' }, { id: 'caixas', nome: 'Caixas d’água' }, { id: 'historico', nome: 'Histórico' }] },
   { id: 'almox', nome: 'Almoxarifado', ic: 'caixa', versao: 'v0.3', parcial: 'consultar e lançar prontos aqui; cadastro de material, kits, fotos e inventário seguem no EFClaudian', abas: [{ id: 'painel', nome: 'Painel' }, { id: 'materiais', nome: 'Materiais' }, { id: 'movimentacoes', nome: 'Movimentações' }, { id: 'solicitacoes', nome: 'Solicitações' }, { id: 'equipamentos', nome: 'Equipamentos' }, { id: 'contagem', nome: 'Contagem', oculta: true, pai: () => typeof cgDoEq === 'function' && cgDoEq() ? 'equipamentos' : 'materiais' }, { id: 'calibracao', nome: 'Calibração', oculta: true, pai: 'equipamentos' }] },
   { id: 'qualidade', nome: 'Qualidade', ic: 'escudo', versao: 'v0.7', parcial: 'Análise de problemas pronta aqui; Não conformidades e Bugs seguem no EFClaudian', abas: [{ id: 'nc', nome: 'Não conformidades' }, { id: 'analise', nome: 'Análise de problemas' }, { id: 'bugs', nome: 'Bugs e sugestões' }] },
@@ -2534,7 +2540,10 @@ const Notif = {
 /* ---------- pedidos ao superior (autorizações) ---------- */
 const APROV_APLICA = {}; /* APROV_APLICA[tipo] = async (payload, pedido) => … ; só os tipos com tela refeita aqui podem ser decididos no EFCwork */
 const Aprov = {
-  async pedir(p) {
+  async pedir(p) { /* v0.6.8 (varredura): se a gravação falhar, avisa e devolve null (antes falhava em silêncio, sem mensagem nenhuma) */
+    try { return await this._pedir(p); } catch (e) { console.error(e); aviso('Não deu para enviar o pedido: ' + svErro(e), 'erro'); if (S.fm && typeof lcErro === 'function') lcErro('Não deu para enviar o pedido. Confira a internet e tente de novo.'); return null; }
+  },
+  async _pedir(p) {
     const u = S.user; if (!u) return null;
     const para = semAusentes((Array.isArray(p.para) && p.para.length) ? p.para : supsOf(u));
     if (!para.length) { aviso('Você ainda não tem superior cadastrado. Fale com o Administrador.', 'erro'); return null; }
@@ -3157,7 +3166,7 @@ function alPainel() {
   const cgA = typeof cgAberta === 'function' ? cgAberta() : null;
   if (cgA) { const pr = cgProgresso(cgA); h += '<a class="al-aviso cg-av" href="#/almox/contagem">' + ic('lista') + '<span>Contagem <b>' + esc(cgA.numero) + '</b> em andamento: ' + pr.feitos + ' de ' + pr.total + ' contados' + (cgA.contadorNome ? ' · ' + esc(cgA.contadorNome) : '') + (pr.recontar.length ? ' · ' + pr.recontar.length + ' para recontar' : '') + '</span>' + ic('seta') + '</a>'; }
   if (typeof cbAbertas === 'function' && cbAbertas().length) { const l = cbAbertas(); h += '<a class="al-aviso cg-av" href="#/almox/calibracao">' + ic('eng') + '<span>' + (l.length === 1 ? 'Calibração <b>' + esc(l[0].numero) + '</b>: ' + esc(cbSitTxt(l[0])) : '<b>' + l.length + '</b> solicitações de calibração em andamento') + '</span>' + ic('seta') + '</a>'; }
-  const errs = S.almMov.filter(m => m.erro && !m.anulada && String(m.criadoEm || '').slice(0, 10) >= addDias(hojeISO(), -90));
+  const errs = S.almMov.filter(m => m.erro && !m.anulada && diaLocal(m.criadoEm) >= addDias(hojeISO(), -90));
   if (errs.length && alSup()) h += '<section class="pn"><div class="hd"><h3>Erros de lançamento</h3><em>' + errs.length + '</em><span class="sp"></span><small class="cg-90">últimos 90 dias</small></div>' + errs.slice(0, 5).map(m => '<button type="button" class="li al-li" data-act="al-mov" data-id="' + esc(m.id) + '"><span class="tx"><b>' + esc(m.itemNome) + ' · ' + alQ(m.qtd) + '</b><small>saída de ' + fmtD(m.data) + ' lançada na ' + esc((m.retroativa || {}).contagem || 'contagem') + ' · ' + esc(m.erro.responsavelNome || 'responsável não informado') + '</small></span>' + alPill('Erro', 'cr') + '</button>').join('') + '</section>';
   const crit = typeof alCtrl === 'function' && alCtrl(S.user) ? alCritPend() : [];
   if (crit.length) h += '<section class="pn"><div class="hd"><h3>Produto crítico: confirmar saída</h3><em>' + crit.length + '</em></div>' + crit.slice(0, 6).map(m => '<button type="button" class="li al-li" data-act="al-mov" data-id="' + esc(m.id) + '"><span class="tx"><b>' + esc(m.itemNome) + '</b><small>' + alQ(m.qtd) + ' · ' + esc(AL_TIPO[m.tipo] || '') + ' · ' + fmtD(m.data) + ' · ' + esc(m.porNome || '') + (m.motivo ? ' · ' + esc(m.motivo) : '') + '</small></span>' + alPill('Aguardando', 'wa') + '</button>').join('') + '</section>';
@@ -4049,13 +4058,13 @@ function cgTela() {
   const hist = S.almInv.filter(x => x.situacao !== 'aberto').slice().sort((a, b) => String(b.abertoEm).localeCompare(String(a.abertoEm)));
   if (!inv) {
     const ult = hist.find(x => x.situacao === 'concluido');
-    let h = '<section class="pn cg-vazio"><div class="cg-vz">' + ic('lista') + '<div><b>Nenhuma contagem aberta</b><span>' + (ult ? 'A última foi a ' + esc(ult.numero) + ', concluída em ' + fmtD(String(ult.concluidoEm || '').slice(0, 10)) + '.' : 'Nenhuma contagem feita ainda.') + ' Na contagem às cegas, quem conta não vê o saldo do sistema.</span></div>' +
+    let h = '<section class="pn cg-vazio"><div class="cg-vz">' + ic('lista') + '<div><b>Nenhuma contagem aberta</b><span>' + (ult ? 'A última foi a ' + esc(ult.numero) + ', concluída em ' + fmtD(diaLocal(ult.concluidoEm)) + '.' : 'Nenhuma contagem feita ainda.') + ' Na contagem às cegas, quem conta não vê o saldo do sistema.</span></div>' +
       (sup ? '<button type="button" class="bt pr" data-act="cg-nova">' + ic('mais') + 'Nova contagem</button>' : '') + '</div></section>';
     return h + cgHistorico(hist);
   }
   const pr = cgProgresso(inv), pct = pr.total ? Math.round(pr.feitos / pr.total * 100) : 0, rcN = pr.recontar.length;
   const vista = sup && S.cgVista === 'conf' ? 'conf' : 'contar';
-  let h = '<section class="pn cg-topo"><div class="cg-tp"><div class="cg-tpt"><span class="pill wa">Em andamento</span><small>' + esc(inv.local || '') + ' · aberta por ' + esc(inv.porNome || '') + ' em ' + fmtD(String(inv.abertoEm || '').slice(0, 10)) + '</small><small>Quem conta: <b>' + esc(inv.contadorNome || 'qualquer pessoa do Almoxarifado') + '</b> · ' + esc(cgPartesTxt(inv.partes) || 'materiais') + '</small></div>' +
+  let h = '<section class="pn cg-topo"><div class="cg-tp"><div class="cg-tpt"><span class="pill wa">Em andamento</span><small>' + esc(inv.local || '') + ' · aberta por ' + esc(inv.porNome || '') + ' em ' + fmtD(diaLocal(inv.abertoEm)) + '</small><small>Quem conta: <b>' + esc(inv.contadorNome || 'qualquer pessoa do Almoxarifado') + '</b> · ' + esc(cgPartesTxt(inv.partes) || 'materiais') + '</small></div>' +
     '<div class="cg-pct"><b class="num">' + pct + '%</b><small>' + pr.feitos + ' de ' + pr.total + ' contados</small></div></div>' +
     '<div class="cg-bar" role="progressbar" aria-valuenow="' + pct + '" aria-valuemin="0" aria-valuemax="100"><i style="width:' + pct + '%"></i></div>' +
     (sup ? '<div class="cg-acts">' + ddHTML('cg:vista', vista, [['contar', 'Mostrar: contagem'], ['conf', 'Mostrar: conferência' + (pr.difs.length ? ' (' + pr.difs.length + ' não bateram)' : '')]]) + '<span class="sp"></span><button type="button" class="bt ic-so" data-act="cg-folha" title="Imprimir a folha de contagem (sem o saldo)" aria-label="Imprimir a folha de contagem">' + ic('impressora') + '</button><button type="button" class="bt ic-so" data-act="cg-cancelar" title="Cancelar a contagem" aria-label="Cancelar a contagem">' + ic('lixo') + '</button></div>' : '') + '</section>';
@@ -4072,8 +4081,8 @@ function cgHistorico(hist) {
       { k: 'tipo', rot: 'Tipo', v: x => x.tipo === 'contagem' ? 'Contagem' : 'Inventário' },
       { k: 'loc', rot: 'Local', v: x => x.local || '' },
       { k: 'quem', rot: 'Quem contou', v: x => x.contadorNome || '' },
-      { k: 'ab', rot: 'Aberta', tipo: 'data', v: x => String(x.abertoEm || '').slice(0, 10) },
-      { k: 'fim', rot: 'Concluída', tipo: 'data', v: x => String(x.concluidoEm || '').slice(0, 10) },
+      { k: 'ab', rot: 'Aberta', tipo: 'data', v: x => diaLocal(x.abertoEm) },
+      { k: 'fim', rot: 'Concluída', tipo: 'data', v: x => diaLocal(x.concluidoEm) },
       { k: 'ct', rot: 'Contados', tipo: 'num', v: x => (x.resumo || {}).contados || 0 },
       { k: 'df', rot: 'Diferenças', tipo: 'num', v: x => (x.resumo || {}).difs || 0 },
       { k: 'er', rot: 'Erros de lançamento', tipo: 'num', v: x => (x.resumo || {}).erros || 0 },
@@ -4197,7 +4206,7 @@ async function cgResOk() {
   const r = { tipo: f.tipo, porId: S.user.id, porNome: S.user.nome, ts: nowISO(), obs: String(f.obs || '').trim(), nCont: cgNAnt(cgContagens(inv)[f.kItem]) };
   if (f.tipo === 'saida_retro') {
     const er = validaData(f.data); if (er) return lcErro(er);
-    if (String(inv.abertoEm || '').slice(0, 10) < f.data) return lcErro('A saída esquecida tem de ser antes da contagem (' + fmtD(String(inv.abertoEm).slice(0, 10)) + ').');
+    if (diaLocal(inv.abertoEm) < f.data) return lcErro('A saída esquecida tem de ser antes da contagem (' + fmtD(String(inv.abertoEm).slice(0, 10)) + ').');
     const mot = lcMotFinal(f); if (!mot) return lcErro('Escolha o motivo da saída.');
     const u = f.respId ? userById(f.respId) : null;
     Object.assign(r, { data: f.data, motivo: mot, respId: u ? u.id : '', respNome: u ? u.nome : '', reclamacao: String(f.reclamacao || '').trim() });
@@ -4393,7 +4402,7 @@ function cbEtapas(c) {
   const datas = apl.map(i => i.data).filter(Boolean).sort(), tec = Array.from(new Set(apl.map(i => i.tecnico).filter(Boolean)));
   const comp = it.filter(i => i.compra && i.compra.numero), compNums = Array.from(new Set(comp.map(i => i.compra.numero)));
   const e = [
-    { id: 'sol', nome: 'Solicitada', feito: true, data: String(c.criadoEm || '').slice(0, 10), txt: c.numero + ' · ' + it.length + ' equipamento(s)' + (c.prestador ? ' · ' + c.prestador : ''), quem: c.criadoPorNome },
+    { id: 'sol', nome: 'Solicitada', feito: true, data: diaLocal(c.criadoEm), txt: c.numero + ' · ' + it.length + ' equipamento(s)' + (c.prestador ? ' · ' + c.prestador : ''), quem: c.criadoPorNome },
     { id: 'cot', nome: 'Cotação recebida', feito: cot || apl.length > 0, data: c.cotacaoEm || '', txt: cbTotal(c) ? brl(cbTotal(c)) + (c.cotacaoRef ? ' · ref. ' + c.cotacaoRef : '') : '' },
     { id: 'ag', nome: 'Agendada', feito: !!(c.agenda && c.agenda.data) || apl.length > 0, data: (c.agenda && c.agenda.data) || '', txt: c.agenda && c.agenda.data ? 'para ' + fmtD(c.agenda.data) + (c.agenda.obs ? ' · ' + c.agenda.obs : '') : '', quem: c.agenda && c.agenda.porNome },
     { id: 'cal', nome: 'Calibrada', feito: it.length > 0 && apl.length === it.length, parcial: apl.length > 0 && apl.length < it.length, data: datas[datas.length - 1] || '', txt: apl.length ? apl.length + ' de ' + it.length + (tec.length ? ' · por ' + tec.join(', ') : '') : '' },
@@ -4454,7 +4463,7 @@ function cbTela() {
     filtros: [{ k: 'sit', rot: 'Situação', opcoes: Object.keys(CB_SIT).map(k => [k, CB_SIT[k][0]]), teste: (c, v) => cbSit(c) === v }],
     cols: [
       { k: 'num', rot: 'Número', fixa: true, v: c => c.numero || '', cls: 'forte' },
-      { k: 'sol', rot: 'Solicitada', tipo: 'data', v: c => String(c.criadoEm || '').slice(0, 10) },
+      { k: 'sol', rot: 'Solicitada', tipo: 'data', v: c => diaLocal(c.criadoEm) },
       { k: 'pre', rot: 'Prestador', v: c => c.prestador || '' },
       { k: 'n', rot: 'Equipamentos', tipo: 'num', v: c => (c.itens || []).length },
       { k: 'cot', rot: 'Cotação', tipo: 'data', v: c => c.cotacaoEm || '' },
@@ -4552,7 +4561,7 @@ LC_FORM.cbag = f => {
 async function cbAgOk() {
   const f = S.fm, c = cbDe(f.id); if (!c || !alSup()) return;
   if (!/^\d{4}-\d{2}-\d{2}$/.test(f.data || '')) return lcErro('Informe a data marcada.');
-  if (f.data < String(c.criadoEm || '').slice(0, 10)) return lcErro('A data marcada não pode ser antes da solicitação.');
+  if (f.data < diaLocal(c.criadoEm)) return lcErro('A data marcada não pode ser antes da solicitação.');
   if (!lcTravar()) return;
   const ag = { data: f.data, obs: String(f.obs || '').trim(), porId: S.user.id, porNome: S.user.nome, ts: nowISO() };
   const hist = (c.agendaHist || []).concat(c.agenda && c.agenda.data ? [c.agenda] : []);
@@ -4642,13 +4651,13 @@ function cbPrint(id) {
 function cbHistEquip(e) {
   const reg = [];
   S.almCal.forEach(c => (c.itens || []).forEach(i => { if (i.equipId !== e.id) return;
-    reg.push({ c: c, i: i, ord: i.data || (c.agenda && c.agenda.data) || String(c.criadoEm || '').slice(0, 10) }); }));
+    reg.push({ c: c, i: i, ord: i.data || (c.agenda && c.agenda.data) || diaLocal(c.criadoEm) }); }));
   /* calibrações avulsas (sem solicitação) que estão só na linha do tempo do equipamento */
   const avulsas = (e.hist || []).filter(h => h.tipo === 'calibracao' && !(h.depois && h.depois.cal && h.depois.cal.campanha && S.almCal.some(c => c.numero === h.depois.cal.campanha)));
   reg.sort((a, b) => String(b.ord).localeCompare(String(a.ord)));
   if (!reg.length && !avulsas.length) return '<p class="gv-h">Calibrações</p><p class="tb-nada">Nenhuma calibração registrada.</p>';
   return '<p class="gv-h">Calibrações deste equipamento</p><div class="cb-hq">' + reg.map(x => { const c = x.c, i = x.i, s = cbSit(c);
-    const lin = [['Solicitada', fmtD(String(c.criadoEm || '').slice(0, 10)) + ' · ' + c.numero], ['Cotação', c.cotacaoEm ? fmtD(c.cotacaoEm) + (Number(i.valor) > 0 ? ' · ' + brl(i.valor) : '') : ''], ['Agendada', c.agenda && c.agenda.data ? fmtD(c.agenda.data) : ''],
+    const lin = [['Solicitada', fmtD(diaLocal(c.criadoEm)) + ' · ' + c.numero], ['Cotação', c.cotacaoEm ? fmtD(c.cotacaoEm) + (Number(i.valor) > 0 ? ' · ' + brl(i.valor) : '') : ''], ['Agendada', c.agenda && c.agenda.data ? fmtD(c.agenda.data) : ''],
       ['Calibrada', i.aplicado ? fmtD(i.data) + ' · ' + (i.tecnico ? i.tecnico + ' · ' : '') + (c.prestador || '') : ''], ['Código do certificado', i.certificado || ''], ['Validade', i.validade ? fmtD(i.validade) : (i.aplicado && i.data ? fmtD(eqAddMeses(i.data, cbFreq(e))) : '')],
       ['Resultado', i.aplicado ? (i.resultado === 'reprovado' ? 'Reprovado' : 'Aprovado para uso') : ''], ['Compra', i.compra && i.compra.numero ? 'Nº ' + i.compra.numero + (i.compra.nf ? ' · NF ' + i.compra.nf : '') : '']].filter(l => l[1]);
     return '<button type="button" class="cb-hc' + (i.aplicado ? '' : ' at') + '" data-act="cb-abre" data-id="' + esc(c.id) + '"><span class="cb-hh"><b>' + esc(c.numero) + '</b>' + (i.aplicado ? alPill(i.resultado === 'reprovado' ? 'Reprovado' : 'Calibrado', i.resultado === 'reprovado' ? 'cr' : 'ok') : cbPill(c)) + '</span>' + (i.aplicado ? '' : cbPassos(c, true)) + '<dl class="gv-fl">' + lin.map(l => '<dt>' + esc(l[0]) + '</dt><dd>' + esc(l[1]) + '</dd>').join('') + '</dl></button>'; }).join('') +
@@ -5164,7 +5173,7 @@ function coEtapas(c) {
   e.push({ nome: 'Coletada', feito: true, data: c.data || '', txt: [c.pontos ? c.pontos + ' pontos' : '', c.prof, c.estadio, c.coletor ? 'coletor ' + c.coletor : ''].filter(Boolean).join(' · '), quem: c.criadoPorNome });
   e.push({ nome: 'Enviada', feito: !!c.enviado, parcial: !c.enviado && rp, data: c.envio || '', txt: c.enviado ? [c.lab, c.nfEnvio ? 'NF ' + c.nfEnvio : '', c.rastreio ? 'rastreio ' + c.rastreio : ''].filter(Boolean).join(' · ') : rp ? 'data retroativa aguardando confirmação' : '' });
   e.push({ nome: 'O.S', feito: !!c.os, txt: c.os ? 'O.S ' + c.os : c.enviado ? 'o laboratório ainda não mandou' : '' });
-  const laudo = { nome: 'Laudo', feito: !!c.laudo, data: String(c.laudoEm || '').slice(0, 10), txt: c.laudo ? '' : c.enviado ? 'previsto até ' + fmtD(coPrevisto(c)) + ' (' + coLabPrazo(c.lab) + ' dias do laboratório)' : '', quem: c.laudoPor, alerta: !c.laudo && ls === 'Atrasado' ? 'atrasado: passou de ' + coLaudoLimite(c) + ' dias do envio' : '' };
+  const laudo = { nome: 'Laudo', feito: !!c.laudo, data: diaLocal(c.laudoEm), txt: c.laudo ? '' : c.enviado ? 'previsto até ' + fmtD(coPrevisto(c)) + ' (' + coLabPrazo(c.lab) + ' dias do laboratório)' : '', quem: c.laudoPor, alerta: !c.laudo && ls === 'Atrasado' ? 'atrasado: passou de ' + coLaudoLimite(c) + ' dias do envio' : '' };
   const compra = { nome: 'Compra do serviço', feito: c.compra === 'solicitado', data: c.dataSolicitacao || '', txt: c.pedidoSankhya ? 'Nº ' + c.pedidoSankhya : '', quem: c.solicitadoPorNome };
   /* laudo e compra na ordem em que aconteceram */
   e.push.apply(e, compra.feito && (!laudo.feito || String(compra.data) < String(laudo.data)) ? [compra, laudo] : [laudo, compra]);
@@ -6586,7 +6595,7 @@ function dcAbreLanc(id) {
   S._dcSel = id; gvAbrir(() => {
     const l = S.lanc.find(x => x.id === id); if (!l) return null;
     const pend = dcCorrPend(l.id), hist = (l.historico || []).slice().reverse(), doc = l.alvoTipo !== 'caixa';
-    let c = gvCampos([[doc ? 'Preenchido em' : 'Limpeza em', fmtD(l.data)], doc ? ['Entregue por', l.entreguePor || '—'] : ['', ''], doc && (l.entreguePor || l.entregueEm) ? ['Entregue em', fmtD(l.entregueEm || String(l.ts || '').slice(0, 10)) + ' (automático)'] : ['', ''],
+    let c = gvCampos([[doc ? 'Preenchido em' : 'Limpeza em', fmtD(l.data)], doc ? ['Entregue por', l.entreguePor || '—'] : ['', ''], doc && (l.entreguePor || l.entregueEm) ? ['Entregue em', fmtD(l.entregueEm || diaLocal(l.ts)) + ' (automático)'] : ['', ''],
       ['Observação', l.obs || '—'], ['Lançado por', (l.lancadoPorNome || '—') + ' · ' + fmtDT(l.ts)]]);
     if (pend) c += lcAv('Correção pedida por ' + esc(pend.solicitanteNome) + ', aguardando ' + esc((pend.paraNomes || []).join(', ') || 'o superior') + '.', 'wa');
     if (hist.length) c += '<p class="gv-h">Correções aplicadas</p><div class="dc-cr">' + hist.map(x => '<div><b>' + esc(dcMudanca(x)) + '</b><small>Motivo: ' + esc(x.motivo || '—') + ' · pedido por ' + esc(x.pedidoPor || '—') + ' · aprovado por ' + esc(x.aprovadoPor || '—') + ' · ' + esc(fmtDT(x.ts)) + '</small></div>').join('') + '</div>';
@@ -8601,7 +8610,7 @@ function anSelo(ctx) { const I = anInfo(ctx); if (!I) return ''; const f = anFal
   const l = anAtivas((p || {}).acoes), at = l.filter(a => anAcSt(a) === 'atrasada').length, fe = l.filter(a => a.st === 'feita').length;
   const ef = p && p.efic ? (p.efic.res === 'eficaz' ? '<span class="pill ok">Eficaz</span>' : '<span class="pill cr">Não eficaz</span>') : '';
   return '<span class="pill ' + t[1] + '">' + esc(t[0]) + '</span>' + (l.length ? '<span class="pill ' + (at ? 'cr' : fe === l.length ? 'ok' : '') + '">' + (at ? at + (at > 1 ? ' ações atrasadas' : ' ação atrasada') : fe + ' de ' + l.length + (l.length > 1 ? ' ações feitas' : ' ação feita')) + '</span>' : '') + ef; }
-function anEficDesde(I) { const l = anAtivas((I.doc || {}).acoes), ds = l.map(a => a.feitaEm).filter(Boolean).concat(I.nc && I.nc.ret ? [I.nc.ret.data || String(I.nc.ret.ts || '').slice(0, 10)] : []).sort(); return ds.length ? addDias(ds[ds.length - 1], AN_EFIC_DIAS) : ''; }
+function anEficDesde(I) { const l = anAtivas((I.doc || {}).acoes), ds = l.map(a => a.feitaEm).filter(Boolean).concat(I.nc && I.nc.ret ? [I.nc.ret.data || diaLocal(I.nc.ret.ts)] : []).sort(); return ds.length ? addDias(ds[ds.length - 1], AN_EFIC_DIAS) : ''; }
 function anPdca(I, d) {
   const l = anAtivas(d.acoes), f = anFalta(I, d);
   const st = [['P', 'Planejar', 'análise e ações', !f.length && (I.direta || l.length > 0)], ['D', 'Fazer', 'ações feitas', I.direta ? !f.length : l.length > 0 && l.every(a => a.st === 'feita')],
@@ -9118,7 +9127,7 @@ function pgEtapasLista(p, cs, st, q) {
   if (p) e.push({ nome: 'Programada', feito: true, data: p.data || '', txt: [p.coletor ? 'para ' + p.coletor : '', p.prazo ? 'prazo ' + fmtD(p.prazo) : ''].filter(Boolean).join(', '), quem: p.criadoPorNome });
   e.push({ nome: 'Coletada', feito: st === 'coletada', data: st === 'coletada' ? (c0.data || (p && p.coletadaEm) || '') : '', txt: st === 'coletada' ? [c0.coletor, c0.prof].filter(Boolean).join(', ') : '', quem: c0.criadoPorNome || (p && p.coletadaPor) || '', alerta: q && q.k === 'atrasada' ? 'atrasada' + (p && p.prazo ? ': o prazo era ' + fmtD(p.prazo) : '') : '' });
   e.push({ nome: 'Enviada', feito: !!env, parcial: !env && vivas.some(c => c.enviado), data: env ? (vivas.map(c => c.envio || '').sort().pop() || '') : '', txt: env ? labs : vivas.some(c => c.enviado) ? vivas.filter(c => c.enviado).length + ' de ' + vivas.length + ' amostras enviadas' : '' });
-  e.push({ nome: 'Laudo', feito: !!lau, parcial: !lau && vivas.some(c => c.laudo), data: lau ? (vivas.map(c => String(c.laudoEm || '').slice(0, 10)).sort().pop() || '') : '', txt: !lau && vivas.some(c => c.laudo) ? vivas.filter(c => c.laudo).length + ' de ' + vivas.length + ' laudos' : '' });
+  e.push({ nome: 'Laudo', feito: !!lau, parcial: !lau && vivas.some(c => c.laudo), data: lau ? (vivas.map(c => diaLocal(c.laudoEm)).sort().pop() || '') : '', txt: !lau && vivas.some(c => c.laudo) ? vivas.filter(c => c.laudo).length + ' de ' + vivas.length + ' laudos' : '' });
   if (st !== 'cancelada') { const at = e.find(x => !x.feito); if (at) at.atual = true; }
   return e;
 }
@@ -9975,7 +9984,7 @@ TELAS.inicio = function () {
   const lis = l.slice(0, 8).map(t => '<div class="li"><span class="ico' + (t._v ? ' ini-cr' : t._h ? ' ini-wa' : '') + '">' + ic(t._v ? 'alerta' : 'relogio') + '</span><span class="tx"><b>' + esc(t.titulo || '(sem título)') + '</b><small>' + (t.prazo ? 'prazo ' + fmtD(t.prazo) + (t.hora ? ' às ' + esc(t.hora) : '') : 'sem prazo') + '</small></span>' +
     '<span class="pill ' + (t._v ? 'cr' : t._h ? 'wa' : 'ok') + '">' + (t._v ? 'vencida' : t._h ? 'hoje' : 'no prazo') + '</span></div>').join('');
   const tarefas = '<section class="pn"><div class="hd"><h3>Minhas tarefas</h3><em>' + l.length + '</em><span class="sp"></span></div>' +
-    (l.length ? lis + (l.length > 8 ? '<div class="li"><span class="tx"><small>+ ' + (l.length - 8) + ' tarefas. A lista completa chega na v0.2; até lá, veja no EFClaudian.</small></span></div>' : '') :
+    (l.length ? lis + (l.length > 8 ? '<div class="li"><span class="tx"><small>+ ' + (l.length - 8) + ' tarefas. A lista completa está no EFClaudian.</small></span></div>' : '') :
       '<div class="vazio">' + ic('ok') + '<b>Nada pendente com o seu nome.</b><span>As tarefas que o EFClaudian atribuir a você aparecem aqui.</span></div>') + '</section>';
   /* voltar para / mais usadas */
   const o = csUsoLer(), atual = S.rota.area + (S.rota.aba ? '/' + S.rota.aba : '');

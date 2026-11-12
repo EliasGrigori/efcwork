@@ -144,7 +144,7 @@ function pgEtapasLista(p, cs, st, q) {
   if (p) e.push({ nome: 'Programada', feito: true, data: p.data || '', txt: [p.coletor ? 'para ' + p.coletor : '', p.prazo ? 'prazo ' + fmtD(p.prazo) : ''].filter(Boolean).join(', '), quem: p.criadoPorNome });
   e.push({ nome: 'Coletada', feito: st === 'coletada', data: st === 'coletada' ? (c0.data || (p && p.coletadaEm) || '') : '', txt: st === 'coletada' ? [c0.coletor, c0.prof].filter(Boolean).join(', ') : '', quem: c0.criadoPorNome || (p && p.coletadaPor) || '', alerta: q && q.k === 'atrasada' ? 'atrasada' + (p && p.prazo ? ': o prazo era ' + fmtD(p.prazo) : '') : '' });
   e.push({ nome: 'Enviada', feito: !!env, parcial: !env && vivas.some(c => c.enviado), data: env ? (vivas.map(c => c.envio || '').sort().pop() || '') : '', txt: env ? labs : vivas.some(c => c.enviado) ? vivas.filter(c => c.enviado).length + ' de ' + vivas.length + ' amostras enviadas' : '' });
-  e.push({ nome: 'Laudo', feito: !!lau, parcial: !lau && vivas.some(c => c.laudo), data: lau ? (vivas.map(c => String(c.laudoEm || '').slice(0, 10)).sort().pop() || '') : '', txt: !lau && vivas.some(c => c.laudo) ? vivas.filter(c => c.laudo).length + ' de ' + vivas.length + ' laudos' : '' });
+  e.push({ nome: 'Laudo', feito: !!lau, parcial: !lau && vivas.some(c => c.laudo), data: lau ? (vivas.map(c => diaLocal(c.laudoEm)).sort().pop() || '') : '', txt: !lau && vivas.some(c => c.laudo) ? vivas.filter(c => c.laudo).length + ' de ' + vivas.length + ' laudos' : '' });
   if (st !== 'cancelada') { const at = e.find(x => !x.feito); if (at) at.atual = true; }
   return e;
 }

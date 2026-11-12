@@ -33,7 +33,7 @@ function cbEtapas(c) {
   const datas = apl.map(i => i.data).filter(Boolean).sort(), tec = Array.from(new Set(apl.map(i => i.tecnico).filter(Boolean)));
   const comp = it.filter(i => i.compra && i.compra.numero), compNums = Array.from(new Set(comp.map(i => i.compra.numero)));
   const e = [
-    { id: 'sol', nome: 'Solicitada', feito: true, data: String(c.criadoEm || '').slice(0, 10), txt: c.numero + ' · ' + it.length + ' equipamento(s)' + (c.prestador ? ' · ' + c.prestador : ''), quem: c.criadoPorNome },
+    { id: 'sol', nome: 'Solicitada', feito: true, data: diaLocal(c.criadoEm), txt: c.numero + ' · ' + it.length + ' equipamento(s)' + (c.prestador ? ' · ' + c.prestador : ''), quem: c.criadoPorNome },
     { id: 'cot', nome: 'Cotação recebida', feito: cot || apl.length > 0, data: c.cotacaoEm || '', txt: cbTotal(c) ? brl(cbTotal(c)) + (c.cotacaoRef ? ' · ref. ' + c.cotacaoRef : '') : '' },
     { id: 'ag', nome: 'Agendada', feito: !!(c.agenda && c.agenda.data) || apl.length > 0, data: (c.agenda && c.agenda.data) || '', txt: c.agenda && c.agenda.data ? 'para ' + fmtD(c.agenda.data) + (c.agenda.obs ? ' · ' + c.agenda.obs : '') : '', quem: c.agenda && c.agenda.porNome },
     { id: 'cal', nome: 'Calibrada', feito: it.length > 0 && apl.length === it.length, parcial: apl.length > 0 && apl.length < it.length, data: datas[datas.length - 1] || '', txt: apl.length ? apl.length + ' de ' + it.length + (tec.length ? ' · por ' + tec.join(', ') : '') : '' },
@@ -94,7 +94,7 @@ function cbTela() {
     filtros: [{ k: 'sit', rot: 'Situação', opcoes: Object.keys(CB_SIT).map(k => [k, CB_SIT[k][0]]), teste: (c, v) => cbSit(c) === v }],
     cols: [
       { k: 'num', rot: 'Número', fixa: true, v: c => c.numero || '', cls: 'forte' },
-      { k: 'sol', rot: 'Solicitada', tipo: 'data', v: c => String(c.criadoEm || '').slice(0, 10) },
+      { k: 'sol', rot: 'Solicitada', tipo: 'data', v: c => diaLocal(c.criadoEm) },
       { k: 'pre', rot: 'Prestador', v: c => c.prestador || '' },
       { k: 'n', rot: 'Equipamentos', tipo: 'num', v: c => (c.itens || []).length },
       { k: 'cot', rot: 'Cotação', tipo: 'data', v: c => c.cotacaoEm || '' },
@@ -192,7 +192,7 @@ LC_FORM.cbag = f => {
 async function cbAgOk() {
   const f = S.fm, c = cbDe(f.id); if (!c || !alSup()) return;
   if (!/^\d{4}-\d{2}-\d{2}$/.test(f.data || '')) return lcErro('Informe a data marcada.');
-  if (f.data < String(c.criadoEm || '').slice(0, 10)) return lcErro('A data marcada não pode ser antes da solicitação.');
+  if (f.data < diaLocal(c.criadoEm)) return lcErro('A data marcada não pode ser antes da solicitação.');
   if (!lcTravar()) return;
   const ag = { data: f.data, obs: String(f.obs || '').trim(), porId: S.user.id, porNome: S.user.nome, ts: nowISO() };
   const hist = (c.agendaHist || []).concat(c.agenda && c.agenda.data ? [c.agenda] : []);
@@ -282,13 +282,13 @@ function cbPrint(id) {
 function cbHistEquip(e) {
   const reg = [];
   S.almCal.forEach(c => (c.itens || []).forEach(i => { if (i.equipId !== e.id) return;
-    reg.push({ c: c, i: i, ord: i.data || (c.agenda && c.agenda.data) || String(c.criadoEm || '').slice(0, 10) }); }));
+    reg.push({ c: c, i: i, ord: i.data || (c.agenda && c.agenda.data) || diaLocal(c.criadoEm) }); }));
   /* calibrações avulsas (sem solicitação) que estão só na linha do tempo do equipamento */
   const avulsas = (e.hist || []).filter(h => h.tipo === 'calibracao' && !(h.depois && h.depois.cal && h.depois.cal.campanha && S.almCal.some(c => c.numero === h.depois.cal.campanha)));
   reg.sort((a, b) => String(b.ord).localeCompare(String(a.ord)));
   if (!reg.length && !avulsas.length) return '<p class="gv-h">Calibrações</p><p class="tb-nada">Nenhuma calibração registrada.</p>';
   return '<p class="gv-h">Calibrações deste equipamento</p><div class="cb-hq">' + reg.map(x => { const c = x.c, i = x.i, s = cbSit(c);
-    const lin = [['Solicitada', fmtD(String(c.criadoEm || '').slice(0, 10)) + ' · ' + c.numero], ['Cotação', c.cotacaoEm ? fmtD(c.cotacaoEm) + (Number(i.valor) > 0 ? ' · ' + brl(i.valor) : '') : ''], ['Agendada', c.agenda && c.agenda.data ? fmtD(c.agenda.data) : ''],
+    const lin = [['Solicitada', fmtD(diaLocal(c.criadoEm)) + ' · ' + c.numero], ['Cotação', c.cotacaoEm ? fmtD(c.cotacaoEm) + (Number(i.valor) > 0 ? ' · ' + brl(i.valor) : '') : ''], ['Agendada', c.agenda && c.agenda.data ? fmtD(c.agenda.data) : ''],
       ['Calibrada', i.aplicado ? fmtD(i.data) + ' · ' + (i.tecnico ? i.tecnico + ' · ' : '') + (c.prestador || '') : ''], ['Código do certificado', i.certificado || ''], ['Validade', i.validade ? fmtD(i.validade) : (i.aplicado && i.data ? fmtD(eqAddMeses(i.data, cbFreq(e))) : '')],
       ['Resultado', i.aplicado ? (i.resultado === 'reprovado' ? 'Reprovado' : 'Aprovado para uso') : ''], ['Compra', i.compra && i.compra.numero ? 'Nº ' + i.compra.numero + (i.compra.nf ? ' · NF ' + i.compra.nf : '') : '']].filter(l => l[1]);
     return '<button type="button" class="cb-hc' + (i.aplicado ? '' : ' at') + '" data-act="cb-abre" data-id="' + esc(c.id) + '"><span class="cb-hh"><b>' + esc(c.numero) + '</b>' + (i.aplicado ? alPill(i.resultado === 'reprovado' ? 'Reprovado' : 'Calibrado', i.resultado === 'reprovado' ? 'cr' : 'ok') : cbPill(c)) + '</span>' + (i.aplicado ? '' : cbPassos(c, true)) + '<dl class="gv-fl">' + lin.map(l => '<dt>' + esc(l[0]) + '</dt><dd>' + esc(l[1]) + '</dd>').join('') + '</dl></button>'; }).join('') +

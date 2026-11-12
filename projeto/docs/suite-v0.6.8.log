@@ -1,0 +1,1854 @@
+== tools/testes/t_html_seg.js
+  ok  nenhum dado novo entra no HTML sem esc() (183 nomes conhecidos na base)
+  ok  nenhum <img src> recebe dado sem esc() ou imgSrc()
+erros de execução: 0
+exit 0
+== tools/testes/t_v010.js
+  ok  nenhum nome da Meri Pobo fixo no código
+  ok  apelido Cwork Quality e versão no arquivo
+  ok  sem Principal: aparece o primeiro acesso
+  ok  tela de entrar tem a arte e o formulário (v0.4.2: garota-propaganda vem da Administração)
+  ok  nome sem sobrenome é recusado
+  ok  senhas diferentes são recusadas
+  ok  depois do primeiro acesso entra no app
+  ok  Início saúda pelo primeiro nome: "Bom dia, Joana"
+  ok  menu lateral: Início + 6 áreas + Relatórios, e Administração no pé
+  ok  "Cwork Quality" no pé do menu e da página
+  ok  sem empresa configurada: "Sua empresa"
+  ok  inicio: 0 abas (esperado 0)
+  ok  coletas: 5 abas (esperado 5)
+  ok  rateios: 0 abas (esperado 0)
+  ok  inspecoes: 3 abas (esperado 3)
+  ok  documentos: 3 abas (esperado 3)
+  ok  almox: 5 abas (esperado 5)
+  ok  qualidade: 3 abas (esperado 3)
+  ok  relatorios: 0 abas (esperado 0)
+  ok  adm: 4 abas (esperado 4)
+  ok  estrutura aprovada: Coletas 5, Rateios 1, Inspeções 3, Documentos 3, Almoxarifado 5, Qualidade 3 
+  ok  área e aba atuais marcadas no menu e nas abas
+  ok  área ainda não refeita leva ao EFClaudian
+  ok  botão do tema troca para o Escuro (Dourado)
+  ok  Escuro usa o fundo azul-tinta do Dourado original (rgb(11, 13, 22))
+  ok  empresa salva aparece no menu (nome e unidade)
+  ok  unidades repetidas são juntadas
+  ok  escolha da unidade é uma janela retrátil
+  ok  unidade deste aparelho trocada
+  ok  ao recarregar: continua logado, tema e empresa guardados
+  ok  Início mostra "Voltar para" e "Mais usadas"
+  ok  Sair volta para a tela de entrar
+  ok  lembra o usuário
+  ok  senha errada: "Login ou senha incorretos."
+  ok  entra com a senha certa
+  ok  nenhum erro de JavaScript no PC
+  ok  celular 390 px: nenhuma tela rola para o lado
+  ok  celular: barra de baixo visível e menu lateral escondido
+  ok  celular: alvos de toque com 36 px ou mais
+  ok  celular: "Mais" abre o menu lateral
+  ok  nenhum erro de JavaScript no celular
+
+t_v010: 41 ok · 0 falha(s)
+exit 0
+== tools/testes/t_v020.js
+  ok  saldo por lote: luva 5−4 = 1; saída anulada não conta (água 34); gelo 22
+  ok  lote vencido não é utilizável (fenolftaleína: saldo 2, utilizável 0)
+  ok  situações: abaixo do mínimo, sem saldo, lote vencido, em dia, vence em 30 dias, inativo (min,zero,vencido,ok,avencer,inativo)
+  ok  Início: 4 materiais pedem atenção, 2 calibrações vencidas/a vencer, 1 solicitação pendente (4,2,1,0)
+  ok  número do Início abre Materiais já filtrado (4 linhas)
+  ok  Painel: 5 itens ativos, 4 pedem atenção, valor em estoque (5 | 4 | R$ 303,80 | 2)
+  ok  valor em estoque = soma de saldo × preço de cada lote
+  ok  aviso numa linha só (lote vencendo + solicitação pendente)
+  ok  cabeçalho com o botão Saída (ajustado na v0.3: antes era só consulta)
+  ok  Materiais lista os 6 itens (inclui o inativo)
+  ok  colunas: Código, Item, Local, Un, Utilizável, Mínimo, Valor, Situação
+  ok  números alinhados à direita
+  ok  total na barra de cima e sem caixa de busca da tabela (v0.4.8)
+  ok  sem botão Filtro (v0.4.8)
+  ok  filtro pronto Situação mora no menu da coluna Situação
+  ok  filtro "Pedem atenção": 4 linhas, símbolo no cabeçalho e Limpar filtro
+  ok  dois filtros juntos (Pedem atenção + Geladeira): 2 linhas
+  ok  busca da coluna Item sem acento acha "Água desmineralizada"
+  ok  ordenar por Utilizável (maior primeiro) pelo cabeçalho
+  ok  esconder a coluna Código (lembrado no aparelho)
+  ok  planilha .xlsx: aba Materiais, cabeçalho + 6 linhas (EFCwork-materiais-2026-11-12.xlsx)
+  ok  na planilha o número sai como número (Utilizável 34)
+  ok  impressora: monta a folha com título e as 6 linhas
+  ok  clicar na linha abre a gaveta do item
+  ok  gaveta: situação, lote L1 e a última saída com motivo
+  ok  linha aberta fica marcada na tabela
+  ok  Esc fecha a gaveta
+  ok  Movimentações: 6 lançamentos
+  ok  saída anulada aparece com a situação "Anulada"
+  ok  filtro Tipo = Saídas: 2 linhas; rodapé com entradas e saídas em R$
+  ok  Solicitações: 2 linhas e "1 pendentes" no cabeçalho
+  ok  gaveta da solicitação: itens, inclusive o ainda não cadastrado
+  ok  calibração: vencida (400 dias), a vencer (340 dias), em dia (30 dias), não calibra (vencida,avencer,ok,)
+  ok  gaveta do equipamento: calibração e local
+  ok  tecla / abre a busca geral
+  ok  busca vazia mostra "Voltar para"
+  ok  busca acha o material
+  ok  Enter vai para Materiais com a gaveta do item aberta
+  ok  Ctrl+K abre; acha equipamento pela TAG
+  ok  acha telas pelo nome
+  ok  Esc fecha a busca
+  ok  entra como Secundário sem a atribuição do Almoxarifado
+  ok  Início sem os números do Almoxarifado para quem não tem acesso
+  ok  Almoxarifado: mensagem "Você não tem acesso", sem tabela
+  ok  busca geral não mostra materiais para quem não tem acesso
+  ok  nenhum erro de JavaScript no PC
+  ok  celular: nenhuma aba do Almoxarifado rola a página para o lado (a tabela rola dentro dela)
+  ok  celular: a gaveta abre em tela cheia
+  ok  nenhum erro de JavaScript no celular
+
+t_v020: 49 ok · 0 falha(s)
+exit 0
+== tools/testes/t_v030.js
+— Cabeçalho
+  ok  Materiais: botões Saída (principal) e Entrada no cabeçalho
+  ok  atalho só com ícone para o EFClaudian (cadastro, kits, fotos, inventário)
+— Saída
+  ok  Saída abre na gaveta com a lista dos 5 materiais ativos
+  ok  busca na lista (sem acento, por palavras): 1 material
+  ok  material escolhido vira o título do formulário
+  ok  sem motivo: "Escolha o motivo"
+  ok  motivos: os usados pela equipe em 90 dias (saída anulada não conta) e a lista simples; nada fixo de empresa
+  ok  saldo não fica negativo: "Só há 34 disponível"
+  ok  o que foi digitado continua no campo depois do erro
+  ok  botão − diminui a quantidade
+  ok  saída gravada como no EFClaudian (lotRef, preço do lote, motivo, quem)
+  ok  saldo utilizável da água: 34 − 20 = 14
+  ok  ao registrar, a gaveta fecha (saiu do cabeçalho)
+  ok  passou do mínimo (15) para baixo: aviso no sino de quem cuida do almoxarifado
+  ok  motivo usado fica na ordem da pessoa (sv2_alm_pref)
+  ok  auditoria registrada (sv2_audit, como no EFClaudian)
+  ok  só lote vencido: avisa e pede para escolher o lote vencido
+  ok  lote vencido escolhido: pede o motivo para usar
+  ok  saída do lote vencido grava o motivo (vencidoMotivo)
+  ok  saiu do material: depois de registrar, volta para o detalhe dele
+  ok  outro motivo escrito fica guardado na lista da pessoa e vem primeiro naquele material
+  ok  produto crítico: aviso no formulário
+  ok  saída de produto crítico fica "aguardando confirmação"
+  ok  Painel mostra a saída crítica para quem confirma
+  ok  líder confirma; fica marcado que foi quem lançou
+— Frasco
+  ok  item por frasco: botão principal é Abrir frasco
+  ok  abrir frasco: 1 em uso, 2 lacrados
+  ok  o detalhe mostra o frasco em uso com o botão Acabou
+  ok  frasco que acabou: registro "Frasco terminou"
+— Entrada
+  ok  entrada com 2 materiais (linhas)
+  ok  item que controla validade: pede lote e validade
+  ok  dados digitados continuam depois de os dados mudarem no Firebase
+  ok  entrada grava uma movimentação por material, no mesmo grupo, com o documento
+  ok  luva: 10 disponíveis; último valor do item atualizado para 31,50
+  ok  embalagem: 2 fardos de 12 = 24 Lt a R$ 2,00 cada
+  ok  valor sugerido na unidade escolhida: Fardo R$ 24,00 · Lt R$ 2,00
+— Ajuste, corrigir e anular
+  ok  ajuste sem mudança: "Nada mudou"
+  ok  Principal ajusta na hora: 20 → 18 (ajuste −2 com motivo)
+  ok  corrigir pede o porquê
+  ok  correção guarda o antes no histórico (20 → 18)
+  ok  o detalhe mostra a correção (20 → 18)
+  ok  anular pela lixeira do canto: fica anulada com o motivo, nada se apaga
+  ok  entrada com saída depois dela não mostra a lixeira (corrigir em vez de anular)
+— Solicitação
+  ok  Solicitações: botão Nova solicitação
+  ok  solicitação sem número: pede o Nº do documento
+  ok  solicitação gravada pendente
+  ok  Atender: entrada já preenchida com o que estava cadastrado (10 luvas, doc 1042)
+  ok  solicitação Atendida e entrada lançada (luva 20)
+  ok  cancelar pela lixeira: Cancelada com o motivo
+— Secundário pede, superior decide no sino
+  ok  secundário: o ajuste avisa que vai como pedido
+  ok  secundário: saldo não muda; vira pedido pendente ao superior
+  ok  secundário lança saída normalmente
+  ok  superior: número no sino (4)
+  ok  sino: pedido do almoxarifado para decidir
+  ok  aprovar aplica o ajuste (18 → 17) e grava a decisão
+  ok  o ajuste fica no nome de quem pediu, com quem aprovou
+  ok  avisos listados no sino
+  ok  marcar todas como lidas
+  ok  nenhum erro de JavaScript no PC
+— Celular
+  ok  celular: formulário em tela cheia, sem rolar para o lado
+  ok  celular: botões do formulário com 44 px (44,44)
+  ok  nenhum erro de JavaScript no celular
+
+t_v030: 62 ok · 0 falha(s)
+exit 0
+== tools/testes/t_v031.js
+— Tabelas mais largas; a tabela recua quando a gaveta abre
+  ok  tabela usa a largura toda (1086 px de 1126 disponíveis)
+  ok  com a gaveta aberta a tabela recua e fica a 20 px dela, a mesma margem da esquerda (pedido de 06/11) (20 px)
+  ok  tela larga (1920), com a gaveta: tabela sem limite de largura, só recua o espaço da gaveta (1220 px)
+— Voltar uma camada
+  ok  detail aberto = 1 camada
+  ok  saída por cima do detalhe = 2 camadas
+  ok  Esc volta só uma camada: do formulário para o detalhe
+  ok  Esc de novo fecha o detalhe
+  ok  voltar do navegador/celular: também uma camada (formulário → detalhe)
+  ok  voltar de novo fecha o detalhe
+  ok  continua na mesma tela (não voltou de tela)
+  ok  formulário recém-aberto não conta como preenchido
+  ok  preenchido: Esc pergunta "Descartar o que você preencheu?"
+  ok  "Continuar preenchendo": o que foi digitado continua
+  ok  voltar do celular com algo preenchido também pergunta
+  ok  voltar com a pergunta aberta = continuar preenchendo
+  ok  "Descartar": volta para o detalhe
+  ok  entrada: "Adicionar outro material" abre a lista como camada
+  ok  Esc na lista volta para as linhas da entrada
+  ok  entrada com material escolhido: pergunta antes de descartar
+  ok  descartou: gaveta fechada (abriu pelo cabeçalho, não havia detalhe)
+  ok  depois de gravar: volta ao detalhe com 1 camada
+  ok  e um voltar fecha o detalhe (o histórico ficou certo)
+  ok  busca geral é uma camada
+  ok  voltar fecha a busca
+— Nomes dos perfis
+  ok  Principal aparece como "Administrador"
+  ok  Secundário = Colaborador · Secundário ★ = Líder · Visitante = Consulta
+  ok  Colaborador vê o próprio perfil com o nome novo
+  ok  textos usam o nome novo ("Como Colaborador…")
+  ok  no cadastro continua gravado "secundario" (o EFClaudian lê igual)
+— Favoritos
+  ok  Saída: lista suspensa de favoritos (vem da configuração do almoxarifado)
+  ok  escolher o favorito já traz os materiais, as quantidades e o motivo
+  ok  saída do favorito: 2 movimentações no mesmo grupo, com o nome do favorito; quantidade mudada respeitada (gelo 1)
+  ok  "Guardar como favorito" pede o nome
+  ok  favorito guardado na lista da pessoa (2 materiais)
+  ok  a lista mostra os 2 favoritos
+— Tirar da lista segurando 1,5 s e arrastando
+  ok  segurando 1,5 s aparece a lixeira ao lado da lista
+  ok  soltou na lixeira: o favorito saiu da lista
+  ok  aviso com "Desfazer"
+  ok  Desfazer devolve o favorito
+  ok  favorito da configuração: some só da lista da pessoa (a configuração continua)
+  ok  motivo também sai da lista segurando e arrastando
+  ok  soltar fora da lixeira: nada sai e nada é escolhido
+  ok  toque normal na opção continua escolhendo
+  ok  nenhum erro de JavaScript no PC
+— Celular
+  ok  celular: menu aberto é uma camada
+  ok  voltar do celular fecha o menu e fica na tela
+  ok  celular: a lixeira aparece dentro da tela, perto da lista
+  ok  celular: voltar com algo preenchido pergunta antes
+  ok  nenhum erro de JavaScript no celular
+
+t_v031: 49 ok · 0 falha(s)
+exit 0
+== tools/testes/t_v032.js
+— Abrir
+  ok  Materiais: botão Contagem no cabeçalho
+  ok  Contagem vazia; a aba Materiais fica marcada (a contagem é uma ação dela)
+  ok  quem vai contar: só aparece quem tem o Almoxarifado (Ana e você; Vera não)
+  ok  sem escolher: "Escolha quem vai contar"
+  ok  contagem aberta (CNT-2026-01), formato do EFClaudian (tipo contagem, materiais), quem conta: Ana
+— Contar às cegas (Ana)
+  ok  Início da Ana: "Contagem para você" com o progresso
+  ok  Ana recebeu o aviso no sino
+  ok  ordem do lugar: portas em sequência, depois gavetas, depois o resto (Porta 02, Porta 11, Porta 12, Gaveta 07, Geladeira)
+  ok  às cegas: nenhum saldo na tela, só os campos para digitar
+  ok  material com 2 lotes: um campo por lote
+  ok  lote sem número: não salva e o que foi digitado continua
+  ok  Enter no último lote salva: contado 4 (1 + 3), com o que o sistema esperava guardado junto (às escondidas)
+  ok  depois de salvar, o cursor vai para o próximo que falta
+  ok  chegou dado novo enquanto digitava: o campo continua com o foco e o número
+  ok  todos os 6 materiais contados (100%)
+  ok  mensagem "Tudo contado"
+— Conferir e recontar (Joana)
+  ok  conferência: 6 contados, 3 bateram, 3 não bateram, 0 em recontagem (6,3,3,0)
+  ok  o app sugere recontar os que não bateram
+  ok  Concluir fica travado enquanto falta decidir
+  ok  recontagem pedida para os 3
+  ok  Ana avisada: "Recontar 3 material(is)"
+  ok  Ana vê a seção "Recontar" no topo com os 3, campos vazios (às cegas de novo)
+  ok  depois da recontagem: água bateu (foi erro de contagem); fita e pano não bateram de novo (agua:bateu2,fita:difere,pano:difere)
+  ok  não sugere recontar de novo o que já foi recontado
+— Decidir e concluir
+  ok  gaveta mostra a 1ª contagem e a recontagem
+  ok  falta: opções Saída esquecida, Perda, Quebra, Erro de lançamento, Outro
+  ok  saída esquecida: data, quem esqueceu, motivo e reclamação
+  ok  formulário com algo escolhido: voltar pergunta antes de descartar
+  ok  decisão guardada (ainda não lançada)
+  ok  sobra: opções Entrada não lançada, Achado… (sem saída esquecida)
+  ok  tudo decidido: Concluir liberado
+  ok  contagem concluída: 2 diferenças, 1 erro de lançamento, 1 bateu na recontagem
+  ok  saída esquecida lançada com a data certa (ontem), 3 Un, marcada como erro da Ana, com a reclamação
+  ok  sobra virou ajuste +1 com o motivo da contagem
+  ok  estoque igual ao contado (pano 7, fita 4); água sem mudança (foi erro de contagem)
+  ok  quem esqueceu é avisado no sino ("Saída não lançada", com a reclamação)
+— Depois: painel, movimentações e histórico
+  ok  Painel: "Erros de lançamento" (últimos 90 dias) para o Líder/Administrador
+  ok  Movimentações: filtro "Erros de lançamento" acha a saída
+  ok  detalhe da saída: "Lançada depois" e a reclamação
+  ok  histórico: a contagem aparece concluída
+  ok  resumo da contagem com o erro de lançamento e quem esqueceu
+  ok  segunda contagem do ano: número seguinte (-02)
+  ok  folha impressa: por lugar, às cegas (sem saldo)
+  ok  cancelar pela lixeira: fica no histórico como cancelada
+  ok  nenhum erro de JavaScript no PC
+— Celular
+  ok  celular: a contagem não rola para o lado
+  ok  celular: botão "Contado" com 44 px
+  ok  nenhum erro de JavaScript no celular
+
+t_v032: 48 ok · 0 falha(s)
+exit 0
+== tools/testes/t_v033.js
+— Abrir a solicitação
+  ok  Equipamentos: botão Calibração no cabeçalho
+  ok  números: 1 vencida, 1 a vencer, 0 em andamento, 2 precisam e não estão em solicitação (1,1,0,2)
+  ok  a aba Equipamentos fica marcada (calibração é uma ação dela)
+  ok  lista: vencidas primeiro, depois a vencer; vidraria fora do plano não aparece (3)
+  ok  sem marcar: "Marque pelo menos um equipamento"
+  ok  "Marcar vencidos e a vencer" marca PHM-02 e BAL-01
+  ok  solicitação CAL-2026-01 aberta no formato do EFClaudian (prestador, itens, aguardando cotação)
+  ok  depois de abrir, mostra o detalhe da solicitação
+  ok  as 5 etapas: Solicitada (feita) → Cotação recebida (próxima) → Agendada → Calibrada → Compra
+  ok  Solicitada mostra a data, o número e quem pediu
+— Cotação e agenda
+  ok  cotação: data, referência e valor de cada um (R$ 430,00) → "Cotada · falta agendar"
+  ok  a etapa mostra o valor total e volta para o detalhe
+  ok  agendada (data futura permitida) → "Agendada para …"
+  ok  reagendar guarda a data antiga no histórico
+— Calibrado
+  ok  pede quem calibrou
+  ok  sem nenhum certificado: pede o código
+  ok  validade sugerida = data da calibração + 12 meses (2027-11-11)
+  ok  só o pHmetro com certificado: "Calibração em andamento"; a balança fica para depois
+  ok  o equipamento recebe a calibração (data, código, quem calibrou, validade, número da solicitação) e fica "Em dia"
+  ok  segunda vez: só a balança aparece para calibrar
+  ok  balança reprovada: fica "Uso com restrição"; solicitação "Calibrada · falta a compra"
+  ok  reprovação avisa no sino dos superiores
+— Compra e encerramento
+  ok  pede o Nº da solicitação de compras
+  ok  pede a NF
+  ok  compra com data de hoje e NF: "Encerrada" (igual ao EFClaudian)
+  ok  as 5 etapas feitas; sem lixeira depois de calibrado
+— Histórico só do equipamento
+  ok  detalhe do pHmetro: solicitada, cotação, agendada, calibrada por quem, código do certificado, validade e compra
+  ok  mostra só as calibrações dele (não a da balança)
+  ok  equipamento fora de solicitação: botão "Pedir calibração"
+  ok  Pedir calibração já vem com ele marcado
+  ok  formulário mexido: voltar pergunta antes de descartar
+  ok  segunda solicitação do ano (-02) com o prestador já escolhido
+  ok  cancelar pela lixeira (antes de calibrar), com motivo
+  ok  histórico com as 2 solicitações
+  ok  Colaborador vê a calibração mas não abre solicitação
+  ok  nenhum erro de JavaScript no PC
+— Celular
+  ok  celular: a calibração não rola para o lado
+  ok  celular: detalhe em tela cheia
+  ok  nenhum erro de JavaScript no celular
+
+t_v033: 39 ok · 0 falha(s)
+exit 0
+== tools/testes/t_v034.js
+— Gaveta deslizando
+  ok  ao abrir, a gaveta entra deslizando da lateral (gv-entra)
+  ok  animação gvEntra ativa (gvEntra)
+  ok  depois de 0,3 s a classe sai (a gaveta fica parada)
+  ok  trocar de equipamento com a gaveta aberta não repete a entrada
+  ok  Esc fecha (o #gv some na hora para o app)
+  ok  a gaveta sai deslizando e é removida depois
+  ok  abrir outra enquanto a anterior ainda sai: sem duas gavetas com o mesmo id
+— Fluido da linha do tempo
+  ok  nunca vista: começa só com "Solicitada" acesa e o fluido no início ({"esp":"2,3","acesas":1,"h":1})
+  ok  sobe até a 2ª etapa (Cotação) e acende
+  ok  espera 0,4 s antes de subir para a próxima
+  ok  a etapa que acende ganha o "pulo" (acende)
+  ok  sobe até a 3ª (Agendada): fluido mais alto (62 → 122 px)
+  ok  guarda até onde esta pessoa viu (por pessoa e por solicitação)
+  ok  brilho correndo no fluido (cbBrilho)
+  ok  abrir de novo sem novidade: já aparece cheio, sem animar
+— Mudou com a gaveta aberta
+  ok  calibrada com a gaveta aberta: a 4ª etapa aparece apagada…
+  ok  …e o fluido sobe na hora até ela
+— Duas novidades antes de abrir (outra pessoa)
+  ok  viu na etapa 1; agora tem cotação e agenda: começa da 1, não do zero
+  ok  sobe uma etapa (0,6 s + gota 0,3 s), espera 0,4 s e sobe a próxima (2ª em 844 ms, 3ª 1309 ms depois)
+  ok  nenhum erro de JavaScript (gaveta e fluido)
+— Reduzir movimento
+  ok  com "reduzir movimento" no aparelho: aparece pronto, sem subir
+  ok  e a gaveta abre sem deslizar
+  ok  e fecha na hora
+  ok  nenhum erro de JavaScript com movimento reduzido
+— Inventário de equipamentos e vidrarias
+  ok  Equipamentos: botão Inventário no cabeçalho
+  ok  vindo de Equipamentos: já marca Equipamentos e Vidrarias (mat:false,equip:true,vid:true)
+  ok  mostra quantos tem em cada parte: 5 materiais ativos, 3 equipamentos, 2 vidrarias (5,3,2)
+  ok  itens para contar: 3 equipamentos + béquer + pipeta em 2 lugares = 6
+  ok  nada marcado: "Marque o que vai ser contado"
+  ok  inventário aberto com equipamentos e vidrarias (sem materiais)
+  ok  na lista: os 3 equipamentos, o béquer e a pipeta em cada lugar (v:e5__gaveta-03,e:e1,v:e4,v:e5__laboratorio,e:e2,e:e3)
+  ok  às cegas também para vidraria (o 12 do béquer não aparece)
+  ok  cada equipamento tem "Não achei" e "Achei"
+  ok  o título vira "Inventário CNT-…", debaixo de Equipamentos (aba marcada e botão de voltar)
+  ok  Achei = 1, Não achei = 0 (o sistema espera 1)
+  ok  o contado mostra "Não achei" em vermelho
+  ok  conferência: só o que não bateu (balança e béquer) (v:e4,e:e2)
+  ok  conferência com a coluna Tipo
+  ok  equipamento: opções próprias (Não encontrado, Em outro lugar…), sem "saída esquecida"
+  ok  concluir: a balança fica marcada "não encontrado" (CNT-2026-01) com o registro no histórico
+  ok  o béquer passa a 10 no Laboratório, com "Quebra 12 → 10" no histórico
+  ok  a gaveta do equipamento avisa "Não encontrado na contagem CNT-…"
+— Achado numa próxima contagem
+  ok  achou a balança na contagem seguinte: a marca "não encontrado" sai sozinha
+  ok  nenhum erro de JavaScript no PC
+— Celular
+  ok  celular: o inventário não rola para o lado
+  ok  celular: botões Achei / Não achei com altura de toque (44 px)
+  ok  celular: o fluido também sobe na tela cheia
+  ok  nenhum erro de JavaScript no celular
+
+t_v034: 48 ok · 0 falha(s)
+exit 0
+== tools/testes/t_v035.js
+— Coluna Local curta
+  ok  tabela mostra só o lugar ("Bancada 1"); o completo fica no passar o mouse e na gaveta (Bancada 1 | Laboratório · Bancada 1)
+— Onde está o equipamento
+  ok  gaveta: "Onde está" = Em uso · Laboratório · Bancada 1, em destaque
+  ok  "Iguais a este": as outras micropipetas, com a reserva guardada e onde está (MP-02reserva guardadaGaveta 02 / MP-03reserva guardadaPorta 05)
+  ok  tocar na reserva abre ela (Guardado · Gaveta 02)
+  ok  guardado: botão "Pôr em uso" (e não "Guardar")
+— Pôr em uso a reserva
+  ok  a lista de lugares de uso não mostra gavetas nem portas (, Bancada 1, Geladeira, Suporte de vidrarias, __outro)
+  ok  sem lugar: "Diga onde ele vai ficar em uso"
+  ok  em uso na Bancada 1; o lugar de guarda (Gaveta 02) fica lembrado
+  ok  histórico: "Posto em uso em Bancada 1 — substitui a MP-01…"
+  ok  volta para a gaveta do equipamento, já atualizada
+— Guardar
+  ok  a lista de guarda mostra gavetas e portas, sem bancada (, Porta 02, Porta 05, Porta 11, Porta 12, Gaveta 02, __outro)
+  ok  guardado na "Porta 07" (nome arrumado); o lugar de uso (Bancada 1) fica lembrado; calibração pausa como no EFClaudian
+  ok  calibração "Pausada (guardado)"
+  ok  Pôr em uso de novo já vem com a Bancada 1
+— Calibração vencida ao pôr em uso
+  ok  avisa: calibração vencida → vai entrar como "Uso com restrição"
+  ok  entrou como "Uso com restrição"
+— Lugares de referência (pino)
+  ok  o pino abre os dois lugares (a guarda ficou lembrada ao pôr em uso)
+  ok  lugar de guarda trocado para a Gaveta 02
+— Vidraria por lugar
+  ok  béquer sem lugares: "Sem lugar definido 12"
+  ok  passou do total (13 de 12): não deixa e manda usar o Inventário
+  ok  grava 4 no suporte (em uso) e 8 na Gaveta 03 (guardadas = 8, compatível com o EFClaudian)
+  ok  gaveta do béquer: "Onde ficam" com cada lugar, guardadas / em uso (Gaveta 03guardadas8 | Suporte de vidrariasem uso4)
+  ok  na tabela: "2 lugares" (2 lugares)
+— Tirar um lugar da lista (segurar e arrastar)
+  ok  segurar 1,5 s e arrastar para a lixeira tira o lugar da lista
+— Inventário por lugar
+  ok  o béquer é contado em cada lugar; a micropipeta guardada aparece na Porta 07 (e:mp1=Porta 07 v:e4__laboratorio__gaveta-03=Gaveta 03 e:mp2=Bancada 1 e:mp3=Bancada 1 v:e4__laboratorio__suporte-de-vidrarias=Suporte de vidrarias)
+  ok  chaves sem ~ * / [ ] (o Firestore recusa esses no caminho)
+  ok  o esperado de cada lugar é o daquele lugar (4 e 8), às cegas
+  ok  conferência: coluna Lugar curta, só o que não bateu (Suporte de vidrarias)
+  ok  concluir: total 12 → 11, suporte 4 → 3, gaveta continua 8
+  ok  histórico: "Laboratório › Suporte de vidrarias 4 → 3"
+  ok  demonstração recusa "~" no caminho, como o Firestore (o erro da v0.3.4 não volta)
+  ok  nenhum erro de JavaScript no PC
+— Colaborador e celular
+  ok  Colaborador também guarda e põe em uso (é quem usa a bancada)
+  ok  celular: gaveta em tela cheia, sem rolar para o lado
+  ok  nenhum erro de JavaScript no celular
+
+t_v035: 35 ok · 0 falha(s)
+exit 0
+== tools/testes/t_v036.js
+— Fluido Gota
+  ok  começa com só a 1ª bolinha cheia (26,0,0,0,0)
+  ok  o fluido para na borda e cai uma gota na bolinha
+  ok  a bolinha solta uma onda quando a gota chega
+  ok  a 2ª bolinha encheu de baixo para cima (26,26,0,0,0)
+  ok  depois de 0,4 s, a mesma coisa na 3ª (26,26,26,0,0)
+  ok  o fluido termina na borda de cima da bolinha, não no meio (2 px)
+— Colaborador pede (aguarda confirmação)
+  ok  o formulário avisa: fica aguardando a confirmação de Joana Silva; pode usar normalmente
+  ok  botão "Pedir para pôr em uso"
+  ok  sem o porquê: "Diga o porquê: quem confirma precisa saber"
+  ok  pedido criado para o superior, com o lugar e o porquê
+  ok  o equipamento ainda não mudou (espera a confirmação)
+  ok  a gaveta mostra "Aguardando confirmação…" com quem e o porquê (sem botão de confirmar para ela)
+  ok  abrindo de novo, o formulário já avisa que tem pedido esperando
+  ok  não deixa um segundo pedido do mesmo equipamento enquanto o primeiro espera
+  ok  segundo equipamento: outro pedido (Guardar na Gaveta 09)
+— Líder confirma e recusa
+  ok  para o líder, a gaveta tem Confirmar e Recusar
+  ok  confirmado: a MP-02 fica em uso na Bancada 1 (quem gravou foi o líder)
+  ok  histórico: o porquê, "pedido de Ana Lima" e "confirmado por Joana Silva"
+  ok  o aviso de "aguardando" sai da gaveta
+  ok  recusar pede o motivo
+  ok  recusado com o motivo; a MP-01 não muda
+— Regras do Firestore imitadas no demo
+  ok  Ana recebe a recusa no sino, com o motivo
+  ok  Colaborador gravando posGuarda direto: "O Firebase não deixou gravar (permissão)", como no Firestore real
+— Recontagem: quem conta só grava "contagens"
+  ok  pedir recontagem grava o nº da contagem (1), não um sim/não
+  ok  Ana vê a fita em "Recontar"
+  ok  Ana reconta sem erro de permissão: a marca fica como estava e a recontagem conta como feita
+  ok  nenhum erro de JavaScript
+  ok  a decisão guarda em qual contagem foi tomada
+  ok  se o item for contado de novo, a decisão antiga deixa de valer (precisa decidir de novo)
+— Celular
+  ok  celular: pedido sem rolar para o lado
+  ok  nenhum erro de JavaScript no celular
+
+t_v036: 31 ok · 0 falha(s)
+exit 0
+== tools/testes/t_v040.js
+— Amostras
+  ok  uma tabela só com as 7 amostras de campo (todos os materiais)
+  ok  cabeçalho: 2 não enviadas, 1 aguardando laudo, 1 laudo atrasado (2 não enviadas1 aguardando laudo1 laudo atrasado)
+  ok  situações calculadas como no EFClaudian (Não enviada,Laudo atrasado,Laudo baixado,Aguardando laudo,Encerrada,Cancelada)
+  ok  prazo do laboratório da configuração (IBRA 10 dias) + 5 de folga; sem prazo = 7 + 5
+  ok  filtro único: Material = Folha → 2
+— Ciclo da amostra
+  ok  ciclo: Programada → Coletada → Enviada (próxima) → O.S → Laudo → Compra (+Programada|+Coletada|>Enviada|-O.S|-Laudo|-Compra do serviço)
+  ok  a programação mostra o coletor; a coleta mostra pontos, profundidade e coletor
+  ok  mesma linha do tempo com fluido Gota da calibração (guarda até onde cada um viu)
+  ok  encerrada: a compra (antes) aparece antes do laudo — na ordem em que aconteceram
+  ok  laudo atrasado: "previsto até …" e o aviso em vermelho
+— Enviar
+  ok  Enviar lista as 2 não enviadas (sem as canceladas e as já enviadas)
+  ok  sem marcar: "Marque pelo menos uma amostra"
+  ok  marcar todas: 2, e avisa que cada laboratório vira uma remessa
+  ok  envio antes da data da coleta: recusado
+  ok  mais de 30 dias à frente: recusado (regra do EFClaudian)
+  ok  a foto do cupom entra reduzida (JPEG) e aparece no formulário
+  ok  enviadas: data, laboratório de cada uma, NF e rastreio (arrumado em maiúsculas)
+  ok  o cupom vai para sv2_fotos (como as fotos do EFClaudian) e as duas amostras apontam para ele
+  ok  a gaveta mostra NF, rastreio e a miniatura do cupom
+  ok  a miniatura carrega a foto
+  ok  "Abrir nos Correios" abre a página oficial de rastreamento
+  ok  e avisa que o código foi copiado para colar lá
+  ok  tocar no cupom abre a foto grande
+  ok  Esc fecha só a foto (uma camada)
+— Remessas, O.S e laudo
+  ok  aba Envio: uma linha por remessa (dia + laboratório) — 5
+  ok  gaveta da remessa: 2 amostras, 1/2 laudos, a lista das amostras
+  ok  O.S vazia: pede
+  ok  O.S vale para a remessa inteira
+  ok  com O.S, o botão vira "Corrigir O.S"
+  ok  corrigir pede o motivo
+  ok  Administrador corrige direto; o histórico guarda antes, depois e o motivo (formato do EFClaudian)
+  ok  Laudos recebidos: só a que falta (v0.4.1: com 1, vai direto)
+  ok  laudo marcado com quem e quando
+  ok  NF e rastreio anexados depois do envio, a qualquer momento
+— Colaborador: data retroativa e correção viram pedido
+  ok  Enviar pela gaveta já vem com a amostra marcada
+  ok  data de ontem: avisa que vai aguardar a confirmação do líder
+  ok  virou pedido envio_retro (o mesmo do EFClaudian); a amostra continua não enviada
+  ok  situação: "Envio aguardando confirmação"
+  ok  Colaborador corrigindo O.S: vira pedido corrigir_os (formato do EFClaudian)
+  ok  o líder confirma aqui no EFCwork: envio retroativo e O.S aplicados
+— Busca e celular
+  ok  busca geral acha as amostras pelo talhão
+  ok  nenhum erro de JavaScript no PC
+  ok  celular: amostras sem rolar para o lado
+  ok  celular: ciclo em tela cheia
+  ok  nenhum erro de JavaScript no celular
+
+t_v040: 45 ok · 0 falha(s)
+exit 0
+== tools/testes/t_v041.js
+— Tabelas
+  ok  o total fica na barra de cima, acima da sua coluna (v0.4.8)
+    total: R$ 840,00 | busca sem resultado: R$ 0,00 | busca: TotalR$ 120,00
+  ok  o total segue a busca e o filtro
+  ok  nenhuma célula com "—": sem dado = em branco
+— O.S: todas ou escolher quais (Aquasollus)
+  ok  sugere: "Todas as 2 sem O.S"
+  ok  "Escolher quais" mostra a lista para marcar
+  ok  só a marcada recebe a O.S AQ-100
+  ok  de novo: só a que falta (RU13TAI24), avisando a que já tem
+  ok  duas O.S na mesma remessa (AQ-100, AQ-200)
+  ok  todas com O.S: abre "Corrigir O.S" escolhendo qual
+  ok  corrige só a escolhida
+— Laudo e anexos com a mesma regra
+  ok  laudo: só 1 sem laudo → "Vale para" direto
+  ok  rastreio só na escolhida
+  ok  de novo: só a que ainda está sem anexo
+  ok  cada amostra com o seu rastreio
+— Confirmação rápida no aviso
+  ok  pedidos que já esperavam não pulam na tela
+  ok  pedido novo aparece num aviso no canto, com o que é e o porquê
+  ok  Confirmar ali mesmo aplica e o aviso some
+  ok  cartão do pedido no sino sem a faixa lateral colorida
+— Notinha
+  ok  notinha: empresa da configuração, número 1042 e os 2 itens
+  ok  com total de itens, assinaturas (atendente e solicitante) e "impresso em"
+  ok  manda imprimir
+  ok  estilo cupom: faixa de 80 mm (74 mm de texto) que cresce com os itens
+— Tela de entrar
+  ok  e-mail digitado sem o @: avisa depois de falhar (não bloqueia logins antigos)
+  ok  conta sem perfil: diz que a senha está certa e o que conferir
+  ok  nenhum erro de JavaScript
+— Celular
+  ok  celular: escolher quais sem rolar para o lado
+  ok  celular: o aviso fica acima da barra de baixo
+  ok  nenhum erro de JavaScript no celular
+
+t_v041: 28 ok · 0 falha(s)
+exit 0
+== tools/testes/t_v0410.js
+— Títulos do plano
+  ok  Faltam / Coletadas sem maiúsculas e sem espaçamento: none|normal, none|normal
+— Celular: campos das gavetas
+  ok  Novo plano: listas com 44 px (44, 44, 44, 44)
+  ok  itens da lista aberta com 44 px (44, 44, 44…)
+  ok  Coletado: data, coletores e campos com 44 px (44, 44, 44, 44)
+  ok  nada rola para o lado
+  ok  no PC as listas têm 34 px sozinhas e a altura do campo ao lado quando lado a lado (v0.6.5 ITEM 10) ([[40,40]])
+— Menu da coluna: clicar fora numa linha só fecha o menu (retorno do Grok B7)
+  ok  clicar numa linha com o menu aberto fecha o menu e não abre a gaveta da linha
+  ok  sem menu aberto, a linha abre a gaveta normalmente
+— v0.4.12: cantos do menu iguais e mensagem de leitura
+  ok  Travar, ordenar e itens do menu com o mesmo canto de 8 px (8px, 8px, 8px)
+— Login e cache separados do EFClaudian (Firebase simulado)
+    init:efcwork appcheck:efcwork appcheck-key:6LdLDeYtAAAAADNuye_RKI1MROdCo56DGI31jDS- activate:efcwork firestore:efcwork auth:efcwork persist:efcwork
+  ok  o EFCwork usa um app do Firebase só dele (login e cache não se misturam com o EFClaudian)
+  ok  App Check ligado no app do EFCwork antes do Firestore (o Firebase exige)
+  ok  sem erros com o Firebase simulado
+  ok  sem erros no console
+
+13 ok, 0 falha(s)
+exit 0
+== tools/testes/t_v0413.js
+1366 px, colunas largas (caso do Grok):
+  ok  não existe mais a linha própria do total (decisão de 10/11)
+  ok  o total fica na mesma linha dos ícones, logo antes deles, sem encostar
+  ok  continua acima do cabeçalho
+1366 px, colunas normais:
+  ok  cabe na linha dos ícones: continua como antes
+1280 px:
+  ok  em 1280 px o total fica na linha dos ícones (sem linha própria)
+1600 px:
+  ok  em 1600 px continua alinhado
+1024 px (coluna fora da tela):
+  ok  quando a coluna nem aparece, o total fica em sequência (não some para fora da tela)
+Celular 390 px:
+  ok  no celular nada muda
+
+8 ok, 0 falha(s)
+exit 0
+== tools/testes/t_v0414.js
+Aba e tela (Principal):
+  ok  a aba Atividade aparece em Administração
+  ok  título Atividade
+  ok  gráfico de colunas com 30 dias
+  ok  colunas com registro (hoje, ontem e 12 dias atrás = 3 colunas) e os últimos 7 dias em destaque
+  ok  padrão: últimos 30 dias → 5 registros (o de 60 dias atrás fica de fora)
+  ok  agrupa por dia: Hoje, Ontem…
+  ok  linha: nome, o que aconteceu, área e app
+  ok  selo da ação em amarelo (desprogramou)
+  ok  texto com HTML não vira HTML (esc)
+Detalhe no próprio lugar:
+  ok  nenhuma linha aberta no começo, sem gaveta
+  ok  abre quem, quando, app, onde e o antes riscado
+  ok  abre na própria linha (não é gaveta)
+  ok  abrir outra fecha a anterior (só uma aberta) e mostra os valores numéricos
+  ok  tocar de novo fecha
+  ok  mostra quem autorizou, quando teve autorização
+Filtro único recolhível:
+  ok  painel começa fechado e sem "Limpar filtro"
+  ok  botão com o resumo: últimos 30 dias · todos
+  ok  Esc fecha o detalhe aberto (uma camada por vez)
+  ok  o botão abre o painel com 4 janelas retráteis: período, pessoa, área, app
+  ok  Esc fecha o painel
+  ok  filtrar por pessoa: 2 registros e o resumo cita Juraci
+  ok  o gráfico também segue a pessoa
+  ok  aparece "Limpar filtro"
+  ok  combinar filtros sem resultado: mensagem "Nada com este filtro"
+  ok  Limpar filtro volta ao padrão
+  ok  últimos 7 dias: 4 registros
+  ok  todo o período: 6 registros
+Planilha e imprimir:
+  ok  baixa a planilha .xlsx do que está filtrado
+  ok  imprimir monta a página com as 6 linhas
+Mostrar mais:
+  ok  mostra 100 e oferece "Mostrar mais"
+  ok  Mostrar mais traz o restante
+Quem não é Principal:
+  ok  a aba não aparece
+  ok  abrindo o endereço direto: cai na primeira tela liberada (Empresa) e o endereço é corrigido
+  ok  não sobra tela vazia nem aviso: aparece uma tela de verdade
+  ok  a busca geral não oferece a tela
+  ok  voltando a ser Principal, a tela reaparece
+  ok  sem erros no console
+Celular 390 px:
+  ok  não rola para o lado
+  ok  linhas e botões com toque confortável (83, 44, 44 px)
+  ok  detalhe abre na linha e cabe na tela
+  ok  painel do filtro abre e cabe na tela
+
+41 ok, 0 falha(s)
+exit 0
+== tools/testes/t_v0415.js
+Nuvem — gaveta e Atualizar agora (Nº 46):
+  ok  a gaveta Nuvem abre com o botão Atualizar agora
+  ok  depois de atualizar mostra "Atualizado às HH:MM"
+  ok  o botão volta a ficar ativo
+  ok  Esc fecha a gaveta
+  ok  Data.atualizar() existe e responde ok na demonstração
+  ok  sem erros no console
+Calibração — selo e lembrete (Nº 27):
+  ok  vence em 50 dias → aviso de 2 meses; em 5 dias → aviso de 7 dias; em 200 dias → nada (d7:q2, m2:q1)
+  ok  rodar de novo não duplica (cada aviso uma vez por vencimento)
+  ok  o aviso aparece para o Administrador no sino: "Calibração vence em 7 dias: Phmetro B"
+  ok  selo "Vence em 50 dias" e "Vence em 5 dias" na tela Equipamentos (Vence em 50 dias | Vence em 5 dias)
+  ok  tocar no aviso abre o equipamento
+Ajustes do Grok:
+  ok  botões do rodapé do menu da coluna com canto de 8 px (8px,8px,8px)
+  ok  a coluna App da planilha/impressão da Atividade traz só a versão
+Checagem de esc() (Nº 31):
+  ok  teste t_html_seg.js passa
+  ok  a checagem pega um dado novo montado sem esc() (prova negativa)
+
+15 ok, 0 falha(s)
+exit 0
+== tools/testes/t_v042.js
+— Antes de configurar
+  ok  aparelho no tema claro, sem configuração: Avisos com a ilustração padrão (v0.4.3)
+  ok  primeiro acesso aparece dentro do mesmo cartão
+— Administração › Empresa › Tela de entrar
+  ok  parte "Tela de entrar" aparece, com QUALIDADE como padrão
+  ok  faixa padrão = áreas do app; avisos de exemplo preenchidos
+  ok  foto sem fundo: reconhecida como recortada e guardada em sv2_cfg/entrar (image/webp)
+  ok  bordas transparentes cortadas e tamanho reduzido
+  ok  foto cabe com folga no documento (11 KB)
+  ok  a Administração avisa: "Recortada (sem fundo): efeito completo"
+  ok  cópia guardada no aparelho para a tela de entrar
+— Tema Claro: Avisos flutuando (PC)
+  ok  depois de sair: foto no arco e 3 avisos
+  ok  rodapé mostra o nome da empresa (da cópia do aparelho)
+  ok  PC claro: nada rola para o lado
+— Tema Escuro: Revista (PC)
+  ok  Revista: QUALIDADE atrás e na frente da foto e faixa dourada
+  ok  o formulário não fica em cima da faixa
+  ok  PC escuro: nada rola para o lado
+— Trocar textos e foto com fundo
+  ok  salva palavra em maiúsculas, faixa e avisos (aviso sem título sai)
+  ok  palavra curta demais: avisa e não salva
+  ok  foto com fundo: reconhecida e guardada como JPG
+  ok  a Administração avisa que vai numa moldura
+  ok  escuro com foto com fundo: moldura, CAMPO só atrás, faixa nova
+  ok  claro: avisos com o texto novo
+— Quem não é Administrador
+  ok  colaborador só vê (campos travados, sem Escolher/Salvar)
+  ok  lixeira tira a foto
+  ok  sem foto: Revista com a ilustração padrão, palavra atrás e na frente (v0.4.3)
+  ok  Administração avisa: sem foto aparece a ilustração padrão
+— Celular
+  ok  aparelho novo, sem cópia: ilustração padrão (v0.4.3)
+  ok  celular claro: arte em cima (380 px) e botão Entrar visível sem rolar (787 px)
+  ok  celular claro: nada rola para o lado
+  ok  celular escuro: arte em cima (380 px) e botão Entrar visível sem rolar (797 px)
+  ok  celular escuro: nada rola para o lado
+  ok  celular escuro: palavra em duas linhas, dentro da tela
+— Tema do aparelho e reduzir movimento
+  ok  sem escolha no app, segue o tema escuro do aparelho
+  ok  reduzir movimento: tudo parado e visível
+  ok  escolha feita no app vale mais que o tema do aparelho
+  ok  nenhum erro de JavaScript no PC
+  ok  nenhum erro de JavaScript no celular
+
+t_v042: 36 ok · 0 falha(s)
+exit 0
+== tools/testes/t_v044.js
+— Aba Programação
+  ok  tabela da Programação aparece, com "2 programadas a coletar" no cabeçalho (sem dia não conta)
+  ok  ordem pela data definida, mais nova em cima (situação não muda a ordem)
+  ok  programação sem dia definido não aparece na tabela
+  ok  marcador: Atrasada / Esta semana / Próximos dias / Programada
+  ok  tabela igual à do EFClaudian (v0.4.5): Data · Sem · Talhão · Tipo · Origem · Pontos · Coletor · Prof · Estádio · Prazo · Situação
+  ok  sem bolinhas na linha (v0.4.5): a coletada mostra só a situação
+  ok  cartões dos planos: RU12 coletada (100%), RU13 programada e atrasada (contorno), plano encerrado
+  ok  rótulo curto da área: JD01; quando dois iguais (RU35), mostra mais dígitos
+  ok  coletadas, canceladas e coletas sem programação também aparecem
+  ok  botões Coletado e Coleta avulsa no cabeçalho
+— Detalhe e Coletado
+  ok  detalhe mostra tipo, talhão e as análises
+  ok  Coletado já vem com a área marcada: vai gravar Solo e Nematoide
+  ok  sem profundidade: pede a profundidade
+  ok  data no futuro: não deixa
+  ok  2 amostras gravadas (Solo e Nematoide), no mesmo lote
+  ok  profundidade, coletor, pontos, laboratório de cada análise e semana preenchidos
+  ok  programação fica como coletada (data e quem lançou); criadoPor = quem lança (regra do Firebase)
+  ok  histórico (auditoria) registrado
+  ok  cabeçalho sem contagem (v0.4.5: tirado a pedido)
+— Travas dos planos
+  ok  plano encerrado: não aceita coleta da área (igual ao EFClaudian)
+— Coleta avulsa
+  ok  abre em Solo com a primeira análise marcada
+  ok  área do plano que já tem solo no período: barra e explica (recoleta no EFClaudian)
+  ok  duas análises marcadas = 2 amostras no mesmo lote
+  ok  fruta: identificação e rastreabilidade preenchidas pelo talhão (MAMÃO RU11 / 202611121811)
+  ok  fruta não pede profundidade nem estádio
+  ok  fruta gravada com a sigla no fim (etiqueta completa do IBRA)
+  ok  composto: sem talhão, análise marcada
+  ok  composto sem pilha / lote: avisa
+  ok  composto gravado (lote em maiúsculas, identificação e fertilizante padrão)
+  ok  as amostras novas aparecem em Amostras
+— Quem não lança
+  ok  visitante vê a tabela, sem Coletado nem Coleta avulsa
+— Celular
+  ok  celular: tabela sem rolar para o lado
+  ok  celular: Coletado abre em tela cheia, sem rolar para o lado
+  ok  nenhum erro de JavaScript no PC
+  ok  nenhum erro de JavaScript no celular
+
+t_v044: 35 ok · 0 falha(s)
+exit 0
+== tools/testes/t_v045.js
+— Cabeçalho
+  ok  ícone "!" ao lado do título Programação
+  ok  saiu "N programadas a coletar"
+  ok  botões na linha do título (PC)
+— Cartões dos planos
+  ok  há cartões de plano (2)
+  ok  cartão compacto (menos de 200 px de altura)
+  ok  cabeçalho do cartão numa linha: título, "01/01 a 31/12" e status
+  ok  sem "Ano 2026" nem o nome repetido no cartão
+  ok  cartão só com borda (sem sombra)
+  ok  plural certo: "1 de 1 área coletada"
+   programada: rgb(188, 220, 200)|1px|none | atrasada: rgb(231, 211, 159)|1px|none
+  ok  contornos finos (1 px), sem anel de brilho
+  ok  legenda virou o ícone "!" (escondida) e a frase do EFClaudian saiu do subtítulo
+  ok  ao passar o mouse no "!" aparece a legenda das cores
+  ok  Quem sem bolinha de iniciais
+— Gaveta aberta: cartões e barra não mudam
+  ok  cartões com a mesma forma e lugar com a gaveta aberta
+  ok  barra da tabela em uma linha com a gaveta aberta
+— Avulsa fica só na tabela de baixo
+  ok  programação avulsa não marca área no cartão do plano
+  ok  a avulsa aparece na tabela de baixo
+— Formulário: listas menores, 2 por linha
+  ok  Análises em lista suspensa fechada, com o resumo da escolha
+  ok  marcar mais uma: o botão mostra "Solo completo + 1"
+  ok  campos em 2 colunas no PC
+  ok  janela retrátil do formulário: 34 px sozinha, a altura do campo ao lado quando lado a lado (v0.6.5 ITEM 10)
+  ok  itens da lista com no máximo 34 px
+— Tabela como a do EFClaudian, etapas na gaveta
+  ok  colunas iguais às do EFClaudian: Data · Sem · Talhão · Tipo · Origem · Pontos · Coletor · Prof · Estádio · Prazo · Situação
+  ok  nenhuma bolinha de etapa na tabela
+  ok  cor só para problema: só "Atrasada" é pílula colorida
+  ok  ao clicar: gaveta com a linha do tempo Programada → Coletada → Enviada → Laudo
+— Solo + Raiz em linhas separadas depois da coleta
+    p|p1|NEMATOIDE=10/11/202646RU11TAI24NEMATOIDEAvulsa18Equipe A0-2017/11/2026Coletada 11/11/2026 || p|p1|SOLO=10/11/202646RU11TAI24SOLOAvulsa18Equipe A0-2017/11/2026Coletada 11/11/2026
+  ok  SOLO+RAIZ coletada vira 2 linhas: SOLO e NEMATOIDE
+  ok  gaveta da linha Nematoide mostra só a amostra de nematoide
+  ok  linha do tempo: Coletada feita, Enviada pendente
+— Tamanhos de letra e cantos (Programação, gaveta fechada)
+   letras: 13px 14px 15px 30px | cantos: 50% 7px 10px 5px 0px
+  ok  no máximo 7 tamanhos de letra (4)
+  ok  no máximo 3 raios de canto, fora círculos (50% 7px 10px 5px 0px)
+  ok  tema Escuro: sem rolar para o lado
+— Celular
+  ok  celular: sem rolar para o lado
+  ok  celular: a tabela já aparece na primeira tela (cartões compactos)
+  ok  celular: listas também 2 lado a lado
+  ok  celular: formulário sem rolar para o lado
+— Primeiro acesso em 800 px de altura
+  ok  botão do primeiro acesso inteiro na tela (1280×800)
+  ok  nenhum erro de JavaScript no PC
+  ok  nenhum erro de JavaScript no celular
+
+t_v045: 39 ok · 0 falha(s)
+exit 0
+== tools/testes/t_v046.js
+— Cartão abre a página do plano
+  ok  o cartão do plano é um link para a página dele
+  ok  abre #/coletas/plano/r3 com o título "SOLO+RAIZ · semestral · ano"
+  ok  a aba Programação continua marcada e o caminho mostra Coletas / Programação
+  ok  status e período (01/07 a 31/12) no cabeçalho
+  ok  sem Calendário e sem Histórico (decisão de 07/11)
+   áreas: p:RU11 f:RU12 f:RU13 f:RU14 f:RU15 f:RU16
+  ok  Faltam (6) com RU11 programada; Coletadas (0)
+  ok  a programada mostra o dia dentro do chip
+  ok  barra: "0% · 0 de 6 áreas coletadas"
+— Cores: o que não terminou é discreto, coletada forte
+   falta: 1px|rgb(233, 227, 213)|rgb(255, 254, 251)|rgb(91, 84, 67) | programada: 1px|rgb(188, 220, 200)|rgb(242, 248, 244)|rgb(91, 84, 67)
+  ok  claro: falta e programada com linha fina (1 px) e tom claro
+— Marcar áreas e barra flutuante
+  ok  barra flutuante: "2 marcadas · Programar · Lançar coletadas"
+  ok  marcada ganha o ✓ no canto
+  ok  a barra fica embaixo, dentro da tela
+— Programar
+  ok  Programar abre na gaveta com as 2 áreas marcadas
+  ok  com a gaveta aberta a barra de seleção some
+  ok  a já programada (RU11) aparece na escolha com o dia dela, desmarcada (dá para marcar e reprogramar — v0.4.9)
+  ok  dia fora do período: avisa e não grava
+  ok  prazo antes do dia: avisa
+    RU13TAI24/dia/16/Joana Silva | RU14TAI24/dia/12/Joana Silva | 2026-S2
+  ok  gravou 2 programações dentro do plano, no formato do EFClaudian (dia, pontos = ha × 4, quem)
+  ok  as 2 viram programadas, a gaveta fecha e a seleção limpa
+  ok  auditoria registrada (programar_plano, igual ao EFClaudian)
+— Lançar coletadas (com e sem programação)
+  ok  resumo: "Vai gravar 4 amostra(s): Solo 2, Nematoide 2"
+  ok  sem profundidade: pede
+    RU11TAI24:NEMATOIDE:p1:0-20 | RU11TAI24:SOLO:p1:0-20 | RU15TAI24:NEMATOIDE:-:0-20 | RU15TAI24:SOLO:-:0-20
+  ok  RU11 usa a programação p1; RU15 é coleta direta do plano (sem programação)
+  ok  a programação p1 fica marcada como coletada
+  ok  auditoria: coletado_programacao (RU11) e coletado_plano (RU15), como no EFClaudian
+  ok  as 2 vão para Coletadas e a barra sobe para 33%
+  ok  coletada não se marca (não é botão)
+  ok  claro: coletada em verde cheio
+— Folha de campo
+  ok  folha de campo com as 4 áreas que faltam
+— Tema escuro
+    rgb(43, 110, 72) | rgb(38, 40, 57) | 1px
+  ok  escuro: coletada em verde mais fechado; falta com linha fina escura
+— Voltar
+  ok  voltar do navegador leva de volta para a Programação
+  ok  o cartão do plano já mostra as 2 coletadas
+  ok  cartões da Programação com as mesmas cores (falta discreta)
+— Plano que não existe
+  ok  endereço de plano que não existe: "Plano não encontrado"
+— Celular
+  ok  celular: nada rola para o lado
+  ok  celular: a barra fica acima da barra de baixo, dentro da tela
+  ok  celular: Lançar coletadas abre em tela cheia sem rolar de lado
+— Visitante só vê
+  ok  visitante vê as áreas e a folha, sem marcar nem Programar
+  ok  nenhum erro de JavaScript no PC
+  ok  nenhum erro de JavaScript no celular
+
+t_v046: 40 ok · 0 falha(s)
+exit 0
+== tools/testes/t_v047.js
+— Programações do plano gravadas pelo EFClaudian (dentro do plano)
+   áreas: x:RU11 p:RU12 f:RU14 f:RU15 p:RU16 c:RU13
+  ok  a página do plano lê as programações de dentro do plano: RU11 atrasada, RU12 e RU16 (sem dia) programadas, RU13 coletada
+  ok  a tabela da Programação mostra as programações do plano (origem Plano, situação)
+  ok  programação sem dia fica só no plano (igual às outras)
+  ok  o cartão do plano também mostra a atrasada
+   marcadas no Coletado: rz~r1~2026-S2~RU11TAI24
+   amostras RU11: NEMATOIDE/sem progId SOLO/sem progId | sv2_prog: 0
+  ok  Coletado numa programação do plano: Solo + Nematoide sem progId e nada gravado em sv2_prog (igual ao EFClaudian)
+  ok  auditoria coletado_plano
+— Aba Ajustes
+  ok  abas "Áreas · Ajustes" na página do plano
+  ok  quatro blocos separados: Plano, Áreas, Período, Recoletas
+  ok  sem barra de seleção e sem botão Renovar (renovar fica no sino)
+— Plano: análises
+  ok  Salvar análises começa desligado
+  ok  marcar "Micronutrientes" liga o Salvar
+  ok  análises salvas no plano (a1, a2, a6)
+  ok  auditoria alterar_rodizio (formato do EFClaudian)
+— Áreas
+  ok  área coletada no período: caixinha travada ("não sai")
+  ok  busca filtra a lista de áreas
+  ok  tirar área programada avisa que a programação é cancelada
+  ok  confirmação: "Tirar 1 área(s) do plano?" com a programação
+  ok  RU17 entrou, RU12 saiu e a programação dela foi tirada do plano
+  ok  auditoria das áreas (entrou, saiu, programação cancelada)
+— Recoleta (Líder/Administrador: direto)
+  ok  escolher a área abre a gaveta "Liberar recoleta" com as amostras da coleta
+  ok  sem motivo: avisa
+  ok  "Outro" pede o motivo escrito
+  ok  gravou liberadas[período][área] no formato do EFClaudian
+  ok  auditoria recoleta_rodizio
+  ok  a recoleta aparece na tabela do bloco Recoletas
+  ok  RU13 volta para Faltam com o sinal de recoleta
+  ok  a coleta anterior não é apagada
+  ok  a trava libera nova coleta da área
+— Recoleta (Colaborador: pedido)
+  ok  colaborador vê os ajustes, mas não salva plano nem encerra
+  ok  colaborador: a gaveta vira "Pedir recoleta"
+   pedido: pendente|r1:2026-S2:RU11TAI24|Recoleta de RU11TAI24 (SOLO+RAIZ · semestral · 2026)
+  ok  virou pedido (sv2_aprov tipo recoleta_plano) para o superior
+  ok  o pedido aparece como "aguardando confirmação" e a área sai da lista
+  ok  o pedido chega no sino de quem confirma
+  ok  confirmado no sino: grava a recoleta com quem pediu e quem confirmou
+— Renovar: sugestão no sino
+  ok  o sino sugere renovar o plano do ano que acabou
+  ok  o plano deste ano só é sugerido a partir de 1º de dezembro
+   novo plano: FOLHA · trimestral · 2026|2026|FOLHA|T|RU17TAI24,RU18TAI24|a3|true|2026
+  ok  Renovar cria a cópia para o ano seguinte (mesmas áreas, análises e frequência)
+  ok  depois de renovar, a sugestão some
+  ok  auditoria criar_rodizio (renovação)
+— Encerrar período
+  ok  gaveta "Encerrar Nº semestre" pede o motivo de cada área que faltou
+  ok  sem motivo: avisa quais áreas faltam
+   confirmação: Cancelar a programação aberta?1 no prazo: RU16TAI24. Para encerrar o período, ela é cancelada com o motivo "período encerrado".Cancelar todas e encerrarVoltar
+  ok  com programação aberta, abre o aviso pedindo para cancelar todas (a de antes da recoleta não conta)
+  ok  "Voltar" não encerra e mantém a gaveta
+  ok  gravou fechados[período] = {ts, porNome, snap, motivos} (formato do EFClaudian)
+  ok  auditoria encerrar_rodizio
+  ok  o bloco Período mostra "Encerrado em…" e some o Encerrar e a recoleta
+  ok  período encerrado: a trava não aceita mais coleta
+  ok  as programações abertas do período ficam canceladas ("Período encerrado")
+— Retorno do Grok
+  ok  login sem @ não é barrado antes: tenta, e só depois de falhar avisa do @
+— Celular e tema escuro
+  ok  celular: sem rolagem para o lado
+  ok  celular: os blocos ficam um embaixo do outro
+  ok  sem erro de JavaScript
+t_v047: 52 ok · 0 falha(s)
+exit 0
+== tools/testes/t_v048.js
+— Barra e cabeçalho
+  ok  sem botão Filtro; "Limpar filtro" só aparece com filtro
+  ok  o botão do menu fica oculto e aparece ao passar o mouse
+— Ordenar
+  ok  menu abre com um botão único de ordenar (Ordem padrão)
+  ok  auditoria: sem maiúsculas de enfeite, Travar com cantos de 8 px e 34 px de altura
+  ok  1º toque: De A a Z, "Água…" primeiro
+  ok  2º toque: De Z a A, "Reagente antigo" primeiro e símbolo no cabeçalho
+  ok  3º toque: volta à ordem padrão e tira o símbolo
+  ok  Esc fecha o menu (uma camada)
+  ok  coluna de número: o botão único diz "menor para o maior"
+— Filtrar
+  ok  lista de valores com a contagem (Geladeira 2)
+  ok  busca por texto filtra a tabela e a lista; o cursor fica na busca
+  ok  desmarcar Geladeira tira as 2 linhas e o menu continua aberto
+  ok  "Marcar todos" fica pela metade
+  ok  marcar todos volta tudo e tira o símbolo
+  ok  desmarcar todos: nenhuma linha
+  ok  Limpar esta coluna
+  ok  Mínimo de 3 em diante: 3 itens
+  ok  símbolo de filtro e sublinhado no cabeçalho da coluna filtrada
+  ok  "Limpar filtro" aparece no lugar do antigo Filtro
+  ok  barra: Limpar filtro · contagem (sem caixa de busca da tabela)
+  ok  Limpar filtro limpa tudo e some
+— Total
+  ok  total na barra dos ícones, exatamente acima da coluna Valor, sem faixa: Total R$ 303,80
+  ok  quadradinho "Total" logo à esquerda do valor, sem texto embaixo (a contagem fica na dica)
+  ok  total segue o filtro da coluna e continua alinhado: Total R$ 231,38
+  ok  mudando colunas de lugar, o total acompanha a coluna Valor
+  ok  Valor na última coluna (embaixo dos ícones): o total desce para uma linha própria em cima da coluna (ou, se nem assim couber, fica em sequência)
+— Menu nasce da coluna
+  ok  menu da coluna cod: colado na coluna, pontinha apontando para ela e inteiro na tela
+  ok  menu da coluna loc: colado na coluna, pontinha apontando para ela e inteiro na tela
+  ok  menu da coluna sit: colado na coluna, pontinha apontando para ela e inteiro na tela
+— Travar
+  ok  travada: aviso e controles bloqueados
+  ok  cadeado no cabeçalho; filtro travado não conta para o Limpar filtro
+  ok  Limpar filtro limpa a coluna solta e mantém o filtro travado
+  ok  travado continua depois de reabrir o app
+  ok  destravar e limpar volta ao normal
+  ok  ordem travada em Valor: outra coluna avisa e não reordena
+— Colunas
+  ok  mover para a direita pelo menu
+  ok  mover para a esquerda volta
+  ok  arrastando: etiqueta da coluna e marca de onde vai cair
+  ok  soltar: Situação foi para antes de Item (sem abrir o menu)
+  ok  a ordem das colunas fica lembrada no aparelho
+  ok  planilha e impressão seguem a nova ordem
+  ok  "Voltar à ordem original das colunas"
+— Outras tabelas
+  ok  coluna de data: botão único com "mais recente primeiro"; o filtro pronto Período mora nela
+— Celular
+  ok  botão do menu visível no celular (toque)
+  ok  no celular o menu abre de baixo, na largura da tela
+  ok  voltar do celular fecha só o menu
+  ok  sem erros no console
+
+47 ok, 0 falha(s)
+exit 0
+== tools/testes/t_v049.js
+— Desprogramar no plano
+  ok  ponto de partida: RU11 atrasada, RU12 programada, RU14 falta
+  ok  marcar uma área programada mostra "Desprogramar 1" na barra
+  ok  pede confirmação antes de desprogramar
+  ok  RU12 saiu das programações do plano e as outras ficaram
+  ok  RU12 voltou para "Faltam" e pode ser programada de novo
+  ok  auditoria desprogramar_plano
+— Reprogramar
+  ok  só áreas já programadas marcadas: o botão vira "Reprogramar"
+   gaveta: SOLO+RAIZ · semestral · 2026Reprogramar1 · Áreas · 1 marcada(s)RU1109/11RU12RU14RU15RU16As que têm data já estão programadas: marque para mudar o dia, o prazo o
+  ok  gaveta "Reprogramar" mostra a área
+  ok  RU11 reprogramada: novo dia e novo coletor gravados no plano
+  ok  RU11 deixou de estar atrasada (agora programada)
+  ok  misturar área que falta com programada: o botão fica "Programar"
+  ok  as duas áreas ficaram programadas no mesmo dia (a que já tinha programação recebeu o novo dia)
+— Desprogramar na Programação
+  ok  a gaveta da programação tem a lixeira "Desprogramar" no canto de cima
+  ok  desprogramar pela gaveta tira do plano e fecha a gaveta
+— Novo plano (novo rodízio)
+  ok  botão "Novo plano" na Programação (Líder★/Administrador)
+  ok  gaveta "Novo plano de coleta" abre
+  ok  mesmo tipo + frequência + ano já existente: avisa e não cria
+  ok  sem áreas: pede para marcar
+  ok  sem análises: pede para marcar
+  ok  quinzenal sem a primeira segunda-feira: pede a data
+  ok  plano FOLHA trimestral criado com 2 áreas, 1 análise, sem programações
+  ok  abre a página do plano novo logo depois de criar
+  ok  auditoria criar_rodizio
+  ok  as 2 áreas aparecem em "Faltam" no plano novo
+— Permissão
+  ok  Colaborador não vê "Novo plano"
+— Coletado: Coletores alinhado com a Data
+   alinhamento: {"rot":0,"campo":0}
+  ok  Data da coleta e Coletores começam na mesma altura (rótulo e campo)
+— Tabela: lista do menu não trava
+  ok  a lista de valores tem rolagem própria (1442 > 250)
+  ok  ao desmarcar, a lista continua onde estava (rolagem 300)
+  ok  depois de desmarcar a lista rola livre (não volta ao ponto antigo): 80
+  ok  a roda do mouse continua rolando a lista: 200
+  ok  dá para desmarcar um segundo valor em seguida
+— Tabela: trocar de aba com o menu aberto
+  ok  um único toque na outra aba: a tela muda e o menu some (antes travava no 1º toque)
+  ok  voltando para a tabela o menu não reaparece
+  ok  tocar noutra coluna com o menu aberto abre o menu dela (1 toque)
+— Tabela: total e A-Z
+   total: {"txt":"R$ 2.749.103,80","cabe":true,"semSobrepor":true,"direita":true,"texto":"Total R$ 2.749.103,80","small":false,"larg":157,"col":157}
+  ok  valor grande cabe na caixa, não passa por cima de "Total" e fica alinhado à direita da coluna
+  ok  sem texto embaixo de "Total"
+  ok  número bem maior que a coluna: caixa cresce para a esquerda sem tocar em "Total"{"cabe":true,"semSobrepor":true,"direita":true,"cresceu":true}
+  ok  A-Z é um botão só: três toques voltam ao padrão
+— Celular
+  ok  celular: menu em folha com fundo escuro
+  ok  celular: tocar no fundo fecha o menu
+  ok  celular: botão voltar fecha o menu
+  ok  celular: "Novo plano" abre sem rolagem lateral
+  ok  sem erros no console
+
+43 ok, 0 falha(s)
+exit 0
+== tools/testes/t_v050.js
+Documentos — tabela:
+  ok  a área Documentos abre de verdade (não é mais a tela de "em breve")
+  ok  4 caixas de números: 1 vencido, 2 vencem em 15 dias, 1 sem data, 3 em dia (desativado fora da conta)
+  ok  Tabela | Calendário fica no lugar da contagem
+  ok  grupos Formulários (com OAB e N/A) · Regulatórios · Desativados, cada um em ordem alfabética
+  ok  o cabeçalho do grupo diz quantos há nele
+  ok  vencido em vermelho; em dia sem cor
+  ok  regulatório com validade mostra "Validade" no período
+Gaveta, mover de grupo e lançar entrega:
+  ok  gaveta: dados, prazo, lápis, lixeira no canto e Mover de grupo
+  ok  mover pergunta antes
+  ok  moveu para Regulatórios e o botão agora volta para Formulários
+  ok  e volta para Formulários
+  ok  Lançar entrega abre com o responsável já sugerido
+  ok  sem data: pede a data
+  ok  gravou em sv2_lanc igual ao EFClaudian (entregue por, entregue em hoje, quem lançou)
+  ok  volta para a gaveta do documento, já em dia e com a entrega na lista
+  ok  não deixa lançar duas vezes a mesma data
+  ok  Esc com o formulário preenchido pergunta antes de descartar
+  ok  descartar volta uma camada (para a gaveta do documento)
+  ok  Esc de novo fecha a gaveta
+  ok  regulatório com validade: o Líder/Principal informa a nova validade na entrega
+Cadastro, desativar e reativar:
+  ok  Novo documento grava no formato do EFClaudian (maiúsculas, ultimoBase vazio)
+  ok  aparece na tabela
+  ok  desativar pede o motivo
+  ok  desativou (nada apagado)
+  ok  foi para Desativados
+  ok  desativado: Reativar no lugar de Lançar, sem lixeira
+  ok  reativar
+  ok  tudo vai para a atividade (lançar, criar, desativar, reativar, mover)
+Calendário:
+  ok  Calendário no lugar da tabela
+  ok  abre no mês de hoje, com hoje marcado
+  ok  o dia do vencimento mostra o código
+  ok  tocar no dia mostra o que vence nele
+  ok  próximo mês, e aparece "Hoje" para voltar
+  ok  Hoje volta para o mês atual
+  ok  tocar no documento da lista abre a gaveta
+Caixas d’água:
+  ok  ordem alfabética (CXR01, CXR02, CXR10)
+  ok  caixa vencida com o prazo
+  ok  Lançar limpeza já vem com a data de hoje e sem "quem entregou"
+  ok  limpeza lançada
+Histórico e correção:
+  ok  mais recente em cima (a limpeza lançada por último)
+  ok  sem botão de novo e sem caixas de números no histórico
+  ok  lançamento: entregue por, observação e Corrigir (Principal)
+  ok  Principal corrige na hora: data nova, marcado alterado e histórico guardado
+  ok  a gaveta mostra a correção aplicada
+  ok  selo Corrigido na tabela
+Colaborador:
+  ok  colaborador vê "Pedir correção"
+  ok  o pedido vai para o superior em sv2_aprov, no formato do EFClaudian
+  ok  a linha mostra "Correção pendente"
+  ok  colaborador não tem Novo documento
+  ok  colaborador: lança, mas sem lápis, lixeira e mover
+  ok  o superior aprova pelo sino e a correção é aplicada
+Busca geral e Histórico do item:
+  ok  a busca geral acha o documento
+  ok  Enter abre a gaveta do documento
+  ok  Histórico do item: abre o histórico já filtrado por ele
+Data e hora no horário do aparelho:
+  ok  fmtDT usa a data local (21:52 de 08/11 não vira 09/11)
+  ok  sem erros no console
+Celular 390 px:
+  ok  não rola para o lado
+  ok  toque confortável (44, 44 px)
+  ok  calendário cabe na tela, dias com 44 px
+  ok  gaveta em tela cheia no celular
+  ok  sem erros no console (celular)
+
+61 ok, 0 falha(s)
+exit 0
+== tools/testes/t_v051.js
+Celular — menu da coluna aberto e 1 toque na página (Grok v0.4.11 A2):
+  ok  Saída: menu aberto como folha de baixo, com o fundo escuro
+  ok  Saída: o botão está embaixo do fundo escuro (o toque cai no fundo)
+  ok  Saída: o menu fechou
+  ok  Saída: o mesmo toque já abriu a ação (sem precisar de 2º toque)
+  ok  Saída: voltar fecha só a gaveta e fica em Materiais
+  ok  Entrada: menu aberto como folha de baixo, com o fundo escuro
+  ok  Entrada: o botão está embaixo do fundo escuro (o toque cai no fundo)
+  ok  Entrada: o menu fechou
+  ok  Entrada: o mesmo toque já abriu a ação (sem precisar de 2º toque)
+  ok  Entrada: voltar fecha só a gaveta e fica em Materiais
+Celular — toque numa linha com o menu aberto só fecha:
+  ok  toque numa linha: fecha o menu e a gaveta da linha não abre
+  ok  toque de novo na linha: abre a gaveta
+Celular — toque no fundo sobre a barra de cima só fecha (não abre a busca):
+  ok  toque no fundo em cima da busca: fecha o menu e a busca não abre
+Celular — X do menu e voltar continuam fechando uma camada só:
+  ok  voltar fecha só o menu
+  ok  sem erros no console (celular)
+PC — clicar fora do menu continua igual (v0.4.11):
+  ok  no PC não há fundo escuro
+  ok  no PC 1 clique em Saída fecha o menu e abre a Saída
+Tela de entrar quando a nuvem não responde (Grok v0.4.11 B1):
+  ok  PC: leitura recusada (App Check/permissão) → mostra o Entrar, não o Primeiro acesso
+  ok  PC: sem erros (erro)
+  ok  celular: leitura recusada (App Check/permissão) → mostra o Entrar, não o Primeiro acesso
+  ok  celular: sem erros (erro)
+  ok  PC: nuvem respondeu que não há Administrador → Primeiro acesso (projeto novo)
+  ok  PC: sem erros (vazio)
+  ok  celular: nuvem respondeu que não há Administrador → Primeiro acesso (projeto novo)
+  ok  celular: sem erros (vazio)
+
+25 ok, 0 falha(s)
+exit 0
+== tools/testes/t_v053.js
+PC 1280 — os 3 estados com o botão que alterna:
+  ok  começa aberto (240 px), 1º pontinho aceso, sem puxador
+  ok  um clique: só ícones (68 px), 2º pontinho, gravado neste aparelho
+  ok  só ícones: o nome some e vira etiqueta
+  ok  passar o mouse no ícone mostra o nome da área
+  ok  outro clique: recolhido, menu fora da tela e o puxador aparece
+  ok  recolhido: o conteúdo usa a largura toda (1280 px)
+  ok  recarregar a página mantém recolhido
+  ok  puxador fino (8 px) cresce ao passar o mouse (30 px)
+  ok  clicar no puxador abre o menu por cima (sem empurrar o conteúdo), 1 camada
+  ok  Esc fecha só o menu por cima; continua recolhido
+  ok  clicar fora fecha o menu por cima
+  ok  escolher uma área no menu por cima abre a área e o menu recolhe de novo
+  ok  no menu por cima, o botão fixa o menu aberto de novo (sem voltar de tela)
+  ok  sem erros no console
+Formas do puxador (A, B, C) e tema escuro:
+  ok  forma pa aparece
+  ok  forma pb aparece
+  ok  forma pc aparece
+  ok  escuro + só ícones ok
+Animações: só quando muda e respeitando "reduzir movimento":
+  ok  com "reduzir movimento" o puxador não anima
+  ok  redesenhar a tela não repete a animação do puxador
+Celular (390): nada muda
+  ok  no celular não há botão de alternar nem puxador
+  ok  o ☰ continua abrindo o menu como gaveta
+  ok  sem rolar de lado
+Total na linha dos ícones (Elias, 10/11):
+  ok  1180 px: Total na mesma linha dos ícones, sem linha extra
+  ok  1280 px: Total na mesma linha dos ícones, sem linha extra
+  ok  1366 px: Total na mesma linha dos ícones, sem linha extra
+
+26 ok, 0 falha(s)
+exit 0
+== tools/testes/t_v060.js
+PC 1280 — Cloro vazio e abas:
+  ok  a tela do Cloro abre pela área Inspeções
+  ok  sem bebedouros: mostra o aviso de cadastro inicial
+  ok  a aba Apontamentos continua como "em breve"
+PC 1280 — com 7 locais (mais de 5):
+  ok  com mais de 5 locais mostra 5 velocímetros
+  ok  aparece "Escolher locais"
+  ok  cada velocímetro mostra a média da semana do local (Almoxarifado|0,10 · Escritório|0,80 · Laboratório|—)
+  ok  os 5 velocímetros ficam na mesma linha
+  ok  meta: "N de 7 verificados hoje" (4 de 7 verificados hoje2 em aberto49 dias sem verificação)
+  ok  meta: 2 em aberto
+  ok  meta: dias sem verificação (bebedouros sem leitura)
+  ok  painel "A fazer" lista as pendentes
+  ok  bebedouro pendente aparece com Liberar/Recusar (para quem é superior)
+  ok  a gaveta de locais lista os 7
+  ok  com 5 marcados os outros 2 ficam travados (2)
+  ok  a escolha dos locais vale na tela (Escritório, Laboratório, Oficina, Portaria, Vestiário)
+  ok  e fica gravada neste aparelho
+PC 1280 — Nova verificação (gaveta em passos):
+  ok  abre a gaveta Nova verificação
+  ok  sem o botão "Lançar e próximo"
+  ok  rodapé com Cancelar e Lançar
+  ok  passos numerados na gaveta
+  ok  sem resultado: mostra o erro (o ponto já vem sugerido na ordem da rota)
+  ok  a gaveta abre com o próximo bebedouro sugerido
+  ok  a lista de pontos tem bebedouros, "fora da lista" e a caixa d’água
+  ok  digitar 0,15 mostra a faixa "Abaixo de 0,20" na hora
+  ok  o cursor continua no campo do resultado
+  ok  abaixo da faixa: aparecem Dosagem e Cloro depois
+  ok  Dosagem e Cloro depois alinhados (mesmo topo, altura e largura): {"dt":659,"ct":659,"dh":40,"ch":40,"dw":186,"cw":186}
+  ok  0,85 mostra "Conforme"
+  ok  conforme: a aplicação só aparece se marcar "Fiz aplicação"
+  ok  2,50 mostra "Acima de 2,00"
+  ok  cloro depois sem dosagem: pede a dosagem
+  ok  lançou e fechou a gaveta
+  ok  gravou: 0,15 → aplicou 50 ml → 0,90 = resolvido
+  ok  registro feito
+  ok  bebedouro com verificação em aberto hoje: explica e oferece a pendente
+PC 1280 — Detalhe com a linha do tempo da gota:
+  ok  o detalhe usa a linha do tempo com o tubo de fluido (a mesma da Calibração/Amostras)
+  ok  etapas: leitura, aplicar, medir de novo, fechar
+  ok  selo mostra "Em aberto · bloqueia em N h"
+  ok  rodapé: Só a aplicação e Medir de novo
+  ok  em aberto não oferece correção (só depois de fechada)
+  ok  Só a aplicação: pede só a dosagem
+  ok  registrou a aplicação de 40 ml e ficou faltando medir
+  ok  medir de novo 0,70: resolvido, com a dosagem de 40 ml
+  ok  fechada: aparece o lápis de correção no topo
+  ok  correção do Principal vale na hora e guarda o antes no histórico
+PC 1280 — 24 h, bloqueio e encerramento:
+  ok  passou 24 h sem nova verificação: ficou bloqueada
+  ok  o superior vê "Encerrar"
+  ok  encerrar exige o motivo
+  ok  encerrada com o motivo
+PC 1280 — dias sem verificação e bebedouros:
+  ok  há dias úteis sem verificação (48)
+  ok  justificar exige motivo de 5 letras ou mais
+  ok  justificativa gravada em sv2_cloro_falta
+  ok  o dia justificado sai da lista
+  ok  lançar depois grava a verificação como retroativa
+  ok  lista os 8 bebedouros
+  ok  liberar o bebedouro pendente o deixa ativo
+PC 1280 — foto do clorímetro:
+  ok  foto anexada aparece no passo da foto
+  ok  a verificação com foto foi lançada
+  ok  a foto foi para sv2_cloro_foto, com o mesmo código da verificação
+  ok  o detalhe mostra a foto
+PC 1280 — busca e proteção:
+  ok  a busca geral acha bebedouros
+  ok  nome de bebedouro com HTML é mostrado como texto (esc)
+  ok  sem rolagem para o lado no PC
+  ok  sem erros no console (PC)
+Celular 390 — mesma tela:
+  ok  celular: 5 velocímetros em 2 colunas (o último ocupa a linha)
+  ok  celular: sem rolagem para o lado e sem afastar a tela (innerWidth 390 px)
+  ok  celular: Dosagem e Cloro depois alinhados e com 40 px ou mais: {"dt":623,"ct":623,"dh":44,"ch":44,"dw":172,"cw":172,"h":44}
+  ok  celular: gaveta sem rolagem para o lado
+  ok  celular: voltar fecha a gaveta
+  ok  sem erros no console (celular)
+
+70 ok, 0 falha(s)
+exit 0
+== tools/testes/t_v061.js
+PC 1280 — tela em cartões (OPÇÃO 1):
+  ok  a aba Apontamentos abre
+  ok  sem apontamentos: mostra o aviso e convida a registrar
+  ok  o filtro padrão (esta semana) mostra os 5 desta semana
+  ok  meta: 4 em aberto de 7 (4 em aberto de 71 urgente1 NC vencida)
+  ok  meta: 1 urgente
+  ok  meta: 1 NC vencida
+  ok  o primeiro cartão é o mais recente, com categoria, setor e gravidade (EPICampo · Dois colaboradores sem luvaGraveEm andamentoNC aberta12/11/)
+  ok  os cartões trazem categoria, setor, gravidade, situação e o selo da NC
+  ok  reincidência conta o mesmo setor e categoria nos 30 dias (2 de acidente no Packing House; o de 40 dias não entra)
+  ok  a foto do apontamento aparece no cartão
+  ok  ações: Pareto, Setores e Novo apontamento
+  ok  o atalho dos urgentes filtra só os urgentes em aberto
+  ok  filtro Todos mostra os 7
+PC 1280 — novo apontamento (gaveta em passos, gravidade em botões):
+  ok  abre a gaveta
+  ok  cinco passos numerados
+  ok  a gravidade está em 4 botões grandes (não em janela retrátil)
+  ok  os 4 botões de gravidade: mesma linha, mesma altura e mesma largura
+  ok  Categoria e Setor alinhados (mesma linha, altura e largura)
+  ok  sem categoria: avisa
+  ok  sem setor: avisa
+  ok  sem gravidade: avisa
+  ok  ao escolher Grave, explica que vai para o sino do superior
+  ok  sem dizer se avisou o encarregado: avisa
+  ok  a foto escolhida aparece na gaveta
+  ok  lançou e a gaveta fechou
+  ok  gravou com gravidade, encarregado avisado, aberto e 1 foto
+  ok  a foto foi para sv2_fotos com refTipo apont
+  ok  o registro de atividade guardou o apontamento grave
+  ok  sem superior cadastrado, não manda aviso para ninguém (e não dá erro)
+PC 1280 — detalhe, NC e resolver:
+  ok  o detalhe usa a linha do tempo da gota
+  ok  a NC aparece na linha do tempo
+  ok  rodapé com Não procede, Mudar gravidade, NC e Resolver (Não procede · Mudar gravidade · Fechar NC · Resolver)
+  ok  os botões do rodapé ficam alinhados: mesma linha, mesma altura e mesma largura
+  ok  a gravidade mudou e a de quem registrou ficou guardada
+  ok  a gravidade antiga aparece riscada
+  ok  fechar a NC também deixa o apontamento resolvido
+  ok  NC sem responsável: avisa
+  ok  abrir NC põe o apontamento em andamento
+  ok  resolver grava o que foi feito e a foto do depois
+  ok  o detalhe separa as fotos do depois
+  ok  o detalhe avisa quando as fotos serão apagadas (LGPD)
+  ok  resolvido: aparece Reabrir
+  ok  reabrir volta para aberto
+PC 1280 — Pareto e setores:
+  ok  o Pareto lista as categorias por quantidade
+  ok  o Pareto explica os poucos vitais
+  ok  dá para agrupar por setor
+  ok  os setores vão para sv2_cfg/apont como {nome, ativo} (igual ao EFClaudian)
+  ok  o setor novo aparece no formulário
+PC 1280 — busca, proteção e Cloro intacto:
+  ok  a busca geral acha apontamentos
+  ok  apontamento com HTML no texto não executa nada (esc)
+  ok  a aba Cloro da v0.6.0 continua funcionando
+  ok  sem rolagem para o lado no PC
+  ok  sem erros no console (PC)
+Celular 390:
+  ok  celular: os cartões aparecem
+  ok  celular: sem rolagem para o lado
+  ok  celular: a tela não é empurrada para além dos 390 px (sem zoom-out) — 390 px
+  ok  celular: botões de gravidade do mesmo tamanho e com 44 px ou mais (44)
+  ok  celular: a gaveta não rola para o lado nem afasta a tela
+  ok  celular: os botões do rodapé do detalhe ficam do mesmo tamanho ({"h":true,"w":true,"min":44,"linhas":2})
+  ok  sem erros no console (celular)
+
+60 ok, 0 falha(s)
+exit 0
+== tools/testes/t_v0611.js
+Velocímetro com tamanho travado:
+  ok  900 px com 2 locais: todos com 114 px (114,114)
+  ok  900 px com 2 locais: alinhados à esquerda, sem esticar
+  ok  900 px: sem rolagem para o lado
+  ok  900 px/2: sem erros no console
+  ok  900 px com 5 locais: todos com 114 px (114,114,114,114,114)
+  ok  900 px com 5 locais: na mesma linha
+  ok  900 px: sem rolagem para o lado
+  ok  900 px/5: sem erros no console
+  ok  1280 px com 2 locais: todos com 114 px (114,114)
+  ok  1280 px com 2 locais: alinhados à esquerda, sem esticar
+  ok  1280 px: sem rolagem para o lado
+  ok  1280 px/2: sem erros no console
+  ok  1280 px com 5 locais: todos com 114 px (114,114,114,114,114)
+  ok  1280 px com 5 locais: na mesma linha
+  ok  1280 px: sem rolagem para o lado
+  ok  1280 px/5: sem erros no console
+  ok  1600 px com 2 locais: todos com 114 px (114,114)
+  ok  1600 px com 2 locais: alinhados à esquerda, sem esticar
+  ok  1600 px: sem rolagem para o lado
+  ok  1600 px/2: sem erros no console
+  ok  1600 px com 5 locais: todos com 114 px (114,114,114,114,114)
+  ok  1600 px com 5 locais: na mesma linha
+  ok  1600 px: sem rolagem para o lado
+  ok  1600 px/5: sem erros no console
+  ok  celular com 2 locais: 114 px, sem esticar e sem rolagem (114,114)
+Passos numerados e aviso de resolvido:
+  ok  sem resultado: passos 1,2,3,4 (1 Ponto | 2 Resultado | 3 Foto | 4 Registro)
+  ok  com 0,15: passos 1 a 5, Registro é o 5 (1 Ponto | 2 Resultado | 3 Foto | 4 Aplicação · obrigatória abaixo de 0,20 | 5 Registro)
+  ok  apagando o valor: volta a 1 a 4, sem pular o 4 (1 Ponto | 2 Resultado | 3 Foto | 4 Registro)
+  ok  dentro da faixa: Aplicação aparece e Registro vira 5
+  ... aviso:
+  ok  lançar com cloro depois dentro da faixa avisa "Resolvido: dentro da faixa."
+  ok  lançar sem o cloro depois continua avisando que falta a nova verificação
+  ok  sem erros no console
+
+32 ok, 0 falhas
+exit 0
+== tools/testes/t_v062.js
+PC 1280 — sem auditoria e abrir:
+  ok  a aba Auditoria interna saiu do "em breve"
+  ok  sem RNC: aviso e "Abrir auditoria" (para o líder)
+  ok  o número da RNC vem sozinho (RNC-ano-01)
+  ok  sem tipo: pede o tipo
+  ok  sem prazo: pede o prazo
+  ok  abriu a RNC em "registro", com o auditor
+  ok  depois de abrir, já entra no registro da NC 01
+Registrar NC (gaveta em passos):
+  ok  cinco passos: Fotos, Onde, O que está errado, Gravidade e prioridade, Quem responde
+  ok  sem local: avisa
+  ok  leis entram como etiquetas (botão Adicionar e tecla Enter)
+  ok  gravidade Maior sugere G = 5 na GUT
+  ok  GUT pela metade: pede as três notas
+  ok  piso da GUT: G = 5 com 10 pontos fica Médio (GUT = 5 × 2 × 1 = 10MédioGravidade 5 nunca fica BaixoTirar a GUT)
+  ok  cada nota explica o que significa (padrão do EFClaudian)
+  ok  sem dizer se estava ciente: avisa
+  ok  Responsável e "Estava ciente?" na mesma linha e da mesma altura (1460/1460/40/40)
+  ok  rodapé: Cancelar · Salvar e próxima · Salvar
+  ok  a NC 01 foi gravada no formato do EFClaudian (leis, lei, ciente, fotosAntes)
+  ok  tratativa no padrão do EFClaudian (Maior/Alto = com análise)
+  ok  a GUT ficou em sv2_rnc_gut (60, Alto, com histórico)
+  ok  a foto ficou em sv2_rnc_foto (papel antes)
+  ok  "Salvar e próxima" abre a NC 02 no mesmo local, com o mesmo responsável
+Tela tudo à mostra, agrupar e ordenar:
+  ok  cada responsável é um painel, em ordem, "Sem responsável" no fim (Jackson, Josineldo, Marcelo Bruno, Zoe, Sem responsável)
+  ok  dentro do Josineldo os locais em ordem (CBR 01, CBR 02, CBR 03)
+  ok  todas as NCs à mostra, sem abrir nada, com a foto
+  ok  cada painel tem Apresentar e a impressora
+  ok  sem rolagem para o lado
+  ok  por prioridade: o local com a NC mais alta vem primeiro (NC 01, NC 02, NC 03, NC 04)
+  ok  agrupar por setor: Campo e Estrutura
+  ok  agrupar por local: um painel por local (9)
+  ok  agrupar por achado usa o nome curto quando existe
+  ok  a escolha do agrupamento fica gravada neste aparelho
++ NC aqui, detalhe e tirar NC:
+  ok  "+ NC aqui" já vem com local, área e responsável (NC 11)
+  ok  detalhe da NC com local, GUT e sugestão
+  ok  no registro: lixeira (tirar) no alto e Corrigir
+  ok  Corrigir abre a NC com tudo preenchido (inclusive a GUT)
+  ok  tirar sem motivo: pede o motivo
+  ok  a NC tirada some da tela mas fica guardada, com o motivo
+Apresentação (Nº 45):
+  ok  abre em tela cheia, na ordem do relatório (Campo primeiro)
+  ok  PC: Anterior e Próxima com 36 px de altura e do tamanho do texto (108×36, 108×36)
+  ok  seta para a direita vai para a próxima NC
+  ok  por pessoa: Josineldo tem 4 como responsável + 1 como corresponsável = 5
+  ok  Corrigir: 9 campos e a segunda pontuação GUT
+  ok  o que foi digitado continua depois de marcar a GUT
+  ok  correções gravadas na NC (encarregado, local e 2ª GUT 64)
+  ok  cada correção ficou no histórico (apresAlt: antes, depois, quem)
+  ok  depois de salvar, volta para a NC (sai da correção)
+  ok  Esc fecha só a correção (uma camada)
+  ok  Esc de novo fecha a apresentação
+  ok  o detalhe da NC mostra o que foi corrigido na apresentação
+Relatório:
+  ok  completo: gráfico na folha 1, uma folha por NC (9) e o índice no fim (11 folhas)
+  ok  as fotos das NCs entram nas folhas
+  ok  só o visual: o gráfico e o índice (2 folhas)
+  ok  a impressora do painel já escolhe as folhas daquela pessoa
+  ok  folhas de um responsável: folha de rosto dele + as 2 NCs, sem índice
+Enviar, conferir e fechar:
+  ok  enviar mostra quem recebe e quem é avisado no app
+  ok  RNC enviada
+  ok  o responsável com conta no app recebe o aviso no sino
+  ok  depois de enviada: some "Nova NC" e "+ NC aqui"; aparece "Conferir o retorno"
+  ok  a apresentação continua abrindo e corrigindo depois de enviada
+  ok  a conferência começa pela primeira sem retorno
+  ok  sem dizer se foi resolvida: avisa
+  ok  as 9 NCs conferidas, uma atrás da outra (Salvar e ir para a próxima)
+  ok  todas conferidas: aparece "Fechar a RNC"
+  ok  fechar pede confirmação com o resumo (8 de 9 resolvidas)
+  ok  RNC fechada
+  ok  fechada: a apresentação abre, mas sem corrigir
+  ok  com outra auditoria ainda aberta, não oferece abrir uma nova
+  ok  com tudo fechado, o líder pode abrir a próxima auditoria
+Quem não é líder:
+  ok  funcionário comum não abre auditoria nem registra NC
+  ok  mas vê as NCs
+Apontamentos (defeito da v0.6.1 corrigido):
+  ok  NC de apontamento sem prazo agora é recusada (antes passava em branco)
+  ok  NC com prazo para hoje agora é aceita (antes dava "Informe o prazo")
+  ok  sem erros no console (PC)
+Celular 390 e tema escuro:
+  ok  celular: sem rolagem para o lado e sem afastar a tela
+  ok  celular: Apresentar e impressora na mesma linha e da mesma altura em todos os painéis
+  ok  celular: Anterior e Próxima do mesmo tamanho e na altura de botão do aparelho (139×36, 139×36; 44 px em tela de toque)
+  ok  celular: a gaveta da NC não arrasta para o lado
+  ok  sem erros no console (celular)
+
+79 ok, 0 falhas
+exit 0
+== tools/testes/t_v063.js
+Selos na auditoria e abrir a análise:
+  ok  depois de enviada, cada NC mostra o selo da análise ("Sem análise")
+  ok  NC de risco baixo é tratativa direta (selo "Sem o que foi feito")
+  ok  o detalhe da NC tem o botão "Análise"
+  ok  quem é o responsável pela resposta abre a análise para escrever
+  ok  gaveta em 7 passos (contenção, 5 Porquês, Ishikawa, causa, outra área, 5W2H, eficácia)
+  ok  aviso do que o risco Alto pede e do que falta
+  ok  trilha PDCA (Planejar, Fazer, Checar, Agir)
+  ok  Ishikawa desenhado (espinha de peixe)
+Escrever a análise:
+  ok  o que foi digitado continua depois de acrescentar causas no Ishikawa
+  ok  causas entram no Ishikawa; a primeira já fica como principal
+  ok  tocar numa causa marca a principal; a categoria (6M) vem dela
+  ok  tirar uma causa: ela fica guardada, marcada como tirada
+  ok  "Usar o último por quê" preenche a causa
+  ok  outra área = Sim sem dizer quais: avisa
+Ação 5W2H por cima da análise:
+  ok  a ação abre no lugar da análise, sem camada nova (gv,fm)
+  ok  ação com quem sem conta no app: avisa
+  ok  depois de salvar a ação, volta para a análise com tudo o que estava escrito
+  ok  a ação ficou em sv2_rnc_plano no formato 5W2H do EFClaudian
+  ok  quem faz a ação recebe o aviso no sino
+  ok  a ação aparece em cartão, com Editar, Cancelar e Concluir
+  ok  análise gravada (causa, porquês, Ishikawa com principal, 6M, outra área, contenção, revisão)
+  ok  o selo vira "Análise completa" e "0 de 1 ação feita"
+  ok  o texto guardado no aparelho some quando a nuvem confirma
+Conferir o retorno com a análise:
+  ok  a conferência mostra o que falta para marcar Resolvida
+  ok  Resolvida com ação aberta: o líder precisa escrever o motivo da liberação
+  ok  concluir a ação grava "feita" e volta para a análise
+  ok  com a análise completa e a ação feita, marca Resolvida sem liberação
+Eficácia:
+  ok  com tudo feito, o rodapé oferece "Eficácia"
+  ok  sem escolher: pede eficaz ou não
+  ok  eficácia gravada (efic) e o selo mostra "Eficaz"
+Quem não é o responsável, troca de responsável e tratamento:
+  ok  NC de outro responsável: só ver (sem campos), mostrando quem responde
+  ok  o líder troca o responsável com motivo (respHist)
+  ok  agora quem recebeu escreve a análise
+  ok  tratativa direta: só "o que foi feito" e quando
+  ok  trocar para com análise (tratHist) mostra os 7 passos
+Conflito e texto guardado no aparelho:
+  ok  se outra pessoa salvou antes, não grava por cima e avisa
+  ok  o texto fica guardado neste aparelho
+  ok  ao abrir de novo, oferece "Usar o texto guardado"
+  ok  e recupera o texto
+Relatório com a folha da análise:
+  ok  completo: cada NC com análise ganha a sua folha (com o Ishikawa), e as folhas seguem numeradas (14)
+  ok  sem erros no console (auditoria)
+Qualidade › Análise de problemas:
+  ok  a aba saiu do "em breve" e mostra o vazio
+  ok  reclamação sem cliente: avisa
+  ok  abriu a ANP-ano-01 no formato do EFClaudian
+  ok  já abre a análise para o responsável escrever
+  ok  6 passos (sem "outra área", que é da NC)
+  ok  a análise e a ação ficaram em sv2_analise
+  ok  a lista mostra "Análise completa"
+  ok  eficaz conclui a análise e ela passa a só ver
+Do apontamento:
+  ok  o detalhe do apontamento tem "Analisar" (para o líder)
+  ok  abre a nova análise já com os dados do apontamento
+  ok  a ANP-02 ficou ligada ao apontamento
+  ok  quem não é o responsável vê a análise sem campos
+  ok  depois, o apontamento mostra o número da análise
+  ok  sem erros no console (PC)
+Celular 390:
+  ok  celular: trocar de gaveta não afasta a tela (innerWidth 390)
+  ok  celular: Editar, Cancelar e Concluir na mesma linha
+  ok  sem erros no console (celular)
+
+58 ok, 0 falhas
+exit 0
+== tools/testes/t_v064.js
+Editor no registro da NC (PC):
+  ok  cada miniatura tem o botão "Marcar"
+  ok  o editor abre em tela cheia (uma camada)
+  ok  PC: painel ao lado, Desfazer na grade das ferramentas, ao lado de Numerar (Círculo, Seta, Texto, Borrar, Numerar, Desfazer)
+  ok  PC: a foto à esquerda e o painel de 300 px à direita
+  ok  Texto: tocar na foto abre o campo do texto
+  ok  círculo, seta numerada, texto e borrado entram nas marcas (c,s1,t:fio solto,b)
+  ok  a lista das marcas mostra as 4
+  ok  tirar qualquer marca pela lista (o círculo saiu)
+  ok  Desfazer tira a última
+  ok  Pronto: a foto do formulário passa a ser a marcada, com a original e as marcas guardadas
+  ok  a miniatura mostra "Marcas · 2" e volta para o formulário
+  ok  abrir de novo continua as marcas
+  ok  Esc com marca nova pergunta antes de descartar
+  ok  descartar fecha o editor e a foto fica como estava
+  ok  gravado em sv2_rnc_foto: dataUrl (com marcas), base (original), marcas, marcadoPor e marcadoEm
+Ver grande e marcar a foto gravada:
+  ok  a foto grande mostra quantas marcas, quem marcou e quando
+  ok  a chave "Original" mostra a foto sem as marcas
+  ok  "Marcas" abre o editor com as marcas da foto gravada
+  ok  tirar todas as marcas grava um registro novo com a original; o anterior continua guardado
+Borrar (LGPD) e quem não é líder:
+  ok  foto com parte borrada: quem não é líder não vê a original
+  ok  o líder vê a chave "Original"
+  ok  Esc fecha a foto grande
+Apontamentos e Cloro:
+  ok  apontamento: marcar a foto antes de enviar
+  ok  gravado em sv2_fotos com a original e as marcas
+  ok  cloro: a foto do clorímetro marcada, com a original guardada
+  ok  sem erros no console (PC)
+Celular 390:
+  ok  celular: Cancelar/Pronto no alto, cores e grossura e, embaixo, as 6 ferramentas na mesma linha
+  ok  celular: tela escura (rgb(18, 20, 28))
+  ok  celular: nada arrasta para o lado
+  ok  sem erros no console (celular)
+
+30 ok, 0 falhas
+exit 0
+== tools/testes/t_v065.js
+Aba Água (PC):
+  ok  Coletas tem a aba Água
+  ok  o título é Água
+  ok  uma caixa do projeto "Rodízio dos bebedouros" (só leitura)
+  ok  a caixa mostra a próxima coleta e quais bebedouros
+  ok  OPÇÃO 2: a tela tem só as caixas e a tabela; o botão "Acompanhamento (3)" fica no topo
+  ok  a gaveta mostra o prazo do laudo e a média por laboratório
+  ok  acompanhamento: recoleta, ação corretiva e laudo atrasado
+  ok  o cabeçalho resume as pendências
+  ok  contaminado é o próximo: Lançar da gaveta abre a Nova coleta como Recoleta, com ele marcado
+  ok  Esc volta uma camada só (do formulário para a gaveta do acompanhamento)
+  ok  Esc de novo fecha a gaveta
+Bebedouro novo no rodízio (regra do Elias, 11/11 21:56):
+  ok  bebedouro novo entra como o próximo, junto com o que está há mais tempo sem coleta (BR 06 + BR 01)
+  ok  a caixa do rodízio já mostra o novo
+  ok  na Nova coleta ele vem marcado, e dá para trocar por outro (BR 01, BR 06)
+  ok  liberdade de escolher outro: desmarcou o BR 06 e marcou o BR 03
+  ok  a tabela mostra as 7 coletas
+  ok  a coleta cancelada aparece como Cancelada
+  ok  não conforme aparece na tabela
+  ok  sem erros no console
+Detalhe da coleta não conforme:
+  ok  abre a gaveta com o ponto e a situação
+  ok  ciclo: Coletada, Enviada, O.S, Resultado, Compra
+  ok  mostra o agente e a gravidade
+  ok  mostra o cartão da ação corretiva (v0.6.6: conduzida aqui)
+  ok  lixeira no canto de cima (só Líder ★/Administrador)
+  ok  Esc fecha a gaveta
+Envio e resultado (coleta pendente do poço):
+  ok  botões Informar envio e Registrar resultado
+  ok  gravou envio, O.S e nº da solicitação (2026-11-10)
+  ok  volta ao detalhe, agora com Corrigir envio
+  (envio antes da coleta)
+  ok  o envio não pode ser antes da coleta
+  ok  não conforme sem agente: pede o agente
+  ok  não conforme sem gravidade: pede a gravidade
+  ok  gravou resultado não conforme com agente, gravidade e data do laudo
+  ok  mandou o aviso de água não conforme
+  ok  a recoleta do poço entrou no acompanhamento
+  ok  registrou no histórico (alterar_coleta_agua)
+Pedir recoleta:
+  ok  coleta conforme de bebedouro tem Pedir recoleta
+  ok  motivo curto é recusado
+  ok  gravou a recoleta pedida com motivo, quem e quando
+  ok  o botão some depois de pedir
+Nova coleta: rodízio, mesclada, recoleta, avulsa:
+  ok  abre o formulário
+  ok  havendo recoleta pendente, o tipo já vem Recoleta
+  ok  rodízio: vêm marcados os 2 há mais tempo sem coleta (BR 01, BR 02)
+  ok  rodízio lançou uma amostra por bebedouro marcado (1)
+  ok  ficou ligada ao calendário do rodízio (projetoId legado + ocorrência)
+  ok  rodada, resultado pendente e semana gravados
+  ok  mesclada lançou uma amostra com os 5 bebedouros
+  ok  recoleta lista as pendentes (3)
+  ok  recoleta lançou uma para cada marcada, ligada à original (recoletaDe)
+  ok  depois de lançadas, as recoletas saem do acompanhamento
+  ok  avulsa sem ponto: pede o ponto
+  ok  outro ponto sem nome: pede o nome
+  ok  quantidade inválida é recusada
+  ok  avulsa gravou o ponto digitado, sem ligar ao rodízio
+  ok  data futura é recusada
+Cancelar e prazos:
+  ok  cancelar sem motivo é recusado
+  ok  cancelou com motivo (nada é apagado)
+  ok  o detalhe mostra Cancelada e a lixeira some
+  ok  prazo fora de 1 a 60 é recusado
+  ok  gravou os prazos em sv2_cfg/agua e manteve o resto
+  ok  o prazo novo vale na hora (laudos atrasados recalculados)
+Busca e aviso (sino):
+  ok  a busca geral acha coletas de água
+  ok  sem erros no console (PC)
+Celular (390):
+  ok  a aba Água não arrasta para o lado
+  ok  botões com 44 px ou mais (44, 44, 44, 44, 44, 44)
+  ok  o detalhe no celular não arrasta para o lado
+  ok  o formulário no celular não arrasta para o lado
+  ok  sem erros no console (celular)
+
+67 ok, 0 falhas
+exit 0
+== tools/testes/t_v066.js
+Fotos vencidas (7 dias depois da conclusão):
+  ok  ação concluída há 10 dias: fotos eliminadas (dataUrl vazio) e marcado fotosApagadas
+  ok  o texto da etapa continua
+  ok  fica registrado no histórico
+Abrir ação corretiva (coleta não conforme sem ação):
+  ok  detalhe mostra, na seção Ação corretiva, o botão Abrir ação corretiva
+  ok  formulário com o agente encontrado
+  ok  sem responsável: pede o responsável
+  ok  prazo no passado é recusado
+  ok  sem o que fazer: pede o texto
+  ok  gravou a ação na coleta (mesmo formato do EFClaudian)
+  ok  avisou o responsável
+  ok  depois de abrir, mostra a ação (Tratativas 0, Ação aberta)
+Etapas com fotos e concluir:
+  ok  formulário Registrar a etapa 1
+  ok  etapa sem texto é recusada
+  ok  duas fotos, a primeira com marca (Marcas · 1)
+  ok  gravou a etapa com 2 fotos
+  ok  a foto marcada guarda a original e as marcas (sv2_agua_foto)
+  ok  a gaveta mostra a etapa com as 2 miniaturas
+  ok  tocar na foto abre a foto grande
+  ok  Esc fecha só a foto grande
+  ok  formulário Concluir a ação
+  ok  concluiu com a etapa final (Conclusão)
+  ok  mostra Ação concluída, o aviso "Fotos até" e some Registrar etapa
+  ok  a ação concluída sai do acompanhamento
+PDF da ação:
+  ok  imprime a ação com as tratativas e as 2 fotos
+  ok  o A4 deitado vale só durante a impressão
+Detalhe da coleta mostra a ação; sino abre a ação:
+  ok  a coleta mostra o cartão da ação
+  ok  na ação antiga aparece "2 foto(s) eliminada(s)"
+  ok  o aviso do sino abre a ação direto, de qualquer tela
+Relatório de água por local:
+  ok  formulário com período e a contagem
+  ok  período invertido é recusado
+  ok  gera o relatório com o resumo por local, o total e cada local
+  ok  coleta cancelada fica fora
+  ok  sem as avulsas: caixas e poços ficam fora
+  ok  sem erros no console (PC)
+Celular (390):
+  ok  detalhe da coleta: 2 botões no rodapé numa linha, 44 px (44, 44)
+  ok  Abrir ação corretiva fica na seção da ação, com 44 px
+  ok  formulário Abrir ação não arrasta para o lado
+  ok  a ação no celular não arrasta para o lado
+  ok  sem erros no console (celular)
+
+39 ok, 0 falhas
+exit 0
+== tools/testes/t_v067.js
+Caixas dos projetos:
+  ok  três caixas (rodízio, canal, caixas) e a caixa Novo projeto
+  ok  a caixa mostra a frequência com nome e as duas análises
+Detalhe do projeto (OPÇÃO 1) e ações:
+  ok  abre o projeto no calendário do mês (OPÇÃO 2), na data atrasada
+  ok  ações da primeira data: Remarcar, Não vai ter, Lançar
+  ok  lixeira (desativar) no canto e Editar no rodapé
+  ok  Não vai ter sem motivo é recusado
+  ok  registrou "não houve" com o motivo na ocorrência
+  ok  a próxima passa a ser a data seguinte
+  ok  (a próxima não pede confirmação agora)
+  ok  remarcar para o passado é recusado
+  ok  remarcou só esta data (projeto sem rodízio não realinha)
+  ok  o detalhe mostra "era …" e Remarcada
+Lançar a coleta do projeto (2 pontos × 2 análises):
+  ok  Nova coleta vem como Projeto, com o nome e a data
+  ok  os 2 pontos e as 2 análises já vêm marcados
+  ok  lançou 4 coletas (uma por ponto e por análise)
+  ok  tipo Projeto, mesma ocorrência e rodada; cada análise com o seu laboratório
+  ok  a data ficou Lançada no calendário do projeto
+Rodízio (legado): remarcar realinha as seguintes:
+  ok  avisa que as seguintes contam da nova data
+  ok  o rodízio virou documento, remarcou e realinhou a cada 15 dias
+Novo projeto, aviso de repetido, editar e desativar:
+  ok  abre o editor
+  ok  sem nome: pede o nome
+  ok  sem pontos: pede os pontos
+  ok  pontos por vez maior que os pontos é recusado
+  ok  avisa que os bebedouros já estão no rodízio com a mesma análise
+  ok  gravou: 3 pontos, 1 por vez, quinzenal, analiseIds e analiseId (para o EFClaudian)
+  ok  depois de salvar abre o projeto (quinzenal)
+  ok  mandou o aviso de pontos repetidos
+  ok  o resumo do editor mostra "trimestral"
+  ok  editou para trimestral (13 semanas)
+  ok  desativou com motivo (nada apagado)
+  ok  a caixa do projeto desativado sumiu
+Aviso para confirmar (dia útil anterior):
+  ok  avisou para confirmar a coleta do dia útil seguinte (sozinho ao entrar ou agora: 0)
+  ok  não repete o mesmo aviso
+Calendário do mês:
+  ok  as datas do mês aparecem marcadas; a próxima vem selecionada
+  ok  a seta troca de mês
+  ok  tocar numa data mostra ela embaixo com os botões
+Cadastros › Pontos de água:
+  ok  a aba Cadastros lista os pontos de água
+  ok  nome repetido é recusado
+  ok  cadastrou o açude
+  ok  desativou o ponto (aparece Inativo)
+  ok  ponto inativo sai das listas de projeto e da avulsa
+  ok  sem erros no console (PC)
+Celular (390):
+  ok  a aba Água não arrasta para o lado
+  ok  calendário no celular: sem rolar para o lado, botões 44 px
+  ok  o editor no celular não arrasta para o lado
+  ok  sem erros no console (celular)
+
+46 ok, 0 falhas
+exit 0
+== tools/testes/t_v068.js
+Dia local dos carimbos (registro feito às 22h em Russas = 01h UTC do dia seguinte):
+  ok  diaLocal e fmtD dão 12/11 (antes davam 13/11)
+  ok  data pura e vazia voltam iguais
+  ok  Aprov.pedir passou a ter proteção
+Pedido de autorização que falha:
+  ok  devolve vazio em vez de quebrar (null)
+  ok  mostra o aviso "Não deu para enviar o pedido"
+Início:
+  ok  Coletas e Inspeções com o texto de hoje (não mais "chega na v0.4/v0.6")
+  ok  sem erros no console (PC)
+Celular (390):
+  ok  busca do topo com 44 px (44)
+  ok  campos da Empresa com 44 px (44, 44, 44, 44, 44, 44, 44, 44)
+  ok  sem erros no console (celular)
+
+10 ok, 0 falhas
+exit 0

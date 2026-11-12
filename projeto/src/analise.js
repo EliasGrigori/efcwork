@@ -63,7 +63,7 @@ function anSelo(ctx) { const I = anInfo(ctx); if (!I) return ''; const f = anFal
   const l = anAtivas((p || {}).acoes), at = l.filter(a => anAcSt(a) === 'atrasada').length, fe = l.filter(a => a.st === 'feita').length;
   const ef = p && p.efic ? (p.efic.res === 'eficaz' ? '<span class="pill ok">Eficaz</span>' : '<span class="pill cr">Não eficaz</span>') : '';
   return '<span class="pill ' + t[1] + '">' + esc(t[0]) + '</span>' + (l.length ? '<span class="pill ' + (at ? 'cr' : fe === l.length ? 'ok' : '') + '">' + (at ? at + (at > 1 ? ' ações atrasadas' : ' ação atrasada') : fe + ' de ' + l.length + (l.length > 1 ? ' ações feitas' : ' ação feita')) + '</span>' : '') + ef; }
-function anEficDesde(I) { const l = anAtivas((I.doc || {}).acoes), ds = l.map(a => a.feitaEm).filter(Boolean).concat(I.nc && I.nc.ret ? [I.nc.ret.data || String(I.nc.ret.ts || '').slice(0, 10)] : []).sort(); return ds.length ? addDias(ds[ds.length - 1], AN_EFIC_DIAS) : ''; }
+function anEficDesde(I) { const l = anAtivas((I.doc || {}).acoes), ds = l.map(a => a.feitaEm).filter(Boolean).concat(I.nc && I.nc.ret ? [I.nc.ret.data || diaLocal(I.nc.ret.ts)] : []).sort(); return ds.length ? addDias(ds[ds.length - 1], AN_EFIC_DIAS) : ''; }
 function anPdca(I, d) {
   const l = anAtivas(d.acoes), f = anFalta(I, d);
   const st = [['P', 'Planejar', 'análise e ações', !f.length && (I.direta || l.length > 0)], ['D', 'Fazer', 'ações feitas', I.direta ? !f.length : l.length > 0 && l.every(a => a.st === 'feita')],

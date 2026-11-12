@@ -1,7 +1,7 @@
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.6.7';
+const VERSAO = '0.6.8';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -89,7 +89,10 @@ const perfilLabel = u => !u ? '' : u.perfil === 'secundario' && u.estrela ? PERF
 const isPrincipal = u => !!u && (u.perfil === 'principal' || u.perfil === 'principal_temp');
 const DIAS = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'];
 const MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
-function fmtD(iso) { if (!iso) return '—'; const p = String(iso).slice(0, 10).split('-'); return p.length === 3 ? p[2] + '/' + p[1] + '/' + p[0] : '—'; }
+/* v0.6.8 (varredura): dia LOCAL de um registro. Os carimbos (criadoEm, ts…) são gravados em UTC; cortar os 10 primeiros caracteres dá o dia
+   seguinte para o que foi feito entre 21h e meia-noite (UTC−3). Data pura (AAAA-MM-DD) volta igual. */
+const diaLocal = ts => { const s = String(ts || ''); if (!s || /^\d{4}-\d{2}-\d{2}$/.test(s)) return s; const d = new Date(s); return isNaN(d) ? s.slice(0, 10) : d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); };
+function fmtD(iso) { if (!iso) return '—'; const p = diaLocal(iso).split('-'); return p.length === 3 ? p[2] + '/' + p[1] + '/' + p[0] : '—'; }
 function dataLonga(d) { d = d || new Date(); const s = DIAS[d.getDay()]; return s.charAt(0).toUpperCase() + s.slice(1) + ', ' + d.getDate() + ' de ' + MESES[d.getMonth()]; }
 function iniciais(nome) { const p = String(nome || '?').trim().split(/\s+/); return ((p[0] || '?').charAt(0) + (p.length > 1 ? p[p.length - 1].charAt(0) : '')).toUpperCase(); }
 

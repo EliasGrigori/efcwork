@@ -338,3 +338,11 @@ Construída com Opus 5.5 · alto, depois do "já iniciar" (12/11 02:11). A v0.6.
 - ITENS 1 a 9 aprovados. **ITEM 5:** "Mas depois devemos corrigir isso lá para aqui ser como eu te falei" → **pendência**: mudar o EFClaudian para aceitar frequência mensal de verdade (mesmo dia do mês) e as frequências longas no editor dele; depois o EFCwork passa a usar "mensal" real.
 - "Pode publicar e iniciar a próxima etapa" (02:55) e logo depois "Quando publicar aguarde um momento" (02:56): publica a v0.6.6 + v0.6.7 juntas e **espera**, sem começar a próxima etapa.
 - Testes depois do ajuste: t_v067 46 ok (calendário: datas marcadas, troca de mês, tocar na data); t_v065 67, t_v066 39, t_v010 41, t_v046 40, t_html_seg sem falhas. Suíte: 35 arquivos, 0 falhas.
+
+## Pedido de 12/11 03:02 — varredura completa + integração EFCdocs e Quiz
+Pedido (voz): varredura completa em busca de defeitos e fragilidades no código, auditoria interna visual, e mapeamento da implementação do EFCdocs e do Quiz.
+Respostas na checklist (03:0x):
+- Modelo: **Etapa 1** (varredura + auditoria visual) com **Opus 5.5 · alto**; **Etapa 2** (mapa da integração EFCdocs/Quiz + nota de compatibilidade para a IA do Docs) com **Fable 5.2 · alto**.
+- Documentos que o Docs cria/edita e o EFCwork anexa para impressão rápida (como a etiqueta da caixa no EFClaudian): **fluxogramas, POPs e procedimentos, etiqueta dos isopores, cadeia de custódia, ficha do Ibra — tudo que for de preenchimento**. O documento pode ser criado do zero pelo app ou importado pelo EFCwork e vinculado como documento de impressão direta. Ele está criando o Docs com outra IA e quer as duas na mesma direção, 100% compatíveis: sugestões, se é possível, dificuldades, modelo e esforço.
+- EFCdocs: tem repositório no GitHub (nome a confirmar).
+- Quiz: botão de acesso; treinamentos no histórico do EFCwork; atividade do EFCwork no Quiz; mesmo login. "Sobre a atividade no Quiz, ele pode ter seus treinamentos independentes e também posso passar os treinamentos sem o quiz; isso se torna opcional."

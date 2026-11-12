@@ -52,7 +52,7 @@ function coEtapas(c) {
   e.push({ nome: 'Coletada', feito: true, data: c.data || '', txt: [c.pontos ? c.pontos + ' pontos' : '', c.prof, c.estadio, c.coletor ? 'coletor ' + c.coletor : ''].filter(Boolean).join(' · '), quem: c.criadoPorNome });
   e.push({ nome: 'Enviada', feito: !!c.enviado, parcial: !c.enviado && rp, data: c.envio || '', txt: c.enviado ? [c.lab, c.nfEnvio ? 'NF ' + c.nfEnvio : '', c.rastreio ? 'rastreio ' + c.rastreio : ''].filter(Boolean).join(' · ') : rp ? 'data retroativa aguardando confirmação' : '' });
   e.push({ nome: 'O.S', feito: !!c.os, txt: c.os ? 'O.S ' + c.os : c.enviado ? 'o laboratório ainda não mandou' : '' });
-  const laudo = { nome: 'Laudo', feito: !!c.laudo, data: String(c.laudoEm || '').slice(0, 10), txt: c.laudo ? '' : c.enviado ? 'previsto até ' + fmtD(coPrevisto(c)) + ' (' + coLabPrazo(c.lab) + ' dias do laboratório)' : '', quem: c.laudoPor, alerta: !c.laudo && ls === 'Atrasado' ? 'atrasado: passou de ' + coLaudoLimite(c) + ' dias do envio' : '' };
+  const laudo = { nome: 'Laudo', feito: !!c.laudo, data: diaLocal(c.laudoEm), txt: c.laudo ? '' : c.enviado ? 'previsto até ' + fmtD(coPrevisto(c)) + ' (' + coLabPrazo(c.lab) + ' dias do laboratório)' : '', quem: c.laudoPor, alerta: !c.laudo && ls === 'Atrasado' ? 'atrasado: passou de ' + coLaudoLimite(c) + ' dias do envio' : '' };
   const compra = { nome: 'Compra do serviço', feito: c.compra === 'solicitado', data: c.dataSolicitacao || '', txt: c.pedidoSankhya ? 'Nº ' + c.pedidoSankhya : '', quem: c.solicitadoPorNome };
   /* laudo e compra na ordem em que aconteceram */
   e.push.apply(e, compra.feito && (!laudo.feito || String(compra.data) < String(laudo.data)) ? [compra, laudo] : [laudo, compra]);

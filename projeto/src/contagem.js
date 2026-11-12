@@ -84,13 +84,13 @@ function cgTela() {
   const hist = S.almInv.filter(x => x.situacao !== 'aberto').slice().sort((a, b) => String(b.abertoEm).localeCompare(String(a.abertoEm)));
   if (!inv) {
     const ult = hist.find(x => x.situacao === 'concluido');
-    let h = '<section class="pn cg-vazio"><div class="cg-vz">' + ic('lista') + '<div><b>Nenhuma contagem aberta</b><span>' + (ult ? 'A última foi a ' + esc(ult.numero) + ', concluída em ' + fmtD(String(ult.concluidoEm || '').slice(0, 10)) + '.' : 'Nenhuma contagem feita ainda.') + ' Na contagem às cegas, quem conta não vê o saldo do sistema.</span></div>' +
+    let h = '<section class="pn cg-vazio"><div class="cg-vz">' + ic('lista') + '<div><b>Nenhuma contagem aberta</b><span>' + (ult ? 'A última foi a ' + esc(ult.numero) + ', concluída em ' + fmtD(diaLocal(ult.concluidoEm)) + '.' : 'Nenhuma contagem feita ainda.') + ' Na contagem às cegas, quem conta não vê o saldo do sistema.</span></div>' +
       (sup ? '<button type="button" class="bt pr" data-act="cg-nova">' + ic('mais') + 'Nova contagem</button>' : '') + '</div></section>';
     return h + cgHistorico(hist);
   }
   const pr = cgProgresso(inv), pct = pr.total ? Math.round(pr.feitos / pr.total * 100) : 0, rcN = pr.recontar.length;
   const vista = sup && S.cgVista === 'conf' ? 'conf' : 'contar';
-  let h = '<section class="pn cg-topo"><div class="cg-tp"><div class="cg-tpt"><span class="pill wa">Em andamento</span><small>' + esc(inv.local || '') + ' · aberta por ' + esc(inv.porNome || '') + ' em ' + fmtD(String(inv.abertoEm || '').slice(0, 10)) + '</small><small>Quem conta: <b>' + esc(inv.contadorNome || 'qualquer pessoa do Almoxarifado') + '</b> · ' + esc(cgPartesTxt(inv.partes) || 'materiais') + '</small></div>' +
+  let h = '<section class="pn cg-topo"><div class="cg-tp"><div class="cg-tpt"><span class="pill wa">Em andamento</span><small>' + esc(inv.local || '') + ' · aberta por ' + esc(inv.porNome || '') + ' em ' + fmtD(diaLocal(inv.abertoEm)) + '</small><small>Quem conta: <b>' + esc(inv.contadorNome || 'qualquer pessoa do Almoxarifado') + '</b> · ' + esc(cgPartesTxt(inv.partes) || 'materiais') + '</small></div>' +
     '<div class="cg-pct"><b class="num">' + pct + '%</b><small>' + pr.feitos + ' de ' + pr.total + ' contados</small></div></div>' +
     '<div class="cg-bar" role="progressbar" aria-valuenow="' + pct + '" aria-valuemin="0" aria-valuemax="100"><i style="width:' + pct + '%"></i></div>' +
     (sup ? '<div class="cg-acts">' + ddHTML('cg:vista', vista, [['contar', 'Mostrar: contagem'], ['conf', 'Mostrar: conferência' + (pr.difs.length ? ' (' + pr.difs.length + ' não bateram)' : '')]]) + '<span class="sp"></span><button type="button" class="bt ic-so" data-act="cg-folha" title="Imprimir a folha de contagem (sem o saldo)" aria-label="Imprimir a folha de contagem">' + ic('impressora') + '</button><button type="button" class="bt ic-so" data-act="cg-cancelar" title="Cancelar a contagem" aria-label="Cancelar a contagem">' + ic('lixo') + '</button></div>' : '') + '</section>';
@@ -107,8 +107,8 @@ function cgHistorico(hist) {
       { k: 'tipo', rot: 'Tipo', v: x => x.tipo === 'contagem' ? 'Contagem' : 'Inventário' },
       { k: 'loc', rot: 'Local', v: x => x.local || '' },
       { k: 'quem', rot: 'Quem contou', v: x => x.contadorNome || '' },
-      { k: 'ab', rot: 'Aberta', tipo: 'data', v: x => String(x.abertoEm || '').slice(0, 10) },
-      { k: 'fim', rot: 'Concluída', tipo: 'data', v: x => String(x.concluidoEm || '').slice(0, 10) },
+      { k: 'ab', rot: 'Aberta', tipo: 'data', v: x => diaLocal(x.abertoEm) },
+      { k: 'fim', rot: 'Concluída', tipo: 'data', v: x => diaLocal(x.concluidoEm) },
       { k: 'ct', rot: 'Contados', tipo: 'num', v: x => (x.resumo || {}).contados || 0 },
       { k: 'df', rot: 'Diferenças', tipo: 'num', v: x => (x.resumo || {}).difs || 0 },
       { k: 'er', rot: 'Erros de lançamento', tipo: 'num', v: x => (x.resumo || {}).erros || 0 },
@@ -232,7 +232,7 @@ async function cgResOk() {
   const r = { tipo: f.tipo, porId: S.user.id, porNome: S.user.nome, ts: nowISO(), obs: String(f.obs || '').trim(), nCont: cgNAnt(cgContagens(inv)[f.kItem]) };
   if (f.tipo === 'saida_retro') {
     const er = validaData(f.data); if (er) return lcErro(er);
-    if (String(inv.abertoEm || '').slice(0, 10) < f.data) return lcErro('A saída esquecida tem de ser antes da contagem (' + fmtD(String(inv.abertoEm).slice(0, 10)) + ').');
+    if (diaLocal(inv.abertoEm) < f.data) return lcErro('A saída esquecida tem de ser antes da contagem (' + fmtD(String(inv.abertoEm).slice(0, 10)) + ').');
     const mot = lcMotFinal(f); if (!mot) return lcErro('Escolha o motivo da saída.');
     const u = f.respId ? userById(f.respId) : null;
     Object.assign(r, { data: f.data, motivo: mot, respId: u ? u.id : '', respNome: u ? u.nome : '', reclamacao: String(f.reclamacao || '').trim() });
