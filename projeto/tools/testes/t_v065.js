@@ -29,7 +29,7 @@ const dd = async (p, id, v) => { await p.click('#gv [data-dd="' + id + '"] .dd-b
   console.log('Aba Água (PC):');
   conf(await p.evaluate(() => (csArea('coletas').abas || []).some(a => a.id === 'agua')), 'Coletas tem a aba Água');
   conf(/Água/.test(await p.textContent('h1')), 'o título é Água');
-  conf((await p.textContent('.pn, main')).length > 0 && (await p.$$('.ag-box')).length === 1, 'uma caixa do projeto "Rodízio dos bebedouros" (só leitura)');
+  conf((await p.textContent('.pn, main')).length > 0 && (await p.$$('.ag-box[data-act="pj-abre"]')).length === 1, 'uma caixa do projeto "Rodízio dos bebedouros" (só leitura)');
   conf(/Próxima:/.test(await p.textContent('.ag-box')) && /Rodízio · BR 01, BR 02/.test(await p.textContent('.ag-box')), 'a caixa mostra a próxima coleta e quais bebedouros');
   conf(!(await p.$('main .ag-pn, .cs-main .ag-pn')) && /Acompanhamento \(3\)/.test(await p.textContent('[data-act="ag-pend"]')), 'OPÇÃO 2: a tela tem só as caixas e a tabela; o botão "Acompanhamento (3)" fica no topo');
   await p.click('[data-act="ag-pend"]'); await esp(p, 500);
@@ -67,7 +67,7 @@ const dd = async (p, id, v) => { await p.click('#gv [data-dd="' + id + '"] .dd-b
   conf(/CX 01 — Casa de bombas/.test(gv) && /Não conforme/.test(gv), 'abre a gaveta com o ponto e a situação');
   conf(/Coletada/.test(gv) && /Enviada/.test(gv) && /O\.S/.test(gv) && /Resultado: não conforme/.test(gv) && /Compra do serviço/.test(gv), 'ciclo: Coletada, Enviada, O.S, Resultado, Compra');
   conf(/Coliformes totais/.test(gv) && /grave/.test(gv), 'mostra o agente e a gravidade');
-  conf(/Marcelo Bruno/.test(gv) && /EFClaudian/.test(gv), 'mostra a ação corretiva (conduzida no EFClaudian por enquanto)');
+  conf(/Marcelo Bruno/.test(gv) && /Ação aberta/.test(gv), 'mostra o cartão da ação corretiva (v0.6.6: conduzida aqui)');
   conf(!!(await p.$('#gv .gv-cab [data-act="ag-canc"], #gv [data-act="ag-canc"]')), 'lixeira no canto de cima (só Líder ★/Administrador)');
   await p.keyboard.press('Escape'); await esp(p, 400);
   conf(!(await p.$('#gv')), 'Esc fecha a gaveta');

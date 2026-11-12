@@ -27,7 +27,7 @@
 .ap-fot{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .ap-fot .bt{cursor:pointer}
 .ap-ft{position:relative;display:inline-block}
-.ap-ft img{width:72px;height:72px;border-radius:8px;object-fit:cover;display:block;border:1px solid var(--bd)}
+.ap-ft img{width:84px;height:84px;border-radius:8px;object-fit:cover;display:block;border:1px solid var(--bd)}
 .ap-ft .bt{position:absolute;top:3px;right:3px;min-height:28px;height:28px;width:28px;padding:0;background:var(--bg1)}
 .ap-setx{min-height:160px;resize:vertical}
 .ap-gal{display:flex;gap:8px;flex-wrap:wrap}

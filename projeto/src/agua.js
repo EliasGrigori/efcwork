@@ -6,7 +6,7 @@
    que aparece no acompanhamento, e aviso na hora. Nada disso é gravado à parte: o plano é calculado das próprias coletas
    (tipoColeta, bebIds, rodada, recoletaDe, recoletaPedida). O rodízio é o projeto "legado" (sv2_aguaproj): aqui só se lê o calendário dele e se
    lança a coleta com projetoId/ocorrencia certos (para não ficar "atrasada" no EFClaudian).
-   Fica no EFClaudian nesta versão: criar/remarcar projetos e pontos, ação corretiva (v0.6.6), relatório por local (v0.6.6), etiqueta da caixa. */
+   Fica no EFClaudian nesta versão: criar/remarcar projetos e pontos (v0.6.7) e a etiqueta da caixa. Ação corretiva e relatório por local: aguaac.js (v0.6.6). */
 Object.assign(S, { aguacol: [], aguaproj: [], aguapontos: [], agCarregado: false, cfgAgua: S.cfgAgua || null });
 const AG_CFG_PADRAO = { periodoDias: 15, porVez: 2, laudoDias: 7, recoletaDias: 7, fora: [] };
 const AG_AGENTES = [['coliformes', 'Coliformes totais'], ['ecoli', 'E. coli'], ['pseudomonas', 'Pseudomonas'], ['outro', 'Outro']];
@@ -23,9 +23,10 @@ const agCmp = (a, b) => String(a || '').localeCompare(String(b || ''), 'pt-BR', 
 
 /* ---------- carregar ---------- */
 CS_CARGAS.push(() => {
+  const re = () => { S.agCarregado = true; if (S.rota.area === 'coletas' || S.rota.area === 'inicio') render(); else if (S.gv) gvDesenha(); };
+  /* v0.6.6: as coletas carregam para todos (o responsável por uma ação corretiva pode não ter a atribuição Coletas); a aba continua só com ela */
+  csOuve('sv2_aguacol', l => { S.aguacol = l; re(); if (typeof acLimparUmaVez === 'function') acLimparUmaVez(); });
   if (!coVe()) return;
-  const re = () => { S.agCarregado = true; if (S.rota.area === 'coletas' || S.rota.area === 'inicio') render(); };
-  csOuve('sv2_aguacol', l => { S.aguacol = l; re(); });
   csOuve('sv2_aguaproj', l => { S.aguaproj = l; re(); });
   csOuve('sv2_aguaponto', l => { S.aguapontos = l; re(); });
 });
@@ -127,7 +128,7 @@ const pjProxima = p => pjPendentes(p, 1)[0] || null;
 function pjUtilAntes(iso) { let d = addDias(iso, -1); while (pjDow(d) === 0 || pjDow(d) === 6) d = addDias(d, -1); return d; }
 const pjAvisar = x => !!x && x.sit === 'aguardando' && hojeISO() >= pjUtilAntes(x.data);
 const pjDataTxt = x => PJ_DIAS3[pjDow(x.data)] + ' ' + fmtD(x.data).slice(0, 5) + (x.hora ? ' · ' + x.hora : '');
-function pjQuandoTxt(p) { const n = Math.max(1, Number(p.cadaSemanas) || 1); return (n === 1 ? 'toda ' + PJ_DIAS[p.dia] : 'a cada ' + n + ' semanas, ' + PJ_DIAS[p.dia]) + (p.hora ? ' · ' + p.hora : ''); }
+function pjQuandoTxt(p) { const n = Math.max(1, Number(p.cadaSemanas) || 1), dia = PJ_DIAS[p.dia] || ''; const nome = { 1: 'toda ' + dia, 2: 'quinzenal, ' + dia, 4: 'mensal (a cada 4 semanas), ' + dia, 8: 'bimestral, ' + dia, 13: 'trimestral, ' + dia, 26: 'semestral, ' + dia }[n] || 'a cada ' + n + ' semanas, ' + dia; return nome + (p.hora ? ' · ' + p.hora : ''); }
 const pjUltimaRef = ref => { const b = ref.indexOf('beb:') === 0 ? ref.slice(4) : ''; return agAtivas().filter(c => c.pontoRef === ref || (b && agBebIds(c).indexOf(b) >= 0)).map(c => c.data).sort().pop() || ''; };
 function pjSugeridos(p) {
   const l = (p.pontos || []).map(pjPonto).filter(Boolean);
@@ -152,21 +153,21 @@ function agMeta(p) {
 }
 /* caixas dos projetos (só leitura) */
 function agBoxesHTML() {
-  const ps = pjProjetos(); if (!ps.length) return '';
+  const ps = pjProjetos(), sup = isSup(S.user); if (!ps.length && !sup) return '';
   return '<div class="ag-boxes">' + ps.map(p => {
     const x = pjProxima(p), sit = x ? PJ_SIT[x.sit] : null, av = pjAvisar(x), cor = x && x.sit === 'atrasada' ? 'cr' : av ? 'wa' : '';
-    return '<div class="ag-box' + (cor ? ' ' + cor : '') + '"><span class="ag-bt"><b>' + esc(p.nome) + '</b>' + (sit ? alPill(sit[0], av ? 'wa' : sit[1]) : '') + '</span>' +
+    return '<div class="ag-box' + (cor ? ' ' + cor : '') + '" data-act="pj-abre" data-id="' + esc(p.id) + '" role="button" tabindex="0" aria-label="Abrir o projeto ' + esc(p.nome) + '"><span class="ag-bt"><b>' + esc(p.nome) + '</b>' + (sit ? alPill(sit[0], av ? 'wa' : sit[1]) : '') + '</span>' +
       '<span class="ag-bq">' + (x ? 'Próxima: <b>' + esc(pjDataTxt(x)) + '</b>' : 'Sem data') + '</span><small>' + esc(pjOQue(p)) + '</small>' +
-      '<small>' + esc(pjQuandoTxt(p) + ' · ' + (((S.analises || []).find(a => a.id === p.analiseId) || {}).nome || 'sem análise')) + '</small>' +
-      (agPode() && p.legado ? '<button type="button" class="bt' + (x && x.data <= hojeISO() ? ' pr' : '') + '" data-act="ag-nova" data-tipo="' + esc(agPlano().tipo) + '" data-oc="' + esc(x ? x.oc : '') + '">' + ic('mais') + 'Lançar esta coleta</button>' : '') + '</div>';
-  }).join('') + '</div>';
+      '<small>' + esc(pjQuandoTxt(p) + ' · ' + pjAnsTxt(p)) + '</small>' +
+      (agPode() && x ? '<button type="button" class="bt' + (x.data <= hojeISO() ? ' pr' : '') + '" data-act="ag-nova" data-pid="' + esc(p.id) + '" data-oc="' + esc(x.oc) + '">' + ic('mais') + 'Lançar esta coleta</button>' : '') + '</div>';
+  }).join('') + (sup ? '<button type="button" class="ag-box ag-novo" data-act="pj-novo">' + ic('mais') + '<b>Novo projeto</b><small>pontos, análises, dia e frequência</small></button>' : '') + '</div>';
 }
 /* acompanhamento: recoletas, ações corretivas, laudos atrasados */
 function agPendLinhas() {
   const p = agPend(), hoje = hojeISO(), podeL = agPode(), l = [];
   const venceTxt = ate => ate < hoje ? '<b class="cr">venceu ' + esc(fmtD(ate).slice(0, 5)) + '</b>' : ate === hoje ? '<b class="wa">hoje</b>' : 'até ' + esc(fmtD(ate).slice(0, 5));
   p.rec.forEach(r => l.push({ cls: r.ate < hoje ? 'cr' : 'wa', t: 'Recoleta · ' + r.c.pontoNome, d: esc(r.motivo) + ' · coleta de ' + esc(fmtD(r.c.data).slice(0, 5)) + ' · ' + venceTxt(r.ate), bt: podeL ? '<button type="button" class="bt pr" data-act="ag-nova" data-tipo="recoleta">Lançar</button>' : '' }));
-  p.ac.forEach(c => l.push({ cls: agAcSit(c.acao) === 'vencida' ? 'cr' : 'wa', t: 'Ação corretiva · ' + c.pontoNome, d: esc((c.acao.responsavelNome || '') + ' · ' + (c.acao.etapas || []).length + ' etapa(s) · ') + (agAcSit(c.acao) === 'vencida' ? '<b class="cr">prazo venceu ' + esc(fmtD(c.acao.prazo).slice(0, 5)) + '</b>' : 'prazo ' + esc(fmtD(c.acao.prazo).slice(0, 5))), bt: '<button type="button" class="bt" data-act="ag-abre" data-id="' + esc(c.id) + '">Abrir</button>' }));
+  p.ac.forEach(c => l.push({ cls: agAcSit(c.acao) === 'vencida' ? 'cr' : 'wa', t: 'Ação corretiva · ' + c.pontoNome, d: esc((c.acao.responsavelNome || '') + ' · ' + (c.acao.etapas || []).length + ' etapa(s) · ') + (agAcSit(c.acao) === 'vencida' ? '<b class="cr">prazo venceu ' + esc(fmtD(c.acao.prazo).slice(0, 5)) + '</b>' : 'prazo ' + esc(fmtD(c.acao.prazo).slice(0, 5))), bt: '<button type="button" class="bt" data-act="ac-abre" data-id="' + esc(c.id) + '">Abrir</button>' }));
   p.atr.forEach(c => l.push({ cls: 'wa', t: 'Laudo atrasado · ' + c.pontoNome, d: esc((c.lab || 'sem laboratório') + ' · enviada em ' + fmtD(c.envio).slice(0, 5) + ' · ' + agDif(c.envio, hoje) + ' dias'), bt: '<button type="button" class="bt" data-act="ag-abre" data-id="' + esc(c.id) + '">Abrir</button>' }));
   return l;
 }
@@ -205,9 +206,10 @@ function agTabela() {
 }
 function agTela(aba) {
   const p = agPend(), np = agPendLinhas().length, podeCfg = isSup(S.user);
-  const ext = '<a class="bt ic-so" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener" title="No EFClaudian: projetos, pontos, ação corretiva, relatório por local e etiqueta da caixa" aria-label="Abrir o EFClaudian (projetos, pontos, ação corretiva, relatório e etiqueta)">' + ic('externo') + '</a>';
+  const ext = '<a class="bt ic-so" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener" title="No EFClaudian: projetos, pontos e etiqueta da caixa" aria-label="Abrir o EFClaudian (projetos, pontos e etiqueta da caixa)">' + ic('externo') + '</a>';
   const acoes = (np ? '<button type="button" class="bt" data-act="ag-pend">' + ic('lista') + 'Acompanhamento (' + np + ')</button>' : '') +
     (agPode() ? '<button type="button" class="bt pr" data-act="ag-nova">' + ic('mais') + 'Nova coleta de água</button>' : '') +
+    (podeCfg ? '<button type="button" class="bt ic-so" data-act="agr-abre" title="Relatório de água por local" aria-label="Relatório de água por local">' + ic('impressora') + '</button>' : '') +
     (podeCfg ? '<button type="button" class="bt ic-so" data-act="ag-cfg" title="Prazos da água" aria-label="Prazos da água">' + ic('eng') + '</button>' : '') + ext;
   const h = cabecalho({ titulo: aba.nome, abaNome: aba.nome, meta: agMeta(p), acoes: acoes });
   if (!S.agCarregado && !DEMO) return h + '<section class="pn"><div class="vazio">' + ic('relogio') + '<b>Carregando as coletas de água…</b></div></section>';
@@ -238,11 +240,11 @@ function agAbre(id) {
       if (!nc && !filha && !c.recoletaPedida && bebs.length) pe += '<button type="button" class="bt" data-act="ag-rec" data-id="' + esc(c.id) + '">' + ic('recontar') + 'Pedir recoleta</button>';
     }
     const cab = isSup(S.user) && !canc ? '<button type="button" class="bt ic-so" data-act="ag-canc" data-id="' + esc(c.id) + '" title="Cancelar a coleta" aria-label="Cancelar a coleta">' + ic('lixo') + '</button>' : '';
-    const ac = c.acao ? agAcTxt(c.acao) + ' · ' + (c.acao.responsavelNome || '') + (c.acao.prazo ? ' · prazo ' + fmtD(c.acao.prazo) : '') : '';
+    const a = c.acao, acBl = a ? '<p class="gv-h">Ação corretiva</p><button type="button" class="ac-res" data-act="ac-abre" data-id="' + esc(c.id) + '"><span><b>' + esc(a.responsavelNome || '') + '</b><small>' + esc('prazo ' + fmtD(a.prazo) + ' · ' + (a.etapas || []).length + ' etapa(s)' + (a.orientacao ? ' · ' + a.orientacao : '')) + '</small></span>' + acPill(a) + '</button>' : nc && !canc && isSup(S.user) ? '<p class="gv-h">Ação corretiva</p><button type="button" class="bt pr ac-abrir" data-act="ac-nova" data-id="' + esc(c.id) + '">' + ic('lista') + 'Abrir ação corretiva</button>' : '';
     return { ico: 'frasco', cabAcoes: cab, sub: (c.analiseNome || '') + ' · ' + agTipoTxt(c), titulo: c.pontoNome || 'Coleta de água', pill: canc ? alPill('Cancelada') : agLaudoAtrasado(c) ? alPill('Laudo atrasado', 'cr') : alPill(c.resultado === 'PENDENTE' ? 'Pendente' : c.resultado === 'CONFORME' ? 'Conforme' : 'Não conforme', c.resultado === 'CONFORME' ? 'ok' : nc ? 'cr' : 'wa'),
       corpo: (canc ? '' : tlFluido('ag-' + c.id, agEtapas(c))) + '<p class="gv-h">Coleta</p>' + gvCampos([['Semana', c.semana ? 'semana ' + c.semana : ''], ['Tipo', agTipoTxt(c) + (orig ? ' · recoleta de ' + fmtD(orig.data) + ' (' + String(orig.resultado || '').toLowerCase() + ')' : '')], ['Bebedouros', bebs.length > 1 ? bebs.join(', ') : ''], ['Quantidade', c.qtd ? String(c.qtd) : ''], ['Laboratório', c.lab], ['Valor', c.valor ? brl(c.valor) : ''],
         ['Recoleta', filha ? 'lançada em ' + fmtD(filha.data) + ' · ' + String(filha.resultado || '').toLowerCase() : c.recoletaPedida ? 'pedida: ' + c.recoletaPedida.motivo + ' — ' + (c.recoletaPedida.porNome || '') + ', ' + fmtDT(c.recoletaPedida.ts) : ''],
-        ['Ação corretiva', ac ? ac + ' (abrir e conduzir no EFClaudian)' : nc ? 'ainda não aberta (abre no EFClaudian)' : ''], ['Observação', c.obs], ['Cancelada', canc ? c.canceladaMotivo || 'sim' : '']]),
+        ['Ação corretiva', !a && nc && !canc && !isSup(S.user) ? 'ainda não aberta (o Líder ★ ou o Administrador abre)' : ''], ['Observação', c.obs], ['Cancelada', canc ? c.canceladaMotivo || 'sim' : '']]) + acBl,
       rodape: pe };
   });
   render();
@@ -252,10 +254,13 @@ function agAbre(id) {
 const agDDAn = () => (S.analises || []).filter(a => a.tipo === 'AGUA' && a.ativo !== false);
 function agAgoraHM() { const d = new Date(); return pad(d.getHours()) + ':' + pad(d.getMinutes()); }
 function agCk(g, id, on, t, sub) { return '<button type="button" class="fm-pki cb-ck' + (on ? ' on' : '') + '" data-act="ag-ck" data-g="' + g + '" data-id="' + esc(id) + '" aria-pressed="' + on + '"><span class="cb-box">' + (on ? ic('ok') : '') + '</span><span><b>' + esc(t) + '</b><small>' + esc(sub || '') + '</small></span></button>'; }
-function agNovoEstado(tipo, oc) {
-  const pl = agPlano(), rec = agRecoletasPend(), t = AG_TIPOS[tipo] && tipo !== 'projeto' ? tipo : (rec.length ? 'recoleta' : pl.tipo), an = agDDAn(), anPad = (an.find(a => /MICRO/i.test(a.nome)) || an[0] || {}).id || '';
+function agNovoEstado(tipo, oc, pid) {
+  const pj = pid ? pjDe(pid) : null, pl = agPlano(), rec = agRecoletasPend(), an = agDDAn(), anPad = (an.find(a => /MICRO/i.test(a.nome)) || an[0] || {}).id || '';
+  let t = pj && !pj.legado ? 'projeto' : pj && pj.legado ? pl.tipo : AG_TIPOS[tipo] && tipo !== 'projeto' ? tipo : (rec.length ? 'recoleta' : pl.tipo);
   const bebs = {}; agSugeridos().forEach(b => { bebs[b.id] = true; }); const recs = {}; rec.forEach(r => { recs[r.c.id] = true; });
-  return { k: 'agNova', tipo: t, bebs: bebs, recs: recs, pv: '', outro: '', data: hojeISO(), hora: agAgoraHM(), an: anPad, qtd: '1', lab: '', coletor: S.user.nome, oc: oc || '' };
+  const ppt = {}, pan = {}; if (pj && !pj.legado) { pjSugeridos(pj).forEach(x => { ppt[x.ref] = true; }); pjAnIds(pj).forEach(a => { pan[a] = true; }); }
+  const anP = pj && pjAnIds(pj)[0] && an.some(a => a.id === pjAnIds(pj)[0]) ? pjAnIds(pj)[0] : anPad;
+  return { k: 'agNova', tipo: t, bebs: bebs, recs: recs, ppt: ppt, pan: pan, pid: pj ? pj.id : '', pv: '', outro: '', data: hojeISO(), hora: agAgoraHM(), an: anP, qtd: '1', lab: pj ? pj.lab || '' : '', coletor: S.user.nome, oc: oc || '' };
 }
 function agTipoDica(f) {
   const p = agPlano();
@@ -268,25 +273,33 @@ LC_FORM.agNova = f => {
   if (f.tipo === 'rodizio') onde = '<p class="ag-dc">Marcados: os ' + agPorVez() + ' há mais tempo sem coleta. Uma amostra por bebedouro.</p><div class="fm-pk"><div class="fm-pkl co-pkl">' + (bebs.length ? bebs.map(b => agCk('bebs', b.id, !!f.bebs[b.id], b.codigo, (b.local || '') + ' · ' + ult(b.id))).join('') : '<p class="ag-dc">Nenhum bebedouro ativo.</p>') + '</div></div>';
   else if (f.tipo === 'mesclada') onde = '<p class="ag-dc">Uma amostra só, com a água de todos os bebedouros do rodízio.</p><div class="gv-lotes">' + bebs.map(b => '<div class="gv-lote"><span><b>' + esc(b.codigo) + '</b> ' + esc(b.local || '') + '</span></div>').join('') + '</div>';
   else if (f.tipo === 'recoleta') onde = '<p class="ag-dc">Nos mesmos bebedouros da coleta que precisa repetir.</p><div class="fm-pk"><div class="fm-pkl co-pkl">' + rec.map(r => agCk('recs', r.c.id, !!f.recs[r.c.id], r.c.pontoNome, r.motivo + ' · até ' + fmtD(r.ate).slice(0, 5))).join('') + '</div></div>';
+  else if (f.tipo === 'projeto') { const pj = pjDe(f.pid); onde = '<p class="ag-dc">' + (Number(pj.porVez) > 0 ? 'Marcados: os ' + Number(pj.porVez) + ' há mais tempo sem coleta.' : 'Todos os pontos do projeto.') + ' Uma amostra por ponto' + (pjAnIds(pj).length > 1 ? ' e por análise' : '') + '.</p><div class="fm-pk"><div class="fm-pkl co-pkl">' + (pj.pontos || []).map(pjPonto).filter(Boolean).map(x => agCk('ppt', x.ref, !!f.ppt[x.ref], x.cod, [PJ_TIPO1[x.tipo], pjUltimaRef(x.ref) ? 'última ' + fmtD(pjUltimaRef(x.ref)).slice(0, 5) : 'nunca coletado'].join(' · '))).join('') + '</div></div>'; }
   else { const pts = pjPontos(); onde = agBl('Ponto', ddHTML('ag:pv', f.pv || '', [['', 'Escolha o ponto']].concat(pts.map(p => [p.ref, (PJ_TIPO1[p.tipo] || 'Ponto') + ' · ' + p.nome])).concat([['outro', 'Outro ponto (poço, torneira…)']]))) + (f.pv === 'outro' ? agBl('Nome do ponto', lcIn('outro', f.outro, ' placeholder="Ex.: Poço 03"')) : ''); }
   return { ico: 'frasco', sub: fmtD(hojeISO()) + ' · ' + S.user.nome, titulo: 'Nova coleta de água', corpo: lcMsg() +
-    '<p class="gv-h">1 · Tipo</p>' + agBl('Tipo da coleta', ddHTML('ag:tipo', f.tipo, tipos), agTipoDica(f)) +
+    (f.tipo === 'projeto' ? '<p class="gv-h">1 · Projeto</p><div class="pj-ctx"><b>' + esc(pjDe(f.pid).nome) + '</b><small>' + esc('coleta de ' + pjDataTxt(pjEfetiva(pjDe(f.pid), f.oc)) + ' · ' + pjAnsTxt(pjDe(f.pid))) + '</small></div>'
+      : '<p class="gv-h">1 · Tipo</p>' + agBl('Tipo da coleta', ddHTML('ag:tipo', f.tipo, tipos), agTipoDica(f))) +
     '<p class="gv-h">2 · Onde</p>' + onde +
     '<p class="gv-h">3 · Coleta</p><div class="fm-g">' + agBl('Data', lcData('data', f.data)) + agBl('Hora', lcIn('hora', f.hora, ' type="time"')) + '</div>' +
-    '<div class="fm-g">' + agBl('Análise', ddHTML('ag:an', f.an || '', ans.length ? ans.map(a => [a.id, a.nome]) : [['', 'Cadastre uma análise de Água no EFClaudian']])) + agBl('Laboratório', ddHTML('ag:lab', f.lab || '', [['', 'O da análise']].concat(coLabs().map(x => [x, x])))) + '</div>' +
+    (f.tipo === 'projeto' && pjAnIds(pjDe(f.pid)).length > 1 ? agBl('Análises', '<div class="fm-pk"><div class="fm-pkl co-pkl">' + pjAnIds(pjDe(f.pid)).map(id => ans.find(a => a.id === id)).filter(Boolean).map(a => agCk('pan', a.id, !!f.pan[a.id], a.nome, a.lab ? 'laboratório ' + a.lab : '')).join('') + '</div></div>') + '<div class="fm-g">' + agBl('Laboratório', ddHTML('ag:lab', f.lab || '', [['', 'O de cada análise']].concat(coLabs().map(x => [x, x])))) + '</div>' :
+    '<div class="fm-g">' + agBl('Análise', ddHTML('ag:an', f.an || '', ans.length ? ans.map(a => [a.id, a.nome]) : [['', 'Cadastre uma análise de Água no EFClaudian']])) + agBl('Laboratório', ddHTML('ag:lab', f.lab || '', [['', 'O da análise']].concat(coLabs().map(x => [x, x])))) + '</div>') +
     '<div class="fm-g">' + agBl('Amostras por ponto', lcIn('qtd', f.qtd, ' inputmode="numeric"')) + agBl('Coletor', lcIn('coletor', f.coletor)) + '</div>' +
-    (f.oc ? lcAv('Conta como a coleta do rodízio de ' + esc(fmtD(f.oc).slice(0, 5)) + '.') : ''),
+    (f.oc ? lcAv('Conta como a coleta ' + (f.tipo === 'projeto' ? 'do projeto' : 'do rodízio') + ' de ' + esc(fmtD(f.oc).slice(0, 5)) + '.') : ''),
     rodape: lcPe('ag-nova-ok', 'Lançar') };
 };
 async function agNovaOk() {
   const f = S.fm; if (!f || !agPode()) return;
   const erro = validaData(f.data); if (erro) return lcErro(erro);
   if (!f.hora) return lcErro('Informe a hora.');
-  const an = (S.analises || []).find(a => a.id === f.an); if (!an) return lcErro('Escolha a análise (cadastre uma de Água no EFClaudian).');
+  const pj = f.tipo === 'projeto' ? pjDe(f.pid) : null, multi = pj && pjAnIds(pj).length > 1;
+  const ansSel = multi ? pjAnIds(pj).filter(id => f.pan[id]).map(id => (S.analises || []).find(a => a.id === id)).filter(Boolean) : [(S.analises || []).find(a => a.id === f.an)].filter(Boolean);
+  if (multi && !ansSel.length) return lcErro('Marque pelo menos uma análise.');
+  const an = ansSel[0]; if (!an) return lcErro('Escolha a análise (cadastre uma de Água no EFClaudian).');
   const qtd = parseInt(f.qtd, 10); if (!(qtd >= 1 && qtd <= 100)) return lcErro('Quantidade inválida.');
-  const tipo = f.tipo, rodada = tipo === 'rodizio' || tipo === 'mesclada' ? 'R' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5) : '';
+  const tipo = f.tipo, rodada = tipo === 'rodizio' || tipo === 'mesclada' || tipo === 'projeto' ? 'R' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5) : '';
   const base = { data: f.data, hora: f.hora, semana: pgSemana(f.data), analiseId: an.id, analiseNome: an.nome, qtd: qtd, coletor: String(f.coletor || '').trim(), lab: f.lab || an.lab || '', envio: '', os: '', numSolicitacao: '', resultado: 'PENDENTE', obs: '', situacao: 'ativa', canceladaMotivo: '', valor: Number(an.valor) || 0, precoRev: Number(an.rev) || 0, nf: '', compra: 'pendente', pedidoSankhya: '', dataSolicitacao: '', solicitadoPor: '', solicitadoPorNome: '', tipoColeta: tipo, agente: [], gravidade: '', laudoEm: '', criadoEm: nowISO(), criadoPor: S.user.id, criadoPorNome: S.user.nome };
   if (tipo === 'rodizio' || tipo === 'mesclada') Object.assign(base, f.oc ? { projetoId: 'legado', ocorrencia: f.oc } : pjVinculoLegado(f.data));
+  if (tipo === 'projeto') Object.assign(base, { projetoId: pj.id, ocorrencia: f.oc });
+  const comAn = (o, a) => Object.assign({}, o, { analiseId: a.id, analiseNome: a.nome, lab: f.lab || a.lab || '', valor: Number(a.valor) || 0, precoRev: Number(a.rev) || 0 });
   const regs = [];
   if (tipo === 'avulsa') {
     if (!f.pv) return lcErro('Escolha o ponto.');
@@ -298,6 +311,9 @@ async function agNovaOk() {
   } else if (tipo === 'mesclada') {
     const bs = agBebs(); if (!bs.length) return lcErro('Nenhum bebedouro ativo no rodízio.');
     regs.push(Object.assign({}, base, { pontoRef: 'mesclada', pontoNome: 'Mesclada · ' + bs.map(b => b.codigo).join(' + '), bebIds: bs.map(b => b.id), rodada: rodada }));
+  } else if (tipo === 'projeto') {
+    const refs = (pj.pontos || []).filter(r => f.ppt[r]); if (!refs.length) return lcErro('Marque pelo menos um ponto.');
+    refs.forEach(r => { const x = pjPonto(r); if (x) ansSel.forEach(a => regs.push(comAn(Object.assign({}, base, { pontoRef: r, pontoNome: x.nome, bebIds: r.indexOf('beb:') === 0 ? [r.slice(4)] : [], rodada: rodada }), a))); });
   } else if (tipo === 'recoleta') {
     const ids = agRecoletasPend().filter(r => f.recs[r.c.id]).map(r => r.c.id); if (!ids.length) return lcErro('Marque a recoleta que está lançando.');
     ids.forEach(id => { const o = S.aguacol.find(x => x.id === id); if (o) regs.push(Object.assign({}, base, { pontoRef: o.pontoRef, pontoNome: o.pontoNome, bebIds: agBebIds(o), recoletaDe: o.id })); });
@@ -307,7 +323,7 @@ async function agNovaOk() {
   try {
     for (const o of regs) {
       const nid = await Data.col('sv2_aguacol').add(o);
-      Audit.log({ acao: 'criar_coleta_agua', entidade: 'coleta_agua', entidadeId: nid, resumo: AG_TIPOS[tipo] + ': coleta de água ' + o.pontoNome + ' — ' + an.nome + ' (' + qtd + ') em ' + fmtD(f.data) + (o.recoletaDe ? ' (recoleta)' : ''), depois: { tipo: tipo, ponto: o.pontoNome, analise: an.nome, qtd: qtd } });
+      Audit.log({ acao: 'criar_coleta_agua', entidade: 'coleta_agua', entidadeId: nid, resumo: AG_TIPOS[tipo] + (pj ? ' ' + pj.nome : '') + ': coleta de água ' + o.pontoNome + ' — ' + o.analiseNome + ' (' + qtd + ') em ' + fmtD(f.data) + (o.recoletaDe ? ' (recoleta)' : ''), depois: { tipo: tipo, ponto: o.pontoNome, analise: o.analiseNome, qtd: qtd } });
     }
     lcFim(); aviso(regs.length > 1 ? regs.length + ' coletas de água lançadas.' : 'Coleta de água lançada.');
   } catch (e) { lcErro(svErro(e)); }
@@ -400,9 +416,9 @@ document.addEventListener('click', ev => {
   const t = ev.target.closest && ev.target.closest('[data-act^="ag-"]'); if (!t) return;
   const a = t.getAttribute('data-act'), id = t.getAttribute('data-id'), f = S.fm, vol = S.gv && !S.gvForm ? S.gv : null, volta = vol ? () => gvAbrir(vol) : null;
   const c = id ? S.aguacol.find(x => x.id === id) : null;
-  if (a === 'ag-nova') { if (!agPode()) return; lcAbrir(agNovoEstado(t.getAttribute('data-tipo') || '', t.getAttribute('data-oc') || ''), volta); }
+  if (a === 'ag-nova') { if (!agPode()) return; lcAbrir(agNovoEstado(t.getAttribute('data-tipo') || '', t.getAttribute('data-oc') || '', t.getAttribute('data-pid') || ''), volta); }
   else if (a === 'ag-nova-ok') agNovaOk();
-  else if (a === 'ag-ck' && f) { const g = t.getAttribute('data-g'); if (g === 'bebs') f.bebs[id] = !f.bebs[id]; else if (g === 'recs') f.recs[id] = !f.recs[id]; else if (g === 'ag') { const i = f.agente.indexOf(id); if (i >= 0) f.agente.splice(i, 1); else f.agente.push(id); } f.sujo = true; f.msg = ''; gvDesenha(true); }
+  else if (a === 'ag-ck' && f) { const g = t.getAttribute('data-g'); if (g === 'bebs') f.bebs[id] = !f.bebs[id]; else if (g === 'recs') f.recs[id] = !f.recs[id]; else if (g === 'ppt') f.ppt[id] = !f.ppt[id]; else if (g === 'pan') f.pan[id] = !f.pan[id]; else if (g === 'pt') { f.pontos[id] = !f.pontos[id]; f.avisado = ''; } else if (g === 'an') { f.ans[id] = !f.ans[id]; f.avisado = ''; } else if (g === 'ag') { const i = f.agente.indexOf(id); if (i >= 0) f.agente.splice(i, 1); else f.agente.push(id); } f.sujo = true; f.msg = ''; gvDesenha(true); }
   else if (a === 'ag-env') { if (!agPode() || !c) return; lcAbrir({ k: 'agEnv', id: c.id, envio: c.envio || '', lab: c.lab || '', os: c.os || '', sol: c.numSolicitacao || '' }, volta); }
   else if (a === 'ag-env-ok') agEnvOk();
   else if (a === 'ag-res') { if (!agPode() || !c) return; lcAbrir({ k: 'agRes', id: c.id, res: c.resultado || 'PENDENTE', laudo: c.laudoEm || hojeISO(), agente: (c.agente || []).slice(), agOutro: c.agenteOutro || '', grav: c.gravidade || '', obs: c.obs || '' }, volta); }

@@ -69,8 +69,7 @@ TELAS.coletas = function (aba) {
   const pl = (n, um, mais) => n + ' ' + (n === 1 ? um : mais);
   const meta = [r.naoenv ? metaPl(pl(r.naoenv, 'não enviada', 'não enviadas'), 'wa') : '', r.aguarda ? '<span>' + r.aguarda + ' aguardando laudo</span>' : '', r.atras ? metaPl(pl(r.atras, 'laudo atrasado', 'laudos atrasados'), 'cr', 'alerta') : ''].filter(Boolean);
   const acoes = (coPode() && r.naoenv ? '<button type="button" class="bt pr" data-act="co-env">' + ic('sai') + 'Enviar</button>' : '') + ext;
-  if (t.id === 'cadastros') return cabecalho({ titulo: t.nome, abaNome: t.nome, meta: [metaPl('chega numa próxima versão', 'wa', 'relogio')], acoes: '<a class="bt pr" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener">' + ic('externo') + 'Usar no EFClaudian</a>' }) +
-    '<section class="pn"><div class="vazio">' + ic('lista') + '<b>Talhões, análises, laboratórios e prazos continuam no EFClaudian por enquanto.</b><span>Os dados são os mesmos: o que for lançado lá aparece aqui na hora.</span></div></section>';
+  if (t.id === 'cadastros') return paTela(t); /* v0.6.7 (aguapj.js): Pontos de água; o resto dos cadastros segue no EFClaudian */
   if (t.id === 'agua') return agTela(t); /* v0.6.5 (agua.js) */
   if (t.id === 'plano') { /* v0.4.6 (plano.js) */
     if (!S.colCarregado && !DEMO) return cabecalho({ caminho: ['Coletas', 'Programação', 'Plano'], titulo: 'Plano de coleta' }) + '<section class="pn"><div class="vazio">' + ic('relogio') + '<b>Carregando o plano…</b></div></section>';

@@ -41,7 +41,8 @@ const semear = p => p.evaluate(async png => {
   conf(/Apontamentos/.test(await p.textContent('.cs-ph h1')), 'a aba Apontamentos abre');
   conf(/Nenhum apontamento/.test(await p.textContent('.cs-ct')), 'sem apontamentos: mostra o aviso e convida a registrar');
   await semear(p); await esp(p, 800);
-  conf((await p.$$('.ap-card')).length === 4, 'o filtro padrão (esta semana) mostra os 4 desta semana');
+  const nSem = await p.evaluate(() => [0, 0, -1, -2, -3, -4].filter(n => addDias(hojeISO(), n) >= apSeg()).length); /* depende do dia da semana em que o teste roda */
+  conf((await p.$$('.ap-card')).length === nSem, 'o filtro padrão (esta semana) mostra os ' + nSem + ' desta semana');
   const m = (await p.textContent('.cs-meta')).replace(/\s+/g, ' ');
   conf(/4 em aberto de 7/.test(m), 'meta: 4 em aberto de 7 (' + m + ')');
   conf(/1 urgente/.test(m), 'meta: 1 urgente');

@@ -37,7 +37,7 @@ body.fed-on{overflow:hidden}
 .fed-ml .bt{width:28px;height:28px;vertical-align:middle;margin-left:4px}
 .fed-d{color:var(--tx3);font-size:13px;margin-top:6px}
 .fed-pv{margin-top:auto;padding-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.fed-mkb{position:absolute;left:3px;bottom:3px;display:inline-flex;align-items:center;gap:3px;height:24px;padding:0 6px;border:0;border-radius:6px;background:var(--bg1);color:var(--tx);font:inherit;font-size:11.5px;font-weight:600;cursor:pointer;box-shadow:var(--sh)}
+.fed-mkb{white-space:nowrap;position:absolute;left:3px;bottom:3px;display:inline-flex;align-items:center;gap:3px;height:24px;padding:0 6px;border:0;border-radius:6px;background:var(--bg1);color:var(--tx);font:inherit;font-size:11.5px;font-weight:600;cursor:pointer;box-shadow:var(--sh)}
 .fed-mkb .ic{width:12px;height:12px}
 .fed-v{flex-direction:column}
 .fed-v .fed-h{display:flex}

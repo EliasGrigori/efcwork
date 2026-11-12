@@ -96,17 +96,17 @@ Janela Col Detail (openColDetail),Coletas,should,sim,nao,,rascunho automático; 
 Janela Col Env (openColEnv),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
 Janela Cancel Col (openCancelCol),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
 Janela Motivo (openMotivo),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Pj (openPj),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Remarcar coleta (openPjRem),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Já há coleta remarcada à mão mais à frente (openPjRealinharPergunta),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Pj Edit (openPjEdit),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Pj Ponto (openPjPonto),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Pj (openPj),Coletas,should,sim,sim,,rascunho automático; prioridade a revisar · v0.6.7 aguapj.js
+Janela Remarcar coleta (openPjRem),Coletas,should,sim,sim,,rascunho automático; prioridade a revisar · v0.6.7 aguapj.js
+Janela Já há coleta remarcada à mão mais à frente (openPjRealinharPergunta),Coletas,should,sim,sim,,rascunho automático; prioridade a revisar · v0.6.7 aguapj.js
+Janela Pj Edit (openPjEdit),Coletas,should,sim,sim,,rascunho automático; prioridade a revisar · v0.6.7 aguapj.js
+Janela Pj Ponto (openPjPonto),Coletas,should,sim,sim,,rascunho automático; prioridade a revisar · v0.6.7 aguapj.js
 Janela Nova coleta de água (openAguaNew),Coletas,should,sim,sim,Coletas › Água · Nova coleta de água,rascunho automático; prioridade a revisar
 Janela Água · (openAguaDetail),Coletas,should,sim,sim,Coletas › Água · detalhe,rascunho automático; prioridade a revisar
 Janela Prazos da água (openAgCfg),Geral,should,sim,sim,Coletas › Água · Prazos da água,rascunho automático; prioridade a revisar
-Janela Ação corretiva (openAcaoNova),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Ação corretiva · (openAcao),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Relatório de água por local (openAgRel),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Ação corretiva (openAcaoNova),Geral,should,sim,sim,Coletas › Água · Abrir ação corretiva,v0.6.6 aguaac.js; rascunho automático; prioridade a revisar
+Janela Ação corretiva · (openAcao),Geral,should,sim,sim,Coletas › Água · ação corretiva,v0.6.6 aguaac.js; rascunho automático; prioridade a revisar
+Janela Relatório de água por local (openAgRel),Geral,should,sim,sim,Coletas › Água · impressora,v0.6.6 aguaac.js; rascunho automático; prioridade a revisar
 Janela Prazo Lote (openPrazoLote),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
 Janela Lab Edit (openLabEdit),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
 Janela Faz Edit (openFazEdit),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
