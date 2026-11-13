@@ -1,0 +1,412 @@
+{
+ "nome": "EFCwork",
+ "quando": "2026-11-13T16:41:25.938Z",
+ "achados": [
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/analise.css:70",
+   "oque": "cor escrita direto: #bbb",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/analise.css:71",
+   "oque": "cor escrita direto: #333 #999",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/analise.css:72",
+   "oque": "cor escrita direto: #000 #fff",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/auditoria.css:91",
+   "oque": "cor escrita direto: #fff",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/auditoria.css:95",
+   "oque": "cor escrita direto: #000",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/auditoria.css:97",
+   "oque": "cor escrita direto: #444",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/auditoria.css:101",
+   "oque": "cor escrita direto: #555",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/auditoria.css:103",
+   "oque": "cor escrita direto: #999",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/auditoria.css:105",
+   "oque": "cor escrita direto: #555",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/auditoria.css:108",
+   "oque": "cor escrita direto: #444",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/auditoria.css:112",
+   "oque": "cor escrita direto: #eee",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/auditoria.css:113",
+   "oque": "cor escrita direto: #000",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/auditoria.css:114",
+   "oque": "cor escrita direto: #555",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/auditoria.css:116",
+   "oque": "cor escrita direto: #000",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/auditoria.css:117",
+   "oque": "cor escrita direto: #444",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/auditoria.css:120",
+   "oque": "cor escrita direto: #bbb",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/auditoria.css:122",
+   "oque": "cor escrita direto: #999",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/auditoria.css:125",
+   "oque": "cor escrita direto: #333",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/auditoria.css:126",
+   "oque": "cor escrita direto: #555",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/auditoria.css:128",
+   "oque": "cor escrita direto: #999",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/auditoria.css:129",
+   "oque": "cor escrita direto: #eee",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/base.css:46",
+   "oque": "cor escrita direto: #c99d48 #1c1406",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/base.css:94",
+   "oque": "cor escrita direto: #fff",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/calibracao.css:19",
+   "oque": "cor escrita direto: #f7df9e #d9b46a #b4862f",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/casca.css:7",
+   "oque": "cor escrita direto: #1c1406",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/casca.css:163",
+   "oque": "cor escrita direto: #1c1406",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/casca.css:186",
+   "oque": "cor escrita direto: #fff7dc #d9b46a #9a7128",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/entrar.css:32",
+   "oque": "cor escrita direto: #f3eee3",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/entrar.css:39",
+   "oque": "cor escrita direto: #d9b46a",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/entrar.css:43",
+   "oque": "cor escrita direto: #0d0b14",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/entrar.css:48",
+   "oque": "cor escrita direto: #000",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/entrar.css:49",
+   "oque": "cor escrita direto: #f7df9e #b4862f",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/entrar.css:59",
+   "oque": "cor escrita direto: #f3d9a6 #e6b46a #b9823a",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/entrar.css:65",
+   "oque": "cor escrita direto: #fff",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/fluidez.css:4",
+   "oque": "cor escrita direto: #7fd3a0",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/fluidez.css:33",
+   "oque": "cor escrita direto: #000",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/impressos.css:3",
+   "oque": "cor escrita direto: #fff",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/nota.css:2",
+   "oque": "cor escrita direto: #000",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/nota.css:4",
+   "oque": "cor escrita direto: #000",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/nota.css:10",
+   "oque": "cor escrita direto: #000",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/nota.css:15",
+   "oque": "cor escrita direto: #000",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/nota.css:17",
+   "oque": "cor escrita direto: #000",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/plano.css:11",
+   "oque": "cor escrita direto: #fff",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/plano.css:13",
+   "oque": "cor escrita direto: #1c1406",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/programacao.css:21",
+   "oque": "cor escrita direto: #fff",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/tabela.css:87",
+   "oque": "cor escrita direto: #000",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/tabela.css:88",
+   "oque": "cor escrita direto: #000",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/tabela.css:91",
+   "oque": "cor escrita direto: #999",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/tabela.css:92",
+   "oque": "cor escrita direto: #eee",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "src/tabela.css:94",
+   "oque": "cor escrita direto: #555",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "App",
+   "nivel": "ajuste",
+   "onde": "Início · 1280 · claro",
+   "oque": "8 tamanhos de letra (meta: até 7)",
+   "sug": "Juntar tamanhos parecidos."
+  },
+  {
+   "parte": "App",
+   "nivel": "ajuste",
+   "onde": "Almoxarifado · 1280 · claro",
+   "oque": "8 tamanhos de letra (meta: até 7)",
+   "sug": "Juntar tamanhos parecidos."
+  },
+  {
+   "parte": "App",
+   "nivel": "ajuste",
+   "onde": "Início · 1280 · escuro",
+   "oque": "8 tamanhos de letra (meta: até 7)",
+   "sug": "Juntar tamanhos parecidos."
+  },
+  {
+   "parte": "App",
+   "nivel": "ajuste",
+   "onde": "Almoxarifado · 1280 · escuro",
+   "oque": "8 tamanhos de letra (meta: até 7)",
+   "sug": "Juntar tamanhos parecidos."
+  },
+  {
+   "parte": "App",
+   "nivel": "ajuste",
+   "onde": "Início · 390 · claro",
+   "oque": "8 tamanhos de letra (meta: até 7)",
+   "sug": "Juntar tamanhos parecidos."
+  },
+  {
+   "parte": "App",
+   "nivel": "ajuste",
+   "onde": "Almoxarifado · 390 · claro",
+   "oque": "8 tamanhos de letra (meta: até 7)",
+   "sug": "Juntar tamanhos parecidos."
+  },
+  {
+   "parte": "App",
+   "nivel": "ajuste",
+   "onde": "Início · 390 · escuro",
+   "oque": "8 tamanhos de letra (meta: até 7)",
+   "sug": "Juntar tamanhos parecidos."
+  },
+  {
+   "parte": "App",
+   "nivel": "ajuste",
+   "onde": "Almoxarifado · 390 · escuro",
+   "oque": "8 tamanhos de letra (meta: até 7)",
+   "sug": "Juntar tamanhos parecidos."
+  }
+ ]
+}

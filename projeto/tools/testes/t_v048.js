@@ -168,7 +168,7 @@ const cab = p => p.$$eval('.tb[data-tb="al-mat"] .tb-cab th', l => l.map(x => x.
   await m.goto(URL); await m.waitForTimeout(400); await m.fill('#en-nome', 'Joana Silva'); await m.fill('#en-login', 'joana.silva'); await m.fill('#en-senha', 'senha1234'); await m.fill('#en-senha2', 'senha1234'); await m.click('[data-form="en-primeiro"] button[type=submit]'); await m.waitForTimeout(600); await semear(m);
   await m.goto(URL); await m.waitForTimeout(600); await m.evaluate(() => { location.hash = '#/almox/materiais'; }); await m.waitForTimeout(400);
   conf(Number(await m.$eval('.tb-cab th[data-tbk="nome"] .tb-hm', e => getComputedStyle(e).opacity)) > 0, 'botão do menu visível no celular (toque)');
-  await m.click('.tb-cab th[data-tbk="nome"] .tb-thr'); await m.waitForTimeout(300);
+  await m.click('.tb-cab th[data-tbk="nome"] .tb-thr'); await m.waitForTimeout(500); /* v0.6.14: a folha sobe em 400 ms */
   const fol = await m.evaluate(() => { const e = document.querySelector('.tb-mn'); const r = e.getBoundingClientRect(); return e.classList.contains('tb-mn-folha') && Math.abs(r.bottom - innerHeight) < 2 && r.width >= innerWidth - 2; });
   conf(fol, 'no celular o menu abre de baixo, na largura da tela');
   await m.screenshot({ path: path.join(SHOTS, 'v048-cel-menu.png') });

@@ -225,8 +225,8 @@ async function trImportaTexto(txt) {
 /* ---------- ações, listas retráteis e busca ---------- */
 DD_AO.tr = (k, v) => {
   const f = S.fm; if (!f) return; f.sujo = true; f.msg = '';
-  if (k === 'sit') { f.sit = v; gvDesenha(true); } else if (k === 'pop' || k === 'mat') f[k] = v;
-  else if (k.indexOf('ef.') === 0) { const r = f.rows[Number(k.slice(3))]; if (r) r.eficaz = v; }
+  if (k === 'sit') { f.sit = v; gvDesenha(true); } else if (k === 'pop' || k === 'mat') { f[k] = v; gvDesenha(true); }
+  else if (k.indexOf('ef.') === 0) { const r = f.rows[Number(k.slice(3))]; if (r) r.eficaz = v; gvDesenha(true); }
 };
 document.addEventListener('click', e => {
   const t = e.target.closest && e.target.closest('[data-act^="tr-"]'); if (!t) return;

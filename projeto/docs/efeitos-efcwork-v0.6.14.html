@@ -1,0 +1,469 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EFCwork · Efeitos e fluidez</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600;700&display=swap">
+<style>
+/* tokens do EFCwork (Claro marfim e ouro; Escuro = Dourado original) */
+:root{--f:'Source Sans 3',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;--fh:'Fraunces',Georgia,'Times New Roman',serif;
+  --bg0:#f7f5ef;--bg1:#fffefb;--bg2:#f2eee4;--bd:#e6dfcf;--bd2:#d8cdb2;--tx:#1e1b14;--tx2:#5b5443;--tx3:#8d846c;
+  --a:#9a7128;--aS:rgba(154,113,40,.12);--aTx:#7d5a1c;--ok:#2f7d4f;--okS:rgba(47,125,79,.12);--wa:#9a6a0c;--waS:rgba(154,106,12,.13);--cr:#b33a32;--crS:rgba(179,58,50,.11);
+  --ouro:linear-gradient(135deg,#f7df9e 0%,#d9b46a 42%,#b4862f 100%);--onOuro:#1c1406;--r:10px;--rs:7px;--btn:36px;--vidro:rgba(255,254,251,.86);color-scheme:light}
+:root[data-tema="escuro"]{--bg0:#0b0d16;--bg1:#121524;--bg2:#181c2e;--bd:#2a2b3b;--bd2:#3d3b4b;--tx:#f3eee3;--tx2:#bcb3a1;--tx3:#80796a;
+  --a:#d9b46a;--aS:rgba(217,180,106,.15);--aTx:#f0d48f;--ok:#7fbf98;--okS:rgba(127,191,152,.14);--wa:#e2b55f;--waS:rgba(226,181,95,.14);--cr:#e38b7d;--crS:rgba(227,139,125,.14);--vidro:rgba(18,21,36,.82);color-scheme:dark}
+/* EFC · movimento — escala única de movimento da família EFClaudian (EFCwork, Sabiá, EFClaudian, Vértice Docs).
+   Um arquivo só para todos, como o Contrato EFD: qualquer mudança sobe a versão e entra nos apps no mesmo dia, com a ordem do Elias.
+   Versão 1 (13/11/2026). Tokens e receitas adaptados do Transitions.dev (github.com/Jakubantalik/transitions.dev), usados aqui
+   conforme a licença de uso dele (uso em projeto liberado; não redistribuir a biblioteca como material próprio).
+   Regras da família: nada de animação infinita que não informe nada (exceção aprovada: o reflexo do botão dourado);
+   toda animação respeita "movimento reduzido"; duração sempre de um token do MESMO USO. */
+:root{
+  /* durações (por uso) */
+  --duration-stagger:40ms;   /* atraso entre itens de uma lista que entra */
+  --duration-micro:80ms;     /* trecho de tremida, atraso de dica */
+  --duration-quick:150ms;    /* fechar lista retrátil ou confirmação, trocar texto, dica, hover */
+  --duration-fast:250ms;     /* abrir lista retrátil ou confirmação, trocar ícone, aba, fechar aviso */
+  --duration-medium:350ms;   /* fechar gaveta ou folha, abrir aviso */
+  --duration-slow:400ms;     /* abrir gaveta ou folha, revelar conteúdo carregado, barra que enche */
+  --duration-very-slow:500ms;/* momento de destaque: visto de salvo, número que importa */
+  /* curvas */
+  --ease-smooth-out:cubic-bezier(.22,1,.36,1); /* abrir e fechar superfícies, deslizar, mudar de tamanho ou lugar */
+  --ease-in-out:ease-in-out;                     /* trocar ícone ou texto */
+  --ease-out:ease-out;                           /* dica, borda, cor */
+  --ease-linear:linear;                          /* brilho que passa, carregando */
+  --ease-bounce:cubic-bezier(.34,1.36,.64,1);    /* selo que aparece, passo que acende */
+  /* distâncias, escalas e desfoque */
+  --distance-micro:4px;--distance-small:6px;--distance-base:8px;--distance-medium:12px;--distance-large:30px;
+  --scale-large:.96;--scale-medium:.97;--scale-small:.98;--scale-tiny:.99;
+  --blur-small:2px;--blur-medium:3px;--blur-large:8px;
+  /* receitas (cada uma lê a escala acima) */
+  --dropdown-open-dur:var(--duration-fast);--dropdown-close-dur:var(--duration-quick);--dropdown-pre-scale:var(--scale-medium);--dropdown-closing-scale:var(--scale-tiny);--dropdown-ease:var(--ease-smooth-out);
+  --modal-open-dur:var(--duration-fast);--modal-close-dur:var(--duration-quick);--modal-scale:var(--scale-large);--modal-ease:var(--ease-smooth-out);
+  --panel-open-dur:var(--duration-slow);--panel-close-dur:var(--duration-medium);--panel-blur:var(--blur-small);--panel-ease:var(--ease-smooth-out);
+  --toast-open:var(--duration-medium);--toast-close:var(--duration-fast);--toast-distance:16px;--toast-blur:var(--blur-small);--toast-scale:var(--scale-medium);--toast-ease:var(--ease-smooth-out);
+  --tabs-dur:var(--duration-fast);--tabs-ease:var(--ease-smooth-out);
+  --acc-expand:var(--duration-fast);--acc-collapse:var(--duration-fast);--acc-ease:var(--ease-smooth-out);
+  --icon-swap-dur:var(--duration-fast);--icon-swap-blur:var(--blur-small);--icon-swap-start-scale:.25;--icon-swap-ease:var(--ease-in-out);
+  --shake-distance:var(--distance-small);--shake-overshoot:var(--distance-micro);--shake-dur-a:var(--duration-micro);--shake-dur-b:60ms;--shake-ease:var(--ease-smooth-out);
+  --subtle-dur:455ms;--subtle-distance:.14em;--subtle-blur:.042em;--subtle-ease:var(--ease-smooth-out);
+  --check-dur:var(--duration-very-slow);--check-ease:var(--ease-smooth-out);--check-bob-ease:cubic-bezier(.34,1.35,.64,1);
+}
+
+/* lista retrátil, menu, folha de opções ancorada no botão (abre do botão) */
+.t-dropdown{transform-origin:top left;transform:scale(var(--dropdown-pre-scale));opacity:0;pointer-events:none;
+  transition:transform var(--dropdown-open-dur) var(--dropdown-ease),opacity var(--dropdown-open-dur) var(--dropdown-ease);will-change:transform,opacity}
+.t-dropdown[data-origin="top-right"]{transform-origin:top right}.t-dropdown[data-origin="top-center"]{transform-origin:top center}
+.t-dropdown[data-origin="bottom-left"]{transform-origin:bottom left}.t-dropdown[data-origin="bottom-right"]{transform-origin:bottom right}
+.t-dropdown.is-open{transform:scale(1);opacity:1;pointer-events:auto}
+.t-dropdown.is-closing{transform:scale(var(--dropdown-closing-scale));opacity:0;pointer-events:none;
+  transition:transform var(--dropdown-close-dur) var(--dropdown-ease),opacity var(--dropdown-close-dur) var(--dropdown-ease)}
+
+/* janela no centro (confirmação) + fundo que escurece */
+.t-modal{transform-origin:center;transform:scale(var(--modal-scale));opacity:0;pointer-events:none;
+  transition:transform var(--modal-open-dur) var(--modal-ease),opacity var(--modal-open-dur) var(--modal-ease);will-change:transform,opacity}
+.t-modal.is-open{transform:scale(1);opacity:1;pointer-events:auto}
+.t-modal.is-closing{transform:scale(var(--modal-scale));opacity:0;pointer-events:none;
+  transition:transform var(--modal-close-dur) var(--modal-ease),opacity var(--modal-close-dur) var(--modal-ease)}
+.t-fundo{opacity:0;transition:opacity var(--modal-close-dur) var(--ease-out)}
+.t-fundo.is-open{opacity:1;transition-duration:var(--modal-open-dur)}
+
+/* gaveta lateral (detalhe) — painel que desliza da direita; folha que sobe de baixo no celular */
+.t-gaveta{transform:translateX(100%);opacity:.6;filter:blur(var(--panel-blur));
+  transition:transform var(--panel-close-dur) var(--panel-ease),opacity var(--panel-close-dur) var(--panel-ease),filter var(--panel-close-dur) var(--panel-ease);will-change:transform,opacity}
+.t-gaveta.is-open{transform:none;opacity:1;filter:none;
+  transition:transform var(--panel-open-dur) var(--panel-ease),opacity var(--panel-open-dur) var(--panel-ease),filter var(--panel-open-dur) var(--panel-ease)}
+.t-folha{transform:translateY(100%);opacity:.6;transition:transform var(--panel-close-dur) var(--panel-ease),opacity var(--panel-close-dur) var(--panel-ease);will-change:transform}
+.t-folha.is-open{transform:none;opacity:1;transition:transform var(--panel-open-dur) var(--panel-ease),opacity var(--panel-open-dur) var(--panel-ease)}
+
+/* aviso que sobe de baixo (um por vez) */
+.t-toast{opacity:0;transform:translateY(var(--toast-distance)) scale(var(--toast-scale));filter:blur(var(--toast-blur));will-change:transform,opacity,filter;
+  transition:opacity var(--toast-close) var(--toast-ease),transform var(--toast-close) var(--toast-ease),filter var(--toast-close) var(--toast-ease)}
+.t-toast.is-open{opacity:1;transform:none;filter:none;
+  transition:opacity var(--toast-open) var(--toast-ease),transform var(--toast-open) var(--toast-ease),filter var(--toast-open) var(--toast-ease)}
+
+/* traço da aba que desliza até a aba escolhida (abas sublinhadas da família) */
+.t-abas{position:relative}
+.t-abas-linha{position:absolute;left:0;bottom:0;height:2px;width:0;background:var(--a,currentColor);border-radius:2px;pointer-events:none;
+  transition:transform var(--tabs-dur) var(--tabs-ease),width var(--tabs-dur) var(--tabs-ease);will-change:transform,width}
+
+/* bloco que abre e recolhe (filtro, detalhes) */
+.t-acc-panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows var(--acc-collapse) var(--acc-ease)}
+.t-acc[data-open="true"] .t-acc-panel{grid-template-rows:1fr;transition-duration:var(--acc-expand)}
+.t-acc-panel-inner{overflow:hidden;opacity:0;transition:opacity var(--acc-collapse) var(--acc-ease)}
+.t-acc[data-open="true"] .t-acc-panel-inner{opacity:1;transition-duration:var(--acc-expand)}
+
+/* dois ícones no mesmo lugar (tema claro/escuro, mostrar/ocultar) */
+.t-icon-swap{position:relative;display:inline-grid}
+.t-icon-swap .t-icon{grid-area:1/1;transition:opacity var(--icon-swap-dur) var(--icon-swap-ease),filter var(--icon-swap-dur) var(--icon-swap-ease),transform var(--icon-swap-dur) var(--icon-swap-ease)}
+.t-icon-swap[data-state="a"] .t-icon[data-icon="a"],.t-icon-swap[data-state="b"] .t-icon[data-icon="b"]{opacity:1;filter:none;transform:none}
+.t-icon-swap[data-state="a"] .t-icon[data-icon="b"],.t-icon-swap[data-state="b"] .t-icon[data-icon="a"]{opacity:0;filter:blur(var(--icon-swap-blur));transform:scale(var(--icon-swap-start-scale))}
+
+/* erro: tremida curta (280 ms, uma vez) */
+.t-shake.is-shaking{animation:t-shake calc(var(--shake-dur-a) * 2 + var(--shake-dur-b) * 2) linear}
+@keyframes t-shake{
+  0%{transform:translateX(0);animation-timing-function:var(--shake-ease)}
+  28.57%{transform:translateX(var(--shake-distance));animation-timing-function:var(--shake-ease)}
+  57.14%{transform:translateX(calc(var(--shake-distance) * -1));animation-timing-function:var(--shake-ease)}
+  78.57%{transform:translateX(var(--shake-overshoot));animation-timing-function:var(--shake-ease)}
+  100%{transform:translateX(0)}}
+
+/* número que mudou porque o dado mudou (discreto) */
+.t-subtle-number{display:inline-flex;align-items:baseline;font-variant-numeric:tabular-nums}
+.t-subtle-slot{position:relative;display:inline-block}.t-subtle-new{display:inline-block}
+.t-subtle-old{position:absolute;inset:0;text-align:center;pointer-events:none}
+.t-subtle-number.is-animating .t-subtle-new{animation:t-subtle-in var(--subtle-dur) var(--subtle-ease) both}
+.t-subtle-number.is-animating .t-subtle-old{animation:t-subtle-out var(--subtle-dur) var(--subtle-ease) both}
+@keyframes t-subtle-in{from{transform:translateY(calc(var(--subtle-distance) * var(--subtle-dir,1)));opacity:0;filter:blur(var(--subtle-blur))}}
+@keyframes t-subtle-out{to{transform:translateY(calc(var(--subtle-distance) * var(--subtle-dir,1) * -1));opacity:0;filter:blur(var(--subtle-blur))}}
+
+/* visto de "salvo" (desenha uma vez) */
+.t-success-check{display:inline-block;transform-origin:center;opacity:0}
+.t-success-check svg{display:block;overflow:visible}
+.t-success-check svg path{stroke-dasharray:var(--check-len,20);stroke-dashoffset:var(--check-len,20)}
+.t-success-check[data-state="in"]{animation:t-check-in var(--check-dur) var(--check-ease) forwards,t-check-bob var(--check-dur) var(--check-bob-ease) forwards}
+.t-success-check[data-state="in"] svg path{animation:t-check-draw var(--check-dur) var(--check-ease) var(--duration-micro) forwards}
+@keyframes t-check-in{from{opacity:0;transform:rotate(80deg);filter:blur(var(--blur-large))}to{opacity:1;transform:none;filter:none}}
+@keyframes t-check-bob{from{translate:0 var(--distance-medium)}to{translate:0 0}}
+@keyframes t-check-draw{to{stroke-dashoffset:0}}
+
+/* movimento reduzido: obrigatório — tudo para, o estado final aparece na hora */
+@media (prefers-reduced-motion:reduce){
+  .t-dropdown,.t-modal,.t-fundo,.t-gaveta,.t-folha,.t-toast,.t-abas-linha,.t-acc-panel,.t-acc-panel-inner,.t-icon-swap .t-icon{transition:none!important}
+  .t-shake.is-shaking,.t-subtle-number .t-subtle-new{animation:none!important}.t-subtle-number .t-subtle-old{display:none}
+  .t-success-check{animation:none!important;opacity:1}.t-success-check svg path{animation:none!important;stroke-dashoffset:0!important}
+}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg0);color:var(--tx);font:15px/1.5 var(--f);-webkit-font-smoothing:antialiased}
+main{max-width:1180px;margin:0 auto;padding-block:28px 90px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2{font-family:var(--fh);font-weight:600;letter-spacing:-.01em;margin:0;text-wrap:balance}
+h1{font-size:32px}h1::after{content:"";display:block;width:56px;height:3px;background:var(--a);border-radius:2px;margin-top:10px}
+.sub{color:var(--tx2);max-width:74ch;margin:12px 0 0}
+.topo{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;justify-content:space-between}
+.tm{display:flex;gap:8px}
+.bt{height:var(--btn);display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:0 14px;border:1px solid var(--bd2);border-radius:var(--rs);background:var(--bg1);color:var(--tx);font:600 14px var(--f);cursor:pointer;transition:background var(--duration-quick) var(--ease-out),border-color var(--duration-quick) var(--ease-out)}
+.bt:hover{background:var(--bg2)}.bt.on{border-color:var(--a);color:var(--aTx)}.bt:focus-visible{outline:2px solid var(--a);outline-offset:2px}
+.bt.pr{position:relative;overflow:hidden;background:var(--ouro);border-color:transparent;color:var(--onOuro)}
+.bt.pr::after{content:"";position:absolute;top:0;bottom:0;left:-60%;width:40%;background:linear-gradient(105deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-18deg);animation:ouroBrilho 6s ease-in-out infinite;pointer-events:none}/* mov:ok exceção aprovada */
+@keyframes ouroBrilho{0%,72%{left:-60%}100%{left:130%}}
+.ic{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.sec{margin-top:40px}.sec>h2{font-size:26px}.sec>p{color:var(--tx2);max-width:78ch;margin:8px 0 0}
+.it{margin-top:22px;background:var(--bg1);border:1px solid var(--bd);border-radius:12px;padding:20px 20px 16px}
+.num{font:700 15px var(--f);letter-spacing:.08em;color:var(--aTx);text-transform:uppercase}.num b{font-size:30px;letter-spacing:0;margin-left:4px}
+.it h3{font:600 22px var(--fh);margin:4px 0 0}.it>p{color:var(--tx2);max-width:80ch;margin:6px 0 0}
+.ref{font-size:13px;color:var(--tx3);margin-top:4px}
+.acs{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.resp{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin-top:14px;padding-top:12px;border-top:1px solid var(--bd)}
+.resp label{display:inline-flex;gap:6px;align-items:center;font-weight:600;cursor:pointer}.resp input{accent-color:var(--a);width:17px;height:17px}
+textarea{width:100%;margin-top:10px;min-height:52px;border:1px solid var(--bd2);border-radius:var(--rs);background:var(--bg0);color:var(--tx);font:14px var(--f);padding:8px 10px;resize:vertical}
+.fim{display:flex;gap:12px;align-items:center;margin-top:28px}#ok{color:var(--ok);font-weight:600}
+
+/* ---------- a tela de entrar (igual à do app, em tamanho de demonstração) ---------- */
+.lg{position:relative;container-type:inline-size;width:100%;aspect-ratio:16/9.6;margin-top:14px;border:1px solid var(--bd);border-radius:12px;overflow:hidden;background:var(--bg0);isolation:isolate}
+.lg.cheia{position:fixed;inset:0;aspect-ratio:auto;border-radius:0;border:0;z-index:50}
+.lg canvas.fx{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0}
+.lg .arte{position:absolute;left:5.5cqw;top:0;bottom:0;width:48cqw;display:flex;flex-direction:column;justify-content:center;gap:1.4cqw;z-index:2;pointer-events:none}
+.lg .eb{margin:0;font:600 max(11px,1.05cqw) var(--f);letter-spacing:.08em;text-transform:uppercase;color:var(--aTx)}
+.lg .pal{margin:0;font:700 7.2cqw/0.95 var(--fh);letter-spacing:-.02em;color:var(--tx);white-space:nowrap}
+:root[data-tema="escuro"] .lg .pal{background:linear-gradient(90deg,#f7e2a8,#d9b46a 60%,#c29640);-webkit-background-clip:text;background-clip:text;color:transparent}
+:root[data-tema="escuro"] .lg .pal.tx-blur,:root[data-tema="escuro"] .lg .pal.tx-split,:root[data-tema="escuro"] .lg .pal.tx-type{background:none;color:#e6c47e}
+.lg .diz{margin:0;font:500 max(13px,1.7cqw)/1.35 var(--f);color:var(--tx2);max-width:36cqw}
+.lg .cx{position:absolute;right:5.5cqw;top:50%;transform:translateY(-50%);width:max(280px,30cqw);background:var(--vidro);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid var(--bd);border-radius:14px;box-shadow:0 24px 60px rgba(0,0,0,.18);padding:22px;display:flex;flex-direction:column;gap:10px;z-index:3}
+.lg .cx h4{margin:0 0 4px;font:600 21px var(--fh)}
+.lg .cx label{font:600 13px var(--f);color:var(--tx2);display:flex;flex-direction:column;gap:5px}
+.lg .cx input{height:40px;border:1px solid var(--bd2);border-radius:var(--rs);background:var(--bg1);color:var(--tx);padding:0 12px;font:15px var(--f)}
+.lg .cx .bt{height:42px;margin-top:6px;width:100%}
+.lg .cx small{color:var(--tx3);font-size:12px;text-align:center}
+.lg .cheia-b{position:absolute;right:10px;top:10px;z-index:6;height:32px;font-size:13px;padding:0 10px}
+.lg .vazio{position:absolute;inset:0;display:grid;place-items:center;color:var(--tx3);font-size:14px;z-index:1}
+@container (max-width:620px){
+  .lg .arte{left:6cqw;right:6cqw;width:auto;top:8cqw;bottom:auto;gap:2.4cqw}
+  .lg .pal{font-size:12.5cqw}.lg .diz{font-size:max(13px,3.6cqw);max-width:none}.lg .eb{font-size:max(11px,2.8cqw)}
+  .lg .cx{left:6cqw;right:6cqw;width:auto;top:auto;bottom:6cqw;transform:none;padding:16px}
+}
+@media(max-width:640px){.lg{aspect-ratio:9/16}.it{padding:16px 14px 14px}h1{font-size:26px}}
+
+/* textos que entram (React Bits: Blur Text, Split Text, Shiny Text) — uma vez */
+.tx-blur .w{display:inline-block;opacity:0;filter:blur(10px);transform:translateY(-.25em);animation:txBlur var(--duration-very-slow) var(--ease-smooth-out) forwards;animation-delay:calc(var(--i) * 70ms + 150ms)}
+@keyframes txBlur{to{opacity:1;filter:none;transform:none}}
+.tx-split .l{display:inline-block;opacity:0;transform:translateY(.45em);animation:txSplit var(--duration-very-slow) var(--ease-smooth-out) forwards;animation-delay:calc(var(--i) * var(--duration-stagger) + 120ms)}
+@keyframes txSplit{to{opacity:1;transform:none}}
+.tx-shiny{position:relative}
+.tx-shiny .sh{position:absolute;inset:0;pointer-events:none;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.75) 50%,transparent 65%);background-size:250% 100%;background-position:150% 0;-webkit-background-clip:text;background-clip:text;color:transparent;animation:txShiny 1.6s var(--ease-in-out) .9s 1 forwards}
+@keyframes txShiny{to{background-position:-50% 0}}
+.tx-type .cur{display:inline-block;width:.06em;height:.9em;background:currentColor;vertical-align:-.08em;margin-left:.04em;animation:cur .8s steps(2) 6}
+@keyframes cur{50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.tx-blur .w,.tx-split .l{animation:none;opacity:1;filter:none;transform:none}.tx-shiny .sh,.tx-type .cur{display:none}}
+
+/* ---------- cardápio de efeitos no app ---------- */
+.dm{position:relative;height:230px;margin-top:14px;border:1px solid var(--bd);border-radius:var(--r);background:var(--bg0);overflow:hidden;display:grid;place-items:center;padding:16px}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;width:100%;max-width:640px}
+.card{position:relative;overflow:hidden;border:1px solid var(--bd);border-radius:var(--r);background:var(--bg1);padding:14px;min-height:110px;display:flex;flex-direction:column;gap:6px;cursor:pointer}
+.card b{font:600 17px var(--fh)}.card span{font-size:13px;color:var(--tx3)}.card i{font-style:normal;font:700 24px var(--f);font-variant-numeric:tabular-nums}
+/* Spotlight Card */
+.sp .card::before{content:"";position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity var(--duration-fast) var(--ease-out);background:radial-gradient(220px circle at var(--mx,50%) var(--my,50%),rgba(217,180,106,.28),transparent 60%)}
+.sp .card:hover::before{opacity:1}
+/* Glare Hover */
+.gl .card::after{content:"";position:absolute;top:0;bottom:0;left:-80%;width:50%;transform:skewX(-20deg);background:linear-gradient(105deg,transparent,rgba(255,255,255,.5),transparent);pointer-events:none}
+:root[data-tema="escuro"] .gl .card::after{background:linear-gradient(105deg,transparent,rgba(247,223,158,.18),transparent)}
+.gl .card:hover::after{left:140%;transition:left 650ms var(--ease-smooth-out)}
+/* Click Spark */
+.spk{position:absolute;pointer-events:none;width:0;height:0}
+.spk i{position:absolute;left:0;top:0;width:2px;height:9px;border-radius:2px;background:var(--a);transform-origin:50% 0;animation:spk 420ms var(--ease-smooth-out) forwards}
+@keyframes spk{from{transform:rotate(var(--r)) translateY(4px) scaleY(1);opacity:1}to{transform:rotate(var(--r)) translateY(22px) scaleY(.2);opacity:0}}
+/* Animated List */
+.al{list-style:none;margin:0;padding:0;width:100%;max-width:420px;display:flex;flex-direction:column;gap:8px}
+.al li{display:flex;gap:10px;align-items:center;background:var(--bg1);border:1px solid var(--bd);border-radius:var(--r);padding:10px 12px;font-size:14px}
+.al li span{color:var(--tx3);font-size:12px;margin-left:auto}
+.al.vai li{opacity:0;transform:translateY(10px) scale(.98);animation:alIn var(--duration-slow) var(--ease-smooth-out) forwards;animation-delay:calc(var(--i) * 60ms)}
+@keyframes alIn{to{opacity:1;transform:none}}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--a);flex:none}
+/* Gradual Blur */
+.gb{position:relative;width:100%;max-width:420px;height:190px;overflow:auto;border:1px solid var(--bd);border-radius:var(--r);background:var(--bg1)}
+.gb p{margin:0;padding:10px 14px;border-bottom:1px solid var(--bd);font-size:14px}
+.gb-f{position:sticky;bottom:0;height:56px;margin-top:-56px;pointer-events:none;-webkit-mask:linear-gradient(transparent,#000);mask:linear-gradient(transparent,#000);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);background:linear-gradient(transparent,var(--bg1))}
+/* Magnet */
+.mg{transition:transform 300ms var(--ease-smooth-out)}
+/* título que entra (Blur Text na troca de área) */
+.tt{font:600 30px var(--fh);margin:0}.tt::after{content:"";display:block;width:56px;height:3px;background:var(--a);border-radius:2px;margin-top:8px}
+/* fluidez entre telas */
+.fl{width:100%;max-width:640px}
+.fl nav{display:flex;gap:2px;border-bottom:1px solid var(--bd);position:relative}
+.fl nav a{padding:9px 12px;font-weight:500;color:var(--tx2);cursor:pointer;white-space:nowrap}.fl nav a.on{color:var(--aTx);font-weight:600}
+.fl .pn{margin-top:12px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.fl .pn div{height:70px;border:1px solid var(--bd);border-radius:var(--r);background:var(--bg1);padding:10px;font-size:13px;color:var(--tx2)}
+.fl .pn.sai{opacity:0;transform:translateX(calc(var(--dir,1) * -10px));transition:opacity var(--duration-quick) var(--ease-out),transform var(--duration-quick) var(--ease-out)}
+.fl .pn.entra{animation:flIn var(--duration-fast) var(--ease-smooth-out)}
+@keyframes flIn{from{opacity:0;transform:translateX(calc(var(--dir,1) * 12px))}}
+@media(max-width:640px){.cards{grid-template-columns:1fr 1fr}.cards .card:nth-child(3){display:none}.fl .pn{grid-template-columns:1fr 1fr}}
+@media (prefers-reduced-motion:reduce){.al.vai li{animation:none;opacity:1;transform:none}.fl .pn.entra{animation:none}.gl .card:hover::after{transition:none}}
+</style></head><body><main>
+<div class="topo"><div><h1>Efeitos e fluidez</h1>
+<p class="sub">Seis modelos completos da tela de entrar, cada um com um efeito no estilo do React Bits refeito sem React (WebGL e canvas puros, leves, que param quando a aba não está aberta e respeitam "movimento reduzido"), e um cardápio de efeitos para dentro do app: marque os que você quer. Mexa o mouse sobre os modelos; no celular, toque. "Tela cheia" mostra o tamanho real.</p></div>
+<div class="tm"><button type="button" class="bt" data-tm="claro">Claro</button><button type="button" class="bt" data-tm="escuro">Escuro</button></div></div>
+
+<section class="sec"><h2>Tela de entrar · escolha 1 modelo</h2><p>Todos mantêm o que você já aprovou: a palavra grande da configuração, a caixa de entrar à direita, o botão dourado. Muda o fundo vivo e a forma como o texto entra. A linha "Coletas, inspeções…" vem da opção 3 da página anterior.</p>
+<article class="it" data-k="login"><div class="num">MODELO<b>1</b></div><h3>Aurora dourada</h3><p>Faixas de luz dourada e verde-oliva que se movem devagar, como um amanhecer no campo. O ponteiro puxa a luz de leve. A palavra e a linha entram palavra por palavra, saindo do desfoque.</p><p class="ref">React Bits: Aurora + Blur Text</p><div class="lg" data-fx="aurora" data-tx="blur"><canvas class="fx" aria-hidden="true"></canvas><div class="vazio"></div><div class="arte"><p class="eb">Qualidade da fazenda</p><h3 class="pal">QUALIDADE</h3><p class="diz">Coletas, inspeções, documentos e almoxarifado num lugar só.</p></div><form class="cx" autocomplete="off"><h4>Entrar</h4><label>Login<input placeholder="seu.login" aria-label="Login"></label><label>Senha<input type="password" placeholder="••••••••" aria-label="Senha"></label><button type="submit" class="bt pr">Entrar</button><small>Esqueceu a senha? Fale com o Administrador.</small></form><button type="button" class="bt cheia-b">Tela cheia</button></div><div class="acs"><button type="button" class="bt" data-de>Ver o texto entrar de novo</button></div><div class="resp"><label><input type="radio" name="modelo" value="MODELO 1 · Aurora dourada"> Escolho este</label></div><textarea placeholder="Comentário (opcional)"></textarea></article><article class="it" data-k="login"><div class="num">MODELO<b>2</b></div><h3>Campo de pontos</h3><p>Pontos alinhados como linhas de plantio. Uma onda dourada passa uma vez ao abrir; depois os pontos crescem e se afastam do ponteiro (no celular, do dedo). Parado, não gasta nada. A palavra sobe letra por letra.</p><p class="ref">React Bits: Dot Grid + Split Text</p><div class="lg" data-fx="pontos" data-tx="split"><canvas class="fx" aria-hidden="true"></canvas><div class="vazio"></div><div class="arte"><p class="eb">Qualidade da fazenda</p><h3 class="pal">QUALIDADE</h3><p class="diz">Coletas, inspeções, documentos e almoxarifado num lugar só.</p></div><form class="cx" autocomplete="off"><h4>Entrar</h4><label>Login<input placeholder="seu.login" aria-label="Login"></label><label>Senha<input type="password" placeholder="••••••••" aria-label="Senha"></label><button type="submit" class="bt pr">Entrar</button><small>Esqueceu a senha? Fale com o Administrador.</small></form><button type="button" class="bt cheia-b">Tela cheia</button></div><div class="acs"><button type="button" class="bt" data-de>Ver o texto entrar de novo</button></div><div class="resp"><label><input type="radio" name="modelo" value="MODELO 2 · Campo de pontos"> Escolho este</label></div><textarea placeholder="Comentário (opcional)"></textarea></article><article class="it" data-k="login"><div class="num">MODELO<b>3</b></div><h3>Seda</h3><p>Um tecido dourado ondulando, liso e elegante. Um reflexo passa uma vez sobre a palavra.</p><p class="ref">React Bits: Silk + Shiny Text</p><div class="lg" data-fx="seda" data-tx="shiny"><canvas class="fx" aria-hidden="true"></canvas><div class="vazio"></div><div class="arte"><p class="eb">Qualidade da fazenda</p><h3 class="pal">QUALIDADE</h3><p class="diz">Coletas, inspeções, documentos e almoxarifado num lugar só.</p></div><form class="cx" autocomplete="off"><h4>Entrar</h4><label>Login<input placeholder="seu.login" aria-label="Login"></label><label>Senha<input type="password" placeholder="••••••••" aria-label="Senha"></label><button type="submit" class="bt pr">Entrar</button><small>Esqueceu a senha? Fale com o Administrador.</small></form><button type="button" class="bt cheia-b">Tela cheia</button></div><div class="acs"><button type="button" class="bt" data-de>Ver o texto entrar de novo</button></div><div class="resp"><label><input type="radio" name="modelo" value="MODELO 3 · Seda"> Escolho este</label></div><textarea placeholder="Comentário (opcional)"></textarea></article><article class="it" data-k="login"><div class="num">MODELO<b>4</b></div><h3>Pólen</h3><p>Partículas douradas subindo devagar, em profundidade; as de perto se deslocam mais com o ponteiro. Lembra pólen no ar da lavoura.</p><p class="ref">React Bits: Particles + Blur Text</p><div class="lg" data-fx="polen" data-tx="blur"><canvas class="fx" aria-hidden="true"></canvas><div class="vazio"></div><div class="arte"><p class="eb">Qualidade da fazenda</p><h3 class="pal">QUALIDADE</h3><p class="diz">Coletas, inspeções, documentos e almoxarifado num lugar só.</p></div><form class="cx" autocomplete="off"><h4>Entrar</h4><label>Login<input placeholder="seu.login" aria-label="Login"></label><label>Senha<input type="password" placeholder="••••••••" aria-label="Senha"></label><button type="submit" class="bt pr">Entrar</button><small>Esqueceu a senha? Fale com o Administrador.</small></form><button type="button" class="bt cheia-b">Tela cheia</button></div><div class="acs"><button type="button" class="bt" data-de>Ver o texto entrar de novo</button></div><div class="resp"><label><input type="radio" name="modelo" value="MODELO 4 · Pólen"> Escolho este</label></div><textarea placeholder="Comentário (opcional)"></textarea></article><article class="it" data-k="login"><div class="num">MODELO<b>5</b></div><h3>Curvas de nível</h3><p>Linhas de um mapa topográfico que mudam devagar, como o relevo da fazenda. As linhas perto do ponteiro acendem em dourado.</p><p class="ref">Inspirado em React Bits: Threads e Waves + Split Text</p><div class="lg" data-fx="curvas" data-tx="split"><canvas class="fx" aria-hidden="true"></canvas><div class="vazio"></div><div class="arte"><p class="eb">Qualidade da fazenda</p><h3 class="pal">QUALIDADE</h3><p class="diz">Coletas, inspeções, documentos e almoxarifado num lugar só.</p></div><form class="cx" autocomplete="off"><h4>Entrar</h4><label>Login<input placeholder="seu.login" aria-label="Login"></label><label>Senha<input type="password" placeholder="••••••••" aria-label="Senha"></label><button type="submit" class="bt pr">Entrar</button><small>Esqueceu a senha? Fale com o Administrador.</small></form><button type="button" class="bt cheia-b">Tela cheia</button></div><div class="acs"><button type="button" class="bt" data-de>Ver o texto entrar de novo</button></div><div class="resp"><label><input type="radio" name="modelo" value="MODELO 5 · Curvas de nível"> Escolho este</label></div><textarea placeholder="Comentário (opcional)"></textarea></article><article class="it" data-k="login"><div class="num">MODELO<b>6</b></div><h3>Raios de luz</h3><p>Feixes de luz dourada caindo do alto sobre a tela, respirando devagar; a origem acompanha o ponteiro. A palavra é digitada letra por letra.</p><p class="ref">React Bits: Light Rays + Text Type</p><div class="lg" data-fx="raios" data-tx="type"><canvas class="fx" aria-hidden="true"></canvas><div class="vazio"></div><div class="arte"><p class="eb">Qualidade da fazenda</p><h3 class="pal">QUALIDADE</h3><p class="diz">Coletas, inspeções, documentos e almoxarifado num lugar só.</p></div><form class="cx" autocomplete="off"><h4>Entrar</h4><label>Login<input placeholder="seu.login" aria-label="Login"></label><label>Senha<input type="password" placeholder="••••••••" aria-label="Senha"></label><button type="submit" class="bt pr">Entrar</button><small>Esqueceu a senha? Fale com o Administrador.</small></form><button type="button" class="bt cheia-b">Tela cheia</button></div><div class="acs"><button type="button" class="bt" data-de>Ver o texto entrar de novo</button></div><div class="resp"><label><input type="radio" name="modelo" value="MODELO 6 · Raios de luz"> Escolho este</label></div><textarea placeholder="Comentário (opcional)"></textarea></article>
+
+</section>
+
+<section class="sec"><h2>Dentro do app · marque os que quiser</h2><p>Cada um aparece onde faz sentido, no máximo um efeito de destaque por tela. Os que você não marcar ficam de fora; o resto do app segue a escala de movimento.</p>
+<article class="it" data-k="app"><div class="num">EFEITO<b>1</b></div><h3>Luz que segue o ponteiro (Spotlight Card)</h3><p>Um brilho dourado acompanha o mouse dentro do cartão. Mostra onde você está sem mudar o desenho.</p><p class="ref">Onde: cartões das áreas no Início e caixas de número (só no PC; no celular não aparece).</p><div class="dm sp"><div class="cards"><div class="card"><b>Coletas</b><i data-v="14">14</i><span>amostras na semana</span></div><div class="card"><b>Inspeções</b><i data-v="3">3</i><span>cloro pendente</span></div><div class="card"><b>Qualidade</b><i data-v="86">86</i><span>eficácia %</span></div></div></div><div class="resp"><label><input type="checkbox"> Quero no app</label></div><textarea placeholder="Comentário (opcional)"></textarea></article><article class="it" data-k="app"><div class="num">EFEITO<b>2</b></div><h3>Reflexo ao passar o mouse (Glare Hover)</h3><p>Um reflexo diagonal atravessa o cartão uma vez quando o mouse entra, como o reflexo do botão dourado.</p><p class="ref">Onde: cartões das áreas no Início (só no PC).</p><div class="dm gl"><div class="cards"><div class="card"><b>Coletas</b><i data-v="14">14</i><span>amostras na semana</span></div><div class="card"><b>Inspeções</b><i data-v="3">3</i><span>cloro pendente</span></div><div class="card"><b>Qualidade</b><i data-v="86">86</i><span>eficácia %</span></div></div></div><div class="resp"><label><input type="checkbox"> Quero no app</label></div><textarea placeholder="Comentário (opcional)"></textarea></article><article class="it" data-k="app"><div class="num">EFEITO<b>3</b></div><h3>Números que contam ao abrir (Count Up)</h3><p>Ao abrir a tela, os números das caixas contam de 0 até o valor em 0,9 s. Depois, quando o dado muda, só os dígitos que mudaram sobem.</p><p class="ref">Onde: caixas de número de cada área (Início, Almoxarifado, Cloro, Treinamentos).</p><div class="dm" data-auto="conta"><div class="cards"><div class="card"><b>Coletas</b><i data-v="14">14</i><span>amostras na semana</span></div><div class="card"><b>Inspeções</b><i data-v="3">3</i><span>cloro pendente</span></div><div class="card"><b>Qualidade</b><i data-v="86">86</i><span>eficácia %</span></div></div></div><div class="acs"><button type="button" class="bt" data-ap="conta">Ver de novo</button></div><div class="resp"><label><input type="checkbox"> Quero no app</label></div><textarea placeholder="Comentário (opcional)"></textarea></article><article class="it" data-k="app"><div class="num">EFEITO<b>4</b></div><h3>Faíscas ao salvar (Click Spark)</h3><p>Oito faíscas douradas curtas saem do botão principal no toque. Só no botão principal, e só quando a ação dá certo.</p><p class="ref">Onde: botão principal dos formulários (Salvar, Registrar, Programar).</p><div class="dm spkz"><button type="button" class="bt pr">Registrar realização</button></div><div class="resp"><label><input type="checkbox"> Quero no app</label></div><textarea placeholder="Comentário (opcional)"></textarea></article><article class="it" data-k="app"><div class="num">EFEITO<b>5</b></div><h3>Lista que entra em sequência (Animated List)</h3><p>Os itens aparecem um depois do outro, 60 ms entre eles, subindo um pouco. Dá a sensação de que a lista &quot;chegou&quot;.</p><p class="ref">Onde: sino de avisos, pendências do Início e listas curtas ao abrir.</p><div class="dm" data-auto="lista"><ul class="al"><li style="--i:0"><span class="dot"></span>Treinamento programado para você<span>agora</span></li><li style="--i:1"><span class="dot"></span>Cloro BR 06 fora da faixa<span>10 min</span></li><li style="--i:2"><span class="dot"></span>Nova versão do POP-07<span>1 h</span></li><li style="--i:3"><span class="dot"></span>Remessa para o laboratório pronta<span>ontem</span></li></ul></div><div class="acs"><button type="button" class="bt" data-ap="lista">Ver de novo</button></div><div class="resp"><label><input type="checkbox"> Quero no app</label></div><textarea placeholder="Comentário (opcional)"></textarea></article><article class="it" data-k="app"><div class="num">EFEITO<b>6</b></div><h3>Título que entra (Blur Text)</h3><p>Ao trocar de área, o título da tela entra letra por letra saindo do desfoque, com o traço dourado embaixo.</p><p class="ref">Onde: título de cada área ao navegar pelo menu.</p><div class="dm"><h4 class="tt">Treinamentos</h4></div><div class="acs"><button type="button" class="bt" data-ap="titulo">Ver de novo</button></div><div class="resp"><label><input type="checkbox"> Quero no app</label></div><textarea placeholder="Comentário (opcional)"></textarea></article><article class="it" data-k="app"><div class="num">EFEITO<b>7</b></div><h3>Botão que puxa o ponteiro (Magnet)</h3><p>O botão principal se move alguns pixels na direção do mouse quando ele chega perto. Brincadeira de PC; no celular não existe.</p><p class="ref">Onde: botão principal da tela de entrar e de formulários grandes (só no PC).</p><div class="dm mgz"><button type="button" class="bt pr mg">Entrar</button></div><div class="resp"><label><input type="checkbox"> Quero no app</label></div><textarea placeholder="Comentário (opcional)"></textarea></article><article class="it" data-k="app"><div class="num">EFEITO<b>8</b></div><h3>Desfoque no fim da lista (Gradual Blur)</h3><p>O fim de uma lista que rola fica desfocado aos poucos, avisando que tem mais embaixo. Some quando chega ao fim.</p><p class="ref">Onde: gavetas longas, sino e menu do celular.</p><div class="dm"><div class="gb"><p>Maria Souza · presente</p><p>João Pedro Lima · presente</p><p>Carlos Dias · faltou</p><p>Rita Alves · presente</p><p>Pedro Nunes · presente</p><p>Ana Lima · presente</p><p>Caio Reis · presente</p><p>Lúcia Melo · faltou</p><div class="gb-f"></div></div></div><div class="resp"><label><input type="checkbox"> Quero no app</label></div><textarea placeholder="Comentário (opcional)"></textarea></article><article class="it" data-k="app"><div class="num">EFEITO<b>9</b></div><h3>Troca de tela fluida</h3><p>Ao trocar de aba ou de área, o conteúdo sai e entra deslizando 10 px na direção da aba escolhida, e o traço da aba desliza junto. É o que mais dá sensação de sistema fluido no dia a dia.</p><p class="ref">Onde: todas as abas e a troca de área pelo menu.</p><div class="dm"><div class="fl"><nav><a class="on">Amostras</a><a>Água</a><a>Envio</a></nav><div class="pn"><div>Amostras · 14</div><div>Laboratórios · 3</div><div>Envio · 2 remessas</div></div></div></div><div class="acs"><button type="button" class="bt" data-ap="fluidez">Ver de novo</button></div><div class="resp"><label><input type="checkbox"> Quero no app</label></div><textarea placeholder="Comentário (opcional)"></textarea></article>
+
+</section>
+<div class="fim"><button type="button" class="bt pr" id="cp">Copiar respostas</button><span id="ok"></span></div>
+</main>
+<script>
+/* EFC · movimento — a pequena orquestração das receitas de efc-movimento.css (mesmo arquivo para toda a família).
+   Lê as durações das variáveis CSS, para que mudar um token mude o app inteiro. Versão 1 (13/11/2026). */
+const Mov = (() => {
+  const raiz = () => getComputedStyle(document.documentElement);
+  const ms = (nome, pad) => { const v = raiz().getPropertyValue(nome).trim(); const n = parseFloat(v); if (!Number.isFinite(n)) return pad; return /ms$/.test(v) ? n : /s$/.test(v) ? n * 1000 : n; };
+  const reduzido = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { return false; } };
+  /* abre uma superfície (.t-dropdown, .t-modal, .t-gaveta, .t-folha, .t-toast, .t-fundo) */
+  function abre(el) { if (!el) return; el.classList.remove('is-closing'); void el.offsetWidth; el.classList.add('is-open'); }
+  /* fecha e só chama "depois" quando a animação de saída terminou (limpa o is-closing: a próxima abertura não pula) */
+  function fecha(el, depois, token) {
+    if (!el) { if (depois) depois(); return; }
+    const t = reduzido() ? 0 : ms(token || '--dropdown-close-dur', 150);
+    el.classList.remove('is-open'); el.classList.add('is-closing');
+    setTimeout(() => { el.classList.remove('is-closing'); if (depois) depois(); }, t);
+  }
+  /* tremida de erro, uma vez, repetível */
+  function treme(el) { if (!el || reduzido()) return; el.classList.add('t-shake'); el.classList.remove('is-shaking'); void el.offsetWidth; el.classList.add('is-shaking');
+    setTimeout(() => el.classList.remove('is-shaking'), ms('--shake-dur-a', 80) * 2 + ms('--shake-dur-b', 60) * 2 + 20); }
+  /* número que mudou: só os dígitos que mudaram sobem ou descem */
+  function numero(el, novo) {
+    if (!el) return; const ant = el.getAttribute('data-valor'); const txt = String(novo); el.setAttribute('data-valor', txt); el.setAttribute('aria-label', txt);
+    if (ant == null || ant === txt || reduzido()) { el.textContent = txt; return; }
+    const a = Number(String(ant).replace(/\D/g, '')), b = Number(txt.replace(/\D/g, '')), mesmo = ant.length === txt.length;
+    el.classList.add('t-subtle-number'); el.style.setProperty('--subtle-dir', b >= a ? '1' : '-1'); el.classList.remove('is-animating'); el.replaceChildren();
+    [...txt].forEach((c, i) => { if (mesmo && ant[i] === c) { el.append(c); return; }
+      const s = document.createElement('span'); s.className = 't-subtle-slot';
+      if (mesmo) { const o = document.createElement('span'); o.className = 't-subtle-old'; o.setAttribute('aria-hidden', 'true'); o.textContent = ant[i]; s.appendChild(o); }
+      const f = document.createElement('span'); f.className = 't-subtle-new'; f.textContent = c; s.appendChild(f); el.appendChild(s); });
+    void el.offsetHeight; el.classList.add('is-animating');
+  }
+  /* traço da aba: põe a linha embaixo da aba ativa; na primeira vez, sem animar */
+  function linhaAba(barra, ativa, semAnimar) {
+    if (!barra || !ativa) return; let l = barra.querySelector('.t-abas-linha');
+    if (!l) { l = document.createElement('span'); l.className = 't-abas-linha'; l.setAttribute('aria-hidden', 'true'); barra.appendChild(l); semAnimar = true; }
+    if (semAnimar) l.style.transition = 'none';
+    l.style.width = ativa.offsetWidth + 'px'; l.style.transform = 'translateX(' + ativa.offsetLeft + 'px)';
+    if (semAnimar) { void l.offsetWidth; l.style.transition = ''; }
+  }
+  /* visto de "salvo": mede o traço e desenha uma vez */
+  function visto(el) { if (!el) return; const p = el.querySelector('path'); if (p && p.getTotalLength) el.style.setProperty('--check-len', Math.ceil(p.getTotalLength())); el.setAttribute('data-state', 'out'); void el.offsetWidth; el.setAttribute('data-state', 'in'); }
+  return { ms, reduzido, abre, fecha, treme, numero, linhaAba, visto };
+})();
+
+
+const $ = (s, r) => (r || document).querySelector(s), $$ = (s, r) => [...(r || document).querySelectorAll(s)];
+const reduz = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { return false; } };
+const escuro = () => document.documentElement.getAttribute('data-tema') === 'escuro';
+function tema(t) { document.documentElement.setAttribute('data-tema', t); $$('button[data-tm]').forEach(b => b.classList.toggle('on', b.getAttribute('data-tm') === t)); try { localStorage.setItem('fx-tema', t); } catch {} FX.forEach(f => f.tema && f.tema()); }
+
+/* ======================= FUNDOS VIVOS ======================= */
+const NOISE = `
+vec3 m289(vec3 x){return x-floor(x*(1./289.))*289.;}vec2 m289(vec2 x){return x-floor(x*(1./289.))*289.;}vec3 pm(vec3 x){return m289(((x*34.)+1.)*x);}
+float sn(vec2 v){const vec4 C=vec4(.211324865405187,.366025403784439,-.577350269189626,.024390243902439);vec2 i=floor(v+dot(v,C.yy));vec2 x0=v-i+dot(i,C.xx);
+vec2 i1=(x0.x>x0.y)?vec2(1.,0.):vec2(0.,1.);vec4 x12=x0.xyxy+C.xxzz;x12.xy-=i1;i=m289(i);vec3 p=pm(pm(i.y+vec3(0.,i1.y,1.))+i.x+vec3(0.,i1.x,1.));
+vec3 m=max(.5-vec3(dot(x0,x0),dot(x12.xy,x12.xy),dot(x12.zw,x12.zw)),0.);m=m*m;m=m*m;vec3 x=2.*fract(p*C.www)-1.;vec3 h=abs(x)-.5;vec3 ox=floor(x+.5);vec3 a0=x-ox;
+m*=1.79284291400159-.85373472095314*(a0*a0+h*h);vec3 g;g.x=a0.x*x0.x+h.x*x0.y;g.yz=a0.yz*x12.xz+h.yz*x12.yw;return 130.*dot(m,g);}
+float fbm(vec2 p){float f=0.,a=.5;for(int i=0;i<4;i++){f+=a*sn(p);p*=2.02;a*=.5;}return f;}`;
+const VS = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
+const HEAD = 'precision highp float;uniform vec2 R;uniform float T;uniform vec2 M;uniform float D;' + NOISE;
+const SH = {
+  aurora: HEAD + `void main(){vec2 uv=gl_FragCoord.xy/R;float as=R.x/R.y;vec2 p=vec2(uv.x*as,uv.y);
+    vec3 base=mix(vec3(.969,.961,.937),vec3(.043,.051,.086),D);
+    vec3 c1=mix(vec3(.85,.66,.30),vec3(.85,.70,.42),D),c2=mix(vec3(.62,.70,.40),vec3(.42,.55,.36),D),c3=mix(vec3(.95,.82,.55),vec3(.71,.53,.18),D);
+    vec3 col=base;float t=T*.06;
+    for(int i=0;i<3;i++){float fi=float(i);float cy=.58+.18*sn(vec2(p.x*.55+fi*3.1+t,t*.7+fi))+(M.y-.5)*.08;float w=.13+.05*fi;
+      float a=exp(-pow((uv.y-cy)/w,2.))*(.55+.45*sn(vec2(p.x*2.4+t*1.8,fi*7.+t)));a*=.55+.45*sn(vec2(p.x*7.+t*2.,uv.y*2.+fi));
+      vec3 c=fi<.5?c1:(fi<1.5?c2:c3);col=mix(col,c,clamp(a,0.,1.)*mix(.55,.62,D));}
+    col+=mix(vec3(0.),vec3(.85,.7,.42)*.08,D)*smoothstep(.9,0.,distance(uv,M));
+    float g=fract(sin(dot(gl_FragCoord.xy,vec2(12.9898,78.233)))*43758.5453);col+=(g-.5)*.025;gl_FragColor=vec4(col,1.);}`,
+  seda: HEAD + `void main(){vec2 uv=gl_FragCoord.xy/R;float as=R.x/R.y;vec2 q=vec2(uv.x*as,uv.y)*2.4;float r=.38;q=mat2(cos(r),-sin(r),sin(r),cos(r))*q;q+=(M-.5)*.25;
+    float to=T*.9;q.y+=.03*sin(8.*q.x-to);
+    float pt=.6+.4*sin(5.*(q.x+q.y+cos(3.*q.x+5.*q.y)+.02*to)+sin(20.*(q.x+q.y-.1*to)));
+    vec3 base=mix(vec3(.96,.94,.89),vec3(.05,.055,.09),D);vec3 ouro=mix(vec3(.80,.62,.30),vec3(.85,.70,.42),D);
+    vec3 col=mix(base,ouro,pt*mix(.42,.55,D)*smoothstep(-.2,1.2,uv.x+uv.y*.4));
+    float g=fract(sin(dot(gl_FragCoord.xy,vec2(12.9898,78.233)))*43758.5453);col-=g/40.;gl_FragColor=vec4(col,1.);}`,
+  curvas: HEAD + `float F(vec2 p){return fbm(p*1.25+vec2(T*.018,-T*.012));}
+    void main(){vec2 uv=gl_FragCoord.xy/R;float as=R.x/R.y;vec2 p=vec2(uv.x*as,uv.y)*1.6;float e=1.5/R.y*1.6;
+    float f=F(p),fx=F(p+vec2(e,0.)),fy=F(p+vec2(0.,e));float k=11.;float v=f*k;float gr=length(vec2(fx-f,fy-f))*k/e*(1.6/R.y);
+    float d=abs(fract(v)-.5);float ln=1.-smoothstep(.5-gr*1.2,.5-gr*.2,.5-d);float mj=step(.5,fract(floor(v)*.2+.1))*0.;
+    float ix=mod(floor(v),5.);float forte=ix<.5?1.:0.;
+    vec3 base=mix(vec3(.969,.961,.937),vec3(.043,.051,.086),D);vec3 lc=mix(vec3(.55,.42,.20),vec3(.85,.70,.42),D);
+    float perto=smoothstep(.45,0.,distance(vec2(uv.x*as,uv.y),vec2(M.x*as,M.y)));
+    float a=ln*(mix(.13,.16,D)+forte*.12+perto*.6);
+    vec3 col=mix(base,lc,clamp(a,0.,1.));col=mix(col,mix(vec3(.94,.90,.80),vec3(.10,.11,.16),D),smoothstep(.15,.0,uv.y)*.0);gl_FragColor=vec4(col,1.);}`,
+  raios: HEAD + `void main(){vec2 uv=gl_FragCoord.xy/R;float as=R.x/R.y;vec2 o=vec2(.30*as+(M.x-.5)*.25,1.15);vec2 p=vec2(uv.x*as,uv.y)-o;
+    float ang=atan(p.x,-p.y);float r=length(p);
+    float ry=0.;for(int i=0;i<3;i++){float fi=float(i);ry+=pow(.5+.5*sin(ang*(9.+fi*7.)+T*(.12+fi*.05)+sn(vec2(ang*3.+fi,T*.08))*1.6),3.+fi*2.);}
+    ry*=smoothstep(1.9,.1,r)*smoothstep(1.2,.0,abs(ang));
+    vec3 base=mix(vec3(.969,.961,.937),vec3(.043,.051,.086),D);vec3 luz=mix(vec3(.88,.70,.36),vec3(.96,.82,.52),D);
+    vec3 col=base+luz*ry*mix(.16,.22,D)+luz*mix(.10,.16,D)*smoothstep(1.4,0.,r);
+    float g=fract(sin(dot(gl_FragCoord.xy,vec2(12.9898,78.233)))*43758.5453);col+=(g-.5)*.02;gl_FragColor=vec4(col,1.);}`
+};
+function shaderFx(cv, nome, escala) {
+  const gl = cv.getContext('webgl', { antialias: false, premultipliedAlpha: false, preserveDrawingBuffer: true }); if (!gl) return null;
+  const mk = (t, s) => { const x = gl.createShader(t); gl.shaderSource(x, s); gl.compileShader(x); if (!gl.getShaderParameter(x, gl.COMPILE_STATUS)) { console.error(gl.getShaderInfoLog(x)); return null; } return x; };
+  const pr = gl.createProgram(), v = mk(gl.VERTEX_SHADER, VS), f = mk(gl.FRAGMENT_SHADER, SH[nome]); if (!v || !f) return null;
+  gl.attachShader(pr, v); gl.attachShader(pr, f); gl.linkProgram(pr); gl.useProgram(pr);
+  const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+  const lp = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(lp); gl.vertexAttribPointer(lp, 2, gl.FLOAT, false, 0, 0);
+  const U = { R: gl.getUniformLocation(pr, 'R'), T: gl.getUniformLocation(pr, 'T'), M: gl.getUniformLocation(pr, 'M'), D: gl.getUniformLocation(pr, 'D') };
+  const m = { x: .5, y: .5, tx: .5, ty: .5 };
+  return { m, resize() { const r = cv.getBoundingClientRect(), k = Math.min(devicePixelRatio || 1, 1.5) * (escala || 1); cv.width = Math.max(2, Math.round(r.width * k)); cv.height = Math.max(2, Math.round(r.height * k)); gl.viewport(0, 0, cv.width, cv.height); },
+    draw(t) { m.x += (m.tx - m.x) * .06; m.y += (m.ty - m.y) * .06; gl.uniform2f(U.R, cv.width, cv.height); gl.uniform1f(U.T, t); gl.uniform2f(U.M, m.x, m.y); gl.uniform1f(U.D, escuro() ? 1 : 0); gl.drawArrays(gl.TRIANGLES, 0, 3); } };
+}
+/* Campo de pontos (Dot Grid): linhas de plantio; os pontos crescem e fogem do ponteiro; uma onda passa ao abrir */
+function pontosFx(cv) {
+  const c = cv.getContext('2d'); let W = 0, H = 0, k = 1, pts = [], mx = 1; const m = { x: -999, y: -999, tx: -999, ty: -999 }; let onda0 = null;
+  return { m, resize() { const r = cv.getBoundingClientRect(); k = Math.min(devicePixelRatio || 1, 2); W = r.width; H = r.height; cv.width = W * k; cv.height = H * k; pts = []; const s = W < 520 ? 20 : 24;
+      for (let y = s / 2; y < H; y += s) for (let x = s / 2 + ((y / s) % 2 ? s / 2 : 0); x < W; x += s) pts.push({ x, y, ox: 0, oy: 0 }); onda0 = null; },
+    draw(t) { if (onda0 == null) onda0 = t; const esc = escuro(); c.setTransform(k, 0, 0, k, 0, 0); c.fillStyle = esc ? '#0b0d16' : '#f7f5ef'; c.fillRect(0, 0, W, H);
+      m.x += (m.tx - m.x) * .18; m.y += (m.ty - m.y) * .18; mx = 0; const R = Math.min(170, W * .22), onda = (t - onda0) * 520 - 100;
+      for (const p of pts) { const dx = p.x - m.x, dy = p.y - m.y, d = Math.hypot(dx, dy); let f = d < R ? 1 - d / R : 0; f = f * f * (3 - 2 * f);
+        const dw = Math.abs(p.x + p.y * .35 - onda), w = dw < 90 ? 1 - dw / 90 : 0; const g = Math.max(f, w * .8);
+        const tx = d > 0 ? dx / d * f * 14 : 0, ty = d > 0 ? dy / d * f * 14 : 0; p.ox += (tx - p.ox) * .2; p.oy += (ty - p.oy) * .2;
+        mx = Math.max(mx, Math.abs(p.ox) + Math.abs(p.oy), w); const rr = 1.3 + g * 2.4; c.fillStyle = g > .02 ? (esc ? 'rgba(217,180,106,' + (.35 + g * .6) + ')' : 'rgba(154,113,40,' + (.30 + g * .6) + ')') : (esc ? 'rgba(243,238,227,.13)' : 'rgba(30,27,20,.13)');
+        c.beginPath(); c.arc(p.x + p.ox, p.y + p.oy, rr, 0, 6.283); c.fill(); } },
+    calmo() { return m.tx < -500 && onda0 != null && mx < .05; } };
+}
+/* Pólen (Particles): partículas douradas que flutuam devagar, em profundidade; o ponteiro desloca as de perto mais que as de longe */
+function polenFx(cv) {
+  const c = cv.getContext('2d'); let W = 0, H = 0, k = 1, ps = []; const m = { x: .5, y: .5, tx: .5, ty: .5 };
+  return { m, resize() { const r = cv.getBoundingClientRect(); k = Math.min(devicePixelRatio || 1, 2); W = r.width; H = r.height; cv.width = W * k; cv.height = H * k;
+      const n = Math.round(Math.min(110, W * H / 9000)); ps = []; for (let i = 0; i < n; i++) ps.push({ x: Math.random() * W, y: Math.random() * H, z: .25 + Math.random() * .75, a: Math.random() * 6.28, v: .15 + Math.random() * .35 }); },
+    draw(t, dt) { const esc = escuro(); c.setTransform(k, 0, 0, k, 0, 0);
+      const gr = c.createRadialGradient(W * .3, H * .35, 0, W * .3, H * .35, Math.max(W, H) * .8); gr.addColorStop(0, esc ? '#141729' : '#fbf8f0'); gr.addColorStop(1, esc ? '#0b0d16' : '#f2eee4'); c.fillStyle = gr; c.fillRect(0, 0, W, H);
+      m.x += (m.tx - m.x) * .05; m.y += (m.ty - m.y) * .05;
+      for (const p of ps) { p.a += dt * .3 * p.v; p.y -= dt * 12 * p.v * p.z; p.x += Math.sin(p.a) * dt * 6 * p.z; if (p.y < -10) { p.y = H + 10; p.x = Math.random() * W; }
+        const px = p.x + (m.x - .5) * -40 * p.z, py = p.y + (m.y - .5) * -30 * p.z, rr = .8 + p.z * 2.6;
+        c.fillStyle = esc ? 'rgba(232,200,130,' + (.25 + p.z * .55) + ')' : 'rgba(154,113,40,' + (.18 + p.z * .45) + ')';
+        c.shadowColor = esc ? 'rgba(217,180,106,.7)' : 'rgba(217,180,106,.4)'; c.shadowBlur = p.z * 8; c.beginPath(); c.arc(px, py, rr, 0, 6.283); c.fill(); }
+      c.shadowBlur = 0; } };
+}
+/* ======================= orquestração ======================= */
+const FX = [];
+function montaFx(box) {
+  const nome = box.getAttribute('data-fx'), cv = $('canvas.fx', box);
+  const fx = nome === 'pontos' ? pontosFx(cv) : nome === 'polen' ? polenFx(cv) : shaderFx(cv, nome, nome === 'curvas' ? 1 : .6);
+  if (!fx) { $('.vazio', box).textContent = 'Este aparelho não desenha o fundo vivo; fica a cor lisa do tema.'; return; }
+  const o = { box, fx, on: false, raf: 0, t0: performance.now(), last: 0 };
+  o.loop = now => { if (!o.on) return; const t = (now - o.t0) / 1000, dt = Math.min(.05, (now - (o.last || now)) / 1000); o.last = now; fx.draw(t, dt); if (fx.calmo && fx.calmo()) { o.raf = 0; return; } o.raf = requestAnimationFrame(o.loop); };
+  o.start = () => { if (o.on) return; o.on = true; fx.resize(); if (reduz()) { fx.draw(8, 0); o.on = false; return; } o.last = 0; o.raf = requestAnimationFrame(o.loop); };
+  o.stop = () => { o.on = false; cancelAnimationFrame(o.raf); o.raf = 0; };
+  o.acorda = () => { if (o.on && !o.raf && !reduz()) o.raf = requestAnimationFrame(o.loop); };
+  o.tema = () => { if (o.on) { if (!o.raf) fx.draw((performance.now() - o.t0) / 1000, 0); } else { fx.resize(); fx.draw(8, 0); } };
+  const mv = e => { const r = box.getBoundingClientRect(), x = (e.clientX - r.left), y = (e.clientY - r.top);
+    if (nome !== 'pontos') { fx.m.tx = x / r.width; fx.m.ty = 1 - y / r.height; } else { fx.m.tx = x; fx.m.ty = y; } o.acorda(); };
+  box.addEventListener('pointermove', mv); box.addEventListener('pointerdown', mv);
+  box.addEventListener('pointerleave', () => { if (nome === 'pontos') { fx.m.tx = -999; fx.m.ty = -999; } else { fx.m.tx = .5; fx.m.ty = .5; } o.acorda(); });
+  FX.push(o); fx.resize(); fx.draw(8, 0);
+}
+/* textos que entram */
+function textos(box) {
+  const tipo = box.getAttribute('data-tx'), pal = $('.pal', box), diz = $('.diz', box);
+  const p0 = pal.getAttribute('data-t') || pal.textContent, d0 = diz.getAttribute('data-t') || diz.textContent; pal.setAttribute('data-t', p0); diz.setAttribute('data-t', d0);
+  pal.className = 'pal'; diz.className = 'diz'; pal.textContent = p0; diz.textContent = d0;
+  if (reduz()) return;
+  const palavras = (el, t) => { el.classList.add('tx-blur'); el.innerHTML = t.split(' ').map((w, i) => '<span class="w" style="--i:' + i + '">' + w.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</span>').join(' '); };
+  const letras = (el, t) => { el.classList.add('tx-split'); el.innerHTML = [...t].map((l, i) => l === ' ' ? ' ' : '<span class="l" style="--i:' + i + '">' + l + '</span>').join(''); };
+  if (tipo === 'split') { letras(pal, p0); palavras(diz, d0); }
+  else if (tipo === 'shiny') { pal.classList.add('tx-shiny'); pal.innerHTML = p0 + '<span class="sh" aria-hidden="true">' + p0 + '</span>'; palavras(diz, d0); }
+  else if (tipo === 'type') { pal.classList.add('tx-type'); pal.textContent = ''; let i = 0; const cur = document.createElement('span'); cur.className = 'cur'; pal.appendChild(cur);
+    const tk = () => { if (i <= p0.length) { pal.firstChild && pal.firstChild.nodeType === 3 ? pal.firstChild.textContent = p0.slice(0, i) : pal.insertBefore(document.createTextNode(p0.slice(0, i)), cur); i++; setTimeout(tk, 70); } }; tk(); palavras(diz, d0); }
+  else { palavras(pal, p0); palavras(diz, d0); }
+}
+/* só anima o modelo que está na tela */
+const io = new IntersectionObserver(l => l.forEach(x => { const o = FX.find(y => y.box === x.target); if (!o) return; if (x.isIntersecting) { o.start(); if (!x.target._txOk) { x.target._txOk = 1; textos(x.target); } } else o.stop(); }), { threshold: .2 });
+document.addEventListener('visibilitychange', () => FX.forEach(o => { if (document.hidden) o.stop(); else if (o.box.getBoundingClientRect().top < innerHeight && o.box.getBoundingClientRect().bottom > 0) o.start(); }));
+addEventListener('resize', () => FX.forEach(o => { o.fx.resize(); if (!o.on) o.fx.draw(8, 0); }));
+
+/* ======================= cardápio no app ======================= */
+function faisca(x, y, alvo) { if (reduz()) return; const s = document.createElement('span'); s.className = 'spk'; s.style.left = x + 'px'; s.style.top = y + 'px';
+  for (let i = 0; i < 8; i++) { const r = document.createElement('i'); r.style.setProperty('--r', (i * 45) + 'deg'); s.appendChild(r); } alvo.appendChild(s); setTimeout(() => s.remove(), 500); }
+const APP = {
+  conta(box) { $$('.card i', box).forEach(n => { const alvo = Number(n.getAttribute('data-v')); n.textContent = '0'; if (reduz()) { n.textContent = alvo; return; } const ini = performance.now(), dur = 900;
+    const p = t => { const k = Math.min(1, (t - ini) / dur), e = 1 - Math.pow(1 - k, 3); n.textContent = String(Math.round(alvo * e)); if (k < 1) requestAnimationFrame(p); }; requestAnimationFrame(p); }); },
+  lista(box) { const l = $('.al', box); l.classList.remove('vai'); void l.offsetWidth; l.classList.add('vai'); },
+  titulo(box) { const h = $('.tt', box), t = ['Coletas', 'Qualidade', 'Almoxarifado', 'Inspeções'], i = (Number(h.getAttribute('data-i') || 0) + 1) % t.length; h.setAttribute('data-i', i);
+    if (reduz()) { h.textContent = t[i]; return; } h.classList.add('tx-blur'); h.innerHTML = t[i].split('').map((l, k) => '<span class="w" style="--i:' + k + '">' + l + '</span>').join(''); },
+  fluidez(box, idx) { const nav = $('nav', box), as = $$('a', nav), pn = $('.pn', box), ant = as.findIndex(a => a.classList.contains('on')); const i = idx == null ? (ant + 1) % as.length : idx; if (i === ant) return;
+    const dir = i > ant ? 1 : -1; pn.style.setProperty('--dir', dir); as.forEach((a, k) => a.classList.toggle('on', k === i)); Mov.linhaAba(nav, as[i]);
+    if (reduz()) { pn.innerHTML = conteudo(i); return; } pn.classList.add('sai'); setTimeout(() => { pn.classList.remove('sai'); pn.innerHTML = conteudo(i); pn.classList.add('entra'); setTimeout(() => pn.classList.remove('entra'), 300); }, Mov.ms('--duration-quick', 150)); }
+};
+const conteudo = i => [['Amostras · 14', 'Laboratórios · 3', 'Envio · 2 remessas'], ['Água · 6 pontos', 'Rodízio · semana 46', 'Projetos · 2'], ['Envio · hoje', 'Kit · 4 papéis', 'Rótulos · 2 caixas']][i].map(x => '<div>' + x + '</div>').join('');
+document.addEventListener('pointermove', e => { const c = e.target.closest && e.target.closest('.sp .card'); if (c) { const r = c.getBoundingClientRect(); c.style.setProperty('--mx', (e.clientX - r.left) + 'px'); c.style.setProperty('--my', (e.clientY - r.top) + 'px'); }
+  const g = e.target.closest && e.target.closest('.mgz'); if (g && !reduz()) { const b = $('.mg', g), r = b.getBoundingClientRect(), dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2), d = Math.hypot(dx, dy);
+    b.style.transform = d < 140 ? 'translate(' + dx * .18 + 'px,' + dy * .25 + 'px)' : ''; } });
+document.addEventListener('pointerleave', () => $$('.mg').forEach(b => { b.style.transform = ''; }), true);
+document.addEventListener('click', e => {
+  const t = e.target.closest('button[data-tm]'); if (t) return tema(t.getAttribute('data-tm'));
+  const ch = e.target.closest('.cheia-b'); if (ch) { const lg = ch.closest('.lg'); lg.classList.toggle('cheia'); ch.textContent = lg.classList.contains('cheia') ? 'Fechar' : 'Tela cheia'; const o = FX.find(y => y.box === lg); if (o) { o.fx.resize(); o.fx.draw(8, 0); } return; }
+  const de = e.target.closest('[data-de]'); if (de) { const lg = de.closest('.it').querySelector('.lg'); lg._txOk = 1; textos(lg); return; }
+  const ap = e.target.closest('[data-ap]'); if (ap) { const box = ap.closest('.it').querySelector('.dm'); APP[ap.getAttribute('data-ap')](box); return; }
+  const sk = e.target.closest('.spkz .bt'); if (sk) { const box = sk.closest('.dm'), r = box.getBoundingClientRect(); faisca(e.clientX - r.left, e.clientY - r.top, box); return; }
+  const fa = e.target.closest('.fl nav a'); if (fa) { APP.fluidez(fa.closest('.dm'), $$('a', fa.parentNode).indexOf(fa)); return; }
+  if (e.target.closest('form')) e.preventDefault();
+});
+document.addEventListener('submit', e => e.preventDefault());
+document.addEventListener('keydown', e => { if (e.key === 'Escape') $$('.lg.cheia').forEach(l => { l.classList.remove('cheia'); $('.cheia-b', l).textContent = 'Tela cheia'; const o = FX.find(y => y.box === l); if (o) { o.fx.resize(); o.fx.draw(8, 0); } }); });
+/* início */
+let t0 = null; try { t0 = localStorage.getItem('fx-tema'); } catch {}
+tema(t0 || (matchMedia('(prefers-color-scheme: dark)').matches ? 'escuro' : 'claro'));
+$$('.lg').forEach(b => { montaFx(b); io.observe(b); });
+const io2 = new IntersectionObserver(l => l.forEach(x => { if (x.isIntersecting) { io2.unobserve(x.target); const a = x.target.getAttribute('data-auto'); if (a) APP[a](x.target); } }), { threshold: .5 });
+$$('.dm[data-auto]').forEach(d => io2.observe(d));
+$$('.fl').forEach(f => { const nav = $('nav', f); Mov.linhaAba(nav, $('a.on', nav), true); });
+document.getElementById('cp').onclick = async () => {
+  const l = ['Respostas EFCwork · Efeitos e fluidez'];
+  const m = $('input[name="modelo"]:checked'); l.push('Tela de entrar: ' + (m ? m.value : '(nenhum modelo escolhido)'));
+  $$('.it[data-k="login"]').forEach(a => { const c = $('textarea', a).value.trim(); if (c) l.push('  ' + $('h3', a).textContent + ': ' + c); });
+  $$('.it[data-k="app"]').forEach(a => { const q = $('input[type=checkbox]', a), c = $('textarea', a).value.trim(); l.push((q.checked ? '[QUERO] ' : '[não] ') + $('h3', a).textContent + (c ? ' — ' + c : '')); });
+  const t = l.join('\n'); try { await navigator.clipboard.writeText(t); } catch (x) { const z = document.createElement('textarea'); z.value = t; document.body.appendChild(z); z.select(); document.execCommand('copy'); z.remove(); }
+  $('#ok').textContent = 'Copiado. Cole na conversa.';
+};
+</script></body></html>

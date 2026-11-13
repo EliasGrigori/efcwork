@@ -36,9 +36,11 @@
 .pg-ansdd .dd-b{height:34px;padding:0 10px;font-size:14px}
 
 /* v0.4.6: o cartão abre a página do plano */
-a.pg-pl{color:inherit;text-decoration:none;cursor:pointer;transition:border-color .15s}a.pg-pl:hover{border-color:var(--bd2)}a.pg-pl:focus-visible{outline:2px solid var(--a);outline-offset:2px}
+a.pg-pl{color:inherit;text-decoration:none;cursor:pointer;transition:border-color var(--duration-quick) var(--ease-out)}a.pg-pl:hover{border-color:var(--bd2)}a.pg-pl:focus-visible{outline:2px solid var(--a);outline-offset:2px}
 
 /* v0.4.9: Data e Coletores na mesma linha (o aviso "pode ser de dias atrás" saiu do rótulo, que quebrava em 2 linhas e empurrava a data) */
 #gv .fm-g{align-items:start}
 .pg-i::after{content:'';position:absolute;inset:-6px} /* v0.6.8: área de toque maior sem mudar o desenho */
 @media(max-width:899px){.pg-i::after{inset:-11px}}
+
+@media(prefers-reduced-motion:reduce){a.pg-pl{transition:none}} /* v0.6.14 */

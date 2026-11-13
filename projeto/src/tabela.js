@@ -284,7 +284,7 @@ function gvAbrir(fn, form) { if (!S.camadas.length) csCamadaAbre('gv', gvFecharS
 function gvFechar() { if (S.camadas.length) csVolta(); else gvFecharSo(); }
 function gvFecharSo() {
   S.gv = null; S.gvForm = false; S.fm = null; S._alSel = null; const g = $('#gv');
-  gvAnim(260); if (g) { if (csMovimento()) { g.id = ''; g.classList.add('gv-sai'); g.setAttribute('aria-hidden', 'true'); setTimeout(() => g.remove(), 220); } else g.remove(); } /* fecha deslizando de volta */
+  const fz = Mov.ms('--panel-close-dur', 350); gvAnim(fz + 40); if (g) { if (csMovimento()) { g.id = ''; g.classList.add('gv-sai'); g.setAttribute('aria-hidden', 'true'); setTimeout(() => g.remove(), fz - 10); } else g.remove(); } /* fecha deslizando de volta */
   document.body.classList.remove('gv-aberta'); try { render(); } catch {}
 }
 /* v0.6.3: corta o lado da página só enquanto a gaveta desliza */
@@ -296,7 +296,7 @@ function gvDesenha(forca) {
   let o; try { o = S.gv(); } catch (e) { console.error(e); o = null; }
   if (!o) { S.gv = null; if (g) g.remove(); return; }
   const nova = !g, rol = g && g.querySelector('.gv-corpo') ? g.querySelector('.gv-corpo').scrollTop : 0, mesma = g && g._gvFn === S.gv;
-  if (!g) { g = document.createElement('aside'); g.id = 'gv'; g.className = 'gv gv-entra'; g.setAttribute('role', 'dialog'); g.setAttribute('aria-modal', 'false'); document.body.appendChild(g); setTimeout(() => g.classList.remove('gv-entra'), 320); }
+  if (!g) { g = document.createElement('aside'); g.id = 'gv'; g.className = 'gv gv-entra'; g.setAttribute('role', 'dialog'); g.setAttribute('aria-modal', 'false'); document.body.appendChild(g); setTimeout(() => g.classList.remove('gv-entra'), Mov.ms('--panel-open-dur', 400) + 20); }
   gvAnim(0); /* gaveta aberta: o lado da página fica cortado até ela terminar de sair */ /* abre deslizando da lateral (pedido de 06/11) */
   g._gvFn = S.gv;
   document.body.classList.add('gv-aberta');

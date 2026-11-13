@@ -438,3 +438,10 @@ Lista de presença pronta com os nomes (A4),Qualidade,should,não,sim,Qualidade 
 Importar resumo do Sabiá (.json do contrato; teste e ensaio não entram),Qualidade,should,não,sim,Qualidade › Treinamentos,v0.6.12 (ponte automática na v0.6.11)
 POP e material ligados ao treinamento (Impressos),Qualidade,should,não,sim,Qualidade › Treinamentos,v0.6.12
 Aviso no sino ao instrutor programado,Qualidade,could,não,sim,Qualidade › Treinamentos,v0.6.12
+Escala única de movimento (arquivo comum da família),Sistema,must,não,sim,Todas as telas,v0.6.14 tools/visual/efc-movimento.*
+Tela de entrar com pólen dourado e linha do app,Sistema,should,não,sim,Entrar,v0.6.14 (Modelo 4 · Pólen)
+Troca de tela fluida e traço da aba que desliza,Sistema,should,não,sim,Todas as abas,v0.6.14
+Título que entra (Blur Text),Sistema,could,não,sim,Cabeçalho das áreas,v0.6.14
+Avisos um por vez com visto e faíscas ao salvar,Sistema,should,não,sim,Avisos,v0.6.14
+Lista do sino em sequência e desfoque no fim das listas,Sistema,could,não,sim,Sino e gavetas,v0.6.14
+Medidor da auditoria visual,Projeto,should,não,sim,tools/auditoria,v0.6.14

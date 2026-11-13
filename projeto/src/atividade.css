@@ -23,7 +23,7 @@
 .at-ev.ab .at-ini{background:var(--bg1)}
 .at-t{min-width:0}.at-t b{font-weight:600}
 .at-t small{display:block;color:var(--tx2);font-size:13px;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.at-s{width:16px;height:16px;color:var(--tx3);transition:transform .15s}
+.at-s{width:16px;height:16px;color:var(--tx3);transition:transform var(--duration-quick) var(--ease-in-out)}
 .at-ev.ab .at-s{transform:rotate(180deg)}
 .at-det{padding:4px 16px 14px 102px}
 .at-det dl{display:grid;grid-template-columns:120px minmax(0,1fr);gap:6px 14px;margin:0}
@@ -45,3 +45,5 @@
   .at-det dl{grid-template-columns:1fr;gap:0}.at-det dt{margin-top:8px}
   .at-bar .bt:not(.ic-so){flex:1}
 }
+
+@media(prefers-reduced-motion:reduce){.at-s{transition:none}} /* v0.6.14 */

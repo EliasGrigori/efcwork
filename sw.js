@@ -1,7 +1,7 @@
 /* EFCwork — sw.js (veio do EFClaudian v2.84.0+): guarda a TELA do app no aparelho para abrir sem internet.
    Os DADOS não passam por aqui: o Firestore guarda o cache dele e sincroniza quando a conexão volta.
-   O nome do cache sobe a cada versão (tools/montar.py troca efcwork-0.6.12). */
-const VERSAO = 'efcwork-0.6.12';
+   O nome do cache sobe a cada versão (tools/montar.py troca efcwork-0.6.14). */
+const VERSAO = 'efcwork-0.6.14';
 const ESSENCIAIS = ['./index.html'];
 const TELA = ['./', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 const FORA = [

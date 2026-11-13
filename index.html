@@ -16,6 +16,129 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-check-compat.js"></script>
 <style>
+/* ===== movimento.css ===== */
+/* EFC · movimento — escala única de movimento da família EFClaudian (EFCwork, Sabiá, EFClaudian, Vértice Docs).
+   Um arquivo só para todos, como o Contrato EFD: qualquer mudança sobe a versão e entra nos apps no mesmo dia, com a ordem do Elias.
+   Versão 1 (13/11/2026). Tokens e receitas adaptados do Transitions.dev (github.com/Jakubantalik/transitions.dev), usados aqui
+   conforme a licença de uso dele (uso em projeto liberado; não redistribuir a biblioteca como material próprio).
+   Regras da família: nada de animação infinita que não informe nada (exceção aprovada: o reflexo do botão dourado);
+   toda animação respeita "movimento reduzido"; duração sempre de um token do MESMO USO. */
+:root{
+  /* durações (por uso) */
+  --duration-stagger:40ms;   /* atraso entre itens de uma lista que entra */
+  --duration-micro:80ms;     /* trecho de tremida, atraso de dica */
+  --duration-quick:150ms;    /* fechar lista retrátil ou confirmação, trocar texto, dica, hover */
+  --duration-fast:250ms;     /* abrir lista retrátil ou confirmação, trocar ícone, aba, fechar aviso */
+  --duration-medium:350ms;   /* fechar gaveta ou folha, abrir aviso */
+  --duration-slow:400ms;     /* abrir gaveta ou folha, revelar conteúdo carregado, barra que enche */
+  --duration-very-slow:500ms;/* momento de destaque: visto de salvo, número que importa */
+  /* curvas */
+  --ease-smooth-out:cubic-bezier(.22,1,.36,1); /* abrir e fechar superfícies, deslizar, mudar de tamanho ou lugar */
+  --ease-in-out:ease-in-out;                     /* trocar ícone ou texto */
+  --ease-out:ease-out;                           /* dica, borda, cor */
+  --ease-linear:linear;                          /* brilho que passa, carregando */
+  --ease-bounce:cubic-bezier(.34,1.36,.64,1);    /* selo que aparece, passo que acende */
+  /* distâncias, escalas e desfoque */
+  --distance-micro:4px;--distance-small:6px;--distance-base:8px;--distance-medium:12px;--distance-large:30px;
+  --scale-large:.96;--scale-medium:.97;--scale-small:.98;--scale-tiny:.99;
+  --blur-small:2px;--blur-medium:3px;--blur-large:8px;
+  /* receitas (cada uma lê a escala acima) */
+  --dropdown-open-dur:var(--duration-fast);--dropdown-close-dur:var(--duration-quick);--dropdown-pre-scale:var(--scale-medium);--dropdown-closing-scale:var(--scale-tiny);--dropdown-ease:var(--ease-smooth-out);
+  --modal-open-dur:var(--duration-fast);--modal-close-dur:var(--duration-quick);--modal-scale:var(--scale-large);--modal-ease:var(--ease-smooth-out);
+  --panel-open-dur:var(--duration-slow);--panel-close-dur:var(--duration-medium);--panel-blur:var(--blur-small);--panel-ease:var(--ease-smooth-out);
+  --toast-open:var(--duration-medium);--toast-close:var(--duration-fast);--toast-distance:16px;--toast-blur:var(--blur-small);--toast-scale:var(--scale-medium);--toast-ease:var(--ease-smooth-out);
+  --tabs-dur:var(--duration-fast);--tabs-ease:var(--ease-smooth-out);
+  --acc-expand:var(--duration-fast);--acc-collapse:var(--duration-fast);--acc-ease:var(--ease-smooth-out);
+  --icon-swap-dur:var(--duration-fast);--icon-swap-blur:var(--blur-small);--icon-swap-start-scale:.25;--icon-swap-ease:var(--ease-in-out);
+  --shake-distance:var(--distance-small);--shake-overshoot:var(--distance-micro);--shake-dur-a:var(--duration-micro);--shake-dur-b:60ms;--shake-ease:var(--ease-smooth-out);
+  --subtle-dur:455ms;--subtle-distance:.14em;--subtle-blur:.042em;--subtle-ease:var(--ease-smooth-out);
+  --check-dur:var(--duration-very-slow);--check-ease:var(--ease-smooth-out);--check-bob-ease:cubic-bezier(.34,1.35,.64,1);
+}
+
+/* lista retrátil, menu, folha de opções ancorada no botão (abre do botão) */
+.t-dropdown{transform-origin:top left;transform:scale(var(--dropdown-pre-scale));opacity:0;pointer-events:none;
+  transition:transform var(--dropdown-open-dur) var(--dropdown-ease),opacity var(--dropdown-open-dur) var(--dropdown-ease);will-change:transform,opacity}
+.t-dropdown[data-origin="top-right"]{transform-origin:top right}.t-dropdown[data-origin="top-center"]{transform-origin:top center}
+.t-dropdown[data-origin="bottom-left"]{transform-origin:bottom left}.t-dropdown[data-origin="bottom-right"]{transform-origin:bottom right}
+.t-dropdown.is-open{transform:scale(1);opacity:1;pointer-events:auto}
+.t-dropdown.is-closing{transform:scale(var(--dropdown-closing-scale));opacity:0;pointer-events:none;
+  transition:transform var(--dropdown-close-dur) var(--dropdown-ease),opacity var(--dropdown-close-dur) var(--dropdown-ease)}
+
+/* janela no centro (confirmação) + fundo que escurece */
+.t-modal{transform-origin:center;transform:scale(var(--modal-scale));opacity:0;pointer-events:none;
+  transition:transform var(--modal-open-dur) var(--modal-ease),opacity var(--modal-open-dur) var(--modal-ease);will-change:transform,opacity}
+.t-modal.is-open{transform:scale(1);opacity:1;pointer-events:auto}
+.t-modal.is-closing{transform:scale(var(--modal-scale));opacity:0;pointer-events:none;
+  transition:transform var(--modal-close-dur) var(--modal-ease),opacity var(--modal-close-dur) var(--modal-ease)}
+.t-fundo{opacity:0;transition:opacity var(--modal-close-dur) var(--ease-out)}
+.t-fundo.is-open{opacity:1;transition-duration:var(--modal-open-dur)}
+
+/* gaveta lateral (detalhe) — painel que desliza da direita; folha que sobe de baixo no celular */
+.t-gaveta{transform:translateX(100%);opacity:.6;filter:blur(var(--panel-blur));
+  transition:transform var(--panel-close-dur) var(--panel-ease),opacity var(--panel-close-dur) var(--panel-ease),filter var(--panel-close-dur) var(--panel-ease);will-change:transform,opacity}
+.t-gaveta.is-open{transform:none;opacity:1;filter:none;
+  transition:transform var(--panel-open-dur) var(--panel-ease),opacity var(--panel-open-dur) var(--panel-ease),filter var(--panel-open-dur) var(--panel-ease)}
+.t-folha{transform:translateY(100%);opacity:.6;transition:transform var(--panel-close-dur) var(--panel-ease),opacity var(--panel-close-dur) var(--panel-ease);will-change:transform}
+.t-folha.is-open{transform:none;opacity:1;transition:transform var(--panel-open-dur) var(--panel-ease),opacity var(--panel-open-dur) var(--panel-ease)}
+
+/* aviso que sobe de baixo (um por vez) */
+.t-toast{opacity:0;transform:translateY(var(--toast-distance)) scale(var(--toast-scale));filter:blur(var(--toast-blur));will-change:transform,opacity,filter;
+  transition:opacity var(--toast-close) var(--toast-ease),transform var(--toast-close) var(--toast-ease),filter var(--toast-close) var(--toast-ease)}
+.t-toast.is-open{opacity:1;transform:none;filter:none;
+  transition:opacity var(--toast-open) var(--toast-ease),transform var(--toast-open) var(--toast-ease),filter var(--toast-open) var(--toast-ease)}
+
+/* traço da aba que desliza até a aba escolhida (abas sublinhadas da família) */
+.t-abas{position:relative}
+.t-abas-linha{position:absolute;left:0;bottom:0;height:2px;width:0;background:var(--a,currentColor);border-radius:2px;pointer-events:none;
+  transition:transform var(--tabs-dur) var(--tabs-ease),width var(--tabs-dur) var(--tabs-ease);will-change:transform,width}
+
+/* bloco que abre e recolhe (filtro, detalhes) */
+.t-acc-panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows var(--acc-collapse) var(--acc-ease)}
+.t-acc[data-open="true"] .t-acc-panel{grid-template-rows:1fr;transition-duration:var(--acc-expand)}
+.t-acc-panel-inner{overflow:hidden;opacity:0;transition:opacity var(--acc-collapse) var(--acc-ease)}
+.t-acc[data-open="true"] .t-acc-panel-inner{opacity:1;transition-duration:var(--acc-expand)}
+
+/* dois ícones no mesmo lugar (tema claro/escuro, mostrar/ocultar) */
+.t-icon-swap{position:relative;display:inline-grid}
+.t-icon-swap .t-icon{grid-area:1/1;transition:opacity var(--icon-swap-dur) var(--icon-swap-ease),filter var(--icon-swap-dur) var(--icon-swap-ease),transform var(--icon-swap-dur) var(--icon-swap-ease)}
+.t-icon-swap[data-state="a"] .t-icon[data-icon="a"],.t-icon-swap[data-state="b"] .t-icon[data-icon="b"]{opacity:1;filter:none;transform:none}
+.t-icon-swap[data-state="a"] .t-icon[data-icon="b"],.t-icon-swap[data-state="b"] .t-icon[data-icon="a"]{opacity:0;filter:blur(var(--icon-swap-blur));transform:scale(var(--icon-swap-start-scale))}
+
+/* erro: tremida curta (280 ms, uma vez) */
+.t-shake.is-shaking{animation:t-shake calc(var(--shake-dur-a) * 2 + var(--shake-dur-b) * 2) linear}
+@keyframes t-shake{
+  0%{transform:translateX(0);animation-timing-function:var(--shake-ease)}
+  28.57%{transform:translateX(var(--shake-distance));animation-timing-function:var(--shake-ease)}
+  57.14%{transform:translateX(calc(var(--shake-distance) * -1));animation-timing-function:var(--shake-ease)}
+  78.57%{transform:translateX(var(--shake-overshoot));animation-timing-function:var(--shake-ease)}
+  100%{transform:translateX(0)}}
+
+/* número que mudou porque o dado mudou (discreto) */
+.t-subtle-number{display:inline-flex;align-items:baseline;font-variant-numeric:tabular-nums}
+.t-subtle-slot{position:relative;display:inline-block}.t-subtle-new{display:inline-block}
+.t-subtle-old{position:absolute;inset:0;text-align:center;pointer-events:none}
+.t-subtle-number.is-animating .t-subtle-new{animation:t-subtle-in var(--subtle-dur) var(--subtle-ease) both}
+.t-subtle-number.is-animating .t-subtle-old{animation:t-subtle-out var(--subtle-dur) var(--subtle-ease) both}
+@keyframes t-subtle-in{from{transform:translateY(calc(var(--subtle-distance) * var(--subtle-dir,1)));opacity:0;filter:blur(var(--subtle-blur))}}
+@keyframes t-subtle-out{to{transform:translateY(calc(var(--subtle-distance) * var(--subtle-dir,1) * -1));opacity:0;filter:blur(var(--subtle-blur))}}
+
+/* visto de "salvo" (desenha uma vez) */
+.t-success-check{display:inline-block;transform-origin:center;opacity:0}
+.t-success-check svg{display:block;overflow:visible}
+.t-success-check svg path{stroke-dasharray:var(--check-len,20);stroke-dashoffset:var(--check-len,20)}
+.t-success-check[data-state="in"]{animation:t-check-in var(--check-dur) var(--check-ease) forwards,t-check-bob var(--check-dur) var(--check-bob-ease) forwards}
+.t-success-check[data-state="in"] svg path{animation:t-check-draw var(--check-dur) var(--check-ease) var(--duration-micro) forwards}
+@keyframes t-check-in{from{opacity:0;transform:rotate(80deg);filter:blur(var(--blur-large))}to{opacity:1;transform:none;filter:none}}
+@keyframes t-check-bob{from{translate:0 var(--distance-medium)}to{translate:0 0}}
+@keyframes t-check-draw{to{stroke-dashoffset:0}}
+
+/* movimento reduzido: obrigatório — tudo para, o estado final aparece na hora */
+@media (prefers-reduced-motion:reduce){
+  .t-dropdown,.t-modal,.t-fundo,.t-gaveta,.t-folha,.t-toast,.t-abas-linha,.t-acc-panel,.t-acc-panel-inner,.t-icon-swap .t-icon{transition:none!important}
+  .t-shake.is-shaking,.t-subtle-number .t-subtle-new{animation:none!important}.t-subtle-number .t-subtle-old{display:none}
+  .t-success-check{animation:none!important;opacity:1}.t-success-check svg path{animation:none!important;stroke-dashoffset:0!important}
+}
+
 /* ===== base.css ===== */
 /* EFCwork · base.css — tokens, tipografia e componentes comuns.
    Temas: Claro (marfim + ouro, botões em degradê dourado) e Escuro (o Dourado original do EFClaudian).
@@ -64,7 +187,7 @@ h1,h2,h3{font-family:var(--fh);font-weight:600;letter-spacing:-.01em;margin:0}
 .bt .ic{width:16px;height:16px}
 .bt.pr{background:var(--ouro);border-color:#c99d48;color:#1c1406;position:relative;overflow:hidden;box-shadow:0 4px 14px rgba(217,180,106,.25),inset 0 1px 0 rgba(255,255,255,.35)}
 .bt.pr::after{content:"";position:absolute;top:0;bottom:0;left:-60%;width:40%;background:linear-gradient(105deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-18deg);pointer-events:none}
-@media (prefers-reduced-motion:no-preference){.bt.pr::after{animation:ouroBrilho 6s ease-in-out infinite}}
+@media (prefers-reduced-motion:no-preference){.bt.pr::after{animation:ouroBrilho 6s ease-in-out infinite}} /* mov:ok — reflexo do botão dourado, exceção aprovada */
 @keyframes ouroBrilho{0%,70%{left:-60%}100%{left:130%}}
 .bt.pr:hover{filter:brightness(1.04)}
 .bt.ic-so{width:var(--btn);padding:0;color:var(--tx2)}
@@ -109,9 +232,8 @@ h1,h2,h3{font-family:var(--fh);font-weight:600;letter-spacing:-.01em;margin:0}
 
 /* avisos */
 .av-pilha{position:fixed;left:50%;transform:translateX(-50%);width:max-content;max-width:calc(100vw - 32px);bottom:max(16px,env(safe-area-inset-bottom,0px));z-index:60;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
-.av{pointer-events:auto;background:var(--tx);color:var(--bg1);padding:10px 14px;border-radius:8px;font-size:14px;display:flex;gap:12px;align-items:center;box-shadow:0 8px 24px rgba(0,0,0,.25);transition:opacity .3s}
+.av{pointer-events:auto;background:var(--tx);color:var(--bg1);padding:10px 14px;border-radius:8px;font-size:14px;display:flex;gap:12px;align-items:center;box-shadow:0 8px 24px rgba(0,0,0,.25)}
 .av.erro{background:var(--cr);color:#fff}
-.av.sai{opacity:0}
 .av-df{background:transparent;border:0;color:inherit;font-weight:700;text-decoration:underline;cursor:pointer}
 
 /* ===== casca.css ===== */
@@ -200,7 +322,7 @@ button.cs-sync:focus-visible{outline:2px solid var(--a);outline-offset:1px}
 @media(max-width:899px){
   .cs-busca{height:44px} .cp input,.cp select{height:44px} /* v0.6.8 (varredura): toque com 44 px */
   .cs-app{grid-template-columns:1fr}
-  .cs-lado{position:fixed;left:0;top:0;bottom:0;width:min(290px,86vw);transform:translateX(-102%);transition:transform .2s;box-shadow:0 10px 40px rgba(0,0,0,.25);padding-top:max(14px,env(safe-area-inset-top,0px))}
+  .cs-lado{position:fixed;left:0;top:0;bottom:0;width:min(290px,86vw);transform:translateX(-102%);transition:transform var(--duration-medium) var(--ease-smooth-out);box-shadow:0 10px 40px rgba(0,0,0,.25);padding-top:max(14px,env(safe-area-inset-top,0px))}
   .menu-aberto .cs-lado{transform:none}
   .menu-aberto .cs-fundo{display:block;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:19}
   .cs-so-cel{display:inline-flex}
@@ -238,19 +360,19 @@ button.cs-sync:focus-visible{outline:2px solid var(--a);outline-offset:1px}
 .cs-topl .cs-marca{min-width:0}
 .cs-alt{display:none;align-items:center;gap:6px;flex:none;padding-top:3px}
 .cs-pts{display:flex;gap:3px;align-items:center}
-.cs-pts i{width:5px;height:5px;border-radius:3px;background:var(--sbBd);transition:width .3s cubic-bezier(.34,1.56,.64,1),background .2s}
+.cs-pts i{width:5px;height:5px;border-radius:3px;background:var(--sbBd);transition:width var(--duration-fast) var(--ease-bounce),background var(--duration-quick) var(--ease-out)}
 .cs-pts i.on{width:13px;background:var(--a)}
 .cs-altb{width:32px;height:32px;min-height:32px;border-color:transparent;background:transparent;color:inherit;opacity:.7}
 .cs-altb:hover{opacity:1;background:var(--bg2);border-color:var(--sbBd)}
-.cs-altb .ic{width:17px;height:17px;transition:transform .35s cubic-bezier(.34,1.4,.64,1)}
+.cs-altb .ic{width:17px;height:17px;transition:transform var(--duration-fast) var(--ease-in-out)}
 .cs-pux{display:none}
 @media(min-width:900px){
   .cs-alt{display:flex}
-  .cs-app{transition:grid-template-columns .34s cubic-bezier(.3,.9,.3,1)}
+  .cs-app{transition:grid-template-columns var(--duration-medium) var(--ease-smooth-out)}
   .cs-main{grid-column:2;grid-row:1} /* o conteúdo fica sempre na 2ª coluna, mesmo com o menu fora do fluxo (recolhido) */
   .cs-topl .cs-nm{min-width:0}.cs-topl .cs-nm span{white-space:nowrap}
   .cs-topl .cs-marca{gap:8px;padding-right:0}
-  .cs-it span,.cs-nm,.cs-emp,.cs-ust,.cs-cw,.cs-gh{transition:opacity .2s}
+  .cs-it span,.cs-nm,.cs-emp,.cs-ust,.cs-cw,.cs-gh{transition:opacity var(--duration-quick) var(--ease-out)}
   /* --- só ícones --- */
   .cs-app.m-ic{grid-template-columns:68px minmax(0,1fr)}
   .m-ic .cs-lado{padding:14px 10px;overflow:visible}
@@ -263,32 +385,32 @@ button.cs-sync:focus-visible{outline:2px solid var(--a);outline-offset:1px}
   .m-ic .cs-it{justify-content:center;padding:0;width:48px;margin:0 auto}
   .m-ic .cs-it.on::before{left:-10px}
   /* o nome vira etiqueta ao passar o mouse */
-  .m-ic .cs-it span{position:absolute;left:calc(100% + 10px);top:50%;transform:translate(-4px,-50%);background:var(--tx);color:var(--bg1);font-size:13px;font-weight:500;padding:6px 10px;border-radius:7px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s,transform .2s;z-index:40;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+  .m-ic .cs-it span{position:absolute;left:calc(100% + 10px);top:50%;transform:translate(-4px,-50%);background:var(--tx);color:var(--bg1);font-size:13px;font-weight:500;padding:6px 10px;border-radius:7px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity var(--duration-quick) var(--ease-out),transform var(--duration-quick) var(--ease-out);z-index:40;box-shadow:0 6px 18px rgba(0,0,0,.18)}
   .m-ic .cs-it:hover span,.m-ic .cs-it:focus-visible span{opacity:1;transform:translate(0,-50%)}
   .m-ic .cs-us{flex-direction:column;padding:0;gap:6px}
   /* --- recolhido --- */
   .cs-app.m-rc{grid-template-columns:0px minmax(0,1fr)}
-  .m-rc .cs-lado{position:fixed;left:0;top:0;bottom:0;width:240px;transform:translateX(-104%);transition:transform .3s cubic-bezier(.4,0,.2,1),box-shadow .3s;z-index:30}
+  .m-rc .cs-lado{position:fixed;left:0;top:0;bottom:0;width:240px;transform:translateX(-104%);transition:transform var(--duration-medium) var(--ease-smooth-out),box-shadow var(--duration-medium) var(--ease-smooth-out);z-index:30}
   .m-rc .cs-altb .ic{transform:rotate(180deg)}
   .m-rc.flut .cs-lado{transform:none;box-shadow:0 20px 60px rgba(40,28,6,.30),0 2px 8px rgba(40,28,6,.12)}
-  .m-rc.flut .cs-fundo{display:block;position:fixed;inset:0;z-index:29;background:rgba(28,20,6,.16);animation:cs-fd .3s ease both}
-  .m-rc.abrindo .cs-lado{animation:cs-lado-entra .55s cubic-bezier(.22,1.25,.36,1) both}
-  .m-rc.abrindo .cs-it,.m-rc.abrindo .cs-gh,.m-rc.abrindo .cs-emp,.m-rc.abrindo .cs-pe{animation:cs-it-entra .38s cubic-bezier(.2,.8,.3,1) both;animation-delay:calc(var(--i,6) * 24ms + 120ms)}
+  .m-rc.flut .cs-fundo{display:block;position:fixed;inset:0;z-index:29;background:rgba(28,20,6,.16);animation:cs-fd var(--duration-fast) var(--ease-out) both}
+  .m-rc.abrindo .cs-lado{animation:cs-lado-entra var(--duration-slow) var(--ease-smooth-out) both}
+  .m-rc.abrindo .cs-it,.m-rc.abrindo .cs-gh,.m-rc.abrindo .cs-emp,.m-rc.abrindo .cs-pe{animation:cs-it-entra var(--duration-slow) var(--ease-smooth-out) both;animation-delay:calc(var(--i,6) * var(--duration-stagger) + var(--duration-micro))}
   .m-rc.abrindo .cs-emp{--i:0}.m-rc.abrindo .cs-pe{--i:9}
   .m-rc.fixando .cs-lado,.cs-app.fixando .cs-lado{transition:none}
   /* --- puxador --- */
   .m-rc .cs-pux{display:flex;position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:28;border:0;padding:0;cursor:pointer;align-items:center;justify-content:center;color:#1c1406;overflow:hidden;
     background:var(--ouro);
-    transition:width .42s cubic-bezier(.34,1.56,.64,1),height .42s cubic-bezier(.34,1.56,.64,1),border-radius .3s,box-shadow .3s,opacity .2s}
-  .m-rc.flut .cs-pux{opacity:0;pointer-events:none;transform:translate(-100%,-50%);transition:opacity .15s,transform .2s}
-  .cs-pux .ic{width:18px;height:18px;stroke-width:2.4;opacity:0;transform:translateX(-6px);transition:opacity .2s .08s,transform .3s .08s;position:relative;z-index:1}
-  .cs-pux:hover .ic,.cs-pux:focus-visible .ic{opacity:1;transform:none;animation:cs-pux-seta 1.1s ease-in-out .4s infinite}
+    transition:width var(--duration-medium) var(--ease-bounce),height var(--duration-medium) var(--ease-bounce),border-radius var(--duration-fast) var(--ease-out),box-shadow var(--duration-fast) var(--ease-out),opacity var(--duration-quick) var(--ease-out)}
+  .m-rc.flut .cs-pux{opacity:0;pointer-events:none;transform:translate(-100%,-50%);transition:opacity var(--duration-quick) var(--ease-out),transform var(--duration-quick) var(--ease-out)}
+  .cs-pux .ic{width:18px;height:18px;stroke-width:2.4;opacity:0;transform:translateX(-6px);transition:opacity var(--duration-quick) var(--ease-out) var(--duration-micro),transform var(--duration-fast) var(--ease-smooth-out) var(--duration-micro);position:relative;z-index:1}
+  .cs-pux:hover .ic,.cs-pux:focus-visible .ic{opacity:1;transform:none;animation:cs-pux-seta calc(var(--duration-very-slow) * 2) var(--ease-in-out) var(--duration-slow) 2}
   .cs-pux:focus-visible{outline:2px solid var(--a);outline-offset:2px}
   .cs-pux:active{filter:brightness(.95)}
   /* brilho que passa (chamativo, mas só de vez em quando) */
-  .cs-pux::after{content:"";position:absolute;left:0;right:0;top:-60%;height:45%;background:linear-gradient(180deg,transparent,rgba(255,255,255,.75),transparent);animation:cs-pux-brilho 5.5s ease-in-out 1.2s infinite;pointer-events:none}
-  .cs-pux-g{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;opacity:0;transition:opacity .2s}
-  .cs-pux.entra{animation:cs-pux-entra .75s cubic-bezier(.22,1.3,.36,1) both}
+  .cs-pux::after{content:"";position:absolute;left:0;right:0;top:-60%;height:45%;background:linear-gradient(180deg,transparent,rgba(255,255,255,.75),transparent);animation:cs-pux-brilho calc(var(--duration-very-slow) * 4) var(--ease-in-out) var(--duration-very-slow) 1 both;pointer-events:none}
+  .cs-pux-g{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;opacity:0;transition:opacity var(--duration-quick) var(--ease-out)}
+  .cs-pux.entra{animation:cs-pux-entra var(--duration-very-slow) var(--ease-smooth-out) both}
   /* forma A — lingueta (aba que sai da borda) */
   .cs-pux.pa{width:8px;height:72px;border-radius:0 9px 9px 0;box-shadow:0 0 0 1px rgba(154,113,40,.28),0 6px 18px rgba(154,113,40,.38)}
   .cs-pux.pa:hover,.cs-pux.pa:focus-visible{width:30px;height:118px;border-radius:0 14px 14px 0;box-shadow:0 0 0 1px rgba(154,113,40,.35),0 10px 28px rgba(154,113,40,.45)}
@@ -300,7 +422,7 @@ button.cs-sync:focus-visible{outline:2px solid var(--a);outline-offset:1px}
   /* forma C — fio de luz com um ponto, que vira aba */
   .cs-pux.pc{width:4px;height:120px;border-radius:0 3px 3px 0;box-shadow:0 0 10px 1px rgba(217,180,106,.75)}
   .cs-pux.pc .cs-pux-g{opacity:1}
-  .cs-pux.pc .cs-pux-g::before{content:"";width:10px;height:10px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff7dc,#d9b46a 60%,#9a7128);box-shadow:0 0 0 3px rgba(217,180,106,.35);transform:translateX(3px);animation:cs-pux-pulso 2.6s ease-in-out infinite}
+  .cs-pux.pc .cs-pux-g::before{content:"";width:10px;height:10px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff7dc,#d9b46a 60%,#9a7128);box-shadow:0 0 0 3px rgba(217,180,106,.35);transform:translateX(3px);animation:cs-pux-pulso calc(var(--duration-very-slow) * 5) var(--ease-in-out) 2}
   .cs-pux.pc{overflow:visible}
   .cs-pux.pc:hover,.cs-pux.pc:focus-visible{width:30px;height:118px;border-radius:0 14px 14px 0;overflow:hidden}
   .cs-pux.pc:hover .cs-pux-g{opacity:0}
@@ -309,7 +431,7 @@ button.cs-sync:focus-visible{outline:2px solid var(--a);outline-offset:1px}
 @keyframes cs-lado-entra{0%{transform:translateX(-104%)}100%{transform:none}}
 @keyframes cs-it-entra{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
 @keyframes cs-pux-entra{0%{transform:translate(-110%,-50%) scaleY(.35);opacity:0}45%{transform:translate(0,-50%) scaleY(1.18);opacity:1}68%{transform:translate(0,-50%) scaleY(.92)}84%{transform:translate(0,-50%) scaleY(1.04)}100%{transform:translate(0,-50%) scaleY(1)}}
-@keyframes cs-pux-brilho{0%,78%{top:-60%}100%{top:120%}}
+@keyframes cs-pux-brilho{0%,40%{top:-60%}100%{top:120%}}
 @keyframes cs-pux-seta{0%,100%{transform:translateX(0)}50%{transform:translateX(3px)}}
 @keyframes cs-pux-pulso{0%,100%{box-shadow:0 0 0 3px rgba(217,180,106,.35)}50%{box-shadow:0 0 0 7px rgba(217,180,106,0)}}
 @media(prefers-reduced-motion:reduce){
@@ -423,10 +545,10 @@ body.dd-arrastando{cursor:grabbing;-webkit-user-select:none;user-select:none}
 .gv-corpo p.tb-nada{margin:0}
 @media(min-width:1200px){body.gv-aberta .cs-ct{padding-right:440px}} /* v0.3.1, pedido do Elias 06/11: a tabela recua quando a gaveta abre, com a margem curta (20 px) */
 /* gaveta deslizando (v0.3.4) */
-.gv.gv-entra{animation:gvEntra .28s cubic-bezier(.2,.8,.2,1)}
-.gv.gv-sai{animation:gvSai .2s cubic-bezier(.4,0,1,1) forwards;pointer-events:none}
-@keyframes gvEntra{from{transform:translateX(100%);opacity:.4}to{transform:none;opacity:1}}
-@keyframes gvSai{from{transform:none;opacity:1}to{transform:translateX(100%);opacity:.3}}
+.gv.gv-entra{animation:gvEntra var(--panel-open-dur) var(--panel-ease)}
+.gv.gv-sai{animation:gvSai var(--panel-close-dur) var(--panel-ease) forwards;pointer-events:none}
+@keyframes gvEntra{from{transform:translateX(100%);opacity:.6;filter:blur(var(--panel-blur))}to{transform:none;opacity:1;filter:none}}
+@keyframes gvSai{from{transform:none;opacity:1;filter:none}to{transform:translateX(100%);opacity:.6;filter:blur(var(--panel-blur))}}
 @media(prefers-reduced-motion:reduce){.gv.gv-entra,.gv.gv-sai{animation:none}}
 /* v0.4.8: total na barra de cima, cada valor acima da sua coluna */
 .tb-bar{position:relative}
@@ -464,9 +586,9 @@ body.tb-arrastando,body.tb-arrastando *{cursor:grabbing!important;user-select:no
 .tb-fant{position:fixed;z-index:96;pointer-events:none;display:flex;align-items:center;gap:6px;padding:6px 12px 6px 8px;border-radius:8px;background:var(--bg1);border:1px solid var(--a);box-shadow:0 10px 28px rgba(0,0,0,.22);font-size:13px;font-weight:600;color:var(--tx)}
 .tb-fant .ic{width:14px;height:14px;color:var(--tx3)}
 /* menu da coluna */
-.tb-mn{position:fixed;z-index:60;width:300px;--tb-pt:24px;max-height:min(640px,calc(100vh - 16px));display:flex;flex-direction:column;background:var(--bg1);border:1px solid var(--bd2);border-radius:12px;box-shadow:0 18px 48px rgba(20,16,8,.22),0 2px 6px rgba(20,16,8,.08);overflow:hidden;animation:tbMn .14s ease-out;font-size:14px;overflow:visible}
+.tb-mn{position:fixed;z-index:60;width:300px;--tb-pt:24px;max-height:min(640px,calc(100vh - 16px));display:flex;flex-direction:column;background:var(--bg1);border:1px solid var(--bd2);border-radius:12px;box-shadow:0 18px 48px rgba(20,16,8,.22),0 2px 6px rgba(20,16,8,.08);overflow:hidden;animation:tbMn var(--dropdown-open-dur) var(--dropdown-ease);transform-origin:top center;font-size:14px;overflow:visible}
 :root[data-tema="escuro"] .tb-mn{border-color:rgba(217,180,106,.22);box-shadow:0 18px 48px rgba(0,0,0,.55)}
-@keyframes tbMn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+@keyframes tbMn{from{opacity:0;transform:scale(var(--dropdown-pre-scale))}to{opacity:1;transform:none}}
 .tb-mn-cab{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 12px 10px 14px;border-bottom:1px solid var(--bd)}
 .tb-mn-t{display:flex;flex-direction:column;min-width:0}.tb-mn-t small{font-size:12px;color:var(--tx3)}
 .tb-mn-t b{font-family:var(--fh);font-size:18px;font-weight:600;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -505,8 +627,8 @@ body.tb-arrastando,body.tb-arrastando *{cursor:grabbing!important;user-select:no
 .tb-mn-nd{margin:6px;color:var(--tx3);font-size:13px}
 .tb-mn-pe{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;background:var(--bg0)}
 .tb-mn-mv{display:flex;gap:4px}.tb-mn-mv .bt{height:34px;width:34px}.tb-sesq{display:inline-flex;transform:rotate(180deg)}
-.tb-mn.tb-mn-folha{left:0!important;right:0;top:auto!important;bottom:0;width:auto;max-height:82vh;border-radius:16px 16px 0 0;animation:tbFolha .2s ease-out;padding-bottom:env(safe-area-inset-bottom,0px)}
-@keyframes tbFolha{from{transform:translateY(30%);opacity:.4}to{transform:none;opacity:1}}
+.tb-mn.tb-mn-folha{left:0!important;right:0;top:auto!important;bottom:0;width:auto;max-height:82vh;border-radius:16px 16px 0 0;animation:tbFolha var(--panel-open-dur) var(--panel-ease);padding-bottom:env(safe-area-inset-bottom,0px)}
+@keyframes tbFolha{from{transform:translateY(100%);opacity:.6}to{transform:none;opacity:1}}
 @media(prefers-reduced-motion:reduce){.tb-mn,.tb-mn.tb-mn-folha{animation:none}}
 .tb-mn-bs,.tb-mn-nr,.tb-mn-h{flex-shrink:0}
 /* pontinha do menu apontando para a coluna */
@@ -625,7 +747,7 @@ textarea.fm-i{height:auto;min-height:64px;padding:9px 12px;resize:vertical}
 .cg-pct b{display:block;font-family:var(--fh);font-size:28px;font-weight:600;line-height:1;color:var(--aTx)}
 .cg-pct small{font-size:13px;color:var(--tx3)}
 .cg-bar{height:8px;border-radius:5px;background:var(--bg2);overflow:hidden}
-.cg-bar i{display:block;height:100%;border-radius:5px;background:var(--ouro);transition:width .4s}
+.cg-bar i{display:block;height:100%;border-radius:5px;background:var(--ouro);transition:width var(--duration-slow) var(--ease-smooth-out)}
 .cg-acts{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .cg-acts .sp{flex:1}
 .cg-acts .dd{min-width:240px}
@@ -686,6 +808,8 @@ a.cg-av span{flex:1}
 .cg-ach{font-family:var(--f)!important;font-size:15px!important;color:var(--ok)}
 .cg-ach.nao{color:var(--cr)!important}
 
+@media(prefers-reduced-motion:reduce){.cg-bar i{transition:none}} /* v0.6.14 */
+
 /* ===== calibracao.css ===== */
 /* EFCwork · calibracao.css — ciclo da calibração. Prefixo: cb- */
 .cb-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(340px,100%),1fr));gap:12px}
@@ -706,27 +830,27 @@ a.cg-av span{flex:1}
 .cb-tl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
 .cb-tubo{position:absolute;left:12px;width:4px;border-radius:3px;background:var(--bg2);box-shadow:inset 0 1px 2px rgba(0,0,0,.12);overflow:hidden}
 .cb-fluido{position:absolute;left:0;right:0;top:0;height:0;border-radius:3px;background:linear-gradient(180deg,#f7df9e,#d9b46a 45%,#b4862f);overflow:hidden}
-.cb-fluido::after{content:"";position:absolute;left:0;right:0;height:46px;top:-46px;background:linear-gradient(180deg,transparent,rgba(255,250,230,.95),transparent);animation:cbBrilho 1.8s linear infinite}
+.cb-fluido::after{content:"";position:absolute;left:0;right:0;height:46px;top:-46px;background:linear-gradient(180deg,transparent,rgba(255,250,230,.95),transparent);animation:cbBrilho calc(var(--duration-very-slow) * 3) var(--ease-linear) 2}
 .cb-correndo .cb-fluido::after{animation-duration:.9s}
 @keyframes cbBrilho{to{top:100%}}
 .cb-tl li{display:flex;gap:12px;position:relative;padding-bottom:14px}
 .cb-tl li:last-child{padding-bottom:0}
-.cb-n{width:28px;height:28px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:13px;font-weight:700;background:var(--bg1);color:var(--tx3);border:1px solid var(--bd2);position:relative;z-index:1;transition:background .3s,border-color .3s,color .3s}
+.cb-n{width:28px;height:28px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:13px;font-weight:700;background:var(--bg1);color:var(--tx3);border:1px solid var(--bd2);position:relative;z-index:1;transition:background var(--duration-fast) var(--ease-out),border-color var(--duration-fast) var(--ease-out),color .3s}
 .cb-n .ic{width:15px;height:15px;display:none}
 .cb-ib{position:absolute;inset:0;border-radius:50%;overflow:hidden;z-index:0}
-.cb-in{position:absolute;left:0;right:0;bottom:0;height:0;background:var(--ouro);transition:height .5s cubic-bezier(.4,0,.2,1)}
+.cb-in{position:absolute;left:0;right:0;bottom:0;height:0;background:var(--ouro);transition:height var(--duration-very-slow) var(--ease-smooth-out)}
 .cb-nn,.cb-n>.ic{position:relative;z-index:1}
 .cb-tl li.ok:not(.esp) .cb-n{color:var(--onOuro);border-color:var(--a);box-shadow:0 0 0 3px color-mix(in srgb,var(--a) 22%,transparent)}
 .cb-tl li.ok:not(.esp) .cb-in{height:100%}
-.cb-gota{position:absolute;left:11px;width:6px;height:9px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:var(--a);z-index:2;animation:cbCai .3s cubic-bezier(.5,0,1,1) forwards;pointer-events:none}
+.cb-gota{position:absolute;left:11px;width:6px;height:9px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:var(--a);z-index:2;animation:cbCai var(--duration-fast) cubic-bezier(.5,0,1,1) forwards;pointer-events:none}
 @keyframes cbCai{to{transform:translateY(16px);opacity:.2}}
-.cb-onda{position:absolute;inset:-6px;border-radius:50%;border:2px solid var(--a);animation:cbOnda .6s ease-out forwards;pointer-events:none}
+.cb-onda{position:absolute;inset:-6px;border-radius:50%;border:2px solid var(--a);animation:cbOnda var(--duration-very-slow) var(--ease-out) forwards;pointer-events:none}
 @keyframes cbOnda{from{transform:scale(.6);opacity:1}to{transform:scale(1.4);opacity:0}}
 .cb-tl li.ok:not(.esp) .cb-n .ic{display:block}.cb-tl li.ok:not(.esp) .cb-nn{display:none}
-.cb-tl li.acende .cb-n{animation:cbAcende .45s cubic-bezier(.2,.8,.2,1)}
+.cb-tl li.acende .cb-n{animation:cbAcende var(--duration-very-slow) var(--ease-bounce)}
 @keyframes cbAcende{0%{transform:scale(.7)}60%{transform:scale(1.18)}100%{transform:scale(1)}}
 .cb-tl li.at .cb-n{background:var(--waS);color:var(--wa);border-color:var(--wa)}
-.cb-tl li>div{display:flex;flex-direction:column;gap:1px;min-width:0;padding-top:3px;transition:opacity .3s}
+.cb-tl li>div{display:flex;flex-direction:column;gap:1px;min-width:0;padding-top:3px;transition:opacity var(--duration-fast) var(--ease-out)}
 .cb-tl li.esp>div{opacity:.55}
 .cb-tl b{font-weight:600;font-size:15px}
 .cb-tl b em{font-style:normal;font-weight:500;color:var(--tx2);font-size:13px;margin-left:4px}
@@ -737,7 +861,7 @@ a.cg-av span{flex:1}
 .cb-agora{color:var(--wa)!important;font-weight:600}
 /* barrinhas do cartão também com brilho */
 .cb-mini li.ok i{position:relative;overflow:hidden}
-.cb-mini li.ok i::after{content:"";position:absolute;top:0;bottom:0;width:40%;left:-40%;background:linear-gradient(90deg,transparent,rgba(255,250,230,.8),transparent);animation:cbBrilhoH 2.4s linear infinite}
+.cb-mini li.ok i::after{content:"";position:absolute;top:0;bottom:0;width:40%;left:-40%;background:linear-gradient(90deg,transparent,rgba(255,250,230,.8),transparent);animation:cbBrilhoH calc(var(--duration-very-slow) * 4) var(--ease-linear) 1}
 @keyframes cbBrilhoH{to{left:100%}}
 @media(prefers-reduced-motion:reduce){.cb-in{transition:none}.cb-fluido::after,.cb-mini li.ok i::after{animation:none;display:none}.cb-tl li.acende .cb-n{animation:none}.cb-n{transition:none}}
 .cb-obs{margin:0;font-size:14px;color:var(--tx2)}
@@ -842,7 +966,7 @@ div.cb-hc{cursor:default}
 .sn-n.nl .sn-nb b{font-weight:700}
 .sn-nb span span{font-size:13px;color:var(--tx2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .sn-nb small{font-size:12px;color:var(--tx3)}
-.sn-toast{position:fixed;right:20px;bottom:20px;z-index:70;width:min(380px,calc(100vw - 32px));background:var(--bg1);border:1px solid var(--bd2);border-radius:var(--r);box-shadow:var(--sh);padding:12px 14px;display:flex;flex-direction:column;gap:6px;animation:snEntra .28s cubic-bezier(.2,.8,.2,1)}
+.sn-toast{position:fixed;right:20px;bottom:20px;z-index:70;width:min(380px,calc(100vw - 32px));background:var(--bg1);border:1px solid var(--bd2);border-radius:var(--r);box-shadow:var(--sh);padding:12px 14px;display:flex;flex-direction:column;gap:6px;animation:snEntra var(--toast-open) var(--toast-ease)}
 .sn-tc{display:flex;gap:10px;align-items:flex-start}
 .sn-tc>.ic{width:20px;height:20px;flex:none;color:var(--a);margin-top:2px}
 .sn-tc span{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
@@ -1618,12 +1742,14 @@ body.au-apr-on{overflow:hidden}
 .pg-ansdd .dd-b{height:34px;padding:0 10px;font-size:14px}
 
 /* v0.4.6: o cartão abre a página do plano */
-a.pg-pl{color:inherit;text-decoration:none;cursor:pointer;transition:border-color .15s}a.pg-pl:hover{border-color:var(--bd2)}a.pg-pl:focus-visible{outline:2px solid var(--a);outline-offset:2px}
+a.pg-pl{color:inherit;text-decoration:none;cursor:pointer;transition:border-color var(--duration-quick) var(--ease-out)}a.pg-pl:hover{border-color:var(--bd2)}a.pg-pl:focus-visible{outline:2px solid var(--a);outline-offset:2px}
 
 /* v0.4.9: Data e Coletores na mesma linha (o aviso "pode ser de dias atrás" saiu do rótulo, que quebrava em 2 linhas e empurrava a data) */
 #gv .fm-g{align-items:start}
 .pg-i::after{content:'';position:absolute;inset:-6px} /* v0.6.8: área de toque maior sem mudar o desenho */
 @media(max-width:899px){.pg-i::after{inset:-11px}}
+
+@media(prefers-reduced-motion:reduce){a.pg-pl{transition:none}} /* v0.6.14 */
 
 /* ===== plano.css ===== */
 /* v0.4.6 · página do plano (prefixo pp) */
@@ -1691,7 +1817,7 @@ body:has(#gv) .pp-bar{display:none}
 .en-arte{position:absolute;inset:0;overflow:hidden}
 .en-fundo{position:absolute;inset:0}
 .en-lado{position:relative;z-index:6;min-height:100vh;display:flex;align-items:center;justify-content:flex-end;padding:32px clamp(24px,7vw,110px)}
-.en-caixa{width:min(400px,100%);display:flex;flex-direction:column;gap:12px;padding:30px 30px 22px;border-radius:14px;background:var(--bg1);border:1px solid var(--bd);box-shadow:0 30px 80px rgba(0,0,0,.18);animation:en-entra .7s .35s cubic-bezier(.2,.8,.2,1) both}
+.en-caixa{width:min(400px,100%);display:flex;flex-direction:column;gap:12px;padding:30px 30px 22px;border-radius:14px;background:var(--bg1);border:1px solid var(--bd);box-shadow:0 30px 80px rgba(0,0,0,.18);animation:en-entra var(--duration-very-slow) var(--ease-smooth-out) var(--duration-medium) both}
 .en-rev .en-caixa{box-shadow:0 30px 80px rgba(0,0,0,.45)}
 .en-mk{display:flex;gap:10px;align-items:center;margin-bottom:6px}
 .en-mk b{font-family:var(--fh);font-size:19px;font-weight:600;display:block;line-height:1.1}.en-mk small{font-size:12px;color:var(--tx3)}
@@ -1707,11 +1833,20 @@ body:has(#gv) .pp-bar{display:none}
 .en-bt{height:46px;font-size:16px}
 .en-rod{margin-top:14px;font-size:13px;color:var(--tx3);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
 @keyframes en-entra{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+/* v0.6.14 · Pólen: o fundo vivo fica entre a cor de fundo e a arte; a linha que diz o que é o app entra palavra por palavra */
+.en-polen{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+.en-diz{position:absolute;z-index:7;left:clamp(24px,5vw,72px);top:clamp(24px,6vh,56px);max-width:min(480px,40vw);margin:0;pointer-events:none}
+.en-diz small{display:block;font:600 13px var(--f);letter-spacing:.06em;text-transform:uppercase;color:var(--aTx);margin-bottom:8px}
+.en-diz b{display:block;font:600 28px/1.18 var(--fh);color:var(--tx);letter-spacing:-.01em}
+.en-diz span{display:inline-block;opacity:0;filter:blur(10px);transform:translateY(-.25em);animation:en-blur var(--duration-very-slow) var(--ease-smooth-out) forwards;animation-delay:calc(var(--i) * 70ms + 300ms)}
+@keyframes en-blur{to{opacity:1;filter:none;transform:none}}
+.en-rev .en-diz{top:auto;bottom:96px;max-width:min(400px,30vw);background:rgba(11,13,22,.72);padding:16px 18px;border-radius:10px;border:1px solid rgba(217,180,106,.18)}
+.en-rev .en-diz b{font-size:23px;color:#f3eee3}
 
 /* foto (recortada: sai do fundo; com fundo: moldura arredondada) */
-.en-ft{position:absolute;z-index:4;bottom:0;left:15vw;height:min(95vh,900px);pointer-events:none;animation:en-entra .7s .12s cubic-bezier(.2,.8,.2,1) both}
+.en-ft{position:absolute;z-index:4;bottom:0;left:15vw;height:min(95vh,900px);pointer-events:none;animation:en-entra var(--duration-very-slow) var(--ease-smooth-out) var(--duration-quick) both}
 .en-ft img{display:block;height:100%;width:auto}
-.en-ft .en-br{position:absolute;inset:0;-webkit-mask:var(--foto) center bottom/contain no-repeat;mask:var(--foto) center bottom/contain no-repeat;background:linear-gradient(105deg,transparent 35%,rgba(255,236,190,.5) 48%,transparent 60%);background-size:300% 100%;animation:en-brilho 5.5s ease-in-out infinite;mix-blend-mode:screen}
+.en-ft .en-br{position:absolute;inset:0;-webkit-mask:var(--foto) center bottom/contain no-repeat;mask:var(--foto) center bottom/contain no-repeat;background:linear-gradient(105deg,transparent 35%,rgba(255,236,190,.5) 48%,transparent 60%);background-size:300% 100%;animation:en-brilho calc(var(--duration-very-slow) * 5) var(--ease-in-out) var(--duration-very-slow) 1 both;mix-blend-mode:screen}
 @keyframes en-brilho{0%,40%{background-position:120% 0}75%,100%{background-position:-60% 0}}
 .en-ft.moldura{bottom:10vh;height:min(72vh,680px);border-radius:18px;overflow:hidden;border:3px solid #d9b46a;box-shadow:0 24px 60px rgba(0,0,0,.35)}
 .en-ft.moldura img{object-fit:cover}
@@ -1721,31 +1856,27 @@ body:has(#gv) .pp-bar{display:none}
 .en-rev .en-fundo{background:radial-gradient(800px 600px at 35% 30%,rgba(122,90,190,.25),transparent 60%),radial-gradient(500px 400px at 90% 90%,rgba(217,180,106,.18),transparent 60%)}
 .en-pal{position:absolute;left:3vw;top:15vh;z-index:2;font-family:var(--fh);font-weight:700;font-size:min(30vh,calc(160vw / var(--n)));line-height:.9;letter-spacing:-.02em;white-space:nowrap}
 .en-pal br{display:none}
-.en-pal span{display:inline-block;color:transparent;-webkit-text-stroke:2px rgba(217,180,106,.75);animation:en-sobe .8s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i) * 70ms + 200ms)}
-.en-pal.frente{z-index:5;-webkit-mask:linear-gradient(180deg,transparent 0,transparent 63%,#000 63%);mask:linear-gradient(180deg,transparent 0,transparent 63%,#000 63%)}
-.en-pal.frente span{-webkit-text-stroke:0;background:linear-gradient(180deg,#f7df9e,#b4862f);-webkit-background-clip:text;background-clip:text}
-@keyframes en-sobe{from{opacity:0;transform:translateY(60px)}to{opacity:1;transform:none}}
+.en-pal span{display:inline-block;color:transparent;-webkit-text-stroke:0;background:linear-gradient(180deg,#f7df9e,#b4862f);-webkit-background-clip:text;background-clip:text;animation:en-sobe var(--duration-very-slow) var(--ease-smooth-out) both;animation-delay:calc(var(--i) * var(--duration-stagger) + var(--duration-quick))}
+@keyframes en-sobe{from{opacity:0;filter:blur(12px);transform:translateY(-.15em)}to{opacity:1;filter:none;transform:none}}
 .en-faixa{position:absolute;left:0;right:0;bottom:0;height:54px;background:var(--ouro);z-index:6;overflow:hidden;display:flex;align-items:center}
-.en-faixa div{display:flex;gap:44px;white-space:nowrap;font-weight:700;font-size:18px;color:var(--onOuro);animation:en-corre 26s linear infinite;padding-left:44px}
+.en-faixa div{display:flex;gap:44px;white-space:nowrap;font-weight:700;font-size:18px;color:var(--onOuro);padding-left:44px}
 .en-faixa span::after{content:"·";margin-left:44px;opacity:.5}
-@keyframes en-corre{to{transform:translateX(-50%)}}
-.en-luz{position:absolute;inset:0;z-index:5;pointer-events:none;background:linear-gradient(115deg,transparent 40%,rgba(255,240,200,.10) 50%,transparent 60%);background-size:250% 100%;animation:en-brilho 7s ease-in-out infinite}
+.en-luz{position:absolute;inset:0;z-index:5;pointer-events:none;background:linear-gradient(115deg,transparent 40%,rgba(255,240,200,.10) 50%,transparent 60%);background-size:250% 100%;animation:en-brilho calc(var(--duration-very-slow) * 5) var(--ease-in-out) var(--duration-slow) 1 both}
 .en-rev .en-lado{padding-bottom:86px}
 
 /* ===== Claro: Avisos flutuando ===== */
 .en-avi .en-fundo{background:radial-gradient(700px 500px at 20% 20%,rgba(217,180,106,.25),transparent 60%),radial-gradient(600px 500px at 100% 100%,rgba(154,113,40,.12),transparent 60%)}
-.en-arco{position:absolute;left:12vw;bottom:0;width:min(37vw,470px);height:min(89vh,710px);border-radius:999px 999px 0 0;overflow:hidden;z-index:2;background:linear-gradient(180deg,#f3d9a6,#e6b46a 55%,#b9823a);animation:en-entra .7s cubic-bezier(.2,.8,.2,1) both}
+.en-arco{position:absolute;left:12vw;bottom:0;width:min(37vw,470px);height:min(89vh,710px);border-radius:999px 999px 0 0;overflow:hidden;z-index:2;background:linear-gradient(180deg,#f3d9a6,#e6b46a 55%,#b9823a);animation:en-entra var(--duration-very-slow) var(--ease-smooth-out) both}
 .en-avi .en-ft{left:9.5vw;height:min(92vh,740px)}
 .en-avi .en-ft.moldura{left:13vw}
-.en-chip{position:absolute;z-index:5;display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;background:var(--bg1);border:1px solid var(--bd);box-shadow:0 14px 34px rgba(60,40,10,.14);font-size:14px;animation:en-entra .7s cubic-bezier(.2,.8,.2,1) both,en-boia 5s ease-in-out infinite}
+.en-chip{position:absolute;z-index:5;display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;background:var(--bg1);border:1px solid var(--bd);box-shadow:0 14px 34px rgba(60,40,10,.14);font-size:14px;animation:en-entra var(--duration-very-slow) var(--ease-smooth-out) both}
 .en-chip i{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;flex:none;background:var(--ok)}
 .en-chip i.ida{background:var(--a)}
 .en-chip svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .en-chip b{display:block;font-size:14px}.en-chip small{color:var(--tx3);font-size:12px}
-.en-chip.a{left:5.5vw;top:26vh;animation-delay:.9s,0s}
-.en-chip.b{left:min(40vw,520px);top:41vh;animation-delay:1.15s,-1.6s}
-.en-chip.c{left:8.6vw;top:70vh;animation-delay:1.4s,-3.1s}
-@keyframes en-boia{50%{translate:0 -10px}}
+.en-chip.a{left:5.5vw;top:26vh;animation-delay:calc(var(--duration-very-slow) * 2)}
+.en-chip.b{left:min(40vw,520px);top:41vh;animation-delay:calc(var(--duration-very-slow) * 2 + var(--duration-quick))}
+.en-chip.c{left:8.6vw;top:70vh;animation-delay:calc(var(--duration-very-slow) * 2 + var(--duration-quick) * 2)}
 
 /* ===== celular ===== */
 @media(max-width:899px){
@@ -1765,10 +1896,16 @@ body:has(#gv) .pp-bar{display:none}
   .en-faixa{height:34px}.en-faixa div{font-size:14px;gap:28px;padding-left:28px}.en-faixa span::after{margin-left:28px}
   .en-arco{left:50%;margin-left:-120px;top:40px;bottom:auto;width:240px;height:340px;border-radius:120px 120px 0 0}
   .en-chip{padding:7px 10px;gap:8px;border-radius:10px}.en-chip b{font-size:12px}.en-chip small{font-size:11px}.en-chip i{width:22px;height:22px}
+  .en-diz,.en-rev .en-diz{left:16px;right:16px;top:auto;bottom:14px;max-width:none;padding:10px 12px;border-radius:10px;background:var(--vidro-en,rgba(255,254,251,.86));border:1px solid var(--bd)}
+  .en-rev .en-diz{background:rgba(11,13,22,.78);border-color:rgba(217,180,106,.18)}
+  .en-faixa,.en-chip.c{display:none} /* v0.6.14: no celular a linha do app ocupa o lugar da faixa e do terceiro cartão */
+  .en-diz,.en-rev .en-diz{bottom:16px}
+  .en-diz small{font-size:11px;margin-bottom:3px}.en-diz b,.en-rev .en-diz b{font-size:16px}
   .en-chip.a{left:10px;top:70px}.en-chip.b{left:auto;right:10px;top:180px}.en-chip.c{left:16px;top:270px}
 }
 @media(prefers-reduced-motion:reduce){
   .en *,.en *::before,.en *::after{animation:none!important;transition:none!important}
+  .en-diz span{opacity:1;filter:none;transform:none}
 }
 /* v0.4.5: em telas baixas (800 px) o formulário do primeiro acesso cabe inteiro */
 @media(min-width:900px) and (max-height:880px){.en-caixa{padding:22px 26px 18px;gap:8px}.en-caixa h2{font-size:26px}.en-form{gap:9px;margin-top:2px}.en-mk{margin-bottom:2px}}
@@ -1823,7 +1960,7 @@ body:has(#gv) .pp-bar{display:none}
 .at-ev.ab .at-ini{background:var(--bg1)}
 .at-t{min-width:0}.at-t b{font-weight:600}
 .at-t small{display:block;color:var(--tx2);font-size:13px;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.at-s{width:16px;height:16px;color:var(--tx3);transition:transform .15s}
+.at-s{width:16px;height:16px;color:var(--tx3);transition:transform var(--duration-quick) var(--ease-in-out)}
 .at-ev.ab .at-s{transform:rotate(180deg)}
 .at-det{padding:4px 16px 14px 102px}
 .at-det dl{display:grid;grid-template-columns:120px minmax(0,1fr);gap:6px 14px;margin:0}
@@ -1846,6 +1983,8 @@ body:has(#gv) .pp-bar{display:none}
   .at-bar .bt:not(.ic-so){flex:1}
 }
 
+@media(prefers-reduced-motion:reduce){.at-s{transition:none}} /* v0.6.14 */
+
 /* ===== adm.css ===== */
 /* EFCwork · adm.css — Prefixo: adm- */
 .adm-gr{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:16px;align-items:start}
@@ -1864,6 +2003,52 @@ body:has(#gv) .pp-bar{display:none}
 .adm-en .cp>span{font-weight:600}
 @media(max-width:899px){.adm-gr{grid-template-columns:1fr}.adm-avs{grid-template-columns:1fr}}
 
+/* ===== fluidez.css ===== */
+/* EFCwork · fluidez.css — v0.6.14 "Movimento". Só tokens da escala comum (tools/visual/efc-movimento.css). */
+/* avisos: o que sai fica por baixo do novo enquanto some */
+.av.av-sai{position:absolute;bottom:0;pointer-events:none}
+.av-vs{display:inline-grid;flex:none;color:#7fd3a0}
+.av-vs svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+:root[data-tema="escuro"] .av-vs{color:#2f7d4f}
+/* faíscas ao salvar */
+.fz-spk{position:fixed;z-index:120;width:0;height:0;pointer-events:none}
+.fz-spk i{position:absolute;left:-1px;top:0;width:2px;height:9px;border-radius:2px;background:var(--a);transform-origin:50% 0;animation:fzSpk var(--duration-very-slow) var(--ease-smooth-out) forwards}
+@keyframes fzSpk{from{transform:rotate(var(--r)) translateY(6px) scaleY(1);opacity:1}to{transform:rotate(var(--r)) translateY(26px) scaleY(.2);opacity:0}}
+/* lista retrátil: abre crescendo do botão; a cópia que fecha encolhe e some */
+.dd-l:not([hidden]){transform-origin:top left;animation:fzDdAbre var(--dropdown-open-dur) var(--dropdown-ease)}
+@keyframes fzDdAbre{from{opacity:0;transform:scale(var(--dropdown-pre-scale))}}
+.dd-l.dd-fant{pointer-events:none;transform-origin:top left;animation:fzDdFecha var(--dropdown-close-dur) var(--dropdown-ease) forwards}
+@keyframes fzDdFecha{to{opacity:0;transform:scale(var(--dropdown-closing-scale))}}
+/* traço da aba que desliza */
+.cs-abas.fz-abas{position:relative}
+.cs-abas.fz-abas a.on{border-bottom-color:transparent;border-image:none}
+.fz-linha{background:var(--a);border-radius:0}
+:root[data-tema="escuro"] .fz-linha{background:linear-gradient(90deg,#f7df9e,#b4862f)}
+/* conteúdo que entra na troca de tela */
+.cs-ct.fz-entra{animation:fzEntra var(--duration-fast) var(--ease-smooth-out)}
+@keyframes fzEntra{from{opacity:0;transform:translateX(calc(var(--fz-dir,1) * 12px))}}
+/* título que entra letra por letra saindo do desfoque (no escuro, cor lisa enquanto entra) */
+.cs-ph h1.fz-tt span{display:inline-block;opacity:0;filter:blur(8px);transform:translateY(-.2em);animation:fzTt var(--duration-very-slow) var(--ease-smooth-out) forwards;animation-delay:calc(var(--i) * var(--duration-stagger))}
+:root[data-tema="escuro"] .cs-ph h1.fz-tt{background:none;color:#e6c47e}
+@keyframes fzTt{to{opacity:1;filter:none;transform:none}}
+/* lista que entra em sequência (sino) */
+.fz-li{animation:fzLi var(--duration-slow) var(--ease-smooth-out) backwards;animation-delay:calc(var(--i) * 60ms)}
+@keyframes fzLi{from{opacity:0;transform:translateY(10px) scale(.98)}}
+/* desfoque no fim da lista (Gradual Blur): só quando tem mais embaixo */
+.gv-corpo::after,.cs-lado::after{content:"";position:sticky;bottom:0;display:block;flex:none;height:48px;margin-top:-48px;pointer-events:none;opacity:0;transition:opacity var(--duration-fast) var(--ease-out);
+  -webkit-mask:linear-gradient(transparent,#000);mask:linear-gradient(transparent,#000);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);background:linear-gradient(transparent,var(--bg1))}
+.cs-lado::after{background:linear-gradient(transparent,var(--sb))}
+.gv-corpo.fz-mais::after,.cs-lado.fz-mais::after{opacity:1}
+/* tema: o ícone novo entra encolhido e desfocado */
+.fz-tema .ic{animation:fzTema var(--icon-swap-dur) var(--icon-swap-ease)}
+@keyframes fzTema{from{opacity:0;filter:blur(var(--icon-swap-blur));transform:scale(var(--icon-swap-start-scale))}}
+@media (prefers-reduced-motion:reduce){
+  .dd-l:not([hidden]),.dd-l.dd-fant,.cs-ct.fz-entra,.fz-li,.fz-tema .ic,.fz-spk i{animation:none!important}
+  .cs-ph h1.fz-tt span{animation:none;opacity:1;filter:none;transform:none}.dd-l.dd-fant{display:none}
+}
+/* celular: o aviso sobe acima da barra de baixo e do rodapé da gaveta (não cobre botões) */
+@media(max-width:899px){.av-pilha{bottom:calc(84px + env(safe-area-inset-bottom,0px))}}
+
 </style>
 </head>
 <body>
@@ -1871,11 +2056,56 @@ body:has(#gv) .pp-bar{display:none}
 <div id="avisos" class="av-pilha" role="status" aria-live="polite"></div>
 <script>
 'use strict';
+/* ===== movimento.js ===== */
+/* EFC · movimento — a pequena orquestração das receitas de efc-movimento.css (mesmo arquivo para toda a família).
+   Lê as durações das variáveis CSS, para que mudar um token mude o app inteiro. Versão 1 (13/11/2026). */
+const Mov = (() => {
+  const raiz = () => getComputedStyle(document.documentElement);
+  const ms = (nome, pad) => { const v = raiz().getPropertyValue(nome).trim(); const n = parseFloat(v); if (!Number.isFinite(n)) return pad; return /ms$/.test(v) ? n : /s$/.test(v) ? n * 1000 : n; };
+  const reduzido = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { return false; } };
+  /* abre uma superfície (.t-dropdown, .t-modal, .t-gaveta, .t-folha, .t-toast, .t-fundo) */
+  function abre(el) { if (!el) return; el.classList.remove('is-closing'); void el.offsetWidth; el.classList.add('is-open'); }
+  /* fecha e só chama "depois" quando a animação de saída terminou (limpa o is-closing: a próxima abertura não pula) */
+  function fecha(el, depois, token) {
+    if (!el) { if (depois) depois(); return; }
+    const t = reduzido() ? 0 : ms(token || '--dropdown-close-dur', 150);
+    el.classList.remove('is-open'); el.classList.add('is-closing');
+    setTimeout(() => { el.classList.remove('is-closing'); if (depois) depois(); }, t);
+  }
+  /* tremida de erro, uma vez, repetível */
+  function treme(el) { if (!el || reduzido()) return; el.classList.add('t-shake'); el.classList.remove('is-shaking'); void el.offsetWidth; el.classList.add('is-shaking');
+    setTimeout(() => el.classList.remove('is-shaking'), ms('--shake-dur-a', 80) * 2 + ms('--shake-dur-b', 60) * 2 + 20); }
+  /* número que mudou: só os dígitos que mudaram sobem ou descem */
+  function numero(el, novo) {
+    if (!el) return; const ant = el.getAttribute('data-valor'); const txt = String(novo); el.setAttribute('data-valor', txt); el.setAttribute('aria-label', txt);
+    if (ant == null || ant === txt || reduzido()) { el.textContent = txt; return; }
+    const a = Number(String(ant).replace(/\D/g, '')), b = Number(txt.replace(/\D/g, '')), mesmo = ant.length === txt.length;
+    el.classList.add('t-subtle-number'); el.style.setProperty('--subtle-dir', b >= a ? '1' : '-1'); el.classList.remove('is-animating'); el.replaceChildren();
+    [...txt].forEach((c, i) => { if (mesmo && ant[i] === c) { el.append(c); return; }
+      const s = document.createElement('span'); s.className = 't-subtle-slot';
+      if (mesmo) { const o = document.createElement('span'); o.className = 't-subtle-old'; o.setAttribute('aria-hidden', 'true'); o.textContent = ant[i]; s.appendChild(o); }
+      const f = document.createElement('span'); f.className = 't-subtle-new'; f.textContent = c; s.appendChild(f); el.appendChild(s); });
+    void el.offsetHeight; el.classList.add('is-animating');
+  }
+  /* traço da aba: põe a linha embaixo da aba ativa; na primeira vez, sem animar */
+  function linhaAba(barra, ativa, semAnimar) {
+    if (!barra || !ativa) return; let l = barra.querySelector('.t-abas-linha');
+    if (!l) { l = document.createElement('span'); l.className = 't-abas-linha'; l.setAttribute('aria-hidden', 'true'); barra.appendChild(l); semAnimar = true; }
+    if (semAnimar) l.style.transition = 'none';
+    l.style.width = ativa.offsetWidth + 'px'; l.style.transform = 'translateX(' + ativa.offsetLeft + 'px)';
+    if (semAnimar) { void l.offsetWidth; l.style.transition = ''; }
+  }
+  /* visto de "salvo": mede o traço e desenha uma vez */
+  function visto(el) { if (!el) return; const p = el.querySelector('path'); if (p && p.getTotalLength) el.style.setProperty('--check-len', Math.ceil(p.getTotalLength())); el.setAttribute('data-state', 'out'); void el.offsetWidth; el.setAttribute('data-state', 'in'); }
+  return { ms, reduzido, abre, fecha, treme, numero, linhaAba, visto };
+})();
+if (typeof module !== 'undefined' && module.exports) module.exports = Mov;
+
 /* ===== base.js ===== */
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.6.12';
+const VERSAO = '0.6.14';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -3033,7 +3263,7 @@ function gvAbrir(fn, form) { if (!S.camadas.length) csCamadaAbre('gv', gvFecharS
 function gvFechar() { if (S.camadas.length) csVolta(); else gvFecharSo(); }
 function gvFecharSo() {
   S.gv = null; S.gvForm = false; S.fm = null; S._alSel = null; const g = $('#gv');
-  gvAnim(260); if (g) { if (csMovimento()) { g.id = ''; g.classList.add('gv-sai'); g.setAttribute('aria-hidden', 'true'); setTimeout(() => g.remove(), 220); } else g.remove(); } /* fecha deslizando de volta */
+  const fz = Mov.ms('--panel-close-dur', 350); gvAnim(fz + 40); if (g) { if (csMovimento()) { g.id = ''; g.classList.add('gv-sai'); g.setAttribute('aria-hidden', 'true'); setTimeout(() => g.remove(), fz - 10); } else g.remove(); } /* fecha deslizando de volta */
   document.body.classList.remove('gv-aberta'); try { render(); } catch {}
 }
 /* v0.6.3: corta o lado da página só enquanto a gaveta desliza */
@@ -3045,7 +3275,7 @@ function gvDesenha(forca) {
   let o; try { o = S.gv(); } catch (e) { console.error(e); o = null; }
   if (!o) { S.gv = null; if (g) g.remove(); return; }
   const nova = !g, rol = g && g.querySelector('.gv-corpo') ? g.querySelector('.gv-corpo').scrollTop : 0, mesma = g && g._gvFn === S.gv;
-  if (!g) { g = document.createElement('aside'); g.id = 'gv'; g.className = 'gv gv-entra'; g.setAttribute('role', 'dialog'); g.setAttribute('aria-modal', 'false'); document.body.appendChild(g); setTimeout(() => g.classList.remove('gv-entra'), 320); }
+  if (!g) { g = document.createElement('aside'); g.id = 'gv'; g.className = 'gv gv-entra'; g.setAttribute('role', 'dialog'); g.setAttribute('aria-modal', 'false'); document.body.appendChild(g); setTimeout(() => g.classList.remove('gv-entra'), Mov.ms('--panel-open-dur', 400) + 20); }
   gvAnim(0); /* gaveta aberta: o lado da página fica cortado até ela terminar de sair */ /* abre deslizando da lateral (pedido de 06/11) */
   g._gvFn = S.gv;
   document.body.classList.add('gv-aberta');
@@ -10085,8 +10315,8 @@ async function trImportaTexto(txt) {
 /* ---------- ações, listas retráteis e busca ---------- */
 DD_AO.tr = (k, v) => {
   const f = S.fm; if (!f) return; f.sujo = true; f.msg = '';
-  if (k === 'sit') { f.sit = v; gvDesenha(true); } else if (k === 'pop' || k === 'mat') f[k] = v;
-  else if (k.indexOf('ef.') === 0) { const r = f.rows[Number(k.slice(3))]; if (r) r.eficaz = v; }
+  if (k === 'sit') { f.sit = v; gvDesenha(true); } else if (k === 'pop' || k === 'mat') { f[k] = v; gvDesenha(true); }
+  else if (k.indexOf('ef.') === 0) { const r = f.rows[Number(k.slice(3))]; if (r) r.eficaz = v; gvDesenha(true); }
 };
 document.addEventListener('click', e => {
   const t = e.target.closest && e.target.closest('[data-act^="tr-"]'); if (!t) return;
@@ -11012,15 +11242,18 @@ function enArte(c, escuro) {
   const ft = c.foto ? '<div class="en-ft' + (c.recorte ? '' : ' moldura') + '" data-px="14"><img src="' + c.foto + '" alt="">' + (c.recorte ? '<i class="en-br"></i>' : '') + '</div>' : '';
   if (escuro) {
     const n = c.palavra.length, meio = Math.ceil(n / 2);
-    const pal = cls => '<div class="en-pal' + cls + '" data-px="5" aria-hidden="true">' + c.palavra.split('').map((l, i) => (i === meio && n > 6 ? '<br>' : '') + '<span style="--i:' + i + '">' + esc(l) + '</span>').join('') + '</div>';
+    const pal = cls => '<div class="en-pal' + cls + '" aria-hidden="true">' + c.palavra.split('').map((l, i) => (i === meio && n > 6 ? '<br>' : '') + '<span style="--i:' + i + '">' + esc(l) + '</span>').join('') + '</div>';
     const fx = c.faixa.map(x => '<span>' + esc(x) + '</span>').join('');
-    return '<div class="en-fundo"></div>' + pal('') + ft + (c.foto && c.recorte ? pal(' frente') : '') +
-      '<div class="en-faixa" aria-hidden="true"><div>' + fx + fx + '</div></div><i class="en-luz"></i>';
+    return '<div class="en-fundo"></div><canvas class="en-polen" aria-hidden="true"></canvas>' + enDiz() + pal('') + ft + /* v0.6.14 (13/11): a palavra fica só atrás da foto, sem cortar o rosto */
+      '<div class="en-faixa" aria-hidden="true"><div>' + fx + '</div></div><i class="en-luz"></i>';
   }
   const pos = ['a', 'b', 'c'];
-  return '<div class="en-fundo"></div><div class="en-arco" data-px="5"></div>' + ft +
+  return '<div class="en-fundo"></div><canvas class="en-polen" aria-hidden="true"></canvas>' + enDiz() + '<div class="en-arco" data-px="5"></div>' + ft +
     c.avisos.map((x, i) => '<div class="en-chip ' + pos[i] + '" data-px="' + [18, 22, 16][i] + '" aria-hidden="true"><i class="' + (i === 1 ? 'ida' : 'ok') + '">' + (i === 1 ? EN_IDA : EN_OK) + '</i><span><b>' + esc(x[0]) + '</b><small>' + esc(x[1] || '') + '</small></span></div>').join('');
 }
+/* v0.6.14 (Modelo 4 · Pólen, escolhido em 13/11/2026): uma linha diz o que é o app; entra palavra por palavra saindo do desfoque */
+const EN_DIZ = 'Coletas, inspeções, documentos e almoxarifado num lugar só.';
+const enDiz = () => '<p class="en-diz"><small>Qualidade da fazenda</small><b>' + EN_DIZ.split(' ').map((w, i) => '<span style="--i:' + i + '">' + esc(w) + '</span>').join(' ') + '</b></p>';
 function enTela() {
   const primeiro = S._setup === false, c = enCfg(), escuro = csTema() === 'escuro';
   const n = c.palavra.length;
@@ -11049,10 +11282,29 @@ function enTela() {
 /* a foto e as camadas acompanham o mouse (no PC); parado com "reduzir movimento" */
 document.addEventListener('mousemove', e => {
   const en = document.querySelector('.en'); if (!en || matchMedia('(prefers-reduced-motion: reduce)').matches || innerWidth < 900) return;
-  const x = e.clientX / innerWidth - .5, y = e.clientY / innerHeight - .5;
+  const x = e.clientX / innerWidth - .5, y = e.clientY / innerHeight - .5; const pv = en.querySelector('.en-polen'); if (pv && pv._mouse) pv._mouse(x + .5, y + .5);
   en.querySelectorAll('[data-px]').forEach(c => { const k = Number(c.dataset.px); c.style.translate = (-x * k * 2).toFixed(1) + 'px ' + (-y * k).toFixed(1) + 'px'; });
 });
-function enDepois() { const i = $('#en-login'); if (i && !i.value) { try { i.focus(); } catch {} } else { const s = $('#en-senha'); if (s) try { s.focus(); } catch {} } }
+/* Pólen (React Bits: Particles, refeito sem React): partículas douradas subindo devagar, em profundidade; as de perto
+   se deslocam mais com o ponteiro. Para quando a tela de entrar some, quando a aba fica escondida e com "movimento reduzido". */
+function enPolen() {
+  const cv = document.querySelector('.en-polen'); if (!cv || cv._on) return; cv._on = true;
+  const c = cv.getContext('2d'); if (!c) return; let W = 0, H = 0, k = 1, ps = [], raf = 0, ult = 0; const m = { x: .5, y: .5, tx: .5, ty: .5 };
+  const mede = () => { const r = cv.getBoundingClientRect(); k = Math.min(devicePixelRatio || 1, 1.5); W = r.width; H = r.height; cv.width = Math.max(1, W * k); cv.height = Math.max(1, H * k);
+    const n = Math.round(Math.min(90, W * H / 11000)); while (ps.length < n) ps.push({ x: Math.random() * W, y: Math.random() * H, z: .25 + Math.random() * .75, a: Math.random() * 6.28, v: .15 + Math.random() * .35 }); ps.length = n; };
+  const desenha = dt => { const esc = csTema() === 'escuro'; c.setTransform(k, 0, 0, k, 0, 0); c.clearRect(0, 0, W, H); m.x += (m.tx - m.x) * .05; m.y += (m.ty - m.y) * .05;
+    for (const p of ps) { p.a += dt * .3 * p.v; p.y -= dt * 12 * p.v * p.z; p.x += Math.sin(p.a) * dt * 6 * p.z; if (p.y < -10) { p.y = H + 10; p.x = Math.random() * W; }
+      c.fillStyle = esc ? 'rgba(232,200,130,' + (.25 + p.z * .55).toFixed(2) + ')' : 'rgba(154,113,40,' + (.18 + p.z * .45).toFixed(2) + ')';
+      c.shadowColor = esc ? 'rgba(217,180,106,.7)' : 'rgba(217,180,106,.4)'; c.shadowBlur = p.z * 8; c.beginPath(); c.arc(p.x + (m.x - .5) * -40 * p.z, p.y + (m.y - .5) * -30 * p.z, .8 + p.z * 2.6, 0, 6.283); c.fill(); }
+    c.shadowBlur = 0; };
+  const passo = t => { if (!cv.isConnected) { cancelAnimationFrame(raf); removeEventListener('resize', mede); document.removeEventListener('visibilitychange', vis); return; }
+    const dt = Math.min(.05, (t - (ult || t)) / 1000); ult = t; desenha(dt); raf = requestAnimationFrame(passo); };
+  const vis = () => { cancelAnimationFrame(raf); ult = 0; if (!document.hidden && cv.isConnected && !Mov.reduzido()) raf = requestAnimationFrame(passo); };
+  cv._mouse = (x, y) => { m.tx = x; m.ty = y; };
+  mede(); addEventListener('resize', mede); document.addEventListener('visibilitychange', vis);
+  if (Mov.reduzido()) { for (let i = 0; i < 3; i++) desenha(0); return; } raf = requestAnimationFrame(passo);
+}
+function enDepois() { try { enPolen(); } catch (e) { console.error(e); } const i = $('#en-login'); if (i && !i.value) { try { i.focus(); } catch {} } else { const s = $('#en-senha'); if (s) try { s.focus(); } catch {} } }
 function enMsg(t) { const m = $('#en-msg'); if (m) m.textContent = t || ''; }
 
 document.addEventListener('click', e => {
@@ -11446,6 +11698,109 @@ document.addEventListener('click', e => { const t = e.target.closest && e.target
 
 /* liga tudo (último módulo da montagem) */
 csIniciar();
+
+/* ===== fluidez.js ===== */
+/* EFCwork · fluidez.js — v0.6.14 "Movimento" (aprovado em 13/11/2026). Prefixo: fz.
+   Usa a escala comum da família (tools/visual/efc-movimento.css + Mov, carregados antes de tudo).
+   Efeitos que o Elias escolheu (página "Efeitos e fluidez"): troca de tela fluida, título que entra (Blur Text),
+   lista que entra em sequência (Animated List), desfoque no fim da lista (Gradual Blur), faíscas ao salvar (Click Spark).
+   E as receitas da página "Movimento": avisos um por vez com o visto, janela de confirmação, lista retrátil,
+   traço da aba que desliza, tremida no erro, troca do ícone do tema. Tudo para com "movimento reduzido". */
+const fzMov = () => !Mov.reduzido();
+
+/* ---------- avisos: um por vez, sobem de baixo; o de sucesso traz o visto que se desenha ---------- */
+const FZ_VISTO = '<span class="av-vs t-success-check" data-state="out" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>';
+function fzAvFecha(d) { if (!d || d._saindo) return; d._saindo = true; clearTimeout(d._t); d.classList.add('av-sai'); Mov.fecha(d, () => d.remove(), '--toast-close'); }
+aviso = function (txt, tipo, desfazer) {
+  const h = $('#avisos'); if (!h) return;
+  [...h.querySelectorAll('.av')].forEach(fzAvFecha);
+  const ok = !tipo || tipo === 'ok', d = document.createElement('div'); d.className = 'av t-toast ' + (tipo || 'ok'); d.setAttribute('role', tipo === 'erro' ? 'alert' : 'status');
+  d.innerHTML = (ok ? FZ_VISTO : '') + '<span>' + esc(txt) + '</span>' + (desfazer ? '<button type="button" class="av-df">Desfazer</button>' : '');
+  if (desfazer) d.querySelector('.av-df').addEventListener('click', () => { try { desfazer(); } catch {} fzAvFecha(d); });
+  h.appendChild(d); Mov.abre(d);
+  if (ok) { setTimeout(() => Mov.visto(d.querySelector('.t-success-check')), 90); fzFaiscaSeSalvou(); }
+  d._t = setTimeout(() => fzAvFecha(d), desfazer ? 6000 : 3800);
+};
+
+/* ---------- faíscas ao salvar (Click Spark): só no botão principal, e só quando a ação deu certo ---------- */
+S._fzBt = null;
+document.addEventListener('pointerdown', e => { const b = e.target.closest && e.target.closest('.bt.pr'); if (b && !b.closest('.en')) S._fzBt = { x: e.clientX, y: e.clientY, t: Date.now() }; }, true);
+function fzFaiscaSeSalvou() {
+  const p = S._fzBt; S._fzBt = null; if (!p || Date.now() - p.t > 2500 || !fzMov()) return;
+  const s = document.createElement('span'); s.className = 'fz-spk'; s.setAttribute('aria-hidden', 'true'); s.style.left = p.x + 'px'; s.style.top = p.y + 'px';
+  for (let i = 0; i < 8; i++) { const r = document.createElement('i'); r.style.setProperty('--r', (i * 45) + 'deg'); s.appendChild(r); }
+  document.body.appendChild(s); setTimeout(() => s.remove(), Mov.ms('--duration-very-slow', 500));
+}
+
+/* ---------- janela de confirmação: fundo escurece e a janela sobe do centro ---------- */
+const fzCfOrig = csConfirma;
+csConfirma = function (o, aoSim) {
+  const ja = $('#cf'); fzCfOrig(o, aoSim); const d = $('#cf'); if (!d || d === ja) return;
+  d.classList.add('t-fundo'); const cx = d.querySelector('.cf-caixa'); if (cx) cx.classList.add('t-modal'); Mov.abre(d); Mov.abre(cx);
+};
+csConfirmaFecha = function (sim) {
+  const d = $('#cf');
+  if (d) { if (fzMov()) { d.id = ''; d.style.pointerEvents = 'none'; Mov.fecha(d.querySelector('.cf-caixa'), null, '--modal-close-dur'); Mov.fecha(d, () => d.remove(), '--modal-close-dur'); } else d.remove(); }
+  const f = S._cfSim; S._cfSim = null; if (sim && f) f();
+};
+
+/* ---------- lista retrátil: abre crescendo do botão (CSS) e fecha encolhendo (cópia que some) ---------- */
+const fzDdFechaOrig = ddFecha;
+ddFecha = function () {
+  if (fzMov()) $$('.dd-l:not([hidden])').forEach(l => { const g = l.cloneNode(true); g.classList.add('dd-fant'); g.removeAttribute('role'); g.setAttribute('aria-hidden', 'true');
+    g.querySelectorAll('[data-act],[data-v],[role],[tabindex],[id]').forEach(x => { x.removeAttribute('data-act'); x.removeAttribute('data-v'); x.removeAttribute('role'); x.removeAttribute('tabindex'); x.removeAttribute('id'); });
+    const r = l.getBoundingClientRect(); g.style.cssText = 'position:fixed;margin:0;left:' + r.left + 'px;top:' + r.top + 'px;width:' + r.width + 'px;min-width:0;right:auto;bottom:auto;z-index:130';
+    document.body.appendChild(g); setTimeout(() => g.remove(), Mov.ms('--dropdown-close-dur', 150)); }); /* a cópia fica no corpo da página: sobrevive ao redesenho da gaveta */
+  fzDdFechaOrig();
+};
+
+/* ---------- erro no formulário: a mensagem dá uma tremida curta ---------- */
+const fzLcErroOrig = lcErro;
+lcErro = function (t) { const r = fzLcErroOrig(t); const m = $('#gv .fm-msg'); if (m) Mov.treme(m); return r; };
+
+/* ---------- gaveta: lista que entra em sequência e desfoque no fim da rolagem ---------- */
+function fzFimLista(c) { if (!c) return; c.classList.toggle('fz-mais', c.scrollHeight - c.scrollTop - c.clientHeight > 6); }
+GV_DEPOIS.push((g, abriu) => {
+  const c = g.querySelector('.gv-corpo'); fzFimLista(c);
+  if (abriu && fzMov()) g.querySelectorAll('.sn-l>.sn-n,.gv-corpo>.sn-pd').forEach((x, i) => { if (i < 12) { x.style.setProperty('--i', i); x.classList.add('fz-li'); } });
+});
+document.addEventListener('scroll', e => { const c = e.target; if (c && c.classList && (c.classList.contains('gv-corpo') || c.classList.contains('cs-lado'))) fzFimLista(c); }, true);
+
+/* ---------- troca de tela: o conteúdo entra deslizando na direção da aba; o traço da aba desliza; o título entra do desfoque ---------- */
+S._fzRota = null; S._fzLinha = null;
+const fzRenderOrig = render;
+render = function () {
+  fzRenderOrig();
+  try { fzDepois(); } catch (e) { console.error(e); }
+};
+function fzDepois() {
+  if (!S.user || !S.pronto) { S._fzRota = null; S._fzLinha = null; return; }
+  const ar = csArea(S.rota.area), chave = ar.id + '/' + (S.rota.aba || ''), ant = S._fzRota, mudou = ant && ant !== chave, mesmaArea = ant && ant.split('/')[0] === ar.id;
+  S._fzRota = chave;
+  /* traço da aba */
+  const bar = $('.cs-abas'), on = bar && bar.querySelector('a.on');
+  if (bar && on) { bar.classList.add('fz-abas'); const l = document.createElement('span'); l.className = 't-abas-linha fz-linha'; l.setAttribute('aria-hidden', 'true'); bar.appendChild(l);
+    const de = S._fzLinha && S._fzLinha.area === ar.id && mudou ? S._fzLinha : null;
+    l.style.transition = 'none'; l.style.width = (de ? de.w : on.offsetWidth) + 'px'; l.style.transform = 'translateX(' + (de ? de.x : on.offsetLeft) + 'px)';
+    if (de && fzMov()) { void l.offsetWidth; l.style.transition = ''; l.style.width = on.offsetWidth + 'px'; l.style.transform = 'translateX(' + on.offsetLeft + 'px)'; }
+    S._fzLinha = { area: ar.id, x: on.offsetLeft, w: on.offsetWidth };
+  } else S._fzLinha = null;
+  if (!mudou || !fzMov()) return;
+  /* conteúdo entra */
+  const ct = $('.cs-ct'); if (ct) { let dir = 1;
+    if (mesmaArea) { const ids = ar.abas.map(t => t.id), a = ids.indexOf(ant.split('/')[1]), b = ids.indexOf(S.rota.aba); if (a >= 0 && b >= 0 && b < a) dir = -1; }
+    ct.style.setProperty('--fz-dir', dir); gvAnim(Mov.ms('--duration-fast', 250) + 80); /* corta o lado só enquanto o conteúdo desliza */ ct.classList.remove('fz-entra'); void ct.offsetWidth; ct.classList.add('fz-entra'); setTimeout(() => ct.classList.remove('fz-entra'), Mov.ms('--duration-fast', 250) + 60); }
+  /* título da área entra letra por letra, saindo do desfoque (só quando muda de área) */
+  if (!mesmaArea) { const h = $('.cs-ph h1'); if (h && !h.children.length) { const t = h.textContent; if (t.length <= 48) {
+    h.classList.add('fz-tt'); h.innerHTML = [...t].map((c, i) => c === ' ' ? ' ' : '<span style="--i:' + i + '">' + esc(c) + '</span>').join('');
+    setTimeout(() => { if (h.isConnected) { h.textContent = t; h.classList.remove('fz-tt'); } }, Math.min(t.length, 30) * Mov.ms('--duration-stagger', 40) + Mov.ms('--duration-very-slow', 500) + 80); } } }
+}
+/* menu do celular: desfoque no fim quando tem mais itens */
+document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('[data-act="cs-menu"]'); if (t) setTimeout(() => fzFimLista($('.cs-lado')), 30); });
+
+/* ---------- tema: o ícone novo entra no lugar do outro ---------- */
+const fzTemaOrig = csTrocaTema;
+csTrocaTema = function (t) { fzTemaOrig(t); const b = $('[data-act="cs-tema"]'); if (b && fzMov()) { b.classList.remove('fz-tema'); void b.offsetWidth; b.classList.add('fz-tema'); } };
 
 </script>
 </body>

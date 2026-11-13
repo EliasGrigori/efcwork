@@ -1,0 +1,44 @@
+/* EFCwork · fluidez.css — v0.6.14 "Movimento". Só tokens da escala comum (tools/visual/efc-movimento.css). */
+/* avisos: o que sai fica por baixo do novo enquanto some */
+.av.av-sai{position:absolute;bottom:0;pointer-events:none}
+.av-vs{display:inline-grid;flex:none;color:#7fd3a0}
+.av-vs svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+:root[data-tema="escuro"] .av-vs{color:#2f7d4f}
+/* faíscas ao salvar */
+.fz-spk{position:fixed;z-index:120;width:0;height:0;pointer-events:none}
+.fz-spk i{position:absolute;left:-1px;top:0;width:2px;height:9px;border-radius:2px;background:var(--a);transform-origin:50% 0;animation:fzSpk var(--duration-very-slow) var(--ease-smooth-out) forwards}
+@keyframes fzSpk{from{transform:rotate(var(--r)) translateY(6px) scaleY(1);opacity:1}to{transform:rotate(var(--r)) translateY(26px) scaleY(.2);opacity:0}}
+/* lista retrátil: abre crescendo do botão; a cópia que fecha encolhe e some */
+.dd-l:not([hidden]){transform-origin:top left;animation:fzDdAbre var(--dropdown-open-dur) var(--dropdown-ease)}
+@keyframes fzDdAbre{from{opacity:0;transform:scale(var(--dropdown-pre-scale))}}
+.dd-l.dd-fant{pointer-events:none;transform-origin:top left;animation:fzDdFecha var(--dropdown-close-dur) var(--dropdown-ease) forwards}
+@keyframes fzDdFecha{to{opacity:0;transform:scale(var(--dropdown-closing-scale))}}
+/* traço da aba que desliza */
+.cs-abas.fz-abas{position:relative}
+.cs-abas.fz-abas a.on{border-bottom-color:transparent;border-image:none}
+.fz-linha{background:var(--a);border-radius:0}
+:root[data-tema="escuro"] .fz-linha{background:linear-gradient(90deg,#f7df9e,#b4862f)}
+/* conteúdo que entra na troca de tela */
+.cs-ct.fz-entra{animation:fzEntra var(--duration-fast) var(--ease-smooth-out)}
+@keyframes fzEntra{from{opacity:0;transform:translateX(calc(var(--fz-dir,1) * 12px))}}
+/* título que entra letra por letra saindo do desfoque (no escuro, cor lisa enquanto entra) */
+.cs-ph h1.fz-tt span{display:inline-block;opacity:0;filter:blur(8px);transform:translateY(-.2em);animation:fzTt var(--duration-very-slow) var(--ease-smooth-out) forwards;animation-delay:calc(var(--i) * var(--duration-stagger))}
+:root[data-tema="escuro"] .cs-ph h1.fz-tt{background:none;color:#e6c47e}
+@keyframes fzTt{to{opacity:1;filter:none;transform:none}}
+/* lista que entra em sequência (sino) */
+.fz-li{animation:fzLi var(--duration-slow) var(--ease-smooth-out) backwards;animation-delay:calc(var(--i) * 60ms)}
+@keyframes fzLi{from{opacity:0;transform:translateY(10px) scale(.98)}}
+/* desfoque no fim da lista (Gradual Blur): só quando tem mais embaixo */
+.gv-corpo::after,.cs-lado::after{content:"";position:sticky;bottom:0;display:block;flex:none;height:48px;margin-top:-48px;pointer-events:none;opacity:0;transition:opacity var(--duration-fast) var(--ease-out);
+  -webkit-mask:linear-gradient(transparent,#000);mask:linear-gradient(transparent,#000);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);background:linear-gradient(transparent,var(--bg1))}
+.cs-lado::after{background:linear-gradient(transparent,var(--sb))}
+.gv-corpo.fz-mais::after,.cs-lado.fz-mais::after{opacity:1}
+/* tema: o ícone novo entra encolhido e desfocado */
+.fz-tema .ic{animation:fzTema var(--icon-swap-dur) var(--icon-swap-ease)}
+@keyframes fzTema{from{opacity:0;filter:blur(var(--icon-swap-blur));transform:scale(var(--icon-swap-start-scale))}}
+@media (prefers-reduced-motion:reduce){
+  .dd-l:not([hidden]),.dd-l.dd-fant,.cs-ct.fz-entra,.fz-li,.fz-tema .ic,.fz-spk i{animation:none!important}
+  .cs-ph h1.fz-tt span{animation:none;opacity:1;filter:none;transform:none}.dd-l.dd-fant{display:none}
+}
+/* celular: o aviso sobe acima da barra de baixo e do rodapé da gaveta (não cobre botões) */
+@media(max-width:899px){.av-pilha{bottom:calc(84px + env(safe-area-inset-bottom,0px))}}

@@ -1,0 +1,179 @@
+{
+ "nome": "EFCwork",
+ "raiz": "../..",
+ "css": [
+  "src/*.css"
+ ],
+ "larguras": [
+  1280,
+  390
+ ],
+ "botaoMinPc": 32,
+ "botaoMinCel": 36,
+ "maxTamanhos": 7,
+ "temas": {
+  "claro": "csTrocaTema('claro')",
+  "escuro": "csTrocaTema('escuro')"
+ },
+ "antes": [
+  {
+   "ir": "dist/index.html?demo=1",
+   "espera": 500
+  },
+  {
+   "fill": [
+    "#en-nome",
+    "Joana Silva"
+   ]
+  },
+  {
+   "fill": [
+    "#en-login",
+    "joana.silva"
+   ]
+  },
+  {
+   "fill": [
+    "#en-senha",
+    "senha1234"
+   ]
+  },
+  {
+   "fill": [
+    "#en-senha2",
+    "senha1234"
+   ]
+  },
+  {
+   "click": "[data-form=\"en-primeiro\"] button[type=submit]",
+   "espera": 900
+  }
+ ],
+ "telas": [
+  {
+   "nome": "Início",
+   "passos": [
+    {
+     "eval": "location.hash='#/inicio'"
+    }
+   ]
+  },
+  {
+   "nome": "Coletas › Amostras",
+   "passos": [
+    {
+     "eval": "location.hash='#/coletas/amostras'"
+    }
+   ]
+  },
+  {
+   "nome": "Coletas › Água",
+   "passos": [
+    {
+     "eval": "location.hash='#/coletas/agua'"
+    }
+   ]
+  },
+  {
+   "nome": "Coletas › Envio",
+   "passos": [
+    {
+     "eval": "location.hash='#/coletas/envio'"
+    }
+   ]
+  },
+  {
+   "nome": "Inspeções › Cloro",
+   "passos": [
+    {
+     "eval": "location.hash='#/inspecoes/cloro'"
+    }
+   ]
+  },
+  {
+   "nome": "Inspeções › Apontamentos",
+   "passos": [
+    {
+     "eval": "location.hash='#/inspecoes/apontamentos'"
+    }
+   ]
+  },
+  {
+   "nome": "Inspeções › Auditoria",
+   "passos": [
+    {
+     "eval": "location.hash='#/inspecoes/auditoria'"
+    }
+   ]
+  },
+  {
+   "nome": "Documentos",
+   "passos": [
+    {
+     "eval": "location.hash='#/documentos/documentos'"
+    }
+   ]
+  },
+  {
+   "nome": "Documentos › Impressos",
+   "passos": [
+    {
+     "eval": "location.hash='#/documentos/impressos'"
+    }
+   ]
+  },
+  {
+   "nome": "Almoxarifado",
+   "passos": [
+    {
+     "eval": "location.hash='#/almox/painel'"
+    }
+   ]
+  },
+  {
+   "nome": "Qualidade › Análise",
+   "passos": [
+    {
+     "eval": "location.hash='#/qualidade/analise'"
+    }
+   ]
+  },
+  {
+   "nome": "Qualidade › Treinamentos",
+   "passos": [
+    {
+     "eval": "location.hash='#/qualidade/treinos'"
+    }
+   ]
+  },
+  {
+   "nome": "Novo treinamento (gaveta)",
+   "passos": [
+    {
+     "eval": "location.hash='#/qualidade/treinos'"
+    },
+    {
+     "espera": 400
+    },
+    {
+     "eval": "trNovo()"
+    }
+   ]
+  },
+  {
+   "nome": "Administração",
+   "passos": [
+    {
+     "eval": "gvFechar && S.gv && gvFechar(); location.hash='#/adm/empresa'"
+    }
+   ]
+  }
+ ],
+ "ignorar": [
+  ".tb-hm",
+  "#au-imp"
+ ],
+ "infinitasAprovadas": [
+  "ouroBrilho"
+ ]
+}

@@ -38,15 +38,18 @@ function enArte(c, escuro) {
   const ft = c.foto ? '<div class="en-ft' + (c.recorte ? '' : ' moldura') + '" data-px="14"><img src="' + c.foto + '" alt="">' + (c.recorte ? '<i class="en-br"></i>' : '') + '</div>' : '';
   if (escuro) {
     const n = c.palavra.length, meio = Math.ceil(n / 2);
-    const pal = cls => '<div class="en-pal' + cls + '" data-px="5" aria-hidden="true">' + c.palavra.split('').map((l, i) => (i === meio && n > 6 ? '<br>' : '') + '<span style="--i:' + i + '">' + esc(l) + '</span>').join('') + '</div>';
+    const pal = cls => '<div class="en-pal' + cls + '" aria-hidden="true">' + c.palavra.split('').map((l, i) => (i === meio && n > 6 ? '<br>' : '') + '<span style="--i:' + i + '">' + esc(l) + '</span>').join('') + '</div>';
     const fx = c.faixa.map(x => '<span>' + esc(x) + '</span>').join('');
-    return '<div class="en-fundo"></div>' + pal('') + ft + (c.foto && c.recorte ? pal(' frente') : '') +
-      '<div class="en-faixa" aria-hidden="true"><div>' + fx + fx + '</div></div><i class="en-luz"></i>';
+    return '<div class="en-fundo"></div><canvas class="en-polen" aria-hidden="true"></canvas>' + enDiz() + pal('') + ft + /* v0.6.14 (13/11): a palavra fica só atrás da foto, sem cortar o rosto */
+      '<div class="en-faixa" aria-hidden="true"><div>' + fx + '</div></div><i class="en-luz"></i>';
   }
   const pos = ['a', 'b', 'c'];
-  return '<div class="en-fundo"></div><div class="en-arco" data-px="5"></div>' + ft +
+  return '<div class="en-fundo"></div><canvas class="en-polen" aria-hidden="true"></canvas>' + enDiz() + '<div class="en-arco" data-px="5"></div>' + ft +
     c.avisos.map((x, i) => '<div class="en-chip ' + pos[i] + '" data-px="' + [18, 22, 16][i] + '" aria-hidden="true"><i class="' + (i === 1 ? 'ida' : 'ok') + '">' + (i === 1 ? EN_IDA : EN_OK) + '</i><span><b>' + esc(x[0]) + '</b><small>' + esc(x[1] || '') + '</small></span></div>').join('');
 }
+/* v0.6.14 (Modelo 4 · Pólen, escolhido em 13/11/2026): uma linha diz o que é o app; entra palavra por palavra saindo do desfoque */
+const EN_DIZ = 'Coletas, inspeções, documentos e almoxarifado num lugar só.';
+const enDiz = () => '<p class="en-diz"><small>Qualidade da fazenda</small><b>' + EN_DIZ.split(' ').map((w, i) => '<span style="--i:' + i + '">' + esc(w) + '</span>').join(' ') + '</b></p>';
 function enTela() {
   const primeiro = S._setup === false, c = enCfg(), escuro = csTema() === 'escuro';
   const n = c.palavra.length;
@@ -75,10 +78,29 @@ function enTela() {
 /* a foto e as camadas acompanham o mouse (no PC); parado com "reduzir movimento" */
 document.addEventListener('mousemove', e => {
   const en = document.querySelector('.en'); if (!en || matchMedia('(prefers-reduced-motion: reduce)').matches || innerWidth < 900) return;
-  const x = e.clientX / innerWidth - .5, y = e.clientY / innerHeight - .5;
+  const x = e.clientX / innerWidth - .5, y = e.clientY / innerHeight - .5; const pv = en.querySelector('.en-polen'); if (pv && pv._mouse) pv._mouse(x + .5, y + .5);
   en.querySelectorAll('[data-px]').forEach(c => { const k = Number(c.dataset.px); c.style.translate = (-x * k * 2).toFixed(1) + 'px ' + (-y * k).toFixed(1) + 'px'; });
 });
-function enDepois() { const i = $('#en-login'); if (i && !i.value) { try { i.focus(); } catch {} } else { const s = $('#en-senha'); if (s) try { s.focus(); } catch {} } }
+/* Pólen (React Bits: Particles, refeito sem React): partículas douradas subindo devagar, em profundidade; as de perto
+   se deslocam mais com o ponteiro. Para quando a tela de entrar some, quando a aba fica escondida e com "movimento reduzido". */
+function enPolen() {
+  const cv = document.querySelector('.en-polen'); if (!cv || cv._on) return; cv._on = true;
+  const c = cv.getContext('2d'); if (!c) return; let W = 0, H = 0, k = 1, ps = [], raf = 0, ult = 0; const m = { x: .5, y: .5, tx: .5, ty: .5 };
+  const mede = () => { const r = cv.getBoundingClientRect(); k = Math.min(devicePixelRatio || 1, 1.5); W = r.width; H = r.height; cv.width = Math.max(1, W * k); cv.height = Math.max(1, H * k);
+    const n = Math.round(Math.min(90, W * H / 11000)); while (ps.length < n) ps.push({ x: Math.random() * W, y: Math.random() * H, z: .25 + Math.random() * .75, a: Math.random() * 6.28, v: .15 + Math.random() * .35 }); ps.length = n; };
+  const desenha = dt => { const esc = csTema() === 'escuro'; c.setTransform(k, 0, 0, k, 0, 0); c.clearRect(0, 0, W, H); m.x += (m.tx - m.x) * .05; m.y += (m.ty - m.y) * .05;
+    for (const p of ps) { p.a += dt * .3 * p.v; p.y -= dt * 12 * p.v * p.z; p.x += Math.sin(p.a) * dt * 6 * p.z; if (p.y < -10) { p.y = H + 10; p.x = Math.random() * W; }
+      c.fillStyle = esc ? 'rgba(232,200,130,' + (.25 + p.z * .55).toFixed(2) + ')' : 'rgba(154,113,40,' + (.18 + p.z * .45).toFixed(2) + ')';
+      c.shadowColor = esc ? 'rgba(217,180,106,.7)' : 'rgba(217,180,106,.4)'; c.shadowBlur = p.z * 8; c.beginPath(); c.arc(p.x + (m.x - .5) * -40 * p.z, p.y + (m.y - .5) * -30 * p.z, .8 + p.z * 2.6, 0, 6.283); c.fill(); }
+    c.shadowBlur = 0; };
+  const passo = t => { if (!cv.isConnected) { cancelAnimationFrame(raf); removeEventListener('resize', mede); document.removeEventListener('visibilitychange', vis); return; }
+    const dt = Math.min(.05, (t - (ult || t)) / 1000); ult = t; desenha(dt); raf = requestAnimationFrame(passo); };
+  const vis = () => { cancelAnimationFrame(raf); ult = 0; if (!document.hidden && cv.isConnected && !Mov.reduzido()) raf = requestAnimationFrame(passo); };
+  cv._mouse = (x, y) => { m.tx = x; m.ty = y; };
+  mede(); addEventListener('resize', mede); document.addEventListener('visibilitychange', vis);
+  if (Mov.reduzido()) { for (let i = 0; i < 3; i++) desenha(0); return; } raf = requestAnimationFrame(passo);
+}
+function enDepois() { try { enPolen(); } catch (e) { console.error(e); } const i = $('#en-login'); if (i && !i.value) { try { i.focus(); } catch {} } else { const s = $('#en-senha'); if (s) try { s.focus(); } catch {} } }
 function enMsg(t) { const m = $('#en-msg'); if (m) m.textContent = t || ''; }
 
 document.addEventListener('click', e => {

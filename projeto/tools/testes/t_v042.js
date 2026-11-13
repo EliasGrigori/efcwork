@@ -60,7 +60,7 @@ const semRolagem = p => p.evaluate(() => document.documentElement.scrollWidth <=
 
   console.log('— Tema Escuro: Revista (PC)');
   await tema(p, 'escuro');
-  conf(await p.evaluate(() => { const e = document.querySelector('.en'); return e.classList.contains('en-rev') && document.querySelectorAll('.en-pal:not(.frente) span').length === 9 && !!document.querySelector('.en-pal.frente') && document.querySelectorAll('.en-faixa span').length > 8; }), 'Revista: QUALIDADE atrás e na frente da foto e faixa dourada');
+  conf(await p.evaluate(() => { const e = document.querySelector('.en'); return e.classList.contains('en-rev') && document.querySelectorAll('.en-pal:not(.frente) span').length === 9 && !document.querySelector('.en-pal.frente') && document.querySelectorAll('.en-faixa span').length >= 4; }) /* v0.6.14: a faixa fica parada; a palavra só atrás da foto (13/11) */, 'Revista: QUALIDADE só atrás da foto (sem cortar o rosto) e faixa dourada');
   conf(await p.evaluate(() => { const c = document.querySelector('.en-caixa').getBoundingClientRect(), f = document.querySelector('.en-faixa').getBoundingClientRect(); return c.bottom <= f.top; }), 'o formulário não fica em cima da faixa');
   await p.waitForTimeout(1800); await p.screenshot({ path: path.join(SHOTS, 'v042-escuro-pc.png') });
   conf(await semRolagem(p), 'PC escuro: nada rola para o lado');
@@ -75,7 +75,7 @@ const semRolagem = p => p.evaluate(() => document.documentElement.scrollWidth <=
   conf(await p.evaluate(() => S.cfgEntrar.recorte === false && /^data:image\/jpeg/.test(S.cfgEntrar.foto)), 'foto com fundo: reconhecida e guardada como JPG');
   conf(await p.evaluate(() => /moldura/.test(document.querySelector('.adm-en').textContent)), 'a Administração avisa que vai numa moldura');
   await sai(p);
-  conf(await p.evaluate(() => !!document.querySelector('.en-ft.moldura') && !document.querySelector('.en-pal.frente') && document.querySelectorAll('.en-pal span').length === 5 && document.querySelectorAll('.en-faixa span').length === 6), 'escuro com foto com fundo: moldura, CAMPO só atrás, faixa nova');
+  conf(await p.evaluate(() => !!document.querySelector('.en-ft.moldura') && !document.querySelector('.en-pal.frente') && document.querySelectorAll('.en-pal span').length === 5 && document.querySelectorAll('.en-faixa span').length === 3), 'escuro com foto com fundo: moldura, CAMPO só atrás, faixa nova');
   await p.waitForTimeout(1500); await p.screenshot({ path: path.join(SHOTS, 'v042-escuro-moldura.png') });
   await tema(p, 'claro');
   conf(await p.evaluate(() => document.querySelectorAll('.en-chip').length === 2 && /Nota fiscal lançada/.test(document.querySelector('.en-chip').textContent)), 'claro: avisos com o texto novo');
@@ -87,7 +87,7 @@ const semRolagem = p => p.evaluate(() => document.documentElement.scrollWidth <=
   await p.click('[data-act="adm-tira-ftent"]'); await p.waitForTimeout(400);
   conf(await p.evaluate(() => !S.cfgEntrar.foto), 'lixeira tira a foto');
   await sai(p); await tema(p, 'escuro');
-  conf(await p.evaluate(() => document.querySelector('.en').classList.contains('padrao') && !!document.querySelector('.en-pal.frente') && /^data:image\/svg/.test(document.querySelector('.en-ft img').src)), 'sem foto: Revista com a ilustração padrão, palavra atrás e na frente (v0.4.3)');
+  conf(await p.evaluate(() => document.querySelector('.en').classList.contains('padrao') && !document.querySelector('.en-pal.frente') && /^data:image\/svg/.test(document.querySelector('.en-ft img').src)), 'sem foto: Revista com a ilustração padrão, palavra só atrás (v0.6.14)');
   await p.screenshot({ path: path.join(SHOTS, 'v043-padrao-escuro.png') }); await tema(p, 'claro'); await p.waitForTimeout(1500); await p.screenshot({ path: path.join(SHOTS, 'v043-padrao-claro.png') });
   await entra(p, 'joana.silva'); await p.evaluate(() => { location.hash = '#/adm/empresa'; }); await p.waitForTimeout(300);
   conf(await p.evaluate(() => /ilustração padrão/.test(document.querySelector('.adm-en').textContent)), 'Administração avisa: sem foto aparece a ilustração padrão');

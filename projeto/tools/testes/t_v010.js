@@ -103,7 +103,7 @@ const conf = (c, msg) => { if (c) { ok++; console.log('  ok  ' + msg); } else { 
   const alvos = await q.evaluate(() => Array.from(document.querySelectorAll('.cs-baixo a,.cs-baixo button,.cs-topo .bt')).map(x => x.getBoundingClientRect().height).filter(h => h < 36).length);
   conf(alvos === 0, 'celular: alvos de toque com 36 px ou mais');
   await q.screenshot({ path: path.join(SHOTS, 'cel-claro-inicio.png') });
-  await q.click('.cs-baixo [data-act="cs-menu"]'); await q.waitForTimeout(300);
+  await q.click('.cs-baixo [data-act="cs-menu"]'); await q.waitForTimeout(450); /* v0.6.14: o menu abre na escala de movimento (350 ms) */
   conf(await q.evaluate(() => document.querySelector('.cs-lado').getBoundingClientRect().left >= 0), 'celular: "Mais" abre o menu lateral');
   await q.screenshot({ path: path.join(SHOTS, 'cel-claro-menu.png') });
   await q.keyboard.press('Escape'); await q.waitForTimeout(250);
