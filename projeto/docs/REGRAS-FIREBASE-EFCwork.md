@@ -21,3 +21,35 @@ Conferi tudo o que o EFCwork grava (coleção por coleção) contra essas regras
 
 ## Limite conhecido
 - **Conta de teste** (`contaTeste`): a regra exige `testeConta: true` em tudo o que ela cria; o EFCwork ainda não põe esse campo → a conta de teste não consegue gravar no EFCwork (só olhar). Entra quando a Administração for refeita (v0.9).
+
+## v0.6.9 · Impressos (12/11/2026) — publicar no console antes de usar de verdade
+Duas coleções novas. O Vértice Docs e o Sabiá não gravam nelas (não usam a nuvem); só o EFCwork, com o login de quem está usando.
+- `efd_docs/{id}` — ficha de cada impresso (Contrato EFD v1). Leitura: qualquer usuário ativo. Gravação: Administrador e Líder.
+- `efd_partes/{id}` — o arquivo em pedaços de até 900.000 caracteres (`{docId, qual, rev, n, de, b64}`). Mesmas permissões. Nada é apagado: versão antiga e lixeira gravam `b64: ''`.
+
+Trecho para colar dentro de `match /databases/{database}/documents { ... }`, adaptando aos nomes das funções que já existem nas regras (ex.: `isAtivo()`, `isSup()`):
+```
+function efdAtivo() { return request.auth != null && get(/databases/$(database)/documents/sv2_users/$(request.auth.uid)).data.bloqueado != true; }
+function efdSup() { let u = get(/databases/$(database)/documents/sv2_users/$(request.auth.uid)).data;
+  return efdAtivo() && (u.perfil in ['principal', 'principal_temp'] || (u.perfil == 'secundario' && u.estrela == true)); }
+match /efd_docs/{id} {
+  allow read: if efdAtivo();
+  allow create, update: if efdSup() && request.resource.data.v == 1 && request.resource.data.id == id;
+  allow delete: if false;
+}
+match /efd_partes/{id} {
+  allow read: if efdAtivo();
+  allow create, update: if efdSup() && request.resource.data.b64.size() <= 900000;
+  allow delete: if false;
+}
+```
+Conferir depois de publicar: importar um PDF pequeno como Administrador, abrir em outro aparelho e imprimir; como Colaborador, a aba aparece sem Importar e imprime.
+
+## v0.6.10 · Kit do laboratório e papéis do envio (12/11/2026)
+- `sv2_cfg/coletas` ganha o campo `labInfo` (endereço de cada laboratório, para o rótulo). O EFClaudian ignora. Quem já grava `sv2_cfg` (Administrador) continua gravando; **o Líder também precisa poder gravar o campo `labInfo`** (se as regras de hoje deixam só o Administrador gravar `sv2_cfg`, só o Administrador cadastra endereços — funciona, mas avise se quiser liberar para o Líder).
+- `sv2_impressos/{id}` — o kit (papel ligado ao laboratório). Leitura: usuário ativo. Gravação: Administrador e Líder.
+- `sv2_envio_imp/{id}` — o que saiu em cada remessa (para reimprimir). Leitura: usuário ativo. Gravação: quem lança coletas (inclui o Colaborador com Coletas).
+```
+match /sv2_impressos/{id} { allow read: if efdAtivo(); allow create, update: if efdSup() && request.resource.data.v == 1; allow delete: if false; }
+match /sv2_envio_imp/{id} { allow read: if efdAtivo(); allow create, update: if efdAtivo() && request.resource.data.porId == request.auth.uid; allow delete: if false; }
+```

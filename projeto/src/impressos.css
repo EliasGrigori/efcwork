@@ -1,0 +1,30 @@
+/* Documentos › Impressos (v0.6.9) — só tokens */
+.ip-prev{border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg2);height:min(52vh,440px);overflow:hidden;margin:0 0 12px;display:grid;place-items:center}
+.ip-prev iframe{width:100%;height:100%;border:0;background:#fff}
+.ip-prevm{color:var(--tx2);font-size:14px;padding:12px;text-align:center}
+.ip-abrirpdf{display:flex;align-items:center;gap:12px;width:100%;border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg1);padding:12px 14px;margin:0 0 12px;font:inherit;color:inherit;text-align:left;cursor:pointer;min-height:56px}
+.ip-abrirpdf:hover{background:var(--row)}
+.ip-abrirpdf span{flex:1;display:flex;flex-direction:column;min-width:0}
+.ip-abrirpdf b{font-weight:600}.ip-abrirpdf small{color:var(--tx2);font-size:13px}
+.ip-abrirpdf .ic{flex:none;width:18px;height:18px;color:var(--tx2)}
+.ip-link{margin:0 0 12px;word-break:break-all;font-size:14px}
+.ip-link a{color:var(--a)}
+.ip-imp{position:fixed;left:-10000px;top:0;width:800px;height:600px;border:0;opacity:0;pointer-events:none}
+.fm-c.ip-arqc{position:relative}
+.ip-arq{display:flex;align-items:center;gap:10px;border:1px dashed var(--bd2);border-radius:var(--rs);background:var(--bg0);padding:10px 12px;min-height:56px;cursor:pointer}
+.ip-arq.tem{border-style:solid;background:var(--bg1);padding-right:52px}
+.ip-arq:hover{background:var(--row)}
+.ip-arq .ic{flex:none;width:20px;height:20px;color:var(--tx2)}
+.ip-arq span{display:flex;flex-direction:column;min-width:0}
+.ip-arq b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ip-arq small{color:var(--tx2);font-size:13px}
+.ip-arqx{position:absolute;right:8px;bottom:10px}
+.ip-atual{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg1);padding:10px 12px;margin:0 0 12px;min-height:56px}
+.ip-atual span{display:flex;flex-direction:column;min-width:0}
+.ip-atual b{font-weight:600}.ip-atual small{color:var(--tx2);font-size:13px}
+@media(max-width:899px){.ip-arqx{bottom:6px}}
+.ip-bx{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:8px;margin:0 0 12px}
+.ip-bx .bt{justify-content:center}
+/* celular: Reserva e Importar lado a lado, mesma largura; o Vértice fica no menu (Apps da família) */
+.ip-acs{display:contents}
+@media(max-width:899px){.cs-acts:has(.ip-acs){flex:1 1 100%;width:100%}.ip-acs{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:8px;width:100%}.ip-acs .bt{justify-content:center}.ip-acs .ip-vt{display:none}}

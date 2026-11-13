@@ -199,3 +199,9 @@ button.cs-sync:focus-visible{outline:2px solid var(--a);outline-offset:1px}
   .cs-app,.cs-pux,.cs-pux .ic,.cs-pts i,.m-rc .cs-lado,.cs-altb .ic{transition:none!important}
   .cs-pux::after,.cs-pux.entra,.m-rc.abrindo .cs-lado,.m-rc.abrindo .cs-it,.m-rc.abrindo .cs-gh,.m-rc.abrindo .cs-emp,.m-rc.abrindo .cs-pe,.cs-pux:hover .ic,.cs-pux.pc .cs-pux-g::before,.m-rc.flut .cs-fundo{animation:none!important}
 }
+
+/* v0.6.9 · Apps da família no menu */
+.cs-app-l img{width:20px;height:20px;border-radius:5px;flex:none;object-fit:cover}
+.cs-app-l span{flex:1;min-width:0}
+.cs-app-l .cs-app-x{width:14px;height:14px;opacity:.5;flex:none}
+.m-ic .cs-app-l .cs-app-x{display:none}

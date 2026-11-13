@@ -317,6 +317,12 @@ button.cs-sync:focus-visible{outline:2px solid var(--a);outline-offset:1px}
   .cs-pux::after,.cs-pux.entra,.m-rc.abrindo .cs-lado,.m-rc.abrindo .cs-it,.m-rc.abrindo .cs-gh,.m-rc.abrindo .cs-emp,.m-rc.abrindo .cs-pe,.cs-pux:hover .ic,.cs-pux.pc .cs-pux-g::before,.m-rc.flut .cs-fundo{animation:none!important}
 }
 
+/* v0.6.9 · Apps da família no menu */
+.cs-app-l img{width:20px;height:20px;border-radius:5px;flex:none;object-fit:cover}
+.cs-app-l span{flex:1;min-width:0}
+.cs-app-l .cs-app-x{width:14px;height:14px;opacity:.5;flex:none}
+.m-ic .cs-app-l .cs-app-x{display:none}
+
 /* ===== tabela.css ===== */
 /* EFCwork · tabela.css — tabela padrão, janela retrátil, gaveta e impressão. Prefixos: tb-, dd-, gv- */
 .tb{display:flex;flex-direction:column;gap:10px;min-width:0}
@@ -1031,6 +1037,54 @@ div.cb-hc{cursor:default}
   .dc-li{min-height:56px}.dc-uli{grid-template-columns:84px minmax(0,1fr)}.dc-uli small{grid-column:2}
   .dc-gp{flex-wrap:wrap}
 }
+
+/* ===== impressos.css ===== */
+/* Documentos › Impressos (v0.6.9) — só tokens */
+.ip-prev{border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg2);height:min(52vh,440px);overflow:hidden;margin:0 0 12px;display:grid;place-items:center}
+.ip-prev iframe{width:100%;height:100%;border:0;background:#fff}
+.ip-prevm{color:var(--tx2);font-size:14px;padding:12px;text-align:center}
+.ip-abrirpdf{display:flex;align-items:center;gap:12px;width:100%;border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg1);padding:12px 14px;margin:0 0 12px;font:inherit;color:inherit;text-align:left;cursor:pointer;min-height:56px}
+.ip-abrirpdf:hover{background:var(--row)}
+.ip-abrirpdf span{flex:1;display:flex;flex-direction:column;min-width:0}
+.ip-abrirpdf b{font-weight:600}.ip-abrirpdf small{color:var(--tx2);font-size:13px}
+.ip-abrirpdf .ic{flex:none;width:18px;height:18px;color:var(--tx2)}
+.ip-link{margin:0 0 12px;word-break:break-all;font-size:14px}
+.ip-link a{color:var(--a)}
+.ip-imp{position:fixed;left:-10000px;top:0;width:800px;height:600px;border:0;opacity:0;pointer-events:none}
+.fm-c.ip-arqc{position:relative}
+.ip-arq{display:flex;align-items:center;gap:10px;border:1px dashed var(--bd2);border-radius:var(--rs);background:var(--bg0);padding:10px 12px;min-height:56px;cursor:pointer}
+.ip-arq.tem{border-style:solid;background:var(--bg1);padding-right:52px}
+.ip-arq:hover{background:var(--row)}
+.ip-arq .ic{flex:none;width:20px;height:20px;color:var(--tx2)}
+.ip-arq span{display:flex;flex-direction:column;min-width:0}
+.ip-arq b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ip-arq small{color:var(--tx2);font-size:13px}
+.ip-arqx{position:absolute;right:8px;bottom:10px}
+.ip-atual{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg1);padding:10px 12px;margin:0 0 12px;min-height:56px}
+.ip-atual span{display:flex;flex-direction:column;min-width:0}
+.ip-atual b{font-weight:600}.ip-atual small{color:var(--tx2);font-size:13px}
+@media(max-width:899px){.ip-arqx{bottom:6px}}
+.ip-bx{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:8px;margin:0 0 12px}
+.ip-bx .bt{justify-content:center}
+/* celular: Reserva e Importar lado a lado, mesma largura; o Vértice fica no menu (Apps da família) */
+.ip-acs{display:contents}
+@media(max-width:899px){.cs-acts:has(.ip-acs){flex:1 1 100%;width:100%}.ip-acs{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:8px;width:100%}.ip-acs .bt{justify-content:center}.ip-acs .ip-vt{display:none}}
+
+/* ===== kit.css ===== */
+/* Kit do laboratório e papéis do envio (v0.6.10) — só tokens na tela; o rótulo impresso usa preto no branco */
+.kt-kit .ag-l{min-height:56px}
+.kt-kit .dd{flex:0 0 190px}
+.kt-q{color:var(--tx2);font-size:14px;white-space:nowrap}
+.kt-ped{display:flex;flex-wrap:wrap;gap:6px;margin:-4px 0 10px}
+@media(max-width:899px){.kt-kit .ag-l{flex-wrap:nowrap}.kt-kit .dd{flex:0 0 150px}.kt-kit .ag-l .bt{width:auto}}
+#au-imp .kt-pg{break-after:page;page-break-after:always}
+#au-imp .kt-pg:last-child{break-after:auto;page-break-after:auto}
+#au-imp .kt-etq{display:flex;flex-direction:column;gap:14mm;font-family:Arial,Helvetica,sans-serif;color:#000}
+#au-imp .kt-b{border:1.2pt solid #000;padding:8mm 10mm;font-size:16pt;line-height:1.45}
+#au-imp .kt-b i{display:block;font-style:normal;font-weight:700;font-size:12pt;margin-bottom:3mm}
+#au-imp .kt-b b{display:block;font-size:19pt;margin-bottom:2mm}
+#au-imp .kt-dest{border-width:2.4pt;font-size:19pt}
+#au-imp .kt-dest b{font-size:23pt}
 
 /* ===== fotoed.css ===== */
 /* Editor de foto e foto grande (v0.6.4): PC = foto à esquerda e painel à direita; celular = tela escura, ferramentas embaixo */
@@ -1783,7 +1837,7 @@ body:has(#gv) .pp-bar{display:none}
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.6.8';
+const VERSAO = '0.6.10';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -1918,6 +1972,7 @@ const ICS = {
   colunas: '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9.5 4v16M14.5 4v16"/>',
   planilha: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M8.5 12h7M8.5 16h7M12 12v6"/>',
   impressora: '<path d="M7 9V3h10v6M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2"/><rect x="7" y="14" width="10" height="7" rx="1"/>',
+  baixar: '<path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19h14"/>',
   lixo: '<path d="M4 7h16M9 7V4.5h6V7M6 7l1 13h10l1-13M10 11v6M14 11v6"/>', imagem: '<rect x="3.5" y="4.5" width="17" height="15" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="m20.5 16-5-5-8 8.5"/>'
 };
 const ic = (n, cls) => '<svg class="ic' + (cls ? ' ' + cls : '') + '" viewBox="0 0 24 24" aria-hidden="true">' + (ICS[n] || '') + '</svg>';
@@ -2182,7 +2237,7 @@ const AREAS = [
   { id: 'coletas', nome: 'Coletas', ic: 'frasco', versao: 'v0.4', parcial: 'amostras, água, programação, envio e pontos de água prontos aqui; lançar coleta nova, fichas, etiquetas e os outros cadastros seguem no EFClaudian', abas: [{ id: 'amostras', nome: 'Amostras' }, { id: 'agua', nome: 'Água' }, { id: 'programacao', nome: 'Programação' }, { id: 'envio', nome: 'Envio' }, { id: 'cadastros', nome: 'Cadastros' }, { id: 'plano', nome: 'Plano de coleta', oculta: true, pai: 'programacao' }] },
   { id: 'rateios', nome: 'Rateios', ic: 'pizza', versao: 'v0.7', abas: [] },
   { id: 'inspecoes', nome: 'Inspeções', ic: 'lista', versao: 'v0.6', parcial: 'cloro, apontamentos e auditoria interna prontos aqui', abas: [{ id: 'cloro', nome: 'Cloro' }, { id: 'apontamentos', nome: 'Apontamentos' }, { id: 'auditoria', nome: 'Auditoria interna' }] },
-  { id: 'documentos', nome: 'Documentos', ic: 'doc', versao: 'v0.5', parcial: 'documentos, caixas d’água e histórico prontos aqui; o relatório de documentos segue no EFClaudian', abas: [{ id: 'documentos', nome: 'Documentos' }, { id: 'caixas', nome: 'Caixas d’água' }, { id: 'historico', nome: 'Histórico' }] },
+  { id: 'documentos', nome: 'Documentos', ic: 'doc', versao: 'v0.5', parcial: 'documentos, caixas d’água, histórico e impressos prontos aqui; o relatório de documentos segue no EFClaudian', abas: [{ id: 'documentos', nome: 'Documentos' }, { id: 'caixas', nome: 'Caixas d’água' }, { id: 'historico', nome: 'Histórico' }, { id: 'impressos', nome: 'Impressos' }] },
   { id: 'almox', nome: 'Almoxarifado', ic: 'caixa', versao: 'v0.3', parcial: 'consultar e lançar prontos aqui; cadastro de material, kits, fotos e inventário seguem no EFClaudian', abas: [{ id: 'painel', nome: 'Painel' }, { id: 'materiais', nome: 'Materiais' }, { id: 'movimentacoes', nome: 'Movimentações' }, { id: 'solicitacoes', nome: 'Solicitações' }, { id: 'equipamentos', nome: 'Equipamentos' }, { id: 'contagem', nome: 'Contagem', oculta: true, pai: () => typeof cgDoEq === 'function' && cgDoEq() ? 'equipamentos' : 'materiais' }, { id: 'calibracao', nome: 'Calibração', oculta: true, pai: 'equipamentos' }] },
   { id: 'qualidade', nome: 'Qualidade', ic: 'escudo', versao: 'v0.7', parcial: 'Análise de problemas pronta aqui; Não conformidades e Bugs seguem no EFClaudian', abas: [{ id: 'nc', nome: 'Não conformidades' }, { id: 'analise', nome: 'Análise de problemas' }, { id: 'bugs', nome: 'Bugs e sugestões' }] },
   { id: 'relatorios', nome: 'Relatórios', ic: 'graf', versao: 'v0.8', grupo: 'Análise', abas: [] },
@@ -2322,11 +2377,21 @@ function csLado() {
     if (a.grupo && a.grupo !== grupo) { grupo = a.grupo; h += '<div class="cs-gh">' + esc(grupo) + '</div>'; }
     h += '<a class="cs-it' + (a.id === at ? ' on' : '') + '" style="--i:' + (n++) + '" href="#/' + a.id + '"' + (a.id === at ? ' aria-current="page"' : '') + '>' + ic(a.ic) + '<span>' + esc(a.nome) + '</span></a>';
   });
+  h += csAppsFamilia(n);
   const adm = csArea('adm'), u = S.user || {};
   h += '</nav><div class="cs-pe"><a class="cs-it' + (at === 'adm' ? ' on' : '') + '" href="#/adm">' + ic(adm.ic) + '<span>' + adm.nome + '</span></a>' +
     '<div class="cs-us"><span class="cs-av">' + esc(iniciais(u.nome)) + '</span><span class="cs-ust"><b>' + esc(u.nome || '') + '</b><small>' + esc(perfilLabel(u)) + '</small></span><button type="button" class="bt ic-so" data-act="cs-sair" title="Sair" aria-label="Sair">' + ic('sair') + '</button></div>' +
     '<div class="cs-cw"><span>' + APP_APELIDO + '</span><span>v' + VERSAO + (DEMO ? ' · demonstração' : '') + '</span></div></div></aside>';
   return h;
+}
+/* v0.6.9 · Apps da família no menu (plano de integração v2, ITEM 3): Vértice Docs e Sabiá, só para Administrador e Líder (como no EFClaudian).
+   Abrem fora, numa aba nova; o ícone de cada app vai embutido (48 px) para aparecer mesmo sem internet. */
+const CS_APPS = [
+  { id: 'docs', nome: 'Vértice Docs', url: 'https://eliasgrigori.github.io/EFCdocs/', ic: 'data:image/png;base64,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' },
+  { id: 'sabia', nome: 'Sabiá', url: 'https://eliasgrigori.github.io/EFC-Sabi--Quiz/', ic: 'data:image/png;base64,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' }];
+function csAppsFamilia(n) {
+  if (!S.user || !isSup(S.user)) return '';
+  return '<div class="cs-gh">Apps da família</div>' + CS_APPS.map((a, k) => '<a class="cs-it cs-app-l" style="--i:' + (n + k) + '" href="' + esc(a.url) + '" target="_blank" rel="noopener" data-app="' + a.id + '" title="Abrir o ' + esc(a.nome) + ' numa aba nova"><img src="' + esc(a.ic) + '" alt="" width="20" height="20"><span>' + esc(a.nome) + '</span>' + ic('externo', 'cs-app-x') + '</a>').join('');
 }
 /* gaveta da nuvem (Nº 46): situação, hora da última leitura e o botão que força a releitura do servidor */
 function csNuvemGaveta() {
@@ -5186,10 +5251,10 @@ function coResumo() { const a = coAtivas(), s = a.map(coSit); return { a: a, nao
 TELAS.coletas = function (aba) {
   if (!coVe()) return cabecalho({ titulo: 'Coletas' }) + '<section class="pn"><div class="vazio">' + ic('frasco') + '<b>Você não tem acesso às Coletas.</b><span>Peça ao administrador para marcar a atribuição Coletas no seu cadastro.</span></div></section>';
   const ar = csArea('coletas'), t = ar.abas.find(x => x.id === aba) || ar.abas[0], r = coResumo();
-  const ext = '<a class="bt ic-so" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener" title="No EFClaudian: nova programação, planos de coleta, fichas e etiquetas" aria-label="Abrir o EFClaudian (nova programação, planos de coleta, fichas e etiquetas)">' + ic('externo') + '</a>';
+  const ext = '<a class="bt ic-so" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener" title="No EFClaudian: nova programação e planos de coleta" aria-label="Abrir o EFClaudian (nova programação e planos de coleta)">' + ic('externo') + '</a>';
   const pl = (n, um, mais) => n + ' ' + (n === 1 ? um : mais);
   const meta = [r.naoenv ? metaPl(pl(r.naoenv, 'não enviada', 'não enviadas'), 'wa') : '', r.aguarda ? '<span>' + r.aguarda + ' aguardando laudo</span>' : '', r.atras ? metaPl(pl(r.atras, 'laudo atrasado', 'laudos atrasados'), 'cr', 'alerta') : ''].filter(Boolean);
-  const acoes = (coPode() && r.naoenv ? '<button type="button" class="bt pr" data-act="co-env">' + ic('sai') + 'Enviar</button>' : '') + ext;
+  const acoes = (t.id === 'envio' ? ddHTML('kt:vista', S.coEnvVista === 'lab' ? 'lab' : 'rem', [['rem', 'Remessas'], ['lab', 'Laboratórios']]) : '') + (coPode() && r.naoenv ? '<button type="button" class="bt pr" data-act="co-env">' + ic('sai') + 'Enviar</button>' : '') + ext;
   if (t.id === 'cadastros') return paTela(t); /* v0.6.7 (aguapj.js): Pontos de água; o resto dos cadastros segue no EFClaudian */
   if (t.id === 'agua') return agTela(t); /* v0.6.5 (agua.js) */
   if (t.id === 'plano') { /* v0.4.6 (plano.js) */
@@ -5203,7 +5268,7 @@ TELAS.coletas = function (aba) {
   }
   let h = cabecalho({ titulo: t.nome, abaNome: t.nome, meta: meta, acoes: acoes });
   if (!S.colCarregado && !DEMO) return h + '<section class="pn"><div class="vazio">' + ic('relogio') + '<b>Carregando as amostras…</b></div></section>';
-  return h + (t.id === 'envio' ? coTabRemessas() : coTabAmostras());
+  return h + (t.id === 'envio' ? (S.coEnvVista === 'lab' ? ktTabLabs() : coTabRemessas()) : coTabAmostras()); /* v0.6.10: vista Laboratórios (kit.js) */
 };
 function coTabAmostras() {
   const l = S.coletas.filter(c => CO_TXT[c.tipo] && c.tipo !== 'AGUA').sort((a, b) => String(b.data || '').localeCompare(String(a.data || '')) || cmpTxt(coNome(a), coNome(b)));
@@ -5277,9 +5342,9 @@ function coAbre(id) {
 function coAbreLote(k) {
   S._coSel = k; gvAbrir(() => {
     const l = coLote(k); if (!l.length) return null; const c0 = l[0], lau = l.filter(c => c.laudo).length, at = l.filter(c => coLaudoSit(c) === 'Atrasado').length, pode = coPode(), aberta = l.some(c => !coEncerrada(c));
-    return { ico: 'caixa', cabAcoes: pode ? coAnxBt(k) : '', sub: 'Remessa · ' + fmtD(c0.envio), titulo: c0.lab || 'Sem laboratório', pill: alPill(lau === l.length ? 'Laudos baixados' : at ? at + ' laudo(s) atrasado(s)' : 'Aguardando laudos', lau === l.length ? 'ok' : at ? 'cr' : ''),
+    return { ico: 'caixa', cabAcoes: pode ? ktPapBt(k) + coAnxBt(k) : '', sub: 'Remessa · ' + fmtD(c0.envio), titulo: c0.lab || 'Sem laboratório', pill: alPill(lau === l.length ? 'Laudos baixados' : at ? at + ' laudo(s) atrasado(s)' : 'Aguardando laudos', lau === l.length ? 'ok' : at ? 'cr' : ''),
       corpo: gvNums([[String(l.length), 'amostras'], [lau + '/' + l.length, 'laudos'], [lau === l.length ? '—' : fmtD(coPrevisto(c0)), 'laudo previsto', at ? 'cr' : '']]) +
-        gvCampos([['O.S', Array.from(new Set(l.map(c => c.os).filter(Boolean))).join(', ') || 'ainda não informada']]) + coAnexosHTML(l, k) +
+        gvCampos([['O.S', Array.from(new Set(l.map(c => c.os).filter(Boolean))).join(', ') || 'ainda não informada']]) + coAnexosHTML(l, k) + ktRemessaHTML(k) +
         '<p class="gv-h">Amostras</p><div class="gv-lotes">' + l.sort((a, b) => cmpTxt(a.tipo, b.tipo) || cmpTxt(coNome(a), coNome(b))).map(c => { const s = coSit(c); return '<button type="button" class="gv-lote co-am" data-act="co-abre" data-id="' + esc(c.id) + '"><span><b>' + esc(coNome(c)) + '</b> ' + esc((CO_TXT[c.tipo] || '') + ' · ' + (c.sigla || c.analiseNome || '')) + '</span>' + alPill(s.txt, s.cor) + '</button>'; }).join('') + '</div>',
       rodape: pode && aberta ? (l.some(c => !c.os) ? '<button type="button" class="bt" data-act="co-os" data-k="' + esc(k) + '">' + ic('lapis') + 'Informar O.S</button>' : '<button type="button" class="bt" data-act="co-os" data-k="' + esc(k) + '">' + ic('lapis') + 'Corrigir O.S</button>') +
         (lau < l.length ? '<button type="button" class="bt pr" data-act="co-laudo" data-k="' + esc(k) + '">' + ic('ok') + 'Laudos recebidos</button>' : '') : '' };
@@ -5358,7 +5423,8 @@ async function coEnvOk() {
       Audit.log({ acao: 'envio_coleta', entidade: 'coleta', entidadeId: c.id, resumo: 'Remessa: ' + CO_TXT[c.tipo] + ' ' + coNome(c) + ' enviada em ' + fmtD(data) + ' · ' + o.lab, antes: { enviado: !!c.enviado, envio: c.envio || '', lab: c.lab || '' }, depois: o });
     }
     if (data < hojeISO()) coAvisaRetro(cs.length, data, S.user.nome, '');
-    lcFim(); aviso(cs.length + ' amostra(s) enviada(s). As fichas de envio continuam no EFClaudian.');
+    lcFim(); aviso(cs.length + ' amostra(s) enviada(s).');
+    ktDepoisEnvio(Array.from(new Set(cs.map(c => data + '|' + (f.lab || c.lab || ''))))); /* v0.6.10: papéis do envio (rótulo, ficha, custódia) */
   } catch (e) { lcErro(svErro(e)); }
 }
 function coAvisaRetro(n, data, quem, confirmou) {
@@ -6763,6 +6829,778 @@ BG_FONTES.push(q => {
   const d = S.docs.filter(x => bgCasa(q, [x.codigo, x.titulo, x.setor, x.responsavel].join(' '))).slice(0, 6).map(x => { const s = dcSit('doc', x); return { grupo: 'Documentos', nome: x.titulo, sub: [x.codigo, x.setor, s.st === 'venc' || s.st === 'aten' ? dcPrazo(s) : ''].filter(Boolean).join(' · '), ico: 'doc', abrir: () => { if (S.rota.area !== 'documentos' || S.rota.aba !== 'documentos') { S._gvNav = true; ir('documentos', 'documentos'); } dcAbreDoc(x.id); } }; });
   const c = S.caixas.filter(x => bgCasa(q, [x.tag, x.local, 'caixa'].join(' '))).slice(0, 4).map(x => ({ grupo: 'Caixas d’água', nome: x.tag + ' — ' + x.local, sub: dcPrazo(dcSit('caixa', x)), ico: 'doc', abrir: () => { if (S.rota.area !== 'documentos' || S.rota.aba !== 'caixas') { S._gvNav = true; ir('documentos', 'caixas'); } dcAbreCaixa(x.id); } }));
   return d.concat(c);
+});
+
+/* ===== efd.js ===== */
+/* CONTRATO EFD v1 · conferente comum da família EFClaudian (EFCwork, Vértice Docs, Sabiá).
+   Um arquivo só, sem dependências. Serve no navegador (window.EFD) e no Node (require). Não grava nem lê nada: só diz se um
+   registro segue o contrato. As duas pontas rodam o MESMO arquivo contra os MESMOS exemplos (exemplos-efd-v1.json).
+   Mudou o contrato? Sobe o número (v2) nos dois repositórios no mesmo dia, com a ordem do Elias. */
+(function (raiz) {
+  const V = 1, PARTE_MAX = 900000, PARTES_MAX = 5, CAMPOS_MAX = 32, ORIG_PARTES_MAX = 2; /* 12/11: só o essencial na nuvem grátis (cópia até ~3,3 MB; original até ~1,3 MB); de 1 a 32 campos por documento */
+  const TIPOS = ['planilha', 'docx', 'postits', 'externo', 'link'] /* link (12/11, sugestão 8): só o endereço, sem arquivo */, STATUS = ['rascunho', 'vigente', 'obsoleto', 'lixeira'], ORIGENS = ['docs', 'efcwork', 'sabia'];
+  const PAPEIS = ['A4', 'A5', 'etiqueta'], ORIENT = ['retrato', 'paisagem'], T_CAMPO = ['texto', 'data', 'hora', 'numero', 'lista'];
+  const PONTOS = ['coletas.envio', 'coletas.amostra', 'agua.coleta', 'agua.acao', 'documentos.doc', 'qualidade.treino', 'livre'];
+  /* dicionário de campos v1: o que o EFCwork sabe preencher. Listas terminam em [] e têm colunas. */
+  const CAMPOS = {
+    'empresa.nome': 'texto', 'unidade.nome': 'texto', 'unidade.endereco': 'texto', 'unidade.cidade': 'texto',
+    'lab.nome': 'texto', 'lab.endereco': 'texto', 'lab.cidade': 'texto', 'lab.cep': 'texto', 'lab.contato': 'texto', 'lab.telefone': 'texto',
+    'envio.data': 'data', 'envio.caixa': 'numero', 'envio.caixas': 'numero', 'envio.amostras': 'numero', 'envio.transporte': 'texto',
+    'coleta.data': 'data', 'coleta.hora': 'hora', 'coleta.os': 'texto', 'coleta.solicitacao': 'texto', 'coleta.coletor': 'texto', 'coleta.analise': 'texto',
+    'coleta.ponto': 'texto', 'coleta.talhao': 'texto', 'coleta.produto': 'texto', 'coleta.qtd': 'numero', 'coleta.identificacao': 'texto',
+    'usuario.nome': 'texto', 'hoje.data': 'data', 'hoje.hora': 'hora', 'doc.codigo': 'texto', 'doc.rev': 'numero',
+    'amostras[]': 'lista', 'participantes[]': 'lista'
+  };
+  const COLUNAS = { 'amostras[]': ['n', 'identificacao', 'data', 'hora', 'analise', 'ponto', 'talhao', 'produto', 'qtd'], 'participantes[]': ['n', 'nome', 'setor'] };
+  const str = (x, min, max) => typeof x === 'string' && x.length >= (min || 0) && x.length <= (max == null ? 1e9 : max);
+  const int = (x, min, max) => Number.isInteger(x) && x >= (min == null ? -1e15 : min) && x <= (max == null ? 1e15 : max);
+  const iso = x => typeof x === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/.test(x);
+  const dia = x => typeof x === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(x);
+  const idDoc = x => typeof x === 'string' && /^d[0-9a-z]{6,24}$/.test(x);
+  /* nome de célula do Excel para uma chave do dicionário e a volta: coleta.os <-> efc_coleta_os ; amostras[].data <-> efc_amostras_data */
+  const nomeExcel = ch => 'efc_' + String(ch).replace('[]', '').replace(/\./g, '_');
+  function chaveDe(nome) {
+    const m = /^efc_([a-z]+)_([a-z]+)$/.exec(String(nome || '').toLowerCase()); if (!m) return '';
+    if (CAMPOS[m[1] + '.' + m[2]]) return m[1] + '.' + m[2];
+    return COLUNAS[m[1] + '[]'] && COLUNAS[m[1] + '[]'].indexOf(m[2]) >= 0 ? m[1] + '[].' + m[2] : '';
+  }
+  const campoOk = ch => !!CAMPOS[ch] || (/^([a-z]+)\[\]\.([a-z]+)$/.test(ch) && (COLUNAS[RegExp.$1 + '[]'] || []).indexOf(RegExp.$2) >= 0);
+
+  function ficha(o) {
+    const e = []; if (!o || typeof o !== 'object') return ['ficha vazia'];
+    if (o.v !== V) e.push('v deve ser ' + V);
+    if (!idDoc(o.id)) e.push('id fora do padrão (d + letras e números minúsculos)');
+    if (TIPOS.indexOf(o.tipo) < 0) e.push('tipo desconhecido');
+    if (!str(o.nome, 1, 120) || /[\\/:*?"<>|]/.test(o.nome)) e.push('nome vazio, longo ou com \\ / : * ? " < > |');
+    if (!str(o.codigo || '', 0, 20)) e.push('codigo longo');
+    if (STATUS.indexOf(o.status) < 0) e.push('status desconhecido');
+    if (!int(o.rev, 0)) e.push('rev deve ser inteiro');
+    if (ORIGENS.indexOf(o.origem) < 0) e.push('origem desconhecida');
+    ['criado', 'alterado'].forEach(k => { if (!str(o[k + 'PorId'], 1, 128)) e.push(k + 'PorId faltando'); if (!str(o[k + 'Por'], 1, 80)) e.push(k + 'Por (nome) faltando'); if (!iso(o[k + 'Em'])) e.push(k + 'Em deve ser data e hora ISO em UTC'); });
+    if (!str(o.pastaNome || '', 0, 40)) e.push('pastaNome longo');
+    if (o.pub != null) e.push.apply(e, pub(o.pub).map(x => 'pub: ' + x));
+    if (o.orig != null) { const g = o.orig; if (['xlsx', 'docx', 'pdf', 'imagem'].indexOf(g.formato) < 0 || !int(g.bytes, 1) || !int(g.partes, 1, ORIG_PARTES_MAX) || !/^[0-9a-f]{64}$/.test(g.sha256 || '') || !str(g.nomeArquivo, 1, 140)) e.push('orig (arquivo de reserva) incompleto ou grande demais'); }
+    if (o.tipo === 'link') { if (!/^https:\/\/[^\s]{4,}$/.test(o.link || '') || String(o.link).length > 600) e.push('link deve ser um endereço https'); if (o.pub || o.orig) e.push('link não leva arquivo'); }
+    else if (o.status === 'vigente' && !o.pub) e.push('vigente sem cópia publicada');
+    if (o.tipo === 'externo' && o.pub && o.pub.preenche !== 'nao') e.push('documento externo não preenche sozinho');
+    return e;
+  }
+  function pub(p) {
+    const e = []; if (!p || typeof p !== 'object') return ['vazio'];
+    if (!int(p.rev, 1)) e.push('rev deve ser 1 ou mais');
+    if (!iso(p.em) || !str(p.porId, 1, 128) || !str(p.por, 1, 80)) e.push('quem e quando publicou faltando');
+    if (p.formato !== 'pdf') e.push('formato deve ser pdf');
+    if (!int(p.bytes, 100, PARTES_MAX * PARTE_MAX * 3 / 4)) e.push('bytes fora do limite');
+    if (!int(p.partes, 1, PARTES_MAX)) e.push('partes de 1 a ' + PARTES_MAX);
+    if (!/^[0-9a-f]{64}$/.test(p.sha256 || '')) e.push('sha256 deve ter 64 letras e números minúsculos');
+    if (!int(p.paginas, 1, 200)) e.push('paginas faltando');
+    if (PAPEIS.indexOf(p.papel) < 0) e.push('papel desconhecido');
+    if (p.papel === 'etiqueta' && !(Array.isArray(p.mm) && p.mm.length === 2 && p.mm.every(x => x > 10 && x < 500))) e.push('etiqueta precisa de mm: [largura, altura]');
+    if (ORIENT.indexOf(p.orient) < 0) e.push('orient desconhecida');
+    if (['nao', 'docs'].indexOf(p.preenche) < 0) e.push('preenche deve ser nao ou docs');
+    if (!Array.isArray(p.campos)) e.push('campos deve ser lista');
+    else p.campos.forEach(c => { if (!c || !campoOk(c.chave)) e.push('campo fora do dicionário: ' + (c && c.chave)); else if (!str(c.rotulo, 1, 60) || T_CAMPO.indexOf(c.tipo) < 0) e.push('campo sem rótulo ou tipo: ' + c.chave); });
+    if (p.preenche === 'docs' && Array.isArray(p.campos) && !p.campos.length) e.push('preenche pelo Docs mas não tem campos');
+    if (Array.isArray(p.campos) && p.campos.length > CAMPOS_MAX) e.push('no máximo ' + CAMPOS_MAX + ' campos');
+    return e;
+  }
+  function copia(c) {
+    const e = []; if (!c || typeof c !== 'object') return ['parte vazia'];
+    if (!int(c.rev, 1)) e.push('rev'); if (!int(c.de, 1, PARTES_MAX)) e.push('de'); if (!int(c.n, 0, (c.de || 1) - 1)) e.push('n fora de 0..de-1');
+    if (!str(c.b64, 1, PARTE_MAX) || !/^[A-Za-z0-9+/]+=*$/.test(c.b64)) e.push('b64 vazio, grande demais ou com caracteres estranhos');
+    return e;
+  }
+  /* junta as partes na ordem; devolve o base64 inteiro ou lança erro dizendo o que faltou */
+  function juntar(p, partes) {
+    const l = (partes || []).filter(x => x.rev === p.rev).sort((a, b) => a.n - b.n);
+    if (l.length !== p.partes || l.some((x, k) => x.n !== k || x.de !== p.partes)) throw new Error('faltam partes da revisão ' + p.rev);
+    return l.map(x => x.b64).join('');
+  }
+  function impresso(o) {
+    const e = []; if (!o || typeof o !== 'object') return ['vazio'];
+    if (o.v !== V) e.push('v'); if (PONTOS.indexOf(o.ponto) < 0) e.push('ponto desconhecido'); if (!str(o.nome, 1, 80)) e.push('nome'); if (!idDoc(o.docId)) e.push('docId');
+    if (!str(o.lab || '', 0, 60)) e.push('lab'); if (!(o.copias === 'uma' || o.copias === 'porCaixa' || int(o.copias, 1, 20))) e.push('copias'); if (typeof o.ativo !== 'boolean') e.push('ativo');
+    return e;
+  }
+  function pedido(o) {
+    const e = []; if (!o || typeof o !== 'object') return ['vazio'];
+    if (o.v !== V) e.push('v'); if (!str(o.pid, 6, 40) || !/^[0-9a-z]+$/.test(o.pid)) e.push('pid'); if (!idDoc(o.docId)) e.push('docId'); if (!iso(o.criadoEm)) e.push('criadoEm');
+    if (['efcwork', 'sabia'].indexOf(o.de) < 0) e.push('de'); if (!int(o.copias, 1, 20)) e.push('copias');
+    const dados = (d, onde) => { if (!d || typeof d !== 'object' || Array.isArray(d)) { e.push(onde); return; } Object.keys(d).forEach(k => { const v = d[k];
+      if (!CAMPOS[k]) e.push('dado fora do dicionário: ' + k);
+      else if (CAMPOS[k] === 'lista') { if (!Array.isArray(v) || v.some(r => !r || Object.keys(r).some(c => COLUNAS[k].indexOf(c) < 0))) e.push('lista com coluna desconhecida: ' + k); }
+      else if (CAMPOS[k] === 'numero') { if (typeof v !== 'number') e.push('número esperado: ' + k); }
+      else if (CAMPOS[k] === 'data') { if (!dia(v)) e.push('data AAAA-MM-DD esperada: ' + k); }
+      else if (CAMPOS[k] === 'hora') { if (!/^\d{2}:\d{2}$/.test(v)) e.push('hora HH:MM esperada: ' + k); }
+      else if (!str(v, 0, 300)) e.push('texto esperado: ' + k); }); };
+    dados(o.dados, 'dados');
+    /* folhas: uma impressão só com várias folhas do mesmo documento (ex.: uma etiqueta por caixa); cada folha troca só os campos que mudam */
+    if (o.folhas != null) { if (!Array.isArray(o.folhas) || !o.folhas.length || o.folhas.length > 50) e.push('folhas de 1 a 50'); else o.folhas.forEach((f, k) => dados(f, 'folha ' + (k + 1))); }
+    return e;
+  }
+  function treino(o) {
+    const e = []; if (!o || typeof o !== 'object') return ['vazio'];
+    if (o.v !== V) e.push('v'); if (!str(o.titulo, 1, 160)) e.push('titulo'); if (!dia(o.data)) e.push('data AAAA-MM-DD');
+    if (o.teste === true) e.push('treinamento de teste ou ensaio não entra no histórico');
+    if (['programado', 'realizado', 'cancelado'].indexOf(o.situacao) < 0) e.push('situacao'); if (['efcwork', 'sabia'].indexOf(o.origem) < 0) e.push('origem');
+    if (!str(o.instrutorNome || '', 0, 80)) e.push('instrutorNome'); if (o.horas != null && !(typeof o.horas === 'number' && o.horas >= 0 && o.horas <= 200)) e.push('horas');
+    if (o.situacao === 'cancelado' && !str(o.canceladoMotivo, 3, 300)) e.push('cancelado pede motivo');
+    if (o.quiz != null) { const q = o.quiz; if (q.app !== 'sabia' && q.app !== 'efcquiz') e.push('quiz.app'); if (!str(q.sessaoId, 1, 60)) e.push('quiz.sessaoId'); if (q.cod && !/^SAB-[0-9A-F]{4}(-[0-9A-F]{4}){4}$/.test(q.cod)) e.push('quiz.cod'); if (q.pct != null && !(q.pct >= 0 && q.pct <= 100)) e.push('quiz.pct'); }
+    if (o.origem === 'sabia' && !o.quiz) e.push('registro vindo do Sabiá precisa de quiz.sessaoId');
+    if (!Array.isArray(o.participantes) || o.participantes.length > 400) e.push('participantes');
+    else o.participantes.forEach((p, k) => { if (!p || !str(p.nome, 1, 80)) e.push('participante ' + (k + 1) + ' sem nome'); else { if (typeof p.presente !== 'boolean') e.push('presente: ' + p.nome); if (!(p.eficaz === true || p.eficaz === false || p.eficaz == null)) e.push('eficaz: ' + p.nome); if (p.pct != null && !(p.pct >= 0 && p.pct <= 100)) e.push('pct: ' + p.nome); } });
+    if (o.situacao === 'realizado' && Array.isArray(o.participantes) && !o.participantes.length) e.push('realizado sem participantes');
+    (o.docs || []).forEach(d => { if (!d || !idDoc(d.docId) || ['pop', 'material', 'lista', 'registro'].indexOf(d.papel) < 0) e.push('docs: vínculo inválido'); });
+    if (!str(o.criadoPorId, 1, 128) || !iso(o.criadoEm)) e.push('criadoPorId e criadoEm');
+    return e;
+  }
+  const EFD = { V, PARTE_MAX, PARTES_MAX, CAMPOS_MAX, ORIG_PARTES_MAX, TIPOS, STATUS, ORIGENS, PONTOS, CAMPOS, COLUNAS, nomeExcel, chaveDe, campoOk, ficha, pub, copia, juntar, impresso, pedido, treino };
+  if (typeof module !== 'undefined' && module.exports) module.exports = EFD; else raiz.EFD = EFD;
+})(typeof window !== 'undefined' ? window : this);
+
+/* ===== impressos.js ===== */
+/* EFCwork · impressos.js — Documentos › Impressos (v0.6.9). Prefixo: ip.
+   Plano de integração v2, aprovado pelo Elias em 12/11/2026 13:51 (ITENS 1 a 12 e as 8 sugestões).
+   - Tudo o que se imprime: PDF, foto (vira PDF aqui), Excel e Word (guardados como arquivo de reserva; a cópia de impressão é o PDF
+     salvo pelo Excel/Word ou, depois, o que o Vértice Docs mandar) e link (só o endereço, sem arquivo).
+   - Fichas no formato do Contrato EFD v1 (tools/contrato/efd-v1.js, o MESMO arquivo do Vértice): coleção efd_docs (id = ficha.id).
+   - Plano grátis do Firebase (sem Storage): o arquivo vai em pedaços de até 900.000 caracteres em efd_partes
+     ({docId, qual: 'copia'|'orig', rev, n, de, b64}). Cópia até 5 pedaços (~3,3 MB), original até 2 (~1,3 MB). Teto de 150 MB no total.
+     Grava primeiro os pedaços e só depois a ficha: ninguém vê uma cópia pela metade. Versão nova ou lixeira esvaziam os pedaços antigos.
+   - Cada aparelho baixa o arquivo uma vez e guarda (IndexedDB "efcwork-impressos"): depois imprime sem gastar leitura e sem internet.
+   - Nunca depender só do app: Baixar (PDF e original) em cada papel e Reserva (ZIP de tudo, com a lista).
+   - Papel obsoleto não imprime (sugestão 2). Quem cadastra: Administrador e Líder (como o catálogo de documentos). */
+Object.assign(S, { ipDocs: [], ipAparelho: {}, _ipPrev: null });
+const IP_PASTAS = ['Etiquetas', 'Fichas e custódias', 'Formulários', 'Fluxogramas', 'POPs e procedimentos'];
+const IP_PARTE = 900000, IP_COPIA_PARTES = 5, IP_ORIG_PARTES = 2;
+const IP_COPIA_MAX = Math.floor(IP_COPIA_PARTES * IP_PARTE * 3 / 4), IP_ORIG_MAX = Math.floor(IP_ORIG_PARTES * IP_PARTE * 3 / 4);
+const IP_TETO = 150 * 1024 * 1024; /* caracteres guardados na nuvem (o banco grátis tem 1 GB para tudo) */
+const IP_FMT = { pdf: 'PDF', imagem: 'Foto', xlsx: 'Excel', docx: 'Word', link: 'Link' };
+const IP_VERTICE = 'https://eliasgrigori.github.io/EFCdocs/';
+
+CS_CARGAS.push(() => {
+  csOuve('efd_docs', l => { S.ipDocs = (l || []).filter(d => d && d.v === 1); if (S.rota.area === 'documentos' && S.rota.aba === 'impressos') render(); else if (S.gv && S._ipGv) gvDesenha(); }, { order: 'alteradoEm', limit: 600 });
+});
+
+/* ---------- quem pode, formato, situação ---------- */
+const ipPode = () => isSup(S.user);
+const ipVivos = () => S.ipDocs.filter(d => d.status !== 'lixeira');
+const ipFmt = d => d.tipo === 'link' ? 'link' : d.tipo === 'planilha' ? 'xlsx' : d.tipo === 'docx' ? 'docx' : d.fonteFoto ? 'imagem' : 'pdf';
+const ipFmtTxt = d => d.origem === 'docs' && d.tipo === 'postits' ? 'Quadro' : IP_FMT[ipFmt(d)] || 'PDF';
+const ipPasta = d => String(d.pastaNome || '').trim() || 'Sem pasta';
+function ipSit(d) {
+  if (d.status === 'obsoleto') return ['Obsoleto', ''];
+  if (d.tipo !== 'link' && !d.pub) return ['Sem cópia em PDF', 'wa'];
+  return ['Vigente', 'ok'];
+}
+const ipPill = d => { const s = ipSit(d); return '<span class="pill ' + s[1] + '">' + esc(s[0]) + '</span>'; };
+const ipImprime = d => !!(d && d.pub && d.status === 'vigente');
+const ipTam = b => !b ? '' : b < 1024 * 1024 ? Math.max(1, Math.round(b / 1024)) + ' KB' : (b / 1024 / 1024).toFixed(1).replace('.', ',') + ' MB';
+const ipMB = c => (Math.ceil(c / 104857.6) / 10).toFixed(1).replace('.', ',') + ' MB';
+const ipChars = b => Math.ceil((Number(b) || 0) / 3) * 4;
+const ipOcupa = d => d.status === 'lixeira' ? 0 : (d.pub ? ipChars(d.pub.bytes) : 0) + (d.orig ? ipChars(d.orig.bytes) : 0);
+const ipEspaco = () => S.ipDocs.reduce((s, d) => s + ipOcupa(d), 0);
+const ipNovoId = () => 'd' + Date.now().toString(36) + Math.floor(Math.random() * 1679616).toString(36).padStart(4, '0');
+const ipNomeArq = (d, ext) => ((d.codigo ? d.codigo + ' ' : '') + d.nome + (d.rev ? ' v' + d.rev : '')).replace(/[\\/:*?"<>|]+/g, '-').trim() + '.' + ext;
+const ipEhToque = () => { try { return matchMedia('(pointer: coarse)').matches; } catch { return false; } };
+const ipVeNoApp = () => navigator.pdfViewerEnabled !== false && !ipEhToque();
+
+/* ---------- bytes ---------- */
+function ipB64(buf) { const a = new Uint8Array(buf); let s = ''; for (let i = 0; i < a.length; i += 0x8000) s += String.fromCharCode.apply(null, a.subarray(i, i + 0x8000)); return btoa(s); }
+function ipBuf(b64) { const s = atob(b64), a = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) a[i] = s.charCodeAt(i); return a.buffer; }
+async function ipSha(buf) { const h = await crypto.subtle.digest('SHA-256', buf); return Array.from(new Uint8Array(h)).map(x => x.toString(16).padStart(2, '0')).join(''); }
+const ipLat = buf => { const a = new Uint8Array(buf); let s = ''; for (let i = 0; i < a.length; i += 0x8000) s += String.fromCharCode.apply(null, a.subarray(i, i + 0x8000)); return s; };
+function ipPdfInfo(buf) {
+  const t = ipLat(buf); if (t.slice(0, 5) !== '%PDF-') return null;
+  const pg = (t.match(/\/Type\s*\/Page(?![a-z])/g) || []).length || 1;
+  const mb = /\/MediaBox\s*\[\s*([\d.-]+)\s+([\d.-]+)\s+([\d.-]+)\s+([\d.-]+)/.exec(t), deitado = mb ? (Number(mb[3]) - Number(mb[1])) > (Number(mb[4]) - Number(mb[2])) : false;
+  return { paginas: Math.min(pg, 200), orient: deitado ? 'paisagem' : 'retrato' };
+}
+const ipLerArq = f => new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = () => no(new Error('Não deu para ler o arquivo.')); r.readAsArrayBuffer(f); });
+/* foto → PDF de uma página A4 (deitada se a foto for deitada), JPEG embutido, sem biblioteca */
+async function ipFotoPdf(f) {
+  const url = URL.createObjectURL(f);
+  try {
+    const im = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => no(new Error('Não deu para abrir a foto (use JPG ou PNG).')); i.src = url; });
+    const lado = 2200, k = Math.min(1, lado / Math.max(im.naturalWidth, im.naturalHeight)), w = Math.max(1, Math.round(im.naturalWidth * k)), h = Math.max(1, Math.round(im.naturalHeight * k));
+    const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, w, h); g.drawImage(im, 0, 0, w, h);
+    const jpg = new Uint8Array(await (await fetch(c.toDataURL('image/jpeg', 0.85))).arrayBuffer());
+    const dt = w > h, PW = dt ? 842 : 595, PH = dt ? 595 : 842, m = 24, e = Math.min((PW - 2 * m) / w, (PH - 2 * m) / h), dw = +(w * e).toFixed(2), dh = +(h * e).toFixed(2), x = +((PW - dw) / 2).toFixed(2), y = +((PH - dh) / 2).toFixed(2);
+    const cmd = 'q ' + dw + ' 0 0 ' + dh + ' ' + x + ' ' + y + ' cm /Im0 Do Q', enc = s => new TextEncoder().encode(s), partes = [], pos = [];
+    let tam = 0; const poe = p => { partes.push(p); tam += p.length; };
+    poe(enc('%PDF-1.4\n%\xE2\xE3\xCF\xD3\n'));
+    const objs = ['<< /Type /Catalog /Pages 2 0 R >>', '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+      '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + PW + ' ' + PH + '] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>', null, '<< /Length ' + cmd.length + ' >>\nstream\n' + cmd + '\nendstream'];
+    objs.forEach((o, i) => {
+      pos.push(tam);
+      if (o) poe(enc((i + 1) + ' 0 obj\n' + o + '\nendobj\n'));
+      else { poe(enc('4 0 obj\n<< /Type /XObject /Subtype /Image /Width ' + w + ' /Height ' + h + ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ' + jpg.length + ' >>\nstream\n')); poe(jpg); poe(enc('\nendstream\nendobj\n')); }
+    });
+    const xr = tam; poe(enc('xref\n0 6\n0000000000 65535 f \n' + pos.map(p => String(p).padStart(10, '0') + ' 00000 n \n').join('') + 'trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n' + xr + '\n%%EOF\n'));
+    const out = new Uint8Array(tam); let o = 0; partes.forEach(p => { out.set(p, o); o += p.length; });
+    return { buf: out.buffer, orient: dt ? 'paisagem' : 'retrato' };
+  } finally { URL.revokeObjectURL(url); }
+}
+function ipTipoArq(f) {
+  const n = String(f.name || '').toLowerCase(), t = String(f.type || '');
+  if (/\.pdf$/.test(n) || t === 'application/pdf') return 'pdf';
+  if (/\.(jpe?g|png|webp)$/.test(n) || /^image\/(jpeg|png|webp)$/.test(t)) return 'imagem';
+  if (/\.xlsx$/.test(n)) return 'xlsx';
+  if (/\.docx$/.test(n)) return 'docx';
+  if (/\.(xls|xlsm|xlsb|doc|odt|ods)$/.test(n)) return 'velho';
+  return '';
+}
+
+/* ---------- guardado no aparelho (IndexedDB) ---------- */
+function ipBanco() { return new Promise((ok, no) => { const r = indexedDB.open('efcwork-impressos', 1); r.onupgradeneeded = () => r.result.createObjectStore('arq'); r.onsuccess = () => ok(r.result); r.onerror = () => no(r.error); }); }
+async function ipCache(modo, chave, val) {
+  try {
+    const db = await ipBanco();
+    return await new Promise(ok => { const t = db.transaction('arq', modo), s = t.objectStore('arq'), q = modo === 'readonly' ? s.get(chave) : val === undefined ? s.delete(chave) : s.put(val, chave); let r = null; q.onsuccess = () => { r = q.result; }; t.oncomplete = () => { db.close(); ok(modo === 'readonly' ? r || null : true); }; t.onerror = t.onabort = () => { db.close(); ok(null); }; });
+  } catch { return null; }
+}
+const ipChave = (d, qual) => { const m = qual === 'orig' ? d.orig : d.pub; return d.id + '|' + qual + '|' + (m && m.sha256 || ''); };
+const ipParteId = (id, qual, rev, n) => id + '_' + (qual === 'orig' ? 'o' : 'c') + rev + '_' + n;
+/* lê o arquivo: do aparelho; se não tem, da nuvem (pedaços), confere o SHA-256 e guarda */
+async function ipArquivo(d, qual) {
+  const m = qual === 'orig' ? d.orig : d.pub; if (!m) throw new Error('Este papel não tem ' + (qual === 'orig' ? 'arquivo de reserva.' : 'cópia em PDF.'));
+  const ch = ipChave(d, qual), aqui = await ipCache('readonly', ch); if (aqui) { if (qual === 'copia') S.ipAparelho[d.id] = m.sha256; return aqui; }
+  const rev = qual === 'orig' ? (m.rev || d.rev) : m.rev, ps = [];
+  for (let n = 0; n < m.partes; n++) { const p = await Data.col('efd_partes').get(ipParteId(d.id, qual, rev, n)); if (!p || !p.b64) throw new Error('Faltam pedaços do arquivo na nuvem. Confira a internet e tente de novo.'); ps.push(p.b64); }
+  const buf = ipBuf(ps.join(''));
+  if (buf.byteLength !== m.bytes || await ipSha(buf) !== m.sha256) throw new Error('O arquivo chegou diferente do que foi guardado. Tente de novo.');
+  await ipCache('readwrite', ch, buf); if (qual === 'copia') S.ipAparelho[d.id] = m.sha256;
+  return buf;
+}
+async function ipNoAparelho(d) { if (!d.pub) return false; if (S.ipAparelho[d.id] === d.pub.sha256) return true; const x = await ipCache('readonly', ipChave(d, 'copia')); if (x) S.ipAparelho[d.id] = d.pub.sha256; return !!x; }
+/* ao abrir a aba: baixa, um por vez, as cópias vigentes que este aparelho ainda não tem (para imprimir sem internet) */
+async function ipPreBaixar() {
+  if (S._ipBaixando || navigator.onLine === false) return; S._ipBaixando = true;
+  try { for (const d of ipVivos().filter(ipImprime)) { if (await ipNoAparelho(d)) continue; try { await ipArquivo(d, 'copia'); } catch (e) { console.warn('impresso', d.id, e.message); } } }
+  finally { S._ipBaixando = false; if (S.gv && S._ipGv) gvDesenha(); }
+}
+
+/* ---------- tela ---------- */
+function ipGrupos(l) {
+  const ps = Array.from(new Set(l.map(ipPasta))), ord = IP_PASTAS.filter(p => ps.indexOf(p) >= 0).concat(ps.filter(p => IP_PASTAS.indexOf(p) < 0 && p !== 'Sem pasta').sort(cmpTxt));
+  if (ps.indexOf('Sem pasta') >= 0) ord.push('Sem pasta');
+  return ord.map(p => [p, p]).concat([['\u0001obs', 'Obsoletos']]);
+}
+function ipTela() {
+  const l = ipVivos().slice().sort((a, b) => cmpTxt(a.nome, b.nome) || cmpTxt(a.codigo, b.codigo)), esp = ipEspaco(), pct = esp / IP_TETO;
+  const meta = ['<span>' + l.length + (l.length === 1 ? ' impresso' : ' impressos') + '</span>',
+    pct >= 0.8 ? metaPl(ipMB(esp) + ' de 150 MB', pct >= 1 ? 'cr' : 'wa', 'alerta') : '<span title="Espaço que os impressos ocupam na nuvem (o banco grátis tem 1 GB para tudo)">' + ipMB(esp) + ' de 150 MB</span>'];
+  const acoes = '<div class="ip-acs">' + (l.length ? '<button type="button" class="bt" data-act="ip-reserva" title="Baixar todos num arquivo ZIP">' + ic('caixa') + 'Reserva</button>' : '') +
+    (ipPode() ? '<button type="button" class="bt" data-act="ip-importar">' + ic('mais') + 'Importar</button><a class="bt pr ip-vt" href="' + IP_VERTICE + '" target="_blank" rel="noopener" data-act="ip-vertice">' + ic('externo') + 'Novo no Vértice</a>' : '') + '</div>';
+  let h = cabecalho({ titulo: 'Impressos', abaNome: 'Impressos', meta: meta, acoes: acoes });
+  if (!l.length) return h + '<section class="pn"><div class="vazio">' + ic('impressora') + '<b>Nenhum impresso ainda.</b><span>' + (ipPode() ? 'Importe um PDF, uma foto, um arquivo do Excel ou do Word, ou um link. Fichas, custódias e formulários feitos no Vértice Docs também vão aparecer aqui.' : 'Quando o Administrador ou o Líder cadastrar fichas, custódias e formulários, eles aparecem aqui para imprimir.') + '</span></div></section>';
+  setTimeout(ipPreBaixar, 600);
+  return h + tbHTML({ id: 'ip-docs', titulo: 'Impressos', unidade: 'impressos', linhas: l, aoClicar: id => ipAbre(id),
+    grupos: { v: d => d.status === 'obsoleto' ? '\u0001obs' : ipPasta(d), ordem: ipGrupos(l) }, busca: d => [d.codigo, d.nome, ipPasta(d), ipFmtTxt(d), d.alteradoPor].join(' '), vazio: 'Nenhum impresso com este filtro.',
+    cols: [{ k: 'cod', rot: 'Código', v: d => d.codigo || '' }, { k: 'nome', rot: 'Nome', v: d => d.nome, cls: 'forte' }, { k: 'fmt', rot: 'Formato', v: ipFmtTxt },
+      { k: 'por', rot: 'Editado por', v: d => d.alteradoPor || '' }, { k: 'em', rot: 'Data', tipo: 'data', v: d => diaLocal(d.alteradoEm) }, { k: 'rev', rot: 'Versão', tipo: 'num', v: d => d.tipo === 'link' ? null : d.rev || null },
+      { k: 'st', rot: 'Situação', v: d => ipSit(d)[0], html: ipPill }] });
+}
+const ipTelaOrig = TELAS.documentos;
+TELAS.documentos = aba => aba === 'impressos' ? ipTela() : ipTelaOrig(aba);
+
+/* ---------- detalhe ---------- */
+function ipAbre(id) { S._ipGv = id; gvAbrir(() => ipGaveta(id)); }
+function ipGaveta(id) {
+  const d = S.ipDocs.find(x => x.id === id); if (!d || d.status === 'lixeira') { S._ipGv = null; return null; }
+  const f = ipFmt(d), link = d.tipo === 'link', p = d.pub, o = d.orig, aqui = p && S.ipAparelho[d.id] === p.sha256;
+  if (p && !aqui) ipNoAparelho(d).then(x => { if (x && S.gv && S._ipGv === d.id) gvDesenha(); });
+  let c = '';
+  if (link) c += '<p class="gv-h">Endereço</p><p class="ip-link"><a href="' + esc(d.link) + '" target="_blank" rel="noopener">' + esc(d.link) + '</a></p>';
+  else if (p && ipVeNoApp()) c += '<p class="gv-h">Cópia de impressão</p><div class="ip-prev" data-ip-prev="' + esc(d.id) + '"><span class="ip-prevm">Abrindo o PDF…</span></div>';
+  else if (p) c += '<button type="button" class="ip-abrirpdf" data-act="ip-ver" data-id="' + esc(d.id) + '">' + ic('doc') + '<span><b>Ver o PDF</b><small>' + p.paginas + (p.paginas === 1 ? ' página' : ' páginas') + ' · ' + ipTam(p.bytes) + '</small></span>' + ic('externo') + '</button>';
+  if (d.status === 'obsoleto') c += lcAv('<b>Obsoleto:</b> este papel não imprime mais. Use a versão vigente.', 'cr');
+  else if (!link && !p) c += lcAv('Ainda sem cópia em PDF: este papel não imprime daqui. Salve em PDF no ' + (f === 'docx' ? 'Word' : 'Excel') + ' e anexe (no lápis), ou abra no Vértice Docs.', 'wa');
+  const rows = [['Pasta', ipPasta(d)], ['Formato', ipFmtTxt(d)], ['Editado por', d.alteradoPor || ''], ['Data', fmtD(diaLocal(d.alteradoEm))]];
+  if (!link) rows.push(['Versão', String(d.rev || '')]);
+  if (p) rows.push(['Cópia em PDF', p.paginas + (p.paginas === 1 ? ' página' : ' páginas') + ' · ' + ipTam(p.bytes) + (p.orient === 'paisagem' ? ' · deitada' : '')]);
+  if (o) rows.push(['Arquivo de reserva', IP_FMT[o.formato] + ' · ' + ipTam(o.bytes)]);
+  if (p) rows.push(['Guardado no aparelho', aqui ? 'Sim, imprime sem internet' : 'Ainda não']);
+  rows.push(['Origem', d.origem === 'docs' ? 'Vértice Docs' : 'Importado aqui']);
+  c += gvCampos(rows);
+  /* baixar fica no corpo, lado a lado e do mesmo tamanho (no cabeçalho, 4 ícones espremiam o título) */
+  if (p || o) c += '<div class="ip-bx">' + (p ? '<button type="button" class="bt" data-act="ip-baixar" data-id="' + esc(d.id) + '" data-q="copia">' + ic('baixar') + 'Baixar o PDF</button>' : '') +
+    (o ? '<button type="button" class="bt" data-act="ip-baixar" data-id="' + esc(d.id) + '" data-q="orig">' + ic('baixar') + 'Baixar o ' + IP_FMT[o.formato] + '</button>' : '') + '</div>';
+  const cab = (ipPode() ? '<button type="button" class="bt ic-so" data-act="ip-editar" data-id="' + esc(d.id) + '" title="Editar ou trocar o arquivo" aria-label="Editar">' + ic('lapis') + '</button>' : '');
+  const vert = (d.tipo === 'planilha' || d.tipo === 'docx') && o ? '<button type="button" class="bt" data-act="ip-no-vertice" data-id="' + esc(d.id) + '">' + ic('externo') + 'Abrir no Vértice</button>' : '';
+  const pe = link ? '<span class="au-pesp"></span><a class="bt pr" href="' + esc(d.link) + '" target="_blank" rel="noopener">' + ic('externo') + 'Abrir o link</a>'
+    : vert + '<span class="au-pesp"></span><button type="button" class="bt pr" data-act="ip-imprimir" data-id="' + esc(d.id) + '"' + (ipImprime(d) ? '' : ' disabled') + '>' + ic('impressora') + 'Imprimir</button>';
+  return { ico: link ? 'externo' : f === 'xlsx' ? 'planilha' : 'doc', sub: [d.codigo, ipFmtTxt(d), link ? '' : 'versão ' + d.rev].filter(Boolean).join(' · '), titulo: d.nome, pill: ipPill(d), cabAcoes: cab,
+    lixeira: ipPode() ? { act: 'ip-lixo', id: d.id, titulo: 'Mandar para a lixeira' } : null, corpo: c, rodape: pe };
+}
+/* prévia do PDF dentro da gaveta (PC); o endereço temporário é solto quando a gaveta muda */
+GV_DEPOIS.push(async g => {
+  const box = g.querySelector('[data-ip-prev]'); if (!box) return;
+  const d = S.ipDocs.find(x => x.id === box.getAttribute('data-ip-prev')); if (!d || !d.pub) return;
+  if (S._ipPrev && S._ipPrev.ch === ipChave(d, 'copia')) { box.innerHTML = '<iframe title="Prévia do PDF" src="' + esc(S._ipPrev.url) + '#toolbar=0&navpanes=0&view=FitH"></iframe>'; return; }
+  try {
+    const buf = await ipArquivo(d, 'copia'); if (!box.isConnected) return;
+    if (S._ipPrev) URL.revokeObjectURL(S._ipPrev.url);
+    S._ipPrev = { ch: ipChave(d, 'copia'), url: URL.createObjectURL(new Blob([buf], { type: 'application/pdf' })) };
+    box.innerHTML = '<iframe title="Prévia do PDF" src="' + esc(S._ipPrev.url) + '#toolbar=0&navpanes=0&view=FitH"></iframe>';
+    const dd = [...g.querySelectorAll('.gv-fl dt')].find(x => /Guardado no aparelho/.test(x.textContent)); if (dd && dd.nextElementSibling) dd.nextElementSibling.textContent = 'Sim, imprime sem internet'; /* passou a estar no aparelho */
+  } catch (e) { box.innerHTML = '<span class="ip-prevm">' + esc(e.message) + '</span>'; }
+});
+
+/* ---------- imprimir, ver, baixar ---------- */
+async function ipImprimir(id) {
+  const d = S.ipDocs.find(x => x.id === id); if (!d) return;
+  if (d.status === 'obsoleto') return aviso('Obsoleto: este papel não imprime mais. Use a versão vigente.', 'erro');
+  if (!d.pub) return aviso('Este papel ainda não tem cópia em PDF.', 'erro');
+  let buf; try { buf = await ipArquivo(d, 'copia'); } catch (e) { return aviso(e.message, 'erro'); }
+  const url = URL.createObjectURL(new Blob([buf], { type: 'application/pdf' }));
+  Audit.log({ acao: 'imprimir_impresso', entidade: 'impresso', entidadeId: d.id, resumo: 'Imprimiu ' + (d.codigo ? d.codigo + ' ' : '') + d.nome + ' (versão ' + d.rev + ')' });
+  if (!ipVeNoApp()) { ipAbrirFora(url, ipNomeArq(d, 'pdf')); return; }
+  const v = $('#ip-imp'); if (v) v.remove();
+  const fr = document.createElement('iframe'); fr.id = 'ip-imp'; fr.title = 'Impressão'; fr.className = 'ip-imp'; fr.src = url;
+  /* devolve quando a impressão foi chamada (o kit do envio imprime um papel depois do outro) */
+  return new Promise(ok => {
+    let feito = false; const fim = () => { if (!feito) { feito = true; ok(); } };
+    fr.onload = () => { setTimeout(() => { try { fr.contentWindow.focus(); fr.contentWindow.print(); } catch (e) { ipAbrirFora(url, ipNomeArq(d, 'pdf')); } fim(); }, 250); };
+    document.body.appendChild(fr); S._ipImp = { id: d.id, url: url }; setTimeout(fim, 8000);
+  });
+}
+/* celular: o PDF abre no leitor do aparelho (de lá se imprime); se a aba nova for bloqueada, baixa */
+function ipAbrirFora(url, nome) { const w = window.open(url, '_blank', 'noopener'); if (!w) ipSalvar(url, nome); }
+function ipSalvar(url, nome) { const a = document.createElement('a'); a.href = url; a.download = nome; document.body.appendChild(a); a.click(); a.remove(); }
+async function ipVer(id) { const d = S.ipDocs.find(x => x.id === id); if (!d) return; try { const buf = await ipArquivo(d, 'copia'); ipAbrirFora(URL.createObjectURL(new Blob([buf], { type: 'application/pdf' })), ipNomeArq(d, 'pdf')); } catch (e) { aviso(e.message, 'erro'); } }
+const IP_MIME = { pdf: 'application/pdf', xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' };
+async function ipBaixar(id, qual) {
+  const d = S.ipDocs.find(x => x.id === id); if (!d) return;
+  try { const buf = await ipArquivo(d, qual), ext = qual === 'orig' ? (d.orig.formato === 'imagem' ? 'jpg' : d.orig.formato) : 'pdf'; ipSalvar(URL.createObjectURL(new Blob([buf], { type: IP_MIME[ext] || 'application/octet-stream' })), qual === 'orig' && d.orig.nomeArquivo ? d.orig.nomeArquivo : ipNomeArq(d, ext)); }
+  catch (e) { aviso(e.message, 'erro'); }
+}
+/* v0.6.9: até a ponte com o Vértice (v0.6.11), "Abrir no Vértice" baixa o arquivo e abre o Vértice numa aba nova */
+async function ipNoVertice(id) {
+  const d = S.ipDocs.find(x => x.id === id); if (!d || !d.orig) return;
+  const w = window.open(IP_VERTICE, '_blank', 'noopener');
+  await ipBaixar(id, 'orig');
+  aviso(w ? 'O arquivo foi baixado. No Vértice Docs, abra o arquivo baixado para editar.' : 'O arquivo foi baixado. Abra o Vértice Docs e, nele, o arquivo baixado.');
+}
+
+/* ---------- Reserva: ZIP com todos (sem compressão, para abrir em qualquer computador) ---------- */
+const IP_CRC = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+const ipCrc = a => { let c = 0xFFFFFFFF; for (let i = 0; i < a.length; i++) c = IP_CRC[(c ^ a[i]) & 0xFF] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; };
+function ipZip(arqs) {
+  const enc = new TextEncoder(), loc = [], cen = []; let off = 0;
+  const dt = new Date(), dosT = (dt.getHours() << 11) | (dt.getMinutes() << 5) | (dt.getSeconds() >> 1), dosD = ((dt.getFullYear() - 1980) << 9) | ((dt.getMonth() + 1) << 5) | dt.getDate();
+  arqs.forEach(a => {
+    const nome = enc.encode(a.nome), dados = new Uint8Array(a.dados), crc = ipCrc(dados), h = new DataView(new ArrayBuffer(30));
+    [[0, 0x04034b50, 4], [4, 20, 2], [6, 0x0800, 2], [8, 0, 2], [10, dosT, 2], [12, dosD, 2], [14, crc, 4], [18, dados.length, 4], [22, dados.length, 4], [26, nome.length, 2], [28, 0, 2]].forEach(([p, v, n]) => n === 4 ? h.setUint32(p, v, true) : h.setUint16(p, v, true));
+    loc.push(new Uint8Array(h.buffer), nome, dados);
+    const c = new DataView(new ArrayBuffer(46));
+    [[0, 0x02014b50, 4], [4, 20, 2], [6, 20, 2], [8, 0x0800, 2], [10, 0, 2], [12, dosT, 2], [14, dosD, 2], [16, crc, 4], [20, dados.length, 4], [24, dados.length, 4], [28, nome.length, 2], [30, 0, 2], [32, 0, 2], [34, 0, 2], [36, 0, 2], [38, 0, 4], [42, off, 4]].forEach(([p, v, n]) => n === 4 ? c.setUint32(p, v, true) : c.setUint16(p, v, true));
+    cen.push(new Uint8Array(c.buffer), nome);
+    off += 30 + nome.length + dados.length;
+  });
+  const tc = cen.reduce((s, x) => s + x.length, 0), fim = new DataView(new ArrayBuffer(22));
+  [[0, 0x06054b50, 4], [4, 0, 2], [6, 0, 2], [8, arqs.length, 2], [10, arqs.length, 2], [12, tc, 4], [16, off, 4], [20, 0, 2]].forEach(([p, v, n]) => n === 4 ? fim.setUint32(p, v, true) : fim.setUint16(p, v, true));
+  return new Blob(loc.concat(cen, [new Uint8Array(fim.buffer)]), { type: 'application/zip' });
+}
+async function ipReserva() {
+  if (S._ipReserva) return; const l = ipVivos(); if (!l.length) return;
+  const total = l.reduce((s, d) => s + (d.pub ? d.pub.bytes : 0) + (d.orig ? d.orig.bytes : 0), 0);
+  csConfirma({ titulo: 'Baixar a reserva de todos os impressos?', texto: l.length + ' impressos, cerca de ' + ipTam(total || 1) + '. O que este aparelho ainda não tem é lido da nuvem. Guarde o arquivo no computador ou no OneDrive.', sim: 'Baixar a reserva', nao: 'Agora não' }, async () => {
+    S._ipReserva = true; aviso('Preparando a reserva…');
+    const arqs = [], falhas = [], linhas = [['Pasta', 'Código', 'Nome', 'Formato', 'Situação', 'Versão', 'Editado por', 'Data', 'Arquivos'].join(';')], dir = s => String(s).replace(/[\\/:*?"<>|]+/g, '-');
+    try {
+      for (const d of l) {
+        const fs = [], pasta = d.status === 'obsoleto' ? 'Obsoletos' : ipPasta(d);
+        for (const q of ['copia', 'orig']) {
+          if (!(q === 'copia' ? d.pub : d.orig)) continue;
+          try { const buf = await ipArquivo(d, q), ext = q === 'orig' ? (d.orig.formato === 'imagem' ? 'jpg' : d.orig.formato) : 'pdf', nome = dir(pasta) + '/' + (q === 'orig' && d.orig.nomeArquivo ? dir(d.orig.nomeArquivo) : ipNomeArq(d, ext)); arqs.push({ nome: nome, dados: buf }); fs.push(nome); }
+          catch (e) { falhas.push(d.nome); }
+        }
+        linhas.push([pasta, d.codigo || '', d.nome, ipFmtTxt(d), ipSit(d)[0], d.tipo === 'link' ? '' : d.rev, d.alteradoPor || '', fmtD(diaLocal(d.alteradoEm)), d.tipo === 'link' ? d.link : fs.join(' | ')].map(x => '"' + String(x == null ? '' : x).replace(/"/g, '""') + '"').join(';'));
+      }
+      arqs.unshift({ nome: 'LISTA.csv', dados: new TextEncoder().encode('﻿' + linhas.join('\r\n')).buffer });
+      ipSalvar(URL.createObjectURL(ipZip(arqs)), 'efcwork-impressos-reserva-' + hojeISO() + '.zip');
+      Audit.log({ acao: 'reserva_impressos', entidade: 'impresso', entidadeId: '', resumo: 'Baixou a reserva dos impressos (' + (arqs.length - 1) + ' arquivos)' });
+      aviso(falhas.length ? 'Reserva baixada, mas ' + falhas.length + ' não vieram (sem internet?): ' + falhas.slice(0, 3).join(', ') + (falhas.length > 3 ? '…' : '') : 'Reserva baixada: ' + (arqs.length - 1) + ' arquivos e a lista.', falhas.length ? 'erro' : '');
+    } finally { S._ipReserva = false; }
+  });
+}
+
+/* ---------- importar, editar, nova versão ---------- */
+function ipPastas() { return Array.from(new Set(IP_PASTAS.concat(ipVivos().map(d => String(d.pastaNome || '').trim()).filter(Boolean)))).sort((a, b) => (IP_PASTAS.indexOf(a) + 1 || 99) - (IP_PASTAS.indexOf(b) + 1 || 99) || cmpTxt(a, b)); }
+function ipArqBl(f, campo, rot, dica, aceita) {
+  const a = f[campo];
+  return lcBl(rot, '<label class="ip-arq' + (a ? ' tem' : '') + '">' + ic(a ? (a.fmt === 'xlsx' ? 'planilha' : a.fmt === 'imagem' ? 'imagem' : 'doc') : 'mais') + '<span><b>' + esc(a ? a.nome : 'Escolher arquivo') + '</b><small>' + esc(a ? (IP_FMT[a.fmt] || '') + ' · ' + ipTam(a.bytes) + (a.fmt === 'imagem' ? ' · vira PDF de 1 página' : '') : dica) + '</small></span><input type="file" data-ip-arq="' + campo + '" accept="' + aceita + '" hidden></label>' +
+    (a ? '<button type="button" class="bt ic-so ip-arqx" data-act="ip-arq-x" data-c="' + campo + '" title="Tirar o arquivo" aria-label="Tirar o arquivo">' + ic('x') + '</button>' : ''), '', 'ip-arqc');
+}
+LC_FORM.ipEd = f => {
+  const d = f.id ? S.ipDocs.find(x => x.id === f.id) : null, link = d ? d.tipo === 'link' : f.modo === 'link', a = f.arq, planilha = a ? (a.fmt === 'xlsx' || a.fmt === 'docx') : d && !f.trocar && (d.tipo === 'planilha' || d.tipo === 'docx');
+  const pastas = ipPastas();
+  let c = lcMsg();
+  if (!d) c += lcBl('O que vai importar', ddHTML('ip:modo', link ? 'link' : 'arq', [['arq', 'Arquivo: PDF, foto, Excel ou Word'], ['link', 'Link (só o endereço, sem arquivo)']]));
+  if (link) c += lcBl('Endereço', lcIn('link', f.link, ' type="url" inputmode="url" placeholder="https://"'), 'abre numa aba nova; não ocupa espaço');
+  else if (!d || f.trocar) {
+    c += ipArqBl(f, 'arq', d ? 'Novo arquivo (vira a versão ' + ((d.rev || 0) + 1) + ')' : 'Arquivo', 'PDF, JPG, PNG, Excel (.xlsx) ou Word (.docx)', '.pdf,.jpg,.jpeg,.png,.webp,.xlsx,.docx,application/pdf,image/jpeg,image/png');
+    if (planilha) c += ipArqBl(f, 'pdf', 'Cópia em PDF', 'opcional · salve em PDF no ' + (a && a.fmt === 'docx' ? 'Word' : 'Excel') + ' para já imprimir', '.pdf,application/pdf');
+  } else if (d.tipo !== 'link') {
+    c += '<div class="ip-atual"><span><b>Versão ' + d.rev + '</b><small>' + esc([ipFmtTxt(d), d.pub ? ipTam(d.pub.bytes) + ' em PDF' : 'sem cópia em PDF', d.orig ? ipTam(d.orig.bytes) + ' de reserva' : ''].filter(Boolean).join(' · ')) + '</small></span><button type="button" class="bt" data-act="ip-trocar">' + ic('mais') + 'Nova versão</button></div>';
+    if (planilha && !d.pub) c += ipArqBl(f, 'pdf', 'Cópia em PDF', 'salve em PDF no ' + (d.tipo === 'docx' ? 'Word' : 'Excel') + ' para imprimir', '.pdf,application/pdf');
+  }
+  c += '<div class="fm-g">' + lcBl('Nome', lcIn('nome', f.nome, ' maxlength="120" placeholder="Ex.: Ficha de cotação · Laboratório A"')) + lcBl('Código', lcIn('codigo', f.codigo, ' maxlength="20" placeholder="opcional"')) + '</div>';
+  c += '<div class="fm-g">' + lcBl('Pasta', ddHTML('ip:pasta', f.pasta, pastas.map(p => [p, p]).concat([['__outra', 'Outra pasta…']]))) +
+    (d ? lcBl('Situação', ddHTML('ip:sit', f.sit, [['vigente', 'Vigente'], ['obsoleto', 'Obsoleto (não imprime)']])) : '<div></div>') + '</div>';
+  if (f.pasta === '__outra') c += lcBl('Nome da pasta nova', lcIn('pastaNova', f.pastaNova, ' maxlength="40" placeholder="Ex.: Laudos-modelo"'));
+  const esp = ipEspaco(); if (esp / IP_TETO >= 0.8) c += lcAv('Os impressos já ocupam ' + ipTam(esp) + ' dos 150 MB.', esp >= IP_TETO ? 'cr' : 'wa');
+  return { ico: d ? 'lapis' : 'mais', sub: 'Documentos › Impressos', titulo: d ? (f.trocar ? 'Nova versão' : 'Editar impresso') : 'Importar impresso', corpo: c, rodape: lcPe('ip-ok', d ? 'Salvar' : 'Importar') };
+};
+DD_AO.ip = (k, v) => { const f = S.fm; if (!f) return; f.sujo = true; f.msg = ''; if (k === 'modo') f.modo = v; else if (k === 'pasta') f.pasta = v; else if (k === 'sit') f.sit = v; gvDesenha(true); };
+document.addEventListener('change', async e => {
+  const t = e.target; if (!t || !t.hasAttribute || !t.hasAttribute('data-ip-arq') || !S.fm || S.fm.k !== 'ipEd' || !t.files || !t.files[0]) return;
+  const campo = t.getAttribute('data-ip-arq'), arq = t.files[0], f = S.fm; t.value = '';
+  let fmt = ipTipoArq(arq);
+  if (fmt === 'velho') return lcErro('Este formato antigo não entra. No Excel ou no Word, use Salvar como .xlsx ou .docx (ou salve em PDF).');
+  if (!fmt || (campo === 'pdf' && fmt !== 'pdf')) return lcErro(campo === 'pdf' ? 'Aqui vai só o PDF.' : 'Use PDF, JPG, PNG, Excel (.xlsx) ou Word (.docx).');
+  try {
+    let buf, orient = 'retrato', info = null, foto = null;
+    if (fmt === 'imagem') { const r = await ipFotoPdf(arq); buf = r.buf; orient = r.orient; foto = arq; }
+    else buf = await ipLerArq(arq);
+    if (fmt === 'pdf' || fmt === 'imagem') { info = ipPdfInfo(buf); if (!info) return lcErro('Este arquivo não parece um PDF válido.'); if (fmt === 'pdf') orient = info.orient; if (buf.byteLength > IP_COPIA_MAX) return lcErro('O PDF tem ' + ipTam(buf.byteLength) + ' e o limite é ' + ipTam(IP_COPIA_MAX) + '. Reduza (salve em tamanho mínimo) ou guarde como link.'); }
+    else if (buf.byteLength > IP_ORIG_MAX) return lcErro('O arquivo tem ' + ipTam(buf.byteLength) + ' e o limite do arquivo de reserva é ' + ipTam(IP_ORIG_MAX) + '. Salve em PDF e importe o PDF.');
+    if (S.fm !== f) return;
+    f[campo] = { buf: buf, nome: arq.name, bytes: buf.byteLength, fmt: fmt, orient: orient, paginas: info ? info.paginas : 0, foto: !!foto };
+    if (campo === 'arq' && fmt !== 'xlsx' && fmt !== 'docx') f.pdf = null;
+    if (campo === 'arq' && !String(f.nome || '').trim()) f.nome = arq.name.replace(/\.[^.]+$/, '').replace(/[_]+/g, ' ').replace(/[\\/:*?"<>|]+/g, '-').trim().slice(0, 120);
+    f.sujo = true; f.msg = ''; gvDesenha(true);
+  } catch (er) { lcErro(er.message || 'Não deu para ler o arquivo.'); }
+});
+async function ipMeta(buf, info) { return { bytes: buf.byteLength, partes: Math.ceil(ipChars(buf.byteLength) / IP_PARTE), sha256: await ipSha(buf), paginas: info.paginas || 1, orient: info.orient || 'retrato' }; }
+async function ipSobe(id, qual, rev, buf) {
+  const b64 = ipB64(buf), n = Math.ceil(b64.length / IP_PARTE);
+  for (let k = 0; k < n; k++) await Data.col('efd_partes').set(ipParteId(id, qual, rev, k), { docId: id, qual: qual, rev: rev, n: k, de: n, b64: b64.slice(k * IP_PARTE, (k + 1) * IP_PARTE), criadoEm: nowISO(), porId: S.user.id });
+  await ipCache('readwrite', id + '|' + qual + '|' + await ipSha(buf), buf);
+}
+/* esvazia os pedaços de uma versão antiga (o Firestore do plano grátis cobra o espaço; nada é apagado de verdade, como no resto do app) */
+async function ipEsvazia(id, qual, rev, partes) { for (let k = 0; k < (partes || 0); k++) { try { await Data.col('efd_partes').set(ipParteId(id, qual, rev, k), { docId: id, qual: qual, rev: rev, n: k, de: partes, b64: '', apagadaEm: nowISO() }); } catch (e) { console.warn(e); } } }
+async function ipOk() {
+  const f = S.fm; if (!f || !ipPode()) return;
+  const d = f.id ? S.ipDocs.find(x => x.id === f.id) : null, link = !d ? f.modo === 'link' : d.tipo === 'link';
+  const nome = String(f.nome || '').trim().replace(/\s+/g, ' '), codigo = String(f.codigo || '').trim().toUpperCase(), pasta = f.pasta === '__outra' ? String(f.pastaNova || '').trim() : f.pasta;
+  if (!nome) return lcErro('Escreva o nome.');
+  if (/[\\/:*?"<>|]/.test(nome)) return lcErro('O nome não pode ter \\ / : * ? " < > |');
+  if (!pasta) return lcErro('Escreva o nome da pasta nova.');
+  if (link && !/^https:\/\/\S{4,}$/.test(String(f.link || '').trim())) return lcErro('O endereço precisa começar com https://');
+  const novo = !d || f.trocar, a = f.arq, pdfAnexo = f.pdf;
+  if (!link && novo && !a) return lcErro('Escolha o arquivo.');
+  const sit = d ? f.sit : 'vigente';
+  /* espaço: o que entra menos o que sai */
+  const entra = (a ? ipChars(a.bytes) : 0) + (pdfAnexo ? ipChars(pdfAnexo.bytes) : 0), sai = d && novo ? ipOcupa(d) : 0;
+  if (entra && ipEspaco() - sai + entra > IP_TETO) return lcErro('Não cabe: os impressos passariam de 150 MB. Mande para a lixeira o que não usa mais, ou guarde este como link.');
+  if (!lcTravar()) return;
+  const ts = nowISO(), id = d ? d.id : ipNovoId(), rev = !d ? 1 : novo ? (d.rev || 0) + 1 : d.rev || 1;
+  const ficha = Object.assign({ v: 1, id: id, cancelado: false, motivo: '', lixeiraEm: null, pasta: '', origem: 'efcwork', criadoPorId: S.user.id, criadoPor: S.user.nome, criadoEm: ts }, d ? JSON.parse(JSON.stringify(d)) : {}, {
+    nome: nome, codigo: codigo, pastaNome: pasta, alteradoPorId: S.user.id, alteradoPor: S.user.nome, alteradoEm: ts, rev: link ? 1 : rev });
+  delete ficha.srv;
+  const pub = (buf, info) => ipMeta(buf, info).then(m => ({ rev: rev, em: ts, porId: S.user.id, por: S.user.nome, formato: 'pdf', bytes: m.bytes, partes: m.partes, sha256: m.sha256, paginas: m.paginas, papel: 'A4', orient: m.orient, preenche: 'nao', campos: [] }));
+  try {
+    const sobe = [];
+    if (link) Object.assign(ficha, { tipo: 'link', link: String(f.link || '').trim(), pub: null, orig: null });
+    else if (novo) {
+      if (a.fmt === 'xlsx' || a.fmt === 'docx') {
+        ficha.tipo = a.fmt === 'xlsx' ? 'planilha' : 'docx';
+        ficha.orig = { formato: a.fmt, bytes: a.bytes, partes: Math.ceil(ipChars(a.bytes) / IP_PARTE), sha256: await ipSha(a.buf), nomeArquivo: a.nome.slice(0, 140), rev: rev };
+        sobe.push(['orig', a.buf]);
+        if (pdfAnexo) { ficha.pub = await pub(pdfAnexo.buf, pdfAnexo); sobe.push(['copia', pdfAnexo.buf]); } else ficha.pub = null;
+      } else {
+        ficha.tipo = 'externo'; ficha.pub = await pub(a.buf, a); sobe.push(['copia', a.buf]);
+        ficha.orig = null; ficha.fonteFoto = a.fmt === 'imagem';
+      }
+    } else if (pdfAnexo && !d.pub) { ficha.pub = await pub(pdfAnexo.buf, pdfAnexo); ficha.pub.rev = d.rev; sobe.push(['copia', pdfAnexo.buf]); }
+    ficha.status = sit === 'obsoleto' ? 'obsoleto' : (ficha.tipo === 'link' || ficha.pub) ? 'vigente' : 'rascunho';
+    const erros = EFD.ficha(ficha); if (erros.length) { console.error('Contrato EFD', erros); if (S.fm) S.fm._trava = 0; return lcErro('Não deu para salvar: ' + erros[0] + '.'); }
+    if (sobe.reduce((t, x) => t + x[1].byteLength, 0) > 400000) aviso('Enviando o arquivo…');
+    for (const [q, buf] of sobe) await ipSobe(id, q, q === 'copia' ? ficha.pub.rev : rev, buf);
+    await Data.col('efd_docs').set(id, ficha);
+    if (d && novo) { if (d.pub) await ipEsvazia(d.id, 'copia', d.pub.rev, d.pub.partes); if (d.orig) await ipEsvazia(d.id, 'orig', d.orig.rev || d.rev, d.orig.partes); }
+    Audit.log({ acao: !d ? 'importar_impresso' : novo ? 'versao_impresso' : 'editar_impresso', entidade: 'impresso', entidadeId: id, resumo: (!d ? 'Importou' : novo ? 'Nova versão (' + rev + ') de' : 'Editou') + ' o impresso ' + (codigo ? codigo + ' ' : '') + nome + (d && d.status !== ficha.status ? ' · ' + ipSit(ficha)[0].toLowerCase() : '') });
+    if (ficha.pub) S.ipAparelho[id] = ficha.pub.sha256;
+    if (d && novo && typeof ktAvisaVersao === 'function') ktAvisaVersao(ficha, rev); /* sugestão 1 (v0.6.10) */
+    lcFim(); aviso(!d ? 'Impresso importado.' : novo ? 'Versão ' + rev + ' salva.' : 'Impresso salvo.');
+  } catch (e) { console.error(e); if (S.fm) S.fm._trava = 0; lcErro(svErro(e)); }
+}
+function ipLixo(id) {
+  const d = S.ipDocs.find(x => x.id === id); if (!d || !ipPode()) return;
+  csConfirma({ titulo: 'Mandar "' + d.nome + '" para a lixeira?', texto: 'Some da lista e não imprime mais. O registro fica no histórico; os arquivos deixam de ocupar espaço na nuvem.', sim: 'Mandar para a lixeira', nao: 'Cancelar' }, async () => {
+    try {
+      await Data.col('efd_docs').update(d.id, { status: 'lixeira', lixeiraEm: nowISO(), alteradoPorId: S.user.id, alteradoPor: S.user.nome, alteradoEm: nowISO() });
+      if (d.pub) await ipEsvazia(d.id, 'copia', d.pub.rev, d.pub.partes); if (d.orig) await ipEsvazia(d.id, 'orig', d.orig.rev || d.rev, d.orig.partes);
+      Audit.log({ acao: 'lixeira_impresso', entidade: 'impresso', entidadeId: d.id, resumo: 'Mandou para a lixeira o impresso ' + (d.codigo ? d.codigo + ' ' : '') + d.nome });
+      S._ipGv = null; gvFechar(); aviso('Mandado para a lixeira.');
+    } catch (e) { aviso(svErro(e), 'erro'); }
+  });
+}
+
+document.addEventListener('click', ev => {
+  const t = ev.target.closest && ev.target.closest('[data-act^="ip-"]'); if (!t) return;
+  const a = t.getAttribute('data-act'), id = t.getAttribute('data-id'), f = S.fm;
+  const vol = S.gv && !S.gvForm ? S.gv : null, volta = vol ? () => gvAbrir(vol) : null;
+  if (a === 'ip-importar') { if (!ipPode()) return; lcAbrir({ k: 'ipEd', id: '', modo: 'arq', nome: '', codigo: '', pasta: IP_PASTAS[1], pastaNova: '', link: '', arq: null, pdf: null }, null); }
+  else if (a === 'ip-editar') { const d = S.ipDocs.find(x => x.id === id); if (!d || !ipPode()) return; lcAbrir({ k: 'ipEd', id: d.id, nome: d.nome, codigo: d.codigo || '', pasta: ipPasta(d) === 'Sem pasta' ? IP_PASTAS[1] : ipPasta(d), pastaNova: '', sit: d.status === 'obsoleto' ? 'obsoleto' : 'vigente', link: d.link || '', arq: null, pdf: null, trocar: false }, volta); }
+  else if (a === 'ip-trocar' && f) { f.trocar = true; f.sujo = true; gvDesenha(true); }
+  else if (a === 'ip-arq-x' && f) { f[t.getAttribute('data-c')] = null; if (t.getAttribute('data-c') === 'arq') f.pdf = null; f.sujo = true; gvDesenha(true); }
+  else if (a === 'ip-ok') ipOk();
+  else if (a === 'ip-imprimir') ipImprimir(id);
+  else if (a === 'ip-ver') ipVer(id);
+  else if (a === 'ip-baixar') ipBaixar(id, t.getAttribute('data-q'));
+  else if (a === 'ip-no-vertice') ipNoVertice(id);
+  else if (a === 'ip-reserva') ipReserva();
+  else if (a === 'ip-lixo') ipLixo(id);
+});
+
+/* ===== kit.js ===== */
+/* EFCwork · kit.js — Kit do laboratório e papéis do envio (v0.6.10). Prefixo: kt.
+   Plano de integração v2, ITENS 6 e 7 e as sugestões 1, 3 e 5 (aprovados em 12/11/2026 13:51).
+   - Coletas › Envio ganha a vista Laboratórios (lista retrátil Remessas | Laboratórios). Tocar num laboratório abre a gaveta com o endereço
+     (destinatário do rótulo) e o kit de impressão: o rótulo do sistema e os papéis de Documentos › Impressos ligados àquele laboratório.
+     Em cada papel: Sempre, Perguntar ou Só se eu pedir; e para qual análise vale (sugestão 5).
+   - Endereços no cadastro, nada no código: sv2_cfg/coletas.labInfo[nome do laboratório] = {nome, end, bairro, cidade, uf, cep, contato, conteudo, rotulo}.
+     O remetente vem do cadastro da empresa do EFClaudian (sv2_cfg/empresa: razao e unid.matriz/filial), a unidade pela fazenda do talhão.
+   - Kit em sv2_impressos (Contrato EFD v1, ponto 'coletas.envio'): {v, ponto, nome, docId, lab, copias, ordem, ativo, quando, analise}.
+   - Depois de enviar amostras (como no EFClaudian), abre "Papéis deste envio": Sempre já marcado, Perguntar desmarcado; "Quer acrescentar algo
+     na ficha?" com amostras, caixas, análise e pontos sugeridos pelo envio. O rótulo sai uma folha por caixa (A4 em pé, "Caixa 1 de 2").
+     Fica registrado em sv2_envio_imp (o que saiu, de que versão, quem e quando, e os dados) para Reimprimir (sugestão 3) e para o resumo. */
+Object.assign(S, { ktKit: [], ktImp: [], coEnvVista: 'rem' });
+const KT_QUANDO = [['sempre', 'Sempre'], ['perguntar', 'Perguntar'], ['pedir', 'Só se eu pedir']];
+const KT_ROTULO = '__rotulo';
+
+CS_CARGAS.push(() => {
+  if (!coVe()) return;
+  const re = () => { if (S.rota.area === 'coletas' || (S.rota.area === 'documentos' && S.rota.aba === 'impressos')) render(); else if (S.gv) gvDesenha(); };
+  csOuve('sv2_impressos', l => { S.ktKit = (l || []).filter(x => x && x.v === 1); re(); });
+  csOuve('sv2_envio_imp', l => { S.ktImp = l || []; re(); }, { order: 'em', limit: 400 });
+});
+
+/* ---------- dados ---------- */
+const ktPodeCad = () => isSup(S.user);
+const ktInfo = lab => ((S.cfgCol || {}).labInfo || {})[lab] || null;
+const ktTemEnd = i => !!(i && i.nome && i.end);
+const ktKitDe = lab => S.ktKit.filter(x => x.ativo !== false && x.ponto === 'coletas.envio' && (x.lab === lab || !x.lab)).sort((a, b) => (a.ordem || 0) - (b.ordem || 0) || cmpTxt(a.nome, b.nome));
+const ktDoc = id => S.ipDocs.find(d => d.id === id) || null;
+const ktRotQuando = lab => { const i = ktInfo(lab); return (i && i.rotulo) || 'sempre'; };
+const ktImpId = k => k.split('|')[0] + '_' + slugLogin(k.split('|').slice(1).join('|') || 'sem-lab').replace(/\./g, '-').slice(0, 60);
+const ktUltimo = k => S.ktImp.filter(x => x.k === k).sort((a, b) => String(b.em).localeCompare(String(a.em)))[0] || null;
+const ktAnalises = () => Array.from(new Set(S.coletas.map(c => c.analiseNome || c.sigla).filter(Boolean).concat((S.analises || []).map(a => a.nome).filter(Boolean)))).sort(cmpTxt);
+function ktUnidade(l) {
+  const n = { matriz: 0, filial: 0 }; (l || []).forEach(c => { const f = typeof pgFazenda === 'function' ? pgFazenda(c.talhao) : null; n[(f && f.unidade) === 'filial' ? 'filial' : 'matriz']++; });
+  return n.filial > n.matriz ? 'filial' : 'matriz';
+}
+function ktRemetente(u) {
+  const e = S.empresa || {}, x = ((e.unid || {})[u]) || {};
+  return { razao: String(e.razao || e.nome || '').trim(), nome: String(x.nome || (u === 'filial' ? 'Filial' : 'Matriz')).trim(), end: String(x.end || '').trim(), bairro: String(x.bairro || '').trim(), cep: String(x.cep || '').trim(), mun: String(x.mun || '').trim(), uf: String(x.uf || '').trim() };
+}
+const ktRemOk = r => !!(r.razao && r.end);
+const ktDestLinhas = i => !i ? [] : [i.end, i.bairro ? 'Bairro: ' + i.bairro : '', [i.cidade, i.uf].filter(Boolean).join(' – ') + (i.cep ? ' - CEP ' + i.cep : ''), i.contato].filter(x => String(x || '').trim());
+
+/* ---------- Envio › Laboratórios ---------- */
+function ktLinhas() {
+  const nomes = Array.from(new Set(coLabs().concat(Object.keys((S.cfgCol || {}).labInfo || {})))).filter(Boolean).sort(cmpTxt);
+  const ult = {}; coAtivas().forEach(c => { if (c.enviado && c.envio && c.lab && (!ult[c.lab] || c.envio > ult[c.lab])) ult[c.lab] = c.envio; });
+  return nomes.map(n => { const i = ktInfo(n), kit = ktKitDe(n).filter(x => ktDoc(x.docId)); return { id: n, nome: n, cid: i ? [i.cidade, i.uf].filter(Boolean).join(' · ') : '', kit: kit.length + (ktRotQuando(n) !== 'pedir' ? 1 : 0), ult: ult[n] || '', st: !ktTemEnd(i) ? 'end' : kit.length ? 'ok' : 'rot' }; });
+}
+const KT_ST = { ok: ['Kit pronto', 'ok'], rot: ['Só o rótulo', ''], end: ['Falta o endereço', 'wa'] };
+function ktTabLabs() {
+  return tbHTML({ id: 'kt-labs', titulo: 'Laboratórios', unidade: 'laboratórios', linhas: ktLinhas(), aoClicar: n => ktAbreLab(n), busca: r => [r.nome, r.cid].join(' '), vazio: 'Nenhum laboratório cadastrado (os laboratórios vêm do cadastro das Coletas no EFClaudian).',
+    cols: [{ k: 'nome', rot: 'Laboratório', v: r => r.nome, cls: 'forte' }, { k: 'cid', rot: 'Cidade', v: r => r.cid }, { k: 'kit', rot: 'Papéis do kit', tipo: 'num', v: r => r.kit },
+      { k: 'ult', rot: 'Último envio', tipo: 'data', v: r => r.ult }, { k: 'st', rot: 'Situação', v: r => KT_ST[r.st][0], html: r => alPill(KT_ST[r.st][0], KT_ST[r.st][1]) }] });
+}
+DD_AO.kt = (k, v) => {
+  if (k === 'vista') { S.coEnvVista = v; render(); return; }
+  if (k.indexOf('q:') === 0) return ktQuando(k.slice(2), v);
+  const f = S.fm; if (!f) return; f.sujo = true; f.msg = '';
+  if (k === 'doc') f.docId = v; else if (k === 'quando') f.quando = v; else if (k === 'analise') f.analise = v; else if (k === 'copias') f.copias = v; else if (k === 'rem') { ktPapCarrega(f, v); f.sujo = false; } else if (k === 'unid') f.unid = v;
+  gvDesenha(true);
+};
+/* gaveta do laboratório: endereço e kit */
+function ktAbreLab(nome) { S._ktLab = nome; gvAbrir(() => ktGavLab(nome)); }
+function ktGavLab(nome) {
+  const i = ktInfo(nome), sup = ktPodeCad(), kit = ktKitDe(nome), linhas = ktDestLinhas(i);
+  const qdd = (id, v) => sup ? ddHTML('kt:q:' + id, v, KT_QUANDO.concat(id === KT_ROTULO ? [] : [['__tirar', 'Tirar do kit']])) : '<span class="kt-q">' + esc((KT_QUANDO.find(x => x[0] === v) || KT_QUANDO[0])[1]) + '</span>';
+  let c = '<p class="gv-h">Destinatário do rótulo</p>' + (ktTemEnd(i) ? gvCampos([['Nome', i.nome], ['Endereço', linhas[0] || ''], ['Bairro', i.bairro || ''], ['Cidade', [i.cidade, i.uf].filter(Boolean).join(' · ')], ['CEP', i.cep || ''], ['Contato', i.contato || ''], ['Conteúdo', i.conteudo || '']])
+    : lcAv('Falta o endereço deste laboratório. ' + (sup ? 'Toque no lápis para cadastrar: ele vai no rótulo da caixa.' : 'Peça ao Administrador ou ao Líder para cadastrar.'), 'wa'));
+  c += '<p class="gv-h">Kit de impressão do envio</p><div class="ag-pn ag-gv kt-kit">' +
+    '<div class="ag-l"><span class="ag-t"><b>Rótulo destinatário e remetente</b><small>Do sistema · uma folha por caixa</small></span>' + qdd(KT_ROTULO, ktRotQuando(nome)) + '</div>' +
+    kit.map(x => { const d = ktDoc(x.docId); if (!d || d.status === 'lixeira') return ''; return '<div class="ag-l"><span class="ag-t"><b>' + esc(d.nome) + '</b><small>' + esc([ipFmtTxt(d), 'versão ' + d.rev, x.analise ? 'só ' + x.analise : '', x.copias === 'porCaixa' ? 'uma por caixa' : Number(x.copias) > 1 ? x.copias + ' cópias' : '', !x.lab ? 'todos os laboratórios' : '', d.status === 'obsoleto' ? 'OBSOLETO' : !d.pub ? 'sem cópia em PDF' : ''].filter(Boolean).join(' · ')) + '</small></span>' + qdd(x.id, x.quando || 'sempre') + '</div>'; }).join('') + '</div>';
+  if (!kit.length) c += '<p class="ag-dc">' + (sup ? 'Anexe a ficha, a cadeia de custódia ou o formulário deste laboratório (eles vêm de Documentos › Impressos).' : 'Só o rótulo, por enquanto.') + '</p>';
+  const st = !ktTemEnd(i) ? 'end' : kit.length ? 'ok' : 'rot';
+  return { ico: 'predio', sub: 'Coletas › Envio › Laboratórios', titulo: nome, pill: alPill(KT_ST[st][0], KT_ST[st][1]),
+    cabAcoes: sup ? '<button type="button" class="bt ic-so" data-act="kt-end" title="Endereço do laboratório" aria-label="Editar o endereço">' + ic('lapis') + '</button>' : '', corpo: c,
+    rodape: '<button type="button" class="bt" data-act="gv-fecha">Fechar</button><span class="au-pesp"></span>' + (sup ? '<button type="button" class="bt pr" data-act="kt-anexar">' + ic('mais') + 'Anexar papel</button>' : '') };
+}
+async function ktQuando(id, v) {
+  if (!ktPodeCad()) return; const lab = S._ktLab;
+  try {
+    if (id === KT_ROTULO) { const info = Object.assign({}, ((S.cfgCol || {}).labInfo || {})); info[lab] = Object.assign({}, info[lab] || {}, { rotulo: v }); await ktCfgGrava(info); }
+    else if (v === '__tirar') { const x = S.ktKit.find(y => y.id === id); await Data.col('sv2_impressos').update(id, { ativo: false, alteradoEm: nowISO(), alteradoPor: S.user.nome }); Audit.log({ acao: 'kit_tirar', entidade: 'impresso', entidadeId: id, resumo: 'Tirou do kit de ' + lab + ': ' + (x ? x.nome : '') }); aviso('Tirado do kit.'); }
+    else await Data.col('sv2_impressos').update(id, { quando: v, alteradoEm: nowISO(), alteradoPor: S.user.nome });
+  } catch (e) { aviso(svErro(e), 'erro'); }
+}
+async function ktCfgGrava(info) {
+  const cf = S.cfgCol; if (cf && cf.id) await Data.col('sv2_cfg').update('coletas', { labInfo: info });
+  else await Data.col('sv2_cfg').set('coletas', Object.assign({}, cf || {}, { labInfo: info }));
+  S.cfgCol = Object.assign({ id: 'coletas' }, S.cfgCol || {}, { labInfo: info });
+}
+/* endereço do laboratório */
+LC_FORM.ktEnd = f => ({ ico: 'lapis', sub: 'Coletas › Envio › ' + f.lab, titulo: 'Endereço do laboratório', corpo: lcMsg() +
+  '<p class="ag-dc">Vai no rótulo da caixa, como destinatário. Fica no cadastro (não no código do app).</p>' +
+  lcBl('Nome no rótulo', lcIn('nome', f.nome, ' maxlength="120" placeholder="Razão social do laboratório"')) + lcBl('Endereço', lcIn('end', f.end, ' maxlength="140" placeholder="Rua e número"')) +
+  '<div class="fm-g">' + lcBl('Bairro', lcIn('bairro', f.bairro, ' maxlength="80"')) + lcBl('CEP', lcIn('cep', f.cep, ' maxlength="10" inputmode="numeric" placeholder="00000-000"')) + '</div>' +
+  '<div class="fm-g">' + lcBl('Cidade', lcIn('cidade', f.cidade, ' maxlength="80"')) + lcBl('UF', lcIn('uf', f.uf, ' maxlength="2" autocapitalize="characters"')) + '</div>' +
+  lcBl('Contato', lcIn('contato', f.contato, ' maxlength="120" placeholder="Telefone ou setor de recebimento (opcional)"')) + lcBl('Conteúdo', lcIn('conteudo', f.conteudo, ' maxlength="140" placeholder="Ex.: amostras de solo para análise (opcional)"')),
+  rodape: lcPe('kt-end-ok', 'Salvar') });
+async function ktEndOk() {
+  const f = S.fm; if (!f || !ktPodeCad()) return;
+  const t = k => String(f[k] || '').trim().replace(/\s+/g, ' '), o = { nome: t('nome'), end: t('end'), bairro: t('bairro'), cidade: t('cidade'), uf: t('uf').toUpperCase(), cep: t('cep'), contato: t('contato'), conteudo: t('conteudo') };
+  if (!o.nome || !o.end) return lcErro('Escreva pelo menos o nome e o endereço.');
+  if (o.cep && !/^\d{5}-?\d{3}$/.test(o.cep)) return lcErro('CEP com 8 números (00000-000).');
+  if (o.uf && !/^[A-Z]{2}$/.test(o.uf)) return lcErro('UF com 2 letras.');
+  if (o.cep && o.cep.indexOf('-') < 0) o.cep = o.cep.slice(0, 5) + '-' + o.cep.slice(5);
+  if (!lcTravar()) return;
+  try {
+    const info = Object.assign({}, ((S.cfgCol || {}).labInfo || {})); info[f.lab] = Object.assign({}, info[f.lab] || {}, o, { alteradoEm: nowISO(), alteradoPor: S.user.nome });
+    await ktCfgGrava(info); Audit.log({ acao: 'lab_endereco', entidade: 'laboratorio', entidadeId: f.lab, resumo: 'Endereço do laboratório ' + f.lab + ' salvo' });
+    lcFim(); aviso('Endereço salvo.');
+  } catch (e) { if (S.fm) S.fm._trava = 0; lcErro(svErro(e)); }
+}
+/* anexar um papel de Documentos › Impressos ao kit */
+LC_FORM.ktAnexar = f => {
+  const docs = ipVivos().filter(d => d.tipo !== 'link' && d.status !== 'obsoleto').sort((a, b) => cmpTxt(ipPasta(a), ipPasta(b)) || cmpTxt(a.nome, b.nome)), ja = ktKitDe(f.lab).map(x => x.docId);
+  const ops = docs.filter(d => ja.indexOf(d.id) < 0).map(d => [d.id, (d.codigo ? d.codigo + ' · ' : '') + d.nome + (d.pub ? '' : ' (sem PDF)')]);
+  let c = lcMsg();
+  if (!ops.length) c += lcAv('Não há papel para anexar. Importe primeiro a ficha ou a custódia em Documentos › Impressos.', 'wa');
+  else c += lcBl('Papel', ddHTML('kt:doc', f.docId || '', [['', 'Escolha o papel']].concat(ops))) +
+    '<div class="fm-g">' + lcBl('Quando sai', ddHTML('kt:quando', f.quando, KT_QUANDO)) + lcBl('Cópias', ddHTML('kt:copias', f.copias, [['uma', '1 cópia'], ['2', '2 cópias'], ['3', '3 cópias'], ['porCaixa', 'Uma por caixa']])) + '</div>' +
+    lcBl('Vale para', ddHTML('kt:analise', f.analise || '', [['', 'Todas as análises']].concat(ktAnalises().map(a => [a, a]))), 'opcional') +
+    (ktPodeCad() ? '<label class="fm-ck"><input type="checkbox" data-fm="todos"' + (f.todos === '1' ? ' checked' : '') + '> Usar em todos os laboratórios</label>' : '');
+  return { ico: 'mais', sub: 'Kit · ' + f.lab, titulo: 'Anexar papel', corpo: c, rodape: lcPe('kt-anexar-ok', 'Anexar') };
+};
+async function ktAnexarOk() {
+  const f = S.fm; if (!f || !ktPodeCad()) return; const d = ktDoc(f.docId); if (!d) return lcErro('Escolha o papel.');
+  if (!lcTravar()) return;
+  const o = { v: 1, ponto: 'coletas.envio', nome: d.nome, docId: d.id, lab: f.todos === '1' ? '' : f.lab, copias: /^\d$/.test(f.copias) ? Number(f.copias) : f.copias, ordem: ktKitDe(f.lab).length + 1, ativo: true, quando: f.quando, analise: f.analise || '', criadoEm: nowISO(), criadoPorId: S.user.id, criadoPor: S.user.nome };
+  const e = EFD.impresso(o); if (e.length) { console.error('Contrato EFD', e); S.fm._trava = 0; return lcErro('Não deu para anexar: ' + e[0] + '.'); }
+  try { await Data.col('sv2_impressos').add(o); Audit.log({ acao: 'kit_anexar', entidade: 'impresso', entidadeId: d.id, resumo: 'Anexou ' + d.nome + ' ao kit de ' + (o.lab || 'todos os laboratórios') }); lcFim(); aviso('Papel anexado ao kit.'); }
+  catch (er) { if (S.fm) S.fm._trava = 0; lcErro(svErro(er)); }
+}
+
+/* ---------- Papéis deste envio ---------- */
+function ktRemNome(k) { const p = k.split('|'); return fmtD(p[0]) + ' · ' + (p.slice(1).join('|') || 'sem laboratório'); }
+function ktPapItens(k, dados) {
+  const lab = k.split('|').slice(1).join('|'), l = coLote(k), ans = Array.from(new Set(l.map(c => c.analiseNome || c.sigla).filter(Boolean)));
+  const it = [{ id: KT_ROTULO, nome: 'Rótulo destinatário e remetente', quando: ktRotQuando(lab) }];
+  ktKitDe(lab).forEach(x => { const d = ktDoc(x.docId); if (!d || d.status === 'lixeira') return; if (x.analise && ans.indexOf(x.analise) < 0) return; it.push({ id: x.id, docId: d.id, nome: d.nome, quando: x.quando || 'sempre', copias: x.copias, d: d }); });
+  return it.filter(x => x.quando !== 'pedir' || (dados && dados.forcar && dados.forcar[x.id]));
+}
+function ktPapCarrega(f, k) {
+  const l = coLote(k), u = ktUltimo(k), ans = Array.from(new Set(l.map(c => c.analiseNome || c.sigla).filter(Boolean)));
+  const pts = Array.from(new Set(l.map(c => coNome(c)).filter(x => x && x !== '—')));
+  const d = u && u.dados ? u.dados : { amostras: String(l.length), caixas: '1', analise: ans.join(', '), pontos: pts.join(', '), obs: '', unid: ktUnidade(l) };
+  Object.assign(f, { kRem: k, amostras: d.amostras, caixas: d.caixas, analise: d.analise, pontos: d.pontos, obs: d.obs || '', unid: d.unid || ktUnidade(l), sel: {}, reimp: !!u, msg: '' });
+  const antes = u ? (u.itens || []).reduce((o, x) => { o[x.id] = true; return o; }, {}) : {};
+  ktPapItens(k, { forcar: antes }).forEach(x => { f.sel[x.id] = u ? !!antes[x.id] : x.quando === 'sempre'; });
+}
+function ktPapAbre(ks, volta) {
+  ks = (ks || []).filter(k => coLote(k).length); if (!ks.length) return;
+  lcAbrir({ k: 'ktPap', ks: ks, kRem: ks[0], sel: {}, unid: 'matriz' }, volta || null);
+  ktPapCarrega(S.fm, ks[0]); S.fm.sujo = false; gvDesenha(true);
+}
+LC_FORM.ktPap = f => {
+  const k = f.kRem, lab = k.split('|').slice(1).join('|'), it = ktPapItens(k, { forcar: f.sel }), i = ktInfo(lab), rem = ktRemetente(f.unid);
+  const box = x => { const on = !!f.sel[x.id], d = x.d, sub = x.id === KT_ROTULO ? (!ktTemEnd(i) ? 'falta o endereço do laboratório' : !ktRemOk(rem) ? 'falta o endereço da unidade (Administração › Empresa no EFClaudian)' : 'uma folha por caixa') : [ipFmtTxt(d), 'versão ' + d.rev, d.status === 'obsoleto' ? 'obsoleto: não imprime' : !d.pub ? 'abre no Vértice para preencher' : x.copias === 'porCaixa' ? 'uma por caixa' : Number(x.copias) > 1 ? x.copias + ' cópias' : ''].filter(Boolean).join(' · ');
+    return '<button type="button" class="fm-pki cb-ck' + (on ? ' on' : '') + '" data-act="kt-ck" data-id="' + esc(x.id) + '" aria-pressed="' + on + '"><span class="cb-box">' + (on ? ic('ok') : '') + '</span><span><b>' + esc(x.nome) + '</b><small>' + esc(sub) + '</small></span></button>'; };
+  const pedir = ktKitDe(lab).filter(x => x.quando === 'pedir' && !it.some(y => y.id === x.id) && ktDoc(x.docId));
+  let c = lcMsg();
+  if (f.ks.length > 1) c += lcBl('Remessa', ddHTML('kt:rem', k, f.ks.map(x => [x, ktRemNome(x)])), f.ks.length + ' laboratórios neste envio');
+  if (f.reimp) c += lcAv('Já saíram papéis desta remessa. Os mesmos ficam marcados para reimprimir.');
+  c += '<div class="fm-pk"><div class="fm-pkl co-pkl">' + it.map(box).join('') + '</div></div>';
+  if (pedir.length) c += '<div class="kt-ped">' + pedir.map(x => '<button type="button" class="bt lk" data-act="kt-pedir" data-id="' + esc(x.id) + '">' + ic('mais') + esc(ktDoc(x.docId).nome) + '</button>').join('') + '</div>';
+  c += '<p class="gv-h">Quer acrescentar algo na ficha? <small>opcional</small></p>' +
+    '<div class="fm-g">' + lcBl('Amostras', lcIn('amostras', f.amostras, ' inputmode="numeric" maxlength="4"')) + lcBl('Caixas', lcIn('caixas', f.caixas, ' inputmode="numeric" maxlength="2"')) + '</div>' +
+    '<div class="fm-g">' + lcBl('Análise', lcIn('analise', f.analise, ' maxlength="140"')) + lcBl('Pontos', lcIn('pontos', f.pontos, ' maxlength="300"')) + '</div>' +
+    lcBl('Observação', lcTx('obs', f.obs, 'Ex.: urgência, pedido de cotação, contato')) +
+    (((S.empresa || {}).unid || {}).filial ? lcBl('Remetente', ddHTML('kt:unid', f.unid, [['matriz', ktRemetente('matriz').nome], ['filial', ktRemetente('filial').nome]])) : '');
+  return { ico: 'impressora', sub: 'Remessa · ' + ktRemNome(k), titulo: 'Papéis deste envio', corpo: c, rodape: '<button type="button" class="bt" data-act="gv-fecha">Depois</button><span class="au-pesp"></span><button type="button" class="bt pr" data-act="kt-imprimir">' + ic('impressora') + 'Imprimir</button>' };
+};
+/* rótulo: A4 em pé, uma folha por caixa (port do fxEtiqueta do EFClaudian, com os endereços vindos do cadastro) */
+function ktRotuloHTML(lab, unid, caixas, amostras) {
+  const i = ktInfo(lab) || {}, r = ktRemetente(unid), n = Math.max(1, Math.min(20, Number(caixas) || 1)), pags = [];
+  const rem = '<b>' + esc(r.razao) + '</b>' + [r.end, r.bairro ? 'Bairro: ' + r.bairro : '', [r.mun, r.uf].filter(Boolean).join(' – ') + (r.cep ? ' - CEP ' + r.cep : '')].filter(x => x.trim()).map(x => '<div>' + esc(x) + '</div>').join('');
+  const dest = '<b>' + esc(i.nome || lab) + '</b>' + ktDestLinhas(i).map(x => '<div>' + esc(x) + '</div>').join('');
+  for (let k = 1; k <= n; k++) pags.push('<section class="kt-pg"><div class="kt-etq"><div class="kt-b"><i>REMETENTE</i>' + rem + '</div><div class="kt-b kt-dest"><i>DESTINATÁRIO</i>' + dest + '</div>' +
+    '<div class="kt-b"><i>CONTEÚDO</i>' + (i.conteudo ? '<div>' + esc(i.conteudo) + '</div>' : '') + '<div>' + (amostras ? esc(amostras) + ' amostra(s) · ' : '') + 'Caixa ' + k + ' de ' + n + '</div></div></div></section>');
+  return '<div class="kt">' + pags.join('') + '</div>';
+}
+function ktImprimeHTML(html, titulo) {
+  return new Promise(ok => {
+    let el = $('#au-imp'); if (!el) { el = document.createElement('div'); el.id = 'au-imp'; document.body.appendChild(el); }
+    el.innerHTML = html; el.setAttribute('data-modo', 'kit');
+    let pg = $('#kt-page'); if (!pg) { pg = document.createElement('style'); pg.id = 'kt-page'; document.head.appendChild(pg); }
+    pg.textContent = '@media print{@page{size:A4 portrait;margin:12mm}}';
+    const t0 = document.title; document.title = titulo; document.body.classList.add('au-imprimindo');
+    setTimeout(() => { try { window.print(); } catch {} document.body.classList.remove('au-imprimindo'); document.title = t0; const p2 = $('#kt-page'); if (p2) p2.remove(); ok(); }, 80);
+  });
+}
+async function ktImprimir() {
+  const f = S.fm; if (!f || f.k !== 'ktPap') return; const k = f.kRem, lab = k.split('|').slice(1).join('|'), it = ktPapItens(k, { forcar: f.sel }).filter(x => f.sel[x.id]);
+  if (!it.length) return lcErro('Marque pelo menos um papel.');
+  const caixas = Number(String(f.caixas || '').trim() || 1), amostras = String(f.amostras || '').trim();
+  if (!(caixas >= 1 && caixas <= 20 && Number.isInteger(caixas))) return lcErro('Caixas: de 1 a 20.');
+  if (amostras && !/^\d{1,4}$/.test(amostras)) return lcErro('Amostras: só números.');
+  const rot = it.find(x => x.id === KT_ROTULO);
+  if (rot && !ktTemEnd(ktInfo(lab))) return lcErro('Falta o endereço do laboratório para o rótulo. Desmarque o rótulo ou cadastre o endereço (Envio › Laboratórios).');
+  if (rot && !ktRemOk(ktRemetente(f.unid))) return lcErro('Falta o endereço da unidade (remetente). Cadastre no EFClaudian: Administração › Empresa.');
+  const obs = it.filter(x => x.d && x.d.status === 'obsoleto'); if (obs.length) return lcErro('Obsoleto não imprime: ' + obs[0].nome + '. Desmarque ou anexe a versão vigente ao kit.');
+  if (!lcTravar()) return;
+  const dados = { amostras: amostras, caixas: String(caixas), analise: String(f.analise || '').trim(), pontos: String(f.pontos || '').trim(), obs: String(f.obs || '').trim(), unid: f.unid };
+  const reg = { k: k, envio: k.split('|')[0], lab: lab, itens: it.map(x => ({ id: x.id, docId: x.docId || '', nome: x.nome, rev: x.d ? x.d.rev : null })), dados: dados, porId: S.user.id, porNome: S.user.nome, em: nowISO() };
+  try { await Data.col('sv2_envio_imp').set(ktImpId(k), reg); } catch (e) { console.warn(e); }
+  Audit.log({ acao: 'imprimir_envio', entidade: 'remessa', entidadeId: k, resumo: 'Papéis do envio ' + ktRemNome(k) + ': ' + it.map(x => x.nome + (x.d ? ' v' + x.d.rev : '')).join(', ') });
+  lcFim();
+  if (rot) await ktImprimeHTML(ktRotuloHTML(lab, f.unid, caixas, amostras), 'Rótulo ' + lab + ' ' + k.split('|')[0]);
+  for (const x of it.filter(y => y.d)) {
+    const n = x.copias === 'porCaixa' ? caixas : Number(x.copias) || 1;
+    if (!x.d.pub) { await ipNoVertice(x.d.id); continue; }
+    for (let c = 0; c < n; c++) { await ipImprimir(x.d.id); await new Promise(r => setTimeout(r, 400)); }
+  }
+  aviso('Papéis enviados para a impressão.');
+}
+/* depois de gravar o envio: abre os papéis (como o EFClaudian abre a etiqueta) */
+function ktDepoisEnvio(ks) { setTimeout(() => ktPapAbre(ks), 350); }
+/* na gaveta da remessa: o que já saiu e o resumo (para preencher a ficha no Excel) */
+function ktRemessaHTML(k) {
+  const u = ktUltimo(k); if (!u) return '';
+  const d = u.dados || {};
+  return '<p class="gv-h">Papéis impressos</p>' + gvCampos([['Saíram', (u.itens || []).map(x => x.nome + (x.rev ? ' v' + x.rev : '')).join(', ')], ['Quando', fmtDT(u.em) + ' · ' + (u.porNome || '')], ['Amostras', d.amostras || ''], ['Caixas', d.caixas || ''], ['Análise', d.analise || ''], ['Pontos', d.pontos || ''], ['Observação', d.obs || '']]);
+}
+const ktPapBt = k => '<button type="button" class="bt ic-so" data-act="kt-pap" data-k="' + esc(k) + '" title="Papéis do envio (rótulo, ficha, custódia)" aria-label="Papéis do envio">' + ic('impressora') + '</button>';
+/* sugestão 1: ficha nova de um laboratório → avisa quem cuida das coletas */
+function ktAvisaVersao(d, rev) {
+  try {
+    const usos = S.ktKit.filter(x => x.ativo !== false && x.docId === d.id); if (!usos.length) return;
+    const para = S.users.filter(u => !u.bloqueado && u.id !== S.user.id && isSup(u) && temAtrib(u, 'coletas')).map(u => u.id); if (!para.length) return;
+    Notif.send({ nivel: 'info', titulo: 'Versão nova: ' + (d.codigo ? d.codigo + ' ' : '') + d.nome, texto: S.user.nome + ' salvou a versão ' + rev + '. Os envios de ' + Array.from(new Set(usos.map(x => x.lab || 'todos os laboratórios'))).join(', ') + ' já usam a nova.', para: para, refTipo: 'impresso', refId: d.id }).catch(() => {});
+  } catch (e) { console.warn(e); }
+}
+
+document.addEventListener('click', ev => {
+  const t = ev.target.closest && ev.target.closest('[data-act^="kt-"]'); if (!t) return;
+  const a = t.getAttribute('data-act'), f = S.fm, vol = S.gv && !S.gvForm ? S.gv : null, volta = vol ? () => gvAbrir(vol) : null;
+  if (a === 'kt-end') { if (!ktPodeCad()) return; const i = ktInfo(S._ktLab) || {}; lcAbrir(Object.assign({ k: 'ktEnd', lab: S._ktLab }, { nome: i.nome || '', end: i.end || '', bairro: i.bairro || '', cidade: i.cidade || '', uf: i.uf || '', cep: i.cep || '', contato: i.contato || '', conteudo: i.conteudo || '' }), volta); }
+  else if (a === 'kt-end-ok') ktEndOk();
+  else if (a === 'kt-anexar') { if (!ktPodeCad()) return; lcAbrir({ k: 'ktAnexar', lab: S._ktLab, docId: '', quando: 'sempre', copias: 'uma', analise: '', todos: '0' }, volta); }
+  else if (a === 'kt-anexar-ok') ktAnexarOk();
+  else if (a === 'kt-ck' && f) { const id = t.getAttribute('data-id'); f.sel[id] = !f.sel[id]; f.sujo = true; gvDesenha(true); }
+  else if (a === 'kt-pedir' && f) { f.sel[t.getAttribute('data-id')] = true; f.sujo = true; gvDesenha(true); }
+  else if (a === 'kt-imprimir') ktImprimir();
+  else if (a === 'kt-pap') { if (!coPode()) return; ktPapAbre([t.getAttribute('data-k')], volta); }
 });
 
 /* ===== fotoed.js ===== */

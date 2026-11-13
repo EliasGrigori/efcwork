@@ -65,10 +65,10 @@ function coResumo() { const a = coAtivas(), s = a.map(coSit); return { a: a, nao
 TELAS.coletas = function (aba) {
   if (!coVe()) return cabecalho({ titulo: 'Coletas' }) + '<section class="pn"><div class="vazio">' + ic('frasco') + '<b>Você não tem acesso às Coletas.</b><span>Peça ao administrador para marcar a atribuição Coletas no seu cadastro.</span></div></section>';
   const ar = csArea('coletas'), t = ar.abas.find(x => x.id === aba) || ar.abas[0], r = coResumo();
-  const ext = '<a class="bt ic-so" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener" title="No EFClaudian: nova programação, planos de coleta, fichas e etiquetas" aria-label="Abrir o EFClaudian (nova programação, planos de coleta, fichas e etiquetas)">' + ic('externo') + '</a>';
+  const ext = '<a class="bt ic-so" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener" title="No EFClaudian: nova programação e planos de coleta" aria-label="Abrir o EFClaudian (nova programação e planos de coleta)">' + ic('externo') + '</a>';
   const pl = (n, um, mais) => n + ' ' + (n === 1 ? um : mais);
   const meta = [r.naoenv ? metaPl(pl(r.naoenv, 'não enviada', 'não enviadas'), 'wa') : '', r.aguarda ? '<span>' + r.aguarda + ' aguardando laudo</span>' : '', r.atras ? metaPl(pl(r.atras, 'laudo atrasado', 'laudos atrasados'), 'cr', 'alerta') : ''].filter(Boolean);
-  const acoes = (coPode() && r.naoenv ? '<button type="button" class="bt pr" data-act="co-env">' + ic('sai') + 'Enviar</button>' : '') + ext;
+  const acoes = (t.id === 'envio' ? ddHTML('kt:vista', S.coEnvVista === 'lab' ? 'lab' : 'rem', [['rem', 'Remessas'], ['lab', 'Laboratórios']]) : '') + (coPode() && r.naoenv ? '<button type="button" class="bt pr" data-act="co-env">' + ic('sai') + 'Enviar</button>' : '') + ext;
   if (t.id === 'cadastros') return paTela(t); /* v0.6.7 (aguapj.js): Pontos de água; o resto dos cadastros segue no EFClaudian */
   if (t.id === 'agua') return agTela(t); /* v0.6.5 (agua.js) */
   if (t.id === 'plano') { /* v0.4.6 (plano.js) */
@@ -82,7 +82,7 @@ TELAS.coletas = function (aba) {
   }
   let h = cabecalho({ titulo: t.nome, abaNome: t.nome, meta: meta, acoes: acoes });
   if (!S.colCarregado && !DEMO) return h + '<section class="pn"><div class="vazio">' + ic('relogio') + '<b>Carregando as amostras…</b></div></section>';
-  return h + (t.id === 'envio' ? coTabRemessas() : coTabAmostras());
+  return h + (t.id === 'envio' ? (S.coEnvVista === 'lab' ? ktTabLabs() : coTabRemessas()) : coTabAmostras()); /* v0.6.10: vista Laboratórios (kit.js) */
 };
 function coTabAmostras() {
   const l = S.coletas.filter(c => CO_TXT[c.tipo] && c.tipo !== 'AGUA').sort((a, b) => String(b.data || '').localeCompare(String(a.data || '')) || cmpTxt(coNome(a), coNome(b)));
@@ -156,9 +156,9 @@ function coAbre(id) {
 function coAbreLote(k) {
   S._coSel = k; gvAbrir(() => {
     const l = coLote(k); if (!l.length) return null; const c0 = l[0], lau = l.filter(c => c.laudo).length, at = l.filter(c => coLaudoSit(c) === 'Atrasado').length, pode = coPode(), aberta = l.some(c => !coEncerrada(c));
-    return { ico: 'caixa', cabAcoes: pode ? coAnxBt(k) : '', sub: 'Remessa · ' + fmtD(c0.envio), titulo: c0.lab || 'Sem laboratório', pill: alPill(lau === l.length ? 'Laudos baixados' : at ? at + ' laudo(s) atrasado(s)' : 'Aguardando laudos', lau === l.length ? 'ok' : at ? 'cr' : ''),
+    return { ico: 'caixa', cabAcoes: pode ? ktPapBt(k) + coAnxBt(k) : '', sub: 'Remessa · ' + fmtD(c0.envio), titulo: c0.lab || 'Sem laboratório', pill: alPill(lau === l.length ? 'Laudos baixados' : at ? at + ' laudo(s) atrasado(s)' : 'Aguardando laudos', lau === l.length ? 'ok' : at ? 'cr' : ''),
       corpo: gvNums([[String(l.length), 'amostras'], [lau + '/' + l.length, 'laudos'], [lau === l.length ? '—' : fmtD(coPrevisto(c0)), 'laudo previsto', at ? 'cr' : '']]) +
-        gvCampos([['O.S', Array.from(new Set(l.map(c => c.os).filter(Boolean))).join(', ') || 'ainda não informada']]) + coAnexosHTML(l, k) +
+        gvCampos([['O.S', Array.from(new Set(l.map(c => c.os).filter(Boolean))).join(', ') || 'ainda não informada']]) + coAnexosHTML(l, k) + ktRemessaHTML(k) +
         '<p class="gv-h">Amostras</p><div class="gv-lotes">' + l.sort((a, b) => cmpTxt(a.tipo, b.tipo) || cmpTxt(coNome(a), coNome(b))).map(c => { const s = coSit(c); return '<button type="button" class="gv-lote co-am" data-act="co-abre" data-id="' + esc(c.id) + '"><span><b>' + esc(coNome(c)) + '</b> ' + esc((CO_TXT[c.tipo] || '') + ' · ' + (c.sigla || c.analiseNome || '')) + '</span>' + alPill(s.txt, s.cor) + '</button>'; }).join('') + '</div>',
       rodape: pode && aberta ? (l.some(c => !c.os) ? '<button type="button" class="bt" data-act="co-os" data-k="' + esc(k) + '">' + ic('lapis') + 'Informar O.S</button>' : '<button type="button" class="bt" data-act="co-os" data-k="' + esc(k) + '">' + ic('lapis') + 'Corrigir O.S</button>') +
         (lau < l.length ? '<button type="button" class="bt pr" data-act="co-laudo" data-k="' + esc(k) + '">' + ic('ok') + 'Laudos recebidos</button>' : '') : '' };
@@ -237,7 +237,8 @@ async function coEnvOk() {
       Audit.log({ acao: 'envio_coleta', entidade: 'coleta', entidadeId: c.id, resumo: 'Remessa: ' + CO_TXT[c.tipo] + ' ' + coNome(c) + ' enviada em ' + fmtD(data) + ' · ' + o.lab, antes: { enviado: !!c.enviado, envio: c.envio || '', lab: c.lab || '' }, depois: o });
     }
     if (data < hojeISO()) coAvisaRetro(cs.length, data, S.user.nome, '');
-    lcFim(); aviso(cs.length + ' amostra(s) enviada(s). As fichas de envio continuam no EFClaudian.');
+    lcFim(); aviso(cs.length + ' amostra(s) enviada(s).');
+    ktDepoisEnvio(Array.from(new Set(cs.map(c => data + '|' + (f.lab || c.lab || ''))))); /* v0.6.10: papéis do envio (rótulo, ficha, custódia) */
   } catch (e) { lcErro(svErro(e)); }
 }
 function coAvisaRetro(n, data, quem, confirmou) {

@@ -371,3 +371,83 @@ Etapa 2 (Fable 5.2 · alto): mapa da integração EFCdocs (EliasGrigori/EFCdocs)
 
 ## "Pode publicar e pode iniciar próxima etapa" (12/11 04:02, já no Fable 5.2)
 v0.6.8 publicada com as correções dos ITENS 2 a 5. Os ITENS 6 a 9 da página da varredura ficaram sem resposta (limite de 3.000 nas listas, fotos vencidas, regras do Firebase, pendências do EFClaudian): seguem em aberto. Começada a Etapa 2 (integração EFCdocs e Quiz).
+
+## Etapa 2 · Mapa da integração com o Vértice Docs e o Sabiá (12/11, Fable 5.2 · alto)
+Nada do app mudou (segue v0.6.8; suíte não foi rodada de novo porque `src/` e `dist/` estão iguais).
+
+**Lido:** EFCdocs v0.6.11.1 (memória, ficha do sistema, `nucleo/modelo.js`, `armazem.js`, `banco.js`, `perfis.js`, `features.csv`, leitura e gravação de `definedNames`), Sabiá v1.5.0 (memória, `src/integra.js`, `live.js`, regras do Realtime Database), EFCquiz v2.8.8 (bloco da nuvem), EFClaudian v2.102.60 (etiqueta da caixa, botões "Outros apps").
+
+**Fatos que mandam no desenho:**
+- Os apps estão na mesma origem (eliasgrigori.github.io): `localStorage`, IndexedDB e `BroadcastChannel` são comuns.
+- O EFCwork usa app do Firebase com nome (`'efcwork'`, v0.4.10); EFClaudian, EFCquiz e Sabiá usam o padrão. Sessões separadas.
+- Só Firestore; sem Storage (plano pago) e sem Functions. Registro de até 1 MB: arquivo vai em pedaços.
+- O Docs guarda só no aparelho e não tem login (nuvem na v0.9.0 dele, ligação na v0.10.0). Planilha e Quadro geram PDF; Documento só na v0.7.0.
+- Sabiá e EFCquiz guardam o histórico de treinamentos só no aparelho do instrutor.
+- No EFClaudian só a etiqueta da caixa é do app; fichas e custódias saíram em 25/09 (são do laboratório, no Excel).
+
+**Proposta (Contrato EFD v1):**
+- `efd_docs/{id}` = ficha do Docs + `pub` (cópia de impressão em PDF: rev, sha256, partes, papel, campos, preenche); pedaços em `efd_docs/{id}/copia/{rev}_{n}` (base64, até 900.000 caracteres, até 12 pedaços, cerca de 8 MB). Publicar: primeiro os pedaços, depois troca o `pub`.
+- Importação pelo EFCwork: PDF ou imagem entra como `tipo: 'externo'` já com cópia; Excel ou Word ficam em `original/` até o Docs abrir e publicar.
+- `sv2_impressos/{id}` = ponto de impressão do EFCwork (`ponto`, `docId`, `lab`, `copias`).
+- Preenchimento: dicionário de 31 campos e 2 listas; na Planilha, nome definido do Excel (`coleta.os` ↔ `efc_coleta_os`); quem desenha é o Docs; pedido em `localStorage['efd:pedido:<pid>']`, página `?imprimir=<docId>&pedido=<pid>` em iframe, resposta no canal `efd`. `folhas` = várias folhas numa impressão.
+- `sv2_treinos/{id}` = treinamento com ou sem quiz (`origem` efcwork ou sabia, `quiz` opcional com `sessaoId` e código SAB, participantes, situação programado/realizado/cancelado).
+- Login: mesma conta; sessão própria em cada app; atalho com `auth.updateCurrentUser` a provar com o Firebase de verdade.
+
+**Arquivos novos:**
+- `docs/MAPA-INTEGRACAO-DOCS-E-QUIZ.md` (para o Elias) e `docs/NOTA-PARA-A-IA-DO-VERTICE-DOCS.md` (para a outra IA).
+- `tools/contrato/efd-v1.js` (conferente comum, navegador e Node), `gerar-exemplos.js`, `exemplos-efd-v1.json` (inventados), `confere.js`: `node tools/contrato/confere.js` → 87 ok, 0 falhas.
+- `docs/aprovacao-efcwork-integracao-docs-quiz.html`: 12 itens, esboços feitos dentro do app em demonstração (Documentos › Impressos, detalhe com prévia, impressos do envio, Qualidade › Treinamentos), 1280 e 390, Claro e Escuro. Sem rolagem lateral; botões do cabeçalho com 36 px (PC) e 44 px (celular).
+
+**Não testado daqui:** regras do Firestore para `efd_docs`, `sv2_impressos`, `sv2_treinos`; atalho de sessão entre apps; impressão de PDF no Android.
+
+**Plano sugerido:** v0.6.9 Impressos (Opus 5.5 · alto) · v0.6.10 Etiqueta da caixa (Sonnet 5.5 · alto) · v0.6.11 Treinamentos (Opus 5.5 · alto) · v0.6.12 Preenchimento, depende do Docs (Opus 5.5 · alto). No Docs: Ponte 1 e Ponte 2 (Fable 5.2 · alto). Sabiá e EFClaudian: versões curtas (Sonnet 5.5 · alto).
+
+**Aguardando:** respostas dos 12 itens desta página e dos ITENS 6 a 9 da varredura.
+
+## Respostas da página de integração (12/11 08:08)
+Todos os 12 itens aprovados, com estas condições:
+- ITEM 2: o documento precisa poder ser **vinculado ao item**, como no EFClaudian (ao fazer o envio, oferece imprimir o rótulo destinatário/remetente). A **Ficha/Cotação** sempre pergunta se quer adicionar algo (pontos, quantidades etc.). Pediu sugestões de melhoria. **Não pode depender 100% do app**: tem de dar para exportar e imprimir de outro lugar se o app falhar. PDF importado abre dentro do EFCwork; Word e planilha que precisam ser editados redirecionam ao Vértice.
+- ITEM 4: Coletas › Envio mostra na tabela os **laboratórios**; tocar num abre a gaveta lateral, onde anexa documentos e etiquetas. No que ele precisa preencher (**Word e Excel**), quer no Vértice uma **janela de resumo** com os principais dados preenchidos (quantidade de amostras, tipo de análise etc.) para não esquecer na hora de preencher.
+- ITEM 5: aprovado com as condições acima; pediu as melhores possibilidades e o que mais for importante ter.
+- ITEM 6: preencher sozinho deve aceitar de **1 até 32 campos**, e os campos **podem ser células mescladas**.
+- ITEM 7: **treinamentos de teste não entram** no histórico.
+- ITEM 8: Sabiá como **botão no menu lateral esquerdo**, junto com o do Vértice ("capricha").
+- ITEM 9: no Vértice haverá uma aba de **arquivos de documentos internos** (formulários, fluxogramas), tudo na pasta compartilhável com o Cwork, **mas o Cwork só abre nativamente o PDF**; sub-abas para separar (fluxo com fluxo, FOR com FOR...); aparece segregado numa tabela com **quem editou, data e versão**.
+- ITEM 10: limitar o arquivo ao essencial: **endereços e fichas/cadeias de custódia**.
+- ITENS 1, 3, 11, 12: aprovados sem comentário.
+- Pedido novo: **refazer todo o plano de integração**, com sugestões e **realista para quem não quer plano pago** (Firebase grátis).
+
+## Plano de integração refeito (12/11, 12h, Fable 5.2 · alto)
+Pedido: refazer o plano com as condições dele, com sugestões, realista para quem não quer plano pago. Modelo escolhido por ele no checklist: Fable 5.2 · alto. Nada do app mudou.
+
+**Conferido nas páginas do Google (12/11):** Firestore grátis = 1 GiB guardado, 50 mil leituras, 20 mil gravações e 20 mil exclusões por dia, 10 GiB de saída por mês, zera à meia-noite do Pacífico; Storage exige o plano Blaze desde 03/02/2026 (projetos no Spark perderam o acesso); App Check com reCAPTCHA Enterprise tem validade do token de 30 min a 7 dias (padrão 1 h) e cota mensal grátis.
+
+**Mudança principal:** o Vértice não precisa de Firebase, login nem regras. Como os apps estão na mesma origem, trocam por uma caixa no aparelho (IndexedDB `efd-ponte`, gaveta `caixa`, aviso no canal `efd`). Só o EFCwork grava na nuvem, com o login de quem está usando. O Sabiá entrega o resumo do treinamento pela mesma caixa. Condição: mesmo aparelho e mesmo navegador; fora disso, exportar o PDF e importar.
+
+**Prova:** `tools/contrato/confere-ponte.js` (Playwright, servidor local, EFCwork real em demonstração + página no lugar do Vértice): documento com PDF em 3 pedaços chega inteiro (tamanho e SHA-256), com o EFCwork aberto e fechado; resumo e arquivo do Excel vão do EFCwork ao Vértice byte a byte; treino do Sabiá chega e o de teste é recusado; item fora do combinado não entra; outro endereço não enxerga a caixa. 13 ok, 0 falhas.
+
+**Contrato EFD v1 ajustado (ninguém construiu em cima ainda):** `PARTES_MAX` 5 (cópia até ~3,3 MB), `ORIG_PARTES_MAX` 2 (original até ~1,3 MB), `CAMPOS_MAX` 32, ficha com `pastaNome` e `orig`, treino com `teste: true` recusado. `node tools/contrato/confere.js` → 91 ok, 0 falhas.
+
+**Desenho por condição dele:**
+- Documentos › Impressos separado por `pastaNome`, com formato, quem editou, data e versão; PDF abre no EFCwork; Excel e Word mostram a cópia e redirecionam ao Vértice; Baixar (PDF e original) em cada papel e botão Reserva (ZIP de todos); medidor de espaço e teto de 150 MB.
+- Coletas › Envio com vista Laboratórios; gaveta do laboratório com endereço (destinatário do rótulo) e kit de impressão (sempre / perguntar / só se eu pedir); rótulo destinatário e remetente do próprio sistema, endereços no cadastro.
+- Ao enviar: "Papéis deste envio" com o kit marcado e "Quer acrescentar algo na ficha?" (amostras, caixas, análise, pontos, observação); registro do que foi impresso por remessa.
+- Vértice: aba de documentos internos com sub-abas, Compartilhar com o Cwork, janela de resumo do envio (copiar por linha, "na ficha", faltam N de M).
+- Preencher sozinho depois: 1 a 32 campos, célula mesclada (valor na âncora).
+- Menu lateral com grupo "Apps da família": Vértice Docs e Sabiá, com o ícone de cada app.
+- Treinamentos: teste e ensaio não entram.
+
+**Sugestões levadas à página (ITEM 11):** aviso de versão nova no sino; obsoleto não imprime; reimprimir o último kit; lista de presença com os nomes; papel por análise; modelos prontos no Vértice; aviso se a quantidade da ficha diferir do envio; link no lugar de arquivo grande.
+
+**Auditoria visual dos esboços (1280 e 390, Claro e Escuro):** sem rolagem lateral; rodapés com botões na mesma linha e altura (36 px no PC, 44 px no celular). Defeito achado e corrigido antes da página: no celular, a gaveta do papel tinha três botões no rodapé e o Imprimir caía para a linha de baixo; o Baixar virou ícone no canto de cima.
+
+**Arquivos:** `docs/PLANO-INTEGRACAO-v2.md` (substitui o MAPA, que ficou marcado como substituído), `docs/NOTA-PARA-A-IA-DO-VERTICE-DOCS.md` (2ª edição), `tools/contrato/efd-ponte.js`, `confere-ponte.js`, `docs/aprovacao-efcwork-plano-v2.html` (12 itens).
+
+**Ordem proposta:** v0.6.9 Impressos (Opus 5.5 · alto) · v0.6.10 Kit e envio (Opus 5.5 · alto) · v0.6.11 Ponte com o Vértice (Opus 5.5 · alto) · v0.6.12 Treinamentos (Sonnet 5.5 · alto) · v0.6.13 Preencher sozinho (Opus 5.5 · alto). Vértice: Ponte 1 (Opus 5.5 · alto), Ponte 2 (Fable 5.2 · alto). Sabiá: Sonnet 5.5 · alto.
+
+**Não testado daqui:** regras do Firestore; quanto do 1 GiB já está ocupado; consumo do App Check; impressão de PDF no Android; a caixa de troca entre apps instalados por navegadores diferentes (não funciona, por desenho).
+
+**Aguardando:** respostas dos 12 itens do plano v2; ITENS 6 a 9 da varredura.
+
+## Respostas do plano de integração v2 (12/11 13:51)
+ITENS 1 a 12 aprovados, incluindo as 8 sugestões do ITEM 11. Pergunta no ITEM 1: "essa nuvem é referente ao que, pode ser OneDrive ou outra?" (respondida na conversa: é o Firebase que o EFCwork e o EFClaudian já usam; o OneDrive serve para guardar a Reserva, não como banco do app). Ordem: "pode iniciar" a v0.6.9 Impressos com Opus 5.5 · alto.

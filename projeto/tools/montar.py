@@ -9,7 +9,10 @@ import os, re, shutil, sys
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC, DIST = os.path.join(RAIZ, 'src'), os.path.join(RAIZ, 'dist')
 # ordem importa: base primeiro (ajudantes, dados), depois a casca e as telas
-MODULOS = ['base', 'casca', 'servicos', 'planilha', 'tabela', 'almox', 'lanca', 'contagem', 'calibracao', 'lugares', 'nota', 'sino', 'busca', 'coletas', 'agua', 'aguaac', 'aguapj', 'documentos', 'fotoed', 'inspecoes', 'apont', 'auditoria', 'auapres', 'analise', 'anp', 'programacao', 'plano', 'entrar', 'inicio', 'areas', 'atividade', 'adm']
+MODULOS = ['base', 'casca', 'servicos', 'planilha', 'tabela', 'almox', 'lanca', 'contagem', 'calibracao', 'lugares', 'nota', 'sino', 'busca', 'coletas', 'agua', 'aguaac', 'aguapj', 'documentos', 'efd', 'impressos', 'kit', 'fotoed', 'inspecoes', 'apont', 'auditoria', 'auapres', 'analise', 'anp', 'programacao', 'plano', 'entrar', 'inicio', 'areas', 'atividade', 'adm']
+
+# módulos que moram fora de src/ (arquivo comum da família, não duplicar)
+DE_FORA = {'efd': os.path.join('tools', 'contrato', 'efd-v1.js')}
 
 def ler(p):
     with open(p, encoding='utf-8') as f:
@@ -20,6 +23,7 @@ def main():
     css, js = [], []
     for m in MODULOS:
         pc, pj = os.path.join(SRC, m + '.css'), os.path.join(SRC, m + '.js')
+        if m in DE_FORA: pj = os.path.join(RAIZ, DE_FORA[m])  # v0.6.9: o conferente do contrato é o mesmo arquivo do Vértice Docs
         if os.path.exists(pc): css.append('/* ===== ' + m + '.css ===== */\n' + ler(pc))
         if os.path.exists(pj): js.append('/* ===== ' + m + '.js ===== */\n' + ler(pj))
     ver = re.search(r"const VERSAO = '([0-9.]+)'", ler(os.path.join(SRC, 'base.js')))

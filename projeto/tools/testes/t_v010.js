@@ -27,7 +27,7 @@ const conf = (c, msg) => { if (c) { ok++; console.log('  ok  ' + msg); } else { 
   conf(await p.isVisible('.cs-lado'), 'depois do primeiro acesso entra no app');
   const h1 = await p.textContent('.cs-ph h1');
   conf(/^(Bom dia|Boa tarde|Boa noite), Joana$/.test(h1.trim()), 'Início saúda pelo primeiro nome: "' + h1.trim() + '"');
-  conf((await p.$$('.cs-nav .cs-it')).length === 8 && await p.isVisible('.cs-pe .cs-it'), 'menu lateral: Início + 6 áreas + Relatórios, e Administração no pé');
+  conf((await p.$$('.cs-nav .cs-it:not(.cs-app-l)')).length === 8 && (await p.$$('.cs-nav .cs-app-l')).length === 2 && await p.isVisible('.cs-pe .cs-it'), 'menu lateral: Início + 6 áreas + Relatórios, os 2 Apps da família (v0.6.9) e Administração no pé');
   conf(/Cwork Quality/.test(await p.textContent('.cs-cw')) && /Cwork Quality/.test(await p.textContent('.cs-rod')), '"Cwork Quality" no pé do menu e da página');
   conf(/Sua empresa/.test(await p.textContent('.cs-emp')), 'sem empresa configurada: "Sua empresa"');
   await p.screenshot({ path: path.join(SHOTS, 'pc-claro-inicio.png') });
@@ -42,7 +42,7 @@ const conf = (c, msg) => { if (c) { ok++; console.log('  ok  ' + msg); } else { 
     const nAbas = (await p.$$('.cs-abas a')).length;
     conf(nAbas === (r.abas.length > 1 ? r.abas.length : 0), r.id + ': ' + nAbas + ' abas (esperado ' + (r.abas.length > 1 ? r.abas.length : 0) + ')');
   }
-  conf(await p.evaluate(() => [5, 1, 3, 3, 5, 3].join() === ['coletas', 'rateios', 'inspecoes', 'documentos', 'almox', 'qualidade'].map(i => Math.max(1, csArea(i).abas.filter(x => !x.oculta).length)).join()), 'estrutura aprovada: Coletas 5, Rateios 1, Inspeções 3, Documentos 3, Almoxarifado 5, Qualidade 3 ');
+  conf(await p.evaluate(() => [5, 1, 3, 4, 5, 3].join() === ['coletas', 'rateios', 'inspecoes', 'documentos', 'almox', 'qualidade'].map(i => Math.max(1, csArea(i).abas.filter(x => !x.oculta).length)).join()), 'estrutura aprovada: Coletas 5, Rateios 1, Inspeções 3, Documentos 4 (Impressos, v0.6.9), Almoxarifado 5, Qualidade 3 ');
   await p.evaluate(() => { location.hash = '#/coletas/envio'; }); await p.waitForTimeout(150);
   conf(await p.isVisible('.cs-it.on[href="#/coletas"]') && await p.isVisible('.cs-abas a.on[href="#/coletas/envio"]'), 'área e aba atuais marcadas no menu e nas abas');
   await p.evaluate(() => { location.hash = '#/rateios'; }); await p.waitForTimeout(150); /* v0.4: Coletas já foi refeita; Rateios ainda não */

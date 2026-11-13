@@ -1,0 +1,42 @@
+Suíte v0.6.9 · 2026-11-12T17:07:55Z
+t_v020.js: t_v020: 49 ok · 0 falha(s)
+t_v030.js: t_v030: 62 ok · 0 falha(s)
+t_v031.js: t_v031: 49 ok · 0 falha(s)
+t_v032.js: t_v032: 48 ok · 0 falha(s)
+t_v033.js: t_v033: 39 ok · 0 falha(s)
+t_v034.js: t_v034: 48 ok · 0 falha(s)
+t_v035.js: t_v035: 35 ok · 0 falha(s)
+t_v036.js: t_v036: 31 ok · 0 falha(s)
+t_v010.js: t_v010: 41 ok · 0 falha(s)
+t_v040.js: t_v040: 45 ok · 0 falha(s)
+t_v041.js: t_v041: 28 ok · 0 falha(s)
+t_v0410.js: 13 ok, 0 falha(s)
+t_v0413.js: 8 ok, 0 falha(s)
+t_v0414.js: 41 ok, 0 falha(s)
+t_v0415.js: 15 ok, 0 falha(s)
+t_v042.js: t_v042: 36 ok · 0 falha(s)
+t_v044.js: t_v044: 35 ok · 0 falha(s)
+t_v045.js: t_v045: 39 ok · 0 falha(s)
+t_v046.js: t_v046: 40 ok · 0 falha(s)
+t_v047.js: t_v047: 52 ok · 0 falha(s)
+t_v048.js: 47 ok, 0 falha(s)
+t_v049.js: 43 ok, 0 falha(s)
+t_v050.js: 61 ok, 0 falha(s)
+t_v051.js: 25 ok, 0 falha(s)
+t_v053.js: 26 ok, 0 falha(s)
+t_v060.js: 70 ok, 0 falha(s)
+t_v061.js: 60 ok, 0 falha(s)
+t_v0611.js: 32 ok, 0 falhas
+t_v062.js: 79 ok, 0 falhas
+t_v063.js: 58 ok, 0 falhas
+t_v064.js: 30 ok, 0 falhas
+t_v065.js: 67 ok, 0 falhas
+t_v066.js: 39 ok, 0 falhas
+t_v067.js: 46 ok, 0 falhas
+t_v068.js: 10 ok, 0 falhas
+t_v069.js: 58 ok, 0 falhas
+t_html_seg.js: 2 ok, 0 falhas
+tools/contrato/confere.js: 94 ok, 0 falhas
+tools/contrato/confere-ponte.js: 13 ok, 0 falhas
+
+TOTAL: 39 arquivos, 1614 ok, 0 falhas
