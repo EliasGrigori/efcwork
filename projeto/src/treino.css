@@ -1,0 +1,36 @@
+/* Treinamentos (v0.6.12) — só tokens na tela; a lista de presença impressa usa preto no branco */
+.tr-acs{display:contents}
+@media(max-width:899px){.cs-acts:has(.tr-acs){flex:1 1 100%;width:100%}.tr-acs{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:8px;width:100%}.tr-acs .bt{justify-content:center}}
+.tr-obs{margin:4px 0 14px;font-size:14px;color:var(--tx);overflow-wrap:anywhere}
+.tr-vz{margin:6px 0 14px;font-size:14px;color:var(--tx3)}
+.tr-ps,.tr-ds,.tr-lps{list-style:none;margin:6px 0 14px;padding:0;display:flex;flex-direction:column}
+.tr-ps li,.tr-ds li{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:40px;padding:6px 0;border-bottom:1px solid var(--bd)}
+.tr-ps li:last-child,.tr-ds li:last-child{border-bottom:0}
+.tr-pn{min-width:0;overflow-wrap:anywhere;font-size:14px;font-weight:500}
+.tr-pp{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;flex:0 0 auto}
+.tr-dn{display:flex;flex-direction:column;min-width:0}.tr-dn small{color:var(--tx3);font-size:13px}
+.tr-pt{min-height:150px;resize:vertical}
+.tr-lps{gap:0;margin:6px 0 10px}
+.gv-h+.tr-ps,.gv-h+.tr-ds{margin-top:2px}
+.tr-lp{display:flex;flex-direction:column;gap:6px;padding:10px 0;border-bottom:1px solid var(--bd)}
+.tr-lp:last-child{border-bottom:0}
+.tr-pc{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:10px;align-items:center}
+.tr-pc .dd-b{height:36px}
+.tr-add{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;margin:6px 0 12px;align-items:stretch}
+.tr-add .fm-i{height:40px}
+.tr-add .bt{height:40px}
+@media(max-width:899px){.tr-pc .dd-b{height:44px}.tr-add .fm-i,.tr-add .bt{height:44px}}
+/* lista de presença: A4 em pé, preto no branco */
+#au-imp .tr-imp{font-family:Arial,Helvetica,sans-serif;color:#000}
+#au-imp .tr-ie{margin:0 0 2mm;font-size:10pt;color:#000}
+#au-imp .tr-imp h1{margin:0 0 5mm;font-size:16pt;font-weight:700}
+#au-imp .tr-ic,#au-imp .tr-it{width:100%;border-collapse:collapse;font-size:10.5pt}
+#au-imp .tr-ic{margin-bottom:5mm}
+#au-imp .tr-ic th,#au-imp .tr-ic td,#au-imp .tr-it th,#au-imp .tr-it td{border:0.8pt solid #000;padding:2mm 2.5mm;text-align:left;vertical-align:middle}
+#au-imp .tr-ic th{width:24mm;font-weight:700}
+#au-imp .tr-it td{height:9.5mm}
+#au-imp .tr-it .n{width:12mm;text-align:center}
+#au-imp .tr-it th:last-child,#au-imp .tr-it td:last-child{width:62mm}
+#au-imp .tr-ia{display:flex;gap:10mm;margin-top:12mm;font-size:10pt}
+#au-imp .tr-ia span{flex:1;border-top:0.8pt solid #000;padding-top:1.5mm}
+#au-imp .tr-ia span:last-child{flex:0 0 40mm}

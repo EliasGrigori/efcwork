@@ -433,3 +433,8 @@ Papéis deste envio: Sempre/Perguntar/Só se eu pedir e "Quer acrescentar algo n
 Papel por análise e para todos os laboratórios,Coletas,should,não,sim,Coletas › Envio,v0.6.10 (sugestão 5)
 Reimprimir os papéis da remessa e resumo do envio na gaveta,Coletas,should,não,sim,Coletas › Envio,v0.6.10 (sugestão 3) sv2_envio_imp
 Sino avisa versão nova de papel usado no kit,Documentos,should,não,sim,Documentos › Impressos,v0.6.10 (sugestão 1)
+Treinamentos: programar, registrar realização, presença e eficácia,Qualidade,must,não,sim,Qualidade › Treinamentos,v0.6.12 sv2_treinos (Contrato EFD v1 treino)
+Lista de presença pronta com os nomes (A4),Qualidade,should,não,sim,Qualidade › Treinamentos,v0.6.12 (sugestão 4)
+Importar resumo do Sabiá (.json do contrato; teste e ensaio não entram),Qualidade,should,não,sim,Qualidade › Treinamentos,v0.6.12 (ponte automática na v0.6.11)
+POP e material ligados ao treinamento (Impressos),Qualidade,should,não,sim,Qualidade › Treinamentos,v0.6.12
+Aviso no sino ao instrutor programado,Qualidade,could,não,sim,Qualidade › Treinamentos,v0.6.12

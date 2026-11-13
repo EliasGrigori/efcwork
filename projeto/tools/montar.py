@@ -9,7 +9,7 @@ import os, re, shutil, sys
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC, DIST = os.path.join(RAIZ, 'src'), os.path.join(RAIZ, 'dist')
 # ordem importa: base primeiro (ajudantes, dados), depois a casca e as telas
-MODULOS = ['base', 'casca', 'servicos', 'planilha', 'tabela', 'almox', 'lanca', 'contagem', 'calibracao', 'lugares', 'nota', 'sino', 'busca', 'coletas', 'agua', 'aguaac', 'aguapj', 'documentos', 'efd', 'impressos', 'kit', 'fotoed', 'inspecoes', 'apont', 'auditoria', 'auapres', 'analise', 'anp', 'programacao', 'plano', 'entrar', 'inicio', 'areas', 'atividade', 'adm']
+MODULOS = ['base', 'casca', 'servicos', 'planilha', 'tabela', 'almox', 'lanca', 'contagem', 'calibracao', 'lugares', 'nota', 'sino', 'busca', 'coletas', 'agua', 'aguaac', 'aguapj', 'documentos', 'efd', 'impressos', 'kit', 'fotoed', 'inspecoes', 'apont', 'auditoria', 'auapres', 'analise', 'anp', 'treino', 'programacao', 'plano', 'entrar', 'inicio', 'areas', 'atividade', 'adm']
 
 # módulos que moram fora de src/ (arquivo comum da família, não duplicar)
 DE_FORA = {'efd': os.path.join('tools', 'contrato', 'efd-v1.js')}

@@ -53,3 +53,16 @@ Conferir depois de publicar: importar um PDF pequeno como Administrador, abrir e
 match /sv2_impressos/{id} { allow read: if efdAtivo(); allow create, update: if efdSup() && request.resource.data.v == 1; allow delete: if false; }
 match /sv2_envio_imp/{id} { allow read: if efdAtivo(); allow create, update: if efdAtivo() && request.resource.data.porId == request.auth.uid; allow delete: if false; }
 ```
+
+## v0.6.12 · Treinamentos (13/11/2026)
+Uma coleção nova. O arquivo completo com tudo (as regras dele v2.102.42 + efd_docs, efd_partes, sv2_impressos, sv2_envio_imp + sv2_treinos) é `regras-firestore-EFCwork-v0.6.12.txt`.
+- `sv2_treinos/{id}` — um documento por treinamento (Contrato EFD v1, `treino`). Leitura: usuário ativo. Criar e alterar: líder ★ ou Principal. Nunca apagar (cancelar é um update com motivo).
+```
+match /sv2_treinos/{id} {
+  allow read: if usuarioAtivo();
+  allow create: if (liderOuPrincipal()) && testeNovo();
+  allow update: if (liderOuPrincipal()) && testeMuda();
+  allow delete: if false;
+}
+```
+Conferir depois de publicar: como Administrador, programar um treinamento e registrar a realização; como Colaborador, a lista aparece e a lista de presença imprime, sem os botões de gravar.
