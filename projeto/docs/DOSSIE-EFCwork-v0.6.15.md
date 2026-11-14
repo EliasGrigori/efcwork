@@ -847,3 +847,10 @@ Conferência final: suíte completa **46 arquivos, 0 falhas** (`docs/suite-v0.6.
   - Ferramentas novas: `captura4.js`, `itens-p4.js`, `semente-p4.js` (150 amostras a mais), `aud.js`/`aud2.js`.
 - Testes depois das duas correções: `t_html_seg`, `t_v020`, `t_v041`, `t_v048`, `t_v049`, `t_v050`, `t_v053`, `t_v0615c`, `t_v0615d`, `t_v06142` — 0 falhas.
 - Esperando as respostas dos ITENS 25 a 38. `VERSAO` continua 0.6.14.2; nada publicado.
+
+### Respostas finais e publicação (14/11, 16:37; Sonnet 5.5)
+- **Respostas da página final (ITENS 25 a 38): todos Aprovados**, sem comentário. "Pode publicar" às 16:37.
+- `VERSAO` = **0.6.15** (cache do sw.js `efcwork-0.6.15`). Bateria completa **47 arquivos, 0 falhas** (`docs/suite-v0.6.15-final.log`); medidor `--estrito`: **0 defeitos, 0 decisões**, 60 ajustes de sempre (`docs/medidor-v0.6.15-final.txt`).
+- **Publicado no GitHub:** EliasGrigori/efcwork, branch main, commit **bc42a4c** (app montado na raiz; código, testes e documentos em `projeto/`; pacote do Vértice em `projeto/docs/vertice-layout-v0.6.15/`). Prints antigos de testes que só mudaram por regeração não foram incluídos no commit (para não inflar). O site (eliasgrigori.github.io/efcwork) não pôde ser aberto da sessão: conferir no navegador que o rodapé mostra v0.6.15 (se mostrar a antiga, recarregar uma vez para o service worker trocar).
+- Firebase: nada novo além dos campos dentro de `sv2_rodizio.liberadas` (aprovadoPor/Id/Em, recusadaPor/Id/Em, recusaMotivo, porId, porSup).
+- Pendente de resposta dele: ícone de abrir em outra janela sozinho numa linha no celular (proposta para depois); ITENS 6–9 da v0.6.8, v0.6.11 (ponte com o Vértice) e v0.6.13 (preencher sozinho).

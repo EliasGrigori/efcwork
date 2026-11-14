@@ -1,22 +1,16 @@
 # Continuar o EFCwork numa conversa nova (14/11/2026, fim da tarde)
 
 ## Onde parou
-- **Publicado no site:** v0.6.14.2 (commit 016dc3e). Nada da v0.6.15 foi publicado. `VERSAO` ainda 0.6.14.2 no código.
-- **Decisão do Elias (12:21):** só EFCwork; nada no EFClaudian.
-- **Já no app (src/), não publicado:** tudo da v0.6.15 (varredura, partes 1, 2 e 3 aprovadas) com os pedidos dos comentários de 13:54 aplicados:
-  tela parada no PC e só a tabela rolando até o fundo; sem "Mostrando X de Y" nem rodapé; mais linhas carregam sozinhas; total no selo do cabeçalho ("total filtrado"); ícones da tabela na linha das abas; cabeçalhos com a mesma medida; pílulas bolinha + texto em tudo; setas e X acima do título da gaveta; gota em "Últimas movimentações" do material; paleta com resultados suaves; menu da coluna que desliza; cartões de Apontamentos que deslizam (FLIP) e sem traço colorido.
-  Arquivos novos: `src/moderno.js`, `src/moderno.css` (último módulo do `montar.py`); mudanças em `src/tabela.js` (tbSobe, tbAltura, tbFimVigia), `src/almox.js` (gota), `src/casca.js`, `src/fluidez.js`.
-- **Testes:** `t_v0615d.js` novo (20 ok) e 12 suítes antigas atualizadas para as decisões novas (lista no dossiê). Ver `docs/suite-v0.6.15-final.log`.
-- **Pacote do Vértice Docs** entregue (`vertice-layout-v0.6.15.zip`): regras R1–R14, peças portáteis `efc-layout.css/.js`, demonstração, antes/depois e texto pronto para a IA do Vértice.
+- **v0.6.15 PUBLICADA** (14/11, 16:37) no GitHub: EliasGrigori/efcwork, main, commit bc42a4c. Antes no ar: v0.6.14.2 (016dc3e). `VERSAO` = 0.6.15.
+- Todas as respostas da varredura, partes 1 a 3 e da página final (ITENS 25 a 38) estão **Aprovadas** e aplicadas. Bateria: 47 arquivos, 0 falhas; medidor 0 defeitos.
+- Decisão do Elias (12:21): só EFCwork; nada no EFClaudian.
+- Pacote do Vértice Docs entregue (`vertice-layout-v0.6.15.zip`, também em `projeto/docs/vertice-layout-v0.6.15/`).
+- Não consegui abrir o site da sessão: conferir no navegador que mostra v0.6.15.
 
-## Esperando resposta do Elias
-- **Página final** `docs/aprovacao-efcwork-v0.6.15-final.html` (publicada como "EFCwork v0.6.15 · conferência final"): ITENS 25 a 38, todos já no app. Auditoria visual feita (2 defeitos corrigidos; ver dossiê).
-
-## Quando ele colar as respostas
-1. Anotar no dossiê item por item; o que vier Reprovado é desfeito ou refeito pelo comentário.
-2. `sh tools/rodar-tudo.sh` (roda ~25 min: em primeiro plano, em lotes, se precisar), medidor.
-3. Numerar `VERSAO` 0.6.15 e publicar só com "pode publicar". Entregar o ZIP da versão (index.html, sw.js, ícones, manifesto).
-Refazer a página: `EFC_ANTES=<pasta do pacote de hoje cedo> node captura4.js` e `EFC_APP=dist/index.html node monta-pagina.js itens-p4.js` (em `tools/visual/moderno-v0615/pagina/`, com `NODE_PATH=$(npm root -g)`).
+## Próximos passos possíveis
+1. Conferir o site no ar (v0.6.15) e as regras do Firebase (só campos novos em `sv2_rodizio.liberadas`).
+2. Celular: ícone de abrir em outra janela sozinho numa linha nas telas com 3 botões (proposta pendente).
+3. Pendências antigas: ITENS 6 a 9 da v0.6.8, v0.6.11 (ponte com o Vértice), v0.6.13 (preencher sozinho). O Vértice Docs vai aplicar o layout pelo pacote.
 
 ## Padrão que ele espera
 - Antes de cada tarefa: modelo e esforço em **negrito**, esperar "pode iniciar".
