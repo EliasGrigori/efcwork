@@ -883,4 +883,4 @@ Conferência final: suíte completa **46 arquivos, 0 falhas** (`docs/suite-v0.6.
 - "Respostas EFCwork v0.6.15 · celular": ITEM 39 Aprovado; ITEM 40 Aprovado. "Pode publicar, pode continuar."
 - Numerada **v0.6.15.1** (`VERSAO` em src/base.js; cache do sw `efcwork-0.6.15.1`). Conteúdo: ITENS 39 e 40 (celular) + documento de regras do Firebase (Tarefa 1) + testes t_v0615e.js e t_regras_cobertura.js.
 - Testes finais: bateria 49 arquivos, 0 falhas (t_html_seg, t_v0615e 14 ok, t_v0615d 20 ok, t_regras_cobertura 45 ok rodados de novo após a numeração).
-- Publicado no GitHub EliasGrigori/efcwork (main) com a autorização "pode publicar". ZIP: efcwork-v0.6.15.1.zip.
+- Publicado no GitHub EliasGrigori/efcwork (main), commit 85ee2c6, com a autorização "pode publicar". ZIP: efcwork-v0.6.15.1.zip.

@@ -4,7 +4,7 @@
 > Vamos continuar o EFCwork (PWA de arquivo único da família EFClaudian). Anexei o ZIP da versão, o CONTINUAR e o dossiê. Leia o CONTINUAR primeiro e siga o "Padrão de trabalho" dele sem eu repetir: sugerir modelo e esforço em negrito antes de cada tarefa e esperar meu "pode iniciar"; páginas de aprovação fracionadas (um item por mudança); tudo no dossiê; ao final resumo, Firebase, próximos passos e o ZIP; GitHub só com "pode publicar"; OneDrive só se eu pedir pelo nome; só EFCwork, nada no EFClaudian. Próxima tarefa: (diga qual).
 
 ## Onde parou
-- **v0.6.15.1 PUBLICADA** (14/11, 19:49; ITENS 39 e 40 do celular aprovados + regras do Firebase). Antes: **v0.6.15 PUBLICADA** (14/11, 16:37) no GitHub: EliasGrigori/efcwork, main, commits bc42a4c (versão) e 92f2eb4 (docs). `VERSAO` = 0.6.15. Conferir no site que o rodapé mostra v0.6.15 (não consegui abrir da sessão).
+- **v0.6.15.1 PUBLICADA** (14/11, 19:49; ITENS 39 e 40 do celular aprovados + regras do Firebase). Antes: **v0.6.15 PUBLICADA** (14/11, 16:37) no GitHub: EliasGrigori/efcwork, main, commits 85ee2c6 (v0.6.15.1), bc42a4c (versão) e 92f2eb4 (docs). `VERSAO` = 0.6.15. Conferir no site que o rodapé mostra v0.6.15 (não consegui abrir da sessão).
 - Varredura partes 1 a 3 e página final (ITENS 25 a 38): tudo **Aprovado** e aplicado. Bateria 49 arquivos, 0 falhas; medidor 0 defeitos.
 - Pacote do Vértice Docs entregue (`vertice-layout-v0.6.15.zip`).
 - **Tarefa 1 feita e publicada na v0.6.15.1:** `projeto/docs/REGRAS-FIREBASE-EFCwork-v0.6.15.md` + `tools/testes/t_regras_cobertura.js` (45 ok) + `docs/regras-cobertura-v0.6.15.log`.
