@@ -87,9 +87,13 @@
   .en-diz,.en-rev .en-diz{left:16px;right:16px;top:auto;bottom:14px;max-width:none;padding:10px 12px;border-radius:10px;background:var(--vidro-en,rgba(255,254,251,.86));border:1px solid var(--bd)}
   .en-rev .en-diz{background:rgba(11,13,22,.78);border-color:rgba(217,180,106,.18)}
   .en-faixa,.en-chip.c{display:none} /* v0.6.14: no celular a linha do app ocupa o lugar da faixa e do terceiro cartão */
-  .en-diz,.en-rev .en-diz{bottom:16px}
-  .en-diz small{font-size:11px;margin-bottom:3px}.en-diz b,.en-rev .en-diz b{font-size:16px}
-  .en-chip.a{left:10px;top:70px}.en-chip.b{left:auto;right:10px;top:180px}.en-chip.c{left:16px;top:270px}
+  /* v0.6.14.2: no celular a linha fica no alto, em texto simples, e nunca cobre a foto (antes ficava sobre as pernas da moça) */
+  .en-diz,.en-rev .en-diz{top:12px;bottom:auto;left:16px;right:16px;padding:0;background:none;border:0;border-radius:0}
+  .en-diz small{display:none}.en-diz b,.en-rev .en-diz b{font-size:15px;line-height:1.25}
+  .en-ft.moldura,.en-avi .en-ft.moldura{top:62px;height:276px}
+  .en-arco{top:78px;height:280px}
+  .en-chip.a{top:96px}.en-chip.b{top:190px}.en-chip.c{top:270px}
+  .en-chip.a{left:10px}.en-chip.b{left:auto;right:10px}.en-chip.c{left:16px}
 }
 @media(prefers-reduced-motion:reduce){
   .en *,.en *::before,.en *::after{animation:none!important;transition:none!important}

@@ -151,9 +151,13 @@ body.tb-arrastando,body.tb-arrastando *{cursor:grabbing!important;user-select:no
 .tb-mn-av{display:flex;align-items:center;gap:6px;margin:0;padding:8px 14px;font-size:12.5px;color:var(--aTx);background:color-mix(in srgb,var(--a) 8%,var(--bg1));border-bottom:1px solid var(--bd)}
 .tb-mn-av .ic{width:13px;height:13px;flex-shrink:0}
 .tb-mn-g{display:flex;flex-direction:column;gap:2px;padding:10px 8px 8px;border-bottom:1px solid var(--bd)}.tb-mn-g:last-child{border-bottom:0}
-.tb-mn-corpo{flex:1 1 auto;min-height:0;overflow:auto;overscroll-behavior:contain}
-.tb-mn-fg .tb-mn-l{max-height:250px}
-.tb-mn-cab,.tb-mn-av,.tb-mn-pe{flex-shrink:0}
+.tb-mn-corpo{flex:1 1 auto;min-height:0;overflow:auto;overscroll-behavior:contain;display:flex;flex-direction:column}
+.tb-mn-corpo>.tb-mn-g{flex:0 0 auto}
+.tb-mn-corpo>.tb-mn-fg{flex:1 1 auto;min-height:0;display:flex;flex-direction:column} /* v0.6.14.2: só a lista rola; os itens do fim sempre alcançáveis */
+.tb-mn-fg .tb-mn-l{flex:1 1 auto;min-height:96px;max-height:260px}
+.tb-mn-hh{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:28px}.tb-mn-hh .tb-mn-h{padding-bottom:0}
+.tb-mn-lp{height:28px;padding:0 6px;font-size:13px;border-radius:8px}
+.tb-mn-cab,.tb-mn-av{flex-shrink:0}
 .tb-mn-h{font-size:12.5px;color:var(--tx3);font-weight:600;padding:0 6px 4px}
 .tb-mn-o{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:10px;min-height:34px;padding:0 8px;border-radius:8px;cursor:pointer;color:var(--tx2)}
 .tb-mn-o .ic{width:16px;height:16px;color:var(--tx3)}.tb-mn-o span{flex:1}.tb-mn-o i{display:inline-flex;color:var(--aTx)}
@@ -177,23 +181,34 @@ body.tb-arrastando,body.tb-arrastando *{cursor:grabbing!important;user-select:no
 .tb-mn-all{border-bottom:1px dashed var(--bd);border-radius:8px 8px 0 0;margin-bottom:2px;font-weight:600}
 .tb-mn-vz{color:var(--tx3);font-style:italic}
 .tb-mn-nd{margin:6px;color:var(--tx3);font-size:13px}
-.tb-mn-pe{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;background:var(--bg0)}
-.tb-mn-mv{display:flex;gap:4px}.tb-mn-mv .bt{height:34px;width:34px}.tb-sesq{display:inline-flex;transform:rotate(180deg)}
 .tb-mn.tb-mn-folha{left:0!important;right:0;top:auto!important;bottom:0;width:auto;max-height:82vh;border-radius:16px 16px 0 0;animation:tbFolha var(--panel-open-dur) var(--panel-ease);padding-bottom:env(safe-area-inset-bottom,0px)}
 @keyframes tbFolha{from{transform:translateY(100%);opacity:.6}to{transform:none;opacity:1}}
 @media(prefers-reduced-motion:reduce){.tb-mn,.tb-mn.tb-mn-folha{animation:none}}
 .tb-mn-bs,.tb-mn-nr,.tb-mn-h{flex-shrink:0}
 /* pontinha do menu apontando para a coluna */
 .tb-mn-pt{position:absolute;top:-6px;left:var(--tb-pt);width:11px;height:11px;margin-left:-5.5px;transform:rotate(45deg);background:var(--bg1);border-left:1px solid var(--bd2);border-top:1px solid var(--bd2);z-index:1}
-.tb-mn>.tb-mn-cab{border-radius:12px 12px 0 0}.tb-mn>.tb-mn-pe{border-radius:0 0 12px 12px}
+.tb-mn>.tb-mn-cab{border-radius:12px 12px 0 0}
 .tb-mn.tb-mn-folha .tb-mn-pt{display:none}
 /* toque: alvos de 44 px */
 .tb-mn.tb-mn-folha .tb-mn-o,.tb-mn.tb-mn-folha .tb-mn-li,.tb-mn.tb-mn-folha .tb-mn-tr,.tb-mn.tb-mn-folha .tb-mn-bs,.tb-mn.tb-mn-folha .tb-mn-nr label{min-height:44px;height:auto}
-.tb-mn.tb-mn-folha .tb-mn-mv .bt{height:44px;width:44px}
 .tb-mn.tb-mn-cima .tb-mn-pt{top:auto;bottom:-6px;transform:rotate(225deg)}
 
 /* botão único de ordenar (v0.4.9): cada toque troca padrão → crescente → decrescente */
 .tb-mn-ci em{font-style:normal;font-size:12px;color:var(--tx3)}
 .tb-mn-ci{min-height:40px}
 .tb-mn-fundo{position:fixed;inset:0;z-index:59;background:rgba(20,16,8,.38)}
-.tb-mn-pe .bt{border-radius:8px} /* v0.4.15 (Grok v0.4.12 A1): rodapé do menu com o mesmo canto de 8 px */
+.tb-mn.tb-mn-folha .tb-mn-fg .tb-mn-l{max-height:none}.tb-mn.tb-mn-folha .tb-mn-lp{height:44px}
+/* v0.6.14.2 (pedido do Elias 14/11 08:17): menu da coluna sem linhas divisórias e mais compacto, para a parte Filtrar caber na tela */
+.tb-mn-cab{padding:10px 10px 4px 14px;border-bottom:0}
+.tb-mn-av{border-bottom:0;margin:4px 8px 0;border-radius:8px}
+.tb-mn-g{padding:6px 8px 2px;border-bottom:0;gap:0}
+.tb-mn-h{padding:0 6px 2px}
+.tb-mn-hh{min-height:26px}
+.tb-mn-ci{min-height:34px}
+.tb-mn-pre{padding:0 6px 2px}
+.tb-mn-pre .dd-b{min-height:34px;height:34px}
+.tb-mn-bs{height:34px;margin:0 6px 4px}
+.tb-mn-nr label{height:32px}
+.tb-mn-g:last-child{padding-bottom:6px}
+.tb-mn.tb-mn-folha .tb-mn-pre .dd-b{min-height:44px;height:44px}
+.tb-mn.tb-mn-folha .tb-mn-ci{min-height:44px}

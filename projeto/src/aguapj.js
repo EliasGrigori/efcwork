@@ -180,7 +180,7 @@ async function pjEdOk() {
   const iguais = pjProjetos().filter(p => p.id !== f.id).map(p => ({ p: p, c: (p.pontos || []).filter(r => pts.indexOf(r) >= 0 && pjAnIds(p).some(a => ans.indexOf(a) >= 0 && (p.lab || (S.analises.find(x => x.id === a) || {}).lab || '') === labDe(a))) })).filter(x => x.c.length);
   const txtIg = iguais.map(x => '"' + x.p.nome + '": ' + x.c.map(r => (pjPonto(r) || {}).cod || r).join(', ')).join(' · ');
   if (iguais.length && f.avisado !== txtIg) { f.avisado = txtIg; f.msg = ''; gvDesenha(true); return; }
-  const o = { nome: nome, pontos: pts, porVez: f.modo === 'rodizio' ? porVez : 0, mesclada: f.legado ? !!f.mesclada : false, analiseId: ans[0], analiseIds: ans, lab: f.lab || '', cadaSemanas: Number(f.cada) || 1, dia: Number(f.dia), hora: f.hora, inicio: f.inicio, ativo: true };
+  const o = { nome: nome, pontos: pts, porVez: f.modo === 'rodizio' ? porVez : 0, mesclada: f.legado ? !!f.mesclada : false, analiseId: ans[0], analiseIds: ans, lab: f.lab || '', cadaSemanas: Number(f.cada) || 1, dia: Number(f.dia), hora: f.hora, inicio: f.inicio, ativo: true, atualizadoEm: nowISO() };
   if (!lcTravar()) return;
   try {
     let id = f.id;

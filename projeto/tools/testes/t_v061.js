@@ -99,9 +99,9 @@ const semear = p => p.evaluate(async png => {
   await p.evaluate(() => apAbre('ap2')); await esp(p, 700);
   conf(!!(await p.$('#gv .cb-tlw .cb-tubo .cb-fluido')), 'o detalhe usa a linha do tempo da gota');
   conf(/NC para Ana Souza/.test(await p.textContent('#gv')), 'a NC aparece na linha do tempo');
-  const pe = await p.evaluate(() => { const l = [...document.querySelectorAll('#gv .ap-pe .bt')]; const r = l.map(b => b.getBoundingClientRect()); return { n: l.length, txt: l.map(b => b.textContent.trim()), top: r.every(x => Math.round(x.top) === Math.round(r[0].top)), h: r.every(x => Math.round(x.height) === Math.round(r[0].height)), w: r.every(x => Math.abs(x.width - r[0].width) <= 1) }; });
+  const pe = await p.evaluate(() => { const l = [...document.querySelectorAll('#gv .ap-pe .bt')]; const r = l.map(b => b.getBoundingClientRect()); return { n: l.length, txt: l.map(b => b.textContent.trim()), top: (() => { const t = {}; r.forEach(x => { const k = Math.round(x.top); t[k] = (t[k] || 0) + 1; }); const v = Object.values(t); return v.every(c => c === v[0]); })(), h: r.every(x => Math.round(x.height) === Math.round(r[0].height)), w: r.every(x => Math.abs(x.width - r[0].width) <= 1) }; });
   conf(pe.txt.join('|').indexOf('Não procede') >= 0 && pe.txt.join('|').indexOf('Resolver') >= 0, 'rodapé com Não procede, Mudar gravidade, NC e Resolver (' + pe.txt.join(' · ') + ')');
-  conf(pe.top && pe.h && pe.w, 'os botões do rodapé ficam alinhados: mesma linha, mesma altura e mesma largura');
+  conf(pe.top && pe.h && pe.w, 'os botões do rodapé ficam alinhados: linhas iguais (v0.6.14.1: 2 por linha com 4 botões), mesma altura e mesma largura');
   await p.click('#gv [data-act="ap-grav"]'); await esp(p, 500);
   await p.click('#gv .ap-gbt.g-media'); await esp(p, 300);
   await p.fill('#gv [data-fm="motivo"]', 'sem risco imediato, luvas repostas'); await p.click('#gv [data-act="ap-grav-ok"]'); await esp(p, 900);

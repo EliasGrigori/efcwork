@@ -505,4 +505,4 @@ document.addEventListener('keydown', e => { if (e.key !== 'Enter' || !S.fm || S.
 /* busca geral */
 BG_FONTES.push(q => { const out = []; auLista().forEach(r => auNcs(r).forEach(n => { if (out.length < 6 && bgCasa(q, [r.numero, auNum(n.n), n.titulo, n.nc, n.local, n.respNome, auLeis(n).join(' ')].join(' '))) out.push({ r: r, n: n }); }));
   return out.map(x => ({ grupo: 'Auditoria interna', nome: auNum(x.n.n) + ' · ' + (x.n.titulo || x.n.nc), sub: x.r.numero + ' · ' + (x.n.local || '') + ' · ' + auResp(x.n), ico: 'lista',
-    abrir: () => { S.auRid = x.r.id; if (S.rota.area !== 'inspecoes' || S.rota.aba !== 'auditoria') ir('inspecoes', 'auditoria'); auNcAbre(x.r.id, x.n.id); } })); });
+    abrir: () => { S.auRid = x.r.id; if (S.rota.area !== 'inspecoes' || S.rota.aba !== 'auditoria') { S._gvNav = true; ir('inspecoes', 'auditoria'); } auNcAbre(x.r.id, x.n.id); } })); });

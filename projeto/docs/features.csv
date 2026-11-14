@@ -445,3 +445,13 @@ Título que entra (Blur Text),Sistema,could,não,sim,Cabeçalho das áreas,v0.6.
 Avisos um por vez com visto e faíscas ao salvar,Sistema,should,não,sim,Avisos,v0.6.14
 Lista do sino em sequência e desfoque no fim das listas,Sistema,could,não,sim,Sino e gavetas,v0.6.14
 Medidor da auditoria visual,Projeto,should,não,sim,tools/auditoria,v0.6.14
+Traço colorido só em Grave e Urgente,Inspeções,should,não,sim,Apontamentos,v0.6.14.1
+Busca abre o detalhe de qualquer tela,Sistema,should,não,sim,Busca,v0.6.14.1
+Foto grande com marcas logo após enviar,Inspeções,should,não,sim,Apontamentos e Cloro,v0.6.14.1
+Bebedouro novo entra no rodízio da água,Coletas,should,não,sim,Água,v0.6.14.1
+Menu da coluna: uma rolagem, Limpar no alto,Sistema,should,não,sim,Tabelas,v0.6.14.2
+Solicitações: itens só na janela,Almoxarifado,should,não,sim,Solicitações,v0.6.14.2
+Frase da tela de entrar fora da foto (celular),Sistema,could,não,sim,Entrar,v0.6.14.2
+Lista retrátil encolhe ao fechar,Sistema,could,não,sim,Movimento,v0.6.14.2
+Pólen para sozinho,Sistema,could,não,sim,Entrar,v0.6.14.2
+

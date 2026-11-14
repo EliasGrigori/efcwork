@@ -599,9 +599,13 @@ body.tb-arrastando,body.tb-arrastando *{cursor:grabbing!important;user-select:no
 .tb-mn-av{display:flex;align-items:center;gap:6px;margin:0;padding:8px 14px;font-size:12.5px;color:var(--aTx);background:color-mix(in srgb,var(--a) 8%,var(--bg1));border-bottom:1px solid var(--bd)}
 .tb-mn-av .ic{width:13px;height:13px;flex-shrink:0}
 .tb-mn-g{display:flex;flex-direction:column;gap:2px;padding:10px 8px 8px;border-bottom:1px solid var(--bd)}.tb-mn-g:last-child{border-bottom:0}
-.tb-mn-corpo{flex:1 1 auto;min-height:0;overflow:auto;overscroll-behavior:contain}
-.tb-mn-fg .tb-mn-l{max-height:250px}
-.tb-mn-cab,.tb-mn-av,.tb-mn-pe{flex-shrink:0}
+.tb-mn-corpo{flex:1 1 auto;min-height:0;overflow:auto;overscroll-behavior:contain;display:flex;flex-direction:column}
+.tb-mn-corpo>.tb-mn-g{flex:0 0 auto}
+.tb-mn-corpo>.tb-mn-fg{flex:1 1 auto;min-height:0;display:flex;flex-direction:column} /* v0.6.14.2: só a lista rola; os itens do fim sempre alcançáveis */
+.tb-mn-fg .tb-mn-l{flex:1 1 auto;min-height:96px;max-height:260px}
+.tb-mn-hh{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:28px}.tb-mn-hh .tb-mn-h{padding-bottom:0}
+.tb-mn-lp{height:28px;padding:0 6px;font-size:13px;border-radius:8px}
+.tb-mn-cab,.tb-mn-av{flex-shrink:0}
 .tb-mn-h{font-size:12.5px;color:var(--tx3);font-weight:600;padding:0 6px 4px}
 .tb-mn-o{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:10px;min-height:34px;padding:0 8px;border-radius:8px;cursor:pointer;color:var(--tx2)}
 .tb-mn-o .ic{width:16px;height:16px;color:var(--tx3)}.tb-mn-o span{flex:1}.tb-mn-o i{display:inline-flex;color:var(--aTx)}
@@ -625,26 +629,37 @@ body.tb-arrastando,body.tb-arrastando *{cursor:grabbing!important;user-select:no
 .tb-mn-all{border-bottom:1px dashed var(--bd);border-radius:8px 8px 0 0;margin-bottom:2px;font-weight:600}
 .tb-mn-vz{color:var(--tx3);font-style:italic}
 .tb-mn-nd{margin:6px;color:var(--tx3);font-size:13px}
-.tb-mn-pe{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;background:var(--bg0)}
-.tb-mn-mv{display:flex;gap:4px}.tb-mn-mv .bt{height:34px;width:34px}.tb-sesq{display:inline-flex;transform:rotate(180deg)}
 .tb-mn.tb-mn-folha{left:0!important;right:0;top:auto!important;bottom:0;width:auto;max-height:82vh;border-radius:16px 16px 0 0;animation:tbFolha var(--panel-open-dur) var(--panel-ease);padding-bottom:env(safe-area-inset-bottom,0px)}
 @keyframes tbFolha{from{transform:translateY(100%);opacity:.6}to{transform:none;opacity:1}}
 @media(prefers-reduced-motion:reduce){.tb-mn,.tb-mn.tb-mn-folha{animation:none}}
 .tb-mn-bs,.tb-mn-nr,.tb-mn-h{flex-shrink:0}
 /* pontinha do menu apontando para a coluna */
 .tb-mn-pt{position:absolute;top:-6px;left:var(--tb-pt);width:11px;height:11px;margin-left:-5.5px;transform:rotate(45deg);background:var(--bg1);border-left:1px solid var(--bd2);border-top:1px solid var(--bd2);z-index:1}
-.tb-mn>.tb-mn-cab{border-radius:12px 12px 0 0}.tb-mn>.tb-mn-pe{border-radius:0 0 12px 12px}
+.tb-mn>.tb-mn-cab{border-radius:12px 12px 0 0}
 .tb-mn.tb-mn-folha .tb-mn-pt{display:none}
 /* toque: alvos de 44 px */
 .tb-mn.tb-mn-folha .tb-mn-o,.tb-mn.tb-mn-folha .tb-mn-li,.tb-mn.tb-mn-folha .tb-mn-tr,.tb-mn.tb-mn-folha .tb-mn-bs,.tb-mn.tb-mn-folha .tb-mn-nr label{min-height:44px;height:auto}
-.tb-mn.tb-mn-folha .tb-mn-mv .bt{height:44px;width:44px}
 .tb-mn.tb-mn-cima .tb-mn-pt{top:auto;bottom:-6px;transform:rotate(225deg)}
 
 /* botão único de ordenar (v0.4.9): cada toque troca padrão → crescente → decrescente */
 .tb-mn-ci em{font-style:normal;font-size:12px;color:var(--tx3)}
 .tb-mn-ci{min-height:40px}
 .tb-mn-fundo{position:fixed;inset:0;z-index:59;background:rgba(20,16,8,.38)}
-.tb-mn-pe .bt{border-radius:8px} /* v0.4.15 (Grok v0.4.12 A1): rodapé do menu com o mesmo canto de 8 px */
+.tb-mn.tb-mn-folha .tb-mn-fg .tb-mn-l{max-height:none}.tb-mn.tb-mn-folha .tb-mn-lp{height:44px}
+/* v0.6.14.2 (pedido do Elias 14/11 08:17): menu da coluna sem linhas divisórias e mais compacto, para a parte Filtrar caber na tela */
+.tb-mn-cab{padding:10px 10px 4px 14px;border-bottom:0}
+.tb-mn-av{border-bottom:0;margin:4px 8px 0;border-radius:8px}
+.tb-mn-g{padding:6px 8px 2px;border-bottom:0;gap:0}
+.tb-mn-h{padding:0 6px 2px}
+.tb-mn-hh{min-height:26px}
+.tb-mn-ci{min-height:34px}
+.tb-mn-pre{padding:0 6px 2px}
+.tb-mn-pre .dd-b{min-height:34px;height:34px}
+.tb-mn-bs{height:34px;margin:0 6px 4px}
+.tb-mn-nr label{height:32px}
+.tb-mn-g:last-child{padding-bottom:6px}
+.tb-mn.tb-mn-folha .tb-mn-pre .dd-b{min-height:44px;height:44px}
+.tb-mn.tb-mn-folha .tb-mn-ci{min-height:44px}
 
 /* ===== almox.css ===== */
 /* EFCwork · almox.css — Prefixo: al- */
@@ -1371,8 +1386,8 @@ button.cl-li:hover{background:var(--row)}
 .ap-card{display:flex;gap:12px;align-items:center;width:100%;min-width:0;max-width:100%;text-align:left;background:var(--bg1);border:1px solid var(--bd);border-left:3px solid var(--bd);border-radius:var(--r);padding:10px 12px;box-shadow:var(--sh);font:inherit;color:inherit;cursor:pointer}
 .ap-card:hover{background:var(--row)}
 .ap-card.g-urgente,.ap-card.g-grave{border-left-color:var(--cr)}
-.ap-card.g-media{border-left-color:var(--wa)}
 :root[data-tema="escuro"] .ap-card{border-color:rgba(217,180,106,.16)}
+:root[data-tema="escuro"] .ap-card.g-urgente,:root[data-tema="escuro"] .ap-card.g-grave{border-left-color:var(--cr)} /* v0.6.14.2: a borda do Escuro escondia o traço */
 .ap-cf{width:64px;height:64px;border-radius:8px;flex:none;background:var(--bg2);overflow:hidden;display:grid;place-items:center}
 .ap-cf img{width:100%;height:100%;object-fit:cover;display:block}
 .ap-cf.vz .ic{width:20px;height:20px;color:var(--tx3)}
@@ -1406,7 +1421,8 @@ button.cl-li:hover{background:var(--row)}
 .ap-hist span{display:block;color:var(--tx)}
 /* rodapé do detalhe: botões alinhados, mesma altura e mesma largura (regra do Elias, 11/11) */
 .ap-pe{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:8px;width:100%}
-.ap-pe .bt{width:100%;min-width:0;justify-content:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ap-pe .bt{width:100%;min-width:0;justify-content:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:8px;padding-right:8px}
+.ap-pe:has(.bt:nth-child(4)){grid-template-columns:repeat(2,minmax(0,1fr))} /* opção A (14/11): com 4 botões, 2 por linha, texto inteiro */
 .ap-par{display:flex;flex-direction:column;gap:6px;margin:4px 0 10px}
 .ap-pl{display:grid;grid-template-columns:minmax(90px,1fr) minmax(0,2fr) auto auto;gap:8px;align-items:center;font-size:13px}
 .ap-pn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--tx2)}
@@ -1899,9 +1915,13 @@ body:has(#gv) .pp-bar{display:none}
   .en-diz,.en-rev .en-diz{left:16px;right:16px;top:auto;bottom:14px;max-width:none;padding:10px 12px;border-radius:10px;background:var(--vidro-en,rgba(255,254,251,.86));border:1px solid var(--bd)}
   .en-rev .en-diz{background:rgba(11,13,22,.78);border-color:rgba(217,180,106,.18)}
   .en-faixa,.en-chip.c{display:none} /* v0.6.14: no celular a linha do app ocupa o lugar da faixa e do terceiro cartão */
-  .en-diz,.en-rev .en-diz{bottom:16px}
-  .en-diz small{font-size:11px;margin-bottom:3px}.en-diz b,.en-rev .en-diz b{font-size:16px}
-  .en-chip.a{left:10px;top:70px}.en-chip.b{left:auto;right:10px;top:180px}.en-chip.c{left:16px;top:270px}
+  /* v0.6.14.2: no celular a linha fica no alto, em texto simples, e nunca cobre a foto (antes ficava sobre as pernas da moça) */
+  .en-diz,.en-rev .en-diz{top:12px;bottom:auto;left:16px;right:16px;padding:0;background:none;border:0;border-radius:0}
+  .en-diz small{display:none}.en-diz b,.en-rev .en-diz b{font-size:15px;line-height:1.25}
+  .en-ft.moldura,.en-avi .en-ft.moldura{top:62px;height:276px}
+  .en-arco{top:78px;height:280px}
+  .en-chip.a{top:96px}.en-chip.b{top:190px}.en-chip.c{top:270px}
+  .en-chip.a{left:10px}.en-chip.b{left:auto;right:10px}.en-chip.c{left:16px}
 }
 @media(prefers-reduced-motion:reduce){
   .en *,.en *::before,.en *::after{animation:none!important;transition:none!important}
@@ -2105,7 +2125,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = Mov;
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.6.14';
+const VERSAO = '0.6.14.2';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -2502,7 +2522,7 @@ const CS_CARGAS = []; /* funções que cada área registra para começar a ouvir
 /* áreas do EFCwork (estrutura aprovada no Estudo do Rework, 05/11/2026). "versao" = quando a área é refeita aqui */
 const AREAS = [
   { id: 'inicio', nome: 'Início', ic: 'casa', abas: [] },
-  { id: 'coletas', nome: 'Coletas', ic: 'frasco', versao: 'v0.4', parcial: 'amostras, água, programação, envio e pontos de água prontos aqui; lançar coleta nova, fichas, etiquetas e os outros cadastros seguem no EFClaudian', abas: [{ id: 'amostras', nome: 'Amostras' }, { id: 'agua', nome: 'Água' }, { id: 'programacao', nome: 'Programação' }, { id: 'envio', nome: 'Envio' }, { id: 'cadastros', nome: 'Cadastros' }, { id: 'plano', nome: 'Plano de coleta', oculta: true, pai: 'programacao' }] },
+  { id: 'coletas', nome: 'Coletas', ic: 'frasco', versao: 'v0.4', parcial: 'amostras, água, programação, envio e pontos de água prontos aqui; fichas, etiquetas e os outros cadastros seguem no EFClaudian', abas: [{ id: 'amostras', nome: 'Amostras' }, { id: 'agua', nome: 'Água' }, { id: 'programacao', nome: 'Programação' }, { id: 'envio', nome: 'Envio' }, { id: 'cadastros', nome: 'Cadastros' }, { id: 'plano', nome: 'Plano de coleta', oculta: true, pai: 'programacao' }] },
   { id: 'rateios', nome: 'Rateios', ic: 'pizza', versao: 'v0.7', abas: [] },
   { id: 'inspecoes', nome: 'Inspeções', ic: 'lista', versao: 'v0.6', parcial: 'cloro, apontamentos e auditoria interna prontos aqui', abas: [{ id: 'cloro', nome: 'Cloro' }, { id: 'apontamentos', nome: 'Apontamentos' }, { id: 'auditoria', nome: 'Auditoria interna' }] },
   { id: 'documentos', nome: 'Documentos', ic: 'doc', versao: 'v0.5', parcial: 'documentos, caixas d’água, histórico e impressos prontos aqui; o relatório de documentos segue no EFClaudian', abas: [{ id: 'documentos', nome: 'Documentos' }, { id: 'caixas', nome: 'Caixas d’água' }, { id: 'historico', nome: 'Histórico' }, { id: 'impressos', nome: 'Impressos' }] },
@@ -3125,7 +3145,7 @@ function tbMenuHTML(cfg, k) {
     '<i class="tb-mn-pt"></i><div class="tb-mn-cab"><div class="tb-mn-t"><b>' + esc(c.rot) + '</b><small>' + vals.reduce((q, x) => q + x.n, 0) + ' ' + esc(cfg.unidade || 'registros') + ' · ' + vals.length + (vals.length === 1 ? ' valor' : ' valores') + '</small></div>' +
     '<button type="button" class="tb-mn-tr' + (tr ? ' on' : '') + '" data-act="tb-trava" data-tb="' + id + '" data-k="' + esc(k) + '" aria-pressed="' + tr + '" title="' + (tr ? 'Destravar: volta a poder mudar e o Limpar filtro passa a valer' : 'Travar: a ordem e o filtro desta coluna ficam assim, mesmo ao sair do app, até você destravar') + '">' + ic('cadeado') + '<span>' + (tr ? 'Travada' : 'Travar') + '</span></button></div>' +
     (tr ? '<p class="tb-mn-av">' + ic('cadeado') + 'Travada. Destrave para mudar a ordem ou o filtro.</p>' : '') +
-    '<div class="tb-mn-corpo"><div class="tb-mn-g tb-mn-ord"><span class="tb-mn-h">Ordenar</span>' + '<button type="button" class="tb-mn-o tb-mn-ci' + (o ? ' on' : '') + '" data-act="tb-ociclo" data-tb="' + id + '" data-k="' + esc(k) + '"' + dis + ' title="Cada toque troca: ordem padrão, ' + nomes[0].toLowerCase() + ', ' + nomes[1].toLowerCase() + '">' + ic(o === 'asc' ? 'ordAsc' : o === 'desc' ? 'ordDesc' : 'ordPad') + '<span>' + (o === 'asc' ? nomes[0] : o === 'desc' ? nomes[1] : 'Ordem padrão') + '</span><em>' + (o === 'asc' ? 'toque: inverte' : o === 'desc' ? 'toque: volta ao padrão' : 'toque: ordena') + '</em></button></div>';
+    '<div class="tb-mn-corpo"><div class="tb-mn-g tb-mn-ord"><div class="tb-mn-hh"><span class="tb-mn-h">Ordenar</span><button type="button" class="bt lk tb-mn-lp" data-act="tb-mnlimpa" data-tb="' + id + '" data-k="' + esc(k) + '"' + (tbColFiltrada(cfg, k) && !tr ? '' : ' disabled') + '>Limpar esta coluna</button></div>' + '<button type="button" class="tb-mn-o tb-mn-ci' + (o ? ' on' : '') + '" data-act="tb-ociclo" data-tb="' + id + '" data-k="' + esc(k) + '"' + dis + ' title="Cada toque troca: ordem padrão, ' + nomes[0].toLowerCase() + ', ' + nomes[1].toLowerCase() + '">' + ic(o === 'asc' ? 'ordAsc' : o === 'desc' ? 'ordDesc' : 'ordPad') + '<span>' + (o === 'asc' ? nomes[0] : o === 'desc' ? nomes[1] : 'Ordem padrão') + '</span><em>' + (o === 'asc' ? 'toque: inverte' : o === 'desc' ? 'toque: volta ao padrão' : 'toque: ordena') + '</em></button></div>';
   const pre = tbPresetsDe(cfg, k);
   if (pre.length) h += '<div class="tb-mn-g"><span class="tb-mn-h">Filtros prontos</span>' + pre.map(p => '<div class="tb-mn-pre' + (tr ? ' tb-mn-off' : '') + '">' + (pre.length > 1 || p.rot !== c.rot ? '<small>' + esc(p.rot) + '</small>' : '') + ddHTML('tbf:' + cfg.id + ':' + p.k, st.filtros[p.k] == null ? '' : st.filtros[p.k], [['', 'Todos']].concat(p.opcoes)) + '</div>').join('') + '</div>';
   h += '<div class="tb-mn-g tb-mn-fg"><span class="tb-mn-h">Filtrar</span><label class="tb-mn-bs">' + ic('lupa') + '<input type="search" data-tbmnbusca="' + id + '" data-k="' + esc(k) + '" value="' + esc(f.txt || '') + '" placeholder="Buscar em ' + esc(c.rot) + '" aria-label="Buscar em ' + esc(c.rot) + '"' + dis + '></label>';
@@ -3134,8 +3154,6 @@ function tbMenuHTML(cfg, k) {
   h += '<div class="tb-mn-l">' + (vis.length ? '<label class="tb-mn-li tb-mn-all"><input type="checkbox" data-tbmnall="' + id + '" data-k="' + esc(k) + '"' + (todosMarc ? ' checked' : '') + (!todosMarc && algum ? ' data-meio="1"' : '') + dis + '><span>' + (bq ? 'Marcar os encontrados' : 'Marcar todos') + '</span><em>' + vis.reduce((s, x) => s + x.n, 0) + '</em></label>' : '') +
     vis.slice(0, 400).map(x => '<label class="tb-mn-li"><input type="checkbox" data-tbmnv="' + id + '" data-k="' + esc(k) + '" value="' + esc(x.lab) + '"' + (!sel || sel.indexOf(x.lab) >= 0 ? ' checked' : '') + dis + '><span' + (x.lab === '' ? ' class="tb-mn-vz"' : '') + '>' + esc(x.lab === '' ? '(em branco)' : x.lab) + '</span><em>' + x.n + '</em></label>').join('') +
     (!vis.length ? '<p class="tb-mn-nd">Nada com “' + esc(f.txt || '') + '”.</p>' : '') + '</div></div></div>';
-  h += '<div class="tb-mn-pe"><span class="tb-mn-mv"><button type="button" class="bt ic-so" data-act="tb-mvesq" data-tb="' + id + '" data-k="' + esc(k) + '" title="Mover a coluna para a esquerda" aria-label="Mover a coluna para a esquerda"' + (pos <= 0 ? ' disabled' : '') + '><span class="tb-sesq">' + ic('seta') + '</span></button><button type="button" class="bt ic-so" data-act="tb-mvdir" data-tb="' + id + '" data-k="' + esc(k) + '" title="Mover a coluna para a direita" aria-label="Mover a coluna para a direita"' + (pos >= nv - 1 ? ' disabled' : '') + '>' + ic('seta') + '</button></span>' +
-    '<button type="button" class="bt lk" data-act="tb-mnlimpa" data-tb="' + id + '" data-k="' + esc(k) + '"' + (tbColFiltrada(cfg, k) && !tr ? '' : ' disabled') + '>Limpar esta coluna</button></div></div>';
   return h;
 }
 /* a rolagem da lista do menu é guardada quando o usuário rola e devolvida só depois de redesenhar (antes, cada rolagem a devolvia ao ponto antigo e a lista "travava") */
@@ -3375,7 +3393,7 @@ document.addEventListener('click', e => {
   else if (a === 'tb-lin') { const cfg = TB[id]; if (cfg && cfg.aoClicar) cfg.aoClicar(t.getAttribute('data-id')); }
 });
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { if ($$('.dd-l:not([hidden])').length) { ddFecha(); return; } if (S.tbMenu) { e.preventDefault(); tbMenuFecha(); return; } if (S.camadas.length) { e.preventDefault(); csVolta(); } }
+  if (e.key === 'Escape') { if ($$('.dd-l:not([hidden]):not(.dd-fant)').length) { ddFecha(); return; } if (S.tbMenu) { e.preventDefault(); tbMenuFecha(); return; } if (S.camadas.length) { e.preventDefault(); csVolta(); } }
   if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('[data-act="dd-v"], tr[data-act="tb-lin"]')) { e.preventDefault(); e.target.click(); }
 });
 
@@ -3564,7 +3582,7 @@ function alTabSol() {
       { k: 'num', rot: 'Nº', fixa: true, v: x => x.numero || '', cls: 'forte' },
       { k: 'data', rot: 'Data', tipo: 'data', v: x => x.data || '' },
       { k: 'sol', rot: 'Solicitante', v: x => x.solicitante || '' },
-      { k: 'itens', rot: 'Itens', v: x => (x.linhas || []).map(l => alQ(l.qtd) + ' ' + l.nome).join(', ') },
+      { k: 'itens', rot: 'Itens', tipo: 'num', v: x => (x.linhas || []).length }, /* v0.6.14.2: o texto dos itens só aparece na janela (gaveta); a busca continua achando pelo nome do item */
       { k: 'prev', rot: 'Previsão', tipo: 'data', v: x => x.previsao || '' },
       { k: 'sit', rot: 'Situação', v: x => (AL_SOL_ST[x.situacao] || AL_SOL_ST.pendente)[0], html: x => { const s = AL_SOL_ST[x.situacao] || AL_SOL_ST.pendente; return alPill(s[0], s[1]); } }] });
 }
@@ -5880,7 +5898,7 @@ function agBebIds(c) { if (Array.isArray(c.bebIds) && c.bebIds.length) return c.
 const agAtivas = () => (S.aguacol || []).filter(c => c.situacao !== 'cancelada');
 const agUltima = bebId => agAtivas().filter(c => agBebIds(c).indexOf(bebId) >= 0).map(c => c.data).sort().pop() || '';
 function agPorVez() { const L = pjLegadoSalvo(); return L ? (Number(L.porVez) > 0 ? Number(L.porVez) : agBebs().length) : agCfg().porVez; }
-const agSugeridos = () => agBebs().slice().sort((a, b) => (agUltima(a.id) || '0000').localeCompare(agUltima(b.id) || '0000') || agCmp(a.codigo, b.codigo)).slice(0, agPorVez());
+const agSugeridos = () => agBebs().slice().sort((a, b) => (agUltima(a.id) || '0000').localeCompare(agUltima(b.id) || '0000') || (b.rodizioAuto ? 1 : 0) - (a.rodizioAuto ? 1 : 0) || agCmp(a.codigo, b.codigo)).slice(0, agPorVez()); /* v0.6.14.1: entre os nunca coletados, o bebedouro novo vem primeiro */
 const agNC = c => c.resultado === 'NÃO CONFORME';
 const agTipoTxt = c => AG_TIPOS[c.tipoColeta] || 'Avulsa';
 const agAgenteTxt = c => (c.agente || []).map(a => a === 'outro' ? (c.agenteOutro || 'Outro') : ((AG_AGENTES.find(x => x[0] === a) || [])[1] || a)).join(', ');
@@ -5919,7 +5937,10 @@ function pjLegadoVirtual() {
   return { id: 'legado', legado: true, _virtual: true, nome: 'Rodízio dos bebedouros', pontos: (S.bebs || []).filter(b => b.situacao === 'ativo' && c.fora.indexOf(b.id) < 0).map(b => 'beb:' + b.id),
     porVez: c.porVez, mesclada: true, analiseId: pjAnPadrao().id || '', lab: '', cadaSemanas: Math.max(1, Math.round(c.periodoDias / 7)), dia: 2, hora: '08:00', inicio: hojeISO(), confirmadas: {}, remarcadas: {}, puladas: {}, ativo: true };
 }
-const pjLegadoSalvo = () => (S.aguaproj || []).find(p => p.id === 'legado') || null;
+/* v0.6.10.1: bebedouro cadastrado aqui (Cloro) depois do último salvamento do projeto entra sozinho no rodízio; ao salvar o projeto ele passa a valer como ponto comum */
+const pjLegadoSalvo = () => { const p = (S.aguaproj || []).find(x => x.id === 'legado'); if (!p) return null;
+  const nv = (S.bebs || []).filter(b => b.situacao === 'ativo' && b.rodizioAuto && (p.pontos || []).indexOf('beb:' + b.id) < 0 && String(b.ativoDesde || b.criadoEm || '') > String(p.atualizadoEm || '')).map(b => 'beb:' + b.id);
+  return nv.length ? Object.assign({}, p, { pontos: (p.pontos || []).concat(nv) }) : p; };
 const pjLegado = () => pjLegadoSalvo() || pjLegadoVirtual();
 function pjProjetos() {
   const L = pjLegado(), l = (S.aguaproj || []).filter(p => p.ativo !== false && p.id !== 'legado').sort((a, b) => agCmp(a.nome, b.nome));
@@ -5999,7 +6020,7 @@ function agBoxesHTML() {
   return '<div class="ag-boxes">' + ps.map(p => {
     const x = pjProxima(p), sit = x ? PJ_SIT[x.sit] : null, av = pjAvisar(x), cor = x && x.sit === 'atrasada' ? 'cr' : av ? 'wa' : '';
     return '<div class="ag-box' + (cor ? ' ' + cor : '') + '" data-act="pj-abre" data-id="' + esc(p.id) + '" role="button" tabindex="0" aria-label="Abrir o projeto ' + esc(p.nome) + '"><span class="ag-bt"><b>' + esc(p.nome) + '</b>' + (sit ? alPill(sit[0], av ? 'wa' : sit[1]) : '') + '</span>' +
-      '<span class="ag-bq">' + (x ? 'Próxima: <b>' + esc(pjDataTxt(x)) + '</b>' : 'Sem data') + '</span><small>' + esc(pjOQue(p)) + '</small>' +
+      '<span class="ag-bq">' + (x ? 'Próxima: <b>' + esc(pjDataTxt(x)) + '</b>' + (x.oc && x.oc !== x.data ? ' <small>(remarcada, o normal seria ' + esc(PJ_DIAS3[pjDow(x.oc)] + ' ' + fmtD(x.oc).slice(0, 5)) + ')</small>' : '') : 'Sem data') + '</span><small>' + esc(pjOQue(p)) + '</small>' +
       '<small>' + esc(pjQuandoTxt(p) + ' · ' + pjAnsTxt(p)) + '</small>' +
       (agPode() && x ? '<button type="button" class="bt' + (x.data <= hojeISO() ? ' pr' : '') + '" data-act="ag-nova" data-pid="' + esc(p.id) + '" data-oc="' + esc(x.oc) + '">' + ic('mais') + 'Lançar esta coleta</button>' : '') + '</div>';
   }).join('') + (sup ? '<button type="button" class="ag-box ag-novo" data-act="pj-novo">' + ic('mais') + '<b>Novo projeto</b><small>pontos, análises, dia e frequência</small></button>' : '') + '</div>';
@@ -6419,7 +6440,7 @@ async function acPdf(id) {
   const ids = (a.etapas || []).reduce((l, e) => l.concat(e.fotos || []), []);
   if (ids.length && !a.fotosApagadas) { aviso('Preparando as fotos…'); await Promise.all(ids.map(acFotoGet)); }
   const im = f => S._acFotos[f] && imgSrc(S._acFotos[f].dataUrl) ? '<img src="' + imgSrc(S._acFotos[f].dataUrl) + '" alt="">' : '';
-  const kv = [['Ponto', c.pontoNome], ['Coleta', fmtD(c.data) + ' ' + (c.hora || '') + ' · ' + agTipoTxt(c)], ['Análise', (c.analiseNome || '') + ' · ' + (c.lab || '—')], ['Resultado', String(c.resultado || '').toLowerCase() + (c.laudoEm ? ' · laudo ' + fmtD(c.laudoEm) : '')], ['Agente', agAgenteTxt(c) || '—'], ['Gravidade', c.gravidade || '—'],
+  const kv = [['Ponto', c.pontoNome], ['Coleta', fmtD(c.data) + ' ' + (c.hora || '') + ' · ' + agTipoTxt(c)], ['Análise', [c.analiseNome, c.lab].filter(Boolean).join(' · ') || '—'], ['Resultado', String(c.resultado || '').toLowerCase() + (c.laudoEm ? ' · laudo ' + fmtD(c.laudoEm) : '')], ['Agente', agAgenteTxt(c) || '—'], ['Gravidade', c.gravidade || '—'],
     ['Responsável', a.responsavelNome], ['Prazo', fmtD(a.prazo)], ['Situação', a.concluida ? 'Concluída por ' + a.concluidaPorNome + ' em ' + fmtD(agDia(a.concluidaEm)) : agAcSit(a) === 'vencida' ? 'Vencida' : 'Aberta'], ['Aberta por', (a.abertaPorNome || '') + ' · ' + fmtD(agDia(a.abertaEm))]];
   const et = (a.etapas || []).map((e, i) => { const fs = a.fotosApagadas ? [] : (e.fotos || []).map(im).filter(Boolean);
     return '<tr><td><b>' + (e.final ? 'Conclusão' : 'Etapa ' + (i + 1)) + '</b></td><td>' + esc(fmtDT(e.ts)) + '</td><td>' + esc(e.porNome || '') + '</td><td>' + esc(e.texto) + (a.fotosApagadas && (e.fotos || []).length ? '<br><i>' + e.fotos.length + ' foto(s) eliminada(s) depois da conclusão</i>' : '') + (fs.length ? '<div class="ac-ifs">' + fs.join('') + '</div>' : '') + '</td></tr>'; }).join('');
@@ -6670,7 +6691,7 @@ async function pjEdOk() {
   const iguais = pjProjetos().filter(p => p.id !== f.id).map(p => ({ p: p, c: (p.pontos || []).filter(r => pts.indexOf(r) >= 0 && pjAnIds(p).some(a => ans.indexOf(a) >= 0 && (p.lab || (S.analises.find(x => x.id === a) || {}).lab || '') === labDe(a))) })).filter(x => x.c.length);
   const txtIg = iguais.map(x => '"' + x.p.nome + '": ' + x.c.map(r => (pjPonto(r) || {}).cod || r).join(', ')).join(' · ');
   if (iguais.length && f.avisado !== txtIg) { f.avisado = txtIg; f.msg = ''; gvDesenha(true); return; }
-  const o = { nome: nome, pontos: pts, porVez: f.modo === 'rodizio' ? porVez : 0, mesclada: f.legado ? !!f.mesclada : false, analiseId: ans[0], analiseIds: ans, lab: f.lab || '', cadaSemanas: Number(f.cada) || 1, dia: Number(f.dia), hora: f.hora, inicio: f.inicio, ativo: true };
+  const o = { nome: nome, pontos: pts, porVez: f.modo === 'rodizio' ? porVez : 0, mesclada: f.legado ? !!f.mesclada : false, analiseId: ans[0], analiseIds: ans, lab: f.lab || '', cadaSemanas: Number(f.cada) || 1, dia: Number(f.dia), hora: f.hora, inicio: f.inicio, ativo: true, atualizadoEm: nowISO() };
   if (!lcTravar()) return;
   try {
     let id = f.id;
@@ -8285,7 +8306,7 @@ async function clNovaOk() {
   if (!lcTravar()) return;
   try {
     if (novoBeb) {
-      const bid = await Data.col('sv2_bebs').add({ codigo: novoBeb.codigo, local: novoBeb.local, situacao: pendCad ? 'pendente' : 'ativo', descricao: '', criadoEm: nowISO(), criadoPor: S.user.id, criadoPorNome: S.user.nome });
+      const bid = await Data.col('sv2_bebs').add({ codigo: novoBeb.codigo, local: novoBeb.local, situacao: pendCad ? 'pendente' : 'ativo', rodizioAuto: true, descricao: '', criadoEm: nowISO(), criadoPor: S.user.id, criadoPorNome: S.user.nome });
       ponto = { id: bid, codigo: novoBeb.codigo, local: novoBeb.local };
       if (pendCad) { const aid = await Aprov.pedir({ tipo: 'novo_bebedouro', titulo: 'Cadastrar bebedouro ' + novoBeb.codigo + ' — ' + novoBeb.local, descricao: 'Digitado na hora da verificação de cloro.', refTipo: 'bebedouro', refId: bid, payload: { bebId: bid, codigo: novoBeb.codigo, local: novoBeb.local } }); if (aid) await Data.col('sv2_bebs').update(bid, { aprovId: aid }); }
       Audit.log({ acao: 'criar_bebedouro', entidade: 'bebedouro', entidadeId: bid, resumo: pendCad ? 'Bebedouro ' + novoBeb.codigo + ' digitado na verificação (pendente de aprovação)' : 'Cadastrou o bebedouro ' + novoBeb.codigo + ' — ' + novoBeb.local + ' na hora da verificação (já ativo)', depois: novoBeb });
@@ -8305,7 +8326,7 @@ async function clNovaOk() {
     const foto = tipo === 'beb' && imgSrc(f.foto) ? { img: f.foto, origem: f.fotoOrigem || 'camera' } : null;
     if (tipo === 'beb') o.foto = foto ? { st: 'pendente', origem: foto.origem } : { st: 'sem_foto', motivo: String(f.semFoto || '').trim() };
     const cid = await Data.col('sv2_cloro').add(o);
-    if (foto) { S._clFotos[cid] = foto.img; Data.col('sv2_cloro_foto').set(cid, Object.assign({ img: foto.img, ts: nowISO(), porId: S.user.id, origem: foto.origem }, clMkDoc(f))).catch(e => console.error('foto cloro', e)); }
+    if (foto) { S._clFotos[cid] = foto.img; S._clFotoDoc = S._clFotoDoc || {}; S._clFotoDoc[cid] = Object.assign({ base: '', marcas: [], marcadoPor: '', marcadoEm: '' }, clMkDoc(f)); Data.col('sv2_cloro_foto').set(cid, Object.assign({ img: foto.img, ts: nowISO(), porId: S.user.id, origem: foto.origem }, clMkDoc(f))).catch(e => console.error('foto cloro', e)); }
     Audit.log({ acao: 'verificar_cloro', entidade: 'cloro', entidadeId: cid, resumo: 'Cloro ' + o.pontoNome + ' (' + (o.local || 'sem local') + '): ' + ppm(v) + ' ppm — ' + clFaixaTxt(fx) + (dos != null ? ' · dosagem ' + dos + ' ml' : '') + (mot ? ' · motivo: ' + mot : '') + (temV2 ? ' · após ' + ppm(v2) : ''), depois: { ponto: o.pontoNome, valor: v, faixa: fx, situacao: sit } });
     const eu = Array.from(new Set(supsOf(S.user).concat([S.user.id])));
     if (fx === 'alto') Notif.send({ nivel: 'critico', titulo: 'Cloro ALTO: ' + o.pontoNome + ' com ' + ppm(v) + ' ppm', texto: (o.local || '') + ' · ' + fmtD(o.data) + ' ' + o.hora + ' · lançado por ' + S.user.nome + '. Acima de 2,00 ppm: nova verificação obrigatória.', para: eu, refTipo: 'cloro', refId: cid });
@@ -8742,7 +8763,7 @@ async function apNovoOk() {
     hist: [{ ts: ts, porNome: u.nome, txt: 'Registrou como ' + g[1] + (ids.length ? ' com ' + ids.length + ' foto(s)' : ' sem foto') + (o_aud(f) ? ' · ' + o_aud(f) : '') }] };
   try {
     const id = await Data.col('sv2_apont').add(o);
-    fotos.forEach((d, i) => { S._apFotos[ids[i]] = d; Data.col('sv2_fotos').set(ids[i], Object.assign({ refTipo: 'apont', refId: id, papel: 'antes', dataUrl: d, criadoEm: ts, porId: u.id }, apMkDoc(f, i))).catch(er => console.error('foto apont', er)); });
+    fotos.forEach((d, i) => { S._apFotos[ids[i]] = d; S._apFotoDoc[ids[i]] = Object.assign({ base: '', marcas: [], marcadoPor: '', marcadoEm: '' }, apMkDoc(f, i)); Data.col('sv2_fotos').set(ids[i], Object.assign({ refTipo: 'apont', refId: id, papel: 'antes', dataUrl: d, criadoEm: ts, porId: u.id }, apMkDoc(f, i))).catch(er => console.error('foto apont', er)); });
     const sups = supsOf(u).filter(x => x !== u.id);
     const txt = (o.obs || 'Sem observação') + ' · por ' + u.nome + (o.comunicado ? ' · encarregado avisado' : ' · encarregado NÃO avisado');
     if (sups.length && f.grav === 'urgente') Notif.send({ nivel: 'critico', titulo: 'Apontamento URGENTE: ' + c[1] + ' — ' + setor, texto: txt, para: sups, refTipo: 'apont', refId: id });
@@ -8790,7 +8811,7 @@ function apAbre(id) {
     const hist = (a.hist || []).slice().reverse();
     if (hist.length) corpo += '<p class="gv-h">Histórico</p><div class="ap-hist">' + hist.map(h => '<div><b>' + esc(h.porNome || '') + '</b> · ' + esc(fmtDT(h.ts)) + '<span>' + esc(h.txt || '') + '</span></div>').join('') + '</div>';
     let pe = '';
-    if (sup && ab) pe = '<button type="button" class="bt" data-act="ap-np" data-id="' + esc(a.id) + '">Não procede</button><button type="button" class="bt" data-act="ap-grav" data-id="' + esc(a.id) + '">Mudar gravidade</button>' +
+    if (sup && ab) pe = '<button type="button" class="bt" data-act="ap-np" data-id="' + esc(a.id) + '">Não procede</button><button type="button" class="bt" data-act="ap-grav" data-id="' + esc(a.id) + '" >Mudar gravidade</button>' +
       (a.nc ? (a.nc.fechada ? '' : '<button type="button" class="bt" data-act="ap-nc-fechar" data-id="' + esc(a.id) + '">Fechar NC</button>') : '<button type="button" class="bt" data-act="ap-nc" data-id="' + esc(a.id) + '">Abrir NC</button>') +
       '<button type="button" class="bt pr" data-act="ap-res" data-id="' + esc(a.id) + '">Resolver</button>';
     else if (sup && !ab) pe = '<button type="button" class="bt" data-act="ap-reabrir" data-id="' + esc(a.id) + '">Reabrir</button>';
@@ -8816,7 +8837,7 @@ async function apResOk() {
   if (!apPodeCuidar()) return lcErro('Só o Líder ★ ou o Administrador resolve.');
   if (!lcTravar()) return;
   const ts = nowISO(), fotos = (f.fotos || []).slice(0, AP_MAX_FOTOS), ids = fotos.map(() => uid());
-  fotos.forEach((d, i) => { S._apFotos[ids[i]] = d; Data.col('sv2_fotos').set(ids[i], Object.assign({ refTipo: 'apont', refId: a.id, papel: 'depois', dataUrl: d, criadoEm: ts, porId: S.user.id }, apMkDoc(f, i))).catch(er => console.error(er)); });
+  fotos.forEach((d, i) => { S._apFotos[ids[i]] = d; S._apFotoDoc[ids[i]] = Object.assign({ base: '', marcas: [], marcadoPor: '', marcadoEm: '' }, apMkDoc(f, i)); Data.col('sv2_fotos').set(ids[i], Object.assign({ refTipo: 'apont', refId: a.id, papel: 'depois', dataUrl: d, criadoEm: ts, porId: S.user.id }, apMkDoc(f, i))).catch(er => console.error(er)); });
   const patch = { status: 'resolvido', resolucao: { texto: t, porId: S.user.id, porNome: S.user.nome, ts: ts }, fotosDepois: (a.fotosDepois || []).concat(ids), hist: apHistMais(a, 'Resolvido: ' + t + (ids.length ? ' (com ' + ids.length + ' foto(s) do depois)' : '')) };
   Audit.log({ acao: 'situacao_apontamento', entidade: 'apontamento', entidadeId: a.id, resumo: 'Resolveu o apontamento ' + apCat(a.categoria)[1] + ', ' + a.setor + ': ' + t, antes: { situacao: (AP_ST[a.status] || AP_ST.aberto)[0] }, depois: { situacao: 'Resolvido' } });
   if (a.porId !== S.user.id) Notif.send({ nivel: 'info', titulo: 'Seu apontamento foi resolvido', texto: apCat(a.categoria)[1] + ' — ' + a.setor + ': ' + t, para: [a.porId], refTipo: 'apont', refId: a.id }).catch(() => {});
@@ -8968,7 +8989,7 @@ document.addEventListener('click', e => {
 /* busca geral */
 BG_FONTES.push(q => S.apont.filter(a => bgCasa(q, [apCat(a.categoria)[1], a.setor, a.obs, a.porNome, a.risco, a.recom].join(' '))).slice(0, 6).map(a => ({
   grupo: 'Apontamentos', nome: apCat(a.categoria)[1] + ' · ' + (a.setor || ''), sub: fmtD(a.data) + ' · ' + (AP_ST[a.status] || AP_ST.aberto)[0] + (a.obs ? ' · ' + a.obs : ''), ico: 'lista',
-  abrir: () => { if (S.rota.area !== 'inspecoes' || S.rota.aba !== 'apontamentos') ir('inspecoes', 'apontamentos'); apAbre(a.id); } })));
+  abrir: () => { if (S.rota.area !== 'inspecoes' || S.rota.aba !== 'apontamentos') { S._gvNav = true; ir('inspecoes', 'apontamentos'); } apAbre(a.id); } })));
 
 /* ===== auditoria.js ===== */
 /* EFCwork · auditoria.js — Inspeções › Auditoria interna (RNC) (v0.6.2). Prefixo: au.
@@ -9478,7 +9499,7 @@ document.addEventListener('keydown', e => { if (e.key !== 'Enter' || !S.fm || S.
 /* busca geral */
 BG_FONTES.push(q => { const out = []; auLista().forEach(r => auNcs(r).forEach(n => { if (out.length < 6 && bgCasa(q, [r.numero, auNum(n.n), n.titulo, n.nc, n.local, n.respNome, auLeis(n).join(' ')].join(' '))) out.push({ r: r, n: n }); }));
   return out.map(x => ({ grupo: 'Auditoria interna', nome: auNum(x.n.n) + ' · ' + (x.n.titulo || x.n.nc), sub: x.r.numero + ' · ' + (x.n.local || '') + ' · ' + auResp(x.n), ico: 'lista',
-    abrir: () => { S.auRid = x.r.id; if (S.rota.area !== 'inspecoes' || S.rota.aba !== 'auditoria') ir('inspecoes', 'auditoria'); auNcAbre(x.r.id, x.n.id); } })); });
+    abrir: () => { S.auRid = x.r.id; if (S.rota.area !== 'inspecoes' || S.rota.aba !== 'auditoria') { S._gvNav = true; ir('inspecoes', 'auditoria'); } auNcAbre(x.r.id, x.n.id); } })); });
 
 /* ===== auapres.js ===== */
 /* EFCwork · auapres.js — Auditoria interna: apresentação (Nº 45) e relatório (v0.6.2). Prefixo: aua.
@@ -10085,7 +10106,7 @@ document.addEventListener('click', e => {
   else if (a === 'anp-canc-ok') anpCancOk();
 });
 BG_FONTES.push(q => S.anl.filter(x => bgCasa(q, [x.numero, x.titulo, x.descricao, x.local, x.respNome, x.causa].join(' '))).slice(0, 6).map(x => ({ grupo: 'Análise de problemas', nome: x.numero + ' · ' + x.titulo, sub: (ANP_SIT[x.situacao] || ANP_SIT.aberta)[0] + ' · ' + (x.respNome || ''), ico: 'lista',
-  abrir: () => { if (S.rota.area !== 'qualidade' || S.rota.aba !== 'analise') ir('qualidade', 'analise'); anAbrir({ t: 'anp', id: x.id }); } })));
+  abrir: () => { if (S.rota.area !== 'qualidade' || S.rota.aba !== 'analise') { S._gvNav = true; ir('qualidade', 'analise'); } anAbrir({ t: 'anp', id: x.id }); } })));
 
 /* ===== treino.js ===== */
 /* EFCwork · treino.js — Qualidade › Treinamentos (v0.6.12). Prefixo: tr.
@@ -10334,7 +10355,7 @@ document.addEventListener('click', e => {
   else if (a === 'tr-doc') { if (S.gv) gvFecharSo(); ir('documentos', 'impressos'); setTimeout(() => { try { ipAbre(id); } catch (er) { console.error(er); } }, 120); }
 });
 BG_FONTES.push(q => S.trn.filter(x => bgCasa(q, [x.titulo, x.instrutorNome, x.local, trPart(x).map(p => p.nome).join(' ')].join(' '))).slice(0, 6).map(x => ({ grupo: 'Treinamentos', nome: x.titulo, sub: fmtD(x.data) + ' · ' + (TR_SIT[x.situacao] || TR_SIT.programado)[0] + (x.instrutorNome ? ' · ' + x.instrutorNome : ''), ico: 'pessoas',
-  abrir: () => { if (S.rota.area !== 'qualidade' || S.rota.aba !== 'treinos') ir('qualidade', 'treinos'); trAbre(x.id); } })));
+  abrir: () => { if (S.rota.area !== 'qualidade' || S.rota.aba !== 'treinos') { S._gvNav = true; ir('qualidade', 'treinos'); } trAbre(x.id); } })));
 
 /* ===== programacao.js ===== */
 /* EFCwork · programacao.js — Coletas › Programação (v0.4.4): tabela de programações e coletas, "Coletado" das programações
@@ -11289,7 +11310,7 @@ document.addEventListener('mousemove', e => {
    se deslocam mais com o ponteiro. Para quando a tela de entrar some, quando a aba fica escondida e com "movimento reduzido". */
 function enPolen() {
   const cv = document.querySelector('.en-polen'); if (!cv || cv._on) return; cv._on = true;
-  const c = cv.getContext('2d'); if (!c) return; let W = 0, H = 0, k = 1, ps = [], raf = 0, ult = 0; const m = { x: .5, y: .5, tx: .5, ty: .5 };
+  const c = cv.getContext('2d'); if (!c) return; let W = 0, H = 0, k = 1, ps = [], raf = 0, ult = 0, ativ = performance.now(); const m = { x: .5, y: .5, tx: .5, ty: .5 };
   const mede = () => { const r = cv.getBoundingClientRect(); k = Math.min(devicePixelRatio || 1, 1.5); W = r.width; H = r.height; cv.width = Math.max(1, W * k); cv.height = Math.max(1, H * k);
     const n = Math.round(Math.min(90, W * H / 11000)); while (ps.length < n) ps.push({ x: Math.random() * W, y: Math.random() * H, z: .25 + Math.random() * .75, a: Math.random() * 6.28, v: .15 + Math.random() * .35 }); ps.length = n; };
   const desenha = dt => { const esc = csTema() === 'escuro'; c.setTransform(k, 0, 0, k, 0, 0); c.clearRect(0, 0, W, H); m.x += (m.tx - m.x) * .05; m.y += (m.ty - m.y) * .05;
@@ -11298,9 +11319,10 @@ function enPolen() {
       c.shadowColor = esc ? 'rgba(217,180,106,.7)' : 'rgba(217,180,106,.4)'; c.shadowBlur = p.z * 8; c.beginPath(); c.arc(p.x + (m.x - .5) * -40 * p.z, p.y + (m.y - .5) * -30 * p.z, .8 + p.z * 2.6, 0, 6.283); c.fill(); }
     c.shadowBlur = 0; };
   const passo = t => { if (!cv.isConnected) { cancelAnimationFrame(raf); removeEventListener('resize', mede); document.removeEventListener('visibilitychange', vis); return; }
+    if (performance.now() - ativ > 10000) { raf = 0; ult = 0; return; } /* v0.6.14.2: sem ponteiro mexendo por 10 s, o pólen para (nada se mexe para sempre) */
     const dt = Math.min(.05, (t - (ult || t)) / 1000); ult = t; desenha(dt); raf = requestAnimationFrame(passo); };
-  const vis = () => { cancelAnimationFrame(raf); ult = 0; if (!document.hidden && cv.isConnected && !Mov.reduzido()) raf = requestAnimationFrame(passo); };
-  cv._mouse = (x, y) => { m.tx = x; m.ty = y; };
+  const vis = () => { cancelAnimationFrame(raf); ult = 0; ativ = performance.now(); if (!document.hidden && cv.isConnected && !Mov.reduzido()) raf = requestAnimationFrame(passo); };
+  cv._mouse = (x, y) => { m.tx = x; m.ty = y; ativ = performance.now(); if (!raf && cv.isConnected && !document.hidden && !Mov.reduzido()) { ult = 0; raf = requestAnimationFrame(passo); } };
   mede(); addEventListener('resize', mede); document.addEventListener('visibilitychange', vis);
   if (Mov.reduzido()) { for (let i = 0; i < 3; i++) desenha(0); return; } raf = requestAnimationFrame(passo);
 }
@@ -11569,7 +11591,7 @@ document.addEventListener('click', e => {
 });
 /* Esc fecha uma camada de cada vez: primeiro o detalhe aberto, depois o painel do filtro */
 document.addEventListener('keydown', e => {
-  if (e.key !== 'Escape' || S.rota.area !== 'adm' || S.rota.aba !== 'atividade' || (S.camadas && S.camadas.length) || document.querySelector('.dd-l:not([hidden])')) return;
+  if (e.key !== 'Escape' || S.rota.area !== 'adm' || S.rota.aba !== 'atividade' || (S.camadas && S.camadas.length) || document.querySelector('.dd-l:not([hidden]):not(.dd-fant)')) return;
   if (S.atLinha) { S.atLinha = null; render(); } else if (S.atAberto) { S.atAberto = false; render(); }
 });
 
@@ -11747,11 +11769,12 @@ csConfirmaFecha = function (sim) {
 /* ---------- lista retrátil: abre crescendo do botão (CSS) e fecha encolhendo (cópia que some) ---------- */
 const fzDdFechaOrig = ddFecha;
 ddFecha = function () {
-  if (fzMov()) $$('.dd-l:not([hidden])').forEach(l => { const g = l.cloneNode(true); g.classList.add('dd-fant'); g.removeAttribute('role'); g.setAttribute('aria-hidden', 'true');
+  const fan = []; if (fzMov()) $$('.dd-l:not([hidden]):not(.dd-fant)').forEach(l => { const g = l.cloneNode(true); g.classList.add('dd-fant'); g.removeAttribute('role'); g.setAttribute('aria-hidden', 'true');
     g.querySelectorAll('[data-act],[data-v],[role],[tabindex],[id]').forEach(x => { x.removeAttribute('data-act'); x.removeAttribute('data-v'); x.removeAttribute('role'); x.removeAttribute('tabindex'); x.removeAttribute('id'); });
     const r = l.getBoundingClientRect(); g.style.cssText = 'position:fixed;margin:0;left:' + r.left + 'px;top:' + r.top + 'px;width:' + r.width + 'px;min-width:0;right:auto;bottom:auto;z-index:130';
-    document.body.appendChild(g); setTimeout(() => g.remove(), Mov.ms('--dropdown-close-dur', 150)); }); /* a cópia fica no corpo da página: sobrevive ao redesenho da gaveta */
-  fzDdFechaOrig();
+    fan.push(g); });
+  fzDdFechaOrig(); /* a original esconde TODAS as listas (inclusive uma cópia já no corpo): por isso a cópia só entra depois (v0.6.14.2, Grok: a lista fechava seca) */
+  fan.forEach(g => { document.body.appendChild(g); setTimeout(() => g.remove(), Mov.ms('--dropdown-close-dur', 150)); }); /* a cópia fica no corpo da página: sobrevive ao redesenho da gaveta */
 };
 
 /* ---------- erro no formulário: a mensagem dá uma tremida curta ---------- */

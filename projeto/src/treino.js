@@ -244,4 +244,4 @@ document.addEventListener('click', e => {
   else if (a === 'tr-doc') { if (S.gv) gvFecharSo(); ir('documentos', 'impressos'); setTimeout(() => { try { ipAbre(id); } catch (er) { console.error(er); } }, 120); }
 });
 BG_FONTES.push(q => S.trn.filter(x => bgCasa(q, [x.titulo, x.instrutorNome, x.local, trPart(x).map(p => p.nome).join(' ')].join(' '))).slice(0, 6).map(x => ({ grupo: 'Treinamentos', nome: x.titulo, sub: fmtD(x.data) + ' · ' + (TR_SIT[x.situacao] || TR_SIT.programado)[0] + (x.instrutorNome ? ' · ' + x.instrutorNome : ''), ico: 'pessoas',
-  abrir: () => { if (S.rota.area !== 'qualidade' || S.rota.aba !== 'treinos') ir('qualidade', 'treinos'); trAbre(x.id); } })));
+  abrir: () => { if (S.rota.area !== 'qualidade' || S.rota.aba !== 'treinos') { S._gvNav = true; ir('qualidade', 'treinos'); } trAbre(x.id); } })));

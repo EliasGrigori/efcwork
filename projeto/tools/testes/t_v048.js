@@ -7,6 +7,8 @@ const RAIZ = path.resolve(__dirname, '..', '..'), URL = 'file://' + path.join(RA
 const SHOTS = path.join(RAIZ, 'tools', 'testes', 'telas'); fs.mkdirSync(SHOTS, { recursive: true });
 let ok = 0, falhas = 0;
 const conf = (c, msg) => { if (c) { ok++; console.log('  ok  ' + msg); } else { falhas++; console.log('  FALHA  ' + msg); } };
+/* v0.6.14.2: as setas ‹ › saíram do menu da coluna; a troca de lugar continua pelo arrastar e por esta função */
+const mvCol = (p, d) => p.evaluate(d => { const m = document.querySelector('.tb-mn'); tbMoveLado(m.dataset.tbmn, m.dataset.k, d); }, d);
 async function semear(p) {
   await p.evaluate(async () => {
     const h = hojeISO(), mais = n => addDias(h, n), C = Data.col.bind(Data);
@@ -106,9 +108,9 @@ const cab = p => p.$$eval('.tb[data-tb="al-mat"] .tb-cab th', l => l.map(x => x.
   await abre(p, 'loc'); await p.click('.tb-mn-li:has-text("Porta 02") input'); await p.waitForTimeout(200); await fecha(p);
   t0 = await tot();
   conf(/4 itens/.test(await p.$eval('.tb-tl', e => e.title)) && /filtrado/.test(await p.$eval('.tb-tl', e => e.title)) && !/303,80/.test(t0.txt) && t0.alinhado, 'total segue o filtro da coluna e continua alinhado: ' + t0.txt);
-  await abre(p, 'cod'); await p.click('[data-act="tb-mvdir"]'); await p.waitForTimeout(200); await fecha(p);
+  await abre(p, 'cod'); await mvCol(p, 1); await p.waitForTimeout(200); await fecha(p);
   t0 = await tot(); conf(t0.alinhado, 'mudando colunas de lugar, o total acompanha a coluna Valor');
-  await abre(p, 'sit'); await p.click('[data-act="tb-mvesq"]'); await p.waitForTimeout(200); await fecha(p);
+  await abre(p, 'sit'); await mvCol(p, -1); await p.waitForTimeout(200); await fecha(p);
   /* v0.4.13: antes ia para a sequência; agora desce para uma linha própria, ainda em cima da coluna */
   const fl = await p.evaluate(() => { const tb = document.querySelector('.tb[data-tb="al-mat"]'), t = tb.querySelector('.tb-tots'), v = t.querySelector('.tb-tv').getBoundingClientRect(), th = tb.querySelector('.tb-cab th[data-tbk="val"]').getBoundingClientRect(), ic = tb.querySelector('[data-act="tb-cols"]').getBoundingClientRect();
     return t.classList.contains('tb-tots-fluxo') ? v.right <= ic.left : (t.classList.contains('tb-tots-linha') && Math.abs(v.right - th.right) < 2 && v.top >= ic.bottom); });
@@ -138,9 +140,9 @@ const cab = p => p.$$eval('.tb[data-tb="al-mat"] .tb-cab th', l => l.map(x => x.
 
   console.log('— Colunas');
   const c0 = await cab(p);
-  await abre(p, 'loc'); await p.click('[data-act="tb-mvdir"]'); await p.waitForTimeout(150);
+  await abre(p, 'loc'); await mvCol(p, 1); await p.waitForTimeout(150);
   conf((await cab(p)) === 'cod,nome,un,loc,disp,min,val,sit' && await p.isVisible('.tb-mn'), 'mover para a direita pelo menu');
-  await p.click('[data-act="tb-mvesq"]'); await p.waitForTimeout(150); await fecha(p);
+  await mvCol(p, -1); await p.waitForTimeout(150); await fecha(p);
   conf((await cab(p)) === c0, 'mover para a esquerda volta');
   const a = await p.$('.tb-cab th[data-tbk="sit"] .tb-thr'), alvo = await p.$('.tb-cab th[data-tbk="nome"]');
   const ra = await a.boundingBox(), rb = await alvo.boundingBox();

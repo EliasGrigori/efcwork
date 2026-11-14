@@ -1,0 +1,44 @@
+Suíte v0.6.14.1 (repetida depois da OPÇÃO B) — 14/11/2026
+t_html_seg.js rc=0 falhas=0 :: 
+t_v010.js rc=0 falhas=0 :: t_v010: 41 ok · 0 falha(s)
+t_v020.js rc=0 falhas=0 :: t_v020: 49 ok · 0 falha(s)
+t_v030.js rc=0 falhas=0 :: t_v030: 62 ok · 0 falha(s)
+t_v031.js rc=0 falhas=0 :: t_v031: 49 ok · 0 falha(s)
+t_v032.js rc=0 falhas=0 :: t_v032: 48 ok · 0 falha(s)
+t_v033.js rc=0 falhas=0 :: t_v033: 39 ok · 0 falha(s)
+t_v034.js rc=0 falhas=0 :: t_v034: 48 ok · 0 falha(s)
+t_v035.js rc=0 falhas=0 :: t_v035: 35 ok · 0 falha(s)
+t_v036.js rc=0 falhas=0 :: t_v036: 31 ok · 0 falha(s)
+t_v040.js rc=0 falhas=0 :: t_v040: 45 ok · 0 falha(s)
+t_v041.js rc=0 falhas=0 :: t_v041: 28 ok · 0 falha(s)
+t_v0410.js rc=0 falhas=0 :: 13 ok, 0 falha(s)
+t_v0413.js rc=0 falhas=0 :: 8 ok, 0 falha(s)
+t_v0414.js rc=0 falhas=0 :: 41 ok, 0 falha(s)
+t_v0415.js rc=0 falhas=0 :: 15 ok, 0 falha(s)
+t_v042.js rc=0 falhas=0 :: t_v042: 36 ok · 0 falha(s)
+t_v044.js rc=0 falhas=0 :: t_v044: 35 ok · 0 falha(s)
+t_v045.js rc=0 falhas=0 :: t_v045: 39 ok · 0 falha(s)
+t_v046.js rc=0 falhas=0 :: t_v046: 40 ok · 0 falha(s)
+t_v047.js rc=0 falhas=0 :: t_v047: 52 ok · 0 falha(s)
+t_v048.js rc=0 falhas=0 :: 47 ok, 0 falha(s)
+t_v049.js rc=0 falhas=0 :: 43 ok, 0 falha(s)
+t_v050.js rc=0 falhas=0 :: 61 ok, 0 falha(s)
+t_v051.js rc=0 falhas=0 :: 25 ok, 0 falha(s)
+t_v053.js rc=0 falhas=0 :: 26 ok, 0 falha(s)
+t_v060.js rc=0 falhas=0 :: 70 ok, 0 falha(s)
+t_v061.js rc=0 falhas=0 :: 60 ok, 0 falha(s)
+t_v0610.js rc=0 falhas=0 :: 36 ok, 0 falhas
+t_v0611.js rc=0 falhas=0 :: 32 ok, 0 falhas
+t_v0612.js rc=0 falhas=0 :: 52 ok, 0 falhas
+t_v0614.js rc=0 falhas=0 :: 47 ok, 0 falhas
+t_v06141.js rc=0 falhas=0 :: 27 ok, 0 falhas
+t_v062.js rc=0 falhas=0 :: 79 ok, 0 falhas
+t_v063.js rc=0 falhas=0 :: 58 ok, 0 falhas
+t_v064.js rc=0 falhas=0 :: 30 ok, 0 falhas
+t_v065.js rc=0 falhas=0 :: 67 ok, 0 falhas
+t_v066.js rc=0 falhas=0 :: 39 ok, 0 falhas
+t_v067.js rc=0 falhas=0 :: 46 ok, 0 falhas
+t_v068.js rc=0 falhas=0 :: 10 ok, 0 falhas
+t_v069.js rc=0 falhas=0 :: 58 ok, 0 falhas
+confere.js: 94 ok, 0 falhas · confere-ponte.js: 13 ok, 0 falhas · medidor: 0 defeitos
+Total: 41 arquivos de teste + contratos, 0 falhas

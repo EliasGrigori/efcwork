@@ -50,8 +50,8 @@ const iso = d => new Date(Date.now() + d * 864e5).toISOString().slice(0, 10);
   p = await mk(1366);
   await p.evaluate(async () => { await Data.col('sv2_alm_itens').set('u1', { nome: 'Luva', codigo: 'u1', un: 'Un', min: 1, local: 'P', ativo: true }); location.hash = '#/almox/materiais'; }); await p.waitForTimeout(500);
   await p.click('.tb[data-tb="al-mat"] .tb-cab th[data-tbk="nome"] .tb-hm'); await p.waitForTimeout(250);
-  const rad = await p.evaluate(() => [...document.querySelectorAll('.tb-mn-pe .bt')].map(x => getComputedStyle(x).borderTopLeftRadius));
-  conf(rad.length > 0 && rad.every(x => x === '8px'), 'botões do rodapé do menu da coluna com canto de 8 px (' + rad.join(',') + ')');
+  const rad = await p.evaluate(() => [...document.querySelectorAll('.tb-mn-lp')].map(x => getComputedStyle(x).borderTopLeftRadius));
+  conf(rad.length > 0 && rad.every(x => x === '8px'), 'botão Limpar esta coluna (agora no alto do menu) com canto de 8 px (' + rad.join(',') + ')');
   conf(await p.evaluate(() => { const r = [{ versao: 'v2.102.59 · Busca geral mostra as últimas telas', area: 'x' }]; return atApp(r[0]) === 'v2.102.59'; }), 'a coluna App da planilha/impressão da Atividade traz só a versão');
   await p.close();
 

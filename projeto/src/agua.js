@@ -38,7 +38,7 @@ function agBebIds(c) { if (Array.isArray(c.bebIds) && c.bebIds.length) return c.
 const agAtivas = () => (S.aguacol || []).filter(c => c.situacao !== 'cancelada');
 const agUltima = bebId => agAtivas().filter(c => agBebIds(c).indexOf(bebId) >= 0).map(c => c.data).sort().pop() || '';
 function agPorVez() { const L = pjLegadoSalvo(); return L ? (Number(L.porVez) > 0 ? Number(L.porVez) : agBebs().length) : agCfg().porVez; }
-const agSugeridos = () => agBebs().slice().sort((a, b) => (agUltima(a.id) || '0000').localeCompare(agUltima(b.id) || '0000') || agCmp(a.codigo, b.codigo)).slice(0, agPorVez());
+const agSugeridos = () => agBebs().slice().sort((a, b) => (agUltima(a.id) || '0000').localeCompare(agUltima(b.id) || '0000') || (b.rodizioAuto ? 1 : 0) - (a.rodizioAuto ? 1 : 0) || agCmp(a.codigo, b.codigo)).slice(0, agPorVez()); /* v0.6.14.1: entre os nunca coletados, o bebedouro novo vem primeiro */
 const agNC = c => c.resultado === 'NÃO CONFORME';
 const agTipoTxt = c => AG_TIPOS[c.tipoColeta] || 'Avulsa';
 const agAgenteTxt = c => (c.agente || []).map(a => a === 'outro' ? (c.agenteOutro || 'Outro') : ((AG_AGENTES.find(x => x[0] === a) || [])[1] || a)).join(', ');
@@ -77,7 +77,10 @@ function pjLegadoVirtual() {
   return { id: 'legado', legado: true, _virtual: true, nome: 'Rodízio dos bebedouros', pontos: (S.bebs || []).filter(b => b.situacao === 'ativo' && c.fora.indexOf(b.id) < 0).map(b => 'beb:' + b.id),
     porVez: c.porVez, mesclada: true, analiseId: pjAnPadrao().id || '', lab: '', cadaSemanas: Math.max(1, Math.round(c.periodoDias / 7)), dia: 2, hora: '08:00', inicio: hojeISO(), confirmadas: {}, remarcadas: {}, puladas: {}, ativo: true };
 }
-const pjLegadoSalvo = () => (S.aguaproj || []).find(p => p.id === 'legado') || null;
+/* v0.6.10.1: bebedouro cadastrado aqui (Cloro) depois do último salvamento do projeto entra sozinho no rodízio; ao salvar o projeto ele passa a valer como ponto comum */
+const pjLegadoSalvo = () => { const p = (S.aguaproj || []).find(x => x.id === 'legado'); if (!p) return null;
+  const nv = (S.bebs || []).filter(b => b.situacao === 'ativo' && b.rodizioAuto && (p.pontos || []).indexOf('beb:' + b.id) < 0 && String(b.ativoDesde || b.criadoEm || '') > String(p.atualizadoEm || '')).map(b => 'beb:' + b.id);
+  return nv.length ? Object.assign({}, p, { pontos: (p.pontos || []).concat(nv) }) : p; };
 const pjLegado = () => pjLegadoSalvo() || pjLegadoVirtual();
 function pjProjetos() {
   const L = pjLegado(), l = (S.aguaproj || []).filter(p => p.ativo !== false && p.id !== 'legado').sort((a, b) => agCmp(a.nome, b.nome));
@@ -157,7 +160,7 @@ function agBoxesHTML() {
   return '<div class="ag-boxes">' + ps.map(p => {
     const x = pjProxima(p), sit = x ? PJ_SIT[x.sit] : null, av = pjAvisar(x), cor = x && x.sit === 'atrasada' ? 'cr' : av ? 'wa' : '';
     return '<div class="ag-box' + (cor ? ' ' + cor : '') + '" data-act="pj-abre" data-id="' + esc(p.id) + '" role="button" tabindex="0" aria-label="Abrir o projeto ' + esc(p.nome) + '"><span class="ag-bt"><b>' + esc(p.nome) + '</b>' + (sit ? alPill(sit[0], av ? 'wa' : sit[1]) : '') + '</span>' +
-      '<span class="ag-bq">' + (x ? 'Próxima: <b>' + esc(pjDataTxt(x)) + '</b>' : 'Sem data') + '</span><small>' + esc(pjOQue(p)) + '</small>' +
+      '<span class="ag-bq">' + (x ? 'Próxima: <b>' + esc(pjDataTxt(x)) + '</b>' + (x.oc && x.oc !== x.data ? ' <small>(remarcada, o normal seria ' + esc(PJ_DIAS3[pjDow(x.oc)] + ' ' + fmtD(x.oc).slice(0, 5)) + ')</small>' : '') : 'Sem data') + '</span><small>' + esc(pjOQue(p)) + '</small>' +
       '<small>' + esc(pjQuandoTxt(p) + ' · ' + pjAnsTxt(p)) + '</small>' +
       (agPode() && x ? '<button type="button" class="bt' + (x.data <= hojeISO() ? ' pr' : '') + '" data-act="ag-nova" data-pid="' + esc(p.id) + '" data-oc="' + esc(x.oc) + '">' + ic('mais') + 'Lançar esta coleta</button>' : '') + '</div>';
   }).join('') + (sup ? '<button type="button" class="ag-box ag-novo" data-act="pj-novo">' + ic('mais') + '<b>Novo projeto</b><small>pontos, análises, dia e frequência</small></button>' : '') + '</div>';

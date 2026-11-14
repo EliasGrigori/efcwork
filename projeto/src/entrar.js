@@ -85,7 +85,7 @@ document.addEventListener('mousemove', e => {
    se deslocam mais com o ponteiro. Para quando a tela de entrar some, quando a aba fica escondida e com "movimento reduzido". */
 function enPolen() {
   const cv = document.querySelector('.en-polen'); if (!cv || cv._on) return; cv._on = true;
-  const c = cv.getContext('2d'); if (!c) return; let W = 0, H = 0, k = 1, ps = [], raf = 0, ult = 0; const m = { x: .5, y: .5, tx: .5, ty: .5 };
+  const c = cv.getContext('2d'); if (!c) return; let W = 0, H = 0, k = 1, ps = [], raf = 0, ult = 0, ativ = performance.now(); const m = { x: .5, y: .5, tx: .5, ty: .5 };
   const mede = () => { const r = cv.getBoundingClientRect(); k = Math.min(devicePixelRatio || 1, 1.5); W = r.width; H = r.height; cv.width = Math.max(1, W * k); cv.height = Math.max(1, H * k);
     const n = Math.round(Math.min(90, W * H / 11000)); while (ps.length < n) ps.push({ x: Math.random() * W, y: Math.random() * H, z: .25 + Math.random() * .75, a: Math.random() * 6.28, v: .15 + Math.random() * .35 }); ps.length = n; };
   const desenha = dt => { const esc = csTema() === 'escuro'; c.setTransform(k, 0, 0, k, 0, 0); c.clearRect(0, 0, W, H); m.x += (m.tx - m.x) * .05; m.y += (m.ty - m.y) * .05;
@@ -94,9 +94,10 @@ function enPolen() {
       c.shadowColor = esc ? 'rgba(217,180,106,.7)' : 'rgba(217,180,106,.4)'; c.shadowBlur = p.z * 8; c.beginPath(); c.arc(p.x + (m.x - .5) * -40 * p.z, p.y + (m.y - .5) * -30 * p.z, .8 + p.z * 2.6, 0, 6.283); c.fill(); }
     c.shadowBlur = 0; };
   const passo = t => { if (!cv.isConnected) { cancelAnimationFrame(raf); removeEventListener('resize', mede); document.removeEventListener('visibilitychange', vis); return; }
+    if (performance.now() - ativ > 10000) { raf = 0; ult = 0; return; } /* v0.6.14.2: sem ponteiro mexendo por 10 s, o pólen para (nada se mexe para sempre) */
     const dt = Math.min(.05, (t - (ult || t)) / 1000); ult = t; desenha(dt); raf = requestAnimationFrame(passo); };
-  const vis = () => { cancelAnimationFrame(raf); ult = 0; if (!document.hidden && cv.isConnected && !Mov.reduzido()) raf = requestAnimationFrame(passo); };
-  cv._mouse = (x, y) => { m.tx = x; m.ty = y; };
+  const vis = () => { cancelAnimationFrame(raf); ult = 0; ativ = performance.now(); if (!document.hidden && cv.isConnected && !Mov.reduzido()) raf = requestAnimationFrame(passo); };
+  cv._mouse = (x, y) => { m.tx = x; m.ty = y; ativ = performance.now(); if (!raf && cv.isConnected && !document.hidden && !Mov.reduzido()) { ult = 0; raf = requestAnimationFrame(passo); } };
   mede(); addEventListener('resize', mede); document.addEventListener('visibilitychange', vis);
   if (Mov.reduzido()) { for (let i = 0; i < 3; i++) desenha(0); return; } raf = requestAnimationFrame(passo);
 }

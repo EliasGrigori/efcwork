@@ -45,11 +45,12 @@ csConfirmaFecha = function (sim) {
 /* ---------- lista retrátil: abre crescendo do botão (CSS) e fecha encolhendo (cópia que some) ---------- */
 const fzDdFechaOrig = ddFecha;
 ddFecha = function () {
-  if (fzMov()) $$('.dd-l:not([hidden])').forEach(l => { const g = l.cloneNode(true); g.classList.add('dd-fant'); g.removeAttribute('role'); g.setAttribute('aria-hidden', 'true');
+  const fan = []; if (fzMov()) $$('.dd-l:not([hidden]):not(.dd-fant)').forEach(l => { const g = l.cloneNode(true); g.classList.add('dd-fant'); g.removeAttribute('role'); g.setAttribute('aria-hidden', 'true');
     g.querySelectorAll('[data-act],[data-v],[role],[tabindex],[id]').forEach(x => { x.removeAttribute('data-act'); x.removeAttribute('data-v'); x.removeAttribute('role'); x.removeAttribute('tabindex'); x.removeAttribute('id'); });
     const r = l.getBoundingClientRect(); g.style.cssText = 'position:fixed;margin:0;left:' + r.left + 'px;top:' + r.top + 'px;width:' + r.width + 'px;min-width:0;right:auto;bottom:auto;z-index:130';
-    document.body.appendChild(g); setTimeout(() => g.remove(), Mov.ms('--dropdown-close-dur', 150)); }); /* a cópia fica no corpo da página: sobrevive ao redesenho da gaveta */
-  fzDdFechaOrig();
+    fan.push(g); });
+  fzDdFechaOrig(); /* a original esconde TODAS as listas (inclusive uma cópia já no corpo): por isso a cópia só entra depois (v0.6.14.2, Grok: a lista fechava seca) */
+  fan.forEach(g => { document.body.appendChild(g); setTimeout(() => g.remove(), Mov.ms('--dropdown-close-dur', 150)); }); /* a cópia fica no corpo da página: sobrevive ao redesenho da gaveta */
 };
 
 /* ---------- erro no formulário: a mensagem dá uma tremida curta ---------- */

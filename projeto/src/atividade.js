@@ -159,6 +159,6 @@ document.addEventListener('click', e => {
 });
 /* Esc fecha uma camada de cada vez: primeiro o detalhe aberto, depois o painel do filtro */
 document.addEventListener('keydown', e => {
-  if (e.key !== 'Escape' || S.rota.area !== 'adm' || S.rota.aba !== 'atividade' || (S.camadas && S.camadas.length) || document.querySelector('.dd-l:not([hidden])')) return;
+  if (e.key !== 'Escape' || S.rota.area !== 'adm' || S.rota.aba !== 'atividade' || (S.camadas && S.camadas.length) || document.querySelector('.dd-l:not([hidden]):not(.dd-fant)')) return;
   if (S.atLinha) { S.atLinha = null; render(); } else if (S.atAberto) { S.atAberto = false; render(); }
 });

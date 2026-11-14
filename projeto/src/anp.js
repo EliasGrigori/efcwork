@@ -86,4 +86,4 @@ document.addEventListener('click', e => {
   else if (a === 'anp-canc-ok') anpCancOk();
 });
 BG_FONTES.push(q => S.anl.filter(x => bgCasa(q, [x.numero, x.titulo, x.descricao, x.local, x.respNome, x.causa].join(' '))).slice(0, 6).map(x => ({ grupo: 'Análise de problemas', nome: x.numero + ' · ' + x.titulo, sub: (ANP_SIT[x.situacao] || ANP_SIT.aberta)[0] + ' · ' + (x.respNome || ''), ico: 'lista',
-  abrir: () => { if (S.rota.area !== 'qualidade' || S.rota.aba !== 'analise') ir('qualidade', 'analise'); anAbrir({ t: 'anp', id: x.id }); } })));
+  abrir: () => { if (S.rota.area !== 'qualidade' || S.rota.aba !== 'analise') { S._gvNav = true; ir('qualidade', 'analise'); } anAbrir({ t: 'anp', id: x.id }); } })));

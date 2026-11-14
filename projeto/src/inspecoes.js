@@ -272,7 +272,7 @@ async function clNovaOk() {
   if (!lcTravar()) return;
   try {
     if (novoBeb) {
-      const bid = await Data.col('sv2_bebs').add({ codigo: novoBeb.codigo, local: novoBeb.local, situacao: pendCad ? 'pendente' : 'ativo', descricao: '', criadoEm: nowISO(), criadoPor: S.user.id, criadoPorNome: S.user.nome });
+      const bid = await Data.col('sv2_bebs').add({ codigo: novoBeb.codigo, local: novoBeb.local, situacao: pendCad ? 'pendente' : 'ativo', rodizioAuto: true, descricao: '', criadoEm: nowISO(), criadoPor: S.user.id, criadoPorNome: S.user.nome });
       ponto = { id: bid, codigo: novoBeb.codigo, local: novoBeb.local };
       if (pendCad) { const aid = await Aprov.pedir({ tipo: 'novo_bebedouro', titulo: 'Cadastrar bebedouro ' + novoBeb.codigo + ' — ' + novoBeb.local, descricao: 'Digitado na hora da verificação de cloro.', refTipo: 'bebedouro', refId: bid, payload: { bebId: bid, codigo: novoBeb.codigo, local: novoBeb.local } }); if (aid) await Data.col('sv2_bebs').update(bid, { aprovId: aid }); }
       Audit.log({ acao: 'criar_bebedouro', entidade: 'bebedouro', entidadeId: bid, resumo: pendCad ? 'Bebedouro ' + novoBeb.codigo + ' digitado na verificação (pendente de aprovação)' : 'Cadastrou o bebedouro ' + novoBeb.codigo + ' — ' + novoBeb.local + ' na hora da verificação (já ativo)', depois: novoBeb });
@@ -292,7 +292,7 @@ async function clNovaOk() {
     const foto = tipo === 'beb' && imgSrc(f.foto) ? { img: f.foto, origem: f.fotoOrigem || 'camera' } : null;
     if (tipo === 'beb') o.foto = foto ? { st: 'pendente', origem: foto.origem } : { st: 'sem_foto', motivo: String(f.semFoto || '').trim() };
     const cid = await Data.col('sv2_cloro').add(o);
-    if (foto) { S._clFotos[cid] = foto.img; Data.col('sv2_cloro_foto').set(cid, Object.assign({ img: foto.img, ts: nowISO(), porId: S.user.id, origem: foto.origem }, clMkDoc(f))).catch(e => console.error('foto cloro', e)); }
+    if (foto) { S._clFotos[cid] = foto.img; S._clFotoDoc = S._clFotoDoc || {}; S._clFotoDoc[cid] = Object.assign({ base: '', marcas: [], marcadoPor: '', marcadoEm: '' }, clMkDoc(f)); Data.col('sv2_cloro_foto').set(cid, Object.assign({ img: foto.img, ts: nowISO(), porId: S.user.id, origem: foto.origem }, clMkDoc(f))).catch(e => console.error('foto cloro', e)); }
     Audit.log({ acao: 'verificar_cloro', entidade: 'cloro', entidadeId: cid, resumo: 'Cloro ' + o.pontoNome + ' (' + (o.local || 'sem local') + '): ' + ppm(v) + ' ppm — ' + clFaixaTxt(fx) + (dos != null ? ' · dosagem ' + dos + ' ml' : '') + (mot ? ' · motivo: ' + mot : '') + (temV2 ? ' · após ' + ppm(v2) : ''), depois: { ponto: o.pontoNome, valor: v, faixa: fx, situacao: sit } });
     const eu = Array.from(new Set(supsOf(S.user).concat([S.user.id])));
     if (fx === 'alto') Notif.send({ nivel: 'critico', titulo: 'Cloro ALTO: ' + o.pontoNome + ' com ' + ppm(v) + ' ppm', texto: (o.local || '') + ' · ' + fmtD(o.data) + ' ' + o.hora + ' · lançado por ' + S.user.nome + '. Acima de 2,00 ppm: nova verificação obrigatória.', para: eu, refTipo: 'cloro', refId: cid });

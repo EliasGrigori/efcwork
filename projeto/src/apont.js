@@ -164,7 +164,7 @@ async function apNovoOk() {
     hist: [{ ts: ts, porNome: u.nome, txt: 'Registrou como ' + g[1] + (ids.length ? ' com ' + ids.length + ' foto(s)' : ' sem foto') + (o_aud(f) ? ' · ' + o_aud(f) : '') }] };
   try {
     const id = await Data.col('sv2_apont').add(o);
-    fotos.forEach((d, i) => { S._apFotos[ids[i]] = d; Data.col('sv2_fotos').set(ids[i], Object.assign({ refTipo: 'apont', refId: id, papel: 'antes', dataUrl: d, criadoEm: ts, porId: u.id }, apMkDoc(f, i))).catch(er => console.error('foto apont', er)); });
+    fotos.forEach((d, i) => { S._apFotos[ids[i]] = d; S._apFotoDoc[ids[i]] = Object.assign({ base: '', marcas: [], marcadoPor: '', marcadoEm: '' }, apMkDoc(f, i)); Data.col('sv2_fotos').set(ids[i], Object.assign({ refTipo: 'apont', refId: id, papel: 'antes', dataUrl: d, criadoEm: ts, porId: u.id }, apMkDoc(f, i))).catch(er => console.error('foto apont', er)); });
     const sups = supsOf(u).filter(x => x !== u.id);
     const txt = (o.obs || 'Sem observação') + ' · por ' + u.nome + (o.comunicado ? ' · encarregado avisado' : ' · encarregado NÃO avisado');
     if (sups.length && f.grav === 'urgente') Notif.send({ nivel: 'critico', titulo: 'Apontamento URGENTE: ' + c[1] + ' — ' + setor, texto: txt, para: sups, refTipo: 'apont', refId: id });
@@ -212,7 +212,7 @@ function apAbre(id) {
     const hist = (a.hist || []).slice().reverse();
     if (hist.length) corpo += '<p class="gv-h">Histórico</p><div class="ap-hist">' + hist.map(h => '<div><b>' + esc(h.porNome || '') + '</b> · ' + esc(fmtDT(h.ts)) + '<span>' + esc(h.txt || '') + '</span></div>').join('') + '</div>';
     let pe = '';
-    if (sup && ab) pe = '<button type="button" class="bt" data-act="ap-np" data-id="' + esc(a.id) + '">Não procede</button><button type="button" class="bt" data-act="ap-grav" data-id="' + esc(a.id) + '">Mudar gravidade</button>' +
+    if (sup && ab) pe = '<button type="button" class="bt" data-act="ap-np" data-id="' + esc(a.id) + '">Não procede</button><button type="button" class="bt" data-act="ap-grav" data-id="' + esc(a.id) + '" >Mudar gravidade</button>' +
       (a.nc ? (a.nc.fechada ? '' : '<button type="button" class="bt" data-act="ap-nc-fechar" data-id="' + esc(a.id) + '">Fechar NC</button>') : '<button type="button" class="bt" data-act="ap-nc" data-id="' + esc(a.id) + '">Abrir NC</button>') +
       '<button type="button" class="bt pr" data-act="ap-res" data-id="' + esc(a.id) + '">Resolver</button>';
     else if (sup && !ab) pe = '<button type="button" class="bt" data-act="ap-reabrir" data-id="' + esc(a.id) + '">Reabrir</button>';
@@ -238,7 +238,7 @@ async function apResOk() {
   if (!apPodeCuidar()) return lcErro('Só o Líder ★ ou o Administrador resolve.');
   if (!lcTravar()) return;
   const ts = nowISO(), fotos = (f.fotos || []).slice(0, AP_MAX_FOTOS), ids = fotos.map(() => uid());
-  fotos.forEach((d, i) => { S._apFotos[ids[i]] = d; Data.col('sv2_fotos').set(ids[i], Object.assign({ refTipo: 'apont', refId: a.id, papel: 'depois', dataUrl: d, criadoEm: ts, porId: S.user.id }, apMkDoc(f, i))).catch(er => console.error(er)); });
+  fotos.forEach((d, i) => { S._apFotos[ids[i]] = d; S._apFotoDoc[ids[i]] = Object.assign({ base: '', marcas: [], marcadoPor: '', marcadoEm: '' }, apMkDoc(f, i)); Data.col('sv2_fotos').set(ids[i], Object.assign({ refTipo: 'apont', refId: a.id, papel: 'depois', dataUrl: d, criadoEm: ts, porId: S.user.id }, apMkDoc(f, i))).catch(er => console.error(er)); });
   const patch = { status: 'resolvido', resolucao: { texto: t, porId: S.user.id, porNome: S.user.nome, ts: ts }, fotosDepois: (a.fotosDepois || []).concat(ids), hist: apHistMais(a, 'Resolvido: ' + t + (ids.length ? ' (com ' + ids.length + ' foto(s) do depois)' : '')) };
   Audit.log({ acao: 'situacao_apontamento', entidade: 'apontamento', entidadeId: a.id, resumo: 'Resolveu o apontamento ' + apCat(a.categoria)[1] + ', ' + a.setor + ': ' + t, antes: { situacao: (AP_ST[a.status] || AP_ST.aberto)[0] }, depois: { situacao: 'Resolvido' } });
   if (a.porId !== S.user.id) Notif.send({ nivel: 'info', titulo: 'Seu apontamento foi resolvido', texto: apCat(a.categoria)[1] + ' — ' + a.setor + ': ' + t, para: [a.porId], refTipo: 'apont', refId: a.id }).catch(() => {});
@@ -390,4 +390,4 @@ document.addEventListener('click', e => {
 /* busca geral */
 BG_FONTES.push(q => S.apont.filter(a => bgCasa(q, [apCat(a.categoria)[1], a.setor, a.obs, a.porNome, a.risco, a.recom].join(' '))).slice(0, 6).map(a => ({
   grupo: 'Apontamentos', nome: apCat(a.categoria)[1] + ' · ' + (a.setor || ''), sub: fmtD(a.data) + ' · ' + (AP_ST[a.status] || AP_ST.aberto)[0] + (a.obs ? ' · ' + a.obs : ''), ico: 'lista',
-  abrir: () => { if (S.rota.area !== 'inspecoes' || S.rota.aba !== 'apontamentos') ir('inspecoes', 'apontamentos'); apAbre(a.id); } })));
+  abrir: () => { if (S.rota.area !== 'inspecoes' || S.rota.aba !== 'apontamentos') { S._gvNav = true; ir('inspecoes', 'apontamentos'); } apAbre(a.id); } })));

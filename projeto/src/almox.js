@@ -182,7 +182,7 @@ function alTabSol() {
       { k: 'num', rot: 'Nº', fixa: true, v: x => x.numero || '', cls: 'forte' },
       { k: 'data', rot: 'Data', tipo: 'data', v: x => x.data || '' },
       { k: 'sol', rot: 'Solicitante', v: x => x.solicitante || '' },
-      { k: 'itens', rot: 'Itens', v: x => (x.linhas || []).map(l => alQ(l.qtd) + ' ' + l.nome).join(', ') },
+      { k: 'itens', rot: 'Itens', tipo: 'num', v: x => (x.linhas || []).length }, /* v0.6.14.2: o texto dos itens só aparece na janela (gaveta); a busca continua achando pelo nome do item */
       { k: 'prev', rot: 'Previsão', tipo: 'data', v: x => x.previsao || '' },
       { k: 'sit', rot: 'Situação', v: x => (AL_SOL_ST[x.situacao] || AL_SOL_ST.pendente)[0], html: x => { const s = AL_SOL_ST[x.situacao] || AL_SOL_ST.pendente; return alPill(s[0], s[1]); } }] });
 }
