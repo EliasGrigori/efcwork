@@ -1,0 +1,47 @@
+  ok  existe um documento REGRAS-FIREBASE-EFCwork-vX.md (REGRAS-FIREBASE-EFCwork-v0.6.15.md)
+  ok  coleção efd_docs está na tabela
+  ok  coleção efd_partes está na tabela
+  ok  coleção sv2_agua_foto está na tabela
+  ok  coleção sv2_aguacol está na tabela
+  ok  coleção sv2_aguaponto está na tabela
+  ok  coleção sv2_aguaproj está na tabela
+  ok  coleção sv2_alm_cal está na tabela
+  ok  coleção sv2_alm_equip está na tabela
+  ok  coleção sv2_alm_inv está na tabela
+  ok  coleção sv2_alm_itens está na tabela
+  ok  coleção sv2_alm_mov está na tabela
+  ok  coleção sv2_alm_pref está na tabela
+  ok  coleção sv2_alm_sol está na tabela
+  ok  coleção sv2_analise está na tabela
+  ok  coleção sv2_analises está na tabela
+  ok  coleção sv2_apont está na tabela
+  ok  coleção sv2_aprov está na tabela
+  ok  coleção sv2_audit está na tabela
+  ok  coleção sv2_bebs está na tabela
+  ok  coleção sv2_caixas está na tabela
+  ok  coleção sv2_cfg está na tabela
+  ok  coleção sv2_cloro está na tabela
+  ok  coleção sv2_cloro_falta está na tabela
+  ok  coleção sv2_cloro_foto está na tabela
+  ok  coleção sv2_coletas está na tabela
+  ok  coleção sv2_docs está na tabela
+  ok  coleção sv2_envio_imp está na tabela
+  ok  coleção sv2_fotos está na tabela
+  ok  coleção sv2_impressos está na tabela
+  ok  coleção sv2_lanc está na tabela
+  ok  coleção sv2_login está na tabela
+  ok  coleção sv2_meta está na tabela
+  ok  coleção sv2_notifs está na tabela
+  ok  coleção sv2_prog está na tabela
+  ok  coleção sv2_rnc está na tabela
+  ok  coleção sv2_rnc_foto está na tabela
+  ok  coleção sv2_rnc_gut está na tabela
+  ok  coleção sv2_rnc_plano está na tabela
+  ok  coleção sv2_rodizio está na tabela
+  ok  coleção sv2_talhoes está na tabela
+  ok  coleção sv2_tarefas está na tabela
+  ok  coleção sv2_treinos está na tabela
+  ok  coleção sv2_users está na tabela
+  ok  a tabela não lista coleção que o app já não usa
+
+45 ok, 0 falha(s)

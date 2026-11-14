@@ -854,3 +854,33 @@ Conferência final: suíte completa **46 arquivos, 0 falhas** (`docs/suite-v0.6.
 - **Publicado no GitHub:** EliasGrigori/efcwork, branch main, commit **bc42a4c** (app montado na raiz; código, testes e documentos em `projeto/`; pacote do Vértice em `projeto/docs/vertice-layout-v0.6.15/`). Prints antigos de testes que só mudaram por regeração não foram incluídos no commit (para não inflar). O site (eliasgrigori.github.io/efcwork) não pôde ser aberto da sessão: conferir no navegador que o rodapé mostra v0.6.15 (se mostrar a antiga, recarregar uma vez para o service worker trocar).
 - Firebase: nada novo além dos campos dentro de `sv2_rodizio.liberadas` (aprovadoPor/Id/Em, recusadaPor/Id/Em, recusaMotivo, porId, porSup).
 - Pendente de resposta dele: ícone de abrir em outra janela sozinho numa linha no celular (proposta para depois); ITENS 6–9 da v0.6.8, v0.6.11 (ponte com o Vértice) e v0.6.13 (preencher sozinho).
+
+---
+## Tarefa 1 · Regras do Firebase consolidadas (19:07, Sonnet 5.5 · médio)
+- Pedido: ITEM 8 da varredura v0.6.8. Um documento só com tudo que conferir ou colar nas regras. Sem mudança no app.
+- Entregue: `projeto/docs/REGRAS-FIREBASE-EFCwork-v0.6.15.md` (43 coleções levantadas do código, com estado Conferida/Trecho/EFClaudian/Interna; 5 trechos de regra; limites conhecidos; como verificar).
+- Único campo novo desde as regras publicadas: `sv2_rodizio.liberadas.<pk>.<area>.{porId, porSup, aprovadoPor, aprovadoPorId, aprovadoEm, recusadaPor, recusadaPorId, recusadaEm, recusaMotivo}`, gravado só por Líder ★/Principal.
+- Teste novo: `tools/testes/t_regras_cobertura.js` (toda coleção `sv2_*`/`efd_*` de src/*.js precisa estar na tabela do documento): 45 ok, 0 falha. Log em `docs/regras-cobertura-v0.6.15.log`.
+- Limite: li só o código, não as regras publicadas (o arquivo `regras-firestore-EFCwork-v0.6.12.txt` não está neste ambiente). Para conferir linha a linha, o Elias cola as regras atuais.
+- Não publicado no GitHub (aguarda "pode publicar").
+
+---
+## Tarefa 2 · Celular: ícones do cabeçalho (19:11, Sonnet 5.5 · médio)
+- Problema reproduzido a 390 px: Almoxarifado › Materiais e Painel têm Contagem, Entrada, Saída (123/105/91 px, larguras diferentes) e o ícone "Abrir o EFClaudian" caía sozinho numa 2ª linha.
+- Proposta aplicada no app (v0.6.15, NÃO publicada, aguarda aprovação dos ITENS 39 e 40):
+  - ITEM 39: o ícone (classe `cs-ext` nos 5 links do EFClaudian: almox, agua, aguapj, coletas, programacao) sobe para o canto direito da linha do caminho, só no celular e só em cabeçalhos que o têm; 44 px de toque.
+  - ITEM 40: a fileira de ações com 2+ botões de texto (sem ícone solto) divide a largura em partes iguais (114 px cada em 390 px); botão de texto grande demais ("Novo apontamento") passa para a linha de baixo; fileira com ícones soltos (Água) fica como estava. Em 360 px, se 3 botões não couberem iguais, a coluna cresce só o necessário (111/100/100), sem corte.
+  - CSS no fim de `src/moderno.css` (`@media(max-width:899px)`). Aprendizados: `flex-basis:0` com padding diferente gera larguras diferentes (usar `flex:1 1 18px` com border-box); `min-width:max-content` evita corte.
+- Medições a 390/360/700 px em 28 telas: sem corte e sem rolagem lateral.
+- Página de aprovação: `docs/aprovacao-efcwork-v0.6.15-celular.html` (artefato "EFCwork v0.6.15 · celular: cabeçalho"), 2 itens, 3 pares de imagens cada (HOJE = v0.6.15 publicada × PROPOSTA), app de verdade em 390 px com "Ver funcionando". Referências: Material Design (barra de topo), Appian (botões Fill no celular), Mozilla Acorn.
+- Testes: teste novo `tools/testes/t_v0615e.js` (14 ok); bateria completa 49 arquivos, 0 falhas; medidor `docs/medidor-v0.6.15-celular.txt`: 0 defeitos, 0 decisões, 23 ajustes (tamanhos de letra, já conhecidos).
+- ZIP de proposta: `efcwork-v0.6.15-proposta-celular.zip` (para testar no celular; o ZIP publicado `efcwork-v0.6.15.zip` não mudou).
+- Ferramentas novas: `tools/visual/celular-v0615/mede-cab.js`, `pagina/captura5.js`, `pagina/itens-p5.js` (monta com `EFC_APP=dist/index.html node monta-pagina.js itens-p5.js`; HOJE exige uma cópia do dist publicado em `dist/index-antes.html`).
+- Pedido do Elias (19:08): "garantir o padrão e avisar quando iniciar nova conversa e mandar todos os dados" → CONTINUAR reescrito com padrão de trabalho e texto para colar; skill `efcwork-fluxo-de-trabalho` proposta (cartão); aviso de conversa nova combinado.
+
+---
+## Respostas do celular e publicação da v0.6.15.1 (14/11, 19:49)
+- "Respostas EFCwork v0.6.15 · celular": ITEM 39 Aprovado; ITEM 40 Aprovado. "Pode publicar, pode continuar."
+- Numerada **v0.6.15.1** (`VERSAO` em src/base.js; cache do sw `efcwork-0.6.15.1`). Conteúdo: ITENS 39 e 40 (celular) + documento de regras do Firebase (Tarefa 1) + testes t_v0615e.js e t_regras_cobertura.js.
+- Testes finais: bateria 49 arquivos, 0 falhas (t_html_seg, t_v0615e 14 ok, t_v0615d 20 ok, t_regras_cobertura 45 ok rodados de novo após a numeração).
+- Publicado no GitHub EliasGrigori/efcwork (main) com a autorização "pode publicar". ZIP: efcwork-v0.6.15.1.zip.

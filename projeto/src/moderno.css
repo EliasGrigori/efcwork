@@ -144,3 +144,16 @@
 .cs-abas-l.aperta .tb-cont{display:none} /* abas apertadas (gaveta aberta): a contagem sai, as abas ficam */
 .cs-abas-l.desce{flex-wrap:wrap;border-bottom:0;row-gap:6px}.cs-abas-l.desce>.cs-abas{flex:0 0 100%;border-bottom:1px solid var(--bd)}.cs-abas-l.desce>.tb-bar{margin-left:auto;padding-bottom:0}
 .cs-abas-l.aperta .cs-abas a{padding-left:9px;padding-right:9px}
+
+/* v0.6.15 · ITENS 39 e 40 (celular): o ícone "Abrir o EFClaudian" sobe para a linha do caminho, no canto direito, e os botões da fileira
+   de ações dividem a largura em partes iguais (mesma linha, altura e largura). No PC nada muda. */
+@media(max-width:899px){
+  .cs-ph:has(.cs-ext){position:relative}
+  .cs-ph:has(.cs-ext) .cs-bc{padding-right:48px}
+  .cs-acts>.cs-ext{position:absolute;top:-12px;right:-10px;margin:0}
+  /* só botões com texto (sem ícone solto) dividem a largura em partes iguais; se o texto de um não couber na parte igual, ele passa para a linha de baixo e ocupa a linha toda */
+  .cs-acts:has(>:not(.cs-ext)~:not(.cs-ext)):not(:has(>.ic-so:not(.cs-ext))){flex:1 1 100%;width:100%}
+  .cs-acts:has(>:not(.cs-ext)~:not(.cs-ext)):not(:has(>.ic-so:not(.cs-ext)))>.bt,.cs-acts:has(>:not(.cs-ext)~:not(.cs-ext)):not(:has(>.ic-so:not(.cs-ext)))>.dd{flex:1 1 18px;box-sizing:border-box;min-width:max-content;justify-content:center;padding-left:8px;padding-right:8px}
+  .cs-acts:has(>:not(.cs-ext)~:not(.cs-ext)):not(:has(>.ic-so:not(.cs-ext)))>.dd{padding:0}
+  .cs-acts:has(>:not(.cs-ext)~:not(.cs-ext)):not(:has(>.ic-so:not(.cs-ext)))>.dd .bt{width:100%}
+}

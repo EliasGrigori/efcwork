@@ -209,7 +209,7 @@ function agTabela() {
 }
 function agTela(aba) {
   const p = agPend(), np = agPendLinhas().length, podeCfg = isSup(S.user);
-  const ext = '<a class="bt ic-so" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener" title="No EFClaudian: projetos, pontos e etiqueta da caixa" aria-label="Abrir o EFClaudian (projetos, pontos e etiqueta da caixa)">' + ic('externo') + '</a>';
+  const ext = '<a class="bt ic-so cs-ext" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener" title="No EFClaudian: projetos, pontos e etiqueta da caixa" aria-label="Abrir o EFClaudian (projetos, pontos e etiqueta da caixa)">' + ic('externo') + '</a>';
   const acoes = (np ? '<button type="button" class="bt" data-act="ag-pend">' + ic('lista') + 'Acompanhamento (' + np + ')</button>' : '') +
     (agPode() ? '<button type="button" class="bt pr" data-act="ag-nova">' + ic('mais') + 'Nova coleta de água</button>' : '') +
     (podeCfg ? '<button type="button" class="bt ic-so" data-act="agr-abre" title="Relatório de água por local" aria-label="Relatório de água por local">' + ic('impressora') + '</button>' : '') +

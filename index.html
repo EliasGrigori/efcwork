@@ -2295,6 +2295,19 @@ body:has(#gv) .pp-bar{display:none}
 .cs-abas-l.desce{flex-wrap:wrap;border-bottom:0;row-gap:6px}.cs-abas-l.desce>.cs-abas{flex:0 0 100%;border-bottom:1px solid var(--bd)}.cs-abas-l.desce>.tb-bar{margin-left:auto;padding-bottom:0}
 .cs-abas-l.aperta .cs-abas a{padding-left:9px;padding-right:9px}
 
+/* v0.6.15 · ITENS 39 e 40 (celular): o ícone "Abrir o EFClaudian" sobe para a linha do caminho, no canto direito, e os botões da fileira
+   de ações dividem a largura em partes iguais (mesma linha, altura e largura). No PC nada muda. */
+@media(max-width:899px){
+  .cs-ph:has(.cs-ext){position:relative}
+  .cs-ph:has(.cs-ext) .cs-bc{padding-right:48px}
+  .cs-acts>.cs-ext{position:absolute;top:-12px;right:-10px;margin:0}
+  /* só botões com texto (sem ícone solto) dividem a largura em partes iguais; se o texto de um não couber na parte igual, ele passa para a linha de baixo e ocupa a linha toda */
+  .cs-acts:has(>:not(.cs-ext)~:not(.cs-ext)):not(:has(>.ic-so:not(.cs-ext))){flex:1 1 100%;width:100%}
+  .cs-acts:has(>:not(.cs-ext)~:not(.cs-ext)):not(:has(>.ic-so:not(.cs-ext)))>.bt,.cs-acts:has(>:not(.cs-ext)~:not(.cs-ext)):not(:has(>.ic-so:not(.cs-ext)))>.dd{flex:1 1 18px;box-sizing:border-box;min-width:max-content;justify-content:center;padding-left:8px;padding-right:8px}
+  .cs-acts:has(>:not(.cs-ext)~:not(.cs-ext)):not(:has(>.ic-so:not(.cs-ext)))>.dd{padding:0}
+  .cs-acts:has(>:not(.cs-ext)~:not(.cs-ext)):not(:has(>.ic-so:not(.cs-ext)))>.dd .bt{width:100%}
+}
+
 </style>
 </head>
 <body>
@@ -2351,7 +2364,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = Mov;
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.6.15';
+const VERSAO = '0.6.15.1';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -3902,7 +3915,7 @@ TELAS.almox = function (aba) {
   const meta = aba === 'materiais' ? [ '<span>' + r.at.length + ' itens ativos</span>', metaPl(brl(r.val) + ' em estoque'), r.aten.length ? metaPl(r.aten.length + ' pedem atenção', 'wa', 'alerta') : '' ]
     : aba === 'equipamentos' ? ['<span>' + r.eqs.length + ' equipamentos</span>', r.calV ? metaPl(r.calV + ' calibração vencida ou sem data', 'cr', 'alerta') : '', r.calA ? metaPl(r.calA + ' a vencer', 'wa') : '']
     : aba === 'solicitacoes' ? [r.solP ? metaPl(r.solP + ' pendentes', 'wa') : '<span>Nenhuma pendente</span>'] : aba === 'painel' ? ['<span>' + dataLonga() + '</span>'] : [];
-  const ext = '<a class="bt ic-so" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener" title="No EFClaudian: cadastro de material, kits, fotos e inventário" aria-label="Abrir o EFClaudian (cadastro de material, kits, fotos e inventário)">' + ic('externo') + '</a>';
+  const ext = '<a class="bt ic-so cs-ext" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener" title="No EFClaudian: cadastro de material, kits, fotos e inventário" aria-label="Abrir o EFClaudian (cadastro de material, kits, fotos e inventário)">' + ic('externo') + '</a>';
   const cgA = typeof cgAberta === 'function' ? cgAberta() : null, cgBt = alPode() && (aba === 'materiais' || aba === 'painel') ? '<a class="bt" href="#/almox/contagem">' + ic('lista') + 'Contagem' + (cgA ? '<em class="cg-em">em andamento</em>' : '') + '</a>' : '';
   if (aba === 'calibracao') return cabecalho({ caminho: ['Almoxarifado', 'Equipamentos', 'Calibração'], titulo: 'Calibração', abaNome: 'Calibração', meta: ['<span>Solicitada → cotação → agendada → calibrada → compra</span>'], acoes: '<a class="bt" href="#/almox/equipamentos">' + ic('volta') + 'Equipamentos</a>' + (alSup() ? '<button type="button" class="bt pr" data-act="cb-nova">' + ic('mais') + 'Nova solicitação</button>' : '') }) + cbTela();
   if (aba === 'contagem') { const eq = cgDoEq(), nm = eq ? 'Inventário' : 'Contagem', pai = eq ? ['Equipamentos', 'equipamentos'] : ['Materiais', 'materiais']; /* inventário só de equipamentos/vidrarias fica debaixo de Equipamentos */
@@ -5894,7 +5907,7 @@ function coResumo() { const a = coAtivas(), s = a.map(coSit); return { a: a, nao
 TELAS.coletas = function (aba) {
   if (!coVe()) return cabecalho({ titulo: 'Coletas' }) + '<section class="pn"><div class="vazio">' + ic('frasco') + '<b>Você não tem acesso às Coletas.</b><span>Peça ao administrador para marcar a atribuição Coletas no seu cadastro.</span></div></section>';
   const ar = csArea('coletas'), t = ar.abas.find(x => x.id === aba) || ar.abas[0], r = coResumo();
-  const ext = '<a class="bt ic-so" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener" title="No EFClaudian: nova programação e planos de coleta" aria-label="Abrir o EFClaudian (nova programação e planos de coleta)">' + ic('externo') + '</a>';
+  const ext = '<a class="bt ic-so cs-ext" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener" title="No EFClaudian: nova programação e planos de coleta" aria-label="Abrir o EFClaudian (nova programação e planos de coleta)">' + ic('externo') + '</a>';
   const pl = (n, um, mais) => n + ' ' + (n === 1 ? um : mais);
   const meta = [r.naoenv ? metaPl(pl(r.naoenv, 'não enviada', 'não enviadas'), 'wa') : '', r.aguarda ? '<span>' + r.aguarda + ' aguardando laudo</span>' : '', r.atras ? metaPl(pl(r.atras, 'laudo atrasado', 'laudos atrasados'), 'cr', 'alerta') : ''].filter(Boolean);
   const acoes = (t.id === 'envio' ? ddHTML('kt:vista', S.coEnvVista === 'lab' ? 'lab' : 'rem', [['rem', 'Remessas'], ['lab', 'Laboratórios']]) : '') + (coPode() && r.naoenv ? '<button type="button" class="bt pr" data-act="co-env">' + ic('sai') + 'Enviar</button>' : '') + ext;
@@ -6425,7 +6438,7 @@ function agTabela() {
 }
 function agTela(aba) {
   const p = agPend(), np = agPendLinhas().length, podeCfg = isSup(S.user);
-  const ext = '<a class="bt ic-so" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener" title="No EFClaudian: projetos, pontos e etiqueta da caixa" aria-label="Abrir o EFClaudian (projetos, pontos e etiqueta da caixa)">' + ic('externo') + '</a>';
+  const ext = '<a class="bt ic-so cs-ext" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener" title="No EFClaudian: projetos, pontos e etiqueta da caixa" aria-label="Abrir o EFClaudian (projetos, pontos e etiqueta da caixa)">' + ic('externo') + '</a>';
   const acoes = (np ? '<button type="button" class="bt" data-act="ag-pend">' + ic('lista') + 'Acompanhamento (' + np + ')</button>' : '') +
     (agPode() ? '<button type="button" class="bt pr" data-act="ag-nova">' + ic('mais') + 'Nova coleta de água</button>' : '') +
     (podeCfg ? '<button type="button" class="bt ic-so" data-act="agr-abre" title="Relatório de água por local" aria-label="Relatório de água por local">' + ic('impressora') + '</button>' : '') +
@@ -7083,7 +7096,7 @@ CS_CARGAS.push(() => { if (!coVe()) return; setTimeout(() => { try { if (S.agCar
 function paTela(t) {
   const pode = isSup(S.user), l = (S.aguapontos || []).slice().sort((a, b) => (a.ativo === false) - (b.ativo === false) || agCmp(a.nome, b.nome));
   const nb = (S.bebs || []).filter(b => b.situacao === 'ativo').length, nc = (S.caixas || []).filter(c => !c.desativado).length;
-  const h = cabecalho({ titulo: t.nome, abaNome: t.nome, meta: ['<span>' + l.filter(p => p.ativo !== false).length + ' pontos de água ativos</span>'], acoes: (pode ? '<button type="button" class="bt pr" data-act="pa-ed" data-id="">' + ic('mais') + 'Novo ponto de água</button>' : '') + '<a class="bt ic-so" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener" title="Talhões, análises, laboratórios e prazos: no EFClaudian" aria-label="Abrir o EFClaudian (talhões, análises, laboratórios e prazos)">' + ic('externo') + '</a>' });
+  const h = cabecalho({ titulo: t.nome, abaNome: t.nome, meta: ['<span>' + l.filter(p => p.ativo !== false).length + ' pontos de água ativos</span>'], acoes: (pode ? '<button type="button" class="bt pr" data-act="pa-ed" data-id="">' + ic('mais') + 'Novo ponto de água</button>' : '') + '<a class="bt ic-so cs-ext" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener" title="Talhões, análises, laboratórios e prazos: no EFClaudian" aria-label="Abrir o EFClaudian (talhões, análises, laboratórios e prazos)">' + ic('externo') + '</a>' });
   return h + '<section class="pn"><div class="pn-h"><b>Pontos de água</b><small>Bebedouros (' + nb + ') vêm de Inspeções › Cloro e caixas d’água (' + nc + ') de Documentos. Aqui ficam os outros pontos: tratamento, açudes, bacias, poços, canais.</small></div>' +
     (l.length ? l.map(p => '<button type="button" class="anp-li pa-li" data-act="' + (pode ? 'pa-ed' : 'pa-nada') + '" data-id="' + esc(p.id) + '"><span class="tx"><b>' + esc(p.nome) + '</b><small>' + esc([PJ_TIPO1[p.tipo] || 'Outro', p.local].filter(Boolean).join(' · ')) + '</small></span>' + (p.ativo === false ? alPill('Inativo') : '') + '</button>').join('') : '<div class="vazio">' + ic('lista') + '<b>Nenhum outro ponto cadastrado.</b><span>Cadastre canais, poços, açudes e o tratamento para usar nos projetos e na coleta avulsa.</span></div>') +
     '</section><p class="ag-dc">Talhões, análises, laboratórios e prazos continuam no EFClaudian por enquanto.</p>';
@@ -10991,7 +11004,7 @@ function pgAcoes() {
   const pode = coPode(), np = pgPendentes().length, semCad = !pgTalhoes().length || !pgAnalises().length;
   return (pode && !semCad ? '<button type="button" class="bt" data-act="pg-av">' + ic('mais') + 'Coleta avulsa</button>' + (np ? '<button type="button" class="bt pr" data-act="pg-cd">' + ic('ok') + 'Coletado</button>' : '') : '') +
     (ppSup() && !semCad ? '<button type="button" class="bt" data-act="pp-novo">' + ic('mais') + 'Novo plano</button>' : '') +
-    '<a class="bt ic-so" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener" title="Abrir o EFClaudian" aria-label="Abrir o EFClaudian">' + ic('externo') + '</a>';
+    '<a class="bt ic-so cs-ext" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener" title="Abrir o EFClaudian" aria-label="Abrir o EFClaudian">' + ic('externo') + '</a>';
 }
 function pgAbre(id) {
   if (String(id).indexOf('c|') === 0) { const c = S.coletas.find(x => x.id === id.slice(2)); if (c) { S._pgSel = id; coAbre(c.id); } return; }
