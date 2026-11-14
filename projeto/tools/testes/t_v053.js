@@ -60,9 +60,9 @@ let ok = 0, falhas = 0; const conf = (c, m) => { if (c) { ok++; console.log('  o
   conf(await p.evaluate(() => document.querySelector('.cs-app').classList.contains('menu-aberto') && document.querySelector('.cs-lado').getBoundingClientRect().left >= -1), 'o ☰ continua abrindo o menu como gaveta');
   conf(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'sem rolar de lado');
   await p.close();
-  console.log('Total na linha dos ícones (Elias, 10/11):');
+  console.log('Total no cabeçalho e ícones na linha das abas (Elias, 14/11):');
   for (const w of [1180, 1280, 1366]) { p = await mk(w);
-    const m = await p.evaluate(() => { const t = document.querySelector('.tb-tots'); if (!t) return null; const tv = t.querySelector('.tb-tv').getBoundingClientRect(), ic = document.querySelector('.tb-bar .ic-so').getBoundingClientRect(); return { linha: t.classList.contains('tb-tots-linha'), mesma: Math.abs(tv.top - ic.top) < 2, pb: t.parentElement.style.paddingBottom }; });
-    conf(m && !m.linha && m.mesma && !m.pb, w + ' px: Total na mesma linha dos ícones, sem linha extra'); await p.close(); }
+    const m = await p.evaluate(() => { const ab = document.querySelector('.cs-abas-l .cs-abas'), ic = document.querySelector('.cs-abas-l .tb-bar-sobe .ic-so'); if (!ab || !ic) return null; const a = ab.getBoundingClientRect(), i = ic.getBoundingClientRect(); return { mesma: i.top >= a.top - 2 && i.bottom <= a.bottom + 2, velho: !!document.querySelector('.tb-tots'), selo: !!document.querySelector('.cs-meta .tb-tp') }; });
+    conf(m && m.mesma && !m.velho && m.selo, w + ' px: ícones na linha das abas, total no selo do cabeçalho' + JSON.stringify(m)); await p.close(); }
   console.log('\n' + ok + ' ok, ' + falhas + ' falha(s)'); await b.close(); process.exit(falhas ? 1 : 0);
 })();

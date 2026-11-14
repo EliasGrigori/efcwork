@@ -19,7 +19,7 @@ function ppAreas(r, p) {
   return (r.areas || []).slice().sort(cmpTxt).map(a => {
     const cs = rzColetasDe(r, p, a), pr = cs.length ? null : ppProgDe(r, p, a);
     const k = cs.length ? 'c' : pr ? (pgQuando(pr).k === 'atrasada' ? 'x' : 'p') : 'f';
-    return { a: a, rot: rot[a], k: k, rec: k !== 'c' && !!rzLib(r, p, a), d: cs.length ? cs.map(c => c.data).sort().pop() : pr ? pr.data : '', pr: pr, cs: cs };
+    return { a: a, rot: rot[a], k: k, rec: k !== 'c' && !!rzLib(r, p, a), pend: !!rzLibPend(r, p, a), d: cs.length ? cs.map(c => c.data).sort().pop() : pr ? pr.data : '', pr: pr, cs: cs };
   });
 }
 const ppSel = rid => { if (!S._pp || S._pp.rid !== rid) S._pp = { rid: rid, sel: {} }; return S._pp.sel; };
@@ -41,7 +41,7 @@ function ppTela(id) {
     '<button type="button" class="bt ic-so" data-act="pp-folha" data-id="' + esc(r.id) + '" title="Folha de campo (áreas que faltam)" aria-label="Imprimir a folha de campo">' + ic('impressora') + '</button>';
   const meta = [alPill(sit[0], sit[1]), '<span>' + esc((p.nome ? p.nome + ' · ' : '') + fmtD(p.ini).slice(0, 5) + ' a ' + fmtD(p.fim).slice(0, 5)) + '</span>'];
   const chip = x => { const on = !!sel[x.a], dica = x.a + ', ' + PP_TIT[x.k] + (x.d ? ' ' + fmtD(x.d) : '') + (x.pr && x.pr.coletor ? ', ' + x.pr.coletor : '');
-    const dentro = (on ? '<i class="pp-ok">' + ic('ok') + '</i>' : '') + (x.rec ? '<i class="pp-rc" title="Recoleta liberada">' + ic('recontar') + '</i>' : '') + '<b>' + esc(x.rot) + '</b>' + (x.d ? '<small>' + fmtD(x.d).slice(0, 5) + '</small>' : '');
+    const dentro = (on ? '<i class="pp-ok">' + ic('ok') + '</i>' : '') + (x.rec ? '<i class="pp-rc" title="Recoleta liberada">' + ic('recontar') + '</i>' : x.pend ? '<i class="pp-rc pend" title="Nova coleta pedida, aguardando a aprovação do Líder ★ ou do Principal">' + ic('relogio') + '</i>' : '') + '<b>' + esc(x.rot) + '</b>' + (x.d ? '<small>' + fmtD(x.d).slice(0, 5) + '</small>' : '');
     return x.k === 'c' || !pode ? '<span class="pp-ar ' + x.k + '" title="' + esc(dica) + '">' + dentro + '</span>'
       : '<button type="button" class="pp-ar ' + x.k + (on ? ' sel' : '') + '" data-act="pp-ck" data-id="' + esc(x.a) + '" data-r="' + esc(r.id) + '" aria-pressed="' + on + '" title="' + esc(dica) + '">' + dentro + '</button>'; };
   const n = ppMarcadas(r.id).length, aba = ppAba(r.id);
@@ -192,11 +192,12 @@ function ppAjustes(r, p, ar) {
       : sup ? '<p class="pp-nota">Ao encerrar, o app guarda o retrato do período: o que foi e o que não foi coletado, com o motivo de cada área que faltou. Depois disso, ninguém lança mais coleta deste período neste plano.</p><div class="pp-pe"><button type="button" class="bt" data-act="pp-enc" data-id="' + esc(r.id) + '">' + ic('cadeado') + 'Encerrar período</button></div>'
       : '<p class="pp-nota">Encerrar o período: Líder ★ ou Administrador.</p>'));
   /* Recoletas */
-  const lib = (r.liberadas && r.liberadas[p.k]) || {}, libs = Object.keys(lib).sort((a, b) => String(lib[b].ts || '').localeCompare(String(lib[a].ts || ''))), pend = ppRecPend(r.id, p.k);
+  const lib = (r.liberadas && r.liberadas[p.k]) || {}, libsT = Object.keys(lib).sort((a, b) => String(lib[b].ts || '').localeCompare(String(lib[a].ts || ''))), pend = ppRecPend(r.id, p.k);
+  const libP = libsT.filter(a => rzLibSit(lib[a]) === 'pendente'), libs = libsT.filter(a => rzLibSit(lib[a]) !== 'pendente');
   const cols = ar.filter(x => x.k === 'c' && !pend.some(y => y.refId === ppRecRef(r.id, p.k, x.a)));
   const linhas = pend.map(y => { const a = String(y.refId).split(':').pop(); return '<tr><td>' + esc(a) + '</td><td class="l">' + esc(String(y.descricao || '').split(' — ').slice(1).join(' — ')) + '</td><td>' + esc(y.solicitanteNome || '') + '<small>aguardando confirmação</small></td><td>' + esc(fmtD(String(y.ts).slice(0, 10)).slice(0, 5)) + '</td></tr>'; })
-    .concat(libs.map(a => { const l = lib[a] || {}; return '<tr><td>' + esc(a) + '</td><td class="l">' + esc(l.motivo || '') + '</td><td>' + esc(l.por || '') + (l.aprovadoPor ? '<small>confirmado por ' + esc(l.aprovadoPor) + '</small>' : '') + '</td><td>' + (l.ts ? esc(fmtD(String(l.ts).slice(0, 10)).slice(0, 5)) : '') + '</td></tr>'; }));
-  const rec = cad('Recoletas', esc(p.nome),
+    .concat(libs.map(a => { const l = lib[a] || {}; return '<tr' + (l.recusadaEm ? ' class="pp-rcz"' : '') + '><td>' + esc(a) + '</td><td class="l">' + esc(l.motivo || '') + (l.recusadaEm ? '<small>recusada' + (l.recusaMotivo ? ': ' + esc(l.recusaMotivo) : '') + '</small>' : '') + '</td><td>' + esc(l.por || '') + (l.recusadaEm ? '<small>recusada por ' + esc(l.recusadaPor || '') + '</small>' : l.aprovadoPor ? '<small>confirmado por ' + esc(l.aprovadoPor) + '</small>' : '') + '</td><td>' + (l.ts ? esc(fmtD(String(l.ts).slice(0, 10)).slice(0, 5)) : '') + '</td></tr>'; }));
+  const rec = cad('Recoletas', esc(p.nome), (libP.length ? ppLibPendHTML(r, p, libP.map(a => ({ a: a, l: lib[a], ja: (rzColetasDe(r, p, a)[0] || {}).data || '' })), !fch) : '') +
     (coPode() && !fch ? (cols.length ? lcBl('Liberar recoleta de', ddHTML('pp:rec:' + r.id, '', [['', 'Escolha a área coletada']].concat(cols.map(x => [x.a, x.a + ' · coletada ' + fmtD(x.d).slice(0, 5)])))) : '<p class="pp-nada">Nenhuma área coletada para liberar.</p>') + (sup ? '' : '<p class="pp-nota">O pedido vai para o Líder ★ ou o Administrador confirmar.</p>') : '') +
     (linhas.length ? '<div class="pp-tbw"><table class="pp-tb"><thead><tr><th>Área</th><th class="l">Motivo</th><th>Quem</th><th>Quando</th></tr></thead><tbody>' + linhas.join('') + '</tbody></table></div>' : '<p class="pp-nada">Nenhuma recoleta neste período.</p>'));
   return '<div class="pp-aj">' + plano + areas + per + rec + '</div>';
@@ -277,7 +278,7 @@ LC_FORM.pprec = f => {
 };
 async function ppRecGrava(pl, ped) {
   const r = ppPlano(pl.rid); if (!r) throw new Error('Plano não encontrado.');
-  const up = {}; up['liberadas.' + pl.pk + '.' + pl.area] = { motivo: pl.motivo, por: ped ? ped.solicitanteNome : S.user.nome, ts: nowISO(), aprovadoPor: ped ? S.user.nome : '' };
+  const up = {}; up['liberadas.' + pl.pk + '.' + pl.area] = { motivo: pl.motivo, por: ped ? ped.solicitanteNome : S.user.nome, porId: ped ? (ped.solicitanteId || '') : S.user.id, porSup: !ped && isSup(S.user), ts: nowISO(), aprovadoPor: ped ? S.user.nome : '', aprovadoPorId: ped ? S.user.id : '', aprovadoEm: ped ? nowISO() : '' };
   await Data.col('sv2_rodizio').update(r.id, up);
   Audit.log({ acao: 'recoleta_rodizio', entidade: 'rodizio', entidadeId: r.id, resumo: 'Recoleta liberada: ' + pl.area + ' no ' + pl.pk + ' (' + (r.nome || r.tipo) + ') — ' + pl.motivo + (ped ? ' · pedido de ' + ped.solicitanteNome : '') });
 }
@@ -295,6 +296,41 @@ async function ppRecOk() {
   if (id) { lcFim(); aviso('Pedido de recoleta enviado.'); } else lcErro('Não deu para enviar o pedido.');
 }
 DD_AO.pp = (k, v) => { if (k.indexOf('rec:') === 0 && v && coPode()) lcAbrir({ k: 'pprec', rid: k.slice(4), area: v, mot: '', det: '' }); };
+
+/* ---------- v0.6.15 · nova coleta pedida sem aprovação (regra do Elias, 14/11/2026) ----------
+   Liberação gravada por quem não é Líder ★ nem Principal (o EFClaudian deixa o secundário liberar direto) fica pendente:
+   a coleta já feita continua valendo até um Líder ★ ou o Principal aprovar. Aprovar grava aprovadoPor/aprovadoPorId/aprovadoEm;
+   recusar grava recusadaPor/recusadaPorId/recusadaEm/recusaMotivo. Nada é apagado. */
+const ppLibK = (rid, pk, a) => rid + '|' + pk + '|' + a;
+function ppLibPendHTML(r, p, l, aberto) {
+  const sup = ppSup();
+  return '<div class="pp-lps">' + l.map(x => { const k = ppLibK(r.id, p.k, x.a), rep = S._ppLibRep === k;
+    return '<div class="pp-lp"><div class="pp-lpt"><b>Nova coleta de ' + esc(x.a) + '</b><span>' + esc(x.l.motivo || 'sem motivo') + '</span><small>Pedida' + esc(rzLibQuem({ por: x.l.por, ts: x.l.ts })) + ' · aguardando a aprovação do Líder ★ ou do Principal' + (x.ja ? '; até lá vale a coleta de ' + esc(fmtD(x.ja)) : '') + '</small></div>' +
+      (sup && aberto ? (rep ? '<div class="fm-c pp-lpm"><span class="fm-r">Por que recusa?</span><textarea class="fm-i" id="pp-lp-mot" rows="2"></textarea></div><div class="pp-lpb"><button type="button" class="bt" data-act="pp-lib-x">Voltar</button><button type="button" class="bt pr" data-act="pp-lib-rep-ok" data-k="' + esc(k) + '">Recusar</button></div>'
+        : '<div class="pp-lpb"><button type="button" class="bt" data-act="pp-lib-rep" data-k="' + esc(k) + '">Recusar</button><button type="button" class="bt pr" data-act="pp-lib-ok" data-k="' + esc(k) + '">' + ic('ok') + 'Aprovar</button></div>') : '') + '</div>'; }).join('') + '</div>';
+}
+/* todas as liberações pendentes dos planos ativos, nos períodos ainda abertos (para o sino do Líder ★ e do Principal) */
+function ppLibPendentes() {
+  const out = []; if (!S.user) return out;
+  rzAtivos().forEach(r => { const per = rzPeriodos(r); Object.keys(r.liberadas || {}).forEach(pk => { if (r.fechados && r.fechados[pk]) return; const p = per.find(x => x.k === pk); if (!p) return;
+    Object.keys(r.liberadas[pk] || {}).forEach(a => { const l = r.liberadas[pk][a]; if (rzLibSit(l) === 'pendente') out.push({ r: r, p: p, a: a, l: l, k: ppLibK(r.id, pk, a) }); }); }); });
+  return out.sort((x, y) => String(x.l.ts || '').localeCompare(String(y.l.ts || '')));
+}
+async function ppLibDecide(k, sim, motivo) {
+  if (!ppSup()) return false;
+  const [rid, pk, a] = String(k).split('|'), r = ppPlano(rid), l = r && r.liberadas && r.liberadas[pk] && r.liberadas[pk][a];
+  if (!l || rzLibSit(l) !== 'pendente') { aviso('Este pedido já foi decidido.'); return false; }
+  const base = 'liberadas.' + pk + '.' + a + '.', up = {}, agora = nowISO();
+  if (sim) { up[base + 'aprovadoPor'] = S.user.nome; up[base + 'aprovadoPorId'] = S.user.id; up[base + 'aprovadoEm'] = agora; }
+  else { up[base + 'recusadaPor'] = S.user.nome; up[base + 'recusadaPorId'] = S.user.id; up[base + 'recusadaEm'] = agora; up[base + 'recusaMotivo'] = motivo; }
+  try {
+    await Data.col('sv2_rodizio').update(rid, up);
+    Audit.log({ acao: sim ? 'aprovar_recoleta_rodizio' : 'recusar_recoleta_rodizio', entidade: 'rodizio', entidadeId: rid, resumo: (sim ? 'Aprovou' : 'Recusou') + ' a nova coleta de ' + a + ' no ' + pk + ' (' + (r.nome || r.tipo) + ')' + (l.por ? ', pedida por ' + l.por : '') + (sim ? '' : ' — ' + motivo) });
+    const u = rzLibUsr(l); if (u && u.id !== S.user.id) Notif.send({ nivel: 'info', titulo: 'Nova coleta de ' + a + (sim ? ' aprovada' : ' recusada'), texto: (r.nome || r.tipo) + ' · ' + (sim ? 'pode programar e coletar de novo.' : 'vale a coleta já feita. Motivo: ' + motivo), para: [u.id], refTipo: 'rodizio', refId: rid });
+    aviso(sim ? 'Nova coleta de ' + a + ' aprovada.' : 'Nova coleta de ' + a + ' recusada.'); return true;
+  } catch (e) { aviso(svErro(e), 'erro'); return false; }
+}
+async function ppLibRecusa(k, campo) { const m = String(($(campo) || {}).value || '').trim(); if (m.length < 3) { aviso('Escreva o motivo da recusa.', 'erro'); return false; } return ppLibDecide(k, false, m); }
 
 /* ---------- Renovar: sem botão; a partir de 1º/12 o sino sugere (pedido de 08/11 11:00) ---------- */
 function ppRenovaveis() {
@@ -401,7 +437,7 @@ DD_AO.lc = (function (ant) { return (k, v) => {
   f[mapa[k]] = v; f.sujo = true; f.msg = ''; gvDesenha(true);
   if (v === '__outro') { const i = $('#gv [data-fm="' + mapa[k] + 'Txt"]'); if (i) i.focus(); }
 }; })(DD_AO.lc);
-document.addEventListener('click', ev => {
+document.addEventListener('click', async ev => {
   const t = ev.target.closest && ev.target.closest('[data-act^="pp-"]'); if (!t) return;
   const a = t.getAttribute('data-act'), id = t.getAttribute('data-id'), f = S.fm;
   if (a === 'pp-ck') { const sel = ppSel(t.getAttribute('data-r')); sel[id] = !sel[id]; render(); }
@@ -427,4 +463,8 @@ document.addEventListener('click', ev => {
   else if (a === 'pp-enc') { if (!ppSup()) return; lcAbrir({ k: 'ppenc', rid: id, obs: '' }); }
   else if (a === 'pp-enc-ok') ppEncOk();
   else if (a === 'pp-rec-ok') ppRecOk();
+  else if (a === 'pp-lib-ok') { t.disabled = true; await ppLibDecide(t.getAttribute('data-k'), true); }
+  else if (a === 'pp-lib-rep') { S._ppLibRep = t.getAttribute('data-k'); render(); setTimeout(() => { const x = $('#pp-lp-mot'); if (x) x.focus(); }, 0); }
+  else if (a === 'pp-lib-x') { S._ppLibRep = null; render(); }
+  else if (a === 'pp-lib-rep-ok') { if (await ppLibRecusa(t.getAttribute('data-k'), '#pp-lp-mot')) { S._ppLibRep = null; render(); } }
 });

@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EFCwork v0.6.15 · fluidez</title>
+<style>
+:root{--bg:#f7f3ea;--c:#fffdf8;--bd:#e4dccb;--tx:#2a241a;--tx2:#6b6152;--a:#a67c2e;--ok:#2f7d4f;--cr:#b33a32;
+  /* tokens do app (tema Claro) para as demonstrações */
+  --bg0:#f7f5ef;--bg1:#fffefb;--bg2:#f2eee4;--abd:#e6dfcf;--abd2:#d8cdb2;--atx:#1e1b14;--atx2:#5b5443;--atx3:#746c55;--aa:#9a7128;--aS:rgba(154,113,40,.12);--aTx:#7d5a1c;
+  --ouro:linear-gradient(135deg,#f7df9e 0%,#d9b46a 42%,#b4862f 100%);--ease:cubic-bezier(.22,1,.36,1)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b0d16;--c:#121524;--bd:#2a2d3d;--tx:#ece6d8;--tx2:#a9a293;--a:#d9b46a;--ok:#7fbf98;--cr:#e38b7d}}
+:root[data-theme="dark"]{--bg:#0b0d16;--c:#121524;--bd:#2a2d3d;--tx:#ece6d8;--tx2:#a9a293;--a:#d9b46a;--ok:#7fbf98;--cr:#e38b7d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1180px;margin:0 auto;padding:24px 16px 80px}
+h1{font-family:Georgia,serif;margin:0 0 4px}.sub{color:var(--tx2);margin:0 0 20px}
+.it{background:var(--c);border:1px solid var(--bd);border-radius:10px;padding:16px;margin-bottom:16px}
+.num{font-size:28px;font-weight:800;color:var(--a);letter-spacing:.02em}
+.it h2{margin:2px 0 6px;font-size:20px}.it>p{margin:0 0 12px;color:var(--tx2)}
+.resp{display:flex;gap:18px;margin:12px 0 8px;flex-wrap:wrap}.resp label{display:flex;gap:6px;align-items:center;font-weight:600;cursor:pointer}
+textarea{width:100%;min-height:56px;border:1px solid var(--bd);border-radius:7px;background:var(--bg);color:var(--tx);padding:8px;font:inherit}
+.bt-cp{background:var(--a);color:#1c1406;border:0;border-radius:7px;padding:12px 20px;font-weight:700;font-size:16px;cursor:pointer}#ok{margin-left:12px;color:var(--ok);font-weight:600}
+/* pares HOJE / PROPOSTA */
+.par{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:700px){.par{grid-template-columns:1fr}}
+.lado{border:1px solid var(--bd);border-radius:10px;overflow:hidden;background:var(--bg0);color:var(--atx)}
+.lado>header{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;background:var(--c);color:var(--tx);border-bottom:1px solid var(--bd)}
+.lado>header b{font-size:15px;letter-spacing:.04em}
+.rep{border:1px solid var(--bd);background:transparent;color:var(--tx2);border-radius:7px;height:32px;padding:0 10px;font:600 13px system-ui,sans-serif;cursor:pointer}
+.palco{position:relative;height:260px;padding:14px;overflow:hidden;font-size:14px}
+.dica{font-size:13px;color:var(--tx2);margin:8px 0 0}
+/* peças do app */
+.abt{height:36px;padding:0 14px;border-radius:7px;border:1px solid var(--abd2);background:var(--bg1);display:inline-flex;align-items:center;gap:7px;font:600 14px system-ui,sans-serif;color:var(--atx);cursor:pointer}
+.abt.pr{background:var(--ouro);border-color:#c99d48;color:#1c1406}
+.dd{position:relative;display:inline-block;min-width:180px}
+.ddb{width:100%;justify-content:space-between;background:var(--bg0)}
+.ddl{position:absolute;left:0;right:0;top:calc(100% + 4px);margin:0;padding:4px;list-style:none;background:var(--bg1);border:1px solid var(--abd2);border-radius:7px;box-shadow:0 10px 30px rgba(0,0,0,.18);z-index:3;transform-origin:top left}
+.ddl li{padding:8px 10px;border-radius:6px;cursor:pointer}.ddl li:hover{background:var(--bg2)}
+.ddl[hidden]{display:none}
+.anim .ddl.abre{animation:ddA 250ms var(--ease)}
+.anim .ddl.fecha{display:block;animation:ddF 150ms var(--ease) forwards;pointer-events:none}
+@keyframes ddA{from{opacity:0;transform:scale(.97)}}
+@keyframes ddF{to{opacity:0;transform:scale(.99)}}
+/* menu da coluna */
+.mn{position:absolute;left:14px;top:60px;width:230px;background:var(--bg1);border:1px solid var(--abd2);border-radius:12px;box-shadow:0 18px 48px rgba(20,16,8,.22);padding:10px;transform-origin:top left}
+.mn b{font-family:Georgia,serif;font-size:17px}.mn small{display:block;color:var(--atx3);font-size:12px;margin-bottom:8px}
+.mn .li{display:flex;gap:8px;align-items:center;height:30px;color:var(--atx2)}.mn .li i{width:14px;height:14px;border:1.5px solid var(--abd2);border-radius:3px;background:var(--aa)}
+.mn[hidden]{display:none}
+.anim .mn.abre{animation:ddA 250ms var(--ease)}
+.anim .mn.fecha{display:block;animation:ddF 150ms var(--ease) forwards}
+.th{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 10px;border:1px solid var(--abd);border-radius:7px;background:var(--bg2);font-weight:600;font-size:13px;color:var(--atx2);cursor:pointer}
+/* busca do alto */
+.topo{display:flex;align-items:center;gap:8px;height:40px;padding:0 4px}
+.cbusca{flex:1;display:flex;align-items:center;gap:8px;height:34px;border:1px solid var(--abd);border-radius:7px;background:var(--bg1);color:var(--atx3);padding:0 10px;cursor:pointer;font-size:13px}
+.bfundo{position:absolute;inset:0;background:rgba(10,10,20,.38);display:flex;justify-content:center;align-items:flex-start;padding-top:22px}
+.bfundo[hidden]{display:none}
+.bcaixa{width:86%;background:var(--bg1);border:1px solid var(--abd2);border-radius:12px;box-shadow:0 24px 60px rgba(0,0,0,.3);overflow:hidden}
+.bcampo{height:46px;display:flex;align-items:center;padding:0 12px;border-bottom:1px solid var(--abd);color:var(--atx3)}
+.bres{padding:6px}.bres div{padding:8px 10px;border-radius:7px}.bres div:first-child{background:var(--bg2)}
+.anim .bfundo.abre{animation:fd 250ms ease-out}.anim .bfundo.abre .bcaixa{animation:cx 250ms var(--ease)}
+.anim .bfundo.fecha{display:flex;animation:fdF 150ms ease-out forwards}.anim .bfundo.fecha .bcaixa{animation:cxF 150ms ease-out forwards}
+@keyframes fd{from{opacity:0}}@keyframes fdF{to{opacity:0}}
+@keyframes cx{from{opacity:0;transform:scale(.97) translateY(-6px)}}@keyframes cxF{to{opacity:0;transform:scale(.98)}}
+/* cartões dos apontamentos */
+.fl{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cd{display:flex;gap:8px;align-items:center;background:var(--bg1);border:1px solid var(--abd);border-radius:10px;padding:8px}
+.cd i{width:38px;height:38px;border-radius:7px;flex:none;background:linear-gradient(135deg,#c9d8b6,#8fa77a)}
+.cd span{display:flex;flex-direction:column;min-width:0;font-size:13px}.cd small{color:var(--atx3)}
+.cd.g{border-left:3px solid var(--cr)}
+.anim .cd.entra{animation:cdE 350ms var(--ease) both;animation-delay:calc(var(--k) * 40ms)}
+@keyframes cdE{from{opacity:0;transform:translateY(6px)}}
+/* foto grande */
+.miniatura{width:120px;height:84px;border-radius:8px;background:linear-gradient(135deg,#9db4c9,#5d7a94);border:1px solid var(--abd2);cursor:zoom-in}
+.ffundo{position:absolute;inset:0;background:rgba(5,6,10,.82);display:grid;place-items:center}
+.ffundo[hidden]{display:none}
+.foto{width:78%;height:78%;border-radius:8px;background:linear-gradient(135deg,#9db4c9,#5d7a94);box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.anim .ffundo.abre{animation:fd 250ms ease-out}.anim .ffundo.abre .foto{animation:ft 250ms var(--ease)}
+.anim .ffundo.fecha{display:grid;animation:fdF 150ms ease-out forwards}.anim .ffundo.fecha .foto{animation:ftF 150ms ease-out forwards}
+@keyframes ft{from{opacity:.4;transform:scale(.94)}}@keyframes ftF{to{opacity:0;transform:scale(.97)}}
+/* título letra por letra */
+.tt{font-family:Georgia,serif;font-size:30px;font-weight:600;margin:20px 0 6px}
+.tt span{display:inline-block;opacity:0;filter:blur(8px);transform:translateY(-.2em);animation:tt var(--dur) var(--ease) forwards;animation-delay:calc(var(--i) * var(--pas))}
+@keyframes tt{to{opacity:1;filter:none;transform:none}}
+.cron{font:600 13px system-ui,sans-serif;color:var(--tx2)}
+/* menu lateral com os apps da família */
+.lat{width:220px;background:#fffdf8;border-right:1px solid var(--abd);height:100%;padding:10px 8px;display:flex;flex-direction:column;gap:2px}
+.lat .gh{font-size:12px;font-weight:600;color:var(--atx3);padding:10px 8px 4px}
+.lat a{display:flex;align-items:center;gap:10px;height:36px;padding:0 10px;border-radius:7px;color:var(--atx);text-decoration:none;opacity:.74;font-size:14px}
+.lat a.on{opacity:1;background:var(--aS);color:var(--aTx);font-weight:600}
+.lat a img,.lat a .ap{width:20px;height:20px;border-radius:5px;flex:none}
+.lat.novo a.fam{opacity:1;height:40px;margin:2px 0;border:1px solid var(--abd);background:var(--bg1);font-weight:600}
+.lat.novo a.fam .ap{width:24px;height:24px;border-radius:6px;box-shadow:0 1px 3px rgba(0,0,0,.18)}
+.ap.v{background:linear-gradient(135deg,#1f7a8c,#58c4b4)}.ap.s{background:linear-gradient(135deg,#2a2d3d,#6b5aa8)}
+/* tabela com e sem linhas entre colunas */
+.tab{width:100%;border-collapse:separate;border-spacing:0;background:var(--bg1);border:1px solid var(--abd);border-radius:10px;overflow:hidden;font-size:13px}
+.tab th{background:var(--bg2);text-align:left;font-weight:600;color:var(--atx2);height:34px;padding:0 10px;border-bottom:1px solid var(--abd)}
+.tab td{height:36px;padding:0 10px;border-bottom:1px solid var(--abd)}
+.tab tr:last-child td{border-bottom:0}
+.tab.col td,.tab.col th{border-right:1px solid color-mix(in srgb,var(--abd) 70%,transparent)}.tab.col td:last-child,.tab.col th:last-child{border-right:0}
+.n{text-align:right}
+/* áreas do plano */
+.ars{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.ar{position:relative;display:inline-grid;place-items:center;min-width:52px;height:28px;padding:0 6px;border-radius:7px;font-size:13px;font-weight:600;border:1px solid #e9e3d5;color:var(--atx2);background:var(--bg1)}
+.ar.c{background:#2f7d4f;border-color:#2f7d4f;color:#fff}.ar.p{border-color:#bcdcc8;background:#f2f8f4}
+.rec{position:absolute;top:-7px;right:-6px;width:16px;height:16px;border-radius:50%;background:var(--bg1);border:1px solid #9a6a0c;color:#9a6a0c;display:grid;place-items:center}
+.rec svg{width:10px;height:10px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round}
+.tip{margin-top:10px;padding:8px 10px;border-radius:8px;background:var(--bg1);border:1px solid var(--abd);font-size:13px;color:var(--atx2)}
+@media(prefers-reduced-motion:reduce){.anim *{animation:none!important}}
+</style>
+</head>
+<body>
+<main>
+<h1>EFCwork v0.6.15: fluidez e os seus pedidos, uma mudança por vez</h1>
+<p class="sub">Agora em HTML animado: em cada item, use os botões das duas caixas (HOJE e PROPOSTA) ou toque em "Ver de novo". Marque <b>Passa</b> ou <b>Não passa</b>. Os 10 itens que você aprovou já estão no app. Os itens 1 a 3 abaixo também já estão feitos (vieram dos seus comentários); confirme se ficou como você queria.</p>
+
+<article class="it" data-n="1"><div class="num">ITEM 1</div><h2>Linhas finas entre as colunas da tabela</h2>
+<p>Seu pedido no ITEM 8: a tabela ganha uma linha fina entre cada coluna, além da linha entre as linhas. Vale para todas as tabelas do app.</p>
+<div class="par">
+<div class="lado"><header><b>HOJE</b></header><div class="palco" style="height:auto"><table class="tab"><tr><th>Código</th><th>Item</th><th>Local</th><th class="n">Valor</th></tr><tr><td>185</td><td><b>Água desmineralizada 1 L</b></td><td>Porta 02</td><td class="n">R$ 72,42</td></tr><tr><td>21466</td><td><b>Fenolftaleína 1%</b></td><td>Geladeira</td><td class="n">R$ 20,00</td></tr><tr><td>7320</td><td><b>Luva nitrílica M</b></td><td>Porta 12</td><td class="n">R$ 29,00</td></tr></table></div></div>
+<div class="lado"><header><b>PROPOSTA</b></header><div class="palco" style="height:auto"><table class="tab col"><tr><th>Código</th><th>Item</th><th>Local</th><th class="n">Valor</th></tr><tr><td>185</td><td><b>Água desmineralizada 1 L</b></td><td>Porta 02</td><td class="n">R$ 72,42</td></tr><tr><td>21466</td><td><b>Fenolftaleína 1%</b></td><td>Geladeira</td><td class="n">R$ 20,00</td></tr><tr><td>7320</td><td><b>Luva nitrílica M</b></td><td>Porta 12</td><td class="n">R$ 29,00</td></tr></table></div></div>
+</div>
+<div class="resp"><label><input type="radio" name="r1" value="Passa"> Passa</label><label><input type="radio" name="r1" value="Não passa"> Não passa</label></div><textarea placeholder="Comentário (opcional)"></textarea></article>
+
+<article class="it" data-n="2"><div class="num">ITEM 2</div><h2>Vértice Docs e Sabiá com destaque no menu</h2>
+<p>Seu pedido no ITEM 9: o menu ficou mais calmo, mas os apps da família não perdem contraste. Eles ganham uma moldura própria, ícone maior e letra forte; ao passar o mouse, a moldura esquenta para o dourado.</p>
+<div class="par">
+<div class="lado"><header><b>HOJE</b></header><div class="palco" style="padding:0"><nav class="lat"><a class="on">Almoxarifado</a><a>Qualidade</a><div class="gh">Apps da família</div><a class="fam"><span class="ap v"></span>Vértice Docs</a><a class="fam"><span class="ap s"></span>Sabiá</a></nav></div></div>
+<div class="lado"><header><b>PROPOSTA</b></header><div class="palco" style="padding:0"><nav class="lat novo"><a class="on">Almoxarifado</a><a>Qualidade</a><div class="gh">Apps da família</div><a class="fam"><span class="ap v"></span>Vértice Docs</a><a class="fam"><span class="ap s"></span>Sabiá</a></nav></div></div>
+</div>
+<p class="dica">Os ícones aqui são só de exemplo; no app ficam os ícones de verdade do Vértice e do Sabiá.</p>
+<div class="resp"><label><input type="radio" name="r2" value="Passa"> Passa</label><label><input type="radio" name="r2" value="Não passa"> Não passa</label></div><textarea placeholder="Comentário (opcional)"></textarea></article>
+
+<article class="it" data-n="3"><div class="num">ITEM 3</div><h2>Rodízio: uma coleta por período, salvo nova coleta pedida</h2>
+<p>Conferi o caso do JD08 nos seus dados: a coleta de 20/10 existe, mas em 06/11 um colaborador pediu uma nova coleta (motivo "Outro"), sem aprovação de ninguém, e ela foi programada para 09/11. Pela sua regra a coleta de 20/10 deixa de contar, então o app já estava seguindo a regra. O que faltava era mostrar isso. Agora a área com nova coleta pedida ganha a marca de "refazer" no canto e, ao parar o mouse, mostra quem pediu, quando e o motivo.</p>
+<div class="par">
+<div class="lado"><header><b>HOJE</b></header><div class="palco" style="height:auto"><b>FOLHA · trimestral · 2026</b><div class="ars"><span class="ar c">JD07</span><span class="ar p">JD08</span><span class="ar c">RU38</span><span class="ar">RU39</span></div><div class="tip">JD08: programada para seg 09/11</div></div></div>
+<div class="lado"><header><b>PROPOSTA</b></header><div class="palco" style="height:auto"><b>FOLHA · trimestral · 2026</b><div class="ars"><span class="ar c">JD07</span><span class="ar p">JD08<i class="rec"><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 5v6h-6"/></svg></i></span><span class="ar c">RU38</span><span class="ar">RU39</span></div><div class="tip">JD08: programada para seg 09/11 · nova coleta pedida por (nome de quem pediu) em 06/11 (motivo)</div></div></div>
+</div>
+<p class="dica"><b>Falta você decidir:</b> a nova coleta deve precisar da sua aprovação (Líder ou Principal) para valer? <b>OPÇÃO A:</b> sim, só vale depois de aprovada. <b>OPÇÃO B:</b> não, quem tem permissão pede, e o app mostra quem pediu (como na proposta). O pedido é feito no EFClaudian, então a OPÇÃO A muda os dois apps.</p>
+<div class="resp"><label><input type="radio" name="r3" value="Passa · OPÇÃO A"> Passa · OPÇÃO A</label><label><input type="radio" name="r3" value="Passa · OPÇÃO B"> Passa · OPÇÃO B</label><label><input type="radio" name="r3" value="Não passa"> Não passa</label></div><textarea placeholder="Comentário (opcional)"></textarea></article>
+
+<article class="it" data-n="4"><div class="num">ITEM 4</div><h2>Lista retrátil e menu da coluna fecham com efeito</h2>
+<p>Proposta P5 do Grok. Abrir já tem efeito; fechar some de uma vez. Proposta: ao fechar, a lista encolhe e some em 150 ms. Abra e feche nas duas caixas.</p>
+<div class="par">
+<div class="lado" data-d="dd"><header><b>HOJE</b><button class="rep" data-rep>Ver de novo</button></header><div class="palco"><div class="dd"><button class="abt ddb" data-dd>Todos <span>▾</span></button><ul class="ddl" hidden><li>Todos</li><li>Graves e urgentes</li><li>Abertos</li><li>Resolvidos</li></ul></div><div style="margin-top:110px"><span class="th" data-mnb>Local ▾</span></div><div class="mn" hidden style="top:190px"><b>Local</b><small>6 itens · 4 valores</small><div class="li"><i></i>Geladeira</div><div class="li"><i></i>Porta 02</div></div></div></div>
+<div class="lado anim" data-d="dd"><header><b>PROPOSTA</b><button class="rep" data-rep>Ver de novo</button></header><div class="palco"><div class="dd"><button class="abt ddb" data-dd>Todos <span>▾</span></button><ul class="ddl" hidden><li>Todos</li><li>Graves e urgentes</li><li>Abertos</li><li>Resolvidos</li></ul></div><div style="margin-top:110px"><span class="th" data-mnb>Local ▾</span></div><div class="mn" hidden style="top:190px"><b>Local</b><small>6 itens · 4 valores</small><div class="li"><i></i>Geladeira</div><div class="li"><i></i>Porta 02</div></div></div></div>
+</div>
+<div class="resp"><label><input type="radio" name="r4" value="Passa"> Passa</label><label><input type="radio" name="r4" value="Não passa"> Não passa</label></div><textarea placeholder="Comentário (opcional)"></textarea></article>
+
+<article class="it" data-n="5"><div class="num">ITEM 5</div><h2>Busca do alto abre e fecha suave</h2>
+<p>Proposta P6 do Grok. Hoje a caixa de busca aparece e some de uma vez. Proposta: o fundo escurece e a caixa cresce de 97% para o tamanho certo em 250 ms; fecha em 150 ms. Toque na busca para abrir e fora dela para fechar.</p>
+<div class="par">
+<div class="lado" data-d="bg"><header><b>HOJE</b><button class="rep" data-rep>Ver de novo</button></header><div class="palco"><div class="topo"><div class="cbusca" data-bg>Buscar documento, material, coleta…</div></div><div class="bfundo" hidden><div class="bcaixa"><div class="bcampo">Buscar…</div><div class="bres"><div>Luva nitrílica M</div><div>Água desmineralizada 1 L</div><div>Materiais (tela)</div></div></div></div></div></div>
+<div class="lado anim" data-d="bg"><header><b>PROPOSTA</b><button class="rep" data-rep>Ver de novo</button></header><div class="palco"><div class="topo"><div class="cbusca" data-bg>Buscar documento, material, coleta…</div></div><div class="bfundo" hidden><div class="bcaixa"><div class="bcampo">Buscar…</div><div class="bres"><div>Luva nitrílica M</div><div>Água desmineralizada 1 L</div><div>Materiais (tela)</div></div></div></div></div></div>
+</div>
+<div class="resp"><label><input type="radio" name="r5" value="Passa"> Passa</label><label><input type="radio" name="r5" value="Não passa"> Não passa</label></div><textarea placeholder="Comentário (opcional)"></textarea></article>
+
+<article class="it" data-n="6"><div class="num">ITEM 6</div><h2>Apontamentos: cartões entram em sequência ao trocar o filtro</h2>
+<p>Proposta P7 do Grok. Hoje, ao trocar o filtro, os cartões trocam de uma vez. Proposta: eles sobem 6 px, um depois do outro (40 ms entre eles, no máximo 8 cartões, tudo em menos de meio segundo). Troque o filtro nas duas caixas.</p>
+<div class="par">
+<div class="lado" data-d="cd"><header><b>HOJE</b><button class="rep" data-rep>Ver de novo</button></header><div class="palco"><div class="fl"><button class="abt" data-cf>Filtro: Todos</button></div><div class="cards"></div></div></div>
+<div class="lado anim" data-d="cd"><header><b>PROPOSTA</b><button class="rep" data-rep>Ver de novo</button></header><div class="palco"><div class="fl"><button class="abt" data-cf>Filtro: Todos</button></div><div class="cards"></div></div></div>
+</div>
+<div class="resp"><label><input type="radio" name="r6" value="Passa"> Passa</label><label><input type="radio" name="r6" value="Não passa"> Não passa</label></div><textarea placeholder="Comentário (opcional)"></textarea></article>
+
+<article class="it" data-n="7"><div class="num">ITEM 7</div><h2>Foto grande abre e fecha suave</h2>
+<p>Proposta P8 do Grok. Hoje a foto grande aparece e some de uma vez. Proposta: a foto cresce de 94% em 250 ms e some em 150 ms; vale também para o editor de marcação. Toque na miniatura para abrir e na foto para fechar.</p>
+<div class="par">
+<div class="lado" data-d="ft"><header><b>HOJE</b><button class="rep" data-rep>Ver de novo</button></header><div class="palco"><div class="miniatura" data-ft></div><div class="ffundo" hidden><div class="foto"></div></div></div></div>
+<div class="lado anim" data-d="ft"><header><b>PROPOSTA</b><button class="rep" data-rep>Ver de novo</button></header><div class="palco"><div class="miniatura" data-ft></div><div class="ffundo" hidden><div class="foto"></div></div></div></div>
+</div>
+<div class="resp"><label><input type="radio" name="r7" value="Passa"> Passa</label><label><input type="radio" name="r7" value="Não passa"> Não passa</label></div><textarea placeholder="Comentário (opcional)"></textarea></article>
+
+<article class="it" data-n="8"><div class="num">ITEM 8</div><h2>Título da área entra mais rápido</h2>
+<p>Proposta P9 do Grok: o que passa de 600 ms fica mais curto. Hoje o título letra por letra leva perto de 1 segundo ("Almoxarifado"). Proposta: o mesmo efeito em menos de meio segundo. O mesmo vale para o brilho da gota (uma passada só) e para os avisos do sino.</p>
+<div class="par">
+<div class="lado" data-d="tt"><header><b>HOJE</b><button class="rep" data-rep>Ver de novo</button></header><div class="palco" style="height:150px"><div class="tt" style="--dur:500ms;--pas:40ms" data-t="Almoxarifado"></div><span class="cron">cerca de 0,95 s</span></div></div>
+<div class="lado" data-d="tt"><header><b>PROPOSTA</b><button class="rep" data-rep>Ver de novo</button></header><div class="palco" style="height:150px"><div class="tt" style="--dur:260ms;--pas:18ms" data-t="Almoxarifado"></div><span class="cron">cerca de 0,46 s</span></div></div>
+</div>
+<div class="resp"><label><input type="radio" name="r8" value="Passa"> Passa</label><label><input type="radio" name="r8" value="Não passa"> Não passa</label></div><textarea placeholder="Comentário (opcional)"></textarea></article>
+
+<button class="bt-cp" id="cp">Copiar respostas</button><span id="ok"></span>
+</main>
+<script>
+(function(){
+  var reduz = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function fecha(el, anim, cls){ if(!anim||reduz){ el.hidden=true; return; } el.classList.remove('abre'); el.classList.add('fecha'); setTimeout(function(){ el.classList.remove('fecha'); el.hidden=true; }, 155); }
+  function abre(el, anim){ el.hidden=false; el.classList.remove('fecha'); if(anim&&!reduz){ el.classList.remove('abre'); void el.offsetWidth; el.classList.add('abre'); } }
+  var DADOS=[['Esteira sem proteção','Packing House · Grave',1],['Piso molhado','Campo · Baixa',0],['Extintor vencido','Escritório · Grave',1],['Fio desencapado','Oficina · Urgente',1],['Caixa sem tampa','Almoxarifado · Média',0],['Luva rasgada','Campo · Baixa',0]];
+  function cards(box, anim, so){ var l=DADOS.filter(function(x){return !so||x[2]}); box.innerHTML=l.map(function(x,i){return '<div class="cd'+(x[2]?' g':'')+(anim&&!reduz?' entra':'')+'" style="--k:'+Math.min(i,7)+'"><i></i><span><b>'+x[0]+'</b><small>'+x[1]+'</small></span></div>'}).join(''); }
+  function titulo(el){ var t=el.getAttribute('data-t'); el.innerHTML=t.split('').map(function(c,i){return '<span style="--i:'+i+'">'+c+'</span>'}).join(''); }
+  document.querySelectorAll('.lado').forEach(function(L){
+    var anim=L.classList.contains('anim'), d=L.getAttribute('data-d');
+    if(d==='cd'){ L._so=false; cards(L.querySelector('.cards'),false,false); }
+    if(d==='tt') titulo(L.querySelector('.tt'));
+    L.addEventListener('click',function(e){
+      var t=e.target;
+      if(t.closest('[data-dd]')){ var u=L.querySelector('.ddl'); if(u.hidden) abre(u,anim); else fecha(u,anim); return; }
+      if(t.closest('.ddl li')){ L.querySelector('[data-dd]').firstChild.textContent=t.textContent+' '; fecha(L.querySelector('.ddl'),anim); return; }
+      if(t.closest('[data-mnb]')){ var m=L.querySelector('.mn'); if(m.hidden) abre(m,anim); else fecha(m,anim); return; }
+      if(t.closest('[data-bg]')){ abre(L.querySelector('.bfundo'),anim); return; }
+      if(t.classList.contains('bfundo')){ fecha(t,anim); return; }
+      if(t.closest('[data-cf]')){ L._so=!L._so; t.closest('[data-cf]').textContent='Filtro: '+(L._so?'Graves e urgentes':'Todos'); cards(L.querySelector('.cards'),anim,L._so); return; }
+      if(t.closest('[data-ft]')){ abre(L.querySelector('.ffundo'),anim); return; }
+      if(t.closest('.ffundo')){ fecha(L.querySelector('.ffundo'),anim); return; }
+      if(t.closest('[data-rep]')){ demo(L,anim,d); }
+    });
+  });
+  function demo(L,anim,d){
+    var seq=[];
+    if(d==='dd') seq=[function(){abre(L.querySelector('.ddl'),anim)},function(){fecha(L.querySelector('.ddl'),anim)},function(){abre(L.querySelector('.mn'),anim)},function(){fecha(L.querySelector('.mn'),anim)}];
+    if(d==='bg') seq=[function(){abre(L.querySelector('.bfundo'),anim)},function(){fecha(L.querySelector('.bfundo'),anim)}];
+    if(d==='cd') seq=[function(){L.querySelector('[data-cf]').click()},function(){L.querySelector('[data-cf]').click()}];
+    if(d==='ft') seq=[function(){abre(L.querySelector('.ffundo'),anim)},function(){fecha(L.querySelector('.ffundo'),anim)}];
+    if(d==='tt') seq=[function(){titulo(L.querySelector('.tt'))}];
+    seq.forEach(function(f,i){ setTimeout(f, i*900); });
+  }
+  document.getElementById('cp').onclick=async function(){
+    var l=['Respostas EFCwork v0.6.15 (fluidez)'];
+    document.querySelectorAll('.it[data-n]').forEach(function(a){var r=a.querySelector('input:checked'),c=a.querySelector('textarea').value.trim();l.push(a.querySelector('.num').textContent+' '+(r?r.value:'(sem resposta)')+(c?' — '+c:'')+' ['+a.querySelector('h2').textContent+']')});
+    var t=l.join('\n');try{await navigator.clipboard.writeText(t)}catch(x){var z=document.createElement('textarea');z.value=t;document.body.appendChild(z);z.select();document.execCommand('copy');z.remove()}
+    document.getElementById('ok').textContent='Copiado. Cole na conversa.';
+  };
+})();
+</script>
+</body>
+</html>

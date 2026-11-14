@@ -17,7 +17,7 @@
 .cb-tl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
 .cb-tubo{position:absolute;left:12px;width:4px;border-radius:3px;background:var(--bg2);box-shadow:inset 0 1px 2px rgba(0,0,0,.12);overflow:hidden}
 .cb-fluido{position:absolute;left:0;right:0;top:0;height:0;border-radius:3px;background:linear-gradient(180deg,#f7df9e,#d9b46a 45%,#b4862f);overflow:hidden}
-.cb-fluido::after{content:"";position:absolute;left:0;right:0;height:46px;top:-46px;background:linear-gradient(180deg,transparent,rgba(255,250,230,.95),transparent);animation:cbBrilho calc(var(--duration-very-slow) * 3) var(--ease-linear) 2}
+.cb-fluido::after{content:"";position:absolute;left:0;right:0;height:46px;top:-46px;background:linear-gradient(180deg,transparent,rgba(255,250,230,.95),transparent);animation:cbBrilho var(--duration-very-slow) var(--ease-linear) 1} /* v0.6.15 (ITEM 17): um brilho só, de 0,5 s (era 1,5 s × 2) */
 .cb-correndo .cb-fluido::after{animation-duration:.9s}
 @keyframes cbBrilho{to{top:100%}}
 .cb-tl li{display:flex;gap:12px;position:relative;padding-bottom:14px}

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EFC · layout v0.6.15 · demonstração das peças</title>
+<link rel="stylesheet" href="efc-movimento.css">
+<link rel="stylesheet" href="efc-layout.css">
+<style>
+  /* só para a demonstração: casca mínima (o Vértice usa a dele) */
+  body{margin:0;font:15px/1.4 system-ui,sans-serif;background:#f6f2ea;color:var(--efl-texto)}
+  .topo{height:56px;border-bottom:1px solid var(--efl-borda);display:flex;align-items:center;padding:0 20px;background:#fffdf8}
+  main{padding:20px}
+  h1{font:600 30px/1.1 Georgia,serif;margin:0}
+  .abas{display:flex;gap:4px;border-bottom:1px solid var(--efl-borda);margin-top:14px}
+  .abas a{padding:10px 12px;color:var(--efl-texto2);text-decoration:none;border-bottom:2px solid transparent}
+  .abas a.on{color:var(--efl-ouro-texto);border-bottom-color:var(--efl-ouro)}
+  .ferr button,.efl-gv-acoes button{width:32px;height:32px;border:0;background:none;border-radius:6px;cursor:pointer;color:var(--efl-texto2)}
+  table{border-collapse:collapse;width:100%}
+  th,td{text-align:left;padding:0 12px;height:40px;border-bottom:1px solid var(--efl-borda)}
+  td.n,th.n{text-align:right}
+  tr{cursor:pointer}
+  .bloco{margin-top:12px}
+  .gaveta{position:fixed;z-index:50;top:0;right:0;bottom:0;width:400px;background:#fffdf8;border-left:1px solid var(--efl-borda);padding:18px;box-shadow:-8px 0 24px rgba(0,0,0,.08);display:none;overflow:auto}
+  .gaveta.on{display:block}
+  .filtro{margin-left:auto}
+</style>
+</head>
+<body>
+<div class="topo"><b>Vértice Docs</b>&nbsp;·&nbsp;demonstração das peças do layout v0.6.15</div>
+<main>
+  <div class="efl-cab"><div class="efl-cab-tx"><h1>Documentos</h1><div class="efl-meta" id="meta"><span class="efl-selo" id="qtd"></span></div></div>
+    <label class="filtro">Setor: <select id="setor"><option value="">Todos</option><option>Campo</option><option>Packing</option><option>Oficina</option></select></label></div>
+  <nav class="abas" id="abas"><a class="on" href="#">Documentos</a><a href="#">Histórico</a></nav>
+  <div class="ferr" id="ferr"><button title="Colunas" aria-label="Colunas"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v14H4zM9.5 5v14M14.5 5v14"/></svg></button><button title="Planilha" aria-label="Planilha"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l4 4v14H6zM14 3v5h5M9 13h7M9 17h7"/></svg></button><button title="Imprimir" aria-label="Imprimir"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 9V3h10v6M7 17H4v-7h16v7h-3M7 14h10v7H7z"/></svg></button></div>
+  <div class="bloco" data-efl-tabela="docs"><div class="efl-tabela-rola"><table><thead><tr><th>Código</th><th>Título</th><th>Setor</th><th class="n">Custo</th><th>Situação</th></tr></thead><tbody id="tb"></tbody></table><div id="fim"></div></div></div>
+  <div class="efl-sem-rodape">Mostrando 12 de 12 · rodapé que não aparece mais</div>
+</main>
+<aside class="gaveta efl-gaveta" id="gv"></aside>
+<script src="efc-layout.js"></script>
+<script>
+  const SET = ['Campo', 'Packing', 'Oficina'], SIT = [['Em dia', 'ok'], ['Vence em 15 dias', 'wa'], ['Vencido', 'cr']];
+  const DOCS = Array.from({ length: 230 }, (_, i) => ({ id: 'd' + i, cod: 'POP-' + String(i + 1).padStart(3, '0'), tit: 'Procedimento ' + (i + 1), setor: SET[i % 3], custo: 10 + (i % 7) * 3.5, sit: SIT[i % 3] }));
+  const X = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  const brl = v => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  let limite = 100, aberto = null;
+  function lista() { const s = document.getElementById('setor').value; return DOCS.filter(d => !s || d.setor === s); }
+  function desenha() {
+    const volta = EFCLayout.guardaRolagem(), l = lista();
+    document.getElementById('tb').innerHTML = l.slice(0, limite).map(d => '<tr data-id="' + d.id + '"><td>' + d.cod + '</td><td><b>' + d.tit + '</b></td><td>' + d.setor + '</td><td class="n">' + brl(d.custo) + '</td><td><span class="efl-pilula ' + d.sit[1] + '">' + d.sit[0] + '</span></td></tr>').join('');
+    document.getElementById('fim').outerHTML = l.length > limite ? '<div id="fim" class="efl-fim" data-efl-tabela="docs">Carregando mais…</div>' : '<div id="fim"></div>';
+    document.getElementById('qtd').textContent = l.length + ' documentos';
+    const tot = v => brl(v.reduce((s, d) => s + d.custo, 0));
+    EFCLayout.seloTotal(document.getElementById('meta'), { geral: tot(DOCS), valor: tot(l), filtrado: l.length !== DOCS.length, sufixo: 'em custos' });
+    EFCLayout.ferramentasNasAbas(document.getElementById('abas'), document.getElementById('ferr'));
+    EFCLayout.fixarTela();
+    volta();
+    EFCLayout.carregaMais(() => { limite += 100; desenha(); });
+  }
+  function abre(id) {
+    aberto = id; const d = DOCS.find(x => x.id === id), g = document.getElementById('gv');
+    const hist = [{ nome: 'Criado', data: '2026-10-01', quem: 'Joana Silva', feito: true }, { nome: 'Revisado', data: '2026-10-20', txt: 'Revisão 02', quem: 'Carlos Dias', feito: true }, { nome: 'Aprovado', data: '2026-11-03', quem: 'Líder ★', feito: true }];
+    g.innerHTML = '<div class="efl-gv-cab"><span class="efl-gv-sub">Documento · ' + d.cod + '</span><span class="efl-gv-acoes" id="gva"><button title="Fechar" aria-label="Fechar" id="gvx">' + X + '</button></span><h2>' + d.tit + '</h2><span class="efl-pilula ' + d.sit[1] + '">' + d.sit[0] + '</span></div>' +
+      '<div id="gvc"><p><b>Histórico</b></p>' + EFCLayout.linhaDoTempo('doc-' + d.id, hist) + '</div>';
+    g.classList.add('on');
+    EFCLayout.navGaveta({ acoes: document.getElementById('gva'), ids: lista().slice(0, limite).map(x => x.id), atual: id, abrir: abre, corpo: '#gvc' });
+    document.getElementById('gvx').onclick = () => { g.classList.remove('on'); aberto = null; };
+    EFCLayout.gota(g, true);
+  }
+  document.getElementById('tb').addEventListener('click', e => { const tr = e.target.closest('tr[data-id]'); if (tr) abre(tr.getAttribute('data-id')); });
+  document.getElementById('setor').addEventListener('change', () => { limite = 100; desenha(); });
+  addEventListener('keydown', e => { if (e.key === 'Escape' && aberto) document.getElementById('gvx').click(); });
+  addEventListener('resize', () => EFCLayout.fixarTela());
+  desenha();
+</script>
+</body>
+</html>

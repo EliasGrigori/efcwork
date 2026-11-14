@@ -1,7 +1,7 @@
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.6.14.2';
+const VERSAO = '0.6.15';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -122,7 +122,7 @@ const ICS = {
   lupa: '<circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/>',
   nuvem: '<path d="M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 9.5a4.25 4.25 0 0 1-.5 8.5z"/>', gira: '<path d="M20 12a8 8 0 1 1-2.6-5.9M20 4v4.5h-4.5"/>',
   sino: '<path d="M6 16v-5a6 6 0 1 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/>',
-  recolhe: '<path d="m11 17-5-5 5-5M18 17l-5-5 5-5"/>', cadeado: '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>', mais: '<path d="M12 5v14M5 12h14"/>', menos: '<path d="M5 12h14"/>', recontar: '<path d="M20 11a8 8 0 0 0-14.3-4.9L4 8M4 4v4h4M4 13a8 8 0 0 0 14.3 4.9L20 16M20 20v-4h-4"/>', entra: '<path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19h14"/>', sai: '<path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M5 19h14"/>', lapis: '<path d="M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17z"/><path d="M14.5 7.5l2 2"/>', ajuste: '<path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/>', x: '<path d="M6 6l12 12M18 6 6 18"/>', seta: '<path d="m9 6 6 6-6 6"/>', volta: '<path d="m15 6-6 6 6 6"/>',
+  recolhe: '<path d="m11 17-5-5 5-5M18 17l-5-5 5-5"/>', cadeado: '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>', mais: '<path d="M12 5v14M5 12h14"/>', menos: '<path d="M5 12h14"/>', recontar: '<path d="M20 11a8 8 0 0 0-14.3-4.9L4 8M4 4v4h4M4 13a8 8 0 0 0 14.3 4.9L20 16M20 20v-4h-4"/>', entra: '<path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19h14"/>', sai: '<path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M5 19h14"/>', lapis: '<path d="M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17z"/><path d="M14.5 7.5l2 2"/>', ajuste: '<path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/>', x: '<path d="M6 6l12 12M18 6 6 18"/>', seta: '<path d="m9 6 6 6-6 6"/>', volta: '<path d="m15 6-6 6 6 6"/>', recoleta: '<path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 5v6h-6"/>',
   broto: '<path d="M12 21v-8"/><path d="M12 13c0-4-3-6.5-7-6.5 0 4 3 6.5 7 6.5zM12 11c0-3.5 2.6-6 6.5-6 0 3.5-2.6 6-6.5 6z"/>',
   relogio: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>', calendario: '<rect x="4" y="5.5" width="16" height="14.5" rx="2"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/>', esq: '<path d="m14.5 6-6 6 6 6"/>', dir: '<path d="m9.5 6 6 6-6 6"/>', cima: '<path d="m6 14.5 6-6 6 6"/>', baixo: '<path d="m6 9.5 6 6 6-6"/>', excl: '<circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.2v.2"/>', alerta: '<path d="M12 3.5 2.8 19.5h18.4z"/><path d="M12 10v4.5M12 17.3v.2"/>',
   ok: '<path d="M5 12.5l4.5 4.5L19 7.5"/>', sair: '<path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/>', lua: '<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>',
@@ -139,6 +139,8 @@ const ICS = {
   baixar: '<path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19h14"/>',
   lixo: '<path d="M4 7h16M9 7V4.5h6V7M6 7l1 13h10l1-13M10 11v6M14 11v6"/>', imagem: '<rect x="3.5" y="4.5" width="17" height="15" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="m20.5 16-5-5-8 8.5"/>'
 };
+/* v0.6.15 (Grok D10): marca a foto que falhou ao carregar (o CSS mostra um espaço neutro no lugar) */
+document.addEventListener('error', e => { const t = e.target; if (t && t.tagName === 'IMG') t.classList.add('img-x'); }, true);
 const ic = (n, cls) => '<svg class="ic' + (cls ? ' ' + cls : '') + '" viewBox="0 0 24 24" aria-hidden="true">' + (ICS[n] || '') + '</svg>';
 
 /* ============ DADOS (do EFClaudian v2.102.59) ============ */

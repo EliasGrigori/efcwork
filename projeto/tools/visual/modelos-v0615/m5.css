@@ -1,0 +1,30 @@
+/* MODELO 5 · Editorial — mais ar e hierarquia de revista: título serifado maior com o traço que cresce ao entrar,
+   ações secundárias como texto com ícone (sublinhado que desliza no passar do mouse), campos só com a linha de baixo,
+   painéis sem sombra, separados por espaço. Dourado no principal e nos destaques. */
+:root[data-modelo="5"]{--rs:6px;--r:10px}
+:root[data-modelo="5"] .cs-ph h1{font-size:34px;font-weight:500;letter-spacing:-.02em;padding-bottom:10px}
+:root[data-modelo="5"] .cs-ph h1::after{width:56px;height:2px;transform-origin:left;animation:m5traco 450ms cubic-bezier(.22,1,.36,1) both}
+@keyframes m5traco{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+:root[data-modelo="5"] .cs-acts .bt:not(.pr):not(.ic-so),:root[data-modelo="5"] .gv-pe .bt:not(.pr){border-color:transparent;background:transparent;color:var(--aTx);padding:0 8px;position:relative}
+:root[data-modelo="5"] .cs-acts .bt:not(.pr):not(.ic-so)::before,:root[data-modelo="5"] .gv-pe .bt:not(.pr)::before{content:"";position:absolute;left:8px;right:8px;bottom:5px;height:1.5px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform 250ms cubic-bezier(.22,1,.36,1)}
+:root[data-modelo="5"] .cs-acts .bt:not(.pr):not(.ic-so):hover::before,:root[data-modelo="5"] .gv-pe .bt:not(.pr):hover::before{transform:scaleX(1)}
+:root[data-modelo="5"] .bt{font-weight:600}
+:root[data-modelo="5"] .bt:hover:not([disabled]):not(.pr){background:var(--bg2)}
+:root[data-modelo="5"] .cs-acts .bt:not(.pr):not(.ic-so):hover{background:transparent}
+:root[data-modelo="5"] .bt.ic-so{border-color:transparent;background:transparent}
+:root[data-modelo="5"] .bt.pr{border-radius:6px}
+:root[data-modelo="5"] :is(.fm-i,.cp input,.cp select,.dd-b){background:transparent;border:0;border-bottom:1px solid var(--bd2);border-radius:0;padding-left:2px;padding-right:2px;background-image:linear-gradient(var(--a),var(--a));background-repeat:no-repeat;background-position:center bottom;background-size:0 2px;transition:background-size 250ms cubic-bezier(.22,1,.36,1),border-color 150ms ease-out}
+:root[data-modelo="5"] :is(.fm-i,.cp input,.cp select):focus{outline:none;background-size:100% 2px;border-bottom-color:transparent}
+:root[data-modelo="5"] .cp textarea,:root[data-modelo="5"] textarea.fm-i{border:1px solid var(--bd2);border-radius:6px;background:transparent}
+:root[data-modelo="5"] .dd-b:hover{border-bottom-color:var(--a)}
+:root[data-modelo="5"] .pn,:root[data-modelo="5"] .kp{box-shadow:none;border-color:var(--bd)}
+:root[data-modelo="5"] .kp b{font-size:32px;font-weight:500}
+:root[data-modelo="5"] .cs-ct{gap:22px}
+:root[data-modelo="5"] .cs-abas a{font-size:15px;padding:10px 14px}
+:root[data-modelo="5"] .tb-t th{background:transparent;border-bottom:1px solid var(--bd2);color:var(--tx3);font-weight:600}
+:root[data-modelo="5"] .tb-t tbody tr[data-act]:hover td{background:color-mix(in srgb,var(--a) 5%,transparent)}
+:root[data-modelo="5"] .cs-it:hover{background:transparent;color:var(--aTx)}
+:root[data-modelo="5"] .dd-l{border-radius:8px}
+@media (prefers-reduced-motion:reduce){:root[data-modelo="5"] .cs-ph h1::after{animation:none}}
+:root[data-modelo="5"] .tb-busca{background:transparent;border:0;border-bottom:1px solid var(--bd2);border-radius:0;padding-left:2px}
+:root[data-modelo="5"] .tb-busca:focus-within{border-bottom:2px solid var(--a)}

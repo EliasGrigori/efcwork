@@ -1,0 +1,109 @@
+/* EFCwork · moderno.css — PROPOSTAS de modernização da v0.6.15 (ainda não aprovadas). Uma por classe no <html>: mo1 … mo15.
+   Só tokens do app e a escala comum de movimento (tools/visual/efc-movimento.css). Prefixo: mo-. */
+
+/* ITEM 1 · Início: "Pede atenção" */
+.mo-atl{gap:12px;padding-top:7px!important;padding-bottom:7px!important}
+.mo-atl .tx{display:flex;align-items:baseline;gap:10px;justify-content:space-between}
+.mo-atl .tx small{flex:none;white-space:nowrap}
+@media(max-width:599px){.mo-atl .tx{display:block}}
+.mo-atn{flex:none;min-width:40px;height:36px;padding:0 8px;display:grid;place-items:center;border-radius:var(--rs);background:var(--bg2);font-size:18px;font-weight:600;color:var(--tx)}
+.mo-atn.cr{background:var(--crS);color:var(--cr)}.mo-atn.wa{background:var(--waS);color:var(--wa)}
+html.mo1 .ini-gr{margin-top:4px}
+
+/* ITEM 2 · Início: "Próximas coletas" */
+.mo-px .hd .bt.lk{margin:-6px -6px -6px 0}
+@media (pointer:coarse){.mo-px .hd .bt.lk{margin:-10px -6px -10px 0}}
+.mo-pxl{gap:12px}
+.mo-dia{flex:none;width:52px;height:44px;border-radius:var(--rs);border:1px solid var(--bd);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.05;background:var(--bg1)}
+.mo-dia small{font-size:12px;color:var(--tx3)}.mo-dia b{font-size:18px;font-weight:600}
+.mo-dia.hj{border-color:var(--a);background:var(--aS)}.mo-dia.hj small{color:var(--aTx);font-weight:600}
+
+/* ITEM 4 · paleta de comandos */
+html.mo4 .cs-busca kbd{font-size:0}
+html.mo4 .cs-busca kbd::after{content:"Ctrl K";font-size:12px}
+.mo-pal .bg-gh{letter-spacing:0}
+.mo-pal.bg-fundo{animation:moPalFundo var(--modal-open-dur) var(--ease-out)}
+.mo-pal .bg-caixa{animation:moPalAbre var(--modal-open-dur) var(--modal-ease)}
+@keyframes moPalFundo{from{background:transparent}}
+@keyframes moPalAbre{from{opacity:0;transform:translateY(-8px) scale(var(--modal-scale))}}
+.mo-fant{pointer-events:none!important}
+.mo-f-bg{animation:moSome var(--modal-close-dur) var(--ease-out) forwards}
+.mo-f-bg .bg-caixa{animation:moPalFecha var(--modal-close-dur) var(--modal-ease) forwards}
+@keyframes moSome{to{opacity:0}}
+@keyframes moPalFecha{to{opacity:0;transform:translateY(-6px) scale(var(--scale-small))}}
+
+/* ITEM 7 · situação na tabela: ponto e texto; cor cheia só no problema */
+html.mo7 .tb-t td .pill:not(.cr){background:none;padding:0;color:var(--tx);font-weight:500;gap:7px}
+html.mo7 .tb-t td .pill:not(.cr)::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--tx3)}
+html.mo7 .tb-t td .pill.ok::before{background:var(--ok)}
+html.mo7 .tb-t td .pill.wa::before{background:var(--wa)}
+
+/* ITEM 5 · abas com contagem */
+.mo-ct{font-style:normal;font-size:12px;font-weight:600;min-width:20px;height:20px;padding:0 6px;margin-left:7px;border-radius:10px;background:var(--bg2);color:var(--tx2);display:inline-grid;place-items:center;vertical-align:1px;font-variant-numeric:tabular-nums}
+.cs-abas a.on .mo-ct{background:var(--aS);color:var(--aTx)}
+
+/* ITEM 3 · caminho na barra de cima */
+.mo-tp .mo-bc{order:0;font-size:14px;color:var(--tx);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.mo-tp .mo-bc b{font-weight:500;color:var(--tx3)}
+.mo-tp .cs-sp{order:1}
+.mo-tp .cs-busca{order:2;width:230px;flex:none}
+.mo-tp .cs-sync,.mo-tp>.bt{order:3}
+html.mo3 .cs-ph{padding-top:2px}
+
+/* ITEM 9 · gaveta: anterior e próximo */
+.mo-nav{display:inline-flex;align-items:center;gap:2px;flex:none}
+.mo-nav .bt[disabled]{opacity:.35;cursor:default}
+.gv-corpo.mo-troca{animation:moTroca var(--duration-quick) var(--ease-smooth-out)}
+@keyframes moTroca{from{opacity:.2;transform:translateY(calc(var(--mo-d,1) * 8px))}}
+
+/* ITEM 10 · dica desenhada */
+.mo-tt{position:fixed;z-index:200;max-width:260px;padding:5px 9px;border-radius:6px;background:var(--tx);color:var(--bg1);font-size:13px;font-weight:500;line-height:1.3;pointer-events:none;opacity:0;transition:opacity var(--duration-quick) var(--ease-out),transform var(--duration-quick) var(--ease-out);box-shadow:0 4px 12px rgba(0,0,0,.18)}
+.mo-tt.cim{transform:translateY(4px)}.mo-tt.emb{transform:translateY(-4px)}
+.mo-tt.on{opacity:1;transform:none}
+
+/* ITEM 8 · tabela vazia */
+.mo-vz{display:flex;flex-direction:column;align-items:center;gap:8px;padding:20px 12px}
+.mo-vz>.ic{width:26px;height:26px;color:var(--tx3)}
+.mo-vz b{color:var(--tx);font-weight:600;font-size:15px}
+.mo-vz span{color:var(--tx3)}
+.mo-vz .bt{margin-top:4px}
+@media(max-width:899px){.mo-vz{position:sticky;left:0;width:calc(100vw - 34px);box-sizing:border-box;text-align:center}.tb-vz:has(.mo-vz){padding:0!important;text-align:left!important}}
+
+/* ITEM 6 · celular: pastilha da barra de baixo */
+@media(max-width:899px){
+  html.mo6 .cs-baixo{position:fixed}
+  html.mo6 .cs-baixo a,html.mo6 .cs-baixo button{position:relative;z-index:1}
+  .mo-pl{position:absolute;top:8px;width:56px;height:28px;margin-left:-28px;border-radius:14px;background:var(--aS);transition:left var(--duration-fast) var(--ease-smooth-out);z-index:0}
+}
+
+/* ITEM 11 · botão dourado com sombra nítida (sem o brilho borrado em volta) */
+html.mo11 .bt.pr{box-shadow:0 1px 0 rgba(255,255,255,.4) inset,0 0 0 1px rgba(122,86,20,.18),0 1px 2px rgba(60,42,8,.28)}
+html.mo11 .bt.pr:hover:not([disabled]){box-shadow:0 1px 0 rgba(255,255,255,.45) inset,0 0 0 1px rgba(122,86,20,.26),0 2px 4px rgba(60,42,8,.24),0 6px 12px -4px rgba(60,42,8,.3)}
+
+/* ITEM 12 · menu da coluna sai com efeito */
+.mo-f-mn{transform-origin:top center;animation:moMnFecha var(--dropdown-close-dur) var(--dropdown-ease) forwards;z-index:60}
+@keyframes moMnFecha{to{opacity:0;transform:translateY(-4px) scale(var(--scale-small))}}
+
+/* ITEM 13 · Apontamentos: cartões em sequência ao trocar o filtro */
+.ap-card.mo-seq{animation:moSeq var(--duration-fast) var(--ease-smooth-out) backwards;animation-delay:calc(var(--i) * var(--duration-stagger))}
+@keyframes moSeq{from{opacity:0;transform:translateY(8px)}}
+
+/* ITEM 14 · foto grande abre e fecha suave */
+html.mo14 #fed-v{animation:moFedAbre var(--modal-open-dur) var(--ease-out)}
+html.mo14 #fed-v .fed-pal img{animation:moFedImg var(--modal-open-dur) var(--modal-ease)}
+@keyframes moFedAbre{from{opacity:0}}
+@keyframes moFedImg{from{opacity:0;transform:scale(var(--modal-scale))}}
+.mo-f-fed{animation:moSome var(--modal-close-dur) var(--ease-out) forwards}
+.mo-f-fed .fed-pal img{animation:moFedSai var(--modal-close-dur) var(--modal-ease) forwards}
+@keyframes moFedSai{to{transform:scale(var(--scale-medium))}}
+
+/* ITEM 15 · título da tela mais rápido (o todo cabe em 450 ms) */
+html.mo15 .cs-ph h1.fz-tt{--duration-stagger:16ms}
+html.mo15 .cs-ph h1.fz-tt span{animation-duration:var(--duration-fast);filter:blur(4px)}
+
+/* ITENS 16 a 18 aprovados em 14/11: estão no src/ (tabela.css, calibracao.css, fluidez.css). */
+
+@media (prefers-reduced-motion:reduce){
+  .mo-pal.bg-fundo,.mo-pal .bg-caixa,.gv-corpo.mo-troca,.ap-card.mo-seq,html.mo14 #fed-v,html.mo14 #fed-v .fed-pal img{animation:none!important}
+  .mo-fant{display:none!important}.mo-tt,.mo-pl{transition:none}
+}

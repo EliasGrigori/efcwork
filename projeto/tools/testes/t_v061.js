@@ -99,6 +99,7 @@ const semear = p => p.evaluate(async png => {
   await p.evaluate(() => apAbre('ap2')); await esp(p, 700);
   conf(!!(await p.$('#gv .cb-tlw .cb-tubo .cb-fluido')), 'o detalhe usa a linha do tempo da gota');
   conf(/NC para Ana Souza/.test(await p.textContent('#gv')), 'a NC aparece na linha do tempo');
+  await p.mouse.move(2, 2); await p.waitForTimeout(250); /* v0.6.15: o botão dourado sobe 1 px sob o mouse (ITEM 3); mede sem o mouse em cima */
   const pe = await p.evaluate(() => { const l = [...document.querySelectorAll('#gv .ap-pe .bt')]; const r = l.map(b => b.getBoundingClientRect()); return { n: l.length, txt: l.map(b => b.textContent.trim()), top: (() => { const t = {}; r.forEach(x => { const k = Math.round(x.top); t[k] = (t[k] || 0) + 1; }); const v = Object.values(t); return v.every(c => c === v[0]); })(), h: r.every(x => Math.round(x.height) === Math.round(r[0].height)), w: r.every(x => Math.abs(x.width - r[0].width) <= 1) }; });
   conf(pe.txt.join('|').indexOf('Não procede') >= 0 && pe.txt.join('|').indexOf('Resolver') >= 0, 'rodapé com Não procede, Mudar gravidade, NC e Resolver (' + pe.txt.join(' · ') + ')');
   conf(pe.top && pe.h && pe.w, 'os botões do rodapé ficam alinhados: linhas iguais (v0.6.14.1: 2 por linha com 4 botões), mesma altura e mesma largura');

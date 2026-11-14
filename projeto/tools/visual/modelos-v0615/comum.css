@@ -1,0 +1,7 @@
+/* v0.6.15 · modelos de botões, campos e movimento — base comum a todos os modelos (1 a 5).
+   Proposta P3 do Grok: resposta em 150 ms, curva ease-out, aperto .98. Nada se mexe sozinho. */
+:root[data-modelo]:not([data-modelo="0"]) :is(.bt,.cs-it,.cs-abas a,.dd-b,.dd-l li,.tb-mn-o,.tb-mn-li,.tb-mn-tr,.cs-busca,.cs-emp,.kp,.tb-t td,.cs-baixo a,.cs-baixo button,.fm-i,.cp input,.cp select,.cp textarea,.tb-hm){
+  transition:background-color 150ms ease-out,border-color 150ms ease-out,color 150ms ease-out,box-shadow 150ms ease-out,transform 150ms ease-out,opacity 150ms ease-out}
+:root[data-modelo]:not([data-modelo="0"]) :is(.bt,.dd-b,.cs-emp,.tb-mn-tr):active:not([disabled]){transform:scale(.98)}
+:root[data-modelo]:not([data-modelo="0"]) :is(.bt,.dd-b,.cs-busca,.cs-it,.cs-baixo a,.cs-baixo button){touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+@media (prefers-reduced-motion:reduce){:root[data-modelo] *{transition:none!important}:root[data-modelo] :is(.bt,.dd-b):active{transform:none!important}}

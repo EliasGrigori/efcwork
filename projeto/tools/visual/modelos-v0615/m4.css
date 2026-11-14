@@ -1,0 +1,28 @@
+/* MODELO 4 · Contorno nítido — inspirado no Vercel (Geist): linhas finas e precisas, sombra de duas camadas, cantos 6,
+   botão secundário branco com contorno que escurece, anel de foco com folga, tabela com grade fina. Dourado só no principal. */
+:root[data-modelo="4"]{--rs:6px;--r:8px}
+:root[data-modelo="4"] .bt{background:var(--bg1);border-color:var(--bd2);box-shadow:0 1px 1px rgba(0,0,0,.04),0 1px 0 rgba(0,0,0,.02);font-weight:500}
+:root[data-modelo="4"] .bt:hover:not([disabled]):not(.pr):not(.lk){border-color:var(--tx3);background:var(--bg1);color:var(--tx)}
+:root[data-modelo="4"] .bt:active:not([disabled]):not(.pr){box-shadow:inset 0 1px 2px rgba(0,0,0,.08)}
+:root[data-modelo="4"] .bt.pr{background:var(--ouro);border-color:color-mix(in srgb,#b4862f 70%,#000);box-shadow:0 1px 2px rgba(0,0,0,.12),inset 0 1px 0 rgba(255,255,255,.4);font-weight:600}
+:root[data-modelo="4"] .bt.pr::after{display:none}
+:root[data-modelo="4"] .bt.pr:hover{filter:brightness(1.05)}
+:root[data-modelo="4"] .bt.lk{box-shadow:none}
+:root[data-modelo="4"] :focus-visible{outline:2px solid var(--a);outline-offset:2px}
+:root[data-modelo="4"] :is(.fm-i,.cp input,.cp select,.cp textarea,.dd-b){background:var(--bg1);border-color:var(--bd2);border-radius:6px;box-shadow:inset 0 1px 1px rgba(0,0,0,.03)}
+@media (pointer:fine){:root[data-modelo="4"] :is(.fm-i,.cp input,.cp select,.dd-b){height:36px}}
+:root[data-modelo="4"] :is(.fm-i,.cp input,.cp select,.cp textarea,.dd-b):hover{border-color:var(--tx3)}
+:root[data-modelo="4"] :is(.fm-i,.cp input,.cp select,.cp textarea):focus{outline:none;border-color:var(--tx2);box-shadow:0 0 0 3px color-mix(in srgb,var(--tx) 10%,transparent)}
+:root[data-modelo="4"] .cs-abas a{font-weight:500}
+:root[data-modelo="4"] .cs-abas a:hover:not(.on){color:var(--tx);border-bottom-color:var(--bd2)}
+:root[data-modelo="4"] .pn,:root[data-modelo="4"] .kp,:root[data-modelo="4"] .tb{border-radius:8px;box-shadow:0 1px 2px rgba(0,0,0,.04),0 0 0 1px color-mix(in srgb,var(--bd) 60%,transparent)}
+:root[data-modelo="4"] .tb-t td{border-right:1px solid color-mix(in srgb,var(--bd) 55%,transparent)}
+:root[data-modelo="4"] .tb-t td:last-child{border-right:0}
+:root[data-modelo="4"] .tb-t th{background:var(--bg0);font-weight:500;font-size:12.5px}
+:root[data-modelo="4"] .tb-t tbody tr[data-act]:hover td{background:var(--bg0)}
+:root[data-modelo="4"] .cs-it{border-radius:6px}
+:root[data-modelo="4"] .dd-l{border-radius:8px;box-shadow:0 4px 8px rgba(0,0,0,.06),0 16px 32px rgba(0,0,0,.12)}
+:root[data-modelo="4"] .pill,:root[data-modelo="4"] .cs-pl{border-radius:4px}
+:root[data-modelo="4"] .tb-busca{background:var(--bg1);border-radius:6px;box-shadow:inset 0 1px 1px rgba(0,0,0,.03)}
+:root[data-modelo="4"] .tb-busca:hover{border-color:var(--tx3)}
+:root[data-modelo="4"] .tb-busca:focus-within{border-color:var(--tx2);box-shadow:0 0 0 3px color-mix(in srgb,var(--tx) 10%,transparent)}

@@ -1,0 +1,53 @@
+/* EFCwork · suíte da v0.6.15 (observações do Grok): busca acha plano de coleta e palavra com erro de digitação; Pareto com "Outro" no fim.
+   Uso: NODE_PATH=$(npm root -g) node tools/testes/t_v0615b.js */
+const { chromium } = require('playwright');
+const path = require('path');
+const RAIZ = path.resolve(__dirname, '..', '..'), URL = 'file://' + path.join(RAIZ, 'dist', 'index.html') + '?demo=1';
+let ok = 0, falhas = 0;
+const conf = (c, msg) => { if (c) { ok++; console.log('  ok  ' + msg); } else { falhas++; console.log('  FALHA  ' + msg); } };
+(async () => {
+  const b = await chromium.launch();
+  const p = await (await b.newContext({ viewport: { width: 1280, height: 860 }, timezoneId: 'America/Fortaleza' })).newPage(); const er = [];
+  p.on('pageerror', e => er.push(String(e))); await p.route(/gstatic|fonts\.g/, r => r.abort());
+  await p.goto(URL); await p.waitForTimeout(500);
+  await p.fill('#en-nome', 'Joana Silva'); await p.fill('#en-login', 'joana.silva'); await p.fill('#en-senha', 'senha1234'); await p.fill('#en-senha2', 'senha1234');
+  await p.click('[data-form="en-primeiro"] button[type=submit]'); await p.waitForTimeout(700);
+  await p.evaluate(async () => {
+    const C = Data.col.bind(Data), ano = hojeISO().slice(0, 4), h = hojeISO();
+    await C('sv2_rodizio').set('r1', { nome: 'FOLHA · anual · ' + ano, tipo: 'FOLHA', freq: 'A', ano: ano, ativo: true, areas: ['JD06', 'JD08'], analiseIds: [], fechados: {}, liberadas: {}, progs: {}, criadoEm: ano + '-01-01T10:00:00.000Z' });
+    await C('sv2_rodizio').set('r2', { nome: 'SOLO · anual · ' + ano, tipo: 'SOLO', freq: 'A', ano: ano, ativo: false, areas: ['RU11'], criadoEm: ano + '-01-01T10:00:00.000Z' });
+    const mk = (id, cat, setor, obs) => C('sv2_apont').set(id, { data: h, hora: '08:00', criadoEm: nowISO(), porId: 'x', porNome: 'Carlos', origem: 'rotina', categoria: cat, setor: setor, grav: 'media', gravOrig: 'media', gravHist: [], comunicado: true, obs: obs, fotos: [], fotosDepois: [], fotosOff: {}, status: 'aberto', hist: [] });
+    for (let i = 0; i < 6; i++) await mk('o' + i, 'outro', 'Campo', 'Outra coisa ' + i);
+    for (let i = 0; i < 3; i++) await mk('e' + i, 'epi', 'Campo', 'Sem luva ' + i);
+    await mk('f1', 'estrutura', 'Casa de bombas', 'Fios desencapados na CBR 01');
+  });
+  await p.waitForTimeout(400);
+  console.log('Busca geral');
+  const r = q => p.evaluate(q => bgResultados(q).map(x => x.grupo + ' | ' + x.nome), q);
+  let l = await r('folha');
+  conf(l.some(x => /^Planos de coleta \| FOLHA · anual/.test(x)), 'acha o plano de coleta pelo tipo ("folha")');
+  l = await r('jd08');
+  conf(l.some(x => /^Planos de coleta/.test(x)), 'acha o plano pela área ("jd08")');
+  conf(!(await r('solo')).some(x => /^Planos de coleta \| SOLO/.test(x)), 'plano desativado não aparece');
+  conf((await r('desemcapado')).some(x => /^Apontamentos/.test(x)), 'acha "desencapados" escrevendo "desemcapado"');
+  conf((await r('desencapad')).some(x => /^Apontamentos/.test(x)), 'pedaço da palavra continua achando');
+  conf(!(await r('luvx')).some(x => /^Apontamentos/.test(x)), 'palavra curta com erro não acha (evita lixo)');
+  conf((await r('xyzwq')).length === 0, 'texto sem parecido não acha nada');
+  await p.evaluate(() => bgAbrir()); await p.waitForTimeout(300); await p.fill('#bg-q', 'jd08'); await p.waitForTimeout(300);
+  await p.evaluate(() => { const i = BG_RES.findIndex(x => x.grupo === 'Planos de coleta'); document.querySelector('.bg-it[data-k="' + i + '"]').click(); }); await p.waitForTimeout(700);
+  conf(await p.evaluate(() => location.hash === '#/coletas/plano/r1'), 'tocar no resultado abre a página do plano');
+  console.log('Pareto');
+  const d = await p.evaluate(() => apParetoDados('cat', 30));
+  conf(d.itens[d.itens.length - 1].nome === 'Outro' && d.itens[0].nome !== 'Outro', '"Outro" (o maior, 6) vai para o fim: ' + d.itens.map(x => x.nome + ' ' + x.n).join(', '));
+  conf(!d.itens.find(x => x.nome === 'Outro').vital, '"Outro" nunca entra nos poucos vitais');
+  conf(d.itens[0].vital, 'a primeira causa de verdade é vital');
+  conf(d.itens.filter(x => x.vital).map(x => x.nome).join(',') === 'EPI,Estrutura', 'o corte de 80% conta só as causas de verdade (EPI 75%, Estrutura cruza os 80% e entra, como antes); "Outro" fica fora');
+  await p.evaluate(() => { location.hash = '#/inspecoes/apontamentos'; }); await p.waitForTimeout(500);
+  await p.click('[data-act="ap-pareto"]'); await p.waitForTimeout(600);
+  const bar = await p.evaluate(() => [...document.querySelectorAll('.ap-pl')].map(x => [x.querySelector('.ap-pn').textContent, parseFloat(x.querySelector('.ap-pb i').style.width)]));
+  conf(bar.length && bar[bar.length - 1][0] === 'Outro' && bar[bar.length - 1][1] === 100, 'no gráfico, a barra mais longa (Outro) fica embaixo com 100%');
+  conf(er.length === 0, 'sem erro de JavaScript' + (er.length ? ': ' + er[0] : ''));
+  await b.close();
+  console.log('\n' + ok + ' ok, ' + falhas + ' falhas');
+  process.exit(falhas ? 1 : 0);
+})();

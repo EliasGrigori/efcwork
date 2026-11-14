@@ -1,0 +1,12 @@
+Medidor da auditoria · EFCwork · propostas v0.6.15 (todas ligadas)
+defeitos 0 · decisões 0 · ajustes 11 · avisos 0
+
+[ajuste] CSS · tools/visual/moderno-v0615/moderno.css:92 | tools/visual/moderno-v0615/moderno.css:93 | tools/visual/moderno-v0615/moderno.css:105
+    cor escrita direto: #fed
+    → Trocar por um token de cor (var(--…)).
+[ajuste] App · Início · 1280 · claro | Novo treinamento (gaveta) · 1280 · claro | Início · 1280 · escuro … (+3)
+    8 tamanhos de letra (meta: até 7)
+    → Juntar tamanhos parecidos.
+[ajuste] App · Almoxarifado · 1280 · claro | Almoxarifado · 1280 · escuro
+    9 tamanhos de letra (meta: até 7)
+    → Juntar tamanhos parecidos.

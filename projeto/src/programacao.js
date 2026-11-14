@@ -88,8 +88,22 @@ const rzAtivos = () => (S.rodizios || []).filter(r => r.ativo !== false);
 function rzDaArea(mat, area, iso) { for (const r of rzAtivos()) { if (!rzCobre(r, mat) || (r.areas || []).indexOf(area) < 0) continue; const p = rzPeriodoDe(r, iso); if (p && rzVale(r, p)) return { r: r, p: p }; } return null; }
 function rzDono(mat, area, iso) { const l = (S.rodizios || []).filter(r => rzCobre(r, mat) && (r.areas || []).indexOf(area) >= 0).sort((a, b) => (a.ativo === false ? 1 : 0) - (b.ativo === false ? 1 : 0)); for (const r of l) { const p = rzPeriodoDe(r, iso); if (p) return { r: r, p: p }; } return null; }
 const rzTrancado = (mat, area, iso) => { const d = rzDono(mat, area, iso); return d && d.r.fechados && d.r.fechados[d.p.k] ? d : null; };
-const rzLiberada = (r, p, area) => !!(r.liberadas && r.liberadas[p.k] && r.liberadas[p.k][area]);
-const rzLib = (r, p, area) => (r.liberadas && r.liberadas[p.k] && r.liberadas[p.k][area]) || null;
+/* v0.6.15 (regra do Elias, 14/11/2026: "a nova coleta precisa da aprovação do Líder ou do Principal"):
+   a liberação só vale se foi feita por um Líder ★ ou pelo Principal, ou se um deles aprovou depois (aprovadoPor).
+   Pedida por outra pessoa (o EFClaudian deixa o secundário liberar direto) = pendente: a coleta anterior continua valendo.
+   Recusada (recusadaEm) não vale e fica no histórico. Nada é apagado. */
+const rzLibBruta = (r, p, area) => (r && r.liberadas && r.liberadas[p.k] && r.liberadas[p.k][area]) || null;
+const rzNomeIg = (a, b) => !!a && !!b && String(a).trim().toLowerCase() === String(b).trim().toLowerCase();
+function rzLibUsr(l) { const us = S.users || []; return (l.porId && us.find(u => u.id === l.porId)) || us.find(u => rzNomeIg(u.nome, l.por)) || null; }
+function rzLibSit(l) {
+  if (!l) return ''; if (l.recusadaEm) return 'recusada';
+  if (l.aprovadoPor || l.porSup === true || !(S.users || []).length) return 'valida'; /* sem a lista de usuários não dá para conferir: vale como antes */
+  const u = rzLibUsr(l); return u && isSup(u) ? 'valida' : 'pendente';
+}
+const rzLib = (r, p, area) => { const l = rzLibBruta(r, p, area); return rzLibSit(l) === 'valida' ? l : null; };
+const rzLiberada = (r, p, area) => !!rzLib(r, p, area);
+const rzLibPend = (r, p, area) => { const l = rzLibBruta(r, p, area); return rzLibSit(l) === 'pendente' ? l : null; };
+const rzLibQuem = l => (l.por ? ' por ' + l.por : '') + (l.ts ? ' em ' + fmtD(String(l.ts).slice(0, 10)) : '') + (l.motivo ? ' (' + l.motivo + ')' : '');
 /* v0.4.7: com recoleta liberada, só contam as amostras registradas DEPOIS da liberação (a anterior fica no histórico) */
 const rzColetasDe = (r, p, area) => { const mat = rzMat(r), lib = rzLib(r, p, area); return S.coletas.filter(c => c.situacao !== 'cancelada' && c.tipo === mat && (c.talhao === area || (mat === 'COMPOSTO' && !c.talhao && c.loteComp === area)) && c.data >= p.ini && c.data <= p.fim && (!lib || String(c.criadoEm || c.data) > String(lib.ts || ''))); };
 /* devolve o texto do bloqueio ou '' (igual ao EFClaudian) */
@@ -97,6 +111,7 @@ function rzBarrar(mat, area, iso) {
   const t = rzTrancado(mat, area, iso); if (t) return area + ': o plano de coleta "' + t.r.nome + '" (' + t.p.nome + ') foi encerrado — não aceita mais coleta.';
   const x = rzDaArea(mat, area, iso); if (!x) return '';
   const ja = rzColetasDe(x.r, x.p, area).filter(c => c.tipo === mat);
+  if (ja.length && !rzLiberada(x.r, x.p, area) && rzLibPend(x.r, x.p, area)) return area + ': a nova coleta pedida' + rzLibQuem(rzLibPend(x.r, x.p, area)) + ' ainda espera a aprovação do Líder ★ ou do Principal. Até lá vale a coleta de ' + fmtD(ja[0].data) + '.';
   if (ja.length && !rzLiberada(x.r, x.p, area)) return area + ' já tem ' + (CO_TXT[mat] || mat).toLowerCase() + ' no ' + x.p.nome + ' (plano de coleta "' + x.r.nome + '", ' + fmtD(ja[0].data) + '). Para coletar de novo, peça recoleta no plano de coleta (EFClaudian).';
   return '';
 }
@@ -208,7 +223,7 @@ function pgTela() {
         { k: 'tal', rot: 'Talhão', fixa: true, v: r => r.talhao, cls: 'forte' },
         { k: 'tipo', rot: 'Tipo', v: r => r.tipo },
         { k: 'orig', rot: 'Origem', v: r => r.orig },
-        { k: 'pts', rot: 'Pontos', v: r => String(r.pontos || ''), html: r => r.pontos ? esc(String(r.pontos)) : '' },
+        { k: 'pts', rot: 'Pontos', tipo: 'num', v: r => r.pontos ? Number(r.pontos) || 0 : null, html: r => r.pontos ? esc(String(r.pontos)) : '' },
         { k: 'col', rot: 'Coletor', v: r => r.coletor },
         { k: 'prof', rot: 'Prof', v: r => r.prof },
         { k: 'est', rot: 'Estádio', v: r => r.estadio },
@@ -230,6 +245,12 @@ function pgAreaEstado(r, p, area) {
   const pr = pgRzDe(r, p, area) || (S.prog || []).find(x => pgSit(x) === 'pendente' && pgOrigem(x) === 'Plano' && x.talhao === area && x.data && pgGera(x.tipo).indexOf(mat) >= 0 && x.data <= p.fim && (x.prazo || x.data) >= addDias(p.ini, -31));
   return pr ? { k: pgQuando(pr).k === 'atrasada' ? 'x' : 'p', d: pr.data, col: pr.coletor } : { k: 'f' };
 }
+/* v0.6.15 (regra do Elias, 14/11: "a coleta é feita uma vez por rodízio, a não ser que seja descartada ou eu peça uma nova coleta"):
+   a área com nova coleta pedida mostra quem pediu, quando e o motivo; a coleta anterior fica no histórico e não conta mais */
+function pgRecTxt(r, p, area, k) {
+  const pd = rzLibPend(r, p, area); if (pd) return ' · nova coleta pedida' + rzLibQuem(pd) + ', aguardando a aprovação do Líder ★ ou do Principal; até lá vale a coleta já feita';
+  const l = rzLib(r, p, area); if (!l || k === 'c') return ''; return ' · nova coleta pedida' + rzLibQuem(l) + (l.aprovadoPor ? ', aprovada por ' + l.aprovadoPor : '');
+}
 function pgPlanosHTML() {
   const h = hojeISO(), l = rzAtivos().map(r => ({ r: r, p: rzPeriodoDe(r, h) })).filter(x => x.p && rzVale(x.r, x.p)).sort((a, b) => cmpTxt(a.r.tipo, b.r.tipo) || cmpTxt(a.r.nome, b.r.nome));
   if (!l.length) return '';
@@ -243,7 +264,7 @@ function pgPlanosHTML() {
       (r.nome && !String(r.nome).toLowerCase().includes(String(r.tipo || '').toLowerCase()) ? '<small>' + esc(r.nome) + '</small>' : '') +
       '<div class="pg-plb" role="img" aria-label="' + pc + '% coletado"><i style="width:' + pc + '%"></i></div>' +
       '<p class="pg-pln"><b>' + pc + '%</b> · ' + c + ' de ' + pl1(areas.length) + ' coletada' + (c === 1 ? '' : 's') + '</p>' + (pr ? '<p class="pg-pln">' + pr + ' programada' + (pr > 1 ? 's' : '') + '</p>' : '') +
-      '<div class="pg-ars">' + est.map(y => '<span class="pg-ar ' + y.e.k + '" title="' + esc(y.a + ', ' + tit[y.e.k] + (y.e.d ? ' para ' + pgDiaTxt(y.e.d) + (y.e.col ? ', ' + y.e.col : '') : '')) + '">' + esc(rot[y.a]) + '</span>').join('') + '</div></a>';
+      '<div class="pg-ars">' + est.map(y => '<span class="pg-ar ' + y.e.k + '" title="' + esc(y.a + ', ' + tit[y.e.k] + (y.e.d ? ' para ' + pgDiaTxt(y.e.d) + (y.e.col ? ', ' + y.e.col : '') : '') + pgRecTxt(r, p, y.a, y.e.k)) + '">' + esc(rot[y.a]) + (y.e.k !== 'c' && rzLib(r, p, y.a) ? '<i class="pg-rec" aria-hidden="true">' + ic('recoleta') + '</i>' : rzLibPend(r, p, y.a) ? '<i class="pg-rec pend" aria-hidden="true">' + ic('relogio') + '</i>' : '') + '</span>').join('') + '</div></a>';
   }).join('') + '</section>';
 }
 const pgLegenda = () => '<span class="pg-lg"><button type="button" class="pg-i" aria-label="Legenda das cores das áreas">' + ic('excl') + '</button><span class="pg-leg" role="tooltip"><span><i class="pg-ar c"></i>coletada</span><span><i class="pg-ar p"></i>programada</span><span><i class="pg-ar x"></i>programada e atrasada</span><span><i class="pg-ar f"></i>falta</span></span></span>';
@@ -428,4 +449,13 @@ document.addEventListener('click', ev => {
   else if (a === 'pg-ans-abre' && f) { f.ansAberta = !f.ansAberta; gvDesenha(true); }
   else if (a === 'pg-an' && f) { f.ans[id] = !f.ans[id]; f.sujo = true; f.msg = ''; gvDesenha(true); }
   else if (a === 'pg-av-ok') pgAvOk();
+});
+
+/* v0.6.15 (observação do Grok: a busca geral não achava plano de coleta): planos ativos pelo tipo, nome, ano, frequência ou uma área */
+BG_FONTES.push(q => {
+  if (typeof coVe !== 'function' || !coVe()) return [];
+  return rzAtivos().filter(r => bgCasa(q, [r.tipo, r.nome, r.ano, RZ_FREQ[r.freq] || '', 'plano de coleta rodízio'].concat(r.areas || []).join(' '))).slice(0, 6).map(r => {
+    const p = rzPeriodoDe(r, hojeISO()), area = (r.areas || []).find(a => bgCasa(q, a) && !bgCasa(q, [r.tipo, r.nome, r.ano, RZ_FREQ[r.freq] || '', 'plano de coleta rodízio'].join(' ')));
+    return { grupo: 'Planos de coleta', nome: (r.tipo || r.nome) + ' · ' + (RZ_FREQ[r.freq] || '') + ' · ' + r.ano, sub: (area ? 'área ' + area + ' · ' : '') + (r.areas || []).length + ' áreas' + (p ? ' · ' + p.nome : ''), ico: 'frasco', abrir: () => { location.hash = '#/coletas/plano/' + encodeURIComponent(r.id); } };
+  });
 });

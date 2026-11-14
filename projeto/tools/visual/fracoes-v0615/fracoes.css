@@ -1,0 +1,39 @@
+/* v0.6.15 · propostas em pedaços (cada uma liga com uma classe no <html>: f1, f2…). Só forma e resposta; as cores são as de hoje. */
+/* f1 · botão secundário: ao passar o mouse, o contorno esquenta para o dourado */
+:root.f1 .bt:not(.pr):not(.lk):not(.ic-so){transition:border-color 150ms ease-out,background-color 150ms ease-out}
+:root.f1 .bt:not(.pr):not(.lk):not(.ic-so):hover{border-color:color-mix(in srgb,var(--a) 60%,var(--bd2));background:var(--bg1);color:var(--tx)}
+/* f2 · botão só de ícone: sem contorno parado; o fundo aparece ao passar o mouse */
+:root.f2 .bt.ic-so{border-color:transparent;background:transparent;transition:background-color 150ms ease-out,color 150ms ease-out}
+:root.f2 .bt.ic-so:hover{background:var(--bg2);color:var(--tx)}
+/* f3 · botão dourado: sobe 1 px e a sombra cresce ao passar o mouse */
+:root.f3 .bt.pr{transition:transform 150ms ease-out,box-shadow 150ms ease-out}
+:root.f3 .bt.pr:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(217,180,106,.34),inset 0 1px 0 rgba(255,255,255,.4)}
+/* f4 · todo botão "afunda" um pouco ao apertar (98%) */
+:root.f4 :is(.bt,.dd-b){transition:transform 150ms ease-out}
+:root.f4 :is(.bt,.dd-b):active:not([disabled]){transform:scale(.98)}
+/* f5 · campos com 36 px no PC (iguais aos botões) e anel dourado no foco */
+@media (pointer:fine){:root.f5 :is(.fm-i,.cp input,.cp select,.dd-b,.tb-busca){height:36px}}
+:root.f5 :is(.fm-i,.cp input,.cp select,.cp textarea):focus{outline:none;border-color:var(--a);box-shadow:0 0 0 3px var(--aS)}
+:root.f5 .tb-busca:focus-within{border-color:var(--a);box-shadow:0 0 0 3px var(--aS)}
+/* f6 · régua de cantos: 8 px em botões e campos, 12 px em painéis, tabelas e cartões */
+:root.f6{--rs:8px;--r:12px}
+:root.f6 .tb{border-radius:12px}
+/* f7 · cabeçalho da página mais baixo (título 26 px, menos espaço até as abas) */
+:root.f7 .cs-ph{gap:2px}
+:root.f7 .cs-ph h1{font-size:26px;padding-bottom:6px}
+:root.f7 .cs-meta{margin-top:4px}
+:root.f7 .cs-ct{gap:12px}
+/* f8 · abas: ao passar o mouse aparece um traço cinza embaixo (o dourado fica só na aba aberta) */
+:root.f8 .cs-abas a{transition:color 150ms ease-out,border-color 150ms ease-out}
+:root.f8 .cs-abas a:hover:not(.on){border-bottom-color:var(--bd2);color:var(--tx)}
+/* f9 · tabela: a linha sob o mouse ganha um fundo dourado bem leve */
+:root.f9 .tb-t tbody tr[data-act]:hover td{background:color-mix(in srgb,var(--a) 7%,var(--bg1))}
+/* f10 · tabela mais compacta: linha de 36 px (era 40) */
+:root.f10{--row:36px}
+@media (pointer:coarse){:root.f10{--row:44px}}
+/* f11 · menu lateral mais calmo: itens um pouco mais apagados, sem a barrinha dourada do lado */
+:root.f11 .cs-lado .cs-it{opacity:.74}
+:root.f11 .cs-lado .cs-it:hover,:root.f11 .cs-lado .cs-it.on{opacity:1}
+:root.f11 .cs-it.on::before{display:none}
+/* f12 · cartões de número e painéis sem sombra, só a linha fina (mais limpo) */
+:root.f12 .kp,:root.f12 .pn{box-shadow:none}

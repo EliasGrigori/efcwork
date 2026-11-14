@@ -56,6 +56,11 @@ function tbOrdenadas(cfg) {
   return cfg.cols.map((c, i) => [c, i]).sort((a, b) => { const ia = o.indexOf(a[0].k), ib = o.indexOf(b[0].k); return (ia < 0 ? 1000 + a[1] : ia) - (ib < 0 ? 1000 + b[1] : ib); }).map(x => x[0]);
 }
 const tbVisiveis = cfg => { const st = tbEstado(cfg.id); return tbOrdenadas(cfg).filter(c => c.fixa || st.ocultas.indexOf(c.k) < 0); };
+/* v0.6.15 (Grok D9): "1 impresso", não "1 impressos" — a unidade vai para o singular quando o número é 1 (só a 1ª palavra) */
+function tbSing(u) { /* cada palavra até a primeira preposição: "itens ativos" → "item ativo"; "pontos de água" → "ponto de água" */
+  const um = w => /ões$/.test(w) ? w.replace(/ões$/, 'ão') : /ãos$/.test(w) ? w.slice(0, -1) : /ais$/.test(w) ? w.replace(/ais$/, 'al') : /éis$/.test(w) ? w.replace(/éis$/, 'el') : /ns$/.test(w) ? w.replace(/ns$/, 'm') : /[rz]es$/.test(w) ? w.slice(0, -2) : w.replace(/s$/, '');
+  let para = false; return String(u || '').split(' ').map(w => { if (para || /^(de|da|do|das|dos|d’|d'|em|no|na|com|para|e)$/i.test(w) || /^d[’']/.test(w)) { para = true; return w; } return um(w); }).join(' '); }
+const tbUn = (cfg, n) => { const u = cfg.unidade || 'registros'; return n === 1 ? (cfg.unidade1 || tbSing(u)) : u; };
 function tbFmt(c, r) {
   if (c.html) return c.html(r);
   const v = c.v(r);
@@ -74,7 +79,7 @@ function tbTemFiltroSolto(cfg) { const st = tbEstado(cfg.id); return !!st.busca 
    e à esquerda vai "Total · N itens". As posições são medidas na tela (tbAlinhaTot); se não couber, ficam em sequência. */
 function tbTotal(cfg, cols, todas, filtrado) {
   const cs = cols.filter(c => c.total); if (!cs.length) return '';
-  return '<div class="tb-tots" data-tbtot="' + esc(cfg.id) + '"><span class="tb-tl" title="' + (filtrado ? 'Soma só do que está filtrado · ' : 'Soma de toda a lista · ') + todas.length + ' ' + esc(cfg.unidade || 'registros') + '"><b>Total</b></span>' +
+  return '<div class="tb-tots" data-tbtot="' + esc(cfg.id) + '"><span class="tb-tl" title="' + (filtrado ? 'Soma só do que está filtrado · ' : 'Soma de toda a lista · ') + todas.length + ' ' + esc(tbUn(cfg, todas.length)) + '"><b>Total</b></span>' +
     cs.map(c => { const v = typeof c.total === 'function' ? c.total(todas) : todas.reduce((s, r) => s + (Number(c.v(r)) || 0), 0); return '<span class="tb-tv" data-k="' + esc(c.k) + '" title="Total de ' + esc(c.rot) + '"><b>' + esc(c.fmtTotal ? c.fmtTotal(v) : numBR(v, c.dec)) + '</b></span>'; }).join('') + '</div>';
 }
 /* cada valor fica acima da sua coluna, na largura dela; se o número for maior que a coluna, a caixa cresce para a ESQUERDA (nunca por cima do rótulo "Total") */
@@ -94,7 +99,52 @@ function tbAlinhaTot() {
     if (!ok || min - 6 - lb.offsetWidth < esq + 8 || max > dir - 8) { t.classList.add('tb-tots-fluxo'); t.style.width = ''; tvs.concat(lb).forEach(x => { x.style.left = ''; x.style.right = ''; x.style.width = ''; }); }
   });
 }
-addEventListener('resize', () => tbAlinhaTot()); addEventListener('scroll', e => { if (e.target && e.target.classList && e.target.classList.contains('tb-w')) tbAlinhaTot(); }, true);
+/* v0.6.15 (pedido do Elias, 14/11: "rolagem só fica para a tabela, com o cabeçalho para cima congelado"): no PC a tabela da tela
+   tem altura até o fim da janela e rola por dentro; o cabeçalho dela fica parado (th sticky). No celular a página rola como antes. */
+/* v0.6.15 (Elias, 14/11: "a página não rola; só a tabela, do cabeçalho para cima congelado e sem se mexer; a tabela desce até o fundo"):
+   no PC, com uma tabela na tela, ela vai até o fim da janela e a página fica travada (html.pag-fixa). Se o que fica acima
+   da tabela for alto demais (sobram menos de 240 px), a página rola como antes e a tabela tem no máximo a altura da janela. */
+function tbAltura() {
+  const H = document.documentElement, ws = $$('.cs-ct .tb-w').filter(w => !w.closest('.gv')), poe = (w, h, mh) => { if (w.style.height !== h) w.style.height = h; if (w.style.maxHeight !== mh) w.style.maxHeight = mh; }; /* sem apagar antes: a rolagem da tabela não volta ao topo */
+  let trava = false;
+  if (innerWidth >= 900 && ws.length === 1) {
+    const w = ws[0], topo = w.getBoundingClientRect().top + scrollY, alto = innerHeight - topo - 16;
+    if (alto >= 240) { if (scrollY) scrollTo(0, 0); poe(w, alto + 'px', ''); trava = true; } else poe(w, '', (innerHeight - 56 - 32) + 'px');
+  } else ws.forEach(w => poe(w, '', innerWidth >= 900 ? (innerHeight - 56 - 32) + 'px' : ''));
+  H.classList.toggle('pag-fixa', trava);
+}
+/* v0.6.15: com uma tabela só na tela, o total/resumo vira pílula no cabeçalho e (no PC) as ferramentas sobem para a linha das abas */
+function tbSobe() {
+  const tbs = $$('.cs-ct .tb').filter(t => !t.closest('.gv')); if (tbs.length !== 1) return;
+  const tb = tbs[0], bar = tb.querySelector('.tb-bar'); if (!bar) return;
+  let res = {}; try { res = JSON.parse(tb.getAttribute('data-res') || '{}'); } catch (e) { res = {}; }
+  const pht = $('.cs-ct .cs-pht');
+  if (pht && !tb.classList.contains('tb-carr')) { /* carregando: sem total (ainda não há número de verdade) */
+    let meta = pht.querySelector('.cs-meta'); if (!meta) { meta = document.createElement('div'); meta.className = 'cs-meta'; pht.appendChild(meta); }
+    (res.tot || []).forEach(t => {
+      const ja = Array.from(meta.children).find(x => !x.classList.contains('tb-tp') && x.textContent.indexOf(t.geral) >= 0);
+      if (ja) { ja.classList.add('tb-tp'); if (res.fl) { ja.textContent = t.val + ' · total filtrado'; ja.classList.add('fl'); } }
+      else meta.insertAdjacentHTML('beforeend', '<span class="cs-pl tb-tp' + (res.fl ? ' fl' : '') + '" title="' + esc(t.rot) + '">' + esc(t.val) + (res.fl ? ' · total filtrado' : ' no total') + '</span>');
+    });
+    if (res.rod) meta.insertAdjacentHTML('beforeend', '<span class="cs-pl tb-tp">' + res.rod + '</span>');
+  }
+  const tots = bar.querySelector('.tb-tots'); if (tots) tots.remove();
+  const abas = $('.cs-ct .cs-abas');
+  if (abas && innerWidth >= 900) { const w = document.createElement('div'); w.className = 'cs-abas-l'; abas.parentNode.insertBefore(w, abas); w.appendChild(abas); bar.classList.add('tb-bar-sobe'); w.appendChild(bar); }
+  tbAperta();
+}
+/* gaveta aberta ou janela estreita: se as abas não cabem, a contagem ("6 itens") sai da linha para as abas caberem */
+function tbAperta() { $$('.cs-abas-l').forEach(w => { w.classList.remove('aperta', 'desce'); const a = w.querySelector('.cs-abas'), nao = () => a && a.scrollWidth > a.clientWidth + 1;
+  if (nao()) w.classList.add('aperta'); if (nao()) w.classList.add('desce'); }); } /* ainda não cabe: os ícones descem para baixo das abas (todas as abas à vista) */
+/* mais linhas carregam sozinhas quando o fim da tabela aparece (no lugar do "Mostrar mais") */
+let tbFimObs = null;
+function tbFimVigia() {
+  if (tbFimObs) tbFimObs.forEach(o => o.disconnect()); tbFimObs = []; if (typeof IntersectionObserver !== 'function') return;
+  const chega = (es, o) => es.forEach(e => { if (!e.isIntersecting) return; const id = e.target.getAttribute('data-tb'), st = tbEstado(id); o.unobserve(e.target); st.limite += 100; render(); });
+  /* a tabela que rola por dentro é a "janela" do vigia (funciona também dentro de um quadro); senão, a página */
+  $$('.tb-fim').forEach(x => { const w = x.closest('.tb-w'), raiz = w && (w.style.height || w.style.maxHeight) ? w : null, o = new IntersectionObserver(es => chega(es, o), { root: raiz, rootMargin: '0px 0px 200px 0px' }); o.observe(x); tbFimObs.push(o); });
+}
+addEventListener('resize', () => { tbAlinhaTot(); tbAperta(); tbAltura(); }); addEventListener('scroll', e => { if (e.target && e.target.classList && e.target.classList.contains('tb-w')) tbAlinhaTot(); }, true);
 function tbMarcas(cfg, c) {
   const st = tbEstado(cfg.id), o = st.ordem && st.ordem.k === c.k ? st.ordem.dir : '', f = tbColFiltrada(cfg, c.k), t = !!st.trava[c.k];
   return (f ? '<i class="tb-mf" title="Filtrada">' + ic('filtro') + '</i>' : '') + (o ? '<i class="tb-mo" title="' + (o === 'asc' ? 'Crescente' : 'Decrescente') + '">' + ic(o === 'asc' ? 'ordAsc' : 'ordDesc') + '</i>' : '') + (t ? '<i class="tb-mt" title="Travada">' + ic('cadeado') + '</i>' : '');
@@ -102,9 +152,12 @@ function tbMarcas(cfg, c) {
 function tbHTML(cfg) {
   TB[cfg.id] = cfg; const st = tbEstado(cfg.id), cols = tbVisiveis(cfg), todas = tbFiltrar(cfg), l = todas.slice(0, st.limite), fl = tbTemFiltro(cfg);
   const chave = cfg.chave || (r => r.id), mn = S.tbMenu && S.tbMenu.id === cfg.id && S.tbMenu.h === location.hash ? S.tbMenu.k : null;
-  let h = '<div class="tb" data-tb="' + esc(cfg.id) + '"><div class="tb-bar">' +
+  /* v0.6.15 (Elias, 14/11): o total e o resumo do rodapé sobem para as pílulas do cabeçalho da tela (tbSobe); "total filtrado" quando há filtro */
+  const totC = tbVisiveis(cfg).filter(c => c.total), fmtT = (c, rs) => { const v = typeof c.total === 'function' ? c.total(rs) : rs.reduce((s, r) => s + (Number(c.v(r)) || 0), 0); return c.fmtTotal ? c.fmtTotal(v) : numBR(v, c.dec); };
+  const res = { fl: fl && todas.length !== (cfg.linhas || []).length, tot: totC.map(c => ({ rot: c.rot, geral: fmtT(c, cfg.linhas || []), val: fmtT(c, todas) })), rod: cfg.rodape ? cfg.rodape(todas) : '' };
+  let h = '<div class="tb" data-tb="' + esc(cfg.id) + '" data-res="' + esc(JSON.stringify(res)) + '"><div class="tb-bar">' +
     (tbTemFiltroSolto(cfg) ? '<button type="button" class="tb-limpa" data-act="tb-limpa" data-tb="' + esc(cfg.id) + '">' + ic('x') + '<span>Limpar filtro</span></button>' : '') +
-    (cfg.aEsquerda ? cfg.aEsquerda(todas) : '<span class="tb-cont">' + todas.length + (todas.length !== (cfg.linhas || []).length ? ' de ' + (cfg.linhas || []).length : '') + ' ' + esc(cfg.unidade || 'registros') + '</span>') + '<span class="tb-sp"></span>' + tbTotal(cfg, cols, todas, fl) +
+    (cfg.aEsquerda ? cfg.aEsquerda(todas) : '<span class="tb-cont">' + todas.length + (todas.length !== (cfg.linhas || []).length ? ' de ' + (cfg.linhas || []).length : '') + ' ' + esc(tbUn(cfg, (cfg.linhas || []).length)) + '</span>') + '<span class="tb-sp"></span>' + tbTotal(cfg, cols, todas, fl) +
     '<button type="button" class="bt ic-so" data-act="tb-cols" data-tb="' + esc(cfg.id) + '" title="Escolher colunas" aria-label="Escolher colunas">' + ic('colunas') + '</button>' +
     '<button type="button" class="bt ic-so" data-act="tb-xlsx" data-tb="' + esc(cfg.id) + '" title="Baixar planilha (.xlsx)" aria-label="Baixar planilha (.xlsx)">' + ic('planilha') + '</button>' +
     '<button type="button" class="bt ic-so" data-act="tb-imp" data-tb="' + esc(cfg.id) + '" title="Imprimir" aria-label="Imprimir">' + ic('impressora') + '</button></div>';
@@ -115,14 +168,19 @@ function tbHTML(cfg) {
       '<button type="button" class="tb-thr" data-act="tb-menu" data-tb="' + esc(cfg.id) + '" data-k="' + esc(c.k) + '" title="Opções da coluna · arraste para mudar de lugar">' + esc(c.rot) + '</button>' +
       '<button type="button" class="tb-hm' + (mk ? ' on' : '') + '" data-act="tb-menu" data-tb="' + esc(cfg.id) + '" data-k="' + esc(c.k) + '" aria-haspopup="dialog" aria-expanded="' + ab + '" aria-label="Opções da coluna ' + esc(c.rot) + '">' + (mk || '') + '<i class="tb-hv">' + ic('abre') + '</i></button></div></th>';
   }).join('') + '</tr></thead><tbody>';
-  if (!l.length) h += '<tr><td colspan="' + cols.length + '" class="tb-vz">' + esc(cfg.vazio || 'Nada encontrado.') + '</td></tr>';
-  else h += l.map((r, n) => { const id = chave(r); return tbGrupoLinha(cfg, todas, l, n, cols.length) + '<tr' + (cfg.aoClicar ? ' data-act="tb-lin" data-tb="' + esc(cfg.id) + '" data-id="' + esc(id) + '" tabindex="0"' : '') + (cfg.selecionado === id ? ' class="sel"' : '') + '>' + cols.map(c => '<td class="' + (c.tipo === 'num' ? 'n' : '') + (c.cls ? ' ' + c.cls : '') + '"' + (c.titulo ? ' title="' + esc(c.titulo(r)) + '"' : '') + '>' + tbFmt(c, r) + '</td>').join('') + '</tr>'; }).join('');
-  h += '</tbody></table></div>';
-  h += '<div class="tb-pe"><span>Mostrando <b>' + l.length + '</b> de ' + todas.length + '</span>' + (cfg.rodape ? '<span>' + cfg.rodape(todas) + '</span>' : '') + (todas.length > l.length ? '<button type="button" class="bt" data-act="tb-mais" data-tb="' + esc(cfg.id) + '">Mostrar mais ' + Math.min(100, todas.length - l.length) + '</button>' : '') + '</div>';
-  requestAnimationFrame(tbAlinhaTot);
+  const carr = !l.length && !(cfg.linhas || []).length && S._carga > 0; /* v0.6.15 (ITEM 16): ainda carregando, não "Nada encontrado." */
+  if (carr) h = h.replace('<div class="tb" ', '<div class="tb tb-carr" ').replace(/<span class="tb-cont">[^<]*<\/span>/, '<span class="tb-cont">Carregando…</span>') + tbEsqueleto(cols);
+  else if (!l.length) h += '<tr><td colspan="' + cols.length + '" class="tb-vz">' + esc(cfg.vazio || 'Nada encontrado.') + '</td></tr>';
+  /* v0.6.15 (Grok D4): coluna de texto com algum valor comprido (mais de 60 letras) corta com "…" */
+  const lg = {}; cols.forEach(c => { if (!c.html && c.tipo !== 'num' && l.slice(0, 300).some(r => { const v = c.v(r); return typeof v === 'string' && v.length > 60; })) lg[c.k] = 1; });
+  if (l.length) h += l.map((r, n) => { const id = chave(r); return tbGrupoLinha(cfg, todas, l, n, cols.length) + '<tr' + (cfg.aoClicar ? ' data-act="tb-lin" data-tb="' + esc(cfg.id) + '" data-id="' + esc(id) + '" tabindex="0"' : '') + (cfg.selecionado === id ? ' class="sel"' : '') + '>' + cols.map(c => '<td class="' + (c.tipo === 'num' ? 'n' : '') + (c.cls ? ' ' + c.cls : '') + (c.longo || lg[c.k] ? ' tb-lg' : '') + '"' + (c.titulo ? ' title="' + esc(c.titulo(r)) + '"' : c.longo || lg[c.k] ? ' title="' + esc(String(c.v(r) || '')) + '"' : '') + '>' + tbFmt(c, r) + '</td>').join('') + '</tr>'; }).join('');
+  h += '</tbody></table>' + (todas.length > l.length ? '<div class="tb-fim" data-tb="' + esc(cfg.id) + '" aria-hidden="true">Carregando mais…</div>' : '') + '</div>';
+  h += '<div class="tb-pe" hidden><span>' + (carr ? 'Carregando…' : 'Mostrando <b>' + l.length + '</b> de ' + todas.length) + '</span>' + (cfg.rodape ? '<span>' + cfg.rodape(todas) + '</span>' : '') + (todas.length > l.length ? '<button type="button" class="bt" data-act="tb-mais" data-tb="' + esc(cfg.id) + '">Mostrar mais ' + Math.min(100, todas.length - l.length) + '</button>' : '') + '</div>';
+  requestAnimationFrame(() => { tbAlinhaTot(); tbAltura(); });
   if (mn) { h += (innerWidth < 600 ? '<div class="tb-mn-fundo" data-act="tb-mn-x"></div>' : '') + tbMenuHTML(cfg, mn); requestAnimationFrame(() => { tbPosMenu(); tbMnRestaura(); }); }
   return h + '</div>';
 }
+function tbEsqueleto(cols) { const w = [62, 78, 54, 70, 46, 66, 58, 74]; let h = ''; for (let i = 0; i < 6; i++) h += '<tr class="tb-esq" aria-hidden="true">' + cols.map((c, j) => '<td' + (c.tipo === 'num' ? ' class="n"' : '') + '><i style="width:' + w[(i + j) % w.length] + '%"></i></td>').join('') + '</tr>'; return h; }
 /* cabeçalho do grupo (v0.5): aparece antes da primeira linha de cada grupo, com o nome e quantos há nele */
 function tbGrupoLinha(cfg, todas, l, n, ncol) {
   const g = cfg.grupos; if (!g) return '';
@@ -143,7 +201,7 @@ function tbMenuHTML(cfg, k) {
   const pos = tbVisiveis(cfg).findIndex(x => x.k === k), nv = tbVisiveis(cfg).length;
   const lin = (act, ico, txt, on, extra) => '<button type="button" class="tb-mn-o' + (on ? ' on' : '') + '" data-act="' + act + '" data-tb="' + id + '" data-k="' + esc(k) + '"' + (extra || '') + dis + '>' + ic(ico) + '<span>' + txt + '</span>' + (on ? '<i>' + ic('ok') + '</i>' : '') + '</button>';
   let h = '<div class="tb-mn" data-tbmn="' + id + '" data-k="' + esc(k) + '" role="dialog" aria-label="Coluna ' + esc(c.rot) + '">' +
-    '<i class="tb-mn-pt"></i><div class="tb-mn-cab"><div class="tb-mn-t"><b>' + esc(c.rot) + '</b><small>' + vals.reduce((q, x) => q + x.n, 0) + ' ' + esc(cfg.unidade || 'registros') + ' · ' + vals.length + (vals.length === 1 ? ' valor' : ' valores') + '</small></div>' +
+    '<i class="tb-mn-pt"></i><div class="tb-mn-cab"><div class="tb-mn-t"><b>' + esc(c.rot) + '</b><small>' + vals.reduce((q, x) => q + x.n, 0) + ' ' + esc(tbUn(cfg, vals.reduce((q, x) => q + x.n, 0))) + ' · ' + vals.length + (vals.length === 1 ? ' valor' : ' valores') + '</small></div>' +
     '<button type="button" class="tb-mn-tr' + (tr ? ' on' : '') + '" data-act="tb-trava" data-tb="' + id + '" data-k="' + esc(k) + '" aria-pressed="' + tr + '" title="' + (tr ? 'Destravar: volta a poder mudar e o Limpar filtro passa a valer' : 'Travar: a ordem e o filtro desta coluna ficam assim, mesmo ao sair do app, até você destravar') + '">' + ic('cadeado') + '<span>' + (tr ? 'Travada' : 'Travar') + '</span></button></div>' +
     (tr ? '<p class="tb-mn-av">' + ic('cadeado') + 'Travada. Destrave para mudar a ordem ou o filtro.</p>' : '') +
     '<div class="tb-mn-corpo"><div class="tb-mn-g tb-mn-ord"><div class="tb-mn-hh"><span class="tb-mn-h">Ordenar</span><button type="button" class="bt lk tb-mn-lp" data-act="tb-mnlimpa" data-tb="' + id + '" data-k="' + esc(k) + '"' + (tbColFiltrada(cfg, k) && !tr ? '' : ' disabled') + '>Limpar esta coluna</button></div>' + '<button type="button" class="tb-mn-o tb-mn-ci' + (o ? ' on' : '') + '" data-act="tb-ociclo" data-tb="' + id + '" data-k="' + esc(k) + '"' + dis + ' title="Cada toque troca: ordem padrão, ' + nomes[0].toLowerCase() + ', ' + nomes[1].toLowerCase() + '">' + ic(o === 'asc' ? 'ordAsc' : o === 'desc' ? 'ordDesc' : 'ordPad') + '<span>' + (o === 'asc' ? nomes[0] : o === 'desc' ? nomes[1] : 'Ordem padrão') + '</span><em>' + (o === 'asc' ? 'toque: inverte' : o === 'desc' ? 'toque: volta ao padrão' : 'toque: ordena') + '</em></button></div>';
@@ -323,7 +381,7 @@ function tbPlanilha(id) {
 function tbImprimir(id) {
   const cfg = TB[id]; if (!cfg) return; const d = tbLinhasTexto(cfg), e = S.empresa || {};
   let p = $('#tb-imp'); if (!p) { p = document.createElement('div'); p.id = 'tb-imp'; document.body.appendChild(p); }
-  p.innerHTML = '<div class="imp-cab"><b>' + esc(cfg.titulo) + '</b><span>' + esc(e.nome || '') + ' · ' + esc(fmtD(hojeISO())) + ' · ' + d.linhas.length + ' ' + esc(cfg.unidade || 'registros') + '</span></div><table><thead><tr>' + d.cab.map(c => '<th>' + esc(c) + '</th>').join('') + '</tr></thead><tbody>' +
+  p.innerHTML = '<div class="imp-cab"><b>' + esc(cfg.titulo) + '</b><span>' + esc(e.nome || '') + ' · ' + esc(fmtD(hojeISO())) + ' · ' + d.linhas.length + ' ' + esc(tbUn(cfg, d.linhas.length)) + '</span></div><table><thead><tr>' + d.cab.map(c => '<th>' + esc(c) + '</th>').join('') + '</tr></thead><tbody>' +
     d.linhas.map(l => '<tr>' + l.map(v => '<td' + (typeof v === 'number' ? ' class="n"' : '') + '>' + esc(typeof v === 'number' ? numBR(v) : v) + '</td>').join('') + '</tr>').join('') + '</tbody></table><div class="imp-pe">' + APP_APELIDO + '</div>';
   document.body.classList.add('imprimindo'); setTimeout(() => { try { window.print(); } catch {} document.body.classList.remove('imprimindo'); }, 50);
 }

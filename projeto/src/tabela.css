@@ -31,6 +31,11 @@
 .tb-t td.forte{font-weight:600}
 .tb-vz{text-align:center;color:var(--tx3);padding:28px 12px!important;white-space:normal!important}
 .tb-nada{color:var(--tx3)}
+.tb-esq td i{display:block;height:10px;border-radius:5px;background:var(--bg2);max-width:100%;animation:tbEsq calc(var(--duration-very-slow) * 2) var(--ease-in-out) infinite alternate} /* mov:ok — informa "carregando" e some quando os dados chegam (ITEM 16) */
+.tb-esq td.n i{margin-left:auto}
+@keyframes tbEsq{from{opacity:1}to{opacity:.45}}
+.tb.tb-carr .tb-tv b{visibility:hidden}
+@media (prefers-reduced-motion:reduce){.tb-esq td i{animation:none}}
 .tb-pe{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;font-size:14px;color:var(--tx2)}
 .tb-pe b{color:var(--tx)}
 .tb-med{display:inline-block;width:46px;height:5px;border-radius:3px;background:var(--bg2);position:relative;vertical-align:middle;margin-left:8px;overflow:hidden}
@@ -106,13 +111,13 @@ body.dd-arrastando{cursor:grabbing;-webkit-user-select:none;user-select:none}
 .tb-bar{position:relative}
 .tb-tots{position:absolute;left:0;top:0;height:var(--btn);pointer-events:none}
 .tb-tots>span{position:absolute;top:0;height:var(--btn);box-sizing:border-box;pointer-events:auto;border-radius:8px}
-.tb-tl{display:flex;align-items:center;justify-content:center;padding:0 12px;border:1px solid var(--bd);background:var(--bg1);white-space:nowrap}
-.tb-tl b{font-size:14px;color:var(--tx);font-weight:700}
-.tb-tv{display:flex;align-items:center;justify-content:flex-end;padding:0 12px;border:1px solid color-mix(in srgb,var(--a) 40%,var(--bd));background:color-mix(in srgb,var(--a) 8%,var(--bg1));white-space:nowrap}
-.tb-tv b{font-size:15px;font-variant-numeric:tabular-nums;color:var(--tx);font-weight:700}
+.tb-tl{display:flex;align-items:center;justify-content:flex-end;padding:0 2px;white-space:nowrap} /* v0.6.15 (pedido do Elias): sem caixas, com a letra das pílulas do cabeçalho ("4 não enviadas") */
+.tb-tl b{font-size:13px;color:var(--tx3);font-weight:600}
+.tb-tv{display:flex;align-items:center;justify-content:flex-end;padding:0 12px;white-space:nowrap}
+.tb-tv b{font-size:13px;font-variant-numeric:tabular-nums;color:var(--tx);font-weight:700}
 .tb-tots.tb-tots-fluxo{position:static;display:flex;gap:6px;height:auto;order:0}
 .tb-tots.tb-tots-fluxo>span{position:static}
-@media(max-width:599px){.tb-tots{position:static;display:flex;gap:6px;height:auto;width:100%}.tb-tots>span{position:static}.tb-tl{align-items:flex-start}.tb-tv{flex:1;justify-content:center}}
+@media(max-width:599px){.tb-tots{position:static;display:flex;gap:6px;height:auto;width:100%}.tb-tots>span{position:static}.tb-tl{align-items:center}.tb-tv{justify-content:flex-start;padding:0 4px}} /* v0.6.15: "Total" centrado na caixa, igual ao valor ao lado */
 /* botão Limpar filtro (no lugar do antigo botão Filtro) */
 .tb-limpa{display:inline-flex;align-items:center;gap:6px;height:var(--btn);padding:0 12px 0 10px;border:1px solid color-mix(in srgb,var(--a) 45%,var(--bd2));border-radius:var(--rs);background:color-mix(in srgb,var(--a) 9%,var(--bg1));color:var(--aTx);font-size:14px;font-weight:600;cursor:pointer}
 .tb-limpa .ic{width:14px;height:14px}.tb-limpa:hover{background:color-mix(in srgb,var(--a) 16%,var(--bg1))}
@@ -212,3 +217,10 @@ body.tb-arrastando,body.tb-arrastando *{cursor:grabbing!important;user-select:no
 .tb-mn-g:last-child{padding-bottom:6px}
 .tb-mn.tb-mn-folha .tb-mn-pre .dd-b{min-height:44px;height:44px}
 .tb-mn.tb-mn-folha .tb-mn-ci{min-height:44px}
+/* v0.6.15 (Grok D4): texto longo (observação, motivo, descrição) corta com "…" e mostra inteiro ao parar o mouse; o detalhe abre o texto todo */
+.tb-t td.tb-lg{max-width:320px;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:899px){.tb-t td.tb-lg{max-width:220px}}
+/* v0.6.15 (pedido do Elias no ITEM 8): linhas finas entre as colunas da tabela, como no modelo "Contorno nítido" */
+.tb-t td,.tb-t th{border-right:1px solid color-mix(in srgb,var(--bd) 70%,transparent)}
+.tb-t td:last-child,.tb-t th:last-child{border-right:0}
+.tb-t tbody tr.tb-gr td,.tb-t td.tb-vz{border-right:0}

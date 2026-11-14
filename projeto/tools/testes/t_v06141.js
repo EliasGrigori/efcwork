@@ -43,7 +43,7 @@ async function novoAp(p, o) {
   const igual = s => { const [l, t] = s.split('|'); return l === t; };
   conf(igual(cor.media), 'a gravidade Média fica sem traço colorido (' + cor.media + ')');
   conf(igual(cor.baixa), 'a Baixa também fica sem traço');
-  conf(!!cor.grave && !igual(cor.grave), 'a Grave continua com o traço vermelho');
+  conf(!cor.grave || igual(cor.grave), 'v0.6.15 (Elias, 14/11: borda colorida é padrão de app de IA): a Grave também fica sem traço colorido');
 
   console.log('v0.6.1 3.4 — rodapé do detalhe sem texto cortado (PC):');
   await p.evaluate(() => { const a = S.apont.find(x => x.grav === 'grave'); apAbre(a.id); }); await esp(p, 600);

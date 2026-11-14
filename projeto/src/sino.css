@@ -27,3 +27,10 @@
 @keyframes snEntra{from{transform:translateY(16px);opacity:0}to{transform:none;opacity:1}}
 @media(max-width:899px){.sn-toast{right:16px;bottom:76px}}
 @media(prefers-reduced-motion:reduce){.sn-toast{animation:none}}
+/* v0.6.15 (Grok D2/D3): detalhe do aviso dentro do sino e "Mostrar mais" */
+.sn-n{flex-wrap:wrap}
+.sn-det{flex:1 0 100%;display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:0 12px 10px 30px}
+.sn-det p{margin:0;color:var(--tx2);font-size:14px;white-space:pre-wrap}
+.sn-det small{color:var(--tx3);font-size:12px}
+.sn-mais{margin:8px auto;align-self:center}
+:root[data-tema="escuro"] .cs-bdg{color:var(--aT)} /* v0.6.15 ITEM 10: número do sino legível no Escuro (letra escura sobre o vermelho) */

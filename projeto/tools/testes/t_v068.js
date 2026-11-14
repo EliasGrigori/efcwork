@@ -37,7 +37,7 @@ async function abre(b, w, h) {
   console.log('Início:');
   await p.evaluate(() => { location.hash = '#/inicio'; }); await esp(p, 400);
   const ini = await p.evaluate(() => [...document.querySelectorAll('.ini-li small')].map(x => x.textContent).join(' | '));
-  conf(!/chega na v0\.4/.test(ini) && !/chega na v0\.6/.test(ini) && /amostras, água, programação/.test(ini) && /cloro, apontamentos e auditoria interna/.test(ini), 'Coletas e Inspeções com o texto de hoje (não mais "chega na v0.4/v0.6")');
+  conf(!/chega na v0\.4/.test(ini) && !/chega na v0\.6/.test(ini) && await p.evaluate(() => !!document.querySelector('.mo-at')), 'Início sem textos velhos ("chega na v0.4/v0.6"); v0.6.15: "Áreas em construção" virou "Pede atenção"');
   conf(p._er.length === 0, 'sem erros no console (PC)' + (p._er.length ? ': ' + p._er.slice(0, 2).join(' | ') : ''));
   await p.context().close();
   console.log('Celular (390):');

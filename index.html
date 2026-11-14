@@ -147,19 +147,19 @@
   --f:'Source Sans 3',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
   --fh:'Fraunces',Georgia,'Times New Roman',serif;
   --bg0:#f7f5ef;--bg1:#fffefb;--bg2:#f2eee4;--bd:#e6dfcf;--bd2:#d8cdb2;
-  --tx:#1e1b14;--tx2:#5b5443;--tx3:#8d846c;
+  --tx:#1e1b14;--tx2:#5b5443;--tx3:#746c55; /* v0.6.15 ITEM 10: era #8d846c (3,4 de contraste); agora 4,5 a 5,2 */
   --a:#9a7128;--aS:rgba(154,113,40,.12);--aT:#1c1406;--aTx:#7d5a1c;
   --arC:#2f7d4f;--arPF:#f2f8f4;--arXF:#fcf6e6;--arPB:#bcdcc8;--arXB:#e7d39f;--arFB:#e9e3d5;
   --ok:#2f7d4f;--okS:rgba(47,125,79,.12);--wa:#9a6a0c;--waS:rgba(154,106,12,.13);--cr:#b33a32;--crS:rgba(179,58,50,.11);
   --sh:0 1px 2px rgba(40,30,10,.06),0 4px 14px rgba(40,30,10,.05);
   --sb:#fffdf8;--sbTx:#2a2519;--sbBd:#e6dfcf;
   --ouro:linear-gradient(135deg,#f7df9e 0%,#d9b46a 42%,#b4862f 100%);
-  --fedBg:#12141c;--fedTx:#f2efe6;--fedBd:#33364a;--fedBt:#1f2230;--r:10px;--rs:7px;--btn:36px;--row:40px;--onCr:#fff;--onOuro:#1c1406;
+  --fedBg:#12141c;--fedTx:#f2efe6;--fedBd:#33364a;--fedBt:#1f2230;--r:10px;--rs:7px;--btn:36px;--campo:36px;--row:40px;--onCr:#fff;--onOuro:#1c1406;
   color-scheme:light
 }
 :root[data-tema="escuro"]{
   --bg0:#0b0d16;--bg1:#121524;--bg2:#181c2e;--bd:#2a2b3b;--bd2:#3d3b4b;
-  --tx:#f3eee3;--tx2:#bcb3a1;--tx3:#80796a;
+  --tx:#f3eee3;--tx2:#bcb3a1;--tx3:#948c7c; /* v0.6.15 ITEM 10: era #80796a; agora 5,1 a 5,8 */
   --a:#d9b46a;--aS:rgba(217,180,106,.15);--aT:#1c1406;--aTx:#f0d48f;
   --arC:#2b6e48;--arPF:rgba(127,191,152,.07);--arXF:rgba(226,181,95,.07);--arPB:rgba(127,191,152,.38);--arXB:rgba(226,181,95,.4);--arFB:#262839;
   --ok:#7fbf98;--okS:rgba(127,191,152,.14);--wa:#e2b55f;--waS:rgba(226,181,95,.14);--cr:#e38b7d;--crS:rgba(227,139,125,.14);
@@ -193,14 +193,15 @@ h1,h2,h3{font-family:var(--fh);font-weight:600;letter-spacing:-.01em;margin:0}
 .bt.ic-so{width:var(--btn);padding:0;color:var(--tx2)}
 .bt.lk{border-color:transparent;background:transparent;color:var(--aTx);padding:0 6px}
 .bt[disabled]{opacity:.55;cursor:not-allowed}
-@media (pointer:coarse){:root{--btn:44px}}
+@media (pointer:coarse){:root{--btn:44px;--campo:44px}}
+@media (pointer:fine){:root{--row:36px}} /* v0.6.15 ITEM 8: linha da tabela com 36 px no PC; no toque fica como era */
 
 /* campos */
 .cp{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600;color:var(--tx2)}
-.cp input,.cp select,.cp textarea{height:42px;border:1px solid var(--bd2);border-radius:var(--rs);background:var(--bg0);padding:0 12px;font-weight:500;color:var(--tx);font-size:15px;width:100%}
+.cp input,.cp select,.cp textarea{height:var(--campo);border:1px solid var(--bd2);border-radius:var(--rs);background:var(--bg0);padding:0 12px;font-weight:500;color:var(--tx);font-size:15px;width:100%}
 .cp textarea{height:auto;min-height:80px;padding:10px 12px}
 .cp small{font-weight:400;color:var(--tx3)}
-.cp input:focus,.cp select:focus,.cp textarea:focus{outline:2px solid var(--aS);border-color:var(--a)}
+.cp input:focus,.cp select:focus,.cp textarea:focus{outline:none;border-color:var(--a);box-shadow:0 0 0 3px var(--aS)}
 
 /* pílulas de situação */
 .pill{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:600;padding:1px 8px;border-radius:5px;white-space:nowrap;background:var(--bg2);color:var(--tx2)}
@@ -235,6 +236,23 @@ h1,h2,h3{font-family:var(--fh);font-weight:600;letter-spacing:-.01em;margin:0}
 .av{pointer-events:auto;background:var(--tx);color:var(--bg1);padding:10px 14px;border-radius:8px;font-size:14px;display:flex;gap:12px;align-items:center;box-shadow:0 8px 24px rgba(0,0,0,.25)}
 .av.erro{background:var(--cr);color:#fff}
 .av-df{background:transparent;border:0;color:inherit;font-weight:700;text-decoration:underline;cursor:pointer}
+/* v0.6.15 (Grok D10): foto que não carregou vira um espaço neutro (sem o ícone quebrado e sem texto cortado) */
+img.img-x{font-size:0;color:transparent;background:var(--bg2);object-position:-9999px 0}
+
+/* ===== v0.6.15 · botões aprovados por partes em 14/11 (ITEMs 1 a 4) ===== */
+/* ITEM 1: o botão secundário continua claro e o contorno esquenta para o dourado ao passar o mouse */
+.bt{transition:border-color 150ms ease-out,background-color 150ms ease-out,color 150ms ease-out,box-shadow 150ms ease-out,transform 150ms ease-out}
+.bt:not(.pr):not(.lk):not(.ic-so):hover:not([disabled]){border-color:color-mix(in srgb,var(--a) 60%,var(--bd2));background:var(--bg1);color:var(--tx)}
+/* ITEM 2: botão só de ícone sem a caixinha; o fundo aparece ao passar o mouse */
+.bt.ic-so{border-color:transparent;background:transparent}
+.bt.ic-so:hover:not([disabled]){background:var(--bg2);color:var(--tx)}
+:root[data-tema="escuro"] .bt.ic-so:hover:not([disabled]){background:rgba(255,255,255,.07)}
+/* ITEM 3: o dourado sobe 1 px e a sombra cresce ao passar o mouse */
+.bt.pr:hover:not([disabled]){transform:translateY(-1px);box-shadow:0 8px 20px rgba(217,180,106,.34),inset 0 1px 0 rgba(255,255,255,.4)}
+/* ITEM 4: todo botão "afunda" um pouco ao apertar */
+.bt:active:not([disabled]),.dd-b:active{transform:scale(.98)}
+.dd-b{transition:border-color 150ms ease-out,transform 150ms ease-out}
+@media (prefers-reduced-motion:reduce){.bt,.dd-b{transition:none}.bt:active,.dd-b:active,.bt.pr:hover{transform:none}}
 
 /* ===== casca.css ===== */
 /* EFCwork · casca.css — menu lateral, barra de cima, cabeçalho de página, abas, barra de baixo do celular. Prefixo: cs- */
@@ -291,20 +309,20 @@ button.cs-sync:focus-visible{outline:2px solid var(--a);outline-offset:1px}
 .nv-r span{color:var(--tx)}
 .cs-sync i{width:7px;height:7px;border-radius:50%;background:var(--ok);display:inline-block}
 .cs-sync.off{color:var(--wa)}.cs-sync.off i{background:var(--wa)}
-.cs-ct{flex:1;padding:20px 20px 28px;display:flex;flex-direction:column;gap:16px;width:100%}
+.cs-ct{flex:1;padding:20px 20px 28px;display:flex;flex-direction:column;gap:12px;width:100%}
 .cs-rod{padding:14px 20px 90px;font-size:12px;color:var(--tx3)}
 @media(min-width:900px){.cs-rod{padding-bottom:18px}}
 /* cabeçalho de página */
-.cs-ph{display:flex;flex-direction:column;gap:6px}
+.cs-ph{display:flex;flex-direction:column;gap:2px} /* v0.6.15 ITEM 6: cabeçalho mais baixo */
 .cs-bc{font-size:13px;color:var(--tx3)}
 .cs-bc b{color:var(--tx2);font-weight:500}
 .cs-phr{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
 .cs-pht{min-width:0}
-.cs-ph h1{font-size:30px;line-height:1.15;position:relative;padding-bottom:8px;text-wrap:balance}
+.cs-ph h1{font-size:26px;line-height:1.15;position:relative;padding-bottom:6px;text-wrap:balance}
 .cs-ph h1::after{content:"";position:absolute;left:0;bottom:0;width:40px;height:2px;border-radius:2px;background:var(--a)}
 :root[data-tema="escuro"] .cs-ph h1{background:linear-gradient(90deg,#f7e2a8,#d9b46a 60%,#c29640);-webkit-background-clip:text;background-clip:text;color:transparent}
 :root[data-tema="escuro"] .cs-ph h1::after{background:linear-gradient(90deg,#f7df9e,#b4862f)}
-.cs-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;color:var(--tx2);font-size:14px;margin-top:6px}
+.cs-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;color:var(--tx2);font-size:14px;margin-top:4px}
 .cs-pl{display:inline-flex;align-items:center;gap:5px;padding:1px 8px;border-radius:5px;background:var(--bg2);border:1px solid var(--bd);font-size:13px}
 .cs-pl .ic{width:14px;height:14px}
 .cs-pl.cr{color:var(--cr)}.cs-pl.wa{color:var(--wa)}.cs-pl.ok{color:var(--ok)}
@@ -335,7 +353,7 @@ button.cs-sync:focus-visible{outline:2px solid var(--a);outline-offset:1px}
 
   .cs-sp{display:none}
   .cs-ct{padding:16px 16px 20px}
-  .cs-ph h1{font-size:25px}
+  .cs-ph h1{font-size:24px}
   .cs-baixo{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:18;background:var(--bg1);border-top:1px solid var(--bd);padding:6px 4px max(8px,env(safe-area-inset-bottom,0px))}
   .cs-baixo a,.cs-baixo button{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:12px;color:var(--tx3);padding:4px 0;text-decoration:none;background:none;border:0;min-height:44px;cursor:pointer}
   .cs-baixo .ic{width:22px;height:22px}
@@ -444,6 +462,19 @@ button.cs-sync:focus-visible{outline:2px solid var(--a);outline-offset:1px}
 .cs-app-l span{flex:1;min-width:0}
 .cs-app-l .cs-app-x{width:14px;height:14px;opacity:.5;flex:none}
 .m-ic .cs-app-l .cs-app-x{display:none}
+/* v0.6.15 ITEM 7: ao passar o mouse numa aba aparece um traço cinza; o dourado fica só na aba aberta */
+.cs-abas a{transition:color 150ms ease-out,border-color 150ms ease-out}
+.cs-abas a:hover:not(.on){border-bottom-color:var(--bd2)}
+/* v0.6.15 ITEM 9: menu lateral mais calmo (só o aberto e o que está sob o mouse aparecem fortes; sem a barrinha do lado) */
+.cs-lado .cs-it{opacity:.74;transition:opacity 150ms ease-out,background-color 150ms ease-out}
+.cs-lado .cs-it:hover,.cs-lado .cs-it.on{opacity:1}
+.cs-it.on::before{display:none}
+/* ...mas os apps da família (Vértice Docs e Sabiá) não perdem contraste: ganham destaque próprio (comentário do Elias no ITEM 9) */
+.cs-lado .cs-it.cs-app-l{opacity:1;height:40px;margin:2px 0;border:1px solid var(--sbBd);background:var(--bg1);font-weight:600}
+.cs-lado .cs-it.cs-app-l:hover{border-color:color-mix(in srgb,var(--a) 60%,var(--sbBd));background:var(--bg1)}
+:root[data-tema="escuro"] .cs-lado .cs-it.cs-app-l{background:rgba(255,255,255,.04)}
+.cs-app-l img{width:24px;height:24px;border-radius:6px;box-shadow:0 1px 3px rgba(0,0,0,.18)}
+.cs-app-l .cs-app-x{opacity:.7}
 
 /* ===== tabela.css ===== */
 /* EFCwork · tabela.css — tabela padrão, janela retrátil, gaveta e impressão. Prefixos: tb-, dd-, gv- */
@@ -479,6 +510,11 @@ button.cs-sync:focus-visible{outline:2px solid var(--a);outline-offset:1px}
 .tb-t td.forte{font-weight:600}
 .tb-vz{text-align:center;color:var(--tx3);padding:28px 12px!important;white-space:normal!important}
 .tb-nada{color:var(--tx3)}
+.tb-esq td i{display:block;height:10px;border-radius:5px;background:var(--bg2);max-width:100%;animation:tbEsq calc(var(--duration-very-slow) * 2) var(--ease-in-out) infinite alternate} /* mov:ok — informa "carregando" e some quando os dados chegam (ITEM 16) */
+.tb-esq td.n i{margin-left:auto}
+@keyframes tbEsq{from{opacity:1}to{opacity:.45}}
+.tb.tb-carr .tb-tv b{visibility:hidden}
+@media (prefers-reduced-motion:reduce){.tb-esq td i{animation:none}}
 .tb-pe{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;font-size:14px;color:var(--tx2)}
 .tb-pe b{color:var(--tx)}
 .tb-med{display:inline-block;width:46px;height:5px;border-radius:3px;background:var(--bg2);position:relative;vertical-align:middle;margin-left:8px;overflow:hidden}
@@ -554,13 +590,13 @@ body.dd-arrastando{cursor:grabbing;-webkit-user-select:none;user-select:none}
 .tb-bar{position:relative}
 .tb-tots{position:absolute;left:0;top:0;height:var(--btn);pointer-events:none}
 .tb-tots>span{position:absolute;top:0;height:var(--btn);box-sizing:border-box;pointer-events:auto;border-radius:8px}
-.tb-tl{display:flex;align-items:center;justify-content:center;padding:0 12px;border:1px solid var(--bd);background:var(--bg1);white-space:nowrap}
-.tb-tl b{font-size:14px;color:var(--tx);font-weight:700}
-.tb-tv{display:flex;align-items:center;justify-content:flex-end;padding:0 12px;border:1px solid color-mix(in srgb,var(--a) 40%,var(--bd));background:color-mix(in srgb,var(--a) 8%,var(--bg1));white-space:nowrap}
-.tb-tv b{font-size:15px;font-variant-numeric:tabular-nums;color:var(--tx);font-weight:700}
+.tb-tl{display:flex;align-items:center;justify-content:flex-end;padding:0 2px;white-space:nowrap} /* v0.6.15 (pedido do Elias): sem caixas, com a letra das pílulas do cabeçalho ("4 não enviadas") */
+.tb-tl b{font-size:13px;color:var(--tx3);font-weight:600}
+.tb-tv{display:flex;align-items:center;justify-content:flex-end;padding:0 12px;white-space:nowrap}
+.tb-tv b{font-size:13px;font-variant-numeric:tabular-nums;color:var(--tx);font-weight:700}
 .tb-tots.tb-tots-fluxo{position:static;display:flex;gap:6px;height:auto;order:0}
 .tb-tots.tb-tots-fluxo>span{position:static}
-@media(max-width:599px){.tb-tots{position:static;display:flex;gap:6px;height:auto;width:100%}.tb-tots>span{position:static}.tb-tl{align-items:flex-start}.tb-tv{flex:1;justify-content:center}}
+@media(max-width:599px){.tb-tots{position:static;display:flex;gap:6px;height:auto;width:100%}.tb-tots>span{position:static}.tb-tl{align-items:center}.tb-tv{justify-content:flex-start;padding:0 4px}} /* v0.6.15: "Total" centrado na caixa, igual ao valor ao lado */
 /* botão Limpar filtro (no lugar do antigo botão Filtro) */
 .tb-limpa{display:inline-flex;align-items:center;gap:6px;height:var(--btn);padding:0 12px 0 10px;border:1px solid color-mix(in srgb,var(--a) 45%,var(--bd2));border-radius:var(--rs);background:color-mix(in srgb,var(--a) 9%,var(--bg1));color:var(--aTx);font-size:14px;font-weight:600;cursor:pointer}
 .tb-limpa .ic{width:14px;height:14px}.tb-limpa:hover{background:color-mix(in srgb,var(--a) 16%,var(--bg1))}
@@ -660,6 +696,13 @@ body.tb-arrastando,body.tb-arrastando *{cursor:grabbing!important;user-select:no
 .tb-mn-g:last-child{padding-bottom:6px}
 .tb-mn.tb-mn-folha .tb-mn-pre .dd-b{min-height:44px;height:44px}
 .tb-mn.tb-mn-folha .tb-mn-ci{min-height:44px}
+/* v0.6.15 (Grok D4): texto longo (observação, motivo, descrição) corta com "…" e mostra inteiro ao parar o mouse; o detalhe abre o texto todo */
+.tb-t td.tb-lg{max-width:320px;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:899px){.tb-t td.tb-lg{max-width:220px}}
+/* v0.6.15 (pedido do Elias no ITEM 8): linhas finas entre as colunas da tabela, como no modelo "Contorno nítido" */
+.tb-t td,.tb-t th{border-right:1px solid color-mix(in srgb,var(--bd) 70%,transparent)}
+.tb-t td:last-child,.tb-t th:last-child{border-right:0}
+.tb-t tbody tr.tb-gr td,.tb-t td.tb-vz{border-right:0}
 
 /* ===== almox.css ===== */
 /* EFCwork · almox.css — Prefixo: al- */
@@ -681,9 +724,9 @@ a.kp:hover{border-color:var(--a)}
 .fm-c{display:flex;flex-direction:column;gap:6px;min-width:0}
 .fm-r{font-size:13px;font-weight:600;color:var(--tx2)}
 .fm-r small{font-weight:400;font-size:12px;color:var(--tx3)}
-.fm-i{height:40px;border:1px solid var(--bd2);border-radius:var(--rs);background:var(--bg0);padding:0 12px;color:var(--tx);font-size:15px;width:100%;min-width:0}
+.fm-i{height:var(--campo);border:1px solid var(--bd2);border-radius:var(--rs);background:var(--bg0);padding:0 12px;color:var(--tx);font-size:15px;width:100%;min-width:0}
 textarea.fm-i{height:auto;min-height:64px;padding:9px 12px;resize:vertical}
-.fm-i:focus{outline:2px solid var(--aS);border-color:var(--a)}
+.fm-i:focus{outline:none;border-color:var(--a);box-shadow:0 0 0 3px var(--aS)} /* v0.6.15 ITEM 5: anel dourado no foco */
 .fm-i.num{text-align:center;font-weight:600}
 .fm-g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .fm-passo{display:flex;align-items:center;gap:6px}
@@ -694,7 +737,7 @@ textarea.fm-i{height:auto;min-height:64px;padding:9px 12px;resize:vertical}
 .fm-qr .dd{flex:1 1 120px;min-width:0}
 .fm-c .dd{min-width:0}
 .fm-c .dd-b span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
-.fm-fixo{margin:0;min-height:40px;display:flex;align-items:center;padding:0 12px;border:1px dashed var(--bd2);border-radius:var(--rs);font-size:14px;color:var(--tx2)}
+.fm-fixo{margin:0;min-height:var(--campo);display:flex;align-items:center;padding:0 12px;border:1px dashed var(--bd2);border-radius:var(--rs);font-size:14px;color:var(--tx2)}
 .fm-ck{display:flex;gap:8px;align-items:center;font-size:14px;color:var(--tx2);cursor:pointer}
 .fm-ck input{width:17px;height:17px;accent-color:var(--a)}
 .fm-av{display:flex;gap:9px;align-items:flex-start;padding:9px 12px;border-radius:var(--rs);background:var(--bg2);font-size:14px;color:var(--tx2);border:1px solid var(--bd)}
@@ -737,12 +780,15 @@ textarea.fm-i{height:auto;min-height:64px;padding:9px 12px;resize:vertical}
 
 /* v0.4.5: listas suspensas dos formulários menores */
 .fm-c .dd-b{height:34px;padding:0 10px;font-size:14px}
-.fm-g .fm-c .dd-b{height:40px} /* v0.6.5 ITEM 10: lado a lado com um campo, a mesma altura dele */
+.fm-g .fm-c .dd-b{height:var(--campo)} /* v0.6.5 ITEM 10: lado a lado com um campo, a mesma altura dele */
 .fm-c .dd-l{padding:3px;max-width:calc(100vw - 40px)}
 .fm-c .dd-l li{min-height:32px;padding:5px 9px;font-size:14px}
 
 /* v0.4.10 (auditoria aprovada 09/11): no celular, campos de lista e de texto das gavetas com 44 px de toque */
 @media(max-width:599px){#gv .fm-c .dd-b,#gv .pg-ansdd .dd-b,#gv .fm-c input:not([type=checkbox]):not([type=radio]),#gv .fm-c select{height:44px;min-height:44px}#gv .dd-l li:not(.dd-dica){min-height:44px}}
+/* v0.6.15 (Grok D11): a busca da lista de escolha não encolhe (no celular ficava com 42 px) */
+.fm-pk .tb-busca{flex-shrink:0}
+@media(max-width:899px){.fm-pk .tb-busca{min-height:44px}}
 
 /* ===== contagem.css ===== */
 /* EFCwork · contagem.css — contagem às cegas. Prefixo: cg- (e ini-cg no Início) */
@@ -845,7 +891,7 @@ a.cg-av span{flex:1}
 .cb-tl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
 .cb-tubo{position:absolute;left:12px;width:4px;border-radius:3px;background:var(--bg2);box-shadow:inset 0 1px 2px rgba(0,0,0,.12);overflow:hidden}
 .cb-fluido{position:absolute;left:0;right:0;top:0;height:0;border-radius:3px;background:linear-gradient(180deg,#f7df9e,#d9b46a 45%,#b4862f);overflow:hidden}
-.cb-fluido::after{content:"";position:absolute;left:0;right:0;height:46px;top:-46px;background:linear-gradient(180deg,transparent,rgba(255,250,230,.95),transparent);animation:cbBrilho calc(var(--duration-very-slow) * 3) var(--ease-linear) 2}
+.cb-fluido::after{content:"";position:absolute;left:0;right:0;height:46px;top:-46px;background:linear-gradient(180deg,transparent,rgba(255,250,230,.95),transparent);animation:cbBrilho var(--duration-very-slow) var(--ease-linear) 1} /* v0.6.15 (ITEM 17): um brilho só, de 0,5 s (era 1,5 s × 2) */
 .cb-correndo .cb-fluido::after{animation-duration:.9s}
 @keyframes cbBrilho{to{top:100%}}
 .cb-tl li{display:flex;gap:12px;position:relative;padding-bottom:14px}
@@ -990,6 +1036,13 @@ div.cb-hc{cursor:default}
 @keyframes snEntra{from{transform:translateY(16px);opacity:0}to{transform:none;opacity:1}}
 @media(max-width:899px){.sn-toast{right:16px;bottom:76px}}
 @media(prefers-reduced-motion:reduce){.sn-toast{animation:none}}
+/* v0.6.15 (Grok D2/D3): detalhe do aviso dentro do sino e "Mostrar mais" */
+.sn-n{flex-wrap:wrap}
+.sn-det{flex:1 0 100%;display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:0 12px 10px 30px}
+.sn-det p{margin:0;color:var(--tx2);font-size:14px;white-space:pre-wrap}
+.sn-det small{color:var(--tx3);font-size:12px}
+.sn-mais{margin:8px auto;align-self:center}
+:root[data-tema="escuro"] .cs-bdg{color:var(--aT)} /* v0.6.15 ITEM 10: número do sino legível no Escuro (letra escura sobre o vermelho) */
 
 /* ===== busca.css ===== */
 /* EFCwork · busca.css — Prefixo: bg- */
@@ -1011,6 +1064,10 @@ div.cb-hc{cursor:default}
 .bg-vz{margin:14px 10px;color:var(--tx3)}
 .bg-dica{margin:0;padding:8px 14px;border-top:1px solid var(--bd);font-size:13px;color:var(--tx3)}
 @media(max-width:899px){.bg-fundo{padding-top:max(12px,env(safe-area-inset-top,0px))}.bg-caixa{max-height:86vh}.bg-dica{display:none}}
+/* v0.6.15 (Grok D7): no PC fica a tecla "Esc" (dica); no toque, um X de 44 px que fecha de verdade */
+.bg-x{display:none;flex:none;margin-right:-6px}
+@media(pointer:coarse),(max-width:899px){.bg-campo kbd{display:none}.bg-x{display:inline-flex;width:44px;height:44px}.bg-dica{display:none}}
+.bg-campo input::placeholder{text-overflow:ellipsis}
 
 /* ===== coletas.css ===== */
 /* EFCwork · coletas.css — Coletas (v0.4.0) */
@@ -1062,7 +1119,7 @@ div.cb-hc{cursor:default}
   .ag-l .bt{width:100%}
 }
 .ag-dc{margin:0 0 8px;color:var(--tx2);font-size:13px;line-height:1.4}
-.fm-c.ag-al .dd-b{height:40px}
+.fm-c.ag-al .dd-b{height:var(--campo)}
 /* v0.6.6 · ação corretiva */
 .ac-res{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg1);padding:10px 12px;font:inherit;color:inherit;text-align:left;cursor:pointer;min-height:56px}
 .ac-res:hover{background:var(--row)}
@@ -1340,10 +1397,10 @@ button.cl-li:hover{background:var(--row)}
 /* dosagem e cloro depois: mesma altura e mesma linha de base (pedido de 10/11) */
 .cl-fm2{align-items:end}
 .cl-fm2 .fm-c{min-width:0}
-.cl-fm2 .fm-i{width:100%;min-width:0;box-sizing:border-box;height:40px}
+.cl-fm2 .fm-i{width:100%;min-width:0;box-sizing:border-box;height:var(--campo)}
 .cl-fm2 .fm-r{min-height:18px;display:block}
 /* v0.6.2: janela retrátil ao lado de um campo fica da mesma altura (regra do alinhamento de 11/11) */
-.cl-fm2 .dd-b{height:40px}
+.cl-fm2 .dd-b{height:var(--campo)}
 .cl-fb{display:flex;gap:8px;flex-wrap:wrap}
 .cl-fb .bt{cursor:pointer}
 .cl-fp{position:relative;display:inline-block;max-width:100%}
@@ -1701,8 +1758,8 @@ body.au-apr-on{overflow:hidden}
 .tr-pc{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:10px;align-items:center}
 .tr-pc .dd-b{height:36px}
 .tr-add{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;margin:6px 0 12px;align-items:stretch}
-.tr-add .fm-i{height:40px}
-.tr-add .bt{height:40px}
+.tr-add .fm-i{height:var(--campo)}
+.tr-add .bt{height:var(--campo)}
 @media(max-width:899px){.tr-pc .dd-b{height:44px}.tr-add .fm-i,.tr-add .bt{height:44px}}
 /* lista de presença: A4 em pé, preto no branco */
 #au-imp .tr-imp{font-family:Arial,Helvetica,sans-serif;color:#000}
@@ -1766,6 +1823,16 @@ a.pg-pl{color:inherit;text-decoration:none;cursor:pointer;transition:border-colo
 @media(max-width:899px){.pg-i::after{inset:-11px}}
 
 @media(prefers-reduced-motion:reduce){a.pg-pl{transition:none}} /* v0.6.14 */
+/* v0.6.15 (Grok D5): no celular cada cartão de plano cabe inteiro na largura; a faixa encaixa um cartão por vez */
+@media(max-width:599px){.pg-planos{scroll-snap-type:x mandatory}.pg-pl{flex:0 0 calc(100vw - 32px);max-width:380px;scroll-snap-align:start}.pg-pl header{flex-wrap:wrap}}
+/* v0.6.15 (Grok D11): a legenda (i) com 28 px no PC e área de toque de 44 px */
+.pg-i{width:28px;height:28px;margin:-3px} /* 28 px sem empurrar o título: o lugar ocupado continua o de antes (a linha não quebra com a gaveta aberta) */
+@media(pointer:coarse){.pg-i::before{content:"";position:absolute;inset:-8px}}
+/* v0.6.15: área com nova coleta pedida (a anterior não conta mais) ganha a marca ↻ no canto */
+.pg-ar{position:relative}
+.pg-rec{position:absolute;top:-6px;right:-5px;width:15px;height:15px;border-radius:50%;background:var(--bg1);border:1px solid var(--wa);color:var(--wa);display:grid;place-items:center}
+.pg-rec .ic{width:10px;height:10px;stroke-width:2.4}
+.pg-rec.pend{border-style:dashed;border-color:var(--tx3);color:var(--tx3)} /* v0.6.15: nova coleta aguardando aprovação */
 
 /* ===== plano.css ===== */
 /* v0.4.6 · página do plano (prefixo pp) */
@@ -1824,6 +1891,17 @@ body:has(#gv) .pp-bar{display:none}
 .pp-nv.on .pp-nvk{background:var(--a);border-color:var(--a)}.pp-nv .pp-nvk .ic{width:12px;height:12px}
 .pp-nv b{font-weight:600}.pp-nv small{margin-left:auto;color:var(--tx3);font-size:12.5px;text-align:right}
 #gv .pp-lis{display:flex;flex-direction:column;gap:4px}
+
+/* v0.6.15 · nova coleta aguardando aprovação do Líder ★ ou do Principal */
+.pp-rc.pend{color:var(--tx3)}
+.pp-lps{display:flex;flex-direction:column;gap:8px}
+.pp-lp{border:1px dashed var(--wa);border-radius:var(--rs);background:var(--waS);padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.pp-lpt{display:flex;flex-direction:column;gap:2px;min-width:0}
+.pp-lpt b{font-weight:600}.pp-lpt span{color:var(--tx2)}.pp-lpt small{color:var(--tx3);font-size:13px}
+.pp-lpb{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+@media(min-width:900px){.pp-lpb{width:100%;max-width:260px;margin-left:auto}} /* dois iguais, à direita; encolhem no cartão estreito */
+.pp-lpm{margin:0}
+.pp-tb tr.pp-rcz td{color:var(--tx3)}
 
 /* ===== entrar.css ===== */
 /* EFCwork · entrar.css — tela de entrar com a garota-propaganda (v0.4.2). Prefixo: en-
@@ -2052,7 +2130,7 @@ body:has(#gv) .pp-bar{display:none}
 :root[data-tema="escuro"] .cs-ph h1.fz-tt{background:none;color:#e6c47e}
 @keyframes fzTt{to{opacity:1;filter:none;transform:none}}
 /* lista que entra em sequência (sino) */
-.fz-li{animation:fzLi var(--duration-slow) var(--ease-smooth-out) backwards;animation-delay:calc(var(--i) * 60ms)}
+.fz-li{animation:fzLi var(--duration-fast) var(--ease-smooth-out) backwards;animation-delay:calc(min(var(--i), 5) * var(--duration-stagger))} /* v0.6.15 (ITEM 18): termina em ~0,45 s */
 @keyframes fzLi{from{opacity:0;transform:translateY(10px) scale(.98)}}
 /* desfoque no fim da lista (Gradual Blur): só quando tem mais embaixo */
 .gv-corpo::after,.cs-lado::after{content:"";position:sticky;bottom:0;display:block;flex:none;height:48px;margin-top:-48px;pointer-events:none;opacity:0;transition:opacity var(--duration-fast) var(--ease-out);
@@ -2068,6 +2146,154 @@ body:has(#gv) .pp-bar{display:none}
 }
 /* celular: o aviso sobe acima da barra de baixo e do rodapé da gaveta (não cobre botões) */
 @media(max-width:899px){.av-pilha{bottom:calc(84px + env(safe-area-inset-bottom,0px))}}
+
+/* ===== moderno.css ===== */
+/* EFCwork · moderno.css — v0.6.15 · modernização aprovada em 14/11/2026 (parte 1, ITENS 1 a 15).
+   Só tokens do app e a escala comum de movimento (tools/visual/efc-movimento.css). Prefixo: mo-. */
+
+/* ITEM 1 · Início: "Pede atenção" */
+.mo-atl{gap:12px;padding-top:7px!important;padding-bottom:7px!important}
+.mo-atl .tx{display:flex;align-items:baseline;gap:10px;justify-content:space-between}
+.mo-atl .tx small{flex:none;white-space:nowrap}
+@media(max-width:599px){.mo-atl .tx{display:block}}
+.mo-atn{flex:none;min-width:40px;height:36px;padding:0 8px;display:grid;place-items:center;border-radius:var(--rs);background:var(--bg2);font-size:18px;font-weight:600;color:var(--tx)}
+.mo-atn.cr{background:var(--crS);color:var(--cr)}.mo-atn.wa{background:var(--waS);color:var(--wa)}
+.ini-gr{margin-top:4px}
+
+/* ITEM 2 · Início: "Próximas coletas" */
+.mo-px .hd .bt.lk{margin:-6px -6px -6px 0}
+@media (pointer:coarse){.mo-px .hd .bt.lk{margin:-10px -6px -10px 0}}
+.mo-pxl{gap:12px}
+.mo-dia{flex:none;width:52px;height:44px;border-radius:var(--rs);border:1px solid var(--bd);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.05;background:var(--bg1)}
+.mo-dia small{font-size:12px;color:var(--tx3)}.mo-dia b{font-size:18px;font-weight:600}
+.mo-dia.hj{border-color:var(--a);background:var(--aS)}.mo-dia.hj small{color:var(--aTx);font-weight:600}
+
+/* ITEM 4 · paleta de comandos */
+.cs-busca kbd{font-size:0}
+.cs-busca kbd::after{content:"Ctrl K";font-size:12px}
+.mo-pal .bg-gh{letter-spacing:0}
+.mo-pal.bg-fundo{animation:moPalFundo var(--modal-open-dur) var(--ease-out)}
+.mo-pal .bg-caixa{animation:moPalAbre var(--modal-open-dur) var(--modal-ease)}
+@keyframes moPalFundo{from{background:transparent}}
+@keyframes moPalAbre{from{opacity:0;transform:translateY(-8px) scale(var(--modal-scale))}}
+.mo-fant{pointer-events:none!important}
+.mo-f-bg{animation:moSome var(--modal-close-dur) var(--ease-out) forwards}
+.mo-f-bg .bg-caixa{animation:moPalFecha var(--modal-close-dur) var(--modal-ease) forwards}
+@keyframes moSome{to{opacity:0}}
+@keyframes moPalFecha{to{opacity:0;transform:translateY(-6px) scale(var(--scale-small))}}
+
+/* ITEM 7 · situação na tabela: ponto e texto; cor cheia só no problema */
+:is(.cs-ct,.gv) .pill:not(.cr){background:none;padding:0;color:var(--tx);font-weight:500;gap:7px} /* ITEM 7 em todas as telas e gavetas (pedido no ITEM 9) */
+:is(.cs-ct,.gv) .pill:not(.cr)::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--tx3)}
+:is(.cs-ct,.gv) .pill.ok::before{background:var(--ok)}
+:is(.cs-ct,.gv) .pill.wa::before{background:var(--wa)}
+
+/* ITEM 5 · abas com contagem */
+.mo-ct{font-style:normal;font-size:12px;font-weight:600;min-width:20px;height:20px;padding:0 6px;margin-left:7px;border-radius:10px;background:var(--bg2);color:var(--tx2);display:inline-grid;place-items:center;vertical-align:1px;font-variant-numeric:tabular-nums}
+.cs-abas a.on .mo-ct{background:var(--aS);color:var(--aTx)}
+
+/* ITEM 3 · caminho na barra de cima */
+.mo-tp .mo-bc{order:0;font-size:14px;color:var(--tx);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.mo-tp .mo-bc b{font-weight:500;color:var(--tx3)}
+.mo-tp .cs-sp{order:1}
+.mo-tp .cs-busca{order:2;width:230px;flex:none}
+.mo-tp .cs-sync,.mo-tp>.bt{order:3}
+.cs-ph{padding-top:2px}
+
+/* ITEM 9 · gaveta: anterior e próximo */
+.mo-nav{display:inline-flex;align-items:center;gap:2px;flex:none}
+.mo-nav .bt[disabled]{opacity:.35;cursor:default}
+.gv-corpo.mo-troca{animation:moTroca var(--duration-quick) var(--ease-smooth-out)}
+@keyframes moTroca{from{opacity:.2;transform:translateY(calc(var(--mo-d,1) * 8px))}}
+
+/* ITEM 10 · dica desenhada */
+.mo-tt{position:fixed;z-index:200;max-width:260px;padding:5px 9px;border-radius:6px;background:var(--tx);color:var(--bg1);font-size:13px;font-weight:500;line-height:1.3;pointer-events:none;opacity:0;transition:opacity var(--duration-quick) var(--ease-out),transform var(--duration-quick) var(--ease-out);box-shadow:0 4px 12px rgba(0,0,0,.18)}
+.mo-tt.cim{transform:translateY(4px)}.mo-tt.emb{transform:translateY(-4px)}
+.mo-tt.on{opacity:1;transform:none}
+
+/* ITEM 8 · tabela vazia */
+.mo-vz{display:flex;flex-direction:column;align-items:center;gap:8px;padding:20px 12px}
+.mo-vz>.ic{width:26px;height:26px;color:var(--tx3)}
+.mo-vz b{color:var(--tx);font-weight:600;font-size:15px}
+.mo-vz span{color:var(--tx3)}
+.mo-vz .bt{margin-top:4px}
+@media(max-width:899px){.mo-vz{position:sticky;left:0;width:calc(100vw - 34px);box-sizing:border-box;text-align:center}.tb-vz:has(.mo-vz){padding:0!important;text-align:left!important}}
+
+/* ITEM 6 · celular: pastilha da barra de baixo */
+@media(max-width:899px){
+  .cs-baixo{position:fixed}
+  .cs-baixo a,.cs-baixo button{position:relative;z-index:1}
+  .mo-pl{position:absolute;top:8px;width:56px;height:28px;margin-left:-28px;border-radius:14px;background:var(--aS);transition:left var(--duration-fast) var(--ease-smooth-out);z-index:0}
+}
+
+/* ITEM 11 · botão dourado com sombra nítida (sem o brilho borrado em volta) */
+.bt.pr{box-shadow:0 1px 0 rgba(255,255,255,.4) inset,0 0 0 1px rgba(122,86,20,.18),0 1px 2px rgba(60,42,8,.28)}
+.bt.pr:hover:not([disabled]){box-shadow:0 1px 0 rgba(255,255,255,.45) inset,0 0 0 1px rgba(122,86,20,.26),0 2px 4px rgba(60,42,8,.24),0 6px 12px -4px rgba(60,42,8,.3)}
+
+/* ITEM 12 · menu da coluna sai com efeito */
+.mo-f-mn{transform-origin:top center;animation:moMnFecha var(--dropdown-close-dur) var(--dropdown-ease) forwards;z-index:60}
+@keyframes moMnFecha{to{opacity:0;transform:translateY(-4px) scale(var(--scale-small))}}
+
+/* ITEM 13 · Apontamentos: cartões em sequência ao trocar o filtro */
+
+
+/* ITEM 14 · foto grande abre e fecha suave */
+#fed-v{animation:moFedAbre var(--modal-open-dur) var(--ease-out)}
+#fed-v .fed-pal img{animation:moFedImg var(--modal-open-dur) var(--modal-ease)}
+@keyframes moFedAbre{from{opacity:0}}
+@keyframes moFedImg{from{opacity:0;transform:scale(var(--modal-scale))}}
+.mo-f-fed{animation:moSome var(--modal-close-dur) var(--ease-out) forwards}
+.mo-f-fed .fed-pal img{animation:moFedSai var(--modal-close-dur) var(--modal-ease) forwards}
+@keyframes moFedSai{to{transform:scale(var(--scale-medium))}}
+
+/* ITEM 15 · título da tela mais rápido (o todo cabe em 450 ms) */
+.cs-ph h1.fz-tt{--duration-stagger:16ms}
+.cs-ph h1.fz-tt span{animation-duration:var(--duration-fast);filter:blur(4px)}
+
+/* ITENS 16 a 18 aprovados em 14/11: estão no src/ (tabela.css, calibracao.css, fluidez.css). */
+
+@media (prefers-reduced-motion:reduce){
+  .mo-pal.bg-fundo,.mo-pal .bg-caixa,.gv-corpo.mo-troca,#fed-v,#fed-v .fed-pal img{animation:none!important}
+  .mo-fant{display:none!important}.mo-tt,.mo-pl{transition:none}
+}
+
+/* pedido no ITEM 9: as setas e o X sobem para a linha do texto pequeno; o título usa a largura toda e não quebra à toa (todas as gavetas) */
+.gv-cab{flex-wrap:wrap;align-items:center;row-gap:0}
+.gv-cab>.gv-tx{display:contents}
+.gv-cab>.ico{order:0}
+.gv-tx>small{order:1;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gv-cab>:not(.ico):not(.gv-tx){order:2;flex:none}
+.gv-tx>h2{order:3;flex:0 0 100%;margin:6px 0 4px}
+.gv-tx>:not(small):not(h2){order:4}
+/* pedido no ITEM 13: sem o traço colorido na lateral dos cartões (padrão de "cara de IA"); a gravidade fica na pílula */
+.ap-card,.ap-card.g-urgente,.ap-card.g-grave,:root[data-tema="escuro"] .ap-card.g-urgente,:root[data-tema="escuro"] .ap-card.g-grave{border-left:1px solid var(--bd)}
+/* pedido no ITEM 4: resultados entram sem pular */
+.bg-res.mo-alt{transition:height var(--duration-quick) var(--ease-smooth-out)}
+.bg-it.mo-novo{animation:moNovo var(--duration-quick) var(--ease-out) backwards;animation-delay:calc(var(--i) * 20ms)}
+@keyframes moNovo{from{opacity:0;transform:translateY(3px)}}
+@media (prefers-reduced-motion:reduce){.bg-res.mo-alt{transition:none}.bg-it.mo-novo{animation:none}}
+
+/* v0.6.15 · tabelas (Elias, 14/11): sem "Mostrando X de Y" e sem o rodapé do app; no PC a página não rola, só a tabela */
+.tb-pe[hidden]{display:none!important}
+.tb-fim{padding:10px;text-align:center;color:var(--tx3);font-size:13px}
+.cs-rod{display:none}
+@media(max-width:899px){.cs-ct{padding-bottom:96px}} /* espaço da barra de baixo, que antes vinha do rodapé */
+@media(min-width:900px){html.pag-fixa,html.pag-fixa body{overflow:hidden;height:100%}}
+/* ferramentas da tabela na linha das abas (PC) */
+.cs-abas-l{display:flex;align-items:flex-end;gap:12px;border-bottom:1px solid var(--bd)}
+.cs-abas-l>.cs-abas{flex:1;min-width:0;border-bottom:0}
+.cs-abas-l>.tb-bar{flex:none;flex-wrap:nowrap;gap:6px;padding-bottom:4px}
+.tb-bar-sobe .tb-sp{display:none}
+.tb-bar-sobe .tb-cont{font-size:13px}
+/* pílula do total no cabeçalho; "total filtrado" em dourado */
+.cs-pl.tb-tp b{font-weight:700;color:var(--tx)}
+.cs-pl.tb-tp.fl{border-color:color-mix(in srgb,var(--a) 45%,var(--bd));background:var(--aS);color:var(--aTx)}
+/* cabeçalhos com a mesma medida em todas as telas (título + linha de pílulas reservada) */
+@media(min-width:900px){.cs-phr{min-height:66px;align-items:flex-end}.cs-pht{min-height:66px;display:flex;flex-direction:column;justify-content:flex-end}.cs-meta{min-height:24px}}
+
+.cs-abas-l.aperta .tb-cont{display:none} /* abas apertadas (gaveta aberta): a contagem sai, as abas ficam */
+.cs-abas-l.desce{flex-wrap:wrap;border-bottom:0;row-gap:6px}.cs-abas-l.desce>.cs-abas{flex:0 0 100%;border-bottom:1px solid var(--bd)}.cs-abas-l.desce>.tb-bar{margin-left:auto;padding-bottom:0}
+.cs-abas-l.aperta .cs-abas a{padding-left:9px;padding-right:9px}
 
 </style>
 </head>
@@ -2125,7 +2351,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = Mov;
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.6.14.2';
+const VERSAO = '0.6.15';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -2246,7 +2472,7 @@ const ICS = {
   lupa: '<circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/>',
   nuvem: '<path d="M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 9.5a4.25 4.25 0 0 1-.5 8.5z"/>', gira: '<path d="M20 12a8 8 0 1 1-2.6-5.9M20 4v4.5h-4.5"/>',
   sino: '<path d="M6 16v-5a6 6 0 1 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/>',
-  recolhe: '<path d="m11 17-5-5 5-5M18 17l-5-5 5-5"/>', cadeado: '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>', mais: '<path d="M12 5v14M5 12h14"/>', menos: '<path d="M5 12h14"/>', recontar: '<path d="M20 11a8 8 0 0 0-14.3-4.9L4 8M4 4v4h4M4 13a8 8 0 0 0 14.3 4.9L20 16M20 20v-4h-4"/>', entra: '<path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19h14"/>', sai: '<path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M5 19h14"/>', lapis: '<path d="M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17z"/><path d="M14.5 7.5l2 2"/>', ajuste: '<path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/>', x: '<path d="M6 6l12 12M18 6 6 18"/>', seta: '<path d="m9 6 6 6-6 6"/>', volta: '<path d="m15 6-6 6 6 6"/>',
+  recolhe: '<path d="m11 17-5-5 5-5M18 17l-5-5 5-5"/>', cadeado: '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>', mais: '<path d="M12 5v14M5 12h14"/>', menos: '<path d="M5 12h14"/>', recontar: '<path d="M20 11a8 8 0 0 0-14.3-4.9L4 8M4 4v4h4M4 13a8 8 0 0 0 14.3 4.9L20 16M20 20v-4h-4"/>', entra: '<path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19h14"/>', sai: '<path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M5 19h14"/>', lapis: '<path d="M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17z"/><path d="M14.5 7.5l2 2"/>', ajuste: '<path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/>', x: '<path d="M6 6l12 12M18 6 6 18"/>', seta: '<path d="m9 6 6 6-6 6"/>', volta: '<path d="m15 6-6 6 6 6"/>', recoleta: '<path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 5v6h-6"/>',
   broto: '<path d="M12 21v-8"/><path d="M12 13c0-4-3-6.5-7-6.5 0 4 3 6.5 7 6.5zM12 11c0-3.5 2.6-6 6.5-6 0 3.5-2.6 6-6.5 6z"/>',
   relogio: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>', calendario: '<rect x="4" y="5.5" width="16" height="14.5" rx="2"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/>', esq: '<path d="m14.5 6-6 6 6 6"/>', dir: '<path d="m9.5 6 6 6-6 6"/>', cima: '<path d="m6 14.5 6-6 6 6"/>', baixo: '<path d="m6 9.5 6 6 6-6"/>', excl: '<circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.2v.2"/>', alerta: '<path d="M12 3.5 2.8 19.5h18.4z"/><path d="M12 10v4.5M12 17.3v.2"/>',
   ok: '<path d="M5 12.5l4.5 4.5L19 7.5"/>', sair: '<path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/>', lua: '<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>',
@@ -2263,6 +2489,8 @@ const ICS = {
   baixar: '<path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19h14"/>',
   lixo: '<path d="M4 7h16M9 7V4.5h6V7M6 7l1 13h10l1-13M10 11v6M14 11v6"/>', imagem: '<rect x="3.5" y="4.5" width="17" height="15" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="m20.5 16-5-5-8 8.5"/>'
 };
+/* v0.6.15 (Grok D10): marca a foto que falhou ao carregar (o CSS mostra um espaço neutro no lugar) */
+document.addEventListener('error', e => { const t = e.target; if (t && t.tagName === 'IMG') t.classList.add('img-x'); }, true);
 const ic = (n, cls) => '<svg class="ic' + (cls ? ' ' + cls : '') + '" viewBox="0 0 24 24" aria-hidden="true">' + (ICS[n] || '') + '</svg>';
 
 /* ============ DADOS (do EFClaudian v2.102.59) ============ */
@@ -2760,7 +2988,14 @@ async function csSair() {
   try { await Data.auth.signOut(); } catch (e) { try { await Data.auth.forcarSaida(); } catch {} }
   S.user = null; S.gv = null; S.gvForm = false; S.fm = null; S.camadas = []; S.users = []; S.notifs = []; S.aprov = []; { const g = $('#gv'); if (g) g.remove(); } S._desl.forEach(f => { try { f(); } catch {} }); S._desl = []; location.hash = '#/inicio'; render();
 }
-function csOuve(col, cb, o) { const off = Data.col(col).watch(cb, o); S._desl.push(off); return off; }
+/* v0.6.15 (ITEM 16, aprovado 14/11): conta as listas cuja 1ª leitura ainda não chegou (S._carga); enquanto houver, tabela vazia mostra o esqueleto */
+S._carga = 0;
+function csOuve(col, cb, o) {
+  let primeira = true; S._carga++;
+  const fim = () => { if (primeira) { primeira = false; S._carga = Math.max(0, S._carga - 1); } };
+  const off = Data.col(col).watch(function () { const era = primeira; fim(); const r = cb.apply(this, arguments); if (era && !S._carga && S.user) { try { render(); } catch (e) { console.error(e); } } return r; }, o);
+  const des = function () { fim(); return off && off.apply(this, arguments); }; S._desl.push(des); return des;
+}
 /* v0.4.9: Firestore desligado (cache do aparelho quebrado) — repara sozinho uma vez por sessão (até 2 tentativas) */
 const csTerminado = e => /already been terminated|client has been terminated|IndexedDB|INTERNAL ASSERTION/i.test(String((e && (e.message || e.code)) || e || ''));
 function csPodeReparar() { try { return Number(sessionStorage.getItem('cw-reparou') || 0) < 2; } catch { return false; } }
@@ -3055,6 +3290,11 @@ function tbOrdenadas(cfg) {
   return cfg.cols.map((c, i) => [c, i]).sort((a, b) => { const ia = o.indexOf(a[0].k), ib = o.indexOf(b[0].k); return (ia < 0 ? 1000 + a[1] : ia) - (ib < 0 ? 1000 + b[1] : ib); }).map(x => x[0]);
 }
 const tbVisiveis = cfg => { const st = tbEstado(cfg.id); return tbOrdenadas(cfg).filter(c => c.fixa || st.ocultas.indexOf(c.k) < 0); };
+/* v0.6.15 (Grok D9): "1 impresso", não "1 impressos" — a unidade vai para o singular quando o número é 1 (só a 1ª palavra) */
+function tbSing(u) { /* cada palavra até a primeira preposição: "itens ativos" → "item ativo"; "pontos de água" → "ponto de água" */
+  const um = w => /ões$/.test(w) ? w.replace(/ões$/, 'ão') : /ãos$/.test(w) ? w.slice(0, -1) : /ais$/.test(w) ? w.replace(/ais$/, 'al') : /éis$/.test(w) ? w.replace(/éis$/, 'el') : /ns$/.test(w) ? w.replace(/ns$/, 'm') : /[rz]es$/.test(w) ? w.slice(0, -2) : w.replace(/s$/, '');
+  let para = false; return String(u || '').split(' ').map(w => { if (para || /^(de|da|do|das|dos|d’|d'|em|no|na|com|para|e)$/i.test(w) || /^d[’']/.test(w)) { para = true; return w; } return um(w); }).join(' '); }
+const tbUn = (cfg, n) => { const u = cfg.unidade || 'registros'; return n === 1 ? (cfg.unidade1 || tbSing(u)) : u; };
 function tbFmt(c, r) {
   if (c.html) return c.html(r);
   const v = c.v(r);
@@ -3073,7 +3313,7 @@ function tbTemFiltroSolto(cfg) { const st = tbEstado(cfg.id); return !!st.busca 
    e à esquerda vai "Total · N itens". As posições são medidas na tela (tbAlinhaTot); se não couber, ficam em sequência. */
 function tbTotal(cfg, cols, todas, filtrado) {
   const cs = cols.filter(c => c.total); if (!cs.length) return '';
-  return '<div class="tb-tots" data-tbtot="' + esc(cfg.id) + '"><span class="tb-tl" title="' + (filtrado ? 'Soma só do que está filtrado · ' : 'Soma de toda a lista · ') + todas.length + ' ' + esc(cfg.unidade || 'registros') + '"><b>Total</b></span>' +
+  return '<div class="tb-tots" data-tbtot="' + esc(cfg.id) + '"><span class="tb-tl" title="' + (filtrado ? 'Soma só do que está filtrado · ' : 'Soma de toda a lista · ') + todas.length + ' ' + esc(tbUn(cfg, todas.length)) + '"><b>Total</b></span>' +
     cs.map(c => { const v = typeof c.total === 'function' ? c.total(todas) : todas.reduce((s, r) => s + (Number(c.v(r)) || 0), 0); return '<span class="tb-tv" data-k="' + esc(c.k) + '" title="Total de ' + esc(c.rot) + '"><b>' + esc(c.fmtTotal ? c.fmtTotal(v) : numBR(v, c.dec)) + '</b></span>'; }).join('') + '</div>';
 }
 /* cada valor fica acima da sua coluna, na largura dela; se o número for maior que a coluna, a caixa cresce para a ESQUERDA (nunca por cima do rótulo "Total") */
@@ -3093,7 +3333,52 @@ function tbAlinhaTot() {
     if (!ok || min - 6 - lb.offsetWidth < esq + 8 || max > dir - 8) { t.classList.add('tb-tots-fluxo'); t.style.width = ''; tvs.concat(lb).forEach(x => { x.style.left = ''; x.style.right = ''; x.style.width = ''; }); }
   });
 }
-addEventListener('resize', () => tbAlinhaTot()); addEventListener('scroll', e => { if (e.target && e.target.classList && e.target.classList.contains('tb-w')) tbAlinhaTot(); }, true);
+/* v0.6.15 (pedido do Elias, 14/11: "rolagem só fica para a tabela, com o cabeçalho para cima congelado"): no PC a tabela da tela
+   tem altura até o fim da janela e rola por dentro; o cabeçalho dela fica parado (th sticky). No celular a página rola como antes. */
+/* v0.6.15 (Elias, 14/11: "a página não rola; só a tabela, do cabeçalho para cima congelado e sem se mexer; a tabela desce até o fundo"):
+   no PC, com uma tabela na tela, ela vai até o fim da janela e a página fica travada (html.pag-fixa). Se o que fica acima
+   da tabela for alto demais (sobram menos de 240 px), a página rola como antes e a tabela tem no máximo a altura da janela. */
+function tbAltura() {
+  const H = document.documentElement, ws = $$('.cs-ct .tb-w').filter(w => !w.closest('.gv')), poe = (w, h, mh) => { if (w.style.height !== h) w.style.height = h; if (w.style.maxHeight !== mh) w.style.maxHeight = mh; }; /* sem apagar antes: a rolagem da tabela não volta ao topo */
+  let trava = false;
+  if (innerWidth >= 900 && ws.length === 1) {
+    const w = ws[0], topo = w.getBoundingClientRect().top + scrollY, alto = innerHeight - topo - 16;
+    if (alto >= 240) { if (scrollY) scrollTo(0, 0); poe(w, alto + 'px', ''); trava = true; } else poe(w, '', (innerHeight - 56 - 32) + 'px');
+  } else ws.forEach(w => poe(w, '', innerWidth >= 900 ? (innerHeight - 56 - 32) + 'px' : ''));
+  H.classList.toggle('pag-fixa', trava);
+}
+/* v0.6.15: com uma tabela só na tela, o total/resumo vira pílula no cabeçalho e (no PC) as ferramentas sobem para a linha das abas */
+function tbSobe() {
+  const tbs = $$('.cs-ct .tb').filter(t => !t.closest('.gv')); if (tbs.length !== 1) return;
+  const tb = tbs[0], bar = tb.querySelector('.tb-bar'); if (!bar) return;
+  let res = {}; try { res = JSON.parse(tb.getAttribute('data-res') || '{}'); } catch (e) { res = {}; }
+  const pht = $('.cs-ct .cs-pht');
+  if (pht && !tb.classList.contains('tb-carr')) { /* carregando: sem total (ainda não há número de verdade) */
+    let meta = pht.querySelector('.cs-meta'); if (!meta) { meta = document.createElement('div'); meta.className = 'cs-meta'; pht.appendChild(meta); }
+    (res.tot || []).forEach(t => {
+      const ja = Array.from(meta.children).find(x => !x.classList.contains('tb-tp') && x.textContent.indexOf(t.geral) >= 0);
+      if (ja) { ja.classList.add('tb-tp'); if (res.fl) { ja.textContent = t.val + ' · total filtrado'; ja.classList.add('fl'); } }
+      else meta.insertAdjacentHTML('beforeend', '<span class="cs-pl tb-tp' + (res.fl ? ' fl' : '') + '" title="' + esc(t.rot) + '">' + esc(t.val) + (res.fl ? ' · total filtrado' : ' no total') + '</span>');
+    });
+    if (res.rod) meta.insertAdjacentHTML('beforeend', '<span class="cs-pl tb-tp">' + res.rod + '</span>');
+  }
+  const tots = bar.querySelector('.tb-tots'); if (tots) tots.remove();
+  const abas = $('.cs-ct .cs-abas');
+  if (abas && innerWidth >= 900) { const w = document.createElement('div'); w.className = 'cs-abas-l'; abas.parentNode.insertBefore(w, abas); w.appendChild(abas); bar.classList.add('tb-bar-sobe'); w.appendChild(bar); }
+  tbAperta();
+}
+/* gaveta aberta ou janela estreita: se as abas não cabem, a contagem ("6 itens") sai da linha para as abas caberem */
+function tbAperta() { $$('.cs-abas-l').forEach(w => { w.classList.remove('aperta', 'desce'); const a = w.querySelector('.cs-abas'), nao = () => a && a.scrollWidth > a.clientWidth + 1;
+  if (nao()) w.classList.add('aperta'); if (nao()) w.classList.add('desce'); }); } /* ainda não cabe: os ícones descem para baixo das abas (todas as abas à vista) */
+/* mais linhas carregam sozinhas quando o fim da tabela aparece (no lugar do "Mostrar mais") */
+let tbFimObs = null;
+function tbFimVigia() {
+  if (tbFimObs) tbFimObs.forEach(o => o.disconnect()); tbFimObs = []; if (typeof IntersectionObserver !== 'function') return;
+  const chega = (es, o) => es.forEach(e => { if (!e.isIntersecting) return; const id = e.target.getAttribute('data-tb'), st = tbEstado(id); o.unobserve(e.target); st.limite += 100; render(); });
+  /* a tabela que rola por dentro é a "janela" do vigia (funciona também dentro de um quadro); senão, a página */
+  $$('.tb-fim').forEach(x => { const w = x.closest('.tb-w'), raiz = w && (w.style.height || w.style.maxHeight) ? w : null, o = new IntersectionObserver(es => chega(es, o), { root: raiz, rootMargin: '0px 0px 200px 0px' }); o.observe(x); tbFimObs.push(o); });
+}
+addEventListener('resize', () => { tbAlinhaTot(); tbAperta(); tbAltura(); }); addEventListener('scroll', e => { if (e.target && e.target.classList && e.target.classList.contains('tb-w')) tbAlinhaTot(); }, true);
 function tbMarcas(cfg, c) {
   const st = tbEstado(cfg.id), o = st.ordem && st.ordem.k === c.k ? st.ordem.dir : '', f = tbColFiltrada(cfg, c.k), t = !!st.trava[c.k];
   return (f ? '<i class="tb-mf" title="Filtrada">' + ic('filtro') + '</i>' : '') + (o ? '<i class="tb-mo" title="' + (o === 'asc' ? 'Crescente' : 'Decrescente') + '">' + ic(o === 'asc' ? 'ordAsc' : 'ordDesc') + '</i>' : '') + (t ? '<i class="tb-mt" title="Travada">' + ic('cadeado') + '</i>' : '');
@@ -3101,9 +3386,12 @@ function tbMarcas(cfg, c) {
 function tbHTML(cfg) {
   TB[cfg.id] = cfg; const st = tbEstado(cfg.id), cols = tbVisiveis(cfg), todas = tbFiltrar(cfg), l = todas.slice(0, st.limite), fl = tbTemFiltro(cfg);
   const chave = cfg.chave || (r => r.id), mn = S.tbMenu && S.tbMenu.id === cfg.id && S.tbMenu.h === location.hash ? S.tbMenu.k : null;
-  let h = '<div class="tb" data-tb="' + esc(cfg.id) + '"><div class="tb-bar">' +
+  /* v0.6.15 (Elias, 14/11): o total e o resumo do rodapé sobem para as pílulas do cabeçalho da tela (tbSobe); "total filtrado" quando há filtro */
+  const totC = tbVisiveis(cfg).filter(c => c.total), fmtT = (c, rs) => { const v = typeof c.total === 'function' ? c.total(rs) : rs.reduce((s, r) => s + (Number(c.v(r)) || 0), 0); return c.fmtTotal ? c.fmtTotal(v) : numBR(v, c.dec); };
+  const res = { fl: fl && todas.length !== (cfg.linhas || []).length, tot: totC.map(c => ({ rot: c.rot, geral: fmtT(c, cfg.linhas || []), val: fmtT(c, todas) })), rod: cfg.rodape ? cfg.rodape(todas) : '' };
+  let h = '<div class="tb" data-tb="' + esc(cfg.id) + '" data-res="' + esc(JSON.stringify(res)) + '"><div class="tb-bar">' +
     (tbTemFiltroSolto(cfg) ? '<button type="button" class="tb-limpa" data-act="tb-limpa" data-tb="' + esc(cfg.id) + '">' + ic('x') + '<span>Limpar filtro</span></button>' : '') +
-    (cfg.aEsquerda ? cfg.aEsquerda(todas) : '<span class="tb-cont">' + todas.length + (todas.length !== (cfg.linhas || []).length ? ' de ' + (cfg.linhas || []).length : '') + ' ' + esc(cfg.unidade || 'registros') + '</span>') + '<span class="tb-sp"></span>' + tbTotal(cfg, cols, todas, fl) +
+    (cfg.aEsquerda ? cfg.aEsquerda(todas) : '<span class="tb-cont">' + todas.length + (todas.length !== (cfg.linhas || []).length ? ' de ' + (cfg.linhas || []).length : '') + ' ' + esc(tbUn(cfg, (cfg.linhas || []).length)) + '</span>') + '<span class="tb-sp"></span>' + tbTotal(cfg, cols, todas, fl) +
     '<button type="button" class="bt ic-so" data-act="tb-cols" data-tb="' + esc(cfg.id) + '" title="Escolher colunas" aria-label="Escolher colunas">' + ic('colunas') + '</button>' +
     '<button type="button" class="bt ic-so" data-act="tb-xlsx" data-tb="' + esc(cfg.id) + '" title="Baixar planilha (.xlsx)" aria-label="Baixar planilha (.xlsx)">' + ic('planilha') + '</button>' +
     '<button type="button" class="bt ic-so" data-act="tb-imp" data-tb="' + esc(cfg.id) + '" title="Imprimir" aria-label="Imprimir">' + ic('impressora') + '</button></div>';
@@ -3114,14 +3402,19 @@ function tbHTML(cfg) {
       '<button type="button" class="tb-thr" data-act="tb-menu" data-tb="' + esc(cfg.id) + '" data-k="' + esc(c.k) + '" title="Opções da coluna · arraste para mudar de lugar">' + esc(c.rot) + '</button>' +
       '<button type="button" class="tb-hm' + (mk ? ' on' : '') + '" data-act="tb-menu" data-tb="' + esc(cfg.id) + '" data-k="' + esc(c.k) + '" aria-haspopup="dialog" aria-expanded="' + ab + '" aria-label="Opções da coluna ' + esc(c.rot) + '">' + (mk || '') + '<i class="tb-hv">' + ic('abre') + '</i></button></div></th>';
   }).join('') + '</tr></thead><tbody>';
-  if (!l.length) h += '<tr><td colspan="' + cols.length + '" class="tb-vz">' + esc(cfg.vazio || 'Nada encontrado.') + '</td></tr>';
-  else h += l.map((r, n) => { const id = chave(r); return tbGrupoLinha(cfg, todas, l, n, cols.length) + '<tr' + (cfg.aoClicar ? ' data-act="tb-lin" data-tb="' + esc(cfg.id) + '" data-id="' + esc(id) + '" tabindex="0"' : '') + (cfg.selecionado === id ? ' class="sel"' : '') + '>' + cols.map(c => '<td class="' + (c.tipo === 'num' ? 'n' : '') + (c.cls ? ' ' + c.cls : '') + '"' + (c.titulo ? ' title="' + esc(c.titulo(r)) + '"' : '') + '>' + tbFmt(c, r) + '</td>').join('') + '</tr>'; }).join('');
-  h += '</tbody></table></div>';
-  h += '<div class="tb-pe"><span>Mostrando <b>' + l.length + '</b> de ' + todas.length + '</span>' + (cfg.rodape ? '<span>' + cfg.rodape(todas) + '</span>' : '') + (todas.length > l.length ? '<button type="button" class="bt" data-act="tb-mais" data-tb="' + esc(cfg.id) + '">Mostrar mais ' + Math.min(100, todas.length - l.length) + '</button>' : '') + '</div>';
-  requestAnimationFrame(tbAlinhaTot);
+  const carr = !l.length && !(cfg.linhas || []).length && S._carga > 0; /* v0.6.15 (ITEM 16): ainda carregando, não "Nada encontrado." */
+  if (carr) h = h.replace('<div class="tb" ', '<div class="tb tb-carr" ').replace(/<span class="tb-cont">[^<]*<\/span>/, '<span class="tb-cont">Carregando…</span>') + tbEsqueleto(cols);
+  else if (!l.length) h += '<tr><td colspan="' + cols.length + '" class="tb-vz">' + esc(cfg.vazio || 'Nada encontrado.') + '</td></tr>';
+  /* v0.6.15 (Grok D4): coluna de texto com algum valor comprido (mais de 60 letras) corta com "…" */
+  const lg = {}; cols.forEach(c => { if (!c.html && c.tipo !== 'num' && l.slice(0, 300).some(r => { const v = c.v(r); return typeof v === 'string' && v.length > 60; })) lg[c.k] = 1; });
+  if (l.length) h += l.map((r, n) => { const id = chave(r); return tbGrupoLinha(cfg, todas, l, n, cols.length) + '<tr' + (cfg.aoClicar ? ' data-act="tb-lin" data-tb="' + esc(cfg.id) + '" data-id="' + esc(id) + '" tabindex="0"' : '') + (cfg.selecionado === id ? ' class="sel"' : '') + '>' + cols.map(c => '<td class="' + (c.tipo === 'num' ? 'n' : '') + (c.cls ? ' ' + c.cls : '') + (c.longo || lg[c.k] ? ' tb-lg' : '') + '"' + (c.titulo ? ' title="' + esc(c.titulo(r)) + '"' : c.longo || lg[c.k] ? ' title="' + esc(String(c.v(r) || '')) + '"' : '') + '>' + tbFmt(c, r) + '</td>').join('') + '</tr>'; }).join('');
+  h += '</tbody></table>' + (todas.length > l.length ? '<div class="tb-fim" data-tb="' + esc(cfg.id) + '" aria-hidden="true">Carregando mais…</div>' : '') + '</div>';
+  h += '<div class="tb-pe" hidden><span>' + (carr ? 'Carregando…' : 'Mostrando <b>' + l.length + '</b> de ' + todas.length) + '</span>' + (cfg.rodape ? '<span>' + cfg.rodape(todas) + '</span>' : '') + (todas.length > l.length ? '<button type="button" class="bt" data-act="tb-mais" data-tb="' + esc(cfg.id) + '">Mostrar mais ' + Math.min(100, todas.length - l.length) + '</button>' : '') + '</div>';
+  requestAnimationFrame(() => { tbAlinhaTot(); tbAltura(); });
   if (mn) { h += (innerWidth < 600 ? '<div class="tb-mn-fundo" data-act="tb-mn-x"></div>' : '') + tbMenuHTML(cfg, mn); requestAnimationFrame(() => { tbPosMenu(); tbMnRestaura(); }); }
   return h + '</div>';
 }
+function tbEsqueleto(cols) { const w = [62, 78, 54, 70, 46, 66, 58, 74]; let h = ''; for (let i = 0; i < 6; i++) h += '<tr class="tb-esq" aria-hidden="true">' + cols.map((c, j) => '<td' + (c.tipo === 'num' ? ' class="n"' : '') + '><i style="width:' + w[(i + j) % w.length] + '%"></i></td>').join('') + '</tr>'; return h; }
 /* cabeçalho do grupo (v0.5): aparece antes da primeira linha de cada grupo, com o nome e quantos há nele */
 function tbGrupoLinha(cfg, todas, l, n, ncol) {
   const g = cfg.grupos; if (!g) return '';
@@ -3142,7 +3435,7 @@ function tbMenuHTML(cfg, k) {
   const pos = tbVisiveis(cfg).findIndex(x => x.k === k), nv = tbVisiveis(cfg).length;
   const lin = (act, ico, txt, on, extra) => '<button type="button" class="tb-mn-o' + (on ? ' on' : '') + '" data-act="' + act + '" data-tb="' + id + '" data-k="' + esc(k) + '"' + (extra || '') + dis + '>' + ic(ico) + '<span>' + txt + '</span>' + (on ? '<i>' + ic('ok') + '</i>' : '') + '</button>';
   let h = '<div class="tb-mn" data-tbmn="' + id + '" data-k="' + esc(k) + '" role="dialog" aria-label="Coluna ' + esc(c.rot) + '">' +
-    '<i class="tb-mn-pt"></i><div class="tb-mn-cab"><div class="tb-mn-t"><b>' + esc(c.rot) + '</b><small>' + vals.reduce((q, x) => q + x.n, 0) + ' ' + esc(cfg.unidade || 'registros') + ' · ' + vals.length + (vals.length === 1 ? ' valor' : ' valores') + '</small></div>' +
+    '<i class="tb-mn-pt"></i><div class="tb-mn-cab"><div class="tb-mn-t"><b>' + esc(c.rot) + '</b><small>' + vals.reduce((q, x) => q + x.n, 0) + ' ' + esc(tbUn(cfg, vals.reduce((q, x) => q + x.n, 0))) + ' · ' + vals.length + (vals.length === 1 ? ' valor' : ' valores') + '</small></div>' +
     '<button type="button" class="tb-mn-tr' + (tr ? ' on' : '') + '" data-act="tb-trava" data-tb="' + id + '" data-k="' + esc(k) + '" aria-pressed="' + tr + '" title="' + (tr ? 'Destravar: volta a poder mudar e o Limpar filtro passa a valer' : 'Travar: a ordem e o filtro desta coluna ficam assim, mesmo ao sair do app, até você destravar') + '">' + ic('cadeado') + '<span>' + (tr ? 'Travada' : 'Travar') + '</span></button></div>' +
     (tr ? '<p class="tb-mn-av">' + ic('cadeado') + 'Travada. Destrave para mudar a ordem ou o filtro.</p>' : '') +
     '<div class="tb-mn-corpo"><div class="tb-mn-g tb-mn-ord"><div class="tb-mn-hh"><span class="tb-mn-h">Ordenar</span><button type="button" class="bt lk tb-mn-lp" data-act="tb-mnlimpa" data-tb="' + id + '" data-k="' + esc(k) + '"' + (tbColFiltrada(cfg, k) && !tr ? '' : ' disabled') + '>Limpar esta coluna</button></div>' + '<button type="button" class="tb-mn-o tb-mn-ci' + (o ? ' on' : '') + '" data-act="tb-ociclo" data-tb="' + id + '" data-k="' + esc(k) + '"' + dis + ' title="Cada toque troca: ordem padrão, ' + nomes[0].toLowerCase() + ', ' + nomes[1].toLowerCase() + '">' + ic(o === 'asc' ? 'ordAsc' : o === 'desc' ? 'ordDesc' : 'ordPad') + '<span>' + (o === 'asc' ? nomes[0] : o === 'desc' ? nomes[1] : 'Ordem padrão') + '</span><em>' + (o === 'asc' ? 'toque: inverte' : o === 'desc' ? 'toque: volta ao padrão' : 'toque: ordena') + '</em></button></div>';
@@ -3322,7 +3615,7 @@ function tbPlanilha(id) {
 function tbImprimir(id) {
   const cfg = TB[id]; if (!cfg) return; const d = tbLinhasTexto(cfg), e = S.empresa || {};
   let p = $('#tb-imp'); if (!p) { p = document.createElement('div'); p.id = 'tb-imp'; document.body.appendChild(p); }
-  p.innerHTML = '<div class="imp-cab"><b>' + esc(cfg.titulo) + '</b><span>' + esc(e.nome || '') + ' · ' + esc(fmtD(hojeISO())) + ' · ' + d.linhas.length + ' ' + esc(cfg.unidade || 'registros') + '</span></div><table><thead><tr>' + d.cab.map(c => '<th>' + esc(c) + '</th>').join('') + '</tr></thead><tbody>' +
+  p.innerHTML = '<div class="imp-cab"><b>' + esc(cfg.titulo) + '</b><span>' + esc(e.nome || '') + ' · ' + esc(fmtD(hojeISO())) + ' · ' + d.linhas.length + ' ' + esc(tbUn(cfg, d.linhas.length)) + '</span></div><table><thead><tr>' + d.cab.map(c => '<th>' + esc(c) + '</th>').join('') + '</tr></thead><tbody>' +
     d.linhas.map(l => '<tr>' + l.map(v => '<td' + (typeof v === 'number' ? ' class="n"' : '') + '>' + esc(typeof v === 'number' ? numBR(v) : v) + '</td>').join('') + '</tr>').join('') + '</tbody></table><div class="imp-pe">' + APP_APELIDO + '</div>';
   document.body.classList.add('imprimindo'); setTimeout(() => { try { window.print(); } catch {} document.body.classList.remove('imprimindo'); }, 50);
 }
@@ -3634,7 +3927,7 @@ function alAbreItem(id) {
         gvCampos([['Local', i.local], ['Unidade', i.un], ['Embalagem', alFator(i) > 1 ? '1 ' + (i.unCompra || 'emb.') + ' = ' + alFator(i) + ' ' + (i.un || '') : ''], ['Consumo', consumo ? consumo + ' (média de 90 dias)' : 'sem saídas em 90 dias'], ['Por frasco', i.porFrasco ? 'sim (abre e termina frasco)' : '']]) +
         '<p class="gv-h">Lotes com saldo</p>' + (ls.length ? '<div class="gv-lotes">' + ls.map(l => '<div class="gv-lote"><span>' + esc(l.lote || 'sem lote') + (l.validade ? ' · vence ' + fmtD(l.validade) : '') + '</span><span class="num">' + alQ(l.saldo) + ' ' + esc(i.un || '') + (alVencido(l) ? ' ' + alPill('vencido', 'cr') : alAVencer(l) ? ' ' + alPill('vence logo', 'wa') : '') + '</span></div>').join('') + '</div>' : '<p class="tb-nada">Sem saldo.</p>') +
         (alPorFrasco(i) ? alAbertosHTML(i) : '') +
-        '<p class="gv-h">Últimas movimentações</p>' + gvLinha(movs.map(m => [(AL_TIPO[m.tipo] || m.tipo) + ' de ' + alQ(m.qtd) + ' ' + (i.un || '') + (m.motivo ? ' · ' + m.motivo : m.doc ? ' · Doc. ' + m.doc : '') + (m.anulada ? ' (anulada)' : ''), (m.porNome || '') + ' · ' + fmtD(m.data)])),
+        '<p class="gv-h">Últimas movimentações</p>' + (movs.length ? tlFluido('alm-' + i.id, movs.slice().reverse().map(m => ({ nome: (AL_TIPO[m.tipo] || m.tipo) + ' de ' + alQ(m.qtd) + ' ' + (i.un || ''), feito: true, data: m.data, txt: m.motivo || (m.doc ? 'Doc. ' + m.doc : ''), quem: m.porNome, alerta: m.anulada ? 'anulada' : '' }))) : '<p class="tb-nada">Sem movimentações.</p>'),
       rodape: alItemPe(i) };
   });
   render();
@@ -5338,7 +5631,8 @@ document.addEventListener('click', e => { const t = e.target.closest && e.target
    sv2_notifs, lidos por pessoa). O número no sino = avisos não lidos + pedidos para decidir. Prefixo: sn. */
 S.snRep = null; /* id do pedido que está sendo reprovado (mostra o campo do motivo) */
 const snRen = () => typeof ppRenovaveis === 'function' ? ppRenovaveis() : [];
-const snConta = () => S.user ? Notif.unread().length + Aprov.pendentesParaMim().length + snRen().length : 0;
+const snLibP = () => typeof ppLibPendentes === 'function' && typeof ppSup === 'function' && ppSup() ? ppLibPendentes() : []; /* v0.6.15: novas coletas do rodízio para aprovar */
+const snConta = () => S.user ? Notif.unread().length + Aprov.pendentesParaMim().length + snRen().length + snLibP().length : 0;
 const snAberto = () => S.gv === snGaveta;
 function snAtualiza() {
   const b = $('#sn-n'), n = snConta();
@@ -5361,10 +5655,17 @@ function snToastNovos() {
   d.innerHTML = '<div class="sn-tc">' + ic('sino') + '<span><small>Pedido para você confirmar' + (novos.length > 1 ? ' · +' + (novos.length - 1) + ' no sino' : '') + '</small><b>' + esc(a.titulo) + '</b>' + (a.descricao ? '<em>' + esc(a.descricao) + '</em>' : '') + '<small>' + esc(a.solicitanteNome || '') + ' · ' + fmtDT(a.ts) + '</small></span><button type="button" class="bt ic-so" data-act="sn-tx" aria-label="Fechar">' + ic('x') + '</button></div>' +
     '<div class="sn-bts"><button type="button" class="bt" data-act="sn-ver">Ver no sino</button>' + (aqui ? '<button type="button" class="bt pr" data-act="sn-apr" data-id="' + esc(a.id) + '">' + ic('ok') + 'Confirmar</button>' : '') + '</div>';
 }
+const SN_LIM = 40;
+/* detalhe do aviso dentro do sino: texto inteiro, de quem e quando; o que é do EFClaudian leva para lá */
+function snDetHTML(n) {
+  const fora = !n.refTipo || /^(aprovacao|tarefa|relatorio|semanal)/.test(n.refTipo);
+  return '<div class="sn-det">' + (n.texto ? '<p>' + esc(n.texto) + '</p>' : '') + '<small>' + esc((n.origem ? 'De ' + n.origem + ' · ' : '') + fmtDT(n.ts)) + '</small>' +
+    (fora ? '<a class="bt" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener">' + ic('externo') + 'Abrir no EFClaudian</a>' : '') + '</div>';
+}
 const snNivel = { critico: ['Crítico', 'cr'], aviso: ['Aviso', 'wa'], info: ['', ''] };
 function snGaveta() {
   if (!S.user) return null;
-  const pend = Aprov.pendentesParaMim().slice().sort((a, b) => String(b.ts).localeCompare(String(a.ts))), meus = Aprov.meusPendentes(), ns = Notif.mine().slice(0, 40), nl = Notif.unread().length;
+  const pend = Aprov.pendentesParaMim().slice().sort((a, b) => String(b.ts).localeCompare(String(a.ts))), meus = Aprov.meusPendentes(), todos = Notif.mine(), lim = S.snLim || SN_LIM, ns = todos.filter((n, i) => i < lim || !Notif.isRead(n)), nl = Notif.unread().length; /* v0.6.15 (Grok D2): não lido nunca fica de fora da lista */
   let c = '';
   if (pend.length) c += '<p class="gv-h">Para você decidir · ' + pend.length + '</p>' + pend.map(a => {
     const aqui = !!APROV_APLICA[a.tipo];
@@ -5373,18 +5674,46 @@ function snGaveta() {
         : aqui ? '<div class="sn-bts"><button type="button" class="bt" data-act="sn-rep" data-id="' + esc(a.id) + '">Recusar</button><button type="button" class="bt pr" data-act="sn-apr" data-id="' + esc(a.id) + '">' + ic('ok') + 'Confirmar</button></div>'
         : '<div class="sn-bts"><a class="bt" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener">' + ic('externo') + 'Decidir no EFClaudian</a></div>') + '</div>';
   }).join('');
+  const lp = snLibP();
+  if (lp.length) c += '<p class="gv-h">Novas coletas para aprovar · ' + lp.length + '</p>' + lp.map(y => { const rep = S.snRepLib === y.k, ja = (rzColetasDe(y.r, y.p, y.a)[0] || {}).data;
+    return '<div class="sn-pd"><b>Nova coleta de ' + esc(y.a) + ' · ' + esc(y.r.nome || y.r.tipo) + '</b><span>' + esc(y.l.motivo || 'sem motivo') + (ja ? ' · até aprovar, vale a coleta de ' + esc(fmtD(ja)) : '') + '</span><small>Pedida' + esc(rzLibQuem({ por: y.l.por, ts: y.l.ts })) + ' · ' + esc(y.p.nome) + '</small>' +
+      (rep ? '<div class="fm-c"><span class="fm-r">Por que recusa?</span><textarea class="fm-i" id="sn-lib-mot" rows="2"></textarea></div><div class="sn-bts"><button type="button" class="bt" data-act="sn-lib-x">Voltar</button><button type="button" class="bt pr" data-act="sn-lib-rep-ok" data-k="' + esc(y.k) + '">Recusar</button></div>'
+        : '<div class="sn-bts"><button type="button" class="bt" data-act="sn-lib-rep" data-k="' + esc(y.k) + '">Recusar</button><button type="button" class="bt pr" data-act="sn-lib-ok" data-k="' + esc(y.k) + '">' + ic('ok') + 'Aprovar</button></div>') + '</div>'; }).join('');
   const ren = snRen(); /* v0.4.7: no fim do ano, sugere renovar os planos de coleta */
   if (ren.length) c += '<p class="gv-h">Sugestões · ' + ren.length + '</p>' + ren.map(r => '<div class="sn-pd"><b>Renovar ' + esc(r.nome || r.tipo) + ' para ' + (Number(r.ano) + 1) + '?</b><span>Cria o plano de ' + (Number(r.ano) + 1) + ' igual a este: ' + (r.areas || []).length + ' áreas, as mesmas análises e a mesma frequência. O de ' + esc(String(r.ano)) + ' continua até o fim.</span><div class="sn-bts"><button type="button" class="bt" data-act="sn-ren-nao" data-id="' + esc(r.id) + '">Agora não</button><button type="button" class="bt pr" data-act="sn-ren" data-id="' + esc(r.id) + '">' + ic('recontar') + 'Renovar</button></div></div>').join('');
   if (meus.length) c += '<p class="gv-h">Seus pedidos esperando</p>' + gvLinha(meus.map(a => [a.titulo, 'aguardando ' + ((a.paraNomes || []).join(', ') || 'o superior') + ' · ' + fmtDT(a.ts)]));
   c += '<p class="gv-h">Avisos' + (nl ? ' · ' + nl + ' não lido(s)' : '') + '</p>' + (ns.length ? '<div class="sn-l">' + ns.map(n => {
     const lido = Notif.isRead(n), nv = snNivel[n.nivel] || snNivel.info, conf = n.nivel === 'critico' && !Notif.isConfirmed(n);
     return '<div class="sn-n' + (lido ? '' : ' nl') + '"><button type="button" class="sn-nb" data-act="sn-abre" data-id="' + esc(n.id) + '"><i aria-hidden="true"></i><span><b>' + esc(n.titulo) + '</b>' + (n.texto ? '<span>' + esc(n.texto) + '</span>' : '') + '<small>' + fmtDT(n.ts) + (n.origem ? ' · ' + esc(n.origem) : '') + (nv[0] ? ' · ' + nv[0] : '') + '</small></span></button>' +
-      (conf ? '<button type="button" class="bt" data-act="sn-conf" data-id="' + esc(n.id) + '">Confirmar ciência</button>' : '') + '</div>';
-  }).join('') + '</div>' : '<div class="vazio">' + ic('sino') + '<span>Nenhum aviso por enquanto.</span></div>');
-  return { ico: 'sino', sub: (pend.length ? pend.length + ' para decidir · ' : '') + (nl ? nl + ' não lido(s)' : 'tudo lido'), titulo: 'Avisos', corpo: c,
+      (conf ? '<button type="button" class="bt" data-act="sn-conf" data-id="' + esc(n.id) + '">Confirmar ciência</button>' : '') + (S.snDet === n.id ? snDetHTML(n) : '') + '</div>';
+  }).join('') + (todos.length > ns.length ? '<button type="button" class="bt sn-mais" data-act="sn-mais">Mostrar mais ' + Math.min(SN_LIM, todos.length - ns.length) + ' de ' + (todos.length - ns.length) + '</button>' : '') + '</div>' : '<div class="vazio">' + ic('sino') + '<span>Nenhum aviso por enquanto.</span></div>');
+  return { ico: 'sino', sub: (pend.length + lp.length ? (pend.length + lp.length) + ' para decidir · ' : '') + (nl ? nl + ' não lido(s)' : 'tudo lido'), titulo: 'Avisos', corpo: c,
     rodape: nl ? '<button type="button" class="bt" data-act="sn-todas">' + ic('ok') + 'Marcar todas como lidas</button>' : '' };
 }
-function snAbrir() { S.snRep = null; gvAbrir(snGaveta, true); }
+function snAbrir() { S.snRep = null; S.snDet = null; S.snLim = SN_LIM; gvAbrir(snGaveta, true); }
+/* v0.6.15 (Grok D3): cada tipo de aviso leva à sua tela (e ao detalhe, quando o app sabe abrir) */
+function snAbreRef(n) {
+  const id = n.refId || '', vai = (ar, ab) => { if (S.rota.area !== ar || S.rota.aba !== ab) { S._gvNav = true; ir(ar, ab); } };
+  const T = {
+    apont: () => S.apont && S.apont.some(x => x.id === id) && (vai('inspecoes', 'apontamentos'), apAbre(id), true),
+    treinamento: () => typeof trAbre === 'function' && (vai('qualidade', 'treinos'), trAbre(id), true),
+    analise: () => typeof anAbrir === 'function' && (vai('qualidade', 'analise'), anAbrir({ t: 'anp', id: id }), true),
+    rnc_plano: () => (vai('qualidade', 'analise'), true),
+    rnc: () => { S.auRid = id; vai('inspecoes', 'auditoria'); return true; },
+    coleta: () => typeof coAbre === 'function' && S.coletas && S.coletas.some(c => c.id === id) ? (vai('coletas', 'amostras'), coAbre(id), true) : (vai('coletas', 'amostras'), true),
+    coleta_envio: () => (vai('coletas', 'envio'), true),
+    agua_proj: () => (vai('coletas', 'agua'), true),
+    rodizio: () => (vai('coletas', 'programacao'), true),
+    bebedouro: () => (vai('inspecoes', 'cloro'), true),
+    cloro: () => (vai('inspecoes', 'cloro'), true),
+    lancamento: () => (vai('documentos', 'historico'), true),
+    impresso: () => (vai('documentos', 'impressos'), true),
+    inventario: () => (vai('almox', 'contagem'), true),
+    almox: () => (vai('almox', 'solicitacoes'), true)
+  };
+  const f = T[n.refTipo]; if (!f) return false;
+  try { return !!f(); } catch (e) { console.warn('sino: abrir', n.refTipo, e); return false; }
+}
 document.addEventListener('click', async e => {
   const t = e.target.closest && e.target.closest('[data-act^="sn-"]'); if (!t) return;
   const a = t.getAttribute('data-act'), id = t.getAttribute('data-id');
@@ -5395,6 +5724,10 @@ document.addEventListener('click', async e => {
   else if (a === 'sn-rep') { S.snRep = id; gvDesenha(true); const m = $('#sn-mot'); if (m) m.focus(); }
   else if (a === 'sn-rep-x') { S.snRep = null; gvDesenha(true); }
   else if (a === 'sn-rep-ok') { const m = String(($('#sn-mot') || {}).value || '').trim(); if (m.length < 3) { aviso('Escreva o motivo da recusa.', 'erro'); return; } t.disabled = true; if (await Aprov.decidir(id, false, m)) S.snRep = null; gvDesenha(true); }
+  else if (a === 'sn-lib-ok') { t.disabled = true; await ppLibDecide(t.getAttribute('data-k'), true); snAtualiza(); if (snAberto()) gvDesenha(true); }
+  else if (a === 'sn-lib-rep') { S.snRepLib = t.getAttribute('data-k'); gvDesenha(true); setTimeout(() => { const m = $('#sn-lib-mot'); if (m) m.focus(); }, 0); }
+  else if (a === 'sn-lib-x') { S.snRepLib = null; gvDesenha(true); }
+  else if (a === 'sn-lib-rep-ok') { t.disabled = true; if (await ppLibRecusa(t.getAttribute('data-k'), '#sn-lib-mot')) S.snRepLib = null; else t.disabled = false; snAtualiza(); if (snAberto()) gvDesenha(true); }
   else if (a === 'sn-apr') { t.disabled = true; const ok = await Aprov.decidir(id, true); const x = $('#sn-toast'); if (x && x.getAttribute('data-id') === id) x.remove(); if (ok) aviso('Confirmado.'); if (snAberto()) gvDesenha(true); }
   else if (a === 'sn-tx') { const x = $('#sn-toast'); if (x) x.remove(); }
   else if (a === 'sn-ver') { const x = $('#sn-toast'); if (x) x.remove(); snAbrir(); }
@@ -5403,8 +5736,12 @@ document.addEventListener('click', async e => {
     if (n.refTipo === 'equip' && n.refId && alVe() && S.almEq.some(q => q.id === n.refId)) { S._gvNav = true; ir('almox', 'equipamentos'); alAbreEq(n.refId); return; }
     if (n.refTipo === 'agua_acao' && n.refId && S.aguacol.some(c => c.id === n.refId && c.acao)) { acAbre(n.refId); return; }
     if (n.refTipo === 'coleta_agua' && n.refId && coVe() && S.aguacol.some(c => c.id === n.refId)) { S._gvNav = true; ir('coletas', 'agua'); agAbre(n.refId); return; }
-    if (n.refTipo === 'alm_mov' && n.refId && alVe() && S.almMov.some(m => m.id === n.refId)) { S._gvNav = true; ir('almox', 'movimentacoes'); alAbreMov(n.refId); }
+    if (n.refTipo === 'alm_mov' && n.refId && alVe() && S.almMov.some(m => m.id === n.refId)) { S._gvNav = true; ir('almox', 'movimentacoes'); alAbreMov(n.refId); return; }
+    if (snAbreRef(n)) return;
+    /* v0.6.15 (Grok D3): o aviso sem tela própria aqui (aprovação, tarefa, relatório semanal, coisas do EFClaudian) abre o detalhe dentro do sino */
+    S.snDet = S.snDet === n.id ? null : n.id; gvDesenha(true);
   }
+  else if (a === 'sn-mais') { S.snLim = (S.snLim || SN_LIM) + SN_LIM; gvDesenha(true); }
 });
 
 /* ===== busca.js ===== */
@@ -5413,7 +5750,25 @@ document.addEventListener('click', async e => {
    Campo vazio: "Voltar para" e "Mais usadas". Setas escolhem, Enter abre, Esc fecha. */
 const BG_FONTES = []; /* cada área registra: q => [{grupo, nome, sub, abrir:()=>{}}] */
 const bgNorm = s => String(s == null ? '' : s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
-function bgCasa(q, txt) { const pal = bgNorm(q).split(/\s+/).filter(Boolean), t = bgNorm(txt); return pal.length > 0 && pal.every(p => t.indexOf(p) >= 0); }
+/* v0.6.15 (observação do Grok: "desemcapado" não achava "desencapados"): cada palavra da busca precisa estar no texto;
+   se não estiver, vale uma palavra parecida — 1 letra diferente a partir de 5 letras, 2 a partir de 8 (troca, falta ou sobra). */
+function bgDist(a, b, max) {
+  if (Math.abs(a.length - b.length) > max) return max + 1;
+  let ant = Array.from({ length: b.length + 1 }, (_, j) => j);
+  for (let i = 1; i <= a.length; i++) { const cur = [i]; let menor = i;
+    for (let j = 1; j <= b.length; j++) { cur[j] = Math.min(ant[j] + 1, cur[j - 1] + 1, ant[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); if (cur[j] < menor) menor = cur[j]; }
+    if (menor > max) return max + 1; ant = cur; }
+  return ant[b.length];
+}
+function bgParecida(p, palavras) {
+  const max = p.length >= 8 ? 2 : p.length >= 5 ? 1 : 0; if (!max) return false;
+  return palavras.some(w => w.length >= 4 && (bgDist(p, w, max) <= max || (w.length > p.length && bgDist(p, w.slice(0, p.length), max) <= max)));
+}
+function bgCasa(q, txt) {
+  const pal = bgNorm(q).split(/\s+/).filter(Boolean), t = bgNorm(txt); if (!pal.length) return false;
+  let ws = null;
+  return pal.every(p => t.indexOf(p) >= 0 || bgParecida(p, ws || (ws = t.split(/[^a-z0-9]+/).filter(Boolean))));
+}
 BG_FONTES.push(q => {
   const r = [];
   AREAS.forEach(a => { (a.abas.length ? a.abas : [{ id: '', nome: a.nome }]).forEach(t => { if (!a.negada && !t.negada && bgCasa(q, a.nome + ' ' + t.nome)) r.push({ grupo: 'Telas', nome: t.nome, sub: t.id ? a.nome : 'Área', ico: a.ic, abrir: () => ir(a.id, t.id) }); }); });
@@ -5446,7 +5801,7 @@ function bgDesenha() {
 function bgAbrir() {
   if (!S.user || $('#bg')) return;
   const d = document.createElement('div'); d.id = 'bg'; d.className = 'bg-fundo';
-  d.innerHTML = '<div class="bg-caixa" role="dialog" aria-modal="true" aria-label="Buscar"><label class="bg-campo">' + ic('lupa') + '<input id="bg-q" type="search" autocomplete="off" placeholder="Buscar material, equipamento, solicitação ou tela" aria-label="Buscar"><kbd>Esc</kbd></label><div id="bg-res" class="bg-res" role="listbox"></div><p class="bg-dica">Setas para escolher · Enter abre · Esc fecha</p></div>';
+  d.innerHTML = '<div class="bg-caixa" role="dialog" aria-modal="true" aria-label="Buscar"><label class="bg-campo">' + ic('lupa') + '<input id="bg-q" type="search" autocomplete="off" placeholder="Buscar documento, material, coleta…" aria-label="Buscar"><kbd>Esc</kbd><button type="button" class="bt ic-so bg-x" data-act="bg-x" aria-label="Fechar a busca" title="Fechar">' + ic('x') + '</button></label><div id="bg-res" class="bg-res" role="listbox"></div><p class="bg-dica">Setas para escolher · Enter abre · Esc fecha</p></div>';
   document.body.appendChild(d); csCamadaAbre('bg', bgFecharSo); bgDesenha(); setTimeout(() => { const i = $('#bg-q'); if (i) i.focus(); }, 0);
 }
 function bgFecharSo() { const d = $('#bg'); if (d) d.remove(); }
@@ -5455,6 +5810,7 @@ function bgMove(n) { const l = $$('.bg-it'); if (!l.length) return; let k = l.fi
 document.addEventListener('input', e => { if (e.target && e.target.id === 'bg-q') bgDesenha(); });
 document.addEventListener('click', e => {
   if (e.target && e.target.id === 'bg') { bgFechar(); return; }
+  if (e.target.closest && e.target.closest('[data-act="bg-x"]')) { bgFechar(); return; } /* v0.6.15 (Grok D7): no celular, um X de verdade fecha a busca */
   const t = e.target.closest && e.target.closest('[data-act="bg-ir"], [data-act="cs-busca"]'); if (!t) return;
   if (t.getAttribute('data-act') === 'cs-busca') { bgAbrir(); return; }
   const r = BG_RES[+t.getAttribute('data-k')]; bgFecharSo(); csCamadaSaiu('bg', () => { if (r) r.abrir(); });
@@ -8923,15 +9279,18 @@ function apNCFecharOk() {
 function apParetoDados(por, dias) {
   const lim = addDias(hojeISO(), -dias), base = S.apont.filter(a => a.status !== 'nao_procede' && a.data >= lim);
   const m = {}; base.forEach(a => { const k = por === 'setor' ? (a.setor || 'sem setor') : por === 'grav' ? apGrav(a.grav)[1] : apCat(a.categoria)[1]; m[k] = (m[k] || 0) + 1; });
-  const itens = Object.keys(m).map(k => ({ nome: k, n: m[k] })).sort((a, b) => b.n - a.n || cmpTxt(a.nome, b.nome));
-  const total = itens.reduce((s, x) => s + x.n, 0); let ac = 0;
-  itens.forEach(x => { ac += x.n; x.ac = ac; x.pc = total ? ac / total * 100 : 0; x.vital = x.pc <= 80 || (x.ac - x.n) / (total || 1) * 100 < 80; });
+  /* v0.6.15 (observação do Grok): "Outro" e "sem setor" são sobra, não causa: vão sempre para o fim e nunca entram nos "poucos vitais" (prática do Pareto) */
+  const sobra = k => /^outros?$/i.test(String(k).trim()) || k === 'sem setor';
+  const itens = Object.keys(m).map(k => ({ nome: k, n: m[k], sobra: sobra(k) })).sort((a, b) => (a.sobra - b.sobra) || b.n - a.n || cmpTxt(a.nome, b.nome));
+  const total = itens.reduce((s, x) => s + x.n, 0), real = itens.filter(x => !x.sobra).reduce((s, x) => s + x.n, 0); let ac = 0, acR = 0;
+  itens.forEach(x => { ac += x.n; x.ac = ac; x.pc = total ? ac / total * 100 : 0; /* o corte de 80% conta só as causas de verdade */
+    if (!x.sobra) { const antes = acR; acR += x.n; x.vital = acR / (real || 1) * 100 <= 80 || antes / (real || 1) * 100 < 80; } else x.vital = false; });
   return { itens: itens, total: total };
 }
 function apParetoAbre() {
   S.apPPor = S.apPPor || 'cat'; S.apPDias = S.apPDias || 90;
   gvAbrir(() => {
-    const d = apParetoDados(S.apPPor, S.apPDias), max = d.itens.length ? d.itens[0].n : 1, vit = d.itens.filter(x => x.vital);
+    const d = apParetoDados(S.apPPor, S.apPDias), max = Math.max(1, ...d.itens.map(x => x.n)), vit = d.itens.filter(x => x.vital);
     const corpo = '<div class="fm-g cl-fm2">' + lcBl('Agrupar por', ddHTML('app:por', S.apPPor, [['cat', 'Categoria'], ['setor', 'Setor'], ['grav', 'Gravidade']])) + lcBl('Período', ddHTML('app:dias', String(S.apPDias), [['30', 'Últimos 30 dias'], ['90', 'Últimos 90 dias'], ['365', 'Último ano']])) + '</div>' +
       (!d.total ? '<div class="vazio">' + ic('graf') + '<b>Nenhum apontamento neste período.</b></div>' :
         '<div class="ap-par">' + d.itens.map(x => '<div class="ap-pl' + (x.vital ? ' vit' : '') + '"><span class="ap-pn">' + esc(x.nome) + '</span><span class="ap-pb"><i style="width:' + (x.n / max * 100).toFixed(1) + '%"></i></span><b>' + x.n + '</b><small>' + x.pc.toFixed(0) + '%</small></div>').join('') + '</div>' +
@@ -10448,8 +10807,22 @@ const rzAtivos = () => (S.rodizios || []).filter(r => r.ativo !== false);
 function rzDaArea(mat, area, iso) { for (const r of rzAtivos()) { if (!rzCobre(r, mat) || (r.areas || []).indexOf(area) < 0) continue; const p = rzPeriodoDe(r, iso); if (p && rzVale(r, p)) return { r: r, p: p }; } return null; }
 function rzDono(mat, area, iso) { const l = (S.rodizios || []).filter(r => rzCobre(r, mat) && (r.areas || []).indexOf(area) >= 0).sort((a, b) => (a.ativo === false ? 1 : 0) - (b.ativo === false ? 1 : 0)); for (const r of l) { const p = rzPeriodoDe(r, iso); if (p) return { r: r, p: p }; } return null; }
 const rzTrancado = (mat, area, iso) => { const d = rzDono(mat, area, iso); return d && d.r.fechados && d.r.fechados[d.p.k] ? d : null; };
-const rzLiberada = (r, p, area) => !!(r.liberadas && r.liberadas[p.k] && r.liberadas[p.k][area]);
-const rzLib = (r, p, area) => (r.liberadas && r.liberadas[p.k] && r.liberadas[p.k][area]) || null;
+/* v0.6.15 (regra do Elias, 14/11/2026: "a nova coleta precisa da aprovação do Líder ou do Principal"):
+   a liberação só vale se foi feita por um Líder ★ ou pelo Principal, ou se um deles aprovou depois (aprovadoPor).
+   Pedida por outra pessoa (o EFClaudian deixa o secundário liberar direto) = pendente: a coleta anterior continua valendo.
+   Recusada (recusadaEm) não vale e fica no histórico. Nada é apagado. */
+const rzLibBruta = (r, p, area) => (r && r.liberadas && r.liberadas[p.k] && r.liberadas[p.k][area]) || null;
+const rzNomeIg = (a, b) => !!a && !!b && String(a).trim().toLowerCase() === String(b).trim().toLowerCase();
+function rzLibUsr(l) { const us = S.users || []; return (l.porId && us.find(u => u.id === l.porId)) || us.find(u => rzNomeIg(u.nome, l.por)) || null; }
+function rzLibSit(l) {
+  if (!l) return ''; if (l.recusadaEm) return 'recusada';
+  if (l.aprovadoPor || l.porSup === true || !(S.users || []).length) return 'valida'; /* sem a lista de usuários não dá para conferir: vale como antes */
+  const u = rzLibUsr(l); return u && isSup(u) ? 'valida' : 'pendente';
+}
+const rzLib = (r, p, area) => { const l = rzLibBruta(r, p, area); return rzLibSit(l) === 'valida' ? l : null; };
+const rzLiberada = (r, p, area) => !!rzLib(r, p, area);
+const rzLibPend = (r, p, area) => { const l = rzLibBruta(r, p, area); return rzLibSit(l) === 'pendente' ? l : null; };
+const rzLibQuem = l => (l.por ? ' por ' + l.por : '') + (l.ts ? ' em ' + fmtD(String(l.ts).slice(0, 10)) : '') + (l.motivo ? ' (' + l.motivo + ')' : '');
 /* v0.4.7: com recoleta liberada, só contam as amostras registradas DEPOIS da liberação (a anterior fica no histórico) */
 const rzColetasDe = (r, p, area) => { const mat = rzMat(r), lib = rzLib(r, p, area); return S.coletas.filter(c => c.situacao !== 'cancelada' && c.tipo === mat && (c.talhao === area || (mat === 'COMPOSTO' && !c.talhao && c.loteComp === area)) && c.data >= p.ini && c.data <= p.fim && (!lib || String(c.criadoEm || c.data) > String(lib.ts || ''))); };
 /* devolve o texto do bloqueio ou '' (igual ao EFClaudian) */
@@ -10457,6 +10830,7 @@ function rzBarrar(mat, area, iso) {
   const t = rzTrancado(mat, area, iso); if (t) return area + ': o plano de coleta "' + t.r.nome + '" (' + t.p.nome + ') foi encerrado — não aceita mais coleta.';
   const x = rzDaArea(mat, area, iso); if (!x) return '';
   const ja = rzColetasDe(x.r, x.p, area).filter(c => c.tipo === mat);
+  if (ja.length && !rzLiberada(x.r, x.p, area) && rzLibPend(x.r, x.p, area)) return area + ': a nova coleta pedida' + rzLibQuem(rzLibPend(x.r, x.p, area)) + ' ainda espera a aprovação do Líder ★ ou do Principal. Até lá vale a coleta de ' + fmtD(ja[0].data) + '.';
   if (ja.length && !rzLiberada(x.r, x.p, area)) return area + ' já tem ' + (CO_TXT[mat] || mat).toLowerCase() + ' no ' + x.p.nome + ' (plano de coleta "' + x.r.nome + '", ' + fmtD(ja[0].data) + '). Para coletar de novo, peça recoleta no plano de coleta (EFClaudian).';
   return '';
 }
@@ -10568,7 +10942,7 @@ function pgTela() {
         { k: 'tal', rot: 'Talhão', fixa: true, v: r => r.talhao, cls: 'forte' },
         { k: 'tipo', rot: 'Tipo', v: r => r.tipo },
         { k: 'orig', rot: 'Origem', v: r => r.orig },
-        { k: 'pts', rot: 'Pontos', v: r => String(r.pontos || ''), html: r => r.pontos ? esc(String(r.pontos)) : '' },
+        { k: 'pts', rot: 'Pontos', tipo: 'num', v: r => r.pontos ? Number(r.pontos) || 0 : null, html: r => r.pontos ? esc(String(r.pontos)) : '' },
         { k: 'col', rot: 'Coletor', v: r => r.coletor },
         { k: 'prof', rot: 'Prof', v: r => r.prof },
         { k: 'est', rot: 'Estádio', v: r => r.estadio },
@@ -10590,6 +10964,12 @@ function pgAreaEstado(r, p, area) {
   const pr = pgRzDe(r, p, area) || (S.prog || []).find(x => pgSit(x) === 'pendente' && pgOrigem(x) === 'Plano' && x.talhao === area && x.data && pgGera(x.tipo).indexOf(mat) >= 0 && x.data <= p.fim && (x.prazo || x.data) >= addDias(p.ini, -31));
   return pr ? { k: pgQuando(pr).k === 'atrasada' ? 'x' : 'p', d: pr.data, col: pr.coletor } : { k: 'f' };
 }
+/* v0.6.15 (regra do Elias, 14/11: "a coleta é feita uma vez por rodízio, a não ser que seja descartada ou eu peça uma nova coleta"):
+   a área com nova coleta pedida mostra quem pediu, quando e o motivo; a coleta anterior fica no histórico e não conta mais */
+function pgRecTxt(r, p, area, k) {
+  const pd = rzLibPend(r, p, area); if (pd) return ' · nova coleta pedida' + rzLibQuem(pd) + ', aguardando a aprovação do Líder ★ ou do Principal; até lá vale a coleta já feita';
+  const l = rzLib(r, p, area); if (!l || k === 'c') return ''; return ' · nova coleta pedida' + rzLibQuem(l) + (l.aprovadoPor ? ', aprovada por ' + l.aprovadoPor : '');
+}
 function pgPlanosHTML() {
   const h = hojeISO(), l = rzAtivos().map(r => ({ r: r, p: rzPeriodoDe(r, h) })).filter(x => x.p && rzVale(x.r, x.p)).sort((a, b) => cmpTxt(a.r.tipo, b.r.tipo) || cmpTxt(a.r.nome, b.r.nome));
   if (!l.length) return '';
@@ -10603,7 +10983,7 @@ function pgPlanosHTML() {
       (r.nome && !String(r.nome).toLowerCase().includes(String(r.tipo || '').toLowerCase()) ? '<small>' + esc(r.nome) + '</small>' : '') +
       '<div class="pg-plb" role="img" aria-label="' + pc + '% coletado"><i style="width:' + pc + '%"></i></div>' +
       '<p class="pg-pln"><b>' + pc + '%</b> · ' + c + ' de ' + pl1(areas.length) + ' coletada' + (c === 1 ? '' : 's') + '</p>' + (pr ? '<p class="pg-pln">' + pr + ' programada' + (pr > 1 ? 's' : '') + '</p>' : '') +
-      '<div class="pg-ars">' + est.map(y => '<span class="pg-ar ' + y.e.k + '" title="' + esc(y.a + ', ' + tit[y.e.k] + (y.e.d ? ' para ' + pgDiaTxt(y.e.d) + (y.e.col ? ', ' + y.e.col : '') : '')) + '">' + esc(rot[y.a]) + '</span>').join('') + '</div></a>';
+      '<div class="pg-ars">' + est.map(y => '<span class="pg-ar ' + y.e.k + '" title="' + esc(y.a + ', ' + tit[y.e.k] + (y.e.d ? ' para ' + pgDiaTxt(y.e.d) + (y.e.col ? ', ' + y.e.col : '') : '') + pgRecTxt(r, p, y.a, y.e.k)) + '">' + esc(rot[y.a]) + (y.e.k !== 'c' && rzLib(r, p, y.a) ? '<i class="pg-rec" aria-hidden="true">' + ic('recoleta') + '</i>' : rzLibPend(r, p, y.a) ? '<i class="pg-rec pend" aria-hidden="true">' + ic('relogio') + '</i>' : '') + '</span>').join('') + '</div></a>';
   }).join('') + '</section>';
 }
 const pgLegenda = () => '<span class="pg-lg"><button type="button" class="pg-i" aria-label="Legenda das cores das áreas">' + ic('excl') + '</button><span class="pg-leg" role="tooltip"><span><i class="pg-ar c"></i>coletada</span><span><i class="pg-ar p"></i>programada</span><span><i class="pg-ar x"></i>programada e atrasada</span><span><i class="pg-ar f"></i>falta</span></span></span>';
@@ -10790,6 +11170,15 @@ document.addEventListener('click', ev => {
   else if (a === 'pg-av-ok') pgAvOk();
 });
 
+/* v0.6.15 (observação do Grok: a busca geral não achava plano de coleta): planos ativos pelo tipo, nome, ano, frequência ou uma área */
+BG_FONTES.push(q => {
+  if (typeof coVe !== 'function' || !coVe()) return [];
+  return rzAtivos().filter(r => bgCasa(q, [r.tipo, r.nome, r.ano, RZ_FREQ[r.freq] || '', 'plano de coleta rodízio'].concat(r.areas || []).join(' '))).slice(0, 6).map(r => {
+    const p = rzPeriodoDe(r, hojeISO()), area = (r.areas || []).find(a => bgCasa(q, a) && !bgCasa(q, [r.tipo, r.nome, r.ano, RZ_FREQ[r.freq] || '', 'plano de coleta rodízio'].join(' ')));
+    return { grupo: 'Planos de coleta', nome: (r.tipo || r.nome) + ' · ' + (RZ_FREQ[r.freq] || '') + ' · ' + r.ano, sub: (area ? 'área ' + area + ' · ' : '') + (r.areas || []).length + ' áreas' + (p ? ' · ' + p.nome : ''), ico: 'frasco', abrir: () => { location.hash = '#/coletas/plano/' + encodeURIComponent(r.id); } };
+  });
+});
+
 /* ===== plano.js ===== */
 /* ======================= EFCwork · plano.js — v0.4.6 / v0.4.7 =======================
    Página própria do plano de coleta (abre ao tocar no cartão em Coletas › Programação).
@@ -10812,7 +11201,7 @@ function ppAreas(r, p) {
   return (r.areas || []).slice().sort(cmpTxt).map(a => {
     const cs = rzColetasDe(r, p, a), pr = cs.length ? null : ppProgDe(r, p, a);
     const k = cs.length ? 'c' : pr ? (pgQuando(pr).k === 'atrasada' ? 'x' : 'p') : 'f';
-    return { a: a, rot: rot[a], k: k, rec: k !== 'c' && !!rzLib(r, p, a), d: cs.length ? cs.map(c => c.data).sort().pop() : pr ? pr.data : '', pr: pr, cs: cs };
+    return { a: a, rot: rot[a], k: k, rec: k !== 'c' && !!rzLib(r, p, a), pend: !!rzLibPend(r, p, a), d: cs.length ? cs.map(c => c.data).sort().pop() : pr ? pr.data : '', pr: pr, cs: cs };
   });
 }
 const ppSel = rid => { if (!S._pp || S._pp.rid !== rid) S._pp = { rid: rid, sel: {} }; return S._pp.sel; };
@@ -10834,7 +11223,7 @@ function ppTela(id) {
     '<button type="button" class="bt ic-so" data-act="pp-folha" data-id="' + esc(r.id) + '" title="Folha de campo (áreas que faltam)" aria-label="Imprimir a folha de campo">' + ic('impressora') + '</button>';
   const meta = [alPill(sit[0], sit[1]), '<span>' + esc((p.nome ? p.nome + ' · ' : '') + fmtD(p.ini).slice(0, 5) + ' a ' + fmtD(p.fim).slice(0, 5)) + '</span>'];
   const chip = x => { const on = !!sel[x.a], dica = x.a + ', ' + PP_TIT[x.k] + (x.d ? ' ' + fmtD(x.d) : '') + (x.pr && x.pr.coletor ? ', ' + x.pr.coletor : '');
-    const dentro = (on ? '<i class="pp-ok">' + ic('ok') + '</i>' : '') + (x.rec ? '<i class="pp-rc" title="Recoleta liberada">' + ic('recontar') + '</i>' : '') + '<b>' + esc(x.rot) + '</b>' + (x.d ? '<small>' + fmtD(x.d).slice(0, 5) + '</small>' : '');
+    const dentro = (on ? '<i class="pp-ok">' + ic('ok') + '</i>' : '') + (x.rec ? '<i class="pp-rc" title="Recoleta liberada">' + ic('recontar') + '</i>' : x.pend ? '<i class="pp-rc pend" title="Nova coleta pedida, aguardando a aprovação do Líder ★ ou do Principal">' + ic('relogio') + '</i>' : '') + '<b>' + esc(x.rot) + '</b>' + (x.d ? '<small>' + fmtD(x.d).slice(0, 5) + '</small>' : '');
     return x.k === 'c' || !pode ? '<span class="pp-ar ' + x.k + '" title="' + esc(dica) + '">' + dentro + '</span>'
       : '<button type="button" class="pp-ar ' + x.k + (on ? ' sel' : '') + '" data-act="pp-ck" data-id="' + esc(x.a) + '" data-r="' + esc(r.id) + '" aria-pressed="' + on + '" title="' + esc(dica) + '">' + dentro + '</button>'; };
   const n = ppMarcadas(r.id).length, aba = ppAba(r.id);
@@ -10985,11 +11374,12 @@ function ppAjustes(r, p, ar) {
       : sup ? '<p class="pp-nota">Ao encerrar, o app guarda o retrato do período: o que foi e o que não foi coletado, com o motivo de cada área que faltou. Depois disso, ninguém lança mais coleta deste período neste plano.</p><div class="pp-pe"><button type="button" class="bt" data-act="pp-enc" data-id="' + esc(r.id) + '">' + ic('cadeado') + 'Encerrar período</button></div>'
       : '<p class="pp-nota">Encerrar o período: Líder ★ ou Administrador.</p>'));
   /* Recoletas */
-  const lib = (r.liberadas && r.liberadas[p.k]) || {}, libs = Object.keys(lib).sort((a, b) => String(lib[b].ts || '').localeCompare(String(lib[a].ts || ''))), pend = ppRecPend(r.id, p.k);
+  const lib = (r.liberadas && r.liberadas[p.k]) || {}, libsT = Object.keys(lib).sort((a, b) => String(lib[b].ts || '').localeCompare(String(lib[a].ts || ''))), pend = ppRecPend(r.id, p.k);
+  const libP = libsT.filter(a => rzLibSit(lib[a]) === 'pendente'), libs = libsT.filter(a => rzLibSit(lib[a]) !== 'pendente');
   const cols = ar.filter(x => x.k === 'c' && !pend.some(y => y.refId === ppRecRef(r.id, p.k, x.a)));
   const linhas = pend.map(y => { const a = String(y.refId).split(':').pop(); return '<tr><td>' + esc(a) + '</td><td class="l">' + esc(String(y.descricao || '').split(' — ').slice(1).join(' — ')) + '</td><td>' + esc(y.solicitanteNome || '') + '<small>aguardando confirmação</small></td><td>' + esc(fmtD(String(y.ts).slice(0, 10)).slice(0, 5)) + '</td></tr>'; })
-    .concat(libs.map(a => { const l = lib[a] || {}; return '<tr><td>' + esc(a) + '</td><td class="l">' + esc(l.motivo || '') + '</td><td>' + esc(l.por || '') + (l.aprovadoPor ? '<small>confirmado por ' + esc(l.aprovadoPor) + '</small>' : '') + '</td><td>' + (l.ts ? esc(fmtD(String(l.ts).slice(0, 10)).slice(0, 5)) : '') + '</td></tr>'; }));
-  const rec = cad('Recoletas', esc(p.nome),
+    .concat(libs.map(a => { const l = lib[a] || {}; return '<tr' + (l.recusadaEm ? ' class="pp-rcz"' : '') + '><td>' + esc(a) + '</td><td class="l">' + esc(l.motivo || '') + (l.recusadaEm ? '<small>recusada' + (l.recusaMotivo ? ': ' + esc(l.recusaMotivo) : '') + '</small>' : '') + '</td><td>' + esc(l.por || '') + (l.recusadaEm ? '<small>recusada por ' + esc(l.recusadaPor || '') + '</small>' : l.aprovadoPor ? '<small>confirmado por ' + esc(l.aprovadoPor) + '</small>' : '') + '</td><td>' + (l.ts ? esc(fmtD(String(l.ts).slice(0, 10)).slice(0, 5)) : '') + '</td></tr>'; }));
+  const rec = cad('Recoletas', esc(p.nome), (libP.length ? ppLibPendHTML(r, p, libP.map(a => ({ a: a, l: lib[a], ja: (rzColetasDe(r, p, a)[0] || {}).data || '' })), !fch) : '') +
     (coPode() && !fch ? (cols.length ? lcBl('Liberar recoleta de', ddHTML('pp:rec:' + r.id, '', [['', 'Escolha a área coletada']].concat(cols.map(x => [x.a, x.a + ' · coletada ' + fmtD(x.d).slice(0, 5)])))) : '<p class="pp-nada">Nenhuma área coletada para liberar.</p>') + (sup ? '' : '<p class="pp-nota">O pedido vai para o Líder ★ ou o Administrador confirmar.</p>') : '') +
     (linhas.length ? '<div class="pp-tbw"><table class="pp-tb"><thead><tr><th>Área</th><th class="l">Motivo</th><th>Quem</th><th>Quando</th></tr></thead><tbody>' + linhas.join('') + '</tbody></table></div>' : '<p class="pp-nada">Nenhuma recoleta neste período.</p>'));
   return '<div class="pp-aj">' + plano + areas + per + rec + '</div>';
@@ -11070,7 +11460,7 @@ LC_FORM.pprec = f => {
 };
 async function ppRecGrava(pl, ped) {
   const r = ppPlano(pl.rid); if (!r) throw new Error('Plano não encontrado.');
-  const up = {}; up['liberadas.' + pl.pk + '.' + pl.area] = { motivo: pl.motivo, por: ped ? ped.solicitanteNome : S.user.nome, ts: nowISO(), aprovadoPor: ped ? S.user.nome : '' };
+  const up = {}; up['liberadas.' + pl.pk + '.' + pl.area] = { motivo: pl.motivo, por: ped ? ped.solicitanteNome : S.user.nome, porId: ped ? (ped.solicitanteId || '') : S.user.id, porSup: !ped && isSup(S.user), ts: nowISO(), aprovadoPor: ped ? S.user.nome : '', aprovadoPorId: ped ? S.user.id : '', aprovadoEm: ped ? nowISO() : '' };
   await Data.col('sv2_rodizio').update(r.id, up);
   Audit.log({ acao: 'recoleta_rodizio', entidade: 'rodizio', entidadeId: r.id, resumo: 'Recoleta liberada: ' + pl.area + ' no ' + pl.pk + ' (' + (r.nome || r.tipo) + ') — ' + pl.motivo + (ped ? ' · pedido de ' + ped.solicitanteNome : '') });
 }
@@ -11088,6 +11478,41 @@ async function ppRecOk() {
   if (id) { lcFim(); aviso('Pedido de recoleta enviado.'); } else lcErro('Não deu para enviar o pedido.');
 }
 DD_AO.pp = (k, v) => { if (k.indexOf('rec:') === 0 && v && coPode()) lcAbrir({ k: 'pprec', rid: k.slice(4), area: v, mot: '', det: '' }); };
+
+/* ---------- v0.6.15 · nova coleta pedida sem aprovação (regra do Elias, 14/11/2026) ----------
+   Liberação gravada por quem não é Líder ★ nem Principal (o EFClaudian deixa o secundário liberar direto) fica pendente:
+   a coleta já feita continua valendo até um Líder ★ ou o Principal aprovar. Aprovar grava aprovadoPor/aprovadoPorId/aprovadoEm;
+   recusar grava recusadaPor/recusadaPorId/recusadaEm/recusaMotivo. Nada é apagado. */
+const ppLibK = (rid, pk, a) => rid + '|' + pk + '|' + a;
+function ppLibPendHTML(r, p, l, aberto) {
+  const sup = ppSup();
+  return '<div class="pp-lps">' + l.map(x => { const k = ppLibK(r.id, p.k, x.a), rep = S._ppLibRep === k;
+    return '<div class="pp-lp"><div class="pp-lpt"><b>Nova coleta de ' + esc(x.a) + '</b><span>' + esc(x.l.motivo || 'sem motivo') + '</span><small>Pedida' + esc(rzLibQuem({ por: x.l.por, ts: x.l.ts })) + ' · aguardando a aprovação do Líder ★ ou do Principal' + (x.ja ? '; até lá vale a coleta de ' + esc(fmtD(x.ja)) : '') + '</small></div>' +
+      (sup && aberto ? (rep ? '<div class="fm-c pp-lpm"><span class="fm-r">Por que recusa?</span><textarea class="fm-i" id="pp-lp-mot" rows="2"></textarea></div><div class="pp-lpb"><button type="button" class="bt" data-act="pp-lib-x">Voltar</button><button type="button" class="bt pr" data-act="pp-lib-rep-ok" data-k="' + esc(k) + '">Recusar</button></div>'
+        : '<div class="pp-lpb"><button type="button" class="bt" data-act="pp-lib-rep" data-k="' + esc(k) + '">Recusar</button><button type="button" class="bt pr" data-act="pp-lib-ok" data-k="' + esc(k) + '">' + ic('ok') + 'Aprovar</button></div>') : '') + '</div>'; }).join('') + '</div>';
+}
+/* todas as liberações pendentes dos planos ativos, nos períodos ainda abertos (para o sino do Líder ★ e do Principal) */
+function ppLibPendentes() {
+  const out = []; if (!S.user) return out;
+  rzAtivos().forEach(r => { const per = rzPeriodos(r); Object.keys(r.liberadas || {}).forEach(pk => { if (r.fechados && r.fechados[pk]) return; const p = per.find(x => x.k === pk); if (!p) return;
+    Object.keys(r.liberadas[pk] || {}).forEach(a => { const l = r.liberadas[pk][a]; if (rzLibSit(l) === 'pendente') out.push({ r: r, p: p, a: a, l: l, k: ppLibK(r.id, pk, a) }); }); }); });
+  return out.sort((x, y) => String(x.l.ts || '').localeCompare(String(y.l.ts || '')));
+}
+async function ppLibDecide(k, sim, motivo) {
+  if (!ppSup()) return false;
+  const [rid, pk, a] = String(k).split('|'), r = ppPlano(rid), l = r && r.liberadas && r.liberadas[pk] && r.liberadas[pk][a];
+  if (!l || rzLibSit(l) !== 'pendente') { aviso('Este pedido já foi decidido.'); return false; }
+  const base = 'liberadas.' + pk + '.' + a + '.', up = {}, agora = nowISO();
+  if (sim) { up[base + 'aprovadoPor'] = S.user.nome; up[base + 'aprovadoPorId'] = S.user.id; up[base + 'aprovadoEm'] = agora; }
+  else { up[base + 'recusadaPor'] = S.user.nome; up[base + 'recusadaPorId'] = S.user.id; up[base + 'recusadaEm'] = agora; up[base + 'recusaMotivo'] = motivo; }
+  try {
+    await Data.col('sv2_rodizio').update(rid, up);
+    Audit.log({ acao: sim ? 'aprovar_recoleta_rodizio' : 'recusar_recoleta_rodizio', entidade: 'rodizio', entidadeId: rid, resumo: (sim ? 'Aprovou' : 'Recusou') + ' a nova coleta de ' + a + ' no ' + pk + ' (' + (r.nome || r.tipo) + ')' + (l.por ? ', pedida por ' + l.por : '') + (sim ? '' : ' — ' + motivo) });
+    const u = rzLibUsr(l); if (u && u.id !== S.user.id) Notif.send({ nivel: 'info', titulo: 'Nova coleta de ' + a + (sim ? ' aprovada' : ' recusada'), texto: (r.nome || r.tipo) + ' · ' + (sim ? 'pode programar e coletar de novo.' : 'vale a coleta já feita. Motivo: ' + motivo), para: [u.id], refTipo: 'rodizio', refId: rid });
+    aviso(sim ? 'Nova coleta de ' + a + ' aprovada.' : 'Nova coleta de ' + a + ' recusada.'); return true;
+  } catch (e) { aviso(svErro(e), 'erro'); return false; }
+}
+async function ppLibRecusa(k, campo) { const m = String(($(campo) || {}).value || '').trim(); if (m.length < 3) { aviso('Escreva o motivo da recusa.', 'erro'); return false; } return ppLibDecide(k, false, m); }
 
 /* ---------- Renovar: sem botão; a partir de 1º/12 o sino sugere (pedido de 08/11 11:00) ---------- */
 function ppRenovaveis() {
@@ -11194,7 +11619,7 @@ DD_AO.lc = (function (ant) { return (k, v) => {
   f[mapa[k]] = v; f.sujo = true; f.msg = ''; gvDesenha(true);
   if (v === '__outro') { const i = $('#gv [data-fm="' + mapa[k] + 'Txt"]'); if (i) i.focus(); }
 }; })(DD_AO.lc);
-document.addEventListener('click', ev => {
+document.addEventListener('click', async ev => {
   const t = ev.target.closest && ev.target.closest('[data-act^="pp-"]'); if (!t) return;
   const a = t.getAttribute('data-act'), id = t.getAttribute('data-id'), f = S.fm;
   if (a === 'pp-ck') { const sel = ppSel(t.getAttribute('data-r')); sel[id] = !sel[id]; render(); }
@@ -11220,6 +11645,10 @@ document.addEventListener('click', ev => {
   else if (a === 'pp-enc') { if (!ppSup()) return; lcAbrir({ k: 'ppenc', rid: id, obs: '' }); }
   else if (a === 'pp-enc-ok') ppEncOk();
   else if (a === 'pp-rec-ok') ppRecOk();
+  else if (a === 'pp-lib-ok') { t.disabled = true; await ppLibDecide(t.getAttribute('data-k'), true); }
+  else if (a === 'pp-lib-rep') { S._ppLibRep = t.getAttribute('data-k'); render(); setTimeout(() => { const x = $('#pp-lp-mot'); if (x) x.focus(); }, 0); }
+  else if (a === 'pp-lib-x') { S._ppLibRep = null; render(); }
+  else if (a === 'pp-lib-rep-ok') { if (await ppLibRecusa(t.getAttribute('data-k'), '#pp-lp-mot')) { S._ppLibRep = null; render(); } }
 });
 
 /* ===== entrar.js ===== */
@@ -11440,12 +11869,21 @@ const AT_LIM = 100;
 S.atFiltro = { pessoa: '', area: '', app: '', dias: '30' };
 S.atAberto = false; S.atLinha = null; S.atLimite = AT_LIM; S.audit = [];
 
-CS_CARGAS.push(() => {
-  if (!isPrincipal(S.user)) return;
-  csOuve('sv2_audit', l => { S.audit = l || []; if (S.rota.area === 'adm' && S.rota.aba === 'atividade') render(); }, { order: 'ts', limit: 1000 });
-});
+/* v0.6.15 (Grok D1): antes lia só os 1000 registros mais recentes (o gráfico zerava dias cheios e "Todo o período" mostrava 1000).
+   Agora lê pelo período escolhido (no mínimo os 30 dias do gráfico, com 1 dia de folga pelo fuso), e só "Todo o período" lê tudo. */
+const AT_TETO = 50000;
+function atOuve() {
+  if (S._atOff) { try { S._atOff(); } catch {} const k = S._desl.indexOf(S._atOff); if (k >= 0) S._desl.splice(k, 1); S._atOff = null; }
+  const d = S.atFiltro.dias, o = { order: 'ts', limit: AT_TETO };
+  if (d !== '0') o.desde = addDias(hojeISO(), -Math.max(Number(d) || 30, 30));
+  S._atDias = d; S._atCarregou = false;
+  S._atOff = csOuve('sv2_audit', l => { S.audit = l || []; S._atCarregou = true; if (S.rota.area === 'adm' && S.rota.aba === 'atividade') render(); }, o);
+}
+CS_CARGAS.push(() => { if (!isPrincipal(S.user)) return; S._atOff = null; atOuve(); });
 
 /* ---------- como cada registro é mostrado ---------- */
+/* v0.6.15 (Grok): o resumo que já começa com o nome da pessoa não repete o nome ("José José Elias… abriu o app") */
+function atResumoTx(r) { const t = String(r.resumo || atAcao(r.acao) || ''), nm = String(r.userName || '').trim(); if (nm && t.toLowerCase().indexOf(nm.toLowerCase()) === 0) { const x = t.slice(nm.length).trim(); return x || t; } return t; }
 const AT_ACOES = {
   criar_coleta: 'Criou coleta', envio_coleta: 'Envio', corrigir_os: 'Corrigiu O.S', programar_plano: 'Programou', desprogramar_plano: 'Desprogramou',
   criar_rodizio: 'Novo plano', alterar_rodizio: 'Alterou plano', encerrar_rodizio: 'Encerrou plano', recoleta_rodizio: 'Recoleta',
@@ -11535,7 +11973,7 @@ function atLinhas(l) {
     if (d !== dia) { if (aberto) h += '</div>'; dia = d; aberto = true; h += '<div class="at-dia">' + esc(atDiaTxt(d)) + '</div><div class="at-tl">'; }
     h += '<div class="at-ev' + (ab ? ' ab' : '') + '"><button type="button" class="at-li" data-act="at-linha" data-id="' + esc(id) + '" aria-expanded="' + ab + '">' +
       '<span class="at-h">' + esc(atHora(r.ts)) + '</span><span class="at-ini" title="' + esc(r.userName || '') + '">' + esc(atIni(r.userName)) + '</span>' +
-      '<span class="at-t"><b>' + esc((r.userName || '—').split(' ')[0]) + '</b> ' + esc(r.resumo || atAcao(r.acao)) + '<small>' + esc(atArea(r) + (r.entidadeId ? ' · ' + r.entidadeId : '') + ' · ' + atApp(r)) + '</small></span>' +
+      '<span class="at-t"><b>' + esc((r.userName || '—').split(' ')[0]) + '</b> ' + esc(atResumoTx(r)) + '<small>' + esc(atArea(r) + (r.entidadeId ? ' · ' + r.entidadeId : '') + ' · ' + atApp(r)) + '</small></span>' +
       '<span class="pill ' + atCor(r.acao) + '">' + esc(atAcao(r.acao)) + '</span>' + ic('seta', 'at-s') + '</button>' + (ab ? atDetalhe(r) : '') + '</div>';
   });
   if (aberto) h += '</div>';
@@ -11553,7 +11991,7 @@ function atTela() {
   if (!isPrincipal(S.user)) return ''; /* a tela some para quem não é Principal (roteador); aqui é só uma segunda trava */
   const l = atFiltrar(), tem = atTemFiltro();
   return '<div class="at">' + atGrafico() +
-    '<div class="at-bar"><span class="tb-cont">' + l.length + (l.length === 1 ? ' registro' : ' registros') + '</span><span class="tb-sp"></span>' +
+    '<div class="at-bar"><span class="tb-cont">' + l.length + (l.length === 1 ? ' registro' : ' registros') + (S.audit.length >= AT_TETO ? ' (só os ' + AT_TETO.toLocaleString('pt-BR') + ' mais recentes)' : '') + '</span><span class="tb-sp"></span>' +
     (tem ? '<button type="button" class="bt" data-act="at-limpa">Limpar filtro</button>' : '') +
     '<button type="button" class="at-fl" data-act="at-filtro" aria-expanded="' + S.atAberto + '">' + ic('filtro') + '<b>Filtro</b><small>· ' + esc(atResumo()) + '</small></button>' +
     '<button type="button" class="bt ic-so" data-act="at-xlsx" title="Baixar planilha (.xlsx)" aria-label="Baixar planilha (.xlsx)">' + ic('planilha') + '</button>' +
@@ -11578,13 +12016,13 @@ function atImprimir() {
 }
 
 /* ---------- eventos ---------- */
-DD_AO.at = (k, v) => { if (k in S.atFiltro) { S.atFiltro[k] = v; S.atLimite = AT_LIM; S.atLinha = null; render(); } };
+DD_AO.at = (k, v) => { if (k in S.atFiltro) { S.atFiltro[k] = v; S.atLimite = AT_LIM; S.atLinha = null; if (k === 'dias' && v !== S._atDias && isPrincipal(S.user)) atOuve(); render(); } };
 document.addEventListener('click', e => {
   const t = e.target.closest && e.target.closest('[data-act^="at-"]'); if (!t) return;
   const a = t.getAttribute('data-act');
   if (a === 'at-linha') { const id = t.getAttribute('data-id'); S.atLinha = S.atLinha === id ? null : id; render(); }
   else if (a === 'at-filtro') { S.atAberto = !S.atAberto; render(); }
-  else if (a === 'at-limpa') { S.atFiltro = { pessoa: '', area: '', app: '', dias: '30' }; S.atLimite = AT_LIM; S.atLinha = null; render(); }
+  else if (a === 'at-limpa') { S.atFiltro = { pessoa: '', area: '', app: '', dias: '30' }; S.atLimite = AT_LIM; S.atLinha = null; if (S._atDias !== '30' && isPrincipal(S.user)) atOuve(); render(); }
   else if (a === 'at-mais') { S.atLimite += AT_LIM; render(); }
   else if (a === 'at-xlsx') atPlanilha();
   else if (a === 'at-imp') atImprimir();
@@ -11799,7 +12237,7 @@ render = function () {
 function fzDepois() {
   if (!S.user || !S.pronto) { S._fzRota = null; S._fzLinha = null; return; }
   const ar = csArea(S.rota.area), chave = ar.id + '/' + (S.rota.aba || ''), ant = S._fzRota, mudou = ant && ant !== chave, mesmaArea = ant && ant.split('/')[0] === ar.id;
-  S._fzRota = chave;
+  S._fzRota = chave; const _tit = $('.cs-ph h1'), _titAnt = S._fzTit; S._fzTit = _tit ? _tit.textContent : null;
   /* traço da aba */
   const bar = $('.cs-abas'), on = bar && bar.querySelector('a.on');
   if (bar && on) { bar.classList.add('fz-abas'); const l = document.createElement('span'); l.className = 't-abas-linha fz-linha'; l.setAttribute('aria-hidden', 'true'); bar.appendChild(l);
@@ -11814,7 +12252,9 @@ function fzDepois() {
     if (mesmaArea) { const ids = ar.abas.map(t => t.id), a = ids.indexOf(ant.split('/')[1]), b = ids.indexOf(S.rota.aba); if (a >= 0 && b >= 0 && b < a) dir = -1; }
     ct.style.setProperty('--fz-dir', dir); gvAnim(Mov.ms('--duration-fast', 250) + 80); /* corta o lado só enquanto o conteúdo desliza */ ct.classList.remove('fz-entra'); void ct.offsetWidth; ct.classList.add('fz-entra'); setTimeout(() => ct.classList.remove('fz-entra'), Mov.ms('--duration-fast', 250) + 60); }
   /* título da área entra letra por letra, saindo do desfoque (só quando muda de área) */
-  if (!mesmaArea) { const h = $('.cs-ph h1'); if (h && !h.children.length) { const t = h.textContent; if (t.length <= 48) {
+  /* v0.6.15 (pedido do Elias: "nas abas de dentro, como Cloro, Apontamentos e Auditoria, a fluidez não existe"): o título entra também ao trocar de aba */
+  const hT = $('.cs-ph h1'), titMudou = hT && _titAnt != null && _titAnt !== hT.textContent;
+  if (!mesmaArea || titMudou) { const h = hT; if (h && !h.children.length) { const t = h.textContent; if (t.length <= 48) {
     h.classList.add('fz-tt'); h.innerHTML = [...t].map((c, i) => c === ' ' ? ' ' : '<span style="--i:' + i + '">' + esc(c) + '</span>').join('');
     setTimeout(() => { if (h.isConnected) { h.textContent = t; h.classList.remove('fz-tt'); } }, Math.min(t.length, 30) * Mov.ms('--duration-stagger', 40) + Mov.ms('--duration-very-slow', 500) + 80); } } }
 }
@@ -11824,6 +12264,228 @@ document.addEventListener('click', e => { const t = e.target.closest && e.target
 /* ---------- tema: o ícone novo entra no lugar do outro ---------- */
 const fzTemaOrig = csTrocaTema;
 csTrocaTema = function (t) { fzTemaOrig(t); const b = $('[data-act="cs-tema"]'); if (b && fzMov()) { b.classList.remove('fz-tema'); void b.offsetWidth; b.classList.add('fz-tema'); } };
+
+/* ===== moderno.js ===== */
+/* EFCwork · moderno.js — v0.6.15 · modernização aprovada pelo Elias em 14/11/2026 (parte 1, ITENS 1 a 15), já com os pedidos dos comentários.
+   Fica por último na montagem: embrulha render, cabecalho, csTopo, bgResultados, bgAbrir, bgDesenha e tbHTML. Prefixo: mo. */
+(function () {
+  'use strict';
+  const H = document.documentElement, on = () => true; /* tudo aprovado */
+  const mov = () => { try { return !matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return true; } };
+  const pl = (n, um, mais) => (n === 1 ? um : mais);
+  const tenta = (f, pad) => { try { return f(); } catch (e) { return pad; } };
+
+  /* ---------- ITEM 1 · Início: "Pede atenção" (todas as áreas) no lugar das caixas do almoxarifado e de "Áreas em construção" ---------- */
+  function moAtencaoLinhas() {
+    const L = [], add = (n, tipo, um, mais, onde, rota, ico, extra) => { if (n > 0) L.push({ n: n, tipo: tipo, t: pl(n, um, mais), onde: onde, rota: rota, ico: ico, extra: extra || '' }); };
+    tenta(() => { if (!alVe()) return; const r = alResumo();
+      add(r.calV, 'cr', 'calibração vencida', 'calibrações vencidas', 'Almoxarifado · Equipamentos', 'almox/equipamentos', 'eng');
+      add(r.aten.length, 'wa', 'material pede atenção', 'materiais pedem atenção', 'Almoxarifado · Materiais', 'almox/materiais', 'caixa', ' data-act="al-ir" data-f="atencao"');
+      add(r.solP, 'wa', 'solicitação pendente', 'solicitações pendentes', 'Almoxarifado · Solicitações', 'almox/solicitacoes', 'doc');
+      add(r.calA, 'wa', 'calibração a vencer', 'calibrações a vencer', 'Almoxarifado · Equipamentos', 'almox/equipamentos', 'eng'); });
+    tenta(() => { if (!coVe()) return; const r = coResumo();
+      add(r.atras, 'cr', 'laudo atrasado', 'laudos atrasados', 'Coletas · Amostras', 'coletas/amostras', 'frasco');
+      add(r.naoenv, 'wa', 'amostra não enviada', 'amostras não enviadas', 'Coletas · Amostras', 'coletas/amostras', 'frasco');
+      add(agPendLinhas().length, 'wa', 'pendência nas coletas de água', 'pendências nas coletas de água', 'Coletas · Água', 'coletas/agua', 'frasco'); });
+    tenta(() => { const b = S.apont || [], urg = b.filter(a => a.grav === 'urgente' && apAberto(a)).length, ncv = b.filter(a => apNcSit(a) === 'vencida').length, ab = b.filter(apAberto).length - urg;
+      add(urg, 'cr', 'apontamento urgente em aberto', 'apontamentos urgentes em aberto', 'Inspeções · Apontamentos', 'inspecoes/apontamentos', 'alerta');
+      add(ncv, 'cr', 'NC de apontamento vencida', 'NCs de apontamento vencidas', 'Inspeções · Apontamentos', 'inspecoes/apontamentos', 'lista');
+      add(ab, '', 'apontamento em aberto', 'apontamentos em aberto', 'Inspeções · Apontamentos', 'inspecoes/apontamentos', 'lista'); });
+    tenta(() => { const h = hojeISO(), v = (S.tarefas || []).filter(t => t.respId === S.user.id && t.status !== 'done' && t.status !== 'cancelada' && !t.excluida && t.prazo && t.prazo < h).length;
+      add(v, 'cr', 'tarefa vencida', 'tarefas vencidas', 'Minhas tarefas', 'inicio', 'relogio'); });
+    const peso = { cr: 0, wa: 1, '': 2 };
+    return L.sort((a, b) => peso[a.tipo] - peso[b.tipo]);
+  }
+  function moAtencaoHTML() {
+    const L = moAtencaoLinhas();
+    return '<section class="pn mo-at"><div class="hd"><h3>Pede atenção</h3><em>' + L.length + '</em><span class="sp"></span></div>' +
+      (L.length ? L.map(x => '<a class="li ini-li mo-atl" href="#/' + x.rota + '"' + x.extra + '><b class="mo-atn num' + (x.tipo ? ' ' + x.tipo : '') + '">' + x.n + '</b><span class="tx"><b>' + esc(x.t) + '</b><small>' + esc(x.onde) + '</small></span>' + ic('seta') + '</a>').join('') :
+        '<div class="vazio">' + ic('ok') + '<b>Tudo em dia.</b><span>Nada pede atenção agora.</span></div>') + '</section>';
+  }
+  /* ---------- ITEM 2 · Início: "Próximas coletas" (7 dias) ---------- */
+  const DIAS = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'];
+  function moProximasHTML() {
+    const h = hojeISO(), fim = addDias(h, 7);
+    const l = tenta(() => (S.prog || []).concat(typeof pgRzProgs === 'function' ? pgRzProgs() : []).filter(p => p && p.data && p.data >= h && p.data <= fim && pgSit(p) === 'pendente'), []).sort((a, b) => String(a.data).localeCompare(String(b.data))).slice(0, 6);
+    if (!tenta(() => coVe(), false)) return '';
+    const mat = t => { const s = String(t || '').toLowerCase(); return s.charAt(0).toUpperCase() + s.slice(1); };
+    return '<section class="pn mo-px"><div class="hd"><h3>Próximas coletas</h3><em>' + l.length + '</em><span class="sp"></span><a class="bt lk" href="#/coletas/programacao">Programação</a></div>' +
+      (l.length ? l.map(p => { const d = new Date(p.data + 'T12:00:00'), hj = p.data === h, am = p.data === addDias(h, 1);
+        return '<a class="li ini-li mo-pxl" href="#/coletas/programacao"><span class="mo-dia' + (hj ? ' hj' : '') + '"><small>' + (hj ? 'hoje' : am ? 'amanhã' : DIAS[d.getDay()]) + '</small><b class="num">' + String(d.getDate()).padStart(2, '0') + '</b></span><span class="tx"><b>' + esc(mat(p.tipo)) + ' · ' + esc(p.talhao || '') + '</b><small>' + esc(p.coletor || 'sem coletor') + '</small></span></a>'; }).join('') :
+        '<div class="vazio"><b>Nenhuma coleta programada para os próximos 7 dias.</b></div>') + '</section>';
+  }
+  const iniOrig = TELAS.inicio;
+  TELAS.inicio = function () {
+    let h = iniOrig.apply(this, arguments);
+    if (on(1)) {
+      h = h.replace(/<div class="kps">[\s\S]*?<\/a><\/div>/, '').replace(/<section class="pn"><div class="hd"><h3>Áreas do [\s\S]*?<\/section>/, '');
+      h = h.replace('<div class="ini-gr"><div class="ini-col">', '<div class="ini-gr"><div class="ini-col">' + moAtencaoHTML());
+    }
+    if (on(2)) { const k = h.lastIndexOf('<div class="ini-col">'); if (k >= 0) h = h.slice(0, k) + '<div class="ini-col">' + moProximasHTML() + h.slice(k + '<div class="ini-col">'.length); }
+    return h;
+  };
+
+  /* ---------- ITEM 4 · Busca vira paleta de comandos: grupo "Ações", "Ctrl K" no topo, abre e fecha suave (P6 do Grok) ---------- */
+  const MO_ACOES = [
+    ['Novo apontamento', 'inspecoes', 'apontamentos', 'ap-novo', 'lista'], ['Nova verificação de cloro', 'inspecoes', 'cloro', 'cl-nova', 'lista'],
+    ['Nova coleta de água', 'coletas', 'agua', 'ag-nova', 'frasco'], ['Enviar amostras', 'coletas', 'amostras', 'co-env', 'sai'],
+    ['Entrada de material', 'almox', 'materiais', 'lc-ent', 'entra'], ['Saída de material', 'almox', 'materiais', 'lc-sai', 'sai'],
+    ['Nova solicitação', 'almox', 'solicitacoes', 'lc-sol', 'doc'], ['Novo treinamento', 'qualidade', 'treinos', 'tr-novo', 'pessoas'],
+    ['Nova análise de problema', 'qualidade', 'analise', 'anp-nova', 'escudo'], ['Importar impresso', 'documentos', 'impressos', 'ip-importar', 'impressora']];
+  function moAcaoRoda(a) {
+    const faz = () => { const b = [...document.querySelectorAll('.cs-ct [data-act="' + a[3] + '"]')].find(x => !x.getAttribute('data-id') && !x.getAttribute('data-pid')); if (b) b.click(); else aviso('Esta ação não está disponível para o seu perfil nesta tela.'); };
+    if (S.rota.area === a[1] && S.rota.aba === a[2]) faz(); else { ir(a[1], a[2]); setTimeout(faz, 120); }
+  }
+  function moAcoes(q) {
+    const vazio = bgNorm(q).trim().length < 2;
+    const l = MO_ACOES.filter(a => { const ar = csArea(a[1]), t = ar.abas.find(x => x.id === a[2]); return !ar.negada && !(t && t.negada) && (vazio || bgCasa(q, a[0])); })
+      .map(a => ({ grupo: 'Ações', nome: a[0], sub: csArea(a[1]).nome + ' · ' + csNomeRota(a[1] + '/' + a[2]), ico: a[4], abrir: () => moAcaoRoda(a) }));
+    const t = csTema() === 'escuro' ? 'claro' : 'escuro';
+    if (vazio || bgCasa(q, 'tema ' + t + ' aparência')) l.push({ grupo: 'Ações', nome: 'Usar tema ' + t, sub: 'Aparência', ico: t === 'escuro' ? 'lua' : 'sol', abrir: () => csTrocaTema(t) });
+    return vazio ? l.slice(0, 4) : l;
+  }
+  const bgResOrig = bgResultados;
+  bgResultados = function (q) { const r = bgResOrig(q); return on(4) ? moAcoes(q).concat(r) : r; };
+  /* pedido do Elias no ITEM 4: suavizar a troca dos resultados enquanto digita — a caixa muda de altura deslizando,
+     o que já estava fica parado e o que entra aparece em 150 ms */
+  const bgDesOrig = bgDesenha;
+  bgDesenha = function () {
+    const box = document.getElementById('bg-res'), antes = box ? box.offsetHeight : 0, viu = new Set(box ? [...box.querySelectorAll('.bg-it b')].map(x => x.textContent) : []);
+    bgDesOrig.apply(this, arguments);
+    if (!box || !mov() || !antes) return;
+    box.querySelectorAll('.bg-it').forEach((it, i) => { const b = it.querySelector('b'); if (b && !viu.has(b.textContent)) { it.style.setProperty('--i', Math.min(i, 6)); it.classList.add('mo-novo'); } });
+    const depois = box.offsetHeight; if (Math.abs(depois - antes) < 2) return;
+    box.style.height = antes + 'px'; box.style.overflow = 'hidden'; void box.offsetHeight; box.classList.add('mo-alt'); box.style.height = depois + 'px';
+    clearTimeout(box._moT); box._moT = setTimeout(() => { box.classList.remove('mo-alt'); box.style.height = ''; box.style.overflow = ''; }, 170);
+  };
+  const bgAbrirOrig = bgAbrir;
+  bgAbrir = function () { bgAbrirOrig.apply(this, arguments); const d = document.getElementById('bg'); if (d && on(4)) { d.classList.add('mo-pal'); const i = d.querySelector('#bg-q'); if (i) i.placeholder = 'Buscar documento, material, coleta ou ação…'; } };
+
+  /* ---------- ITEM 5 · Abas com a contagem do que espera uma ação ---------- */
+  const MO_CONTA = {
+    'almox/solicitacoes': () => alResumo().solP, 'almox/equipamentos': () => alResumo().calV,
+    'coletas/amostras': () => coResumo().naoenv, 'coletas/agua': () => agPendLinhas().length,
+    'inspecoes/apontamentos': () => (S.apont || []).filter(apAberto).length
+  };
+  const cabOrig = cabecalho;
+  cabecalho = function (o) {
+    let h = cabOrig.apply(this, arguments);
+    if (on(3) && innerWidth >= 900) h = h.replace(/<div class="cs-bc">([\s\S]*?)<\/div>/, (m, x) => { S._moBc = x; return ''; });
+    if (!on(5)) return h;
+    return h.replace(/(<a href="#\/([a-z]+\/[a-z]+)"[^>]*>)([^<]*)(<\/a>)/g, (m, a, rota, nome, f) => { const n = MO_CONTA[rota] ? tenta(MO_CONTA[rota], 0) : 0; return n > 0 ? a + nome + '<em class="mo-ct" aria-label="' + n + ' esperando">' + (n > 99 ? '99+' : n) + '</em>' + f : m; });
+  };
+
+  /* ---------- ITEM 3 · Caminho (onde estou) na barra de cima; a busca fica compacta à direita ---------- */
+  const topoOrig = csTopo;
+  csTopo = function () {
+    let h = topoOrig.apply(this, arguments); if (!on(3) || innerWidth < 900 || !S._moBc) return h;
+    return h.replace('<header class="cs-topo">', '<header class="cs-topo mo-tp">').replace('<button type="button" class="cs-busca"', '<nav class="mo-bc" aria-label="Onde você está">' + S._moBc + '</nav><button type="button" class="cs-busca"');
+  };
+
+  /* ---------- ITEM 9 · Gaveta: registro anterior e próximo sem fechar ---------- */
+  function moVizinhos() { const l = [...document.querySelectorAll('.cs-ct .tb-t tbody tr[data-act="tb-lin"]')], k = l.findIndex(x => x.classList.contains('sel')); return { l: l, k: k }; }
+  function moGvNav(g) {
+    if (!on(9) || S.gvForm || !g) return; const v = moVizinhos(); if (v.k < 0 || v.l.length < 2) return;
+    const x = g.querySelector('.gv-cab [data-act="gv-fecha"]'); if (!x || g.querySelector('.mo-nav')) return;
+    const s = document.createElement('span'); s.className = 'mo-nav';
+    s.innerHTML = '<button type="button" class="bt ic-so" data-act="mo-gv" data-d="-1" title="Anterior · ' + v.k + ' de ' + v.l.length + ' (Alt + seta para cima)" aria-label="Registro anterior"' + (v.k === 0 ? ' disabled' : '') + '>' + ic('cima') + '</button><button type="button" class="bt ic-so" data-act="mo-gv" data-d="1" title="Próximo · ' + (v.k + 2) + ' de ' + v.l.length + ' (Alt + seta para baixo)" aria-label="Próximo registro"' + (v.k === v.l.length - 1 ? ' disabled' : '') + '>' + ic('baixo') + '</button>';
+    x.parentNode.insertBefore(s, g.querySelector('.gv-cab .gv-lx') || x);
+  }
+  function moGvVai(d) { const v = moVizinhos(), a = v.l[v.k + d]; if (v.k < 0 || !a) return; a.click(); const g = document.getElementById('gv'), c = g && g.querySelector('.gv-corpo'); if (c && mov()) { c.classList.remove('mo-troca'); void c.offsetWidth; c.style.setProperty('--mo-d', d); c.classList.add('mo-troca'); } const n = moVizinhos().l[v.k + d]; if (n && n.scrollIntoView) n.scrollIntoView({ block: 'nearest' }); }
+  if (typeof GV_DEPOIS !== 'undefined') GV_DEPOIS.push(g => moGvNav(g));
+  document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-act="mo-gv"]'); if (b && !b.disabled) moGvVai(+b.getAttribute('data-d')); });
+  document.addEventListener('keydown', e => { if (!on(9) || !e.altKey || (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') || !document.getElementById('gv') || S.gvForm) return; e.preventDefault(); moGvVai(e.key === 'ArrowUp' ? -1 : 1); });
+
+  /* ---------- ITEM 10 · Dica desenhada nos botões só de ícone (no lugar da dica do navegador) ---------- */
+  let ttEl = null, ttT = 0, ttDe = null, ttUlt = 0;
+  function ttSome() { clearTimeout(ttT); if (ttDe) { const t = ttDe.getAttribute('data-mo-tt'); if (t != null) { ttDe.setAttribute('title', t); ttDe.removeAttribute('data-mo-tt'); } ttDe = null; } if (ttEl) { ttEl.remove(); ttEl = null; ttUlt = Date.now(); } }
+  function ttMostra(el, txt) {
+    const r = el.getBoundingClientRect(); if (!r.width) return;
+    ttEl = document.createElement('div'); ttEl.className = 'mo-tt'; ttEl.setAttribute('role', 'tooltip'); ttEl.textContent = txt; document.body.appendChild(ttEl);
+    const w = ttEl.offsetWidth, h = ttEl.offsetHeight, emb = r.top - h - 8 < 4;
+    ttEl.style.left = Math.max(6, Math.min(innerWidth - w - 6, r.left + r.width / 2 - w / 2)) + 'px'; ttEl.style.top = (emb ? r.bottom + 8 : r.top - h - 8) + 'px';
+    ttEl.classList.add(emb ? 'emb' : 'cim'); requestAnimationFrame(() => { if (ttEl) ttEl.classList.add('on'); });
+  }
+  document.addEventListener('mouseover', e => {
+    if (!on(10) || !matchMedia('(hover:hover)').matches) return;
+    const el = e.target.closest && e.target.closest('[title]'); if (!el || el === ttDe) return; ttSome();
+    const t = el.getAttribute('title'); if (!t || el.closest('.tb-lg') || el.tagName === 'TD') return;
+    ttDe = el; el.setAttribute('data-mo-tt', t); el.removeAttribute('title');
+    ttT = setTimeout(() => ttMostra(el, t), Date.now() - ttUlt < 400 ? 60 : 450);
+  });
+  document.addEventListener('mouseout', e => { if (ttDe && !(e.relatedTarget && ttDe.contains(e.relatedTarget))) ttSome(); });
+  ['mousedown', 'keydown', 'scroll'].forEach(ev => document.addEventListener(ev, () => ttSome(), true));
+
+  /* ---------- ITEM 8 · Tabela vazia: diz por quê e oferece a saída ---------- */
+  const tbOrig = tbHTML;
+  tbHTML = function (cfg) {
+    let h = tbOrig.apply(this, arguments); if (!on(8) || h.indexOf('class="tb-vz"') < 0) return h;
+    const filtrada = (cfg.linhas || []).length > 0 && tbTemFiltro(cfg), un = tbUn(cfg, 2);
+    const novo = filtrada
+      ? '<div class="mo-vz">' + ic('filtro') + '<b>Nenhum resultado com o filtro atual.</b><span>Há ' + (cfg.linhas || []).length + ' ' + esc(tbUn(cfg, (cfg.linhas || []).length)) + ' fora dele.</span><button type="button" class="bt" data-act="tb-limpa" data-tb="' + esc(cfg.id) + '">' + ic('x') + 'Limpar filtro</button></div>'
+      : '<div class="mo-vz">' + ic(csArea(S.rota.area).ic) + '<b>' + esc((cfg.linhas || []).length ? (cfg.vazio || 'Nada encontrado.') : 'Ainda não há ' + un + ' aqui.') + '</b></div>';
+    return h.replace(/(<td colspan="\d+" class="tb-vz">)[\s\S]*?(<\/td>)/, '$1' + novo + '$2');
+  };
+
+  /* ---------- ITEM 6 · Celular: pastilha no item aberto da barra de baixo, que desliza até o novo ---------- */
+  let moBxAnt = -1;
+  function moBaixo() {
+    const nav = document.querySelector('.cs-baixo'); if (!nav) return; const it = [...nav.children], k = it.findIndex(x => x.classList.contains('on'));
+    if (!on(6) || k < 0) { moBxAnt = k; return; }
+    const p = document.createElement('i'); p.className = 'mo-pl'; p.setAttribute('aria-hidden', 'true'); nav.appendChild(p);
+    const pos = n => { const a = it[n]; return a.offsetLeft + a.offsetWidth / 2; };
+    if (moBxAnt >= 0 && moBxAnt !== k && mov()) { p.style.transition = 'none'; p.style.left = pos(moBxAnt) + 'px'; void p.offsetWidth; p.style.transition = ''; }
+    p.style.left = pos(k) + 'px'; moBxAnt = k;
+  }
+
+  /* ---------- ITENS 12 e 14 · o que fecha sai com efeito (menu da coluna, foto grande, paleta) ---------- */
+  function moFantasma(el, cls, ms, pai) { if (!mov()) return; const r = el.getBoundingClientRect(), g = el.cloneNode(true); g.removeAttribute('id'); g.querySelectorAll('[id]').forEach(x => x.removeAttribute('id')); g.setAttribute('aria-hidden', 'true'); g.classList.add('mo-fant', cls);
+    if (pai) { g.style.position = 'fixed'; g.style.left = r.left + 'px'; g.style.top = r.top + 'px'; g.style.width = r.width + 'px'; g.style.height = r.height + 'px'; g.style.margin = '0'; g.style.right = 'auto'; g.style.bottom = 'auto'; }
+    document.body.appendChild(g); if (!window.__moCongela) setTimeout(() => g.remove(), ms + 40); }
+  try { new MutationObserver(ms => ms.forEach(m => m.removedNodes.forEach(n => { if (n.nodeType !== 1 || n.classList.contains('mo-fant')) return;
+    if (n.id === 'fed-v' && on(14)) moFantasma(n, 'mo-f-fed', 150); else if (n.id === 'bg' && on(4)) moFantasma(n, 'mo-f-bg', 150); }))).observe(document.body, { childList: true }); } catch (e) {}
+
+  /* ---------- ITEM 13 (refeito a pedido do Elias: "não está tão bonito") · Apontamentos: ao trocar o filtro, a lista se rearruma —
+     o cartão que continua desliza até o lugar novo, o que entra aparece no lugar dele, o que sai some; sem sequência ---------- */
+  let moApF = null, moApRota = '', moApPos = null;
+  function moApAntes() {
+    const rota = S.rota.area + '/' + S.rota.aba; moApPos = null; if (rota !== 'inspecoes/apontamentos') return;
+    const m = {}; document.querySelectorAll('.ap-cards .ap-card').forEach(c => { m[c.getAttribute('data-id')] = c.getBoundingClientRect(); }); moApPos = m;
+  }
+  function moApont() {
+    const rota = S.rota.area + '/' + S.rota.aba, f = S.apF || 'semana', mudou = rota === 'inspecoes/apontamentos' && moApRota === rota && moApF !== null && moApF !== f;
+    moApF = rota === 'inspecoes/apontamentos' ? f : null; moApRota = rota;
+    if (!mudou || !mov() || !moApPos) return;
+    const ms = Mov.ms('--duration-fast', 250);
+    document.querySelectorAll('.ap-cards .ap-card').forEach(c => { const r0 = moApPos[c.getAttribute('data-id')], r = c.getBoundingClientRect();
+      if (r0) { const dy = r0.top - r.top; if (Math.abs(dy) > 1) c.animate([{ transform: 'translateY(' + dy + 'px)' }, { transform: 'none' }], { duration: ms, easing: 'cubic-bezier(.22,1,.36,1)' }); }
+      else c.animate([{ opacity: 0, transform: 'scale(.98)' }, { opacity: 1, transform: 'none' }], { duration: ms, easing: 'cubic-bezier(.22,1,.36,1)' }); });
+  }
+
+  /* ---------- depois de cada desenho da tela ---------- */
+  const renderOrig = render;
+  render = function () {
+    S._moBc = ''; tenta(moApAntes);
+    const mn = on(12) && document.querySelector('.tb-mn'), cl = mn ? [mn, mn.getBoundingClientRect()] : null;
+    if (cl && mov()) { cl[2] = mn.cloneNode(true); cl[3] = S.tbMenu && S.tbMenu.k; }
+    const rol = {}; document.querySelectorAll('.cs-ct .tb[data-tb] .tb-w').forEach(w => { rol[w.closest('.tb').getAttribute('data-tb')] = [w.scrollTop, w.scrollLeft]; }); /* a tabela rola por dentro: o redesenho não volta ao topo */
+    renderOrig.apply(this, arguments);
+    tenta(tbSobe); tenta(tbAltura); tenta(tbFimVigia);
+    document.querySelectorAll('.cs-ct .tb[data-tb] .tb-w').forEach(w => { const r = rol[w.closest('.tb').getAttribute('data-tb')]; if (r) { w.scrollTop = r[0]; w.scrollLeft = r[1]; } });
+    const nv = document.querySelector('.tb-mn');
+    if (cl && nv && mov() && S.tbMenu && cl[3] !== S.tbMenu.k) { /* pedido do Elias no ITEM 12: trocou de coluna com o menu aberto */
+      requestAnimationFrame(() => { const r2 = nv.getBoundingClientRect(), dx = cl[1].left - r2.left, dy = cl[1].top - r2.top; if (Math.abs(dx) < 2 && Math.abs(dy) < 2) return;
+        nv.style.animation = 'none'; nv.style.transition = 'none'; nv.style.transform = 'translate(' + dx + 'px,' + dy + 'px)'; void nv.offsetWidth;
+        nv.style.transition = 'transform ' + Mov.ms('--duration-fast', 250) + 'ms ' + getComputedStyle(document.documentElement).getPropertyValue('--ease-smooth-out'); nv.style.transform = '';
+        setTimeout(() => { nv.style.transition = ''; nv.style.animation = ''; }, 300); });
+    }
+    if (cl && cl[2] && !nv) { const g = cl[2], r = cl[1]; g.classList.add('mo-fant', 'mo-f-mn'); g.setAttribute('aria-hidden', 'true'); g.style.cssText += ';position:fixed;left:' + r.left + 'px;top:' + r.top + 'px;width:' + r.width + 'px;margin:0;right:auto;bottom:auto'; document.body.appendChild(g); if (!window.__moCongela) setTimeout(() => g.remove(), 190); }
+    tenta(moBaixo); tenta(moApont);
+  };
+  const mnSoltoOrig = typeof tbMenuFechaSolto === 'function' ? tbMenuFechaSolto : null;
+  if (mnSoltoOrig) tbMenuFechaSolto = function () { const m = on(12) && document.querySelector('.tb-mn'); if (m) moFantasma(m, 'mo-f-mn', 150, true); return mnSoltoOrig.apply(this, arguments); };
+
+})();
 
 </script>
 </body>

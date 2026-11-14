@@ -44,3 +44,13 @@ a.pg-pl{color:inherit;text-decoration:none;cursor:pointer;transition:border-colo
 @media(max-width:899px){.pg-i::after{inset:-11px}}
 
 @media(prefers-reduced-motion:reduce){a.pg-pl{transition:none}} /* v0.6.14 */
+/* v0.6.15 (Grok D5): no celular cada cartão de plano cabe inteiro na largura; a faixa encaixa um cartão por vez */
+@media(max-width:599px){.pg-planos{scroll-snap-type:x mandatory}.pg-pl{flex:0 0 calc(100vw - 32px);max-width:380px;scroll-snap-align:start}.pg-pl header{flex-wrap:wrap}}
+/* v0.6.15 (Grok D11): a legenda (i) com 28 px no PC e área de toque de 44 px */
+.pg-i{width:28px;height:28px;margin:-3px} /* 28 px sem empurrar o título: o lugar ocupado continua o de antes (a linha não quebra com a gaveta aberta) */
+@media(pointer:coarse){.pg-i::before{content:"";position:absolute;inset:-8px}}
+/* v0.6.15: área com nova coleta pedida (a anterior não conta mais) ganha a marca ↻ no canto */
+.pg-ar{position:relative}
+.pg-rec{position:absolute;top:-6px;right:-5px;width:15px;height:15px;border-radius:50%;background:var(--bg1);border:1px solid var(--wa);color:var(--wa);display:grid;place-items:center}
+.pg-rec .ic{width:10px;height:10px;stroke-width:2.4}
+.pg-rec.pend{border-style:dashed;border-color:var(--tx3);color:var(--tx3)} /* v0.6.15: nova coleta aguardando aprovação */

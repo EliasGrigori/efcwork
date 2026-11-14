@@ -1,0 +1,2 @@
+/* dados inventados da parte 3: 40 amostras a mais, para a tabela passar da altura da janela */
+module.exports = async function () { const C = Data.col.bind(Data), h = hojeISO(); for (let i = 14; i < 54; i++) await C('sv2_coletas').set('k' + i, { tipo: i % 2 ? 'SOLO' : 'FOLHA', data: addDias(h, -i * 2), talhao: 'RU' + (10 + i % 9) + 'TAI24', analiseNome: 'Solo completo', lab: 'IBRA', valor: 185, situacao: 'ativa', coletor: 'Equipe A', criadoEm: nowISO() }); };

@@ -52,20 +52,20 @@ button.cs-sync:focus-visible{outline:2px solid var(--a);outline-offset:1px}
 .nv-r span{color:var(--tx)}
 .cs-sync i{width:7px;height:7px;border-radius:50%;background:var(--ok);display:inline-block}
 .cs-sync.off{color:var(--wa)}.cs-sync.off i{background:var(--wa)}
-.cs-ct{flex:1;padding:20px 20px 28px;display:flex;flex-direction:column;gap:16px;width:100%}
+.cs-ct{flex:1;padding:20px 20px 28px;display:flex;flex-direction:column;gap:12px;width:100%}
 .cs-rod{padding:14px 20px 90px;font-size:12px;color:var(--tx3)}
 @media(min-width:900px){.cs-rod{padding-bottom:18px}}
 /* cabeçalho de página */
-.cs-ph{display:flex;flex-direction:column;gap:6px}
+.cs-ph{display:flex;flex-direction:column;gap:2px} /* v0.6.15 ITEM 6: cabeçalho mais baixo */
 .cs-bc{font-size:13px;color:var(--tx3)}
 .cs-bc b{color:var(--tx2);font-weight:500}
 .cs-phr{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
 .cs-pht{min-width:0}
-.cs-ph h1{font-size:30px;line-height:1.15;position:relative;padding-bottom:8px;text-wrap:balance}
+.cs-ph h1{font-size:26px;line-height:1.15;position:relative;padding-bottom:6px;text-wrap:balance}
 .cs-ph h1::after{content:"";position:absolute;left:0;bottom:0;width:40px;height:2px;border-radius:2px;background:var(--a)}
 :root[data-tema="escuro"] .cs-ph h1{background:linear-gradient(90deg,#f7e2a8,#d9b46a 60%,#c29640);-webkit-background-clip:text;background-clip:text;color:transparent}
 :root[data-tema="escuro"] .cs-ph h1::after{background:linear-gradient(90deg,#f7df9e,#b4862f)}
-.cs-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;color:var(--tx2);font-size:14px;margin-top:6px}
+.cs-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;color:var(--tx2);font-size:14px;margin-top:4px}
 .cs-pl{display:inline-flex;align-items:center;gap:5px;padding:1px 8px;border-radius:5px;background:var(--bg2);border:1px solid var(--bd);font-size:13px}
 .cs-pl .ic{width:14px;height:14px}
 .cs-pl.cr{color:var(--cr)}.cs-pl.wa{color:var(--wa)}.cs-pl.ok{color:var(--ok)}
@@ -96,7 +96,7 @@ button.cs-sync:focus-visible{outline:2px solid var(--a);outline-offset:1px}
 
   .cs-sp{display:none}
   .cs-ct{padding:16px 16px 20px}
-  .cs-ph h1{font-size:25px}
+  .cs-ph h1{font-size:24px}
   .cs-baixo{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:18;background:var(--bg1);border-top:1px solid var(--bd);padding:6px 4px max(8px,env(safe-area-inset-bottom,0px))}
   .cs-baixo a,.cs-baixo button{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:12px;color:var(--tx3);padding:4px 0;text-decoration:none;background:none;border:0;min-height:44px;cursor:pointer}
   .cs-baixo .ic{width:22px;height:22px}
@@ -205,3 +205,16 @@ button.cs-sync:focus-visible{outline:2px solid var(--a);outline-offset:1px}
 .cs-app-l span{flex:1;min-width:0}
 .cs-app-l .cs-app-x{width:14px;height:14px;opacity:.5;flex:none}
 .m-ic .cs-app-l .cs-app-x{display:none}
+/* v0.6.15 ITEM 7: ao passar o mouse numa aba aparece um traço cinza; o dourado fica só na aba aberta */
+.cs-abas a{transition:color 150ms ease-out,border-color 150ms ease-out}
+.cs-abas a:hover:not(.on){border-bottom-color:var(--bd2)}
+/* v0.6.15 ITEM 9: menu lateral mais calmo (só o aberto e o que está sob o mouse aparecem fortes; sem a barrinha do lado) */
+.cs-lado .cs-it{opacity:.74;transition:opacity 150ms ease-out,background-color 150ms ease-out}
+.cs-lado .cs-it:hover,.cs-lado .cs-it.on{opacity:1}
+.cs-it.on::before{display:none}
+/* ...mas os apps da família (Vértice Docs e Sabiá) não perdem contraste: ganham destaque próprio (comentário do Elias no ITEM 9) */
+.cs-lado .cs-it.cs-app-l{opacity:1;height:40px;margin:2px 0;border:1px solid var(--sbBd);background:var(--bg1);font-weight:600}
+.cs-lado .cs-it.cs-app-l:hover{border-color:color-mix(in srgb,var(--a) 60%,var(--sbBd));background:var(--bg1)}
+:root[data-tema="escuro"] .cs-lado .cs-it.cs-app-l{background:rgba(255,255,255,.04)}
+.cs-app-l img{width:24px;height:24px;border-radius:6px;box-shadow:0 1px 3px rgba(0,0,0,.18)}
+.cs-app-l .cs-app-x{opacity:.7}

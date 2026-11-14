@@ -17,3 +17,7 @@
 .bg-vz{margin:14px 10px;color:var(--tx3)}
 .bg-dica{margin:0;padding:8px 14px;border-top:1px solid var(--bd);font-size:13px;color:var(--tx3)}
 @media(max-width:899px){.bg-fundo{padding-top:max(12px,env(safe-area-inset-top,0px))}.bg-caixa{max-height:86vh}.bg-dica{display:none}}
+/* v0.6.15 (Grok D7): no PC fica a tecla "Esc" (dica); no toque, um X de 44 px que fecha de verdade */
+.bg-x{display:none;flex:none;margin-right:-6px}
+@media(pointer:coarse),(max-width:899px){.bg-campo kbd{display:none}.bg-x{display:inline-flex;width:44px;height:44px}.bg-dica{display:none}}
+.bg-campo input::placeholder{text-overflow:ellipsis}

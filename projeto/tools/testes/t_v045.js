@@ -77,7 +77,7 @@ async function primeiro(p) {
   console.log('— Gaveta aberta: cartões e barra não mudam');
   await p.click('[data-tb="pg"] tbody tr[data-id="p|p1"]'); await p.waitForTimeout(500);
   const depois = await rects();
-  conf(depois === antes, 'cartões com a mesma forma e lugar com a gaveta aberta');
+  conf(depois === antes, 'cartões com a mesma forma e lugar com a gaveta aberta' + (depois === antes ? '' : ' (antes ' + antes + ' · depois ' + depois + ')'));
   conf(await p.evaluate(() => { const b = document.querySelector('[data-tb="pg"] .tb-bar, [data-tb="pg"] .tb-top') || document.querySelector('.tb-bar'); return !b || b.getBoundingClientRect().height < 60; }), 'barra da tabela em uma linha com a gaveta aberta');
   await p.screenshot({ path: path.join(SHOTS, 'v045-pc-gaveta.png') });
   await p.keyboard.press('Escape'); await p.waitForTimeout(400);

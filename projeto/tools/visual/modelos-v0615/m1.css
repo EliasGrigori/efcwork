@@ -1,0 +1,28 @@
+/* MODELO 1 · Refinado — o EFCwork de hoje, polido. Régua de cantos 4/6/8/12 (P4), campos 36 px no PC (P2),
+   cabeçalho mais baixo (P1), botão secundário com contorno que esquenta para o dourado no passar do mouse. */
+:root[data-modelo="1"]{--rs:8px;--r:12px}
+:root[data-modelo="1"] .bt{border-color:var(--bd2);box-shadow:0 1px 0 rgba(40,30,10,.04)}
+:root[data-modelo="1"] .bt:hover:not([disabled]):not(.pr):not(.lk){border-color:color-mix(in srgb,var(--a) 55%,var(--bd2));background:var(--bg1);color:var(--tx)}
+:root[data-modelo="1"] .bt.pr:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(217,180,106,.32),inset 0 1px 0 rgba(255,255,255,.4)}
+:root[data-modelo="1"] .bt.pr:active{transform:translateY(0) scale(.98)}
+:root[data-modelo="1"] .bt.ic-so:hover{color:var(--aTx)}
+:root[data-modelo="1"] .bt.lk:hover{background:var(--aS)}
+:root[data-modelo="1"] :is(.fm-i,.cp input,.cp select,.dd-b){border-radius:8px}
+@media (pointer:fine){:root[data-modelo="1"] :is(.fm-i,.cp input,.cp select){height:36px}:root[data-modelo="1"] .dd-b{height:36px}}
+:root[data-modelo="1"] :is(.fm-i,.cp input,.cp select,.cp textarea):hover{border-color:color-mix(in srgb,var(--a) 40%,var(--bd2))}
+:root[data-modelo="1"] :is(.fm-i,.cp input,.cp select,.cp textarea):focus{outline:none;border-color:var(--a);box-shadow:0 0 0 3px var(--aS)}
+:root[data-modelo="1"] .dd-b:hover{border-color:color-mix(in srgb,var(--a) 45%,var(--bd2))}
+:root[data-modelo="1"] .dd-l{border-radius:10px;padding:4px}
+:root[data-modelo="1"] .dd-l li{border-radius:6px}
+:root[data-modelo="1"] .cs-ph h1{font-size:27px;padding-bottom:6px}
+:root[data-modelo="1"] .cs-ph{gap:4px}
+:root[data-modelo="1"] .cs-abas a{padding:0 12px;height:40px;display:inline-flex;align-items:center}
+:root[data-modelo="1"] .cs-abas a:hover:not(.on){color:var(--tx);background:linear-gradient(transparent calc(100% - 2px),var(--bd2) 0)}
+:root[data-modelo="1"] .cs-it{border-radius:8px}
+:root[data-modelo="1"] .pn,:root[data-modelo="1"] .kp{border-radius:12px}
+:root[data-modelo="1"] .kp[href]:hover,:root[data-modelo="1"] button.kp:hover{transform:translateY(-1px);border-color:color-mix(in srgb,var(--a) 40%,var(--bd))}
+:root[data-modelo="1"] .tb-t tbody tr[data-act]:hover td{background:color-mix(in srgb,var(--a) 6%,var(--bg1))}
+:root[data-modelo="1"] .pill,:root[data-modelo="1"] .cs-pl{border-radius:6px}
+:root[data-modelo="1"] .tb-busca{border-radius:8px}
+:root[data-modelo="1"] .tb-busca:hover{border-color:color-mix(in srgb,var(--a) 40%,var(--bd2))}
+:root[data-modelo="1"] .tb-busca:focus-within{border-color:var(--a);box-shadow:0 0 0 3px var(--aS)}

@@ -215,12 +215,10 @@ const marcadas = p => p.evaluate(() => Array.from(document.querySelectorAll('.pp
   await fecha(p);
 
   console.log('— Tabela: total e A-Z');
-  const tt = await p.evaluate(() => { const tb = document.querySelector('.tb[data-tb="al-mat"]'), t = tb.querySelector('.tb-tots'), tv = t.querySelector('.tb-tv'), lb = t.querySelector('.tb-tl'), b = tv.querySelector('b'), r = tv.getBoundingClientRect(), l = lb.getBoundingClientRect(), th = tb.querySelector('.tb-cab th[data-tbk="val"]').getBoundingClientRect(); return { txt: b.textContent, cabe: b.scrollWidth <= tv.clientWidth + 1, semSobrepor: l.right <= r.left, direita: Math.abs(r.right - th.right) < 2, texto: t.innerText.replace(/\s+/g, ' '), small: !!t.querySelector('small') , larg: Math.round(r.width), col: Math.round(th.width) }; });
+  /* v0.6.15: o total virou o selo do cabeçalho (sem caixa, sem alinhamento com a coluna) */
+  const tt = await p.evaluate(() => { const m = document.querySelector('.cs-meta .tb-tp'), r = m && m.getBoundingClientRect(); return { txt: m ? m.textContent : '', inteiro: !!r && m.scrollWidth <= m.clientWidth + 1, velho: !!document.querySelector('.tb-tots') }; });
   console.log('   total:', JSON.stringify(tt));
-  conf(tt.cabe && tt.semSobrepor && tt.direita, 'valor grande cabe na caixa, não passa por cima de "Total" e fica alinhado à direita da coluna');
-  conf(!tt.small && /^Total R\$/.test(tt.texto), 'sem texto embaixo de "Total"');
-  const tg = await p.evaluate(() => { const tb = document.querySelector('.tb[data-tb="al-mat"]'), t = tb.querySelector('.tb-tots'), tv = t.querySelector('.tb-tv'), b = tv.querySelector('b'), lb = t.querySelector('.tb-tl'), th = tb.querySelector('.tb-cab th[data-tbk="val"]'); b.textContent = 'R$ 12.345.678.901,80'; tbAlinhaTot(); const r = tv.getBoundingClientRect(), l = lb.getBoundingClientRect(), c = th.getBoundingClientRect(); return { cabe: b.scrollWidth <= tv.clientWidth + 1, semSobrepor: l.right <= r.left + 0.5 || t.classList.contains('tb-tots-fluxo'), direita: Math.abs(r.right - c.right) < 2 || t.classList.contains('tb-tots-fluxo'), cresceu: r.width > c.width }; });
-  conf(tg.cabe && tg.semSobrepor && tg.direita, 'número bem maior que a coluna: caixa cresce para a esquerda sem tocar em "Total"' + JSON.stringify(tg));
+  conf(/R\$/.test(tt.txt) && tt.inteiro && !tt.velho, 'o total aparece inteiro no selo do cabeçalho, sem a caixa antiga');
   await p.screenshot({ path: path.join(SHOTS, 'v049-pc-total.png') });
   await p.evaluate(() => render());  await p.waitForTimeout(300);
   await abre(p, 'nome');

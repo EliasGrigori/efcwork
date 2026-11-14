@@ -54,3 +54,14 @@ body:has(#gv) .pp-bar{display:none}
 .pp-nv.on .pp-nvk{background:var(--a);border-color:var(--a)}.pp-nv .pp-nvk .ic{width:12px;height:12px}
 .pp-nv b{font-weight:600}.pp-nv small{margin-left:auto;color:var(--tx3);font-size:12.5px;text-align:right}
 #gv .pp-lis{display:flex;flex-direction:column;gap:4px}
+
+/* v0.6.15 · nova coleta aguardando aprovação do Líder ★ ou do Principal */
+.pp-rc.pend{color:var(--tx3)}
+.pp-lps{display:flex;flex-direction:column;gap:8px}
+.pp-lp{border:1px dashed var(--wa);border-radius:var(--rs);background:var(--waS);padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.pp-lpt{display:flex;flex-direction:column;gap:2px;min-width:0}
+.pp-lpt b{font-weight:600}.pp-lpt span{color:var(--tx2)}.pp-lpt small{color:var(--tx3);font-size:13px}
+.pp-lpb{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+@media(min-width:900px){.pp-lpb{width:100%;max-width:260px;margin-left:auto}} /* dois iguais, à direita; encolhem no cartão estreito */
+.pp-lpm{margin:0}
+.pp-tb tr.pp-rcz td{color:var(--tx3)}

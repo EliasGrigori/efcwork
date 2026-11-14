@@ -15,34 +15,15 @@ async function abre(b, w, longo) {
   await p.evaluate(() => { location.hash = '#/coletas/amostras'; }); await p.waitForTimeout(600);
   return p;
 }
-const mede = p => p.evaluate(() => { const t = document.querySelector('.tb-tots'), tv = t.querySelector('.tb-tv').getBoundingClientRect(), lb = t.querySelector('.tb-tl').getBoundingClientRect(), th = document.querySelector('.tb-cab th[data-tbk="val"]').getBoundingClientRect(), cab = document.querySelector('.tb-cab').getBoundingClientRect(), ics = [...document.querySelectorAll('.tb-bar .ic-so')].map(x => x.getBoundingClientRect());
-  const cruza = ics.some(i => !(tv.right <= i.left || tv.left >= i.right || tv.bottom <= i.top || tv.top >= i.bottom));
-  return { fluxo: t.classList.contains('tb-tots-fluxo'), linha: t.classList.contains('tb-tots-linha'), direita: Math.abs(tv.right - th.right) < 2, semIcone: !cruza, acimaCab: tv.bottom <= cab.top + 0.5, rotulo: lb.right <= tv.left + 0.5, mesmaLinhaIcones: Math.abs(tv.top - ics[0].top) < 2 }; });
+/* v0.6.15 (Elias, 14/11, ITEM 23 refeito): o total saiu da barra da tabela e virou o selo do cabeçalho, em todas as larguras */
+const mede = p => p.evaluate(() => { const m = document.querySelector('.cs-meta .tb-tp'); return { selo: !!m && /R\$/.test(m.textContent), inteiro: !!m && m.scrollWidth <= m.clientWidth + 1, velho: !!document.querySelector('.tb-tots'), lado: document.documentElement.scrollWidth > innerWidth + 1 }; });
 (async () => {
   const b = await chromium.launch();
-  console.log('1366 px, colunas largas (caso do Grok):');
-  let p = await abre(b, 1366, true), m = await mede(p);
-  /* v0.5.3 (Elias, 10/11): sem linha própria; a coluna Valor fica embaixo dos ícones, então o total fica na linha dos ícones, antes deles */
-  conf(!m.linha, 'não existe mais a linha própria do total (decisão de 10/11)');
-  conf(m.fluxo && m.semIcone && m.mesmaLinhaIcones, 'o total fica na mesma linha dos ícones, logo antes deles, sem encostar');
-  conf(m.acimaCab, 'continua acima do cabeçalho');
-  await p.screenshot({ path: path.join(RAIZ, 'tools', 'testes', 'telas', 'v0413-1366-largo.png'), clip: { x: 240, y: 230, width: 1126, height: 140 } });
-  console.log('1366 px, colunas normais:');
-  p = await abre(b, 1366, false); m = await mede(p);
-  conf(!m.fluxo && !m.linha && m.direita && m.mesmaLinhaIcones, 'cabe na linha dos ícones: continua como antes');
-  console.log('1280 px:');
-  p = await abre(b, 1280, false); m = await mede(p);
-  conf(!m.linha && m.semIcone && m.mesmaLinhaIcones, 'em 1280 px o total fica na linha dos ícones (sem linha própria)');
-  await p.screenshot({ path: path.join(RAIZ, 'tools', 'testes', 'telas', 'v0413-1280.png'), clip: { x: 240, y: 230, width: 1040, height: 140 } });
-  console.log('1600 px:');
-  p = await abre(b, 1600, true); m = await mede(p);
-  conf(!m.fluxo && m.direita, 'em 1600 px continua alinhado');
-  console.log('1024 px (coluna fora da tela):');
-  p = await abre(b, 1024, false); m = await mede(p);
-  conf(m.fluxo && !m.linha, 'quando a coluna nem aparece, o total fica em sequência (não some para fora da tela)');
-  console.log('Celular 390 px:');
-  p = await abre(b, 390, false);
-  conf(await p.evaluate(() => { const t = document.querySelector('.tb-tots'), bar = t.parentElement; return !t.classList.contains('tb-tots-linha') && !bar.style.paddingBottom && getComputedStyle(t).position === 'static'; }), 'no celular nada muda');
+  for (const [w, lg] of [[1024, false], [1280, false], [1366, true], [1600, true], [390, false]]) {
+    const p = await abre(b, w, lg), m = await mede(p);
+    conf(m.selo && m.inteiro && !m.velho && !m.lado, w + ' px' + (lg ? ' (colunas largas)' : '') + ': total inteiro no selo do cabeçalho, sem a caixa antiga e sem rolar de lado');
+    if (w === 1280) await p.screenshot({ path: path.join(RAIZ, 'tools', 'testes', 'telas', 'v0413-1280.png'), clip: { x: 240, y: 60, width: 1040, height: 200 } });
+  }
   await b.close();
   console.log('\n' + ok + ' ok, ' + falhas + ' falha(s)'); process.exit(falhas ? 1 : 0);
 })();

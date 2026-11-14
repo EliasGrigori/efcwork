@@ -3,7 +3,25 @@
    Campo vazio: "Voltar para" e "Mais usadas". Setas escolhem, Enter abre, Esc fecha. */
 const BG_FONTES = []; /* cada área registra: q => [{grupo, nome, sub, abrir:()=>{}}] */
 const bgNorm = s => String(s == null ? '' : s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
-function bgCasa(q, txt) { const pal = bgNorm(q).split(/\s+/).filter(Boolean), t = bgNorm(txt); return pal.length > 0 && pal.every(p => t.indexOf(p) >= 0); }
+/* v0.6.15 (observação do Grok: "desemcapado" não achava "desencapados"): cada palavra da busca precisa estar no texto;
+   se não estiver, vale uma palavra parecida — 1 letra diferente a partir de 5 letras, 2 a partir de 8 (troca, falta ou sobra). */
+function bgDist(a, b, max) {
+  if (Math.abs(a.length - b.length) > max) return max + 1;
+  let ant = Array.from({ length: b.length + 1 }, (_, j) => j);
+  for (let i = 1; i <= a.length; i++) { const cur = [i]; let menor = i;
+    for (let j = 1; j <= b.length; j++) { cur[j] = Math.min(ant[j] + 1, cur[j - 1] + 1, ant[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); if (cur[j] < menor) menor = cur[j]; }
+    if (menor > max) return max + 1; ant = cur; }
+  return ant[b.length];
+}
+function bgParecida(p, palavras) {
+  const max = p.length >= 8 ? 2 : p.length >= 5 ? 1 : 0; if (!max) return false;
+  return palavras.some(w => w.length >= 4 && (bgDist(p, w, max) <= max || (w.length > p.length && bgDist(p, w.slice(0, p.length), max) <= max)));
+}
+function bgCasa(q, txt) {
+  const pal = bgNorm(q).split(/\s+/).filter(Boolean), t = bgNorm(txt); if (!pal.length) return false;
+  let ws = null;
+  return pal.every(p => t.indexOf(p) >= 0 || bgParecida(p, ws || (ws = t.split(/[^a-z0-9]+/).filter(Boolean))));
+}
 BG_FONTES.push(q => {
   const r = [];
   AREAS.forEach(a => { (a.abas.length ? a.abas : [{ id: '', nome: a.nome }]).forEach(t => { if (!a.negada && !t.negada && bgCasa(q, a.nome + ' ' + t.nome)) r.push({ grupo: 'Telas', nome: t.nome, sub: t.id ? a.nome : 'Área', ico: a.ic, abrir: () => ir(a.id, t.id) }); }); });
@@ -36,7 +54,7 @@ function bgDesenha() {
 function bgAbrir() {
   if (!S.user || $('#bg')) return;
   const d = document.createElement('div'); d.id = 'bg'; d.className = 'bg-fundo';
-  d.innerHTML = '<div class="bg-caixa" role="dialog" aria-modal="true" aria-label="Buscar"><label class="bg-campo">' + ic('lupa') + '<input id="bg-q" type="search" autocomplete="off" placeholder="Buscar material, equipamento, solicitação ou tela" aria-label="Buscar"><kbd>Esc</kbd></label><div id="bg-res" class="bg-res" role="listbox"></div><p class="bg-dica">Setas para escolher · Enter abre · Esc fecha</p></div>';
+  d.innerHTML = '<div class="bg-caixa" role="dialog" aria-modal="true" aria-label="Buscar"><label class="bg-campo">' + ic('lupa') + '<input id="bg-q" type="search" autocomplete="off" placeholder="Buscar documento, material, coleta…" aria-label="Buscar"><kbd>Esc</kbd><button type="button" class="bt ic-so bg-x" data-act="bg-x" aria-label="Fechar a busca" title="Fechar">' + ic('x') + '</button></label><div id="bg-res" class="bg-res" role="listbox"></div><p class="bg-dica">Setas para escolher · Enter abre · Esc fecha</p></div>';
   document.body.appendChild(d); csCamadaAbre('bg', bgFecharSo); bgDesenha(); setTimeout(() => { const i = $('#bg-q'); if (i) i.focus(); }, 0);
 }
 function bgFecharSo() { const d = $('#bg'); if (d) d.remove(); }
@@ -45,6 +63,7 @@ function bgMove(n) { const l = $$('.bg-it'); if (!l.length) return; let k = l.fi
 document.addEventListener('input', e => { if (e.target && e.target.id === 'bg-q') bgDesenha(); });
 document.addEventListener('click', e => {
   if (e.target && e.target.id === 'bg') { bgFechar(); return; }
+  if (e.target.closest && e.target.closest('[data-act="bg-x"]')) { bgFechar(); return; } /* v0.6.15 (Grok D7): no celular, um X de verdade fecha a busca */
   const t = e.target.closest && e.target.closest('[data-act="bg-ir"], [data-act="cs-busca"]'); if (!t) return;
   if (t.getAttribute('data-act') === 'cs-busca') { bgAbrir(); return; }
   const r = BG_RES[+t.getAttribute('data-k')]; bgFecharSo(); csCamadaSaiu('bg', () => { if (r) r.abrir(); });

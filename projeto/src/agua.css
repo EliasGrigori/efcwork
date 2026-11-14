@@ -21,7 +21,7 @@
   .ag-l .bt{width:100%}
 }
 .ag-dc{margin:0 0 8px;color:var(--tx2);font-size:13px;line-height:1.4}
-.fm-c.ag-al .dd-b{height:40px}
+.fm-c.ag-al .dd-b{height:var(--campo)}
 /* v0.6.6 · ação corretiva */
 .ac-res{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg1);padding:10px 12px;font:inherit;color:inherit;text-align:left;cursor:pointer;min-height:56px}
 .ac-res:hover{background:var(--row)}

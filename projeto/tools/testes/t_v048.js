@@ -95,26 +95,22 @@ const cab = p => p.$$eval('.tb[data-tb="al-mat"] .tb-cab th', l => l.map(x => x.
   await fecha(p);
   conf(await p.isVisible('.tb-cab th[data-tbk="min"] .tb-mf') && await p.$eval('.tb-cab th[data-tbk="min"]', e => e.classList.contains('tb-at')), 'símbolo de filtro e sublinhado no cabeçalho da coluna filtrada');
   conf(await p.isVisible('[data-act="tb-limpa"]') && /Limpar filtro/.test(await p.textContent('[data-act="tb-limpa"]')), '"Limpar filtro" aparece no lugar do antigo Filtro');
-  const tbar = await p.$$eval('.tb[data-tb="al-mat"] .tb-bar > *', l => l.map(x => x.className.split(' ')[0]).join(','));
+  const tbar = await p.evaluate(() => Array.from((document.querySelector('.tb[data-tb="al-mat"] .tb-bar') || document.querySelector('.tb-bar-sobe')).children).map(x => x.className.split(' ')[0]).join(','));
   conf(tbar.indexOf('tb-limpa,tb-cont') === 0 && !(await p.$('[data-tbbusca]')), 'barra: Limpar filtro · contagem (sem caixa de busca da tabela)');
   await p.click('[data-act="tb-limpa"]'); await p.waitForTimeout(200);
   conf((await linhas(p)).length === 6 && !(await p.$('[data-act="tb-limpa"]')), 'Limpar filtro limpa tudo e some');
 
   console.log('— Total');
-  const tot = async () => p.evaluate(() => { const tb = document.querySelector('.tb[data-tb="al-mat"]'), t = tb.querySelector('.tb-bar .tb-tots'), tv = t.querySelector('.tb-tv'), lb = t.querySelector('.tb-tl'), th = tb.querySelector('.tb-cab th[data-tbk="' + tv.getAttribute('data-k') + '"]'), a = tv.getBoundingClientRect(), c = th.getBoundingClientRect(), l = lb.getBoundingClientRect(), ic = tb.querySelector('[data-act="tb-cols"]').getBoundingClientRect(); return { txt: t.innerText.replace(/\s+/g, ' '), col: th.getAttribute('data-tbk'), alinhado: Math.abs(a.left - c.left) < 2 && Math.abs(a.right - c.right) < 2, rotulo: l.right <= a.left && a.left - l.right < 12, linha: Math.abs(a.top - ic.top) < 2, faixa: !!document.querySelector('.tb-totr') }; });
+  /* v0.6.15 (ITEM 10/23, Elias 14/11): o total sai da barra da tabela e vira o selo do cabeçalho ("R$ 303,80 em estoque"); filtrado, vira "· total filtrado" */
+  const tot = async () => p.evaluate(() => { const m = document.querySelector('.cs-meta .tb-tp'); return { txt: m ? m.textContent : '', fl: !!(m && m.classList.contains('fl')), velho: !!document.querySelector('.tb-tots') }; });
   let t0 = await tot();
-  conf(t0.col === 'val' && t0.alinhado && t0.linha && !t0.faixa, 'total na barra dos ícones, exatamente acima da coluna Valor, sem faixa: ' + t0.txt);
-  conf(t0.rotulo && /Total/.test(t0.txt) && !(await p.$('.tb-tl small')) && !/itens/.test(t0.txt) && /6 itens/.test(await p.$eval('.tb-tl', e => e.title)) && /R\$ 303,80/.test(t0.txt), 'quadradinho "Total" logo à esquerda do valor, sem texto embaixo (a contagem fica na dica)');
+  conf(/R\$ 303,80 em estoque/.test(t0.txt) && !t0.fl && !t0.velho, 'total no selo do cabeçalho, sem a caixa antiga: ' + t0.txt);
   await abre(p, 'loc'); await p.click('.tb-mn-li:has-text("Porta 02") input'); await p.waitForTimeout(200); await fecha(p);
   t0 = await tot();
-  conf(/4 itens/.test(await p.$eval('.tb-tl', e => e.title)) && /filtrado/.test(await p.$eval('.tb-tl', e => e.title)) && !/303,80/.test(t0.txt) && t0.alinhado, 'total segue o filtro da coluna e continua alinhado: ' + t0.txt);
+  conf(t0.fl && /total filtrado/.test(t0.txt) && !/303,80/.test(t0.txt), 'o selo segue o filtro da coluna: ' + t0.txt);
   await abre(p, 'cod'); await mvCol(p, 1); await p.waitForTimeout(200); await fecha(p);
-  t0 = await tot(); conf(t0.alinhado, 'mudando colunas de lugar, o total acompanha a coluna Valor');
+  t0 = await tot(); conf(t0.fl && !t0.velho, 'mudando colunas de lugar, o selo continua');
   await abre(p, 'sit'); await mvCol(p, -1); await p.waitForTimeout(200); await fecha(p);
-  /* v0.4.13: antes ia para a sequência; agora desce para uma linha própria, ainda em cima da coluna */
-  const fl = await p.evaluate(() => { const tb = document.querySelector('.tb[data-tb="al-mat"]'), t = tb.querySelector('.tb-tots'), v = t.querySelector('.tb-tv').getBoundingClientRect(), th = tb.querySelector('.tb-cab th[data-tbk="val"]').getBoundingClientRect(), ic = tb.querySelector('[data-act="tb-cols"]').getBoundingClientRect();
-    return t.classList.contains('tb-tots-fluxo') ? v.right <= ic.left : (t.classList.contains('tb-tots-linha') && Math.abs(v.right - th.right) < 2 && v.top >= ic.bottom); });
-  conf(fl, 'Valor na última coluna (embaixo dos ícones): o total desce para uma linha própria em cima da coluna (ou, se nem assim couber, fica em sequência)');
   await p.evaluate(() => { localStorage.removeItem('cw-tbord-al-mat'); S.tb['al-mat'].colOrd = []; render(); }); await p.waitForTimeout(200);
 
   console.log('— Menu nasce da coluna');

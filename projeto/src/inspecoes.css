@@ -38,10 +38,10 @@ button.cl-li:hover{background:var(--row)}
 /* dosagem e cloro depois: mesma altura e mesma linha de base (pedido de 10/11) */
 .cl-fm2{align-items:end}
 .cl-fm2 .fm-c{min-width:0}
-.cl-fm2 .fm-i{width:100%;min-width:0;box-sizing:border-box;height:40px}
+.cl-fm2 .fm-i{width:100%;min-width:0;box-sizing:border-box;height:var(--campo)}
 .cl-fm2 .fm-r{min-height:18px;display:block}
 /* v0.6.2: janela retrátil ao lado de um campo fica da mesma altura (regra do alinhamento de 11/11) */
-.cl-fm2 .dd-b{height:40px}
+.cl-fm2 .dd-b{height:var(--campo)}
 .cl-fb{display:flex;gap:8px;flex-wrap:wrap}
 .cl-fb .bt{cursor:pointer}
 .cl-fp{position:relative;display:inline-block;max-width:100%}

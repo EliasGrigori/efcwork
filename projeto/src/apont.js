@@ -324,15 +324,18 @@ function apNCFecharOk() {
 function apParetoDados(por, dias) {
   const lim = addDias(hojeISO(), -dias), base = S.apont.filter(a => a.status !== 'nao_procede' && a.data >= lim);
   const m = {}; base.forEach(a => { const k = por === 'setor' ? (a.setor || 'sem setor') : por === 'grav' ? apGrav(a.grav)[1] : apCat(a.categoria)[1]; m[k] = (m[k] || 0) + 1; });
-  const itens = Object.keys(m).map(k => ({ nome: k, n: m[k] })).sort((a, b) => b.n - a.n || cmpTxt(a.nome, b.nome));
-  const total = itens.reduce((s, x) => s + x.n, 0); let ac = 0;
-  itens.forEach(x => { ac += x.n; x.ac = ac; x.pc = total ? ac / total * 100 : 0; x.vital = x.pc <= 80 || (x.ac - x.n) / (total || 1) * 100 < 80; });
+  /* v0.6.15 (observação do Grok): "Outro" e "sem setor" são sobra, não causa: vão sempre para o fim e nunca entram nos "poucos vitais" (prática do Pareto) */
+  const sobra = k => /^outros?$/i.test(String(k).trim()) || k === 'sem setor';
+  const itens = Object.keys(m).map(k => ({ nome: k, n: m[k], sobra: sobra(k) })).sort((a, b) => (a.sobra - b.sobra) || b.n - a.n || cmpTxt(a.nome, b.nome));
+  const total = itens.reduce((s, x) => s + x.n, 0), real = itens.filter(x => !x.sobra).reduce((s, x) => s + x.n, 0); let ac = 0, acR = 0;
+  itens.forEach(x => { ac += x.n; x.ac = ac; x.pc = total ? ac / total * 100 : 0; /* o corte de 80% conta só as causas de verdade */
+    if (!x.sobra) { const antes = acR; acR += x.n; x.vital = acR / (real || 1) * 100 <= 80 || antes / (real || 1) * 100 < 80; } else x.vital = false; });
   return { itens: itens, total: total };
 }
 function apParetoAbre() {
   S.apPPor = S.apPPor || 'cat'; S.apPDias = S.apPDias || 90;
   gvAbrir(() => {
-    const d = apParetoDados(S.apPPor, S.apPDias), max = d.itens.length ? d.itens[0].n : 1, vit = d.itens.filter(x => x.vital);
+    const d = apParetoDados(S.apPPor, S.apPDias), max = Math.max(1, ...d.itens.map(x => x.n)), vit = d.itens.filter(x => x.vital);
     const corpo = '<div class="fm-g cl-fm2">' + lcBl('Agrupar por', ddHTML('app:por', S.apPPor, [['cat', 'Categoria'], ['setor', 'Setor'], ['grav', 'Gravidade']])) + lcBl('Período', ddHTML('app:dias', String(S.apPDias), [['30', 'Últimos 30 dias'], ['90', 'Últimos 90 dias'], ['365', 'Último ano']])) + '</div>' +
       (!d.total ? '<div class="vazio">' + ic('graf') + '<b>Nenhum apontamento neste período.</b></div>' :
         '<div class="ap-par">' + d.itens.map(x => '<div class="ap-pl' + (x.vital ? ' vit' : '') + '"><span class="ap-pn">' + esc(x.nome) + '</span><span class="ap-pb"><i style="width:' + (x.n / max * 100).toFixed(1) + '%"></i></span><b>' + x.n + '</b><small>' + x.pc.toFixed(0) + '%</small></div>').join('') + '</div>' +

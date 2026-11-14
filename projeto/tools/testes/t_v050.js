@@ -40,7 +40,7 @@ const fm = async (p, campo, v) => { await p.fill('#gv [data-fm="' + campo + '"]'
   await vai(p, '#/documentos/documentos');
   conf(await p.evaluate(() => document.querySelector('.cs-ph h1').textContent === 'Documentos' && !/está sendo refeita/.test(document.body.innerText)), 'a área Documentos abre de verdade (não é mais a tela de "em breve")');
   conf(await p.evaluate(() => { const k = [...document.querySelectorAll('.dc-kps .kp')].map(x => x.querySelector('b').textContent + ' ' + x.querySelector('span').textContent); return k.join('|') === '1 Vencidos|2 Vencem em 15 dias|1 Sem data|3 Em dia'; }), '4 caixas de números: 1 vencido, 2 vencem em 15 dias, 1 sem data, 3 em dia (desativado fora da conta)');
-  conf(await p.evaluate(() => !!document.querySelector('[data-tb="dc-docs"] .tb-bar .dc-vs') && !document.querySelector('[data-tb="dc-docs"] .tb-bar .tb-cont')), 'Tabela | Calendário fica no lugar da contagem');
+  conf(await p.evaluate(() => (b => !!b && !!b.querySelector('.dc-vs') && !b.querySelector('.tb-cont'))(document.querySelector('[data-tb="dc-docs"] .tb-bar') || document.querySelector('.tb-bar-sobe'))), 'Tabela | Calendário fica no lugar da contagem');
   const ordem = await p.evaluate(() => [...document.querySelectorAll('[data-tb="dc-docs"] tbody tr')].map(t => t.classList.contains('tb-gr') ? '#' + t.querySelector('b').textContent : t.children[1].textContent));
   conf(ordem.join('|') === '#Formulários|ABASTECIMENTO DE MÁQUINAS|COMANDA ADUBAÇÃO|COTA DE CONSUMO MENSAL DE ÁGUA|LIMPEZA PULVERIZADORES|VERIFICAÇÃO DE LIMPEZA PACKING HOUSE|#Regulatórios|ALVARÁ DE FUNCIONAMENTO|LICENÇA SANITÁRIA MATRIZ|#Desativados|ANTIGO CONTROLE', 'grupos Formulários (com OAB e N/A) · Regulatórios · Desativados, cada um em ordem alfabética');
   conf(await p.evaluate(() => /Formulários\s*5/.test(document.querySelector('tr.tb-gr').textContent)), 'o cabeçalho do grupo diz quantos há nele');
@@ -112,7 +112,7 @@ const fm = async (p, campo, v) => { await p.fill('#gv [data-fm="' + campo + '"]'
   console.log('Caixas d’água:');
   await vai(p, '#/documentos/caixas');
   conf(await p.evaluate(() => [...document.querySelectorAll('[data-tb="dc-cx"] tbody tr:not(.tb-gr)')].map(t => t.children[0].textContent).join(',') === 'CXR01,CXR02,CXR10'), 'ordem alfabética (CXR01, CXR02, CXR10)');
-  conf(await p.evaluate(() => /Vencidas/.test(document.querySelector('.dc-kps').textContent) && /vencido há 10 d/.test(document.querySelector('[data-tb="dc-cx"]').textContent)), 'caixa vencida com o prazo');
+  conf(await p.evaluate(() => /Vencidas/.test(document.querySelector('.dc-kps').textContent) && /vencido há 10 d/.test(document.querySelector('.tb[data-tb="dc-cx"]').textContent)), 'caixa vencida com o prazo');
   await p.click('[data-tb="dc-cx"] tbody tr:has-text("CXR10")'); await p.waitForTimeout(200); await p.click('#gv [data-act="dc-lancar"]'); await p.waitForTimeout(150);
   conf(await p.evaluate(() => /Lançar limpeza/.test(document.querySelector('#gv h2').textContent) && document.querySelector('#gv [data-fm="data"]').value === hojeISO() && !document.querySelector('#gv [data-fm="quem"]')), 'Lançar limpeza já vem com a data de hoje e sem "quem entregou"');
   await p.click('#gv [data-act="dc-lanc-ok"]'); await p.waitForTimeout(500);

@@ -1,0 +1,83 @@
+{
+ "nome": "EFCwork · propostas v0.6.15 (todas ligadas)",
+ "quando": "2026-11-14T14:05:46.762Z",
+ "achados": [
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "tools/visual/moderno-v0615/moderno.css:92",
+   "oque": "cor escrita direto: #fed",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "tools/visual/moderno-v0615/moderno.css:93",
+   "oque": "cor escrita direto: #fed",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "CSS",
+   "nivel": "ajuste",
+   "onde": "tools/visual/moderno-v0615/moderno.css:105",
+   "oque": "cor escrita direto: #fed",
+   "sug": "Trocar por um token de cor (var(--…))."
+  },
+  {
+   "parte": "App",
+   "nivel": "ajuste",
+   "onde": "Início · 1280 · claro",
+   "oque": "8 tamanhos de letra (meta: até 7)",
+   "sug": "Juntar tamanhos parecidos."
+  },
+  {
+   "parte": "App",
+   "nivel": "ajuste",
+   "onde": "Almoxarifado · 1280 · claro",
+   "oque": "9 tamanhos de letra (meta: até 7)",
+   "sug": "Juntar tamanhos parecidos."
+  },
+  {
+   "parte": "App",
+   "nivel": "ajuste",
+   "onde": "Novo treinamento (gaveta) · 1280 · claro",
+   "oque": "8 tamanhos de letra (meta: até 7)",
+   "sug": "Juntar tamanhos parecidos."
+  },
+  {
+   "parte": "App",
+   "nivel": "ajuste",
+   "onde": "Início · 1280 · escuro",
+   "oque": "8 tamanhos de letra (meta: até 7)",
+   "sug": "Juntar tamanhos parecidos."
+  },
+  {
+   "parte": "App",
+   "nivel": "ajuste",
+   "onde": "Almoxarifado · 1280 · escuro",
+   "oque": "9 tamanhos de letra (meta: até 7)",
+   "sug": "Juntar tamanhos parecidos."
+  },
+  {
+   "parte": "App",
+   "nivel": "ajuste",
+   "onde": "Novo treinamento (gaveta) · 1280 · escuro",
+   "oque": "8 tamanhos de letra (meta: até 7)",
+   "sug": "Juntar tamanhos parecidos."
+  },
+  {
+   "parte": "App",
+   "nivel": "ajuste",
+   "onde": "Almoxarifado · 390 · claro",
+   "oque": "8 tamanhos de letra (meta: até 7)",
+   "sug": "Juntar tamanhos parecidos."
+  },
+  {
+   "parte": "App",
+   "nivel": "ajuste",
+   "onde": "Almoxarifado · 390 · escuro",
+   "oque": "8 tamanhos de letra (meta: até 7)",
+   "sug": "Juntar tamanhos parecidos."
+  }
+ ]
+}

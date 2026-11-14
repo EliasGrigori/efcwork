@@ -234,7 +234,7 @@ function alAbreItem(id) {
         gvCampos([['Local', i.local], ['Unidade', i.un], ['Embalagem', alFator(i) > 1 ? '1 ' + (i.unCompra || 'emb.') + ' = ' + alFator(i) + ' ' + (i.un || '') : ''], ['Consumo', consumo ? consumo + ' (média de 90 dias)' : 'sem saídas em 90 dias'], ['Por frasco', i.porFrasco ? 'sim (abre e termina frasco)' : '']]) +
         '<p class="gv-h">Lotes com saldo</p>' + (ls.length ? '<div class="gv-lotes">' + ls.map(l => '<div class="gv-lote"><span>' + esc(l.lote || 'sem lote') + (l.validade ? ' · vence ' + fmtD(l.validade) : '') + '</span><span class="num">' + alQ(l.saldo) + ' ' + esc(i.un || '') + (alVencido(l) ? ' ' + alPill('vencido', 'cr') : alAVencer(l) ? ' ' + alPill('vence logo', 'wa') : '') + '</span></div>').join('') + '</div>' : '<p class="tb-nada">Sem saldo.</p>') +
         (alPorFrasco(i) ? alAbertosHTML(i) : '') +
-        '<p class="gv-h">Últimas movimentações</p>' + gvLinha(movs.map(m => [(AL_TIPO[m.tipo] || m.tipo) + ' de ' + alQ(m.qtd) + ' ' + (i.un || '') + (m.motivo ? ' · ' + m.motivo : m.doc ? ' · Doc. ' + m.doc : '') + (m.anulada ? ' (anulada)' : ''), (m.porNome || '') + ' · ' + fmtD(m.data)])),
+        '<p class="gv-h">Últimas movimentações</p>' + (movs.length ? tlFluido('alm-' + i.id, movs.slice().reverse().map(m => ({ nome: (AL_TIPO[m.tipo] || m.tipo) + ' de ' + alQ(m.qtd) + ' ' + (i.un || ''), feito: true, data: m.data, txt: m.motivo || (m.doc ? 'Doc. ' + m.doc : ''), quem: m.porNome, alerta: m.anulada ? 'anulada' : '' }))) : '<p class="tb-nada">Sem movimentações.</p>'),
       rodape: alItemPe(i) };
   });
   render();

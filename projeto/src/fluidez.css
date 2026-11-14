@@ -26,7 +26,7 @@
 :root[data-tema="escuro"] .cs-ph h1.fz-tt{background:none;color:#e6c47e}
 @keyframes fzTt{to{opacity:1;filter:none;transform:none}}
 /* lista que entra em sequência (sino) */
-.fz-li{animation:fzLi var(--duration-slow) var(--ease-smooth-out) backwards;animation-delay:calc(var(--i) * 60ms)}
+.fz-li{animation:fzLi var(--duration-fast) var(--ease-smooth-out) backwards;animation-delay:calc(min(var(--i), 5) * var(--duration-stagger))} /* v0.6.15 (ITEM 18): termina em ~0,45 s */
 @keyframes fzLi{from{opacity:0;transform:translateY(10px) scale(.98)}}
 /* desfoque no fim da lista (Gradual Blur): só quando tem mais embaixo */
 .gv-corpo::after,.cs-lado::after{content:"";position:sticky;bottom:0;display:block;flex:none;height:48px;margin-top:-48px;pointer-events:none;opacity:0;transition:opacity var(--duration-fast) var(--ease-out);

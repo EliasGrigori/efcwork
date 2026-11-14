@@ -75,7 +75,7 @@ render = function () {
 function fzDepois() {
   if (!S.user || !S.pronto) { S._fzRota = null; S._fzLinha = null; return; }
   const ar = csArea(S.rota.area), chave = ar.id + '/' + (S.rota.aba || ''), ant = S._fzRota, mudou = ant && ant !== chave, mesmaArea = ant && ant.split('/')[0] === ar.id;
-  S._fzRota = chave;
+  S._fzRota = chave; const _tit = $('.cs-ph h1'), _titAnt = S._fzTit; S._fzTit = _tit ? _tit.textContent : null;
   /* traço da aba */
   const bar = $('.cs-abas'), on = bar && bar.querySelector('a.on');
   if (bar && on) { bar.classList.add('fz-abas'); const l = document.createElement('span'); l.className = 't-abas-linha fz-linha'; l.setAttribute('aria-hidden', 'true'); bar.appendChild(l);
@@ -90,7 +90,9 @@ function fzDepois() {
     if (mesmaArea) { const ids = ar.abas.map(t => t.id), a = ids.indexOf(ant.split('/')[1]), b = ids.indexOf(S.rota.aba); if (a >= 0 && b >= 0 && b < a) dir = -1; }
     ct.style.setProperty('--fz-dir', dir); gvAnim(Mov.ms('--duration-fast', 250) + 80); /* corta o lado só enquanto o conteúdo desliza */ ct.classList.remove('fz-entra'); void ct.offsetWidth; ct.classList.add('fz-entra'); setTimeout(() => ct.classList.remove('fz-entra'), Mov.ms('--duration-fast', 250) + 60); }
   /* título da área entra letra por letra, saindo do desfoque (só quando muda de área) */
-  if (!mesmaArea) { const h = $('.cs-ph h1'); if (h && !h.children.length) { const t = h.textContent; if (t.length <= 48) {
+  /* v0.6.15 (pedido do Elias: "nas abas de dentro, como Cloro, Apontamentos e Auditoria, a fluidez não existe"): o título entra também ao trocar de aba */
+  const hT = $('.cs-ph h1'), titMudou = hT && _titAnt != null && _titAnt !== hT.textContent;
+  if (!mesmaArea || titMudou) { const h = hT; if (h && !h.children.length) { const t = h.textContent; if (t.length <= 48) {
     h.classList.add('fz-tt'); h.innerHTML = [...t].map((c, i) => c === ' ' ? ' ' : '<span style="--i:' + i + '">' + esc(c) + '</span>').join('');
     setTimeout(() => { if (h.isConnected) { h.textContent = t; h.classList.remove('fz-tt'); } }, Math.min(t.length, 30) * Mov.ms('--duration-stagger', 40) + Mov.ms('--duration-very-slow', 500) + 80); } } }
 }

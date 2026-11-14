@@ -1,0 +1,27 @@
+/* MODELO 3 · Tátil tonal — inspirado no Material 3: botão secundário em tom dourado bem claro (sem borda), camada de estado
+   que escurece no passar e no aperto, campos preenchidos com linha embaixo que acende, cartões que sobem 2 px. Cantos 10. */
+:root[data-modelo="3"]{--rs:10px;--r:14px}
+:root[data-modelo="3"] .bt:not(.pr){border-color:transparent;background:var(--aS);color:var(--aTx);box-shadow:none}
+:root[data-modelo="3"] .bt:hover:not([disabled]):not(.pr){background:color-mix(in srgb,var(--a) 22%,var(--bg1))}
+:root[data-modelo="3"] .bt:active:not([disabled]):not(.pr){background:color-mix(in srgb,var(--a) 30%,var(--bg1))}
+:root[data-modelo="3"] .bt.ic-so{background:transparent;color:var(--tx2)}
+:root[data-modelo="3"] .bt.ic-so:hover{background:var(--aS)!important;color:var(--aTx)}
+:root[data-modelo="3"] .bt.pr{border-color:transparent;box-shadow:0 2px 6px rgba(150,110,30,.25)}
+:root[data-modelo="3"] .bt.pr:hover{box-shadow:0 6px 16px rgba(150,110,30,.32);transform:translateY(-1px)}
+:root[data-modelo="3"] .bt.lk{background:transparent}
+:root[data-modelo="3"] :is(.fm-i,.cp input,.cp select,.cp textarea,.dd-b){background:var(--bg2);border:0;border-bottom:2px solid var(--bd2);border-radius:8px 8px 2px 2px}
+:root[data-modelo="3"] :is(.fm-i,.cp input,.cp select,.cp textarea,.dd-b):hover{border-bottom-color:color-mix(in srgb,var(--a) 60%,var(--bd2))}
+:root[data-modelo="3"] :is(.fm-i,.cp input,.cp select,.cp textarea):focus{outline:none;border-bottom-color:var(--a);background:color-mix(in srgb,var(--a) 7%,var(--bg1))}
+:root[data-modelo="3"] .cs-abas a.on{border-bottom-width:3px}
+:root[data-modelo="3"] .cs-abas a:hover:not(.on){background:var(--aS);border-radius:8px 8px 0 0}
+:root[data-modelo="3"] .cs-it{border-radius:10px}
+:root[data-modelo="3"] .cs-it:hover{background:var(--aS)}
+:root[data-modelo="3"] .pn,:root[data-modelo="3"] .kp{border-radius:14px;border-color:transparent;box-shadow:0 1px 3px rgba(40,30,10,.08),0 2px 8px rgba(40,30,10,.05)}
+:root[data-modelo="3"] .kp:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(40,30,10,.12)}
+:root[data-tema="escuro"][data-modelo="3"] .pn,:root[data-tema="escuro"][data-modelo="3"] .kp{background:color-mix(in srgb,var(--a) 5%,var(--bg1));box-shadow:none}
+:root[data-modelo="3"] .tb{border-radius:14px}
+:root[data-modelo="3"] .tb-t tbody tr[data-act]:hover td{background:var(--aS)}
+:root[data-modelo="3"] .dd-l{border:0;border-radius:12px;box-shadow:0 12px 32px rgba(40,30,10,.18)}
+:root[data-modelo="3"] .dd-l li:hover{background:var(--aS)}
+:root[data-modelo="3"] .tb-busca{background:var(--bg2);border:0;border-bottom:2px solid var(--bd2);border-radius:8px 8px 2px 2px}
+:root[data-modelo="3"] .tb-busca:focus-within{border-bottom-color:var(--a);background:color-mix(in srgb,var(--a) 7%,var(--bg1))}

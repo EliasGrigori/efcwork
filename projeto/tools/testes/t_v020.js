@@ -49,9 +49,11 @@ async function semear(p) {
   conf(c.sit === 'min,zero,vencido,ok,avencer,inativo', 'situações: abaixo do mínimo, sem saldo, lote vencido, em dia, vence em 30 dias, inativo (' + c.sit + ')');
   /* Início */
   await p.evaluate(() => { location.hash = '#/inicio'; }); await p.waitForTimeout(200);
-  const kpi = await p.$$eval('.kps .kp b', l => l.map(x => x.textContent));
-  conf(kpi[0] === '4' && kpi[1] === '2' && kpi[2] === '1', 'Início: 4 materiais pedem atenção, 2 calibrações vencidas/a vencer, 1 solicitação pendente (' + kpi.join(',') + ')');
-  await p.click('.kps a[data-f="atencao"]'); await p.waitForTimeout(250);
+  /* v0.6.15 (ITEM 1): as caixas viraram a lista "Pede atenção" */
+  const at = await p.$$eval('.mo-atl', l => l.map(x => x.textContent));
+  const nA = re => { const x = at.find(t => re.test(t)); return x ? parseInt(x, 10) : 0; }, kpi = [nA(/materia/), nA(/calibra.*vencida/) + nA(/calibra.*a vencer/), nA(/solicita/)];
+  conf(kpi[0] === 4 && kpi[1] === 2 && kpi[2] === 1, 'Início: 4 materiais pedem atenção, 2 calibrações vencidas/a vencer, 1 solicitação pendente (' + kpi.join(',') + ')');
+  await p.click('.mo-atl[data-f="atencao"]'); await p.waitForTimeout(250);
   conf(await p.evaluate(() => location.hash) === '#/almox/materiais' && (await p.$$('.tb-t tbody tr')).length === 4, 'número do Início abre Materiais já filtrado (4 linhas)');
   /* Painel */
   await p.evaluate(() => { location.hash = '#/almox/painel'; }); await p.waitForTimeout(200);
@@ -68,7 +70,7 @@ async function semear(p) {
   const ths = await p.$$eval('.tb-t thead th', l => l.map(x => x.textContent.replace(/[▲▼]/g, '')));
   conf(ths.join('|') === 'Código|Item|Local|Un|Utilizável|Mínimo|Valor|Situação', 'colunas: ' + ths.join(', '));
   conf(await p.$eval('.tb-t thead th:nth-child(5)', e => e.classList.contains('n')) && await p.$eval('.tb-t tbody td:nth-child(5)', e => getComputedStyle(e).textAlign === 'right'), 'números alinhados à direita');
-  conf(/Total/.test(await p.textContent('.tb-bar .tb-tots')) && !(await p.$('[data-tbbusca]')), 'total na barra de cima e sem caixa de busca da tabela (v0.4.8)');
+  conf(/R\$/.test(await p.textContent('.cs-meta .tb-tp')) && !(await p.$('.tb-tots')) && !(await p.$('[data-tbbusca]')), 'total no selo do cabeçalho (v0.6.15) e sem caixa de busca da tabela');
   conf(!(await p.$('.tb-flt')) && !(await p.$('[data-act="tb-painel"]')), 'sem botão Filtro (v0.4.8)');
   await p.click('.tb-cab th[data-tbk="sit"] .tb-hm'); await p.waitForTimeout(150);
   conf(await p.isVisible('.tb-mn [data-dd="tbf:al-mat:sit"]'), 'filtro pronto Situação mora no menu da coluna Situação');
@@ -110,7 +112,7 @@ async function semear(p) {
   conf((await p.$$('.tb-t tbody tr')).length === 6, 'Movimentações: 6 lançamentos');
   conf(/Anulada/.test(await p.textContent('.tb-t tbody')), 'saída anulada aparece com a situação "Anulada"');
   await p.click('.tb-cab th[data-tbk="tipo"] .tb-hm'); await p.waitForTimeout(150); await p.click('[data-dd="tbf:al-mov:tipo"] .dd-b'); await p.click('[data-dd="tbf:al-mov:tipo"] li[data-v="saida"]'); await p.waitForTimeout(150);
-  conf((await p.$$('.tb-t tbody tr')).length === 2 && /Saídas/.test(await p.textContent('.tb-pe')), 'filtro Tipo = Saídas: 2 linhas; rodapé com entradas e saídas em R$');
+  conf((await p.$$('.tb-t tbody tr')).length === 2 && /Saídas/.test(await p.textContent('.cs-meta')), 'filtro Tipo = Saídas: 2 linhas; rodapé com entradas e saídas em R$');
   await p.keyboard.press('Escape'); await p.waitForTimeout(200);
   /* Solicitações */
   await p.evaluate(() => { location.hash = '#/almox/solicitacoes'; }); await p.waitForTimeout(200);

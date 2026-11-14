@@ -17,8 +17,8 @@
 .tr-pc{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:10px;align-items:center}
 .tr-pc .dd-b{height:36px}
 .tr-add{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;margin:6px 0 12px;align-items:stretch}
-.tr-add .fm-i{height:40px}
-.tr-add .bt{height:40px}
+.tr-add .fm-i{height:var(--campo)}
+.tr-add .bt{height:var(--campo)}
 @media(max-width:899px){.tr-pc .dd-b{height:44px}.tr-add .fm-i,.tr-add .bt{height:44px}}
 /* lista de presença: A4 em pé, preto no branco */
 #au-imp .tr-imp{font-family:Arial,Helvetica,sans-serif;color:#000}

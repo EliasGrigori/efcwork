@@ -8,12 +8,21 @@ const AT_LIM = 100;
 S.atFiltro = { pessoa: '', area: '', app: '', dias: '30' };
 S.atAberto = false; S.atLinha = null; S.atLimite = AT_LIM; S.audit = [];
 
-CS_CARGAS.push(() => {
-  if (!isPrincipal(S.user)) return;
-  csOuve('sv2_audit', l => { S.audit = l || []; if (S.rota.area === 'adm' && S.rota.aba === 'atividade') render(); }, { order: 'ts', limit: 1000 });
-});
+/* v0.6.15 (Grok D1): antes lia só os 1000 registros mais recentes (o gráfico zerava dias cheios e "Todo o período" mostrava 1000).
+   Agora lê pelo período escolhido (no mínimo os 30 dias do gráfico, com 1 dia de folga pelo fuso), e só "Todo o período" lê tudo. */
+const AT_TETO = 50000;
+function atOuve() {
+  if (S._atOff) { try { S._atOff(); } catch {} const k = S._desl.indexOf(S._atOff); if (k >= 0) S._desl.splice(k, 1); S._atOff = null; }
+  const d = S.atFiltro.dias, o = { order: 'ts', limit: AT_TETO };
+  if (d !== '0') o.desde = addDias(hojeISO(), -Math.max(Number(d) || 30, 30));
+  S._atDias = d; S._atCarregou = false;
+  S._atOff = csOuve('sv2_audit', l => { S.audit = l || []; S._atCarregou = true; if (S.rota.area === 'adm' && S.rota.aba === 'atividade') render(); }, o);
+}
+CS_CARGAS.push(() => { if (!isPrincipal(S.user)) return; S._atOff = null; atOuve(); });
 
 /* ---------- como cada registro é mostrado ---------- */
+/* v0.6.15 (Grok): o resumo que já começa com o nome da pessoa não repete o nome ("José José Elias… abriu o app") */
+function atResumoTx(r) { const t = String(r.resumo || atAcao(r.acao) || ''), nm = String(r.userName || '').trim(); if (nm && t.toLowerCase().indexOf(nm.toLowerCase()) === 0) { const x = t.slice(nm.length).trim(); return x || t; } return t; }
 const AT_ACOES = {
   criar_coleta: 'Criou coleta', envio_coleta: 'Envio', corrigir_os: 'Corrigiu O.S', programar_plano: 'Programou', desprogramar_plano: 'Desprogramou',
   criar_rodizio: 'Novo plano', alterar_rodizio: 'Alterou plano', encerrar_rodizio: 'Encerrou plano', recoleta_rodizio: 'Recoleta',
@@ -103,7 +112,7 @@ function atLinhas(l) {
     if (d !== dia) { if (aberto) h += '</div>'; dia = d; aberto = true; h += '<div class="at-dia">' + esc(atDiaTxt(d)) + '</div><div class="at-tl">'; }
     h += '<div class="at-ev' + (ab ? ' ab' : '') + '"><button type="button" class="at-li" data-act="at-linha" data-id="' + esc(id) + '" aria-expanded="' + ab + '">' +
       '<span class="at-h">' + esc(atHora(r.ts)) + '</span><span class="at-ini" title="' + esc(r.userName || '') + '">' + esc(atIni(r.userName)) + '</span>' +
-      '<span class="at-t"><b>' + esc((r.userName || '—').split(' ')[0]) + '</b> ' + esc(r.resumo || atAcao(r.acao)) + '<small>' + esc(atArea(r) + (r.entidadeId ? ' · ' + r.entidadeId : '') + ' · ' + atApp(r)) + '</small></span>' +
+      '<span class="at-t"><b>' + esc((r.userName || '—').split(' ')[0]) + '</b> ' + esc(atResumoTx(r)) + '<small>' + esc(atArea(r) + (r.entidadeId ? ' · ' + r.entidadeId : '') + ' · ' + atApp(r)) + '</small></span>' +
       '<span class="pill ' + atCor(r.acao) + '">' + esc(atAcao(r.acao)) + '</span>' + ic('seta', 'at-s') + '</button>' + (ab ? atDetalhe(r) : '') + '</div>';
   });
   if (aberto) h += '</div>';
@@ -121,7 +130,7 @@ function atTela() {
   if (!isPrincipal(S.user)) return ''; /* a tela some para quem não é Principal (roteador); aqui é só uma segunda trava */
   const l = atFiltrar(), tem = atTemFiltro();
   return '<div class="at">' + atGrafico() +
-    '<div class="at-bar"><span class="tb-cont">' + l.length + (l.length === 1 ? ' registro' : ' registros') + '</span><span class="tb-sp"></span>' +
+    '<div class="at-bar"><span class="tb-cont">' + l.length + (l.length === 1 ? ' registro' : ' registros') + (S.audit.length >= AT_TETO ? ' (só os ' + AT_TETO.toLocaleString('pt-BR') + ' mais recentes)' : '') + '</span><span class="tb-sp"></span>' +
     (tem ? '<button type="button" class="bt" data-act="at-limpa">Limpar filtro</button>' : '') +
     '<button type="button" class="at-fl" data-act="at-filtro" aria-expanded="' + S.atAberto + '">' + ic('filtro') + '<b>Filtro</b><small>· ' + esc(atResumo()) + '</small></button>' +
     '<button type="button" class="bt ic-so" data-act="at-xlsx" title="Baixar planilha (.xlsx)" aria-label="Baixar planilha (.xlsx)">' + ic('planilha') + '</button>' +
@@ -146,13 +155,13 @@ function atImprimir() {
 }
 
 /* ---------- eventos ---------- */
-DD_AO.at = (k, v) => { if (k in S.atFiltro) { S.atFiltro[k] = v; S.atLimite = AT_LIM; S.atLinha = null; render(); } };
+DD_AO.at = (k, v) => { if (k in S.atFiltro) { S.atFiltro[k] = v; S.atLimite = AT_LIM; S.atLinha = null; if (k === 'dias' && v !== S._atDias && isPrincipal(S.user)) atOuve(); render(); } };
 document.addEventListener('click', e => {
   const t = e.target.closest && e.target.closest('[data-act^="at-"]'); if (!t) return;
   const a = t.getAttribute('data-act');
   if (a === 'at-linha') { const id = t.getAttribute('data-id'); S.atLinha = S.atLinha === id ? null : id; render(); }
   else if (a === 'at-filtro') { S.atAberto = !S.atAberto; render(); }
-  else if (a === 'at-limpa') { S.atFiltro = { pessoa: '', area: '', app: '', dias: '30' }; S.atLimite = AT_LIM; S.atLinha = null; render(); }
+  else if (a === 'at-limpa') { S.atFiltro = { pessoa: '', area: '', app: '', dias: '30' }; S.atLimite = AT_LIM; S.atLinha = null; if (S._atDias !== '30' && isPrincipal(S.user)) atOuve(); render(); }
   else if (a === 'at-mais') { S.atLimite += AT_LIM; render(); }
   else if (a === 'at-xlsx') atPlanilha();
   else if (a === 'at-imp') atImprimir();

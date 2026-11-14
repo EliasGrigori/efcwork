@@ -1,0 +1,10 @@
+const { chromium, abre, ir } = require('./lib'); const path = require('path');
+(async () => { const br = await chromium.launch();
+  const p = await abre(br, { raiz: '/home/claude/antes/efcwork', w: 390, h: 800, dsf: 1 });
+  await ir(p, 'almox/materiais', 900); await p.screenshot({ path: 'out/aud/antes-390-mat.png' });
+  const q = await abre(br, { raiz: path.resolve(__dirname, '../../../..'), w: 1280, h: 800, dsf: 1 });
+  await ir(q, 'almox/materiais', 900); await q.click('.tb-t tbody tr:has-text("Luva")'); await q.waitForTimeout(1500); await q.screenshot({ path: 'out/aud/g1280.png' });
+  console.log(await q.evaluate(() => { const a = document.querySelector('.cs-abas'); return { sw: a.scrollWidth, cw: a.clientWidth, ov: getComputedStyle(a).overflowX }; }));
+  const r = await abre(br, { raiz: '/home/claude/antes/efcwork', w: 1280, h: 800, dsf: 1 });
+  await ir(r, 'almox/materiais', 900); await r.click('.tb-t tbody tr:has-text("Luva")'); await r.waitForTimeout(1500); await r.screenshot({ path: 'out/aud/g1280-antes.png' });
+  await br.close(); })();

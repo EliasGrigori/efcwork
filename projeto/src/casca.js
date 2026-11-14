@@ -245,7 +245,14 @@ async function csSair() {
   try { await Data.auth.signOut(); } catch (e) { try { await Data.auth.forcarSaida(); } catch {} }
   S.user = null; S.gv = null; S.gvForm = false; S.fm = null; S.camadas = []; S.users = []; S.notifs = []; S.aprov = []; { const g = $('#gv'); if (g) g.remove(); } S._desl.forEach(f => { try { f(); } catch {} }); S._desl = []; location.hash = '#/inicio'; render();
 }
-function csOuve(col, cb, o) { const off = Data.col(col).watch(cb, o); S._desl.push(off); return off; }
+/* v0.6.15 (ITEM 16, aprovado 14/11): conta as listas cuja 1ª leitura ainda não chegou (S._carga); enquanto houver, tabela vazia mostra o esqueleto */
+S._carga = 0;
+function csOuve(col, cb, o) {
+  let primeira = true; S._carga++;
+  const fim = () => { if (primeira) { primeira = false; S._carga = Math.max(0, S._carga - 1); } };
+  const off = Data.col(col).watch(function () { const era = primeira; fim(); const r = cb.apply(this, arguments); if (era && !S._carga && S.user) { try { render(); } catch (e) { console.error(e); } } return r; }, o);
+  const des = function () { fim(); return off && off.apply(this, arguments); }; S._desl.push(des); return des;
+}
 /* v0.4.9: Firestore desligado (cache do aparelho quebrado) — repara sozinho uma vez por sessão (até 2 tentativas) */
 const csTerminado = e => /already been terminated|client has been terminated|IndexedDB|INTERNAL ASSERTION/i.test(String((e && (e.message || e.code)) || e || ''));
 function csPodeReparar() { try { return Number(sessionStorage.getItem('cw-reparou') || 0) < 2; } catch { return false; } }
