@@ -9,10 +9,12 @@ const TB = {}; S.tb = S.tb || {};
    (a coluna fica assim, mesmo depois de sair do app, até destravar). Coluna com filtro, ordem ou trava mostra o símbolo no cabeçalho.
    As colunas também se reorganizam arrastando o cabeçalho. O total fica numa faixa logo acima do cabeçalho, alinhado com cada coluna. */
 function tbLeJ(k, pad) { try { const v = JSON.parse(Store.get(k) || 'null'); return v == null ? pad : v; } catch { return pad; } }
+const TB_OCULTAS_PADRAO = {};
 function tbEstado(id) {
   if (!S.tb[id]) {
     const oc = tbLeJ('cw-tbcol-' + id, []), co = tbLeJ('cw-tbord-' + id, []), tv = tbLeJ('cw-tbtrava-' + id, {});
     const st = S.tb[id] = { busca: '', filtros: {}, ordem: null, ocultas: Array.isArray(oc) ? oc : [], limite: 100, cf: {}, trava: {}, colOrd: Array.isArray(co) ? co : [] };
+    if (TB_OCULTAS_PADRAO[id] && Store.get('cw-tbcol-' + id) == null) st.ocultas = TB_OCULTAS_PADRAO[id].slice(); /* colunas que começam escondidas (o usuário liga em "Colunas"; a escolha dele fica lembrada) */
     Object.keys(tv || {}).forEach(k => { const t = tv[k] || {}; st.trava[k] = true; if (t.ordem) st.ordem = { k: k, dir: t.ordem }; if (t.cf) st.cf[k] = t.cf; Object.keys(t.pre || {}).forEach(fk => { st.filtros[fk] = t.pre[fk]; }); });
   }
   return S.tb[id];

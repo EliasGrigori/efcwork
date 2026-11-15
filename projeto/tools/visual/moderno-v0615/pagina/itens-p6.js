@@ -1,0 +1,57 @@
+/* Página dos Treinamentos (Tarefa 4): revisão do módulo pelo uso, com dados inventados. HOJE = v0.6.15.1 publicada; PROPOSTA = com os ajustes (já no app, não publicados). */
+const R = {
+  nng: ['NN/g · tabelas de dados', 'https://nngroup.com/articles/data-tables'],
+  uxd: ['UX World · boas práticas de tabelas', 'https://uxdworld.com/?p=18180'],
+  mind: ['MindSphere · tabela de dados (ordem padrão)', 'https://design.mindsphere.io/patterns/datatable.html'],
+  primer: ['GitHub Primer · tabela de dados', 'https://primer.style/product/components/data-table/guidelines'],
+  carbon: ['IBM Carbon · tabela de dados (selecionar todos)', 'https://carbondesignsystem.com/components/data-table/usage/'],
+  agri: ['Agriculture Design System · selecionar todas as linhas', 'https://design-system.agriculture.gov.au/patterns/selectable-table-with-batch-actions'],
+  sap: ['SAP Fiori · copiar um objeto', 'https://www.sap.com/design-system/fiori-design-web/v1-151/foundations/best-practices/global-patterns/object-handling/copy'],
+  packt: ['101 UX Principles · “criar a partir do existente”', 'https://www.packtpub.com/en-dk/product/ux-principles-2nd-edition-second-edition-12-9781803234885/chapter/journeys-and-state/principle-84-add-a-create-from-existing-flow'],
+  adobe: ['Adobe Acrobat · lista de assinaturas', 'https://www.adobe.com/acrobat/resources/sign-in-sheet.html']
+};
+const GRUPOS = { 41: 'A lista de treinamentos', 45: 'Registrar presença e eficácia', 47: 'Repetir e achar por pessoa', 49: 'Lista de presença impressa' };
+const ROTA = 'qualidade/treinos', PRES = "document.querySelector('#gv [data-act=\"tr-pres\"]').click()";
+const ITENS = [
+  { n: 41, t: 'Lista: a coluna Situação sempre aparece',
+    p: 'O problema: na tela de 1280 px a lista cortava as últimas colunas. Situação (Programado, Realizado, “Falta registrar”) ficava escondida, e é ela que diz se falta fazer algo. Proposta: Situação passa para a 3ª coluna, logo depois do título; o título longo corta com reticências (no máximo 320 px; o nome inteiro continua no detalhe). No celular a tabela continua rolando para o lado, como em todas as tabelas do app.',
+    ref: [R.nng, 'Colunas na ordem de importância; o primeiro dado é o nome legível do registro.', R.uxd],
+    pares: [['lista', 'Qualidade › Treinamentos, 1280 px', false]], vivo: { rota: ROTA, feito: true, so: 'pc' } },
+  { n: 42, t: 'Lista: a coluna Origem começa escondida',
+    p: 'Origem (Aqui ou Sabiá) só importa para quem importa treinamentos do Sabiá. Proposta: ela começa escondida e aparece pelo botão Colunas, que já existe. Quem mostrar a coluna uma vez continua vendo (o app lembra no aparelho).',
+    ref: [R.uxd, 'A tabela padrão pode não mostrar todas as colunas; o usuário escolhe quais ver.'],
+    pares: [['lista', 'A mesma lista: sem Origem, sobra lugar para Situação', false]], vivo: { rota: ROTA, feito: true, so: 'pc', passos: [['espera', 800], ['clica', '[data-act="tb-cols"]'], ['espera', 1500]] } },
+  { n: 43, t: 'Lista: programados em ordem de data (atrasados primeiro)',
+    p: 'Hoje os programados saem da data mais distante para a mais próxima, então o que está atrasado fica por último. Proposta: dentro de Programados, a data mais antiga vem primeiro (o atrasado aparece no alto com “Falta registrar”). Realizados e Cancelados continuam do mais recente para o mais antigo.',
+    ref: [R.mind, 'A ordem padrão deve mostrar primeiro o que precisa de atenção mais urgente.'],
+    pares: [['ordem', 'Programados e o primeiro Realizado', false]], vivo: { rota: ROTA, feito: true, so: 'pc' } },
+  { n: 44, t: 'Lista: “a avaliar” na Eficácia',
+    p: 'Hoje, quando o treinamento foi realizado e ninguém foi avaliado ainda, a célula de Eficácia fica em branco e parece erro (“Boas práticas de colheita”). Proposta: aparece “a avaliar” em cinza. Treinamento programado ou cancelado continua em branco. A GitHub Primer prefere célula vazia; aqui o texto diz o que falta fazer, que é o caso que ela admite.',
+    ref: [R.primer, 'Deixar a célula em branco ou mostrar texto que explica a ausência.'],
+    pares: [['aval', 'Quatro realizados: o terceiro ainda não foi avaliado', false]], vivo: { rota: ROTA, feito: true, so: 'pc' } },
+  { n: 45, t: 'Presença: uma linha por pessoa (cabem mais nomes na tela)',
+    p: 'Hoje cada pessoa ocupa duas linhas (83 px no PC) e cabem 6 por tela. Proposta: nome, “Presente” e eficácia na mesma linha (49 px no PC, 57 px no celular, com toque de 44 px). Cabem 9 pessoas por tela no PC e 8 no celular. Uma lista de 30 pessoas deixa de exigir tanta rolagem.',
+    ref: [R.carbon, 'Linhas compactas aceleram a marcação de muitos itens.'],
+    pares: [['pres-pc', 'Presença e eficácia no PC (22 pessoas, treino de 1,5 h)', false], ['pres-cel', 'Presença e eficácia no celular', true]], vivo: { rota: ROTA, feito: true, passos: [['espera', 700], ['js', "trAbre('t1')", 900], ['js', PRES, 1200]] } },
+  { n: 46, t: 'Presença: botões “Todos presentes” e “Todos eficazes”',
+    p: 'Numa turma de 30, quase todo mundo veio e foi eficaz. Hoje são 30 marcações. Proposta: dois botões no alto: “Todos presentes” marca todos; “Todos eficazes” marca como eficaz quem está presente. Depois você só muda as exceções. Nada é gravado até tocar em Salvar.',
+    ref: [R.agri, 'Uma ação para marcar todas as linhas poupa toques; as exceções se ajustam depois.', R.carbon],
+    pares: [['pres-pc', 'Os dois botões no alto da presença', false]], vivo: { rota: ROTA, feito: true, passos: [['espera', 700], ['js', "trAbre('t1')", 900], ['js', PRES, 1200], ['clica', '[data-act="tr-todos"][data-v="e"]'], ['espera', 800]] } },
+  { n: 47, t: 'Detalhe: “Repetir treinamento”',
+    p: 'O mesmo treinamento se repete para outra turma (a Reciclagem da NR-31, o Uso de EPI). Hoje é digitar tudo de novo. Proposta: um ícone de cópia ao lado do lápis, no topo do detalhe, abre “Novo treinamento” já com título, horas, instrutor, local, documentos e participantes; a data vem de hoje e fica Programado. Nada é gravado até Programar. As imagens vêm de um navegador de teste, por isso a data aparece como mês/dia.',
+    ref: [R.sap, 'Copiar abre o novo objeto preenchido, em edição, até confirmar.', R.packt],
+    pares: [['gav', 'O topo do detalhe: o ícone de cópia entra antes do lápis', false], ['form', 'HOJE: “Novo treinamento” vazio. PROPOSTA: o mesmo, repetido do treino', false]], vivo: { rota: ROTA, feito: true, so: 'pc', passos: [['espera', 700], ['js', "trAbre('t1')", 900], ['clica', '#gv [data-act="tr-rep"]'], ['espera', 900]] } },
+  { n: 48, t: 'Detalhe: tocar no nome mostra os treinamentos da pessoa',
+    p: 'Para ver o que a Maria já fez, hoje é fechar o detalhe e digitar o nome na busca. Proposta: o nome na lista de participantes vira botão; ao tocar, o detalhe fecha e a lista fica filtrada por aquela pessoa (o “Limpar filtro” volta ao normal). O nome não ganha sublinhado fixo, para a lista não ficar cheia de links; no PC sublinha ao passar o mouse. No celular não há pista visual: é o ponto que vale você decidir.',
+    ref: [R.nng, 'O usuário precisa trazer ao mesmo tempo os dados de interesse; um toque no nome faz isso.'],
+    pares: [['nomes', 'Participantes no detalhe (aparência igual, agora tocável)', false], ['filtro', 'Resultado: a lista só com os treinamentos da Ana Souza', false]], vivo: { rota: ROTA, feito: true, so: 'pc', passos: [['espera', 700], ['js', "trAbre('t1')", 900], ['clica', '#gv .tr-pb'], ['espera', 1200]] } },
+  { n: 49, t: 'Lista de presença impressa: assinatura na mesma folha',
+    p: 'Com 21 a 25 linhas (22 nomes mais as linhas em branco para quem chegar), hoje as linhas 23 a 25 e o campo “Assinatura do instrutor” caem numa segunda folha. Proposta: nessa faixa a linha passa a 8 mm e tudo fica na folha 1. Listas com até 20 linhas não mudam. Atenção: 8 mm é menos que o espaço folgado que as listas de assinatura recomendam para a letra; por isso só vale para 21 a 25 linhas. No PDF de teste a folha 2 sai em branco, e isso é do gerador de teste; confira na primeira impressão de verdade.',
+    ref: [R.adobe, 'Em lista impressa, deixar espaço suficiente para escrever à mão.'],
+    pares: [['imp1', 'Folha 1 (22 nomes)', false], ['imp2', 'Folha 2: hoje recebe a assinatura; na proposta fica vazia', false]], vivo: { rota: ROTA, feito: true, so: 'pc', dica: 'Abra “Uso correto de EPI na aplicação” e toque na impressora para ver a lista na tela.' } }
+];
+module.exports = { R, GRUPOS, ITENS, img: 'img6f', saida: 'docs/aprovacao-efcwork-v0.6.15-treinamentos.html', titulo: 'EFCwork v0.6.15 · Treinamentos: revisão pelo uso',
+  h1: 'Treinamentos: o que mudaria depois de usar', topo: 'EFCwork v0.6.15 · Treinamentos', copia: 'Respostas EFCwork v0.6.15 · Treinamentos', chave: 'efcwork-v0615-treinos',
+  sub: 'Usei o módulo com treinamentos inventados (12, entre programados, realizados, cancelados, do Sabiá e atrasados), no PC e no celular. Os ajustes já estão no app (ainda não publicados). HOJE = como está no ar; PROPOSTA = com o ajuste. ',
+  semente: require('../../treino-v0615/semente.js').toString(),
+  fila: ['Com os itens aprovados: numero a versão (v0.6.15.2), entrego o ZIP e publico só com o seu “pode publicar”.', 'Itens reprovados saem do pacote antes.'] };

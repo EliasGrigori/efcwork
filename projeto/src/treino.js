@@ -17,6 +17,7 @@ function trEfic(x) { const b = trPresentes(x).filter(p => p.eficaz === true || p
 const trHoras = h => h == null || h === '' ? '' : String(h).replace('.', ',') + ' h';
 const trDe = id => S.trn.find(x => x.id === id) || null;
 function trSitPill(x) { const s = TR_SIT[x.situacao] || TR_SIT.programado; return trFalta(x) ? '<span class="pill wa">Falta registrar</span>' : '<span class="pill ' + s[1] + '">' + esc(s[0]) + '</span>'; }
+TB_OCULTAS_PADRAO['tr-lista'] = ['or']; /* v0.6.15.2: a Origem (Aqui/Sabiá) começa escondida; está na gaveta e em Colunas */
 const trOrigTxt = x => x.origem === 'sabia' ? 'Sabiá' : 'Aqui';
 
 CS_CARGAS.push(() => {
@@ -26,7 +27,8 @@ S.trn = [];
 
 /* ---------- tela ---------- */
 function trTela() {
-  const u = S.user, l = S.trn.slice().sort((a, b) => String(b.data).localeCompare(String(a.data)) || String(b.criadoEm).localeCompare(String(a.criadoEm))), ano = hojeISO().slice(0, 4);
+  const u = S.user, rk = x => x.situacao === 'programado' ? 0 : x.situacao === 'realizado' ? 1 : 2,
+    l = S.trn.slice().sort((a, b) => rk(a) - rk(b) || (rk(a) === 0 ? String(a.data).localeCompare(String(b.data)) : String(b.data).localeCompare(String(a.data))) || String(b.criadoEm).localeCompare(String(a.criadoEm))), ano = hojeISO().slice(0, 4); /* v0.6.15.2: programados do mais próximo (ou atrasado) para o mais distante */
   const prog = l.filter(x => x.situacao === 'programado'), falta = prog.filter(trFalta).length, fei = l.filter(x => x.situacao === 'realizado' && String(x.data).slice(0, 4) === ano);
   const h = fei.reduce((s, x) => s + (Number(x.horas) || 0), 0);
   const meta = ['<span>' + prog.length + (prog.length === 1 ? ' programado' : ' programados') + '</span>', '<span>' + fei.length + (fei.length === 1 ? ' realizado em ' : ' realizados em ') + ano + (h ? ' · ' + trHoras(Math.round(h * 10) / 10) : '') + '</span>',
@@ -37,9 +39,10 @@ function trTela() {
   if (!l.length) return c + '<section class="pn"><div class="vazio">' + ic('pessoas') + '<b>Nenhum treinamento ainda.</b><span>' + (trPode() ? 'Programe um treinamento, registre um que já aconteceu ou importe o resumo de uma sessão do Sabiá. A lista de presença sai pronta, com os nomes.' : 'Quando o Administrador ou o Líder programar ou registrar treinamentos, eles aparecem aqui.') + '</span></div></section>';
   return c + tbHTML({ id: 'tr-lista', titulo: 'Treinamentos', unidade: 'treinamentos', linhas: l, aoClicar: id => trAbre(id),
     grupos: { v: x => x.situacao, ordem: TR_GRUPOS }, busca: x => [x.titulo, x.instrutorNome, x.local, trPart(x).map(p => p.nome).join(' ')].join(' '), vazio: 'Nenhum treinamento com este filtro.',
-    cols: [{ k: 'dt', rot: 'Data', tipo: 'data', v: x => x.data }, { k: 'ti', rot: 'Treinamento', v: x => x.titulo, cls: 'forte' }, { k: 'in', rot: 'Instrutor', v: x => x.instrutorNome || '' },
+    cols: [{ k: 'dt', rot: 'Data', tipo: 'data', v: x => x.data }, { k: 'ti', rot: 'Treinamento', v: x => x.titulo, cls: 'forte', longo: true },
+      { k: 'st', rot: 'Situação', v: x => trFalta(x) ? 'Falta registrar' : TR_SIT[x.situacao][0], html: trSitPill }, { k: 'in', rot: 'Instrutor', v: x => x.instrutorNome || '' },
       { k: 'pr', rot: 'Presentes', tipo: 'num', v: x => x.situacao === 'realizado' ? trPresentes(x).length : null }, { k: 'hr', rot: 'Horas', tipo: 'num', v: x => x.horas == null ? null : Number(x.horas) },
-      { k: 'ef', rot: 'Eficácia %', tipo: 'num', v: x => trEfic(x).pct }, { k: 'or', rot: 'Origem', v: trOrigTxt }, { k: 'st', rot: 'Situação', v: x => trFalta(x) ? 'Falta registrar' : TR_SIT[x.situacao][0], html: trSitPill }] });
+      { k: 'ef', rot: 'Eficácia %', tipo: 'num', v: x => trEfic(x).pct, html: x => { const e = trEfic(x); return e.pct != null ? esc(numBR(e.pct)) : x.situacao === 'realizado' && trPresentes(x).length ? '<span class="tr-av">a avaliar</span>' : ''; } }, { k: 'or', rot: 'Origem', v: trOrigTxt }] });
 }
 const trQualOrig = TELAS.qualidade;
 TELAS.qualidade = aba => aba === 'treinos' ? trTela() : trQualOrig(aba);
@@ -60,12 +63,13 @@ function trGaveta(id) {
   if (x.obs) c += '<p class="gv-h">Observação</p><p class="tr-obs">' + esc(x.obs) + '</p>';
   c += '<p class="gv-h">Participantes (' + ps.length + ')</p>';
   if (!ps.length) c += '<p class="tr-vz">Sem lista ainda. A lista de presença sai em branco para assinar à mão.</p>';
-  else c += '<ul class="tr-ps">' + ps.map(p => '<li><span class="tr-pn">' + esc(p.nome) + '</span><span class="tr-pp">' +
+  else c += '<ul class="tr-ps">' + ps.map(p => '<li><button type="button" class="tr-pn tr-pb" data-act="tr-pessoa" data-nome="' + esc(p.nome) + '" title="Ver os treinamentos de ' + esc(p.nome) + '">' + esc(p.nome) + '</button><span class="tr-pp">' +
     (real ? (p.presente ? '<span class="pill ok">Presente</span>' : '<span class="pill cr">Faltou</span>') + (p.presente && p.eficaz === true ? '<span class="pill ok">Eficaz</span>' : p.presente && p.eficaz === false ? '<span class="pill wa">Não eficaz</span>' : '') + (p.pct != null ? '<span class="pill">' + esc(String(p.pct)) + '%</span>' : '') : '') + '</span></li>').join('') + '</ul>';
   const dl = (x.docs || []).map(d => ({ d: d, ip: S.ipDocs.find(y => y.id === d.docId) }));
   if (dl.length) c += '<p class="gv-h">Documentos</p><ul class="tr-ds">' + dl.map(o => '<li><span class="tr-dn"><b>' + esc(o.ip ? o.ip.nome : 'Documento não encontrado') + '</b><small>' + esc(TR_PAPEL[o.d.papel] || o.d.papel) + (o.ip && o.ip.status === 'obsoleto' ? ' · obsoleto' : '') + '</small></span>' +
     (o.ip ? '<button type="button" class="bt ic-so" data-act="tr-doc" data-id="' + esc(o.d.docId) + '" title="Abrir em Documentos › Impressos" aria-label="Abrir">' + ic('externo') + '</button>' : '') + '</li>').join('') + '</ul>';
-  const cab = trPode() && x.situacao !== 'cancelado' ? '<button type="button" class="bt ic-so" data-act="tr-editar" data-id="' + esc(x.id) + '" title="Editar" aria-label="Editar">' + ic('lapis') + '</button>' : '';
+  const cab = (trPode() ? '<button type="button" class="bt ic-so" data-act="tr-rep" data-id="' + esc(x.id) + '" title="Repetir: novo treinamento com os mesmos dados" aria-label="Repetir o treinamento">' + ic('copia') + '</button>' : '') +
+    (trPode() && x.situacao !== 'cancelado' ? '<button type="button" class="bt ic-so" data-act="tr-editar" data-id="' + esc(x.id) + '" title="Editar" aria-label="Editar">' + ic('lapis') + '</button>' : '');
   const pe = '<button type="button" class="bt ic-so" data-act="tr-lista" data-id="' + esc(x.id) + '" title="Imprimir a lista de presença" aria-label="Imprimir a lista de presença">' + ic('impressora') + '</button>' +
     (trPode() && x.situacao === 'programado' ? '<span class="au-pesp"></span><button type="button" class="bt pr" data-act="tr-pres" data-id="' + esc(x.id) + '">' + ic('ok') + 'Registrar realização</button>'
       : trPode() && real ? '<span class="au-pesp"></span><button type="button" class="bt pr" data-act="tr-pres" data-id="' + esc(x.id) + '">' + ic('pessoas') + 'Presença e eficácia</button>' : '');
@@ -77,6 +81,12 @@ function trGaveta(id) {
 const trNomes = t => { const v = [], vis = {}; String(t || '').split(/[\n;]+/).forEach(s => { const n = s.replace(/\s+/g, ' ').trim(); if (n && !vis[tbNorm(n)]) { vis[tbNorm(n)] = 1; v.push(n); } }); return v; };
 const trDocsOpc = papel => [['', 'Nenhum']].concat(ipVivos().filter(d => d.status !== 'obsoleto').sort((a, b) => cmpTxt(a.nome, b.nome)).map(d => [d.id, (d.codigo ? d.codigo + ' · ' : '') + d.nome]));
 function trNovo() { if (!trPode()) return; lcAbrir({ k: 'trEd', id: '', titulo: '', data: hojeISO(), horas: '', instrutor: S.user.nome, local: '', sit: 'programado', parts: '', pop: '', mat: '', obs: '' }); }
+/* repetir: o mesmo treinamento para outra turma ou outro dia. Abre "Novo treinamento" já preenchido (título, horas, instrutor, local, documentos e participantes); a data vem de hoje e fica Programado */
+function trRepetir(id) {
+  const x = trDe(id); if (!x || !trPode()) return;
+  const doc = p => ((x.docs || []).find(d => d.papel === p) || {}).docId || '';
+  lcAbrir({ k: 'trEd', id: '', titulo: x.titulo, data: hojeISO(), horas: x.horas == null ? '' : String(x.horas).replace('.', ','), instrutor: x.instrutorNome || S.user.nome, local: x.local || '', sit: 'programado', parts: trPart(x).map(p => p.nome).join('\n'), pop: doc('pop'), mat: doc('material'), obs: '' }, () => trAbre(x.id));
+}
 function trEditar(id) {
   const x = trDe(id); if (!x || !trPode()) return;
   const doc = p => ((x.docs || []).find(d => d.papel === p) || {}).docId || '';
@@ -135,13 +145,24 @@ function trPres(id) {
 LC_FORM.trPres = f => {
   const x = trDe(f.id); if (!x) return null;
   const ln = f.rows.map((r, n) => '<li class="tr-lp"><span class="tr-pn">' + esc(r.nome) + '</span><div class="tr-pc"><label class="fm-ck"><input type="checkbox" data-fm="rows.' + n + '.presente"' + (r.presente === '1' ? ' checked' : '') + '> Presente</label>' +
-    ddHTML('tr:ef.' + n, r.eficaz, [['', 'Eficácia: a avaliar'], ['1', 'Eficaz'], ['0', 'Não eficaz']]) + '</div></li>').join('');
+    ddHTML('tr:ef.' + n, r.eficaz, [['', 'A avaliar'], ['1', 'Eficaz'], ['0', 'Não eficaz']]) + '</div></li>').join('');
+  const todos = ln ? '<div class="tr-tds"><button type="button" class="bt" data-act="tr-todos" data-v="p">' + ic('ok') + 'Todos presentes</button><button type="button" class="bt" data-act="tr-todos" data-v="e">' + ic('ok') + 'Todos eficazes</button></div>' : '';
   const c = lcMsg() + (f.prog ? '<div class="fm-g cl-fm2">' + lcBl('Data em que aconteceu', lcData('data', f.data)) + lcBl('Duração (horas)', lcIn('horas', f.horas, ' inputmode="decimal" placeholder="ex.: 1,5"')) + '</div>' : '') +
-    apPasso(f.prog ? 2 : 1, 'Presença e eficácia') + (ln ? '<ul class="tr-lps">' + ln + '</ul>' : '<p class="tr-vz">Ninguém na lista. Adicione os nomes abaixo.</p>') +
+    apPasso(f.prog ? 2 : 1, 'Presença e eficácia') + todos + (ln ? '<ul class="tr-lps">' + ln + '</ul>' : '<p class="tr-vz">Ninguém na lista. Adicione os nomes abaixo.</p>') +
     '<div class="tr-add">' + lcIn('novo', f.novo, ' maxlength="80" placeholder="Adicionar outro participante"') + '<button type="button" class="bt" data-act="tr-add">' + ic('mais') + 'Adicionar</button></div>' +
     lcAv('Eficácia vale só para quem estava presente. “A avaliar” deixa para depois (ex.: observação em campo ou resultado do quiz).');
   return { ico: 'pessoas', sub: x.titulo, titulo: f.prog ? 'Registrar realização' : 'Presença e eficácia', corpo: c, rodape: lcPe('tr-pres-ok', f.prog ? 'Registrar' : 'Salvar') };
 };
+/* atalhos da presença: marca todos como presentes, ou todos os presentes como eficazes (depois é só mudar as exceções) */
+function trTodos(v) {
+  const f = S.fm; if (!f || !f.rows) return; f.sujo = true; f.msg = '';
+  if (v === 'p') f.rows.forEach(r => { r.presente = '1'; }); else f.rows.forEach(r => { if (r.presente === '1') r.eficaz = '1'; });
+  gvDesenha(true);
+}
+/* ver os treinamentos de uma pessoa: fecha a gaveta e filtra a lista pelo nome (o "Limpar filtro" volta ao normal) */
+function trPessoa(nome) {
+  const st = tbEstado('tr-lista'); st.busca = nome; st.limite = 100; if (S.gv) gvFecharSo(); render();
+}
 function trAdd() {
   const f = S.fm; if (!f) return; const n = String(f.novo || '').replace(/\s+/g, ' ').trim(); if (!n) return lcErro('Escreva o nome.');
   if (n.length > 80) return lcErro('O nome cabe em até 80 letras.');
@@ -234,6 +255,9 @@ document.addEventListener('click', e => {
   if (a === 'tr-novo') trNovo();
   else if (a === 'tr-importar') trImportar();
   else if (a === 'tr-editar') trEditar(id);
+  else if (a === 'tr-rep') trRepetir(id);
+  else if (a === 'tr-todos') trTodos(t.getAttribute('data-v'));
+  else if (a === 'tr-pessoa') trPessoa(t.getAttribute('data-nome') || '');
   else if (a === 'tr-ed-ok') trEdOk();
   else if (a === 'tr-pres') trPres(id);
   else if (a === 'tr-pres-ok') trPresOk();

@@ -1,0 +1,46 @@
+/* EFCwork · v0.6.15.2 · Treinamentos (revisão pelo uso, Tarefa 4): lista com Situação à vista e programados em ordem de data,
+   eficácia "a avaliar", Origem começando escondida, presença compacta com atalhos, repetir treinamento, ver os treinamentos de uma pessoa,
+   (a lista impressa não muda: ITEM 49 reprovado, a lista vem do Sabiá). Uso: NODE_PATH=$(npm root -g) node tools/testes/t_v0615f.js */
+const { chromium, abre, ir } = require('../visual/moderno-v0615/pagina/lib');
+const path = require('path'), RAIZ = path.resolve(__dirname, '..', '..'), SEM = require('../visual/treino-v0615/semente.js').toString();
+let ok = 0, falhas = 0; const conf = (c, m) => { if (c) { ok++; console.log('  ok  ' + m); } else { falhas++; console.log('  FALHA  ' + m); } };
+(async () => { const br = await chromium.launch();
+  let p = await abre(br, { raiz: RAIZ, w: 1280, h: 800, semente: false }); await p.evaluate('(' + SEM + ')()'); await p.waitForTimeout(500); await ir(p, 'qualidade/treinos', 1000);
+  console.log('— Lista (PC 1280 px)');
+  const m = await p.evaluate(() => { const w = document.querySelector('.tb-w'), th = [...document.querySelectorAll('.tb-t thead th')].map(e => e.textContent.trim()), lin = [...document.querySelectorAll('.tb-t tbody tr[data-id]')].map(e => e.dataset.id);
+    return { cab: th, lin: lin, sobra: w.scrollWidth > w.clientWidth + 1, sit: [...document.querySelectorAll('.tb-t tbody tr[data-id] .pill, .tb-t tbody tr[data-id] td:nth-child(3)')].length, av: [...document.querySelectorAll('.tr-av')].length }; });
+  conf(!m.sobra, 'a tabela cabe sem rolar para o lado (Situação sempre à vista)'); conf(m.cab.indexOf('Situação') === 2, 'Situação é a 3ª coluna (' + m.cab.join(', ') + ')');
+  conf(m.cab.indexOf('Origem') < 0, 'a Origem começa escondida');
+  conf(m.lin.slice(0, 3).join() === 't9,t10,t11', 'programados: o atrasado primeiro, depois o mais próximo (' + m.lin.slice(0, 3).join(',') + ')');
+  conf(m.lin.slice(3, 5).join() === 't1,t2', 'realizados: do mais novo para o mais antigo');
+  conf(m.av === 1, 'a eficácia ainda não avaliada aparece como "a avaliar" (' + m.av + ')');
+  await p.click('.tb-bar [data-act="tb-cols"]'); await p.waitForTimeout(300);
+  const cx = await p.evaluate(() => [...document.querySelectorAll('.tb-colsp input')].map(e => e.checked)); conf(cx.length === 8 && cx.filter(x => !x).length === 1 && cx[7] === false, 'a Origem aparece em Colunas, desligada, e pode ser ligada');
+  await p.keyboard.press('Escape'); await p.waitForTimeout(300);
+  console.log('— Gaveta: repetir e ver a pessoa');
+  await p.evaluate(() => trAbre('t4')); await p.waitForTimeout(700);
+  conf(!!(await p.$('#gv [data-act="tr-rep"]')), 'botão Repetir na gaveta');
+  await p.click('#gv [data-act="tr-rep"]'); await p.waitForTimeout(800);
+  const f = await p.evaluate(() => ({ k: S.fm && S.fm.k, id: S.fm && S.fm.id, ti: S.fm && S.fm.titulo, sit: S.fm && S.fm.sit, dt: S.fm && S.fm.data, hoje: hojeISO(), n: S.fm ? S.fm.parts.split('\n').length : 0, hr: S.fm && S.fm.horas }));
+  conf(f.k === 'trEd' && f.id === '' && f.sit === 'programado', 'Repetir abre "Novo treinamento" como Programado'); conf(f.ti.indexOf('Higiene') === 0 && f.n === 30 && f.hr === '0,75', 'traz título, horas e os 30 participantes'); conf(f.dt === f.hoje, 'a data começa em hoje');
+  await p.keyboard.press('Escape'); await p.waitForTimeout(500); await p.keyboard.press('Escape'); await p.waitForTimeout(500);
+  await p.evaluate(() => trAbre('t1')); await p.waitForTimeout(700); await p.click('#gv [data-act="tr-pessoa"][data-nome="Juraci Lima"]'); await p.waitForTimeout(700);
+  const g = await p.evaluate(() => ({ gv: !!document.querySelector('#gv'), lin: [...document.querySelectorAll('.tb-t tbody tr[data-id]')].map(e => e.dataset.id), limpa: !!document.querySelector('[data-act="tb-limpa"]') }));
+  conf(!g.gv, 'tocar no nome fecha a gaveta'); conf(g.lin.length > 0 && g.lin.length < 11 && g.lin.indexOf('t1') >= 0 && g.lin.indexOf('t10') < 0, 'a lista fica só com os treinamentos da pessoa (' + g.lin.join(',') + ')'); conf(g.limpa, 'há o "Limpar filtro"');
+  await p.click('[data-act="tb-limpa"]'); await p.waitForTimeout(500);
+  console.log('— Presença e eficácia (compacta)');
+  await p.evaluate(() => trAbre('t2')); await p.waitForTimeout(700); await p.click('#gv [data-act="tr-pres"]'); await p.waitForTimeout(800);
+  const a = await p.evaluate(() => { const l = [...document.querySelectorAll('.tr-lp')].map(e => e.getBoundingClientRect().height); return { n: l.length, max: Math.max.apply(null, l), btn: document.querySelectorAll('[data-act="tr-todos"]').length }; });
+  conf(a.n === 14 && a.max <= 56, 'cada pessoa numa linha (altura máxima ' + Math.round(a.max) + ' px)'); conf(a.btn === 2, 'atalhos Todos presentes e Todos eficazes');
+  await p.click('#gv [data-fm="rows.3.presente"]'); await p.waitForTimeout(200); await p.click('[data-act="tr-todos"][data-v="e"]'); await p.waitForTimeout(500);
+  const e = await p.evaluate(() => ({ rows: S.fm.rows.map(r => r.presente + ':' + r.eficaz) }));
+  conf(e.rows[3] === '0:0' || e.rows[3].indexOf('0:') === 0, 'quem foi desmarcado como ausente não vira eficaz'); conf(e.rows.filter(r => r.indexOf('1:') === 0).every(r => r === '1:1'), 'Todos eficazes marca todos os presentes');
+  await p.click('[data-act="tr-todos"][data-v="p"]'); await p.waitForTimeout(400);
+  conf((await p.evaluate(() => S.fm.rows.every(r => r.presente === '1'))), 'Todos presentes marca todos');
+  conf(p._er.length === 0, 'sem erro de JavaScript'); await p.context().close();
+  console.log('— Presença no celular (390 px)');
+  p = await abre(br, { raiz: RAIZ, w: 390, h: 800, semente: false }); await p.evaluate('(' + SEM + ')()'); await p.waitForTimeout(500); await ir(p, 'qualidade/treinos', 900);
+  await p.evaluate(() => trAbre('t2')); await p.waitForTimeout(700); await p.click('#gv [data-act="tr-pres"]'); await p.waitForTimeout(800);
+  const c = await p.evaluate(() => ({ max: Math.max.apply(null, [...document.querySelectorAll('.tr-lp')].map(e => Math.round(e.getBoundingClientRect().height))), sobra: document.documentElement.scrollWidth > innerWidth, toque: Math.min.apply(null, [...document.querySelectorAll('.tr-pc .dd-b')].map(e => Math.round(e.getBoundingClientRect().height))), corta: [...document.querySelectorAll('.tr-pc .dd-b')].filter(e => e.scrollWidth > e.clientWidth + 1 || getComputedStyle(e).whiteSpace !== 'nowrap').length }));
+  conf(c.max <= 60 && !c.sobra, 'celular: linha da pessoa até 60 px (' + c.max + ') e sem rolar para o lado'); conf(c.toque >= 44, 'toque de 44 px na eficácia'); conf(c.corta === 0, 'celular: “Não eficaz” e “A avaliar” cabem em uma linha, sem cortar (' + c.corta + ' fora)'); await p.context().close();
+  await br.close(); console.log('\n' + ok + ' ok, ' + falhas + ' falha(s)'); process.exit(falhas ? 1 : 0); })();
