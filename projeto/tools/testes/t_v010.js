@@ -45,7 +45,7 @@ const conf = (c, msg) => { if (c) { ok++; console.log('  ok  ' + msg); } else { 
   conf(await p.evaluate(() => [5, 1, 3, 4, 5, 4].join() === ['coletas', 'rateios', 'inspecoes', 'documentos', 'almox', 'qualidade'].map(i => Math.max(1, csArea(i).abas.filter(x => !x.oculta).length)).join()), 'estrutura aprovada: Coletas 5, Rateios 1, Inspeções 3, Documentos 4 (Impressos, v0.6.9), Almoxarifado 5, Qualidade 4 (Treinamentos, v0.6.12) ');
   await p.evaluate(() => { location.hash = '#/coletas/envio'; }); await p.waitForTimeout(150);
   conf(await p.isVisible('.cs-it.on[href="#/coletas"]') && await p.isVisible('.cs-abas a.on[href="#/coletas/envio"]'), 'área e aba atuais marcadas no menu e nas abas');
-  await p.evaluate(() => { location.hash = '#/rateios'; }); await p.waitForTimeout(150); /* v0.4: Coletas já foi refeita; Rateios ainda não */
+  await p.evaluate(() => { location.hash = '#/relatorios'; }); await p.waitForTimeout(150); /* v0.6.17: Rateios foi refeita; Relatórios ainda não */
   conf(/EFClaudian/.test(await p.textContent('.cs-ct')) && await p.isVisible('.cs-acts a[href*="efclaudian"]'), 'área ainda não refeita leva ao EFClaudian');
   await p.screenshot({ path: path.join(SHOTS, 'pc-claro-coletas.png') });
   /* temas */

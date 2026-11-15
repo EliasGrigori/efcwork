@@ -52,7 +52,7 @@ const cab = p => p.$$eval('.tb[data-tb="al-mat"] .tb-cab th', l => l.map(x => x.
   await p.evaluate(() => { location.hash = '#/almox/materiais'; }); await p.waitForTimeout(300);
 
   console.log('— Barra e cabeçalho');
-  conf(!(await p.$('.tb-flt')) && !(await p.$('[data-act="tb-limpa"]')), 'sem botão Filtro; "Limpar filtro" só aparece com filtro');
+  conf(!(await p.$('.tb-flt')) && !(await p.$('[data-act="tb-limpa"]')), 'sem botão Filtro e sem botão "Limpar filtro"');
   const op0 = await p.$eval('.tb-cab th[data-tbk="loc"] .tb-hm', e => getComputedStyle(e).opacity);
   await p.hover('.tb-cab th[data-tbk="loc"]'); await p.waitForTimeout(250);
   const op1 = await p.$eval('.tb-cab th[data-tbk="loc"] .tb-hm', e => getComputedStyle(e).opacity);
@@ -94,11 +94,11 @@ const cab = p => p.$$eval('.tb[data-tb="al-mat"] .tb-cab th', l => l.map(x => x.
   conf(JSON.stringify((await linhas(p)).sort()) === '["agua","gelo","luva"]', 'Mínimo de 3 em diante: 3 itens');
   await fecha(p);
   conf(await p.isVisible('.tb-cab th[data-tbk="min"] .tb-mf') && await p.$eval('.tb-cab th[data-tbk="min"]', e => e.classList.contains('tb-at')), 'símbolo de filtro e sublinhado no cabeçalho da coluna filtrada');
-  conf(await p.isVisible('[data-act="tb-limpa"]') && /Limpar filtro/.test(await p.textContent('[data-act="tb-limpa"]')), '"Limpar filtro" aparece no lugar do antigo Filtro');
+  conf(!(await p.$('[data-act="tb-limpa"]')), 'não há botão "Limpar filtro" (v0.6.17: limpa-se pelo menu da coluna)');
   const tbar = await p.evaluate(() => Array.from((document.querySelector('.tb[data-tb="al-mat"] .tb-bar') || document.querySelector('.tb-bar-sobe')).children).map(x => x.className.split(' ')[0]).join(','));
-  conf(tbar.indexOf('tb-limpa,tb-cont') === 0 && !(await p.$('[data-tbbusca]')), 'barra: Limpar filtro · contagem (sem caixa de busca da tabela)');
-  await p.click('[data-act="tb-limpa"]'); await p.waitForTimeout(200);
-  conf((await linhas(p)).length === 6 && !(await p.$('[data-act="tb-limpa"]')), 'Limpar filtro limpa tudo e some');
+  conf(tbar.indexOf('tb-cont') === 0 && !(await p.$('[data-tbbusca]')), 'barra começa pela contagem (sem caixa de busca da tabela)');
+  await p.evaluate(() => Object.keys(TB).forEach(id => tbMuda(id, s => { s.busca = ''; s.cf = {}; s.filtros = {}; }))); await p.waitForTimeout(200);
+  conf((await linhas(p)).length === 6, 'limpar o filtro devolve as 6 linhas');
 
   console.log('— Total');
   /* v0.6.15 (ITEM 10/23, Elias 14/11): o total sai da barra da tabela e vira o selo do cabeçalho ("R$ 303,80 em estoque"); filtrado, vira "· total filtrado" */
@@ -120,9 +120,9 @@ const cab = p => p.$$eval('.tb[data-tb="al-mat"] .tb-cab th', l => l.map(x => x.
   await abre(p, 'loc'); await p.click('[data-act="tb-trava"]'); await p.waitForTimeout(150);
   conf(await p.isVisible('.tb-mn-av') && await p.$eval('[data-tbmnbusca]', e => e.disabled) && await p.$eval('[data-act="tb-ociclo"]', e => e.disabled), 'travada: aviso e controles bloqueados');
   await fecha(p);
-  conf(await p.isVisible('.tb-cab th[data-tbk="loc"] .tb-mt') && !(await p.$('[data-act="tb-limpa"]')), 'cadeado no cabeçalho; filtro travado não conta para o Limpar filtro');
-  await abre(p, 'nome'); await p.fill('[data-tbmnbusca]', 'luva'); await p.waitForTimeout(400); await fecha(p); await p.click('[data-act="tb-limpa"]'); await p.waitForTimeout(400);
-  conf((await linhas(p)).length === 4, 'Limpar filtro limpa a coluna solta e mantém o filtro travado');
+  conf(await p.isVisible('.tb-cab th[data-tbk="loc"] .tb-mt') && !(await p.$('[data-act="tb-limpa"]')), 'cadeado no cabeçalho; sem botão Limpar filtro');
+  await abre(p, 'nome'); await p.fill('[data-tbmnbusca]', 'luva'); await p.waitForTimeout(400); await fecha(p); await p.evaluate(() => Object.keys(TB).forEach(id => tbMuda(id, s => { s.busca = ''; (TB[id].cols || []).forEach(c => { if (!s.trava[c.k]) delete s.cf[c.k]; }); }))); await p.waitForTimeout(400);
+  conf((await linhas(p)).length === 4, 'limpar a coluna solta mantém o filtro travado');
   await p.reload(); await p.waitForTimeout(900); await p.evaluate(() => { location.hash = '#/almox/materiais'; }); await p.waitForTimeout(400);
   conf((await linhas(p)).length === 4 && await p.isVisible('.tb-cab th[data-tbk="loc"] .tb-mt'), 'travado continua depois de reabrir o app');
   await abre(p, 'loc'); await p.click('[data-act="tb-trava"]'); await p.waitForTimeout(150); await p.click('[data-act="tb-mnlimpa"]'); await p.waitForTimeout(150); await fecha(p);

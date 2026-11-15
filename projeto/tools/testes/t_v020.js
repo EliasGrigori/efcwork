@@ -65,7 +65,7 @@ async function semear(p) {
   await p.screenshot({ path: path.join(SHOTS, 'v020-pc-claro-painel.png') });
   /* Materiais: tabela padrão */
   await p.evaluate(() => { location.hash = '#/almox/materiais'; }); await p.waitForTimeout(200);
-  await p.click('[data-act="tb-limpa"]').catch(() => {}); await p.waitForTimeout(150);
+  await p.evaluate(() => Object.keys(TB).forEach(id => tbMuda(id, s => { s.busca = ''; s.cf = {}; s.filtros = {}; }))); await p.waitForTimeout(150);
   conf((await p.$$('.tb-t tbody tr')).length === 6, 'Materiais lista os 6 itens (inclui o inativo)');
   const ths = await p.$$eval('.tb-t thead th', l => l.map(x => x.textContent.replace(/[▲▼]/g, '')));
   conf(ths.join('|') === 'Código|Item|Local|Un|Utilizável|Mínimo|Valor|Situação', 'colunas: ' + ths.join(', '));
@@ -75,13 +75,13 @@ async function semear(p) {
   await p.click('.tb-cab th[data-tbk="sit"] .tb-hm'); await p.waitForTimeout(150);
   conf(await p.isVisible('.tb-mn [data-dd="tbf:al-mat:sit"]'), 'filtro pronto Situação mora no menu da coluna Situação');
   await p.click('[data-dd="tbf:al-mat:sit"] .dd-b'); await p.click('[data-dd="tbf:al-mat:sit"] li[data-v="atencao"]'); await p.waitForTimeout(150);
-  conf((await p.$$('.tb-t tbody tr')).length === 4 && await p.isVisible('.tb-cab th[data-tbk="sit"] .tb-mf') && await p.isVisible('[data-act="tb-limpa"]'), 'filtro "Pedem atenção": 4 linhas, símbolo no cabeçalho e Limpar filtro');
+  conf((await p.$$('.tb-t tbody tr')).length === 4 && await p.isVisible('.tb-cab th[data-tbk="sit"] .tb-mf'), 'filtro "Pedem atenção": 4 linhas e símbolo no cabeçalho');
   await p.keyboard.press('Escape'); await p.waitForTimeout(200);
   await p.click('.tb-cab th[data-tbk="loc"] .tb-hm'); await p.waitForTimeout(150);
   await p.click('[data-dd="tbf:al-mat:loc"] .dd-b'); await p.click('[data-dd="tbf:al-mat:loc"] li[data-v="Geladeira"]'); await p.waitForTimeout(150);
   conf((await p.$$('.tb-t tbody tr')).length === 2, 'dois filtros juntos (Pedem atenção + Geladeira): 2 linhas');
   await p.keyboard.press('Escape'); await p.waitForTimeout(200);
-  await p.click('[data-act="tb-limpa"]'); await p.waitForTimeout(150);
+  await p.evaluate(() => Object.keys(TB).forEach(id => tbMuda(id, s => { s.busca = ''; s.cf = {}; s.filtros = {}; }))); await p.waitForTimeout(150);
   await p.click('.tb-cab th[data-tbk="nome"] .tb-hm'); await p.waitForTimeout(150); await p.fill('[data-tbmnbusca]', 'agua'); await p.waitForTimeout(400);
   conf((await p.$$('.tb-t tbody tr')).length === 1 && /Água/.test(await p.textContent('.tb-t tbody')), 'busca da coluna Item sem acento acha "Água desmineralizada"');
   await p.fill('[data-tbmnbusca]', ''); await p.waitForTimeout(400); await p.keyboard.press('Escape'); await p.waitForTimeout(200);

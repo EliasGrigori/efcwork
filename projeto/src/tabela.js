@@ -79,7 +79,6 @@ function tbColFiltrada(cfg, k) { const st = tbEstado(cfg.id); return tbCfAtivo(s
 /* ITEM 50 (15/11): sem texto de aviso, só o botão, e só quando passou do teto */
 const tbTetoHTML = cfg => cfg.teto ? '<button type="button" class="bt lk tb-tetob" data-act="' + esc(cfg.teto.act) + '" title="' + esc('Foram carregadas as ' + cfg.teto.n.toLocaleString('pt-BR') + ' ' + (cfg.teto.de || tbUn(cfg, 2)) + ' mais recentes') + '">Carregar todas</button>' : '';
 function tbTemFiltro(cfg) { const st = tbEstado(cfg.id); return !!st.busca || (cfg.cols || []).some(c => tbColFiltrada(cfg, c.k)); }
-function tbTemFiltroSolto(cfg) { const st = tbEstado(cfg.id); return !!st.busca || (cfg.cols || []).some(c => !st.trava[c.k] && tbColFiltrada(cfg, c.k)); }
 /* total (v0.4.8, refeito 08/11 15:00): na barra de cima, na linha dos ícones; cada valor fica exatamente acima da sua coluna
    e à esquerda vai "Total · N itens". As posições são medidas na tela (tbAlinhaTot); se não couber, ficam em sequência. */
 function tbTotal(cfg, cols, todas, filtrado) {
@@ -161,7 +160,6 @@ function tbHTML(cfg) {
   const totC = tbVisiveis(cfg).filter(c => c.total), fmtT = (c, rs) => { const v = typeof c.total === 'function' ? c.total(rs) : rs.reduce((s, r) => s + (Number(c.v(r)) || 0), 0); return c.fmtTotal ? c.fmtTotal(v) : numBR(v, c.dec); };
   const res = { fl: fl && todas.length !== (cfg.linhas || []).length, tot: totC.map(c => ({ rot: c.rot, geral: fmtT(c, cfg.linhas || []), val: fmtT(c, todas) })), rod: cfg.rodape ? cfg.rodape(todas) : '' };
   let h = '<div class="tb" data-tb="' + esc(cfg.id) + '" data-res="' + esc(JSON.stringify(res)) + '"><div class="tb-bar">' +
-    (tbTemFiltroSolto(cfg) ? '<button type="button" class="tb-limpa" data-act="tb-limpa" data-tb="' + esc(cfg.id) + '">' + ic('x') + '<span>Limpar filtro</span></button>' : '') +
     (cfg.aEsquerda ? cfg.aEsquerda(todas) : '<span class="tb-cont">' + todas.length + (todas.length !== (cfg.linhas || []).length ? ' de ' + (cfg.linhas || []).length : '') +  ' ' + esc(tbUn(cfg, (cfg.linhas || []).length)) + '</span>') + tbTetoHTML(cfg) + '<span class="tb-sp"></span>' + tbTotal(cfg, cols, todas, fl) + (cfg.antesIcones || '') +
     '<button type="button" class="bt ic-so" data-act="tb-cols" data-tb="' + esc(cfg.id) + '" title="Escolher colunas" aria-label="Escolher colunas">' + ic('colunas') + '</button>' +
     '<button type="button" class="bt ic-so" data-act="tb-xlsx" data-tb="' + esc(cfg.id) + '" title="Baixar planilha (.xlsx)" aria-label="Baixar planilha (.xlsx)">' + ic('planilha') + '</button>' +
@@ -207,7 +205,7 @@ function tbMenuHTML(cfg, k) {
   const lin = (act, ico, txt, on, extra) => '<button type="button" class="tb-mn-o' + (on ? ' on' : '') + '" data-act="' + act + '" data-tb="' + id + '" data-k="' + esc(k) + '"' + (extra || '') + dis + '>' + ic(ico) + '<span>' + txt + '</span>' + (on ? '<i>' + ic('ok') + '</i>' : '') + '</button>';
   let h = '<div class="tb-mn" data-tbmn="' + id + '" data-k="' + esc(k) + '" role="dialog" aria-label="Coluna ' + esc(c.rot) + '">' +
     '<i class="tb-mn-pt"></i><div class="tb-mn-cab"><div class="tb-mn-t"><b>' + esc(c.rot) + '</b><small>' + vals.reduce((q, x) => q + x.n, 0) + ' ' + esc(tbUn(cfg, vals.reduce((q, x) => q + x.n, 0))) + ' · ' + vals.length + (vals.length === 1 ? ' valor' : ' valores') + '</small></div>' +
-    '<button type="button" class="tb-mn-tr' + (tr ? ' on' : '') + '" data-act="tb-trava" data-tb="' + id + '" data-k="' + esc(k) + '" aria-pressed="' + tr + '" title="' + (tr ? 'Destravar: volta a poder mudar e o Limpar filtro passa a valer' : 'Travar: a ordem e o filtro desta coluna ficam assim, mesmo ao sair do app, até você destravar') + '">' + ic('cadeado') + '<span>' + (tr ? 'Travada' : 'Travar') + '</span></button></div>' +
+    '<button type="button" class="tb-mn-tr' + (tr ? ' on' : '') + '" data-act="tb-trava" data-tb="' + id + '" data-k="' + esc(k) + '" aria-pressed="' + tr + '" title="' + (tr ? 'Destravar: volta a poder mudar' : 'Travar: a ordem e o filtro desta coluna ficam assim, mesmo ao sair do app, até você destravar') + '">' + ic('cadeado') + '<span>' + (tr ? 'Travada' : 'Travar') + '</span></button></div>' +
     (tr ? '<p class="tb-mn-av">' + ic('cadeado') + 'Travada. Destrave para mudar a ordem ou o filtro.</p>' : '') +
     '<div class="tb-mn-corpo"><div class="tb-mn-g tb-mn-ord"><div class="tb-mn-hh"><span class="tb-mn-h">Ordenar</span><button type="button" class="bt lk tb-mn-lp" data-act="tb-mnlimpa" data-tb="' + id + '" data-k="' + esc(k) + '"' + (tbColFiltrada(cfg, k) && !tr ? '' : ' disabled') + '>Limpar esta coluna</button></div>' + '<button type="button" class="tb-mn-o tb-mn-ci' + (o ? ' on' : '') + '" data-act="tb-ociclo" data-tb="' + id + '" data-k="' + esc(k) + '"' + dis + ' title="Cada toque troca: ordem padrão, ' + nomes[0].toLowerCase() + ', ' + nomes[1].toLowerCase() + '">' + ic(o === 'asc' ? 'ordAsc' : o === 'desc' ? 'ordDesc' : 'ordPad') + '<span>' + (o === 'asc' ? nomes[0] : o === 'desc' ? nomes[1] : 'Ordem padrão') + '</span><em>' + (o === 'asc' ? 'toque: inverte' : o === 'desc' ? 'toque: volta ao padrão' : 'toque: ordena') + '</em></button></div>';
   const pre = tbPresetsDe(cfg, k);
@@ -451,7 +449,6 @@ document.addEventListener('click', e => {
   else if (a === 'tb-mvesq' || a === 'tb-mvdir') tbMoveLado(id, k, a === 'tb-mvesq' ? -1 : 1);
   else if (a === 'tb-ordpad') { st.colOrd = []; try { Store.del('cw-tbord-' + id); } catch {} render(); }
   else if (a === 'tb-cols') { st.colsAberto = !st.colsAberto; render(); }
-  else if (a === 'tb-limpa') tbMuda(id, s => { s.busca = ''; (cfg.cols || []).forEach(c => { if (s.trava[c.k]) return; delete s.cf[c.k]; tbPresetsDe(cfg, c.k).forEach(f => { delete s.filtros[f.k]; }); }); });
   else if (a === 'tb-mais') { st.limite += 100; render(); }
   else if (a === 'tb-xlsx') tbPlanilha(id);
   else if (a === 'tb-imp') tbImprimir(id);

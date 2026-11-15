@@ -1,45 +1,45 @@
 funcao,area,prioridade,original,efcwork,destino,notas
-Aba Coletas › Programação,Coletas,must,sim,nao,Coletas › Programação,
-Aba Coletas › Solo,Coletas,must,sim,nao,Coletas › Amostras (filtro Tipo),
+Aba Coletas › Programação,Coletas,must,sim,sim,Coletas › Programação,conferido 15/11: a aba existe e funciona
+Aba Coletas › Solo,Coletas,must,sim,sim,Coletas › Amostras (filtro Tipo),conferido 15/11: a aba existe e funciona
 Aba Coletas › Nematoide,Coletas,must,sim,nao,Coletas › Nematoide,
-Aba Coletas › Folha,Coletas,must,sim,nao,Coletas › Amostras (filtro Tipo),
-Aba Coletas › Fruta,Coletas,must,sim,nao,Coletas › Amostras (filtro Tipo),
-Aba Coletas › Composto,Coletas,must,sim,nao,Coletas › Amostras (filtro Tipo),
+Aba Coletas › Folha,Coletas,must,sim,sim,Coletas › Amostras (filtro Tipo),conferido 15/11: a aba existe e funciona
+Aba Coletas › Fruta,Coletas,must,sim,sim,Coletas › Amostras (filtro Tipo),conferido 15/11: a aba existe e funciona
+Aba Coletas › Composto,Coletas,must,sim,sim,Coletas › Amostras (filtro Tipo),conferido 15/11: a aba existe e funciona
 Aba Coletas › Água,Coletas,must,sim,sim,Coletas › Água,v0.6.5 (ação corretiva e relatório v0.6.6; projetos v0.6.7)
-Aba Coletas › Lotes de envio,Coletas,must,sim,nao,Coletas › Envio,
+Aba Coletas › Lotes de envio,Coletas,must,sim,sim,Coletas › Envio,conferido 15/11: a aba existe e funciona
 Aba Coletas › Etiquetas,Coletas,must,sim,nao,Coletas › Etiquetas,
-Aba Coletas › Cadastros,Coletas,must,sim,nao,Coletas › Cadastros,
-Aba Rateios › Campo,Rateios,must,sim,nao,Rateios › Rateio (filtro Tipo),
-Aba Rateios › Água,Rateios,must,sim,nao,Rateios › Rateio (filtro Tipo),
-Aba Rateios › Calibração,Rateios,must,sim,nao,Rateios › Rateio (filtro Tipo),
+Aba Coletas › Cadastros,Coletas,must,sim,sim,Coletas › Cadastros,conferido 15/11: a aba existe e funciona
+Aba Rateios › Campo,Rateios,must,sim,sim,Rateios › Rateio (filtro Tipo),"v0.6.17 (15/11, publicada; ITENS 61 a 69 aprovados) rateio.js"
+Aba Rateios › Água,Rateios,must,sim,sim,Rateios › Rateio (filtro Tipo),"v0.6.17 (15/11, publicada; ITENS 61 a 69 aprovados) rateio.js"
+Aba Rateios › Calibração,Rateios,must,sim,sim,Rateios › Rateio (filtro Tipo),"v0.6.17 (15/11, publicada; ITENS 61 a 69 aprovados) rateio.js"
 Aba Rateios › Painel,Rateios,must,sim,nao,Relatórios › Rateio,
-Aba Inspeções › Cloro,Inspeções,must,sim,nao,Inspeções › Cloro,
-Aba Inspeções › Apontamentos,Inspeções,must,sim,nao,Inspeções › Apontamentos,
+Aba Inspeções › Cloro,Inspeções,must,sim,sim,Inspeções › Cloro,conferido 15/11: a aba existe e funciona
+Aba Inspeções › Apontamentos,Inspeções,must,sim,sim,Inspeções › Apontamentos,conferido 15/11: a aba existe e funciona
 Aba Inspeções › Relatório de apontamentos,Inspeções,must,sim,nao,Inspeções › Relatório de apontamentos,
-Aba Inspeções › Auditoria interna,Inspeções,must,sim,nao,Inspeções › Auditoria interna,
+Aba Inspeções › Auditoria interna,Inspeções,must,sim,sim,Inspeções › Auditoria interna,conferido 15/11: a aba existe e funciona
 Aba Documentos › Relatório,Documentos,must,sim,nao,Relatórios › Documentos,
-Aba Documentos › Catálogo,Documentos,must,sim,nao,Documentos › Documentos,
-Aba Documentos › Caixas d’água,Documentos,must,sim,nao,Documentos › Caixas d’água,
-Aba Documentos › Lançamentos,Documentos,must,sim,nao,Documentos › Histórico,
-Aba Documentos › Correções,Documentos,must,sim,nao,Documentos › Histórico,
-Aba Gestão da Qualidade › Meu dia,Qualidade,must,sim,nao,Início,
-Aba Gestão da Qualidade › Atividade,Qualidade,must,sim,nao,Qualidade › Atividade,
+Aba Documentos › Catálogo,Documentos,must,sim,sim,Documentos › Documentos,conferido 15/11: a aba existe e funciona
+Aba Documentos › Caixas d’água,Documentos,must,sim,sim,Documentos › Caixas d’água,conferido 15/11: a aba existe e funciona
+Aba Documentos › Lançamentos,Documentos,must,sim,sim,Documentos › Histórico,conferido 15/11: a aba existe e funciona
+Aba Documentos › Correções,Documentos,must,sim,sim,Documentos › Histórico,conferido 15/11: a aba existe e funciona
+Aba Gestão da Qualidade › Meu dia,Qualidade,must,sim,sim,Início,conferido 15/11: a aba existe e funciona
+Aba Gestão da Qualidade › Atividade,Qualidade,must,sim,sim,Qualidade › Atividade,conferido 15/11: a aba existe e funciona
 Aba Gestão da Qualidade › Notificações,Qualidade,must,sim,sim,Sino,v0.3.0: sino do topo (gaveta Avisos)
 Aba Gestão da Qualidade › Conversas,Qualidade,must,sim,nao,Dentro de cada registro + sino,
 Aba Gestão da Qualidade › Equipe,Qualidade,must,sim,nao,Administração › Pessoas,
-Aba Gestão da Qualidade › Aprovações,Qualidade,must,sim,parcial,Início › Esperando você,"v0.3.0: pedidos para decidir no sino; os do Almoxarifado decidem aqui, os outros no EFClaudian"
+Aba Gestão da Qualidade › Aprovações,Qualidade,must,sim,sim,Início › Esperando você,"v0.3.0: pedidos para decidir no sino; os do Almoxarifado decidem aqui, os outros no EFClaudian; conferido 15/11: a aba existe e funciona"
 Aba Gestão da Qualidade › Semana,Qualidade,must,sim,nao,Relatórios › Semana,
-Aba Gestão da Qualidade › Não conformidades,Qualidade,must,sim,nao,Qualidade › Não conformidades,
-Aba Gestão da Qualidade › Análise de problemas,Qualidade,must,sim,nao,Qualidade › Análise de problemas,
-Aba Gestão da Qualidade › Bugs e sugestões,Qualidade,must,sim,nao,Qualidade › Bugs e sugestões,
+Aba Gestão da Qualidade › Não conformidades,Qualidade,must,sim,sim,Qualidade › Não conformidades,"v0.6.16 (15/11, publicada; ITENS 54 a 60 aprovados) nc.js"
+Aba Gestão da Qualidade › Análise de problemas,Qualidade,must,sim,sim,Qualidade › Análise de problemas,conferido 15/11: a aba existe e funciona
+Aba Gestão da Qualidade › Bugs e sugestões,Qualidade,must,sim,sim,Qualidade › Bugs e sugestões,"v0.6.16 (15/11, publicada; ITENS 54 a 60 aprovados) bugs.js"
 Aba Gestão da Qualidade › Relatórios,Qualidade,must,sim,nao,Relatórios,
 Aba Almoxarifado › Painel,Almoxarifado,must,sim,sim,Almoxarifado › Painel,v0.3.0: consulta + lançar (Saída/Entrada no cabeçalho) + saídas de produto crítico para confirmar
 Aba Almoxarifado › Apresentação,Almoxarifado,must,sim,parcial,Relatórios › Almoxarifado do mês,v0.2.0: consulta; lançamentos na v0.3
 Aba Almoxarifado › Materiais,Almoxarifado,must,sim,sim,Almoxarifado › Materiais,"v0.3.0: Saída, Entrada, Abrir frasco, Acabou e Ajustar na gaveta do material"
 Aba Almoxarifado › Movimentações,Almoxarifado,must,sim,sim,Almoxarifado › Movimentações,"v0.3.0: Corrigir, Anular (lixeira), confirmar produto crítico"
 Aba Almoxarifado › Solicitações,Almoxarifado,must,sim,sim,Almoxarifado › Solicitações,"v0.3.0: Nova, Atender (vira entrada), Cancelar (lixeira)"
-Aba Almoxarifado › Equipamentos,Almoxarifado,must,sim,parcial,Almoxarifado › Equipamentos,"v0.3.3: calibração com histórico (solicitar, cotação, agendar, calibrado com quem calibrou/código/validade, compra); cadastro, transferência, dano e manutenção seguem no EFClaudian"
-Aba Almoxarifado › Inventário,Almoxarifado,must,sim,parcial,Almoxarifado › Materiais (ação Contagem),"v0.3.2: contagem às cegas de materiais (abrir com quem conta, por lugar, recontagem sugerida, decisão, saída esquecida = erro de lançamento); vidrarias e equipamentos no inventário geral ficam no EFClaudian"
+Aba Almoxarifado › Equipamentos,Almoxarifado,must,sim,sim,Almoxarifado › Equipamentos,"v0.3.3: calibração com histórico (solicitar, cotação, agendar, calibrado com quem calibrou/código/validade, compra); cadastro, transferência, dano e manutenção seguem no EFClaudian; conferido 15/11: a aba existe e funciona"
+Aba Almoxarifado › Inventário,Almoxarifado,must,sim,sim,Almoxarifado › Materiais (ação Contagem),"v0.3.2: contagem às cegas de materiais (abrir com quem conta, por lugar, recontagem sugerida, decisão, saída esquecida = erro de lançamento); vidrarias e equipamentos no inventário geral ficam no EFClaudian; conferido 15/11: a aba existe e funciona"
 Janela Meu perfil (openMeuPerfil),Administração,should,sim,nao,,rascunho automático; prioridade a revisar
 Janela Sheet (openSheet),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
 Janela Colunas (openColunas),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
@@ -117,7 +117,7 @@ Janela Laudo Corr (openLaudoCorr),Geral,should,sim,nao,,rascunho automático; pr
 Janela O.S da remessa (openOSRem),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
 Janela O.S da remessa primeiro (openOSLaudo),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
 Janela Corrigir O.S (openOSCorr),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Emitir solicitação de compra (openEmitir),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Emitir solicitação de compra (openEmitir),Geral,should,sim,sim,Rateios › Emitir solicitação,"rascunho automático; prioridade a revisar; v0.6.17 (15/11, publicada; ITENS 61 a 69 aprovados) rateio.js"
 Janela Laudo com erro (openLaudoErro),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
 Janela Etiqueta da caixa (openFichas),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
 Janela Lote (openLoteDetail),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
@@ -157,7 +157,7 @@ Janela Cal (openCal),Almoxarifado,should,sim,nao,,rascunho automático; priorida
 Janela Cotação · (openCalCot),Almoxarifado,should,sim,sim,,v0.3.3 calibracao.js
 Janela Calibrado · (openCalReal),Almoxarifado,should,sim,sim,,v0.3.3 calibracao.js
 Janela Solicitações de calibração (openCalLista),Almoxarifado,should,sim,sim,,v0.3.3 calibracao.js
-Janela Emitir solicitação de compra (openRcEmitir),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Emitir solicitação de compra (openRcEmitir),Geral,should,sim,sim,Rateios › Emitir solicitação,"rascunho automático; prioridade a revisar; v0.6.17 (15/11, publicada; ITENS 61 a 69 aprovados) rateio.js"
 Janela Contar · (openInvContar),Almoxarifado,should,sim,sim,,v0.3.2 contagem.js
 Janela Inv Item (openInvItem),Almoxarifado,should,sim,sim,,v0.3.2 contagem.js
 Janela Conferir · (openInvConf),Almoxarifado,should,sim,sim,,v0.3.2 contagem.js
@@ -233,8 +233,8 @@ Janela Registros de teste (openV75Teste),Geral,should,sim,nao,,rascunho automát
 Janela Programar coleta (openRzProg),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
 Janela Empresa (openEmpresa),Administração,should,sim,nao,,rascunho automático; prioridade a revisar
 Janela Trocar o login (openTrocarLogin),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Bug Novo (openBugNovo),Qualidade,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Nº (openBug),Qualidade,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Bug Novo (openBugNovo),Qualidade,should,sim,sim,,"rascunho automático; prioridade a revisar; v0.6.16 (15/11, publicada; ITENS 54 a 60 aprovados) bugs.js"
+Janela Nº (openBug),Qualidade,should,sim,sim,,"rascunho automático; prioridade a revisar; v0.6.16 (15/11, publicada; ITENS 54 a 60 aprovados) bugs.js"
 Janela Cancelar a tarefa (openTfRot),Início,should,sim,nao,,rascunho automático; prioridade a revisar
 Janela Audit Detail (openAuditDetail),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
 Janela Notif Detail (openNotifDetail),Início,should,sim,nao,,rascunho automático; prioridade a revisar
@@ -310,7 +310,7 @@ Travas dos planos de coleta (encerrado / já coletado no período),Coletas,must,
 Tabela da Programação na ordem da planilha (Sem·Data·Área·Pontos·Coletor·Tipo·Profund.·Estádio·Situação),Coletas,must,sim,sim,Coletas › Programação,v0.4.5
 Etapas da programação na gaveta (linha do tempo com fluido),Coletas,should,nao,sim,Coletas › Programação,v0.4.5
 SOLO+RAIZ coletada em linhas separadas (Solo / Nematoide),Coletas,must,nao,sim,Coletas › Programação,v0.4.5
-Legenda das cores dos planos no ícone "!",Coletas,could,nao,sim,Coletas › Programação,v0.4.5
+"Legenda das cores dos planos no ícone ""!""",Coletas,could,nao,sim,Coletas › Programação,v0.4.5
 Página própria do plano de coleta (abre pelo cartão),Coletas,must,sim,sim,Coletas › Programação › Plano,v0.4.6
 Áreas do plano em grade com seleção e barra flutuante,Coletas,must,nao,sim,Coletas › Programação › Plano,v0.4.6
 Programar áreas do plano (sv2_prog),Coletas,must,sim,sim,Coletas › Programação › Plano,v0.4.6
@@ -429,7 +429,7 @@ Apps da família no menu (Vértice Docs e Sabiá) para Administrador e Líder,Ge
 Contrato EFD v1 compilado no app (mesmo arquivo do Vértice) valida cada ficha,Geral,must,não,sim,Geral,v0.6.9 tools/contrato/efd-v1.js
 Envio › Laboratórios: endereço no cadastro e kit de impressão por laboratório,Coletas,must,sim,sim,Coletas › Envio,v0.6.10 kit.js
 Rótulo destinatário e remetente (A4 em pé; uma folha por caixa),Coletas,must,sim,sim,Coletas › Envio,v0.6.10 ktRotuloHTML (port do fxEtiqueta)
-Papéis deste envio: Sempre/Perguntar/Só se eu pedir e "Quer acrescentar algo na ficha?",Coletas,must,não,sim,Coletas › Envio,v0.6.10
+"Papéis deste envio: Sempre/Perguntar/Só se eu pedir e ""Quer acrescentar algo na ficha?""",Coletas,must,não,sim,Coletas › Envio,v0.6.10
 Papel por análise e para todos os laboratórios,Coletas,should,não,sim,Coletas › Envio,v0.6.10 (sugestão 5)
 Reimprimir os papéis da remessa e resumo do envio na gaveta,Coletas,should,não,sim,Coletas › Envio,v0.6.10 (sugestão 3) sv2_envio_imp
 Sino avisa versão nova de papel usado no kit,Documentos,should,não,sim,Documentos › Impressos,v0.6.10 (sugestão 1)
@@ -454,4 +454,8 @@ Solicitações: itens só na janela,Almoxarifado,should,não,sim,Solicitações,
 Frase da tela de entrar fora da foto (celular),Sistema,could,não,sim,Entrar,v0.6.14.2
 Lista retrátil encolhe ao fechar,Sistema,could,não,sim,Movimento,v0.6.14.2
 Pólen para sozinho,Sistema,could,não,sim,Entrar,v0.6.14.2
-
+,,,,,,
+Folha por pessoa das NCs (com ciente),Qualidade,should,sim,sim,Qualidade › Não conformidades,v0.6.16 nc.js (ITEM 56)
+"Relatório de Bugs e sugestões (descrição, andamento e imagem)",Qualidade,should,sim,sim,Qualidade › Bugs e sugestões,v0.6.16 bugs.js (ITEM 60)
+Rateio % segue o filtro da tabela; total no selo,Rateios,should,sim,sim,Rateios,"v0.6.17 (15/11, publicada; ITENS 61 a 69 aprovados) rateio.js"
+Atalhos do Início sem telas sem permissão,Início,should,nao,sim,Início,"v0.6.17 (15/11, publicada; ITENS 61 a 69 aprovados) rateio.js (inicio.js)"

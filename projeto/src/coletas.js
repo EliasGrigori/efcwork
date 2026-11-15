@@ -22,7 +22,7 @@ const CO_LIM = 3000;
 Object.assign(S, { _coTudo: false, _coOff: null });
 const coTeto = () => !S._coTudo && (S.coletas || []).length >= CO_LIM;
 const coOuveColetas = re => { S._coOff = csOuve('sv2_coletas', l => { S.coletas = l; re(); }, S._coTudo ? {} : { order: 'data', limit: CO_LIM }); };
-const coReColetas = () => { S.colCarregado = true; if (S.rota.area === 'coletas' || S.rota.area === 'inicio') render(); };
+const coReColetas = () => { S.colCarregado = true; if (S.rota.area === 'coletas' || S.rota.area === 'inicio' || S.rota.area === 'rateios') render(); };
 function coTudo() { if (S._coTudo) return; S._coTudo = true; if (S._coOff) S._coOff(); aviso('Carregando todas as amostras…'); coOuveColetas(coReColetas); }
 /* nº das amostras novas: com o teto, uma amostra antiga (fora das 3.000) pode ter o mesmo nº; confere no servidor antes de gravar e muda o nº se já existir */
 async function coIdsSeguros(ops) {

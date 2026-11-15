@@ -25,9 +25,9 @@ let ok = 0, falhas = 0; const conf = (c, m) => { if (c) { ok++; console.log('  o
   conf(f.k === 'trEd' && f.id === '' && f.sit === 'programado', 'Repetir abre "Novo treinamento" como Programado'); conf(f.ti.indexOf('Higiene') === 0 && f.n === 30 && f.hr === '0,75', 'traz título, horas e os 30 participantes'); conf(f.dt === f.hoje, 'a data começa em hoje');
   await p.keyboard.press('Escape'); await p.waitForTimeout(500); await p.keyboard.press('Escape'); await p.waitForTimeout(500);
   await p.evaluate(() => trAbre('t1')); await p.waitForTimeout(700); await p.click('#gv [data-act="tr-pessoa"][data-nome="Juraci Lima"]'); await p.waitForTimeout(700);
-  const g = await p.evaluate(() => ({ gv: !!document.querySelector('#gv'), lin: [...document.querySelectorAll('.tb-t tbody tr[data-id]')].map(e => e.dataset.id), limpa: !!document.querySelector('[data-act="tb-limpa"]') }));
-  conf(!g.gv, 'tocar no nome fecha a gaveta'); conf(g.lin.length > 0 && g.lin.length < 11 && g.lin.indexOf('t1') >= 0 && g.lin.indexOf('t10') < 0, 'a lista fica só com os treinamentos da pessoa (' + g.lin.join(',') + ')'); conf(g.limpa, 'há o "Limpar filtro"');
-  await p.click('[data-act="tb-limpa"]'); await p.waitForTimeout(500);
+  const g = await p.evaluate(() => ({ gv: !!document.querySelector('#gv'), lin: [...document.querySelectorAll('.tb-t tbody tr[data-id]')].map(e => e.dataset.id), limpa: !document.querySelector('[data-act="tb-limpa"]') }));
+  conf(!g.gv, 'tocar no nome fecha a gaveta'); conf(g.lin.length > 0 && g.lin.length < 11 && g.lin.indexOf('t1') >= 0 && g.lin.indexOf('t10') < 0, 'a lista fica só com os treinamentos da pessoa (' + g.lin.join(',') + ')'); conf(g.limpa, 'não há botão "Limpar filtro" (o filtro se limpa pelo menu da coluna)');
+  await p.evaluate(() => Object.keys(TB).forEach(id => tbMuda(id, s => { s.busca = ''; s.cf = {}; s.filtros = {}; }))); await p.waitForTimeout(500);
   console.log('— Presença e eficácia (compacta)');
   await p.evaluate(() => trAbre('t2')); await p.waitForTimeout(700); await p.click('#gv [data-act="tr-pres"]'); await p.waitForTimeout(800);
   const a = await p.evaluate(() => { const l = [...document.querySelectorAll('.tr-lp')].map(e => e.getBoundingClientRect().height); return { n: l.length, max: Math.max.apply(null, l), btn: document.querySelectorAll('[data-act="tr-todos"]').length }; });

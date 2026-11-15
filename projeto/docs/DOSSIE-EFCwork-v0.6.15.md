@@ -884,3 +884,151 @@ Conferência final: suíte completa **46 arquivos, 0 falhas** (`docs/suite-v0.6.
 - Numerada **v0.6.15.1** (`VERSAO` em src/base.js; cache do sw `efcwork-0.6.15.1`). Conteúdo: ITENS 39 e 40 (celular) + documento de regras do Firebase (Tarefa 1) + testes t_v0615e.js e t_regras_cobertura.js.
 - Testes finais: bateria 49 arquivos, 0 falhas (t_html_seg, t_v0615e 14 ok, t_v0615d 20 ok, t_regras_cobertura 45 ok rodados de novo após a numeração).
 - Publicado no GitHub EliasGrigori/efcwork (main), commit 85ee2c6, com a autorização "pode publicar". ZIP: efcwork-v0.6.15.1.zip.
+
+---
+## Tarefa 4 · Treinamentos: revisão pelo uso (14/11, 20:02 a ~20:50, Sonnet 5.5 · alto)
+- Usei o módulo da v0.6.12 com 12 treinamentos inventados (programados, um atrasado, realizados, cancelado, do Sabiá, um de teste) no PC (1280) e no celular (390). Dados em `tools/visual/treino-v0615/semente.js`; roteiros `explora.js`, `explora2.js`; PDF da lista impressa `imprime.js <id> <saida.pdf> [dist]`.
+- Defeitos achados e corrigidos no app (v0.6.15.1 + ajustes, NÃO publicados, aguardam aprovação dos ITENS 41 a 49):
+  - D1 (ITENS 41, 42): em 1280 px a lista cortava Situação e Origem à direita. `src/treino.js`: Treinamento com `longo:true` (máx. 320 px, 220 no celular), Situação na 3ª coluna, Origem escondida por padrão (`TB_OCULTAS_PADRAO['tr-lista']=['or']` em `src/tabela.js`; só vale quando `cw-tbcol-<id>` não existe no aparelho).
+  - D2 (ITEM 43): programados saíam da data mais distante; agora grupo programado/realizado/cancelado, programados por data crescente (atrasado primeiro), demais do mais recente ao mais antigo.
+  - D3 (ITEM 44): Eficácia em branco num realizado sem avaliados; agora "a avaliar" (`.tr-av`).
+  - D4 (ITEM 49): lista de presença impressa com 21 a 25 linhas jogava as linhas finais e a assinatura na folha 2; nessa faixa a linha passa a 8 mm (`.tr-ap`), tudo na folha 1. Até 20 linhas não muda.
+  - Defeito meu nas imagens: no celular "Não eficaz" quebrava em 2 linhas no seletor da presença; corrigido (dd 124 px, `white-space:nowrap`, fonte 15 px, padding menor). Teste novo confere que nenhum seletor corta ou quebra.
+- Melhorias por uso:
+  - ITEM 45: presença com uma linha por pessoa (49 px PC, 57 px celular; antes 83/≈115). Cabem 9 pessoas por tela no PC (antes 6) e 8 no celular (antes 6), com toque de 44 px.
+  - ITEM 46: botões "Todos presentes" e "Todos eficazes" (`trTodos`, nada grava até Salvar).
+  - ITEM 47: ícone de cópia no detalhe → `trRepetir(id)` abre "Novo treinamento" preenchido (título, horas, instrutor, local, documentos, participantes), data de hoje, Programado.
+  - ITEM 48: nome de participante é botão (`tr-pessoa`); fecha o detalhe e filtra a lista pelo nome (a busca da lista já inclui participantes). Sem sublinho fixo; sublinha no hover no PC.
+- Observado e NÃO alterado: no celular a tabela rola para o lado (comportamento global de tabelas); a data do campo nativo aparece mês/dia só no Chromium de teste; o PDF gerado pelo Playwright mostra uma folha 2 em branco (também antes da mudança; não investiguei a fundo, parece vir do gerador). Confirmar na primeira impressão real.
+- Ícone novo `copia` em `ICS` (`src/base.js`). Sem campo novo no Firestore: `sv2_treinos` e o contrato EFD.treino ficam como estão (a cópia grava um documento novo com os mesmos campos de um treinamento comum).
+- Testes: `tools/testes/t_v0615f.js` (novo, 27 ok, 0 falhas); bateria completa de 50 arquivos, 0 falhas; medidor `docs/medidor-v0.6.15-treinamentos.txt`: 0 defeitos, 0 decisões, 60 ajustes (mesmos de antes: cores soltas em CSS antigos e tamanhos de letra).
+- Página de aprovação: `docs/aprovacao-efcwork-v0.6.15-treinamentos.html` (artefato "EFCwork v0.6.15 · Treinamentos: aprovação"), 9 itens (41 a 49), HOJE (v0.6.15.1 publicada) × PROPOSTA, app de verdade com os 12 treinamentos. Montagem: `captura6.js` (imagens em `out/img6`, renumeradas para `out/img6f` por um passo manual: copiar `i41-lista`→`i42-lista`, `i42-ordem`→`i43-ordem`, `i43-aval`→`i44-aval`, `i44-pres-*`→`i45-`/`i46-`, `i45-*`→`i47-`, `i46-*`→`i48-`, `i47-imp*`→`i49-imp*`) e `itens-p6.js`.
+- ZIP de proposta: `efcwork-v0.6.15-proposta-treinamentos.zip` (index.html, sw.js, manifest, ícones; `VERSAO` ainda 0.6.15.1, será v0.6.15.2 depois da aprovação).
+- Referências reais usadas na página: NN/g (tabelas de dados), UX World, MindSphere, GitHub Primer, IBM Carbon, Agriculture Design System, SAP Fiori (copiar objeto), 101 UX Principles (criar a partir do existente), Adobe Acrobat (lista de assinaturas).
+- Não publicado no GitHub (aguarda respostas e "pode publicar").
+
+---
+## Respostas da página dos Treinamentos e v0.6.15.2 pronta (14/11, 20:54)
+- "Respostas EFCwork v0.6.15 · Treinamentos": ITENS 41 a 48 **Aprovados**. ITEM 49 (lista de presença impressa com linhas de 8 mm) **Reprovado**: "lista do sabia, importo por fora" (a lista vem do Sabiá, importada; a impressão do app não entra nesse fluxo). Registrado: **não mexer na lista de presença impressa**.
+- Removido do app: `trListaHTML` e `.tr-ap` voltaram ao que eram na v0.6.15.1 (diff zerado nessa função); asserções de impressão saíram do t_v0615f.js (agora 23 ok).
+- Numerada **v0.6.15.2** (`VERSAO` em src/base.js; cache do sw `efcwork-0.6.15.2`). Conteúdo: ITENS 41 a 48.
+- Testes: bateria 50 arquivos, 0 falhas; medidor `docs/medidor-v0.6.15.2.txt`: 0 defeitos, 0 decisões, 60 ajustes (os mesmos de antes). (O medidor da proposta, `medidor-v0.6.15-treinamentos.txt`, foi trocado por este.)
+- ZIP: `efcwork-v0.6.15.2.zip` (index.html, sw.js, manifest, ícones). Firebase: sem campo novo.
+- **NÃO publicado no GitHub** (aguarda "pode publicar"). Commit previsto: src/{base.js,tabela.js,treino.js,treino.css}, tools/testes/t_v0615f.js, tools/visual/treino-v0615/, pagina/{captura6,itens-p6}.js, docs/aprovacao-...-treinamentos.html, docs/medidor-v0.6.15.2.txt, docs/dossiê.
+
+---
+## Publicação da v0.6.15.2 (14/11, 21:28)
+- "Pode publicar" recebido. Commit **a2a806d** em EliasGrigori/efcwork (main): "v0.6.15.2: Treinamentos revisados pelo uso (ITENS 41 a 48)". Arquivos: index.html, sw.js (raiz), projeto/src/{base,tabela,treino}.{js,css}, t_v0615f.js, ferramentas e página de aprovação dos Treinamentos, medidor-v0.6.15.2.txt.
+- Falta ele conferir que o site no ar mostra v0.6.15.2 (a sessão não abre o site).
+
+---
+## ITENS 6 e 7 da varredura v0.6.8: limite de 3.000 e fotos vencidas (14/11, 21:34 a ~22:20, Opus 5.5 · alto)
+- "Pode iniciar" às 21:34 (ele seguiu nesta conversa depois do aviso de conversa nova).
+- Levantamento: `sv2_coletas` e `sv2_aguacol` eram lidas sem limite (`csOuve` sem `order/limit`). Pelas regras do Firebase, uma escuta desligada por mais de 30 minutos lê tudo de novo. Fotos da ação: `acFotoLimpar` só roda no aparelho do Líder ★/Administrador; até lá todos viam as fotos e o PDF saía com elas; o aviso "Fotos até" mostrava o próprio dia da eliminação.
+- Feito no app (NÃO publicado; aguarda os ITENS 50 a 53):
+  - ITEM 50: `coletas.js` `CO_LIM = 3000`, escuta `{ order: 'data', limit: 3000 }` (pela data da coleta; abaixo de 3.000 nada muda). `coTeto()`, `coTudo()` ("Carregar todas", lê tudo na sessão, `data-act="co-tudo"`). `coIdsSeguros(ops)`: com o teto ativo, toda amostra nova com data ≤ a mais antiga carregada é conferida no servidor (`get`) antes do lote; se o nº existir, vira `_2`, `_3`… Chamado antes de `Data.lote` em programacao.js (2 lugares) e plano.js.
+  - ITEM 51: `agua.js` `AG_LIM = 3000`, mesma escuta pela data; `agTudo()` (`ag-tudo`). Água não precisa da conferência de nº (usa `add`).
+  - Aviso na barra das tabelas (`tabela.js` `tbTetoHTML`, opção `teto:{n, act, de}` no `tbHTML`): "· só as mais recentes" + botão `.bt.lk` "Carregar todas"; quando a barra aperta no PC mostra "só as 3.000 mais recentes"; no celular o aviso fica na 1ª linha e "Carregar todas" + ícones na 2ª (`.tb-teto-q`). Tabelas: Amostras, Remessas, Coletas de água.
+  - ITEM 52: `aguaac.js` `acFotosFora(a)` (eliminadas OU vencidas); passou o prazo, miniaturas, visualização e PDF param de mostrar as fotos para todos, com "N foto(s) vencida(s) em dd/mm"; depois da eliminação de vez "eliminada(s) em dd/mm". Eliminação de vez continua só no aparelho do Líder ★/Administrador.
+  - ITEM 53: aviso "Fotos até" mostra vence − 1 dia (o último dia com foto).
+  - Limitação dita na página: com o teto, os selos do topo (não enviadas, laudos atrasados, valor total), o Início e a Programação contam só as amostras carregadas. Uma amostra sem `data` deixaria de aparecer (o app sempre grava data).
+- Testes: `tools/testes/t_v0615g.js` (novo, 20 ok: 3.010 amostras → 3.000 + aviso + Carregar todas; 40 → sem aviso; nº seguro; água 3.004 no celular com toque de 44 px; fotos vencidas para quem não é Líder; PDF sem fotos; "Fotos até"; eliminação de vez). Bateria 51 arquivos, 0 falhas (e 10 arquivos de tabela/coletas/água repetidos depois do último ajuste de CSS, 0 falhas). Medidor `docs/medidor-v0.6.15-limites.txt`: 0 defeitos, 60 ajustes (os mesmos).
+- Página: `docs/aprovacao-efcwork-v0.6.15-limites-fotos.html` (artefato "EFCwork v0.6.15 · Limite de 3.000 e fotos vencidas: aprovação"), ITENS 50 a 53, HOJE = v0.6.15.2 publicada. Ferramentas: `tools/visual/limite-v0615/semente.js` (3.010 amostras, 3.004 coletas de água, 2 ações com fotos; grava pelo `Store` do app), `pagina/captura7.js`, `pagina/itens-p7.js`.
+- Referências: Firebase (cobrança das leituras e regra dos 30 minutos), SAP (carregamento de tabelas com "carregar mais"), Maersk (botão carregar mais), Google Cloud TTL (o app deve conferir a data mesmo com eliminação automática).
+- Ideia para depois (não feita): política TTL do Firestore em `sv2_agua_foto` para eliminar as fotos no servidor sem depender de alguém abrir o app; mudaria o formato (apaga o documento inteiro) e precisa combinar com o EFClaudian.
+- ZIP de proposta: `efcwork-v0.6.15-proposta-limites.zip` (`VERSAO` ainda 0.6.15.2; vira 0.6.15.3 depois da aprovação).
+- Firebase: sem campo novo. As consultas novas (`orderBy('data','desc').limit(3000)` em `sv2_coletas` e `sv2_aguacol`) usam índice de um campo, que o Firestore cria sozinho. As regras precisam permitir `list` com ordenação (já permitem leitura).
+
+---
+## Pedido 15/11 05:29 — comandos de fluidez para a outra conta
+- Elias: "tá faltando fluidez na outra conta, o Claude tá ignorando esse detalhe; me passa os comandos necessários".
+- Entregue `fluidez-comandos-efc.zip`: COMANDOS-FLUIDEZ-EFC.md (regra fixa: troca de área e de aba de dentro com deslize de 12 px + traço da aba + título do desfoque; gaveta 400/350; lista retrátil e menu da coluna que encolhem; confirmação; avisos um por vez com visto; filtro/busca/paleta suaves; lista em sequência; tremida no erro; desfoque no fim; ícone do tema; faíscas só no dourado; escala 40–500 ms, só transform/opacity/filter, sem "transition: all", sem infinito, movimento reduzido; efeitos recusados; como provar com lista de abas + teste Playwright + página com app vivo) + efc-movimento.css/.js + fluidez.js/.css como referência.
+
+---
+## Respostas "limite e fotos" e v0.6.15.3 pronta (15/11, 06:22)
+- ITEM 50 **Aprovado** com ajuste: "Remove esse texto — '2998 amostras · só as mais recentes'; você quer colocar isso em tudo, não precisa disso". Feito: sem texto de aviso; quando passa do teto a barra mostra só o botão "Carregar todas" (título ao passar o mouse explica). Classes `.tb-teto`/`.tb-teto-n`/`.tb-teto-q` removidas. **Regra: não pôr textos de aviso/contagem extras nas barras das tabelas.**
+- ITEM 51 **Aprovado** com ajuste: "pode descer para mil" → `AG_LIM = 1000` na Água (Coletas continua 3.000).
+- ITENS 52 e 53 **Aprovados**.
+- Numerada **v0.6.15.3**. t_v0615g.js ajustado (20 ok). Bateria 51 arquivos, 0 falhas. Medidor `docs/medidor-v0.6.15.3.txt`: 0 defeitos (o da proposta foi trocado por este). ZIP `efcwork-v0.6.15.3.zip`. Firebase: sem campo novo.
+- **NÃO publicado** (aguarda "pode publicar").
+- Pedido novo no mesmo recado: "creio que tem abas do Cwork que não estão portadas do Claudian" → próxima tarefa: comparar as abas do EFClaudian com as do EFCwork (precisa do EFClaudian atual).
+
+## v0.6.15.3 publicada (15/11, 06:58)
+- "Pode só publicar" do Elias. Commit **38604f0** em EliasGrigori/efcwork (main), em cima do a2a806d. Entrou: index.html, sw.js, projeto/src, página de aprovação, medidor, t_v0615g.js, limite-v0615, captura7/itens-p7. dist/ e pagina/out/ não são versionados.
+- Pendente do lado dele: abrir o site e conferir que mostra v0.6.15.3 (a sessão não abre o site).
+- Próxima tarefa proposta: Qualidade › Não conformidades e Bugs e sugestões (itens a partir do 54), Opus 5.5 · alto. Aguarda "pode iniciar".
+- Conversa longa: hora de abrir conversa nova com ZIP, dossiê, CONTINUAR e texto para colar.
+
+## Tarefa: Qualidade › Não conformidades e Bugs e sugestões (15/11, 07:01 → pronta; Opus 5.5 · alto)
+- Pedido: "Pode iniciar" (07:01), na proposta de fazer as telas "must" do FALTA começando pelas duas abas da Qualidade que ainda mandavam para o EFClaudian.
+- Leitura do EFClaudian (repositório EliasGrigori/efclaudian, v2.102.60, clonado só para ler; nada mudado lá): `viewNC`/`ncItens`/`ncRncSit`/`ncPessoaImprimir` (v2.102.41 a .50) e `viewBugs`/`openBugNovo`/`bugGravar`/`openBug`/`bugMudar`/`bugPDF` (v2.80 a v2.92).
+- **Não conformidades (src/nc.js, prefixo nq):** tabela padrão que junta as NCs dos apontamentos (`a.nc`) e as das auditorias enviadas (`sv2_rnc`), em grupos Vencidas/Abertas/Fechadas. NC da auditoria fechada = RNC fechada ou retorno "Resolvida"; vencida = passou do prazo da RNC. Colunas: Prazo (vermelho quando vencido; "vencida há N dias" ao parar o mouse), Situação (+ retorno Parcial/Não resolvida), Origem (Apontamento ou "RNC 03 NC 05"), Local, Não conformidade, Gravidade, Responsável; escondidas: Corresponsáveis, Prioridade GUT, Tratamento. A linha abre a gaveta da origem por cima (apAbre / auNcAbre), sem duplicar ações. "Folha por pessoa" (A4 em pé, papel de cada NC, linha do ciente), como `ncPessoaImprimir`. apont.js e auditoria.js passaram a redesenhar também a aba Qualidade › NC. Nada se grava.
+- **Bugs e sugestões (src/bugs.js, prefixo bs):** os mesmos dados do EFClaudian (`sv2_bugs` e `sv2_bugs_foto/{id}` com `temFoto`; se a regra da foto negar, a imagem vai dentro do relato, como lá). Tabela em grupos Em aberto/Resolvidos/Não procede; "Reportar problema" e "Sugerir melhoria" (no celular "Problema" e "Sugestão" para caber); janela em 3 passos com a parte do app vinda da tela anterior; imagem até 240 KB; o app anota versão ("EFCwork v…"), app ('efcwork', campo novo que o EFClaudian ignora), tela e aparelho; aviso no sino aos Administradores. Gaveta com descrição, imagem que amplia, dados e andamento em linha do tempo; só o Administrador muda a situação (Em análise, Não procede com motivo, Resolvido com versão, Reabrir), cada mudança é um passo novo (`push` em `hist`) e quem reportou é avisado. Relatório A4 deitado (ícone da impressora no cabeçalho) com os relatos da tabela, descrição, andamento e imagem. Sino abre o relato (refTipo 'bug'); busca acha relatos.
+- casca.js (texto da Qualidade), areas.js (o que falta: Semana e Conversas), sino.js (refTipo bug), montar.py (módulos nc e bugs).
+- Firebase: nenhuma coleção nova. `sv2_bugs` e `sv2_bugs_foto` já existem no EFClaudian (com regra); entraram na tabela do REGRAS-FIREBASE como "EFClaudian". Conferir só se aparecer "permissão negada" ao reportar ou ao mudar a situação.
+- Testes: t_v0616.js 45 ok; bateria 52 arquivos 0 falhas; t_html_seg: base com +1 `pe` (HTML do rodapé, justificado); t_regras_cobertura 47 ok. Medidor (`docs/medidor-v0.6.16.txt`): 0 defeitos, 76 ajustes (16 a mais por causa das 4 telas novas no medidor e das cores de papel do relatório impresso, iguais às da Auditoria).
+- Página de aprovação: `docs/aprovacao-efcwork-v0.6.16-qualidade.html`, ITENS 54 a 60 (54 tabela NC, 55 linha abre a gaveta, 56 folha por pessoa, 57 tabela Bugs, 58 reportar, 59 resposta do Administrador, 60 relatório para a IA), com app vivo e referências (ISO 9001 10.2, Ybug, Nolt). HOJE = v0.6.15.3 publicada.
+- ZIP de proposta: `efcwork-v0.6.16-proposta-qualidade.zip` (VERSAO ainda 0.6.15.3; vira 0.6.16 depois da aprovação).
+- FALTA-DO-EFCLAUDIAN.md e features.csv atualizados (as duas abas saíram da lista).
+
+## Respostas da página v0.6.16 · Qualidade (15/11, 09:09) e v0.6.16 pronta
+- ITENS 54, 55, 56, 59 e 60: **Aprovados** como estavam.
+- ITEM 57: **Aprovado com ajuste**: "não procede e resolvidas ficam junto em ordem cronológica de data guardada como finalizado, aí esse finalizado é um botão que aparece só nessa aba, botão com ícone padrão o de imprimir e exportar". Aplicado: a tabela mostra só os relatos em aberto (sem grupos); botão-ícone **Finalizados** (ícone de visto, ao lado da impressora, só nesta aba) troca para a tabela dos resolvidos + não procede juntos, com a coluna "Finalizado em", da mais recente para a mais antiga (dá para inverter no menu da coluna); o botão fica marcado; Esc volta para os em aberto. Campo novo `finalizadoEm` gravado ao Resolver/Não proceder (apagado ao Reabrir); nos relatos antigos vale a data do passo que fechou. Nos Finalizados a coluna Data (envio) começa escondida, para caber sem rolar. O relatório imprime a tabela que está na tela (em aberto ou finalizados).
+- ITEM 58: **Aprovado com ajuste**: "o botão de reportar e sugerir é para ser o mesmo". Aplicado: um botão só, **Reportar ou sugerir**; o tipo (Problema ou Sugestão) se escolhe dentro da janela (vem Problema).
+- VERSAO = **0.6.16**. t_v0616.js 52 ok; bateria 52 arquivos 0 falhas; medidor 0 defeitos (76 ajustes). ZIP `efcwork-v0.6.16.zip`. Aguarda "pode publicar".
+- Firebase: nada a configurar (sv2_bugs e sv2_bugs_foto já têm regra no EFClaudian; `finalizadoEm` é só um campo a mais no relato).
+
+## v0.6.16 publicada (15/11, 09:48 a 10:05)
+- "Pode publicar" do Elias (09:48). Antes de publicar chegou o ajuste (09:53): "Remove esses dois ícones … esse ícone para baixo, porém reduzido no tamanho e padrão dos botões ao lado". Feito: o topo da aba Bugs e sugestões fica só com **Reportar ou sugerir**; o ícone Finalizados (ok) vai para a barra da tabela, antes de Colunas, no mesmo tamanho dos outros três (gancho novo `antesIcones` em tbHTML); a impressora do topo saiu e a da barra chama o relatório com descrição e imagens (gancho novo `imprimir` em tbImprimir). Texto da tabela vazia: "botão ao lado de Colunas, na barra da tabela".
+- Testes: t_v0616.js 53 ok (2 conferências novas: topo só com um botão; 4 ícones da barra com mesmo tamanho e linha); t_html_seg 20 ok; t_v0615g 34 ok; medidor sem defeito. A bateria completa de 52 arquivos rodou antes do ajuste; o ajuste só acrescentou dois ganchos opcionais em tabela.js.
+- Commit **97c1d41** em EliasGrigori/efcwork (main), em cima do 38604f0. Entrou: index.html, sw.js, manifest, ícones, projeto/src, página de aprovação, medidor, t_v0616.js, semente qualidade-v0616, captura8/itens-p8/monta-pagina, REGRAS, efcwork.json, html-seg-base, montar.py.
+- Firebase: nada a configurar (atenção a "permissão negada" em sv2_bugs).
+
+## Pacote de continuação (15/11, 10h)
+- Pedido do Elias: "manda todo material necessário para continuar e não ter o problema de não saber o que fazer". O CONTINUAR antigo tinha trechos velhos e confundiu a outra conversa. Refeito do zero: `CONTINUAR-EFCwork-v0.6.16.md` (autossuficiente: texto para colar, o que fazer ao começar, como conseguir e montar o código, padrão de trabalho, próximas tarefas em ordem, decisões em aberto, peças reaproveitáveis, Firebase, armadilhas), `TEXTO-PARA-COLAR.txt`, `FALTA-DO-EFCLAUDIAN.md` atualizado, `features.csv`, `efcwork-v0.6.16.zip` (app) e `efcwork-v0.6.16-fonte.zip` (código-fonte e ferramentas, 0,9 MB; montar.py gera um index.html idêntico ao publicado).
+- O CONTINUAR e o dossiê novos não foram para o GitHub (a cópia em projeto/docs é a da v0.6.15); só vão com "pode publicar".
+
+---
+## Tarefa: Rateios (15/11, 10:22 → 12h; Opus 5.5 · alto, aplicação em Sonnet 5.5 · médio) — v0.6.17, PUBLICADA
+- Conversa nova (10:20) com o pacote da v0.6.16. Modelo sugerido Opus 5.5 · alto; "PODE CONTINUAR" às 10:22 (já no Opus 5.5).
+- Repositório: `add_repo` do EFCwork com `push` foi **negado pelo sistema de permissões** da sessão; trabalhei pelo ZIP de fonte (Caminho 2 do CONTINUAR; `montar.py` imprimiu "versão 0.6.16"). O EFClaudian foi lido por clone anônimo só de leitura (público, v2.102.60, commit b56739b); nada mudado lá. **Para publicar, o acesso de escrita ao EliasGrigori/efcwork precisa ser liberado de novo.**
+- Os ícones não vêm no ZIP de fonte: copiados do `efcwork-v0.6.16.zip` para `projeto/src/estaticos/` (o `t_v069` precisa do icon-512.png).
+
+### Lido no EFClaudian
+`linhasRateio(kind)` (campo: sv2_coletas com envio, ou cancelada depois de enviada, sem `historica`; água: sv2_aguacol com envio ou cancelada; valor congelado ou o da análise; água × qtd), `viewRateio` (filtros tipo/ano/período/só pendentes; % do total filtrado desde a v2.102.10; marcar linhas ☐ e "Emitir solicitação (N)"), `openEmitir`/`emitirSolicitacao` (Nº ≥ 3, data de hoje sem retroativo, NF obrigatória, O.S das remessas sem O.S pedida ali e gravada em todas as amostras da remessa sem O.S; grava compra 'solicitado', pedidoSankhya, dataSolicitacao, solicitadoPor/Nome, nf; numSolicitacao na água; Audit `emitir_solicitacao` e `os_remessa`), `viewRateioCal`/`openRcEmitir`/`rcEmitirOk` (linha por item de sv2_alm_cal com valor > 0; unidade pelo local do equipamento; Filial em pausa; só `isSup`; grava itens[n].compra {numero, data, nf, porId, porNome, ts}), `viewPainelRateio` (painel de água e de campo; fica para Relatórios), `insResumoHTML` (insumo por amostra; fica para depois). Permissões: área por atribuição `rateios`; campo/água `podeLancar`; calibração `isSup`. Meu dia: "Amostras enviadas sem solicitação de compra" (atribuição Rateios + sup).
+
+### O que entrou (src/rateio.js + rateio.css, prefixo rt; módulo depois de `plano` no montar.py)
+- **Rateios numa tela só** (sem abas): Campo, Água e Calibração na mesma tabela; colunas Tipo, Área ou ponto, Data, Análise, Laboratório, Valor total, Rateio, Situação; O.S, Nº sol., NF, Valor, Quantidade, Trimestre, Cultura, Unidade, Solicitado por em Colunas (desligadas; `TB_OCULTAS_PADRAO['rt-lista']`). Cabe sem rolar de lado em 1280 e 1366 (em 1024 rola, como as outras tabelas).
+- **Filtro = menu da coluna**: Tipo (lista de valores); Data com filtros prontos (este ano, T1–T4, S1–S2, ano passado); Situação com filtros prontos (só as pendentes, com solicitação, canceladas).
+- **Rateio %** = valor da linha ÷ soma do que a tabela mostra (`tbFiltrar` antes de desenhar; canceladas fora). Total no selo do cabeçalho, "total filtrado" com filtro. Pílulas: amostras e calibrações sem solicitação (a mais antiga ao parar o mouse).
+- **Emitir solicitação** (botão dourado; `LC_FORM.rtEmit`): 1 O que entra (Campo e água | Calibração; Todas (N) | Escolher quais, com busca, marcar no lugar sem a lista pular, soma e contagem atualizando), 2 Nº / data de hoje fixa / NF, 3 O.S das remessas sem O.S. Mesmos campos e registros de atividade do EFClaudian. Calibração: Filial em pausa (aviso), sem O.S.
+- **Unidade sem nome fixo**: nome e cidade da Matriz/Filial vêm de `sv2_cfg/empresa.unid` (curto/nome/mun); o equipamento é da Filial quando o local tem a cidade da Filial (o EFClaudian usa o nome fixo da cidade; o t_v010 proíbe nomes da empresa no código).
+- **A linha abre a gaveta da origem** (coAbre / agAbre / cbAbre).
+- **Início › Pede atenção**: "amostras enviadas sem solicitação de compra" (atribuição Rateios + Líder ★/Principal); toque abre o Rateio só com as pendentes (`rt-ir`).
+- **Busca geral** acha "Solicitação Nº" e abre o Rateio buscando por ela.
+- **Permissões**: área `negada` sem a atribuição Rateios (some do menu, da busca, dos atalhos e do endereço); campo/água para quem lança; calibração só Líder ★/Principal. Quem tem Rateios sem Coletas/Almoxarifado carrega sv2_coletas (com o teto de 3.000), sv2_analises, sv2_alm_cal e sv2_alm_equip.
+- **Correção junto (inicio.js)**: os atalhos "Voltar para" e "Mais usadas" mostravam telas sem permissão; agora somem (achado pelo teste).
+- Outros: coletas.js, agua.js e calibracao.js redesenham também quando a área aberta é Rateios; casca.js (área sem `versao`, com `negada`); t_v010 passou a usar Relatórios como "área ainda não refeita"; efcwork.json do medidor com Rateios e a gaveta Emitir.
+
+### Testes
+- `tools/testes/t_v0617.js`: **42 ok** (tabela, filtros, rateio 100%, selo filtrado, Tipo = Calibração, gavetas da origem, emitir campo e água com todas as recusas, O.S na remessa, encerrada, calibração com Filial em pausa, busca, Início, colaborador, área some, celular alinhado e 44 px). Semente: `tools/visual/rateio-v0617/semente.js`.
+- Bateria: **53 arquivos, 0 falhas** (4 lotes). `t_html_seg` sem nomes novos (números e booleano passam por esc()). `t_regras_cobertura` 47 ok (nenhuma coleção nova).
+- Medidor `--estrito` (`docs/medidor-v0.6.17-rateios.txt`): **0 defeitos, 0 decisões**, 80 ajustes (os de sempre: tamanhos de letra; nenhum das telas novas).
+- Auditoria visual (1280 e 390): sem rolagem de lado, sem erro; ajustes antes da página: rótulos de coluna encurtados, Análise/Área com reticências (168 px), O.S e Nº sol. em Colunas, "Todas (N)" no lugar de "Todas as N pendentes" (cortava), "Campo ·" na O.S das remessas de campo.
+
+### Página de aprovação
+`docs/aprovacao-efcwork-v0.6.17-rateios.html` (artefato "EFCwork v0.6.17 · Rateios"), ITENS 61 a 69: 61 tabela única, 62 filtro pelo menu da coluna, 63 rateio e total seguem o filtro, 64 Início, 65 gaveta em 3 partes, 66 escolher quais (decisão minha: dentro da gaveta, em vez da coluna ☐ na tabela do EFClaudian), 67 calibração e Filial em pausa, 68 linha abre a origem, 69 quem vê e quem emite + correção dos atalhos. HOJE = v0.6.16 publicada. App vivo conferido nos 9 itens (PC) e no celular. Ferramentas: `pagina/captura9.js`, `pagina/itens-p9.js`. Referências: Oracle JD Edwards (juntar linhas num pedido), Oracle PeopleSoft (total antes de enviar), Certinia (rateio por percentual).
+
+### Firebase
+Nada novo: as gravações são as mesmas do EFClaudian em sv2_coletas, sv2_aguacol (compra, pedidoSankhya, dataSolicitacao, solicitadoPor/Nome, nf, numSolicitacao, os) e sv2_alm_cal (itens[n].compra). Atenção: quem emite precisa poder fazer `update` nessas coleções (no EFClaudian a regra já deixa).
+
+### Fica para depois
+Painel do rateio → Relatórios › Rateio (próxima tarefa). Insumo por amostra (perguntado na página). 
+
+### Respostas e aplicação (15/11, 11:36 → 12h)
+- ITENS 61, 62, 64, 65, 66, 68 e 69 aprovados como estavam. **ITEM 67 sem resposta**: mantido (a Calibração entra na mesma gaveta, Filial em pausa), pois decorre do 65 e do 66. **ITEM 63 aprovado com pedido novo:** tirar o botão de limpar filtro de todas as páginas, porque ele limpa pelo próprio filtro.
+- Feito: botão "Limpar filtro" removido das tabelas (`tabela.js`), de Atividade (`atividade.js`) e do aviso de tabela vazia (`moderno.js`); apagados `tbTemFiltroSolto`, `atTemFiltro`, os manipuladores `tb-limpa`/`at-limpa` e o CSS `.tb-limpa`; o texto do cadeado ("o Limpar filtro passa a valer") e um comentário em `treino.js` foram ajustados. "Limpar esta coluna" (menu da coluna) e os "Limpar" de seleção ficam.
+- Um deslize no meio: tirei a aspa de fechamento em `moderno.js` e o app parou de abrir (`Invalid or unexpected token`); achei com `node --check` em cada arquivo de `src/` e consertei. Lição: depois de editar HTML dentro de strings, rodar `node --check src/*.js` antes da bateria.
+- `VERSAO = '0.6.17'`. Testes antigos que clicavam no botão (t_v020, t_v040, t_v048, t_v0414, t_v0615d, t_v0615f) agora limpam o estado da tabela e conferem que o botão não existe. Bateria **53 arquivos, 0 falhas**; medidor `--estrito` **0 defeitos**, 80 ajustes (`docs/medidor-v0.6.17.txt`).
+- Publicado em EliasGrigori/efcwork (main) com "pode publicar" às 11:36; o acesso `push` foi liberado nessa hora.
+

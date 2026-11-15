@@ -19,6 +19,8 @@
       add(r.atras, 'cr', 'laudo atrasado', 'laudos atrasados', 'Coletas · Amostras', 'coletas/amostras', 'frasco');
       add(r.naoenv, 'wa', 'amostra não enviada', 'amostras não enviadas', 'Coletas · Amostras', 'coletas/amostras', 'frasco');
       add(agPendLinhas().length, 'wa', 'pendência nas coletas de água', 'pendências nas coletas de água', 'Coletas · Água', 'coletas/agua', 'frasco'); });
+    tenta(() => { if (!rtVe() || !isSup(S.user)) return; /* v0.6.17: como no Meu dia do EFClaudian (atribuição Rateios + Líder ★/Principal) */
+      add(rtPendCA().length, 'wa', 'amostra enviada sem solicitação de compra', 'amostras enviadas sem solicitação de compra', 'Rateios', 'rateios', 'pizza', ' data-act="rt-ir"'); });
     tenta(() => { const b = S.apont || [], urg = b.filter(a => a.grav === 'urgente' && apAberto(a)).length, ncv = b.filter(a => apNcSit(a) === 'vencida').length, ab = b.filter(apAberto).length - urg;
       add(urg, 'cr', 'apontamento urgente em aberto', 'apontamentos urgentes em aberto', 'Inspeções · Apontamentos', 'inspecoes/apontamentos', 'alerta');
       add(ncv, 'cr', 'NC de apontamento vencida', 'NCs de apontamento vencidas', 'Inspeções · Apontamentos', 'inspecoes/apontamentos', 'lista');
@@ -154,7 +156,7 @@
     let h = tbOrig.apply(this, arguments); if (!on(8) || h.indexOf('class="tb-vz"') < 0) return h;
     const filtrada = (cfg.linhas || []).length > 0 && tbTemFiltro(cfg), un = tbUn(cfg, 2);
     const novo = filtrada
-      ? '<div class="mo-vz">' + ic('filtro') + '<b>Nenhum resultado com o filtro atual.</b><span>Há ' + (cfg.linhas || []).length + ' ' + esc(tbUn(cfg, (cfg.linhas || []).length)) + ' fora dele.</span><button type="button" class="bt" data-act="tb-limpa" data-tb="' + esc(cfg.id) + '">' + ic('x') + 'Limpar filtro</button></div>'
+      ? '<div class="mo-vz">' + ic('filtro') + '<b>Nenhum resultado com o filtro atual.</b><span>Há ' + (cfg.linhas || []).length + ' ' + esc(tbUn(cfg, (cfg.linhas || []).length)) + ' fora dele.</span></div>'
       : '<div class="mo-vz">' + ic(csArea(S.rota.area).ic) + '<b>' + esc((cfg.linhas || []).length ? (cfg.vazio || 'Nada encontrado.') : 'Ainda não há ' + un + ' aqui.') + '</b></div>';
     return h.replace(/(<td colspan="\d+" class="tb-vz">)[\s\S]*?(<\/td>)/, '$1' + novo + '$2');
   };

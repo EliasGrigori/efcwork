@@ -20,7 +20,9 @@ TELAS.inicio = function () {
       '<div class="vazio">' + ic('ok') + '<b>Nada pendente com o seu nome.</b><span>As tarefas que o EFClaudian atribuir a você aparecem aqui.</span></div>') + '</section>';
   /* voltar para / mais usadas */
   const o = csUsoLer(), atual = S.rota.area + (S.rota.aba ? '/' + S.rota.aba : '');
-  const rec = o.r.filter(k => k !== atual && k !== 'inicio').slice(0, 4), top = Object.keys(o.n).filter(k => o.n[k] >= 2 && k !== 'inicio').sort((a, b) => o.n[b] - o.n[a]).slice(0, 5);
+  /* v0.6.17: tela sem autorização some também dos atalhos (ex.: Rateios sem a atribuição, Atividade para quem não é Principal) */
+  const livre = k => { const p = k.split('/'), a = AREAS.find(x => x.id === p[0]); if (!a || a.negada) return false; const t = p[1] ? a.abas.find(x => x.id === p[1]) : null; return !t || !t.negada; };
+  const rec = o.r.filter(k => k !== atual && k !== 'inicio' && livre(k)).slice(0, 4), top = Object.keys(o.n).filter(k => o.n[k] >= 2 && k !== 'inicio' && livre(k)).sort((a, b) => o.n[b] - o.n[a]).slice(0, 5);
   const lk = (k, n) => '<a class="ini-at" href="#/' + k + '">' + ic(csArea(k.split('/')[0]).ic) + esc(csNomeRota(k)) + (n ? '<em>' + n + '×</em>' : '') + '</a>';
   const atalhos = '<section class="pn"><div class="hd"><h3>Atalhos</h3></div><div class="cpo">' +
     (rec.length ? '<div><p class="ini-sub">Voltar para</p><div class="ini-ats">' + rec.map(k => lk(k)).join('') + '</div></div>' : '') +

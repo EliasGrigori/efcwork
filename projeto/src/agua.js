@@ -29,7 +29,7 @@ const agTeto = () => !S._agTudo && (S.aguacol || []).length >= AG_LIM;
 const agOuveColetas = re => { S._agRe = re; S._agOff = csOuve('sv2_aguacol', l => { S.aguacol = l; re(); if (typeof acLimparUmaVez === 'function') acLimparUmaVez(); }, S._agTudo ? {} : { order: 'data', limit: AG_LIM }); };
 function agTudo() { if (S._agTudo) return; S._agTudo = true; if (S._agOff) S._agOff(); aviso('Carregando todas as coletas de água…'); agOuveColetas(S._agRe); }
 CS_CARGAS.push(() => {
-  const re = () => { S.agCarregado = true; if (S.rota.area === 'coletas' || S.rota.area === 'inicio') render(); else if (S.gv) gvDesenha(); };
+  const re = () => { S.agCarregado = true; if (S.rota.area === 'coletas' || S.rota.area === 'inicio' || S.rota.area === 'rateios') render(); else if (S.gv) gvDesenha(); };
   /* v0.6.6: as coletas carregam para todos (o responsável por uma ação corretiva pode não ter a atribuição Coletas); a aba continua só com ela */
   agOuveColetas(re);
   if (!coVe()) return;

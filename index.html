@@ -597,9 +597,6 @@ body.dd-arrastando{cursor:grabbing;-webkit-user-select:none;user-select:none}
 .tb-tots.tb-tots-fluxo{position:static;display:flex;gap:6px;height:auto;order:0}
 .tb-tots.tb-tots-fluxo>span{position:static}
 @media(max-width:599px){.tb-tots{position:static;display:flex;gap:6px;height:auto;width:100%}.tb-tots>span{position:static}.tb-tl{align-items:center}.tb-tv{justify-content:flex-start;padding:0 4px}} /* v0.6.15: "Total" centrado na caixa, igual ao valor ao lado */
-/* botão Limpar filtro (no lugar do antigo botão Filtro) */
-.tb-limpa{display:inline-flex;align-items:center;gap:6px;height:var(--btn);padding:0 12px 0 10px;border:1px solid color-mix(in srgb,var(--a) 45%,var(--bd2));border-radius:var(--rs);background:color-mix(in srgb,var(--a) 9%,var(--bg1));color:var(--aTx);font-size:14px;font-weight:600;cursor:pointer}
-.tb-limpa .ic{width:14px;height:14px}.tb-limpa:hover{background:color-mix(in srgb,var(--a) 16%,var(--bg1))}
 /* cabeçalho com menu */
 .tb-t th.tb-th,.tb-t .tb-cab th{padding:0}
 .tb-thi{display:flex;align-items:center;height:var(--row);padding:0 6px 0 12px;gap:4px}
@@ -1952,6 +1949,18 @@ body:has(#gv) .pp-bar{display:none}
 .pp-lpm{margin:0}
 .pp-tb tr.pp-rcz td{color:var(--tx3)}
 
+/* ===== rateio.css ===== */
+/* EFCwork · rateio.css — Rateios (v0.6.17). Prefixo: rt. */
+.rt-canc{color:var(--tx3);font-size:12px}
+.rt-em-v{display:flex;flex-direction:column;align-items:flex-start;gap:2px;margin:0 0 10px}
+.rt-em-v b{font-size:24px;font-weight:600;color:var(--tx);line-height:1.15}
+.rt-em-v small{font-size:13px;color:var(--tx3)}
+.rt-pkl{max-height:min(38vh,320px);overflow:auto}
+.rt-pkl .cb-ck em{font-style:normal;font-size:13px;color:var(--tx2);white-space:nowrap;margin-left:auto}
+.rt-pkl .cb-ck small{display:block;font-size:12px;color:var(--tx3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb-t td.rt-c{max-width:168px}
+@media(max-width:899px){.tb-t td.rt-c{max-width:170px}}
+
 /* ===== entrar.css ===== */
 /* EFCwork · entrar.css — tela de entrar com a garota-propaganda (v0.4.2). Prefixo: en-
    .en-rev = tema Escuro (Revista) · .en-avi = tema Claro (Avisos flutuando). PC: arte no fundo inteiro e formulário à direita.
@@ -2413,7 +2422,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = Mov;
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.6.16';
+const VERSAO = '0.6.17';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -2814,7 +2823,7 @@ const CS_CARGAS = []; /* funções que cada área registra para começar a ouvir
 const AREAS = [
   { id: 'inicio', nome: 'Início', ic: 'casa', abas: [] },
   { id: 'coletas', nome: 'Coletas', ic: 'frasco', versao: 'v0.4', parcial: 'amostras, água, programação, envio e pontos de água prontos aqui; fichas, etiquetas e os outros cadastros seguem no EFClaudian', abas: [{ id: 'amostras', nome: 'Amostras' }, { id: 'agua', nome: 'Água' }, { id: 'programacao', nome: 'Programação' }, { id: 'envio', nome: 'Envio' }, { id: 'cadastros', nome: 'Cadastros' }, { id: 'plano', nome: 'Plano de coleta', oculta: true, pai: 'programacao' }] },
-  { id: 'rateios', nome: 'Rateios', ic: 'pizza', versao: 'v0.7', abas: [] },
+  { id: 'rateios', nome: 'Rateios', ic: 'pizza', get negada() { return !!S.user && !rtVe(); }, abas: [] }, /* v0.6.17: tela única (rateio.js); sem a atribuição Rateios, a área some */
   { id: 'inspecoes', nome: 'Inspeções', ic: 'lista', versao: 'v0.6', parcial: 'cloro, apontamentos e auditoria interna prontos aqui', abas: [{ id: 'cloro', nome: 'Cloro' }, { id: 'apontamentos', nome: 'Apontamentos' }, { id: 'auditoria', nome: 'Auditoria interna' }] },
   { id: 'documentos', nome: 'Documentos', ic: 'doc', versao: 'v0.5', parcial: 'documentos, caixas d’água, histórico e impressos prontos aqui; o relatório de documentos segue no EFClaudian', abas: [{ id: 'documentos', nome: 'Documentos' }, { id: 'caixas', nome: 'Caixas d’água' }, { id: 'historico', nome: 'Histórico' }, { id: 'impressos', nome: 'Impressos' }] },
   { id: 'almox', nome: 'Almoxarifado', ic: 'caixa', versao: 'v0.3', parcial: 'consultar e lançar prontos aqui; cadastro de material, kits, fotos e inventário seguem no EFClaudian', abas: [{ id: 'painel', nome: 'Painel' }, { id: 'materiais', nome: 'Materiais' }, { id: 'movimentacoes', nome: 'Movimentações' }, { id: 'solicitacoes', nome: 'Solicitações' }, { id: 'equipamentos', nome: 'Equipamentos' }, { id: 'contagem', nome: 'Contagem', oculta: true, pai: () => typeof cgDoEq === 'function' && cgDoEq() ? 'equipamentos' : 'materiais' }, { id: 'calibracao', nome: 'Calibração', oculta: true, pai: 'equipamentos' }] },
@@ -3376,7 +3385,6 @@ function tbColFiltrada(cfg, k) { const st = tbEstado(cfg.id); return tbCfAtivo(s
 /* ITEM 50 (15/11): sem texto de aviso, só o botão, e só quando passou do teto */
 const tbTetoHTML = cfg => cfg.teto ? '<button type="button" class="bt lk tb-tetob" data-act="' + esc(cfg.teto.act) + '" title="' + esc('Foram carregadas as ' + cfg.teto.n.toLocaleString('pt-BR') + ' ' + (cfg.teto.de || tbUn(cfg, 2)) + ' mais recentes') + '">Carregar todas</button>' : '';
 function tbTemFiltro(cfg) { const st = tbEstado(cfg.id); return !!st.busca || (cfg.cols || []).some(c => tbColFiltrada(cfg, c.k)); }
-function tbTemFiltroSolto(cfg) { const st = tbEstado(cfg.id); return !!st.busca || (cfg.cols || []).some(c => !st.trava[c.k] && tbColFiltrada(cfg, c.k)); }
 /* total (v0.4.8, refeito 08/11 15:00): na barra de cima, na linha dos ícones; cada valor fica exatamente acima da sua coluna
    e à esquerda vai "Total · N itens". As posições são medidas na tela (tbAlinhaTot); se não couber, ficam em sequência. */
 function tbTotal(cfg, cols, todas, filtrado) {
@@ -3458,7 +3466,6 @@ function tbHTML(cfg) {
   const totC = tbVisiveis(cfg).filter(c => c.total), fmtT = (c, rs) => { const v = typeof c.total === 'function' ? c.total(rs) : rs.reduce((s, r) => s + (Number(c.v(r)) || 0), 0); return c.fmtTotal ? c.fmtTotal(v) : numBR(v, c.dec); };
   const res = { fl: fl && todas.length !== (cfg.linhas || []).length, tot: totC.map(c => ({ rot: c.rot, geral: fmtT(c, cfg.linhas || []), val: fmtT(c, todas) })), rod: cfg.rodape ? cfg.rodape(todas) : '' };
   let h = '<div class="tb" data-tb="' + esc(cfg.id) + '" data-res="' + esc(JSON.stringify(res)) + '"><div class="tb-bar">' +
-    (tbTemFiltroSolto(cfg) ? '<button type="button" class="tb-limpa" data-act="tb-limpa" data-tb="' + esc(cfg.id) + '">' + ic('x') + '<span>Limpar filtro</span></button>' : '') +
     (cfg.aEsquerda ? cfg.aEsquerda(todas) : '<span class="tb-cont">' + todas.length + (todas.length !== (cfg.linhas || []).length ? ' de ' + (cfg.linhas || []).length : '') +  ' ' + esc(tbUn(cfg, (cfg.linhas || []).length)) + '</span>') + tbTetoHTML(cfg) + '<span class="tb-sp"></span>' + tbTotal(cfg, cols, todas, fl) + (cfg.antesIcones || '') +
     '<button type="button" class="bt ic-so" data-act="tb-cols" data-tb="' + esc(cfg.id) + '" title="Escolher colunas" aria-label="Escolher colunas">' + ic('colunas') + '</button>' +
     '<button type="button" class="bt ic-so" data-act="tb-xlsx" data-tb="' + esc(cfg.id) + '" title="Baixar planilha (.xlsx)" aria-label="Baixar planilha (.xlsx)">' + ic('planilha') + '</button>' +
@@ -3504,7 +3511,7 @@ function tbMenuHTML(cfg, k) {
   const lin = (act, ico, txt, on, extra) => '<button type="button" class="tb-mn-o' + (on ? ' on' : '') + '" data-act="' + act + '" data-tb="' + id + '" data-k="' + esc(k) + '"' + (extra || '') + dis + '>' + ic(ico) + '<span>' + txt + '</span>' + (on ? '<i>' + ic('ok') + '</i>' : '') + '</button>';
   let h = '<div class="tb-mn" data-tbmn="' + id + '" data-k="' + esc(k) + '" role="dialog" aria-label="Coluna ' + esc(c.rot) + '">' +
     '<i class="tb-mn-pt"></i><div class="tb-mn-cab"><div class="tb-mn-t"><b>' + esc(c.rot) + '</b><small>' + vals.reduce((q, x) => q + x.n, 0) + ' ' + esc(tbUn(cfg, vals.reduce((q, x) => q + x.n, 0))) + ' · ' + vals.length + (vals.length === 1 ? ' valor' : ' valores') + '</small></div>' +
-    '<button type="button" class="tb-mn-tr' + (tr ? ' on' : '') + '" data-act="tb-trava" data-tb="' + id + '" data-k="' + esc(k) + '" aria-pressed="' + tr + '" title="' + (tr ? 'Destravar: volta a poder mudar e o Limpar filtro passa a valer' : 'Travar: a ordem e o filtro desta coluna ficam assim, mesmo ao sair do app, até você destravar') + '">' + ic('cadeado') + '<span>' + (tr ? 'Travada' : 'Travar') + '</span></button></div>' +
+    '<button type="button" class="tb-mn-tr' + (tr ? ' on' : '') + '" data-act="tb-trava" data-tb="' + id + '" data-k="' + esc(k) + '" aria-pressed="' + tr + '" title="' + (tr ? 'Destravar: volta a poder mudar' : 'Travar: a ordem e o filtro desta coluna ficam assim, mesmo ao sair do app, até você destravar') + '">' + ic('cadeado') + '<span>' + (tr ? 'Travada' : 'Travar') + '</span></button></div>' +
     (tr ? '<p class="tb-mn-av">' + ic('cadeado') + 'Travada. Destrave para mudar a ordem ou o filtro.</p>' : '') +
     '<div class="tb-mn-corpo"><div class="tb-mn-g tb-mn-ord"><div class="tb-mn-hh"><span class="tb-mn-h">Ordenar</span><button type="button" class="bt lk tb-mn-lp" data-act="tb-mnlimpa" data-tb="' + id + '" data-k="' + esc(k) + '"' + (tbColFiltrada(cfg, k) && !tr ? '' : ' disabled') + '>Limpar esta coluna</button></div>' + '<button type="button" class="tb-mn-o tb-mn-ci' + (o ? ' on' : '') + '" data-act="tb-ociclo" data-tb="' + id + '" data-k="' + esc(k) + '"' + dis + ' title="Cada toque troca: ordem padrão, ' + nomes[0].toLowerCase() + ', ' + nomes[1].toLowerCase() + '">' + ic(o === 'asc' ? 'ordAsc' : o === 'desc' ? 'ordDesc' : 'ordPad') + '<span>' + (o === 'asc' ? nomes[0] : o === 'desc' ? nomes[1] : 'Ordem padrão') + '</span><em>' + (o === 'asc' ? 'toque: inverte' : o === 'desc' ? 'toque: volta ao padrão' : 'toque: ordena') + '</em></button></div>';
   const pre = tbPresetsDe(cfg, k);
@@ -3748,7 +3755,6 @@ document.addEventListener('click', e => {
   else if (a === 'tb-mvesq' || a === 'tb-mvdir') tbMoveLado(id, k, a === 'tb-mvesq' ? -1 : 1);
   else if (a === 'tb-ordpad') { st.colOrd = []; try { Store.del('cw-tbord-' + id); } catch {} render(); }
   else if (a === 'tb-cols') { st.colsAberto = !st.colsAberto; render(); }
-  else if (a === 'tb-limpa') tbMuda(id, s => { s.busca = ''; (cfg.cols || []).forEach(c => { if (s.trava[c.k]) return; delete s.cf[c.k]; tbPresetsDe(cfg, c.k).forEach(f => { delete s.filtros[f.k]; }); }); });
   else if (a === 'tb-mais') { st.limite += 100; render(); }
   else if (a === 'tb-xlsx') tbPlanilha(id);
   else if (a === 'tb-imp') tbImprimir(id);
@@ -5089,7 +5095,7 @@ const cgDoEq = () => { const inv = cgAberta(); if (inv) { const p = inv.partes |
    cotacaoEm, situacao) + campos novos que o EFClaudian ignora: agenda{data, obs, porNome, ts}, cotacaoRef, itens[].tecnico,
    itens[].validade; no equipamento cal.validade e cal.tecnico. Ações só do Líder/Administrador. Prefixo: cb. */
 Object.assign(S, { almCal: [] });
-CS_CARGAS.push(() => { if (!alVe()) return; csOuve('sv2_alm_cal', l => { S.almCal = l; if (S.rota.area === 'almox') render(); }); });
+CS_CARGAS.push(() => { if (!alVe()) return; csOuve('sv2_alm_cal', l => { S.almCal = l; if (S.rota.area === 'almox' || S.rota.area === 'rateios') render(); }); });
 const cbDe = id => S.almCal.find(c => c.id === id) || null;
 const cbEnc = it => !!(it.aplicado && it.data && it.certificado && it.compra && it.compra.numero);
 function cbSit(c) {
@@ -5921,7 +5927,7 @@ const CO_LIM = 3000;
 Object.assign(S, { _coTudo: false, _coOff: null });
 const coTeto = () => !S._coTudo && (S.coletas || []).length >= CO_LIM;
 const coOuveColetas = re => { S._coOff = csOuve('sv2_coletas', l => { S.coletas = l; re(); }, S._coTudo ? {} : { order: 'data', limit: CO_LIM }); };
-const coReColetas = () => { S.colCarregado = true; if (S.rota.area === 'coletas' || S.rota.area === 'inicio') render(); };
+const coReColetas = () => { S.colCarregado = true; if (S.rota.area === 'coletas' || S.rota.area === 'inicio' || S.rota.area === 'rateios') render(); };
 function coTudo() { if (S._coTudo) return; S._coTudo = true; if (S._coOff) S._coOff(); aviso('Carregando todas as amostras…'); coOuveColetas(coReColetas); }
 /* nº das amostras novas: com o teto, uma amostra antiga (fora das 3.000) pode ter o mesmo nº; confere no servidor antes de gravar e muda o nº se já existir */
 async function coIdsSeguros(ops) {
@@ -6334,7 +6340,7 @@ const agTeto = () => !S._agTudo && (S.aguacol || []).length >= AG_LIM;
 const agOuveColetas = re => { S._agRe = re; S._agOff = csOuve('sv2_aguacol', l => { S.aguacol = l; re(); if (typeof acLimparUmaVez === 'function') acLimparUmaVez(); }, S._agTudo ? {} : { order: 'data', limit: AG_LIM }); };
 function agTudo() { if (S._agTudo) return; S._agTudo = true; if (S._agOff) S._agOff(); aviso('Carregando todas as coletas de água…'); agOuveColetas(S._agRe); }
 CS_CARGAS.push(() => {
-  const re = () => { S.agCarregado = true; if (S.rota.area === 'coletas' || S.rota.area === 'inicio') render(); else if (S.gv) gvDesenha(); };
+  const re = () => { S.agCarregado = true; if (S.rota.area === 'coletas' || S.rota.area === 'inicio' || S.rota.area === 'rateios') render(); else if (S.gv) gvDesenha(); };
   /* v0.6.6: as coletas carregam para todos (o responsável por uma ação corretiva pode não ter a atribuição Coletas); a aba continua só com ela */
   agOuveColetas(re);
   if (!coVe()) return;
@@ -10728,7 +10734,7 @@ function trTodos(v) {
   if (v === 'p') f.rows.forEach(r => { r.presente = '1'; }); else f.rows.forEach(r => { if (r.presente === '1') r.eficaz = '1'; });
   gvDesenha(true);
 }
-/* ver os treinamentos de uma pessoa: fecha a gaveta e filtra a lista pelo nome (o "Limpar filtro" volta ao normal) */
+/* ver os treinamentos de uma pessoa: fecha a gaveta e filtra a lista pelo nome */
 function trPessoa(nome) {
   const st = tbEstado('tr-lista'); st.busca = nome; st.limite = 100; if (S.gv) gvFecharSo(); render();
 }
@@ -12082,6 +12088,223 @@ document.addEventListener('click', async ev => {
   else if (a === 'pp-lib-rep-ok') { if (await ppLibRecusa(t.getAttribute('data-k'), '#pp-lp-mot')) { S._ppLibRep = null; render(); } }
 });
 
+/* ===== rateio.js ===== */
+/* EFCwork · rateio.js — Rateios (v0.6.17). Prefixo: rt.
+   Como no EFClaudian v2.102.60 (linhasRateio, viewRateio, viewRateioCal, openEmitir/emitirSolicitacao, openRcEmitir/rcEmitirOk),
+   mas numa tela só: Campo, Água e Calibração na mesma tabela, com o Tipo na coluna (menu da coluna = filtro).
+   - Campo: sv2_coletas enviadas (ou canceladas depois de enviadas), sem as "históricas". Valor congelado da amostra (ou o da análise).
+   - Água: sv2_aguacol enviadas (ou canceladas). Valor congelado × amostras.
+   - Calibração: cada equipamento com valor de cada solicitação de calibração (sv2_alm_cal, itens com valor > 0), por unidade.
+   Rateio % = valor da linha ÷ soma do que a tabela está mostrando (segue os filtros), canceladas fora.
+   Emitir solicitação de compra: Campo e água juntos, ou Calibração (separada, só Líder ★/Principal, unidade em pausa não emite).
+   Nº da solicitação (≥ 3), data de HOJE (sem retroativo) e NF obrigatórios; O.S das remessas que ainda não têm é pedida aqui.
+   Mesmos campos do EFClaudian: compra 'solicitado', pedidoSankhya, dataSolicitacao, solicitadoPor(Nome), nf (e numSolicitacao na água);
+   na calibração itens[n].compra {numero, data, nf, porId, porNome, ts}. Amostra com a solicitação emitida = encerrada.
+   Nenhuma coleção nova. O painel do rateio vai para Relatórios (próxima tarefa). */
+/* unidades: nome e cidade vêm do cadastro da empresa (sv2_cfg/empresa.unid, como no EFClaudian); a Filial fica em pausa até o sistema por unidades */
+const rtUnidCad = k => (((S.empresa || {}).unid || {})[k]) || {};
+const RT_UNID = { matriz: { get nome() { return rtUnidCad('matriz').curto || rtUnidCad('matriz').nome || 'Matriz'; }, pausada: false }, filial: { get nome() { return rtUnidCad('filial').curto || rtUnidCad('filial').nome || 'Filial'; }, pausada: true } };
+const rtVe = () => typeof temAtrib === 'function' && temAtrib(S.user, 'rateios');
+const rtPodeCA = () => rtVe() && podeLancar(S.user);
+const rtPodeCal = () => rtVe() && isSup(S.user);
+TB_OCULTAS_PADRAO['rt-lista'] = ['os', 'ps', 'vl', 'qt', 'nf', 'ds', 'tr', 'cu', 'un', 'sp']; /* O.S e Nº da solicitação ficam em Colunas e na gaveta, para caber sem rolar para o lado */
+
+CS_CARGAS.push(() => {
+  if (!rtVe()) return;
+  /* quem vê Rateios sem ver Coletas ou o Almoxarifado: carrega aqui o que a tabela precisa */
+  const re = () => { if (S.rota.area === 'rateios' || S.rota.area === 'inicio') render(); else if (S.gv) gvDesenha(); };
+  if (!coVe()) { coOuveColetas(re); csOuve('sv2_analises', l => { S.analises = l; re(); }); }
+  if (!alVe()) { csOuve('sv2_alm_cal', l => { S.almCal = l; re(); }); csOuve('sv2_alm_equip', l => { S.almEq = l; re(); }); }
+});
+
+/* ---------- linhas ---------- */
+const rtAnalise = id => (S.analises || []).find(a => a.id === id) || null;
+const rtValor = c => { if (c.valor !== undefined && c.valor !== null && c.valor !== '') return Number(c.valor) || 0; const a = rtAnalise(c.analiseId); return a ? Number(a.valor) || 0 : 0; };
+const rtTri = iso => iso ? iso.slice(0, 4) + ' · T' + (Math.floor((Number(iso.slice(5, 7)) - 1) / 3) + 1) : '';
+const rtUnidEq = e => { const m = tbNorm(rtUnidCad('filial').mun || '').trim(); return m && tbNorm((e && (e.local || e.lugar)) || '').indexOf(m) >= 0 ? 'filial' : 'matriz'; }; /* o local do equipamento na cidade da Filial */
+function rtLinhas() {
+  const out = [];
+  (S.coletas || []).filter(c => (c.envio || (c.situacao === 'cancelada' && c.enviado)) && !c.historica).forEach(c => {
+    const t = typeof pgTalhao === 'function' ? pgTalhao(c.talhao) : null;
+    out.push({ id: 'c:' + c.id, k: 'campo', oid: c.id, tipo: CO_TXT[c.tipo] || c.tipo || '', item: coNome(c), data: c.envio || c.data || '', serv: c.analiseNome || '', lab: c.lab || '', os: c.os || '', nf: c.nf || '',
+      ped: c.pedidoSankhya || '', dsol: c.dataSolicitacao || '', valor: rtValor(c), qtd: 1, cultura: (t && t.cultura) || c.cultura || (c.tipo === 'COMPOSTO' ? 'COMPOSTO' : ''), unid: 'matriz',
+      canc: c.situacao === 'cancelada', sol: c.compra === 'solicitado', solPor: c.solicitadoPorNome || '', rem: c.envio ? 'c|' + c.envio + '|' + (c.lab || '—') : '' });
+  });
+  (S.aguacol || []).filter(c => c.envio || c.situacao === 'cancelada').forEach(c => {
+    out.push({ id: 'a:' + c.id, k: 'agua', oid: c.id, tipo: 'Água', item: c.pontoNome || '', data: c.envio || c.data || '', serv: c.analiseNome || '', lab: c.lab || '', os: c.os || '', nf: c.nf || '',
+      ped: c.pedidoSankhya || '', dsol: c.dataSolicitacao || '', valor: rtValor(c), qtd: Number(c.qtd) || 1, cultura: '', unid: 'matriz',
+      canc: c.situacao === 'cancelada', sol: c.compra === 'solicitado', solPor: c.solicitadoPorNome || '', rem: c.envio ? 'a|' + c.envio + '|' + (c.lab || '—') : '' });
+  });
+  (S.almCal || []).filter(c => c.situacao !== 'cancelada').forEach(c => (c.itens || []).forEach((i, n) => {
+    if (!(Number(i.valor) > 0)) return;
+    const e = typeof cbEq === 'function' ? cbEq(i.equipId) : null, cp = i.compra && i.compra.numero ? i.compra : null;
+    out.push({ id: 'k:' + c.id + '|' + n, k: 'cal', oid: c.id, n: n, tipo: 'Calibração', item: [i.tag || (e && e.tag), i.nome || (e && e.nome)].filter(Boolean).join(' · '), data: i.data || c.cotacaoEm || diaLocal(c.criadoEm) || '',
+      serv: c.numero || '', lab: c.prestador || '', os: '', nf: cp ? cp.nf || '' : '', ped: cp ? cp.numero : '', dsol: cp ? cp.data || '' : '', valor: Number(i.valor) || 0, qtd: 1, cultura: '',
+      unid: i.unidade || rtUnidEq(e), canc: false, sol: !!cp, enc: !!(cp && i.aplicado && i.data && i.certificado), solPor: cp ? cp.porNome || '' : '', rem: '' });
+  }));
+  return out.sort((a, b) => String(b.data).localeCompare(String(a.data)) || cmpTxt(a.item, b.item));
+}
+const rtPendente = r => !r.canc && !r.sol;
+const rtPendCA = () => rtLinhas().filter(r => r.k !== 'cal' && rtPendente(r));
+const rtPendCal = () => rtLinhas().filter(r => r.k === 'cal' && rtPendente(r) && !RT_UNID[r.unid].pausada);
+function rtSit(r) {
+  if (r.canc) return ['Cancelada', ''];
+  if (r.k === 'cal') return r.enc ? ['Encerrada', 'ok'] : r.sol ? ['Solicitada', 'ok'] : ['Pendente', 'wa'];
+  return r.sol ? ['Solicitada', 'ok'] : ['Pendente', 'wa'];
+}
+const rtVt = r => r.canc ? 0 : r.valor * r.qtd;
+
+/* ---------- tela ---------- */
+const RT_PER = [['ano', 'Este ano'], ['T1', '1º trimestre deste ano'], ['T2', '2º trimestre deste ano'], ['T3', '3º trimestre deste ano'], ['T4', '4º trimestre deste ano'], ['S1', '1º semestre deste ano'], ['S2', '2º semestre deste ano'], ['passado', 'Ano passado']];
+function rtPerOk(iso, v) {
+  const a = hojeISO().slice(0, 4); if (!iso) return false;
+  if (v === 'passado') return iso.slice(0, 4) === String(Number(a) - 1);
+  if (iso.slice(0, 4) !== a) return false; const m = Number(iso.slice(5, 7));
+  return v === 'ano' ? true : v[0] === 'T' ? Math.floor((m - 1) / 3) + 1 === Number(v[1]) : (m <= 6 ? 1 : 2) === Number(v[1]);
+}
+let rtTotVis = 0;
+function rtTela() {
+  const l = rtLinhas(), pCA = l.filter(r => r.k !== 'cal' && rtPendente(r)), pCal = l.filter(r => r.k === 'cal' && rtPendente(r));
+  const ant = pCA.map(r => r.data).filter(Boolean).sort()[0];
+  const meta = [pCA.length ? metaPl(pCA.length + (pCA.length === 1 ? ' amostra sem solicitação' : ' amostras sem solicitação'), 'wa', 'relogio') : metaPl('Nenhuma amostra sem solicitação', 'ok', 'ok'),
+    pCal.length ? metaPl(pCal.length + (pCal.length === 1 ? ' calibração sem solicitação' : ' calibrações sem solicitação'), 'wa') : ''].filter(Boolean);
+  if (ant && meta[0]) meta[0] = meta[0].replace('<span class="cs-pl', '<span title="A mais antiga foi enviada em ' + esc(fmtD(ant)) + '" class="cs-pl');
+  const podeE = (rtPodeCA() && pCA.length) || (rtPodeCal() && rtPendCal().length);
+  const acoes = podeE ? '<button type="button" class="bt pr" data-act="rt-emitir">' + ic('doc') + 'Emitir solicitação</button>' : '';
+  const c = cabecalho({ titulo: 'Rateio', meta: meta, acoes: acoes });
+  if (!l.length) return c + '<section class="pn"><div class="vazio">' + ic('pizza') + '<b>Nada para ratear ainda.</b><span>Entram aqui as amostras de campo e de água depois de enviadas ao laboratório, e as calibrações com valor da cotação.</span></div></section>';
+  const cfg = { id: 'rt-lista', titulo: 'Rateio', unidade: 'linhas', unidade1: 'linha', linhas: l, aoClicar: rtAbre, selecionado: S._rtSel, vazio: 'Nenhuma linha com este filtro.',
+    busca: r => [r.tipo, r.item, r.serv, r.lab, r.os, r.nf, r.ped, r.solPor, r.cultura].join(' '),
+    filtros: [{ k: 'si', rot: 'Situação', opcoes: [['pend', 'Só as pendentes'], ['sol', 'Com solicitação'], ['canc', 'Canceladas']], teste: (r, v) => v === 'pend' ? rtPendente(r) : v === 'sol' ? r.sol : r.canc },
+      { k: 'dt', rot: 'Data', opcoes: RT_PER, teste: (r, v) => rtPerOk(r.data, v) }],
+    cols: [
+      { k: 'tp', rot: 'Tipo', v: r => r.tipo },
+      { k: 'it', rot: 'Área ou ponto', v: r => r.item, cls: 'forte rt-c', longo: true, titulo: r => r.k === 'cal' ? 'Equipamento: ' + r.item : r.item },
+      { k: 'dt', rot: 'Data', tipo: 'data', v: r => r.data, titulo: r => r.k === 'cal' ? 'Data da calibração (ou da cotação)' : 'Data do envio ao laboratório' },
+      { k: 'sv', rot: 'Análise', v: r => r.serv, cls: 'rt-c', longo: true, titulo: r => r.k === 'cal' ? 'Solicitação de calibração ' + r.serv : r.serv },
+      { k: 'lb', rot: 'Laboratório', v: r => r.lab, titulo: r => r.k === 'cal' ? 'Prestador: ' + r.lab : r.lab },
+      { k: 'os', rot: 'O.S', v: r => r.canc ? '' : r.os },
+      { k: 'ps', rot: 'Nº sol.', titulo: () => 'Nº da solicitação de compra', v: r => r.canc ? '' : r.ped },
+      { k: 'ds', rot: 'Data da solicitação', tipo: 'data', v: r => r.canc ? '' : r.dsol },
+      { k: 'nf', rot: 'NF', v: r => r.canc ? '' : r.nf },
+      { k: 'vl', rot: 'Valor', tipo: 'num', v: r => r.valor, html: r => esc(brl(r.valor)) },
+      { k: 'qt', rot: 'Quantidade', tipo: 'num', v: r => r.qtd },
+      { k: 'vt', rot: 'Valor total', tipo: 'num', v: rtVt, html: r => r.canc ? '<span class="rt-canc">cancelada</span>' : esc(brl(rtVt(r))), total: 'soma', fmtTotal: brl },
+      { k: 'rt', rot: 'Rateio', tipo: 'num', v: r => r.canc || !rtTotVis ? null : Math.round(rtVt(r) / rtTotVis * 1000) / 10, html: r => r.canc || !rtTotVis ? '' : esc(numBR(Math.round(rtVt(r) / rtTotVis * 1000) / 10, 1)) + '%', titulo: () => 'Parte desta linha no total do que a tabela está mostrando' },
+      { k: 'tr', rot: 'Trimestre', v: r => rtTri(r.data) },
+      { k: 'cu', rot: 'Cultura', v: r => r.cultura },
+      { k: 'un', rot: 'Unidade', v: r => RT_UNID[r.unid].nome },
+      { k: 'sp', rot: 'Solicitado por', v: r => r.solPor },
+      { k: 'si', rot: 'Situação', v: r => rtSit(r)[0], html: r => alPill(rtSit(r)[0], rtSit(r)[1]) }] };
+  /* o rateio de cada linha segue o que a tabela mostra (filtros, busca); canceladas não contam */
+  rtTotVis = 0; rtTotVis = tbFiltrar(cfg, { semOrdem: true }).reduce((s, r) => s + rtVt(r), 0);
+  return c + tbHTML(cfg);
+}
+TELAS.rateios = () => rtTela();
+
+/* a linha abre a gaveta da origem (amostra, coleta de água ou calibração), onde moram as ações de sempre */
+function rtAbre(id) {
+  const r = rtLinhas().find(x => x.id === id); if (!r) return; S._rtSel = id;
+  if (r.k === 'campo') coAbre(r.oid); else if (r.k === 'agua') agAbre(r.oid); else cbAbre(r.oid);
+}
+
+/* ---------- emitir a solicitação de compra ---------- */
+const RT_DE = [['ca', 'Campo e água'], ['cal', 'Calibração']];
+const rtCand = f => f.de === 'cal' ? rtPendCal() : rtPendCA();
+const rtAlvos = f => { const c = rtCand(f); return f.alvo === 'escolher' ? c.filter(r => f.sel[r.id]) : c; };
+const rtRemNome = k => { const p = k.split('|'); return (p[0] === 'a' ? 'Água · ' : '') + p[2] + ' · envio ' + fmtD(p[1]); };
+const rtRemSemOs = l => Array.from(new Set(l.filter(r => r.k !== 'cal' && !r.os && r.rem).map(r => r.rem)));
+function rtRemItens(k) { const p = k.split('|'); return p[0] === 'a' ? (S.aguacol || []).filter(c => c.situacao !== 'cancelada' && c.envio === p[1] && (c.lab || '—') === p[2]) : (S.coletas || []).filter(c => c.situacao !== 'cancelada' && c.envio === p[1] && (c.lab || '—') === p[2]); }
+function rtEmitirAbre(de) {
+  const ca = rtPodeCA() && rtPendCA().length, cal = rtPodeCal() && rtPendCal().length;
+  if (!ca && !cal) return;
+  lcAbrir({ k: 'rtEmit', de: de || (ca ? 'ca' : 'cal'), alvo: 'todas', sel: {}, numero: '', nf: '', os: {} });
+}
+LC_FORM.rtEmit = f => {
+  const cand = rtCand(f), al = rtAlvos(f), tot = al.reduce((s, r) => s + rtVt(r), 0), rems = rtRemSemOs(al);
+  const opDe = RT_DE.filter(o => o[0] === 'cal' ? rtPodeCal() && rtPendCal().length : rtPodeCA() && rtPendCA().length);
+  const lin = r => { const on = !!f.sel[r.id]; return '<button type="button" class="fm-pki cb-ck' + (on ? ' on' : '') + '" data-act="rt-ck" data-id="' + esc(r.id) + '" aria-pressed="' + (on ? 'true' : 'false') + '" data-busca="' + esc(tbNorm([r.tipo, r.item, r.lab, r.serv].join(' '))) + '"><span class="cb-box">' + (on ? ic('ok') : '') + '</span>' +
+    '<span><b>' + esc(r.item || '—') + '</b><small>' + esc([r.tipo, r.serv, r.lab, r.k === 'cal' ? '' : 'envio ' + fmtD(r.data)].filter(Boolean).join(' · ')) + '</small></span><em class="num">' + esc(brl(rtVt(r))) + '</em></button>'; };
+  const corpo = lcMsg() + '<div class="rt-em-v"><b class="num" id="rt-tot">' + esc(brl(tot)) + '</b><small id="rt-n">' + esc(al.length) + (al.length === 1 ? (f.de === 'cal' ? ' calibração' : ' amostra') : (f.de === 'cal' ? ' calibrações' : ' amostras')) + ' · solicitado por ' + esc(S.user.nome) + '</small></div>' +
+    '<p class="gv-h">1 · O que entra</p>' +
+    '<div class="fm-g cl-fm2">' + (opDe.length > 1 ? lcBl('Solicitação de', ddHTML('rt:de', f.de, opDe)) : '') + lcBl('Entram', ddHTML('rt:alvo', f.alvo, [['todas', 'Todas (' + esc(cand.length) + ')'], ['escolher', 'Escolher quais']])) + '</div>' +
+    (f.de === 'cal' && rtLinhas().some(r => r.k === 'cal' && rtPendente(r) && RT_UNID[r.unid].pausada) ? lcAv(esc(RT_UNID.filial.nome) + ' está em pausa até o sistema por unidades: as calibrações de lá não entram.') : '') +
+    (f.alvo === 'escolher' ? '<div class="cb-selh"><p class="gv-h" id="rt-mc">' + esc(al.length + ' de ' + cand.length) + ' marcada(s)</p><button type="button" class="bt lk" data-act="rt-todas">' + (al.length && al.length === cand.length ? 'Desmarcar todas' : 'Marcar todas') + '</button></div>' +
+      '<div class="fm-pk"><input class="fm-i fm-pkb" data-pk placeholder="Buscar área, ponto, laboratório…" autocomplete="off"><div class="fm-pkl rt-pkl">' + cand.map(lin).join('') + '</div><p class="fm-pkv" hidden>Nada com essa busca.</p></div>' : '') +
+    '<p class="gv-h">2 · Solicitação</p><div class="fm-g cl-fm2">' + lcBl('Nº da solicitação', lcIn('numero', f.numero, ' inputmode="numeric" enterkeyhint="next"')) + lcBl('Data', '<p class="fm-fixo">' + esc(fmtD(hojeISO())) + ' (hoje)</p>') + '</div>' +
+    lcBl('NF do boleto', lcIn('nf', f.nf, ' enterkeyhint="next"')) +
+    (rems.length ? '<p class="gv-h">3 · O.S das remessas</p>' + lcAv(rems.length + (rems.length === 1 ? ' remessa ainda está sem O.S.' : ' remessas ainda estão sem O.S.') + ' Vale para as amostras da remessa que estão sem O.S.') +
+      rems.map(k => lcBl((k[0] === 'a' ? '' : 'Campo · ') + rtRemNome(k), lcIn('os.' + k.replace(/\./g, '_'), (f.os || {})[k.replace(/\./g, '_')], ' placeholder="Número que o laboratório mandou"'))).join('') : '') +
+    lcAv(f.de === 'cal' ? 'Com a solicitação emitida e o certificado registrado, a calibração fica encerrada.' : 'Com a solicitação emitida, as amostras ficam encerradas: depois, só a baixa do laudo. Qualquer outra mudança passa por pedido de correção ao Líder ★ ou ao Principal.');
+  return { ico: 'doc', sub: 'Rateios', titulo: 'Emitir solicitação de compra', corpo: corpo, rodape: lcPe('rt-emitir-ok', 'Emitir') };
+};
+DD_AO.rt = (k, v) => { const f = S.fm; if (!f) return; f[k] = v; f.msg = ''; if (k === 'de') { f.sel = {}; f.alvo = 'todas'; } gvDesenha(true); };
+async function rtEmitirOk() {
+  const f = S.fm; if (!f) return; const al = rtAlvos(f), num = String(f.numero || '').trim(), nf = String(f.nf || '').trim(), data = hojeISO();
+  if (f.de === 'cal' ? !rtPodeCal() : !rtPodeCA()) return lcErro('Você não pode emitir esta solicitação.');
+  if (!al.length) return lcErro('Marque pelo menos uma ' + (f.de === 'cal' ? 'calibração.' : 'amostra.'));
+  if (num.length < 3) return lcErro('Informe o Nº da solicitação.');
+  if (!nf) return lcErro('Informe a NF do boleto.');
+  const rems = rtRemSemOs(al), osM = {}, falta = [];
+  rems.forEach(k => { const v = String((f.os || {})[k.replace(/\./g, '_')] || '').trim(); if (v) osM[k] = v; else falta.push(rtRemNome(k)); });
+  if (falta.length) return lcErro('Informe a O.S de: ' + falta.join('; ') + '.');
+  if (!lcTravar()) return;
+  const u = S.user, tot = al.reduce((s, r) => s + rtVt(r), 0);
+  try {
+    if (f.de === 'cal') {
+      const por = {}; al.forEach(r => { (por[r.oid] = por[r.oid] || []).push(r.n); });
+      for (const cid of Object.keys(por)) {
+        const c = cbDe(cid); if (!c) continue; const itens = (c.itens || []).map(i => Object.assign({}, i));
+        por[cid].forEach(n => { if (itens[n] && !(itens[n].compra && itens[n].compra.numero)) itens[n].compra = { numero: num, data: data, nf: nf, porId: u.id, porNome: u.nome, ts: nowISO() }; });
+        await Data.col('sv2_alm_cal').update(cid, { itens: itens });
+      }
+      Audit.log({ acao: 'emitir_solicitacao', entidade: 'almox_cal', entidadeId: num, resumo: 'Solicitação ' + num + ' (calibração) com ' + al.length + ' equipamento(s) · ' + brl(tot) + ' · NF ' + nf });
+    } else {
+      let nOs = 0;
+      for (const k of Object.keys(osM)) {
+        const agua = k[0] === 'a', col = agua ? 'sv2_aguacol' : 'sv2_coletas';
+        for (const c of rtRemItens(k).filter(x => !x.os)) {
+          await Data.col(col).update(c.id, { os: osM[k] }); nOs++;
+          Audit.log({ acao: 'os_remessa', entidade: agua ? 'coleta_agua' : 'coleta', entidadeId: c.id, resumo: 'O.S ' + osM[k] + ' da remessa ' + rtRemNome(k) + ' (solicitação ' + num + ')', antes: { os: '' }, depois: { os: osM[k] } });
+        }
+      }
+      let n = 0;
+      for (const r of al) {
+        const agua = r.k === 'agua', col = agua ? 'sv2_aguacol' : 'sv2_coletas', c = (agua ? S.aguacol : S.coletas).find(x => x.id === r.oid);
+        if (!c || c.compra === 'solicitado' || c.situacao === 'cancelada') continue;
+        const patch = { compra: 'solicitado', pedidoSankhya: num, dataSolicitacao: data, solicitadoPor: u.id, solicitadoPorNome: u.nome, nf: nf };
+        if (agua && !c.numSolicitacao) patch.numSolicitacao = num;
+        await Data.col(col).update(c.id, patch); n++;
+        Audit.log({ acao: 'emitir_solicitacao', entidade: agua ? 'coleta_agua' : 'coleta', entidadeId: c.id, resumo: 'Solicitação ' + num + ' em ' + fmtD(data) + ' · NF ' + nf, depois: patch });
+      }
+      Audit.log({ acao: 'emitir_solicitacao', entidade: 'solicitacao', entidadeId: num, resumo: 'Emitiu a solicitação ' + num + ' com ' + n + ' amostra(s) · ' + brl(tot) + (nOs ? ' · O.S em ' + nOs : '') + ' · NF ' + nf, depois: { solicitacao: num, data: data, amostras: n, nf: nf } });
+    }
+    lcFim(); aviso('Solicitação ' + num + ' emitida.');
+  } catch (e) { lcErro(svErro(e)); }
+}
+
+document.addEventListener('click', e => {
+  const t = e.target.closest && e.target.closest('[data-act^="rt-"]'); if (!t) return;
+  const a = t.getAttribute('data-act'), f = S.fm;
+  if (a === 'rt-ir') { const st = tbEstado('rt-lista'); st.filtros.si = 'pend'; } /* o link do Início abre o Rateio só com as pendentes */
+  else if (a === 'rt-emitir') rtEmitirAbre();
+  else if (a === 'rt-emitir-ok') rtEmitirOk();
+  else if (a === 'rt-ck' && f) { const id = t.getAttribute('data-id'); if (f.sel[id]) delete f.sel[id]; else f.sel[id] = true; f.msg = ''; f.sujo = true;
+    /* marca no lugar (a lista não volta ao topo); só a O.S das remessas muda o formulário inteiro */
+    const on = !!f.sel[id]; t.classList.toggle('on', on); t.setAttribute('aria-pressed', on); t.querySelector('.cb-box').innerHTML = on ? ic('ok') : '';
+    const al = rtAlvos(f), cand = rtCand(f), q = (sel, v) => { const el = $(sel); if (el) el.textContent = v; };
+    q('#rt-tot', brl(al.reduce((s, r) => s + rtVt(r), 0))); q('#rt-n', al.length + (al.length === 1 ? (f.de === 'cal' ? ' calibração' : ' amostra') : (f.de === 'cal' ? ' calibrações' : ' amostras')) + ' · solicitado por ' + S.user.nome); q('#rt-mc', al.length + ' de ' + cand.length + ' marcada(s)');
+    if (rtRemSemOs(al).length !== $$('#gv [data-fm^="os."]').length) { const l = $('#gv .rt-pkl'), y = l ? l.scrollTop : 0; gvDesenha(true); const l2 = $('#gv .rt-pkl'); if (l2) l2.scrollTop = y; } }
+  else if (a === 'rt-todas' && f) { const c = rtCand(f), tudo = c.every(r => f.sel[r.id]); f.sel = {}; if (!tudo) c.forEach(r => { f.sel[r.id] = true; }); gvDesenha(true); }
+});
+
+/* busca geral: acha a solicitação de compra pelo Nº e abre o Rateio filtrado por ela */
+BG_FONTES.push(q => {
+  if (!rtVe()) return []; const m = {}; rtLinhas().filter(r => r.ped && !r.canc).forEach(r => { (m[r.ped] = m[r.ped] || []).push(r); });
+  return Object.keys(m).filter(p => bgCasa(q, 'solicitação ' + p + ' ' + m[p].map(r => r.item + ' ' + r.lab).join(' '))).slice(0, 6).map(p => ({ grupo: 'Rateio', nome: 'Solicitação ' + p, sub: m[p].length + (m[p].length === 1 ? ' linha · ' : ' linhas · ') + brl(m[p].reduce((s, r) => s + rtVt(r), 0)) + ' · ' + fmtD(m[p][0].dsol), ico: 'doc',
+    abrir: () => { tbEstado('rt-lista').busca = p; ir('rateios'); } }));
+});
+
 /* ===== entrar.js ===== */
 /* EFCwork · entrar.js — tela de entrar (garota-propaganda: Revista no Escuro, Avisos no Claro) e primeiro acesso. Prefixo: en.
    Usa o mesmo login do EFClaudian (usuário ou e-mail; senha). O primeiro acesso só aparece num projeto/demonstração sem nenhum Principal. */
@@ -12248,7 +12471,9 @@ TELAS.inicio = function () {
       '<div class="vazio">' + ic('ok') + '<b>Nada pendente com o seu nome.</b><span>As tarefas que o EFClaudian atribuir a você aparecem aqui.</span></div>') + '</section>';
   /* voltar para / mais usadas */
   const o = csUsoLer(), atual = S.rota.area + (S.rota.aba ? '/' + S.rota.aba : '');
-  const rec = o.r.filter(k => k !== atual && k !== 'inicio').slice(0, 4), top = Object.keys(o.n).filter(k => o.n[k] >= 2 && k !== 'inicio').sort((a, b) => o.n[b] - o.n[a]).slice(0, 5);
+  /* v0.6.17: tela sem autorização some também dos atalhos (ex.: Rateios sem a atribuição, Atividade para quem não é Principal) */
+  const livre = k => { const p = k.split('/'), a = AREAS.find(x => x.id === p[0]); if (!a || a.negada) return false; const t = p[1] ? a.abas.find(x => x.id === p[1]) : null; return !t || !t.negada; };
+  const rec = o.r.filter(k => k !== atual && k !== 'inicio' && livre(k)).slice(0, 4), top = Object.keys(o.n).filter(k => o.n[k] >= 2 && k !== 'inicio' && livre(k)).sort((a, b) => o.n[b] - o.n[a]).slice(0, 5);
   const lk = (k, n) => '<a class="ini-at" href="#/' + k + '">' + ic(csArea(k.split('/')[0]).ic) + esc(csNomeRota(k)) + (n ? '<em>' + n + '×</em>' : '') + '</a>';
   const atalhos = '<section class="pn"><div class="hd"><h3>Atalhos</h3></div><div class="cpo">' +
     (rec.length ? '<div><p class="ini-sub">Voltar para</p><div class="ini-ats">' + rec.map(k => lk(k)).join('') + '</div></div>' : '') +
@@ -12358,7 +12583,6 @@ function atFiltrar(ignoraPeriodo) {
   const f = S.atFiltro, corte = !ignoraPeriodo && f.dias !== '0' ? addDias(hojeISO(), -(Number(f.dias) - 1)) : '';
   return (S.audit || []).filter(r => r.ts && (!f.pessoa || r.userName === f.pessoa) && (!f.area || atArea(r) === f.area) && (!f.app || atApp(r) === f.app) && (!corte || atDia(r.ts) >= corte));
 }
-const atTemFiltro = () => { const f = S.atFiltro; return !!(f.pessoa || f.area || f.app || f.dias !== '30'); };
 function atResumo() {
   const f = S.atFiltro, p = [(AT_PERIODOS.find(x => x[0] === f.dias) || AT_PERIODOS[1])[1].toLowerCase()];
   if (f.pessoa) p.push(f.pessoa.split(' ')[0]); if (f.area) p.push(f.area); if (f.app) p.push(f.app);
@@ -12420,10 +12644,9 @@ function atFiltroHTML() {
 }
 function atTela() {
   if (!isPrincipal(S.user)) return ''; /* a tela some para quem não é Principal (roteador); aqui é só uma segunda trava */
-  const l = atFiltrar(), tem = atTemFiltro();
+  const l = atFiltrar();
   return '<div class="at">' + atGrafico() +
     '<div class="at-bar"><span class="tb-cont">' + l.length + (l.length === 1 ? ' registro' : ' registros') + (S.audit.length >= AT_TETO ? ' (só os ' + AT_TETO.toLocaleString('pt-BR') + ' mais recentes)' : '') + '</span><span class="tb-sp"></span>' +
-    (tem ? '<button type="button" class="bt" data-act="at-limpa">Limpar filtro</button>' : '') +
     '<button type="button" class="at-fl" data-act="at-filtro" aria-expanded="' + S.atAberto + '">' + ic('filtro') + '<b>Filtro</b><small>· ' + esc(atResumo()) + '</small></button>' +
     '<button type="button" class="bt ic-so" data-act="at-xlsx" title="Baixar planilha (.xlsx)" aria-label="Baixar planilha (.xlsx)">' + ic('planilha') + '</button>' +
     '<button type="button" class="bt ic-so" data-act="at-imp" title="Imprimir" aria-label="Imprimir">' + ic('impressora') + '</button></div>' + atFiltroHTML() +
@@ -12453,7 +12676,6 @@ document.addEventListener('click', e => {
   const a = t.getAttribute('data-act');
   if (a === 'at-linha') { const id = t.getAttribute('data-id'); S.atLinha = S.atLinha === id ? null : id; render(); }
   else if (a === 'at-filtro') { S.atAberto = !S.atAberto; render(); }
-  else if (a === 'at-limpa') { S.atFiltro = { pessoa: '', area: '', app: '', dias: '30' }; S.atLimite = AT_LIM; S.atLinha = null; if (S._atDias !== '30' && isPrincipal(S.user)) atOuve(); render(); }
   else if (a === 'at-mais') { S.atLimite += AT_LIM; render(); }
   else if (a === 'at-xlsx') atPlanilha();
   else if (a === 'at-imp') atImprimir();
@@ -12718,6 +12940,8 @@ csTrocaTema = function (t) { fzTemaOrig(t); const b = $('[data-act="cs-tema"]');
       add(r.atras, 'cr', 'laudo atrasado', 'laudos atrasados', 'Coletas · Amostras', 'coletas/amostras', 'frasco');
       add(r.naoenv, 'wa', 'amostra não enviada', 'amostras não enviadas', 'Coletas · Amostras', 'coletas/amostras', 'frasco');
       add(agPendLinhas().length, 'wa', 'pendência nas coletas de água', 'pendências nas coletas de água', 'Coletas · Água', 'coletas/agua', 'frasco'); });
+    tenta(() => { if (!rtVe() || !isSup(S.user)) return; /* v0.6.17: como no Meu dia do EFClaudian (atribuição Rateios + Líder ★/Principal) */
+      add(rtPendCA().length, 'wa', 'amostra enviada sem solicitação de compra', 'amostras enviadas sem solicitação de compra', 'Rateios', 'rateios', 'pizza', ' data-act="rt-ir"'); });
     tenta(() => { const b = S.apont || [], urg = b.filter(a => a.grav === 'urgente' && apAberto(a)).length, ncv = b.filter(a => apNcSit(a) === 'vencida').length, ab = b.filter(apAberto).length - urg;
       add(urg, 'cr', 'apontamento urgente em aberto', 'apontamentos urgentes em aberto', 'Inspeções · Apontamentos', 'inspecoes/apontamentos', 'alerta');
       add(ncv, 'cr', 'NC de apontamento vencida', 'NCs de apontamento vencidas', 'Inspeções · Apontamentos', 'inspecoes/apontamentos', 'lista');
@@ -12853,7 +13077,7 @@ csTrocaTema = function (t) { fzTemaOrig(t); const b = $('[data-act="cs-tema"]');
     let h = tbOrig.apply(this, arguments); if (!on(8) || h.indexOf('class="tb-vz"') < 0) return h;
     const filtrada = (cfg.linhas || []).length > 0 && tbTemFiltro(cfg), un = tbUn(cfg, 2);
     const novo = filtrada
-      ? '<div class="mo-vz">' + ic('filtro') + '<b>Nenhum resultado com o filtro atual.</b><span>Há ' + (cfg.linhas || []).length + ' ' + esc(tbUn(cfg, (cfg.linhas || []).length)) + ' fora dele.</span><button type="button" class="bt" data-act="tb-limpa" data-tb="' + esc(cfg.id) + '">' + ic('x') + 'Limpar filtro</button></div>'
+      ? '<div class="mo-vz">' + ic('filtro') + '<b>Nenhum resultado com o filtro atual.</b><span>Há ' + (cfg.linhas || []).length + ' ' + esc(tbUn(cfg, (cfg.linhas || []).length)) + ' fora dele.</span></div>'
       : '<div class="mo-vz">' + ic(csArea(S.rota.area).ic) + '<b>' + esc((cfg.linhas || []).length ? (cfg.vazio || 'Nada encontrado.') : 'Ainda não há ' + un + ' aqui.') + '</b></div>';
     return h.replace(/(<td colspan="\d+" class="tb-vz">)[\s\S]*?(<\/td>)/, '$1' + novo + '$2');
   };

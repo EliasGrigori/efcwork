@@ -118,9 +118,6 @@ body.dd-arrastando{cursor:grabbing;-webkit-user-select:none;user-select:none}
 .tb-tots.tb-tots-fluxo{position:static;display:flex;gap:6px;height:auto;order:0}
 .tb-tots.tb-tots-fluxo>span{position:static}
 @media(max-width:599px){.tb-tots{position:static;display:flex;gap:6px;height:auto;width:100%}.tb-tots>span{position:static}.tb-tl{align-items:center}.tb-tv{justify-content:flex-start;padding:0 4px}} /* v0.6.15: "Total" centrado na caixa, igual ao valor ao lado */
-/* botão Limpar filtro (no lugar do antigo botão Filtro) */
-.tb-limpa{display:inline-flex;align-items:center;gap:6px;height:var(--btn);padding:0 12px 0 10px;border:1px solid color-mix(in srgb,var(--a) 45%,var(--bd2));border-radius:var(--rs);background:color-mix(in srgb,var(--a) 9%,var(--bg1));color:var(--aTx);font-size:14px;font-weight:600;cursor:pointer}
-.tb-limpa .ic{width:14px;height:14px}.tb-limpa:hover{background:color-mix(in srgb,var(--a) 16%,var(--bg1))}
 /* cabeçalho com menu */
 .tb-t th.tb-th,.tb-t .tb-cab th{padding:0}
 .tb-thi{display:flex;align-items:center;height:var(--row);padding:0 6px 0 12px;gap:4px}

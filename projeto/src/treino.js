@@ -159,7 +159,7 @@ function trTodos(v) {
   if (v === 'p') f.rows.forEach(r => { r.presente = '1'; }); else f.rows.forEach(r => { if (r.presente === '1') r.eficaz = '1'; });
   gvDesenha(true);
 }
-/* ver os treinamentos de uma pessoa: fecha a gaveta e filtra a lista pelo nome (o "Limpar filtro" volta ao normal) */
+/* ver os treinamentos de uma pessoa: fecha a gaveta e filtra a lista pelo nome */
 function trPessoa(nome) {
   const st = tbEstado('tr-lista'); st.busca = nome; st.limite = 100; if (S.gv) gvFecharSo(); render();
 }

@@ -42,7 +42,7 @@ const vai = async (p, h, t) => { await p.evaluate(x => { location.hash = x; }, h
   await p.click('.tb-cab th[data-tbk="loc"] .tb-hm'); await p.waitForTimeout(250); await p.click('.tb-mn-li:has-text("Porta 02") input'); await p.waitForTimeout(250); await p.keyboard.press('Escape'); await p.waitForTimeout(250);
   s = await p.evaluate(() => { const m = document.querySelector('.cs-meta .tb-tp'); return { txt: m ? m.textContent : '', fl: !!(m && m.classList.contains('fl')) }; });
   conf(s.fl && /total filtrado/.test(s.txt) && !/303,80/.test(s.txt), 'filtrando, o selo vira "total filtrado" e segue o filtro (' + s.txt + ')');
-  await p.click('[data-act="tb-limpa"]').catch(() => {}); await p.waitForTimeout(250);
+  await p.evaluate(() => Object.keys(TB).forEach(id => tbMuda(id, s => { s.busca = ''; s.cf = {}; s.filtros = {}; }))); await p.waitForTimeout(250);
 
   console.log('Ícones na linha das abas e cabeçalhos com a mesma medida (ITEM 23)');
   const med = {};

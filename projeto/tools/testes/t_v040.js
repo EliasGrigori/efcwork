@@ -61,7 +61,7 @@ const abre = async (p, id) => { await p.evaluate(() => { location.hash = '#/cole
   conf(await p.evaluate(() => coLaudoLimite(S.coletas.find(x => x.id === 'c3')) === 15 && coLaudoLimite(S.coletas.find(x => x.id === 'c5')) === 12), 'prazo do laboratório da configuração (IBRA 10 dias) + 5 de folga; sem prazo = 7 + 5');
   await p.click('[data-tb="co-am"] .tb-cab th[data-tbk="mat"] .tb-hm'); await p.waitForTimeout(120); await dd(p, 'tbf:co-am:mat', 'Folha'); await p.waitForTimeout(150); await p.keyboard.press('Escape'); await p.waitForTimeout(200);
   conf((await p.$$('.tb-t tbody tr[data-id]')).length === 2, 'filtro único: Material = Folha → 2');
-  await p.click('[data-act="tb-limpa"]'); await p.waitForTimeout(150);
+  await p.evaluate(() => Object.keys(TB).forEach(id => tbMuda(id, s => { s.busca = ''; s.cf = {}; s.filtros = {}; }))); await p.waitForTimeout(150);
   await p.screenshot({ path: path.join(SHOTS, 'v040-pc-claro-amostras.png') });
 
   console.log('— Ciclo da amostra');

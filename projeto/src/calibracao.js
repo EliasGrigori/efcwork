@@ -6,7 +6,7 @@
    cotacaoEm, situacao) + campos novos que o EFClaudian ignora: agenda{data, obs, porNome, ts}, cotacaoRef, itens[].tecnico,
    itens[].validade; no equipamento cal.validade e cal.tecnico. Ações só do Líder/Administrador. Prefixo: cb. */
 Object.assign(S, { almCal: [] });
-CS_CARGAS.push(() => { if (!alVe()) return; csOuve('sv2_alm_cal', l => { S.almCal = l; if (S.rota.area === 'almox') render(); }); });
+CS_CARGAS.push(() => { if (!alVe()) return; csOuve('sv2_alm_cal', l => { S.almCal = l; if (S.rota.area === 'almox' || S.rota.area === 'rateios') render(); }); });
 const cbDe = id => S.almCal.find(c => c.id === id) || null;
 const cbEnc = it => !!(it.aplicado && it.data && it.certificado && it.compra && it.compra.numero);
 function cbSit(c) {

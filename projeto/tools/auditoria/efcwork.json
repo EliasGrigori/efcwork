@@ -205,6 +205,31 @@
    ]
   },
   {
+   "nome": "Rateios",
+   "passos": [
+    {
+     "eval": "gvFechar && S.gv && gvFechar(); location.hash='#/rateios'"
+    },
+    {
+     "espera": 400
+    }
+   ]
+  },
+  {
+   "nome": "Emitir solicitação (gaveta)",
+   "passos": [
+    {
+     "eval": "location.hash='#/rateios'"
+    },
+    {
+     "espera": 400
+    },
+    {
+     "eval": "rtEmitirAbre('ca')"
+    }
+   ]
+  },
+  {
    "nome": "Administração",
    "passos": [
     {

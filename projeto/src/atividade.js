@@ -66,7 +66,6 @@ function atFiltrar(ignoraPeriodo) {
   const f = S.atFiltro, corte = !ignoraPeriodo && f.dias !== '0' ? addDias(hojeISO(), -(Number(f.dias) - 1)) : '';
   return (S.audit || []).filter(r => r.ts && (!f.pessoa || r.userName === f.pessoa) && (!f.area || atArea(r) === f.area) && (!f.app || atApp(r) === f.app) && (!corte || atDia(r.ts) >= corte));
 }
-const atTemFiltro = () => { const f = S.atFiltro; return !!(f.pessoa || f.area || f.app || f.dias !== '30'); };
 function atResumo() {
   const f = S.atFiltro, p = [(AT_PERIODOS.find(x => x[0] === f.dias) || AT_PERIODOS[1])[1].toLowerCase()];
   if (f.pessoa) p.push(f.pessoa.split(' ')[0]); if (f.area) p.push(f.area); if (f.app) p.push(f.app);
@@ -128,10 +127,9 @@ function atFiltroHTML() {
 }
 function atTela() {
   if (!isPrincipal(S.user)) return ''; /* a tela some para quem não é Principal (roteador); aqui é só uma segunda trava */
-  const l = atFiltrar(), tem = atTemFiltro();
+  const l = atFiltrar();
   return '<div class="at">' + atGrafico() +
     '<div class="at-bar"><span class="tb-cont">' + l.length + (l.length === 1 ? ' registro' : ' registros') + (S.audit.length >= AT_TETO ? ' (só os ' + AT_TETO.toLocaleString('pt-BR') + ' mais recentes)' : '') + '</span><span class="tb-sp"></span>' +
-    (tem ? '<button type="button" class="bt" data-act="at-limpa">Limpar filtro</button>' : '') +
     '<button type="button" class="at-fl" data-act="at-filtro" aria-expanded="' + S.atAberto + '">' + ic('filtro') + '<b>Filtro</b><small>· ' + esc(atResumo()) + '</small></button>' +
     '<button type="button" class="bt ic-so" data-act="at-xlsx" title="Baixar planilha (.xlsx)" aria-label="Baixar planilha (.xlsx)">' + ic('planilha') + '</button>' +
     '<button type="button" class="bt ic-so" data-act="at-imp" title="Imprimir" aria-label="Imprimir">' + ic('impressora') + '</button></div>' + atFiltroHTML() +
@@ -161,7 +159,6 @@ document.addEventListener('click', e => {
   const a = t.getAttribute('data-act');
   if (a === 'at-linha') { const id = t.getAttribute('data-id'); S.atLinha = S.atLinha === id ? null : id; render(); }
   else if (a === 'at-filtro') { S.atAberto = !S.atAberto; render(); }
-  else if (a === 'at-limpa') { S.atFiltro = { pessoa: '', area: '', app: '', dias: '30' }; S.atLimite = AT_LIM; S.atLinha = null; if (S._atDias !== '30' && isPrincipal(S.user)) atOuve(); render(); }
   else if (a === 'at-mais') { S.atLimite += AT_LIM; render(); }
   else if (a === 'at-xlsx') atPlanilha();
   else if (a === 'at-imp') atImprimir();
