@@ -1,16 +1,16 @@
-# EFCwork · CONTINUAR (15/11/2026, 12h) · estado: v0.6.17 (Rateios) PUBLICADA
+# EFCwork · CONTINUAR (15/11/2026, 16h) · estado: v0.6.18 (Relatórios › Rateio) PUBLICADA
 
-Este arquivo substitui o CONTINUAR-EFCwork-v0.6.16.md. Ele é autossuficiente: quem ler só ele já sabe o que fazer.
+Este arquivo substitui o CONTINUAR-EFCwork-v0.6.17.md. Ele é autossuficiente: quem ler só ele já sabe o que fazer.
 
 ## 1. TEXTO PARA COLAR NA CONVERSA NOVA
 (O mesmo texto está em TEXTO-PARA-COLAR.txt.)
 
-> EFCwork, continuando. Anexei o pacote: CONTINUAR-EFCwork-v0.6.17.md, FALTA-DO-EFCLAUDIAN.md, features.csv, o dossiê, o ZIP do app (efcwork-v0.6.17.zip) e o código-fonte (efcwork-v0.6.17-fonte.zip). Leia o CONTINUAR inteiro e o FALTA. Responda em 3 linhas: onde parou e qual é a próxima tarefa. Depois sugira o modelo e o esforço dessa tarefa em **negrito** e espere meu "pode iniciar". Siga o "Padrão de trabalho" do CONTINUAR sem eu repetir. Repositório: EliasGrigori/efcwork (anexe com add_repo; para ler o EFClaudian use EliasGrigori/efclaudian, só leitura). Não abra o OneDrive. Nada no EFClaudian. GitHub só com "pode publicar". Fique em primeiro plano.
+> EFCwork, continuando. Anexei o pacote: CONTINUAR-EFCwork-v0.6.18.md, FALTA-DO-EFCLAUDIAN.md, features.csv, o dossiê, o ZIP do app (efcwork-v0.6.18-proposta-relatorios.zip) e o código-fonte (efcwork-v0.6.18-proposta-relatorios-fonte.zip). Leia o CONTINUAR inteiro e o FALTA. Responda em 3 linhas: onde parou e qual é a próxima tarefa. Depois sugira o modelo e o esforço dessa tarefa em **negrito** e espere meu "pode iniciar". Siga o "Padrão de trabalho" do CONTINUAR sem eu repetir. Repositório: EliasGrigori/efcwork (anexe com add_repo; para ler o EFClaudian use EliasGrigori/efclaudian, só leitura). Não abra o OneDrive. Nada no EFClaudian. GitHub só com "pode publicar". Fique em primeiro plano.
 
 ## 2. O que fazer logo ao começar (ordem)
 1. Ler este arquivo, o FALTA-DO-EFCLAUDIAN.md e o fim do dossiê (últimas seções, de "v0.6.17 · Rateios" para cima).
-2. Conseguir o código (seção 4). Rodar `python3 tools/montar.py` dentro de `projeto/` para provar que o ambiente funciona (imprime "versão 0.6.17").
-3. Responder ao Elias em 3 linhas: onde parou (v0.6.17 Rateios publicada) e a próxima tarefa (Relatórios, começando pelo Painel do rateio).
+2. Conseguir o código (seção 4). Rodar `python3 tools/montar.py` dentro de `projeto/` para provar que o ambiente funciona (imprime "versão 0.6.17" até a v0.6.18 ser numerada).
+3. Responder ao Elias em 3 linhas: onde parou (v0.6.17 publicada; v0.6.18 Relatórios › Rateio esperando as respostas dos ITENS 70 a 78) e a próxima tarefa (aplicar as respostas; depois a seção 6).
 4. Sugerir **modelo e esforço** em negrito e esperar "pode iniciar". Não começar antes.
 5. Perguntar uma vez se o site mostra v0.6.17 no rodapé (a sessão não abre o site). Não insistir. Se não mostrar, pedir para fechar e abrir o app (cache do service worker `efcwork-0.6.17`).
 
@@ -19,7 +19,7 @@ Este arquivo substitui o CONTINUAR-EFCwork-v0.6.16.md. Ele é autossuficiente: q
 - A v0.6.16 trouxe **Qualidade › Não conformidades** (junta as NCs de apontamentos e auditorias, só leitura, com "Folha por pessoa" para imprimir) e **Qualidade › Bugs e sugestões** (relatar com imagem, gaveta com andamento, situação só para o Administrador, Finalizados na barra da tabela, relatório A4 com descrição e imagens). ITENS 54 a 60 aprovados e aplicados.
 - Último ajuste dele (15/11 09:53): o botão-ícone Finalizados fica na barra da tabela, antes de Colunas, do mesmo tamanho dos outros; o topo da aba só tem "Reportar ou sugerir". Dois ganchos novos em `tabela.js`: `cfg.antesIcones` (HTML antes do botão Colunas) e `cfg.imprimir` (função que substitui a impressão padrão).
 - Testes na publicação: t_v0616.js 53 ok; bateria de 52 arquivos sem falha (antes do último ajuste, que só acrescentou ganchos opcionais); medidor 0 defeitos.
-- Os documentos desta versão (CONTINUAR, dossiê, FALTA, matriz) foram publicados junto, em `projeto/docs/` do repositório (CONTINUAR-EFCwork-v0.6.17.md; o dossiê continua com o nome DOSSIE-EFCwork-v0.6.15.md e acumula as seções).
+- Os documentos desta versão (CONTINUAR, dossiê, FALTA, matriz) foram publicados junto, em `projeto/docs/` do repositório (CONTINUAR-EFCwork-v0.6.18.md; o dossiê continua com o nome DOSSIE-EFCwork-v0.6.15.md e acumula as seções).
 
 ### v0.6.17 · Rateios (15/11, 10:22 → 12h, Opus 5.5 · alto para construir, Sonnet 5.5 · médio para aplicar) — PUBLICADA
 - **Publicada** no GitHub EliasGrigori/efcwork, branch main: o commit mais recente, de título "v0.6.17: Rateios" (em cima do 97c1d41 = v0.6.16). Ele disse "pode publicar" às 11:36 e o acesso `push` foi liberado nesta hora (o primeiro `add_repo` tinha sido negado).
@@ -30,9 +30,16 @@ Este arquivo substitui o CONTINUAR-EFCwork-v0.6.16.md. Ele é autossuficiente: q
 - **Firebase:** nada novo. Se aparecer "permissão negada" ao emitir solicitação, a regra de `sv2_coletas`, `sv2_aguacol` e `sv2_alm_cal` precisa deixar quem emite gravar.
 - **Falta ele confirmar que o site mostra v0.6.17** (cache `efcwork-0.6.17`).
 
+### v0.6.18 · Relatórios › Rateio (15/11, 14:48 → 16h, Sonnet 5.5) — PUBLICADA em 15/11 (ITENS 70 a 77 aprovados; 78 reprovado; colunas de ponta a ponta e transição do filtro aplicadas)
+- **Arquivos novos:** `src/relatorios.js`, `src/relatorios.css` (módulo `relatorios` depois de `rateio`), `tools/testes/t_v0618.js` (27 ok), `tools/visual/relatorios-v0618/semente.js`, `pagina/captura10.js`, `pagina/itens-p10.js`, `docs/aprovacao-efcwork-v0.6.18-relatorios.html`. Alterados: `casca.js` (área Relatórios com a aba Rateio e `negada` pela atribuição Rateios), `areas.js`, `coletas.js`, `agua.js`, `rateio.js` (redesenham em Relatórios), `t_v010.js`, `efcwork.json` (2 telas do medidor), `montar.py`.
+- **O que é:** o Painel do rateio do EFClaudian (água: 8 quadros; campo: 7), só leitura; filtro num botão só (Mostrar, Ano, Período, Tipo de ponto), resumo em texto, imprimir, aviso de limite de carga. Fora: planos de coleta e bebedouros sem coleta (já existem em Coletas).
+- **Página de aprovação** (artefato "EFCwork v0.6.18 · Relatórios › Rateio"): ITENS 70 a 78. Esperando as respostas. Com elas: aplicar só o aprovado, `VERSAO = '0.6.18'`, bateria, medidor, ZIP, e publicar só com "pode publicar".
+- **Bateria:** 54 arquivos, 0 falhas. Medidor: 0 defeitos (88 ajustes de tamanho de letra).
+- **Repositório:** o clone `/home/claude/efcwork` está com as mudanças sem commit; para publicar, o acesso `push` precisa estar liberado na conversa (add_repo). `projeto/dist` não é versionado (não adicionar ao commit).
+
 ## 4. Como conseguir e montar o código
 - **Caminho 1 (preferido):** `mcp__claude-code-remote__add_repo` com owner `EliasGrigori`, repo `efcwork`, access `push` (se for publicar) e clonar. Depois `register_repo_root`. Não conferir o repo antes com curl/gh (dá 404 falso em repo privado).
-- **Caminho 2 (sem repositório):** descompactar `efcwork-v0.6.17-fonte.zip` (ou o da v0.6.16) numa pasta vazia: traz `projeto/src`, `projeto/tools` (montar.py, testes, auditoria, visual), regras do Firebase, README. Sem fotos de teste e sem páginas de aprovação antigas.
+- **Caminho 2 (sem repositório):** descompactar `efcwork-v0.6.18-proposta-relatorios-fonte.zip` (ou o da v0.6.16) numa pasta vazia: traz `projeto/src`, `projeto/tools` (montar.py, testes, auditoria, visual), regras do Firebase, README. Sem fotos de teste e sem páginas de aprovação antigas.
 - **Mapa:** a raiz do repositório guarda o app publicado (index.html, sw.js, manifest.webmanifest, ícones). `projeto/src` guarda os 75 módulos (.js e .css). `projeto/tools/montar.py` junta os módulos e gera `projeto/dist/` (não versionado). `projeto/docs` guarda dossiês, roteiros do Grok, regras do Firebase e páginas de aprovação.
 - **Montar:** `cd projeto && python3 tools/montar.py`. A versão vive em `VERSAO` no `src/base.js`; o cache do service worker é `efcwork-<versão>`.
 - **Testes:** precisa de Playwright com Chromium (`npm i -g playwright` e `npx playwright install chromium`, se faltar). Rodar da pasta `projeto`, com `NODE_PATH=$(npm root -g)`: `node tools/testes/t_v0616.js` (um arquivo) ou a bateria de 52 arquivos `t_*.js`. **Um comando em primeiro plano estoura em 600 s:** rodar de 13 em 13 arquivos por comando. Depois da bateria: `git checkout -- projeto/tools/testes/telas` (ela regrava prints).
@@ -69,7 +76,7 @@ Este arquivo substitui o CONTINUAR-EFCwork-v0.6.16.md. Ele é autossuficiente: q
 
 ## 6. Próximas tarefas (ordem sugerida; cada uma só começa com "pode iniciar")
 Fonte: FALTA-DO-EFCLAUDIAN.md (tabelas A, B e C) e features.csv (458 funções: 18 "must" ainda "não").
-1. **Relatórios** (Rateio = o Painel do EFClaudian: água e campo; Semana, Almoxarifado do mês, Documentos, Apontamentos, Coletas em aberto).
+1. **Mais abas de Relatórios** (Rateio = o Painel do EFClaudian: água e campo; Semana, Almoxarifado do mês, Documentos, Apontamentos, Coletas em aberto).
 2. **Administração › Pessoas e perfis** ("Só ver" / "Ver e alterar" por área; detalhe da pessoa; meu perfil).
 3. **Backup e exportação**; **Conversas** (chat dentro de cada registro + sino); **Meu dia** (tarefas no Início).
 4. Partes de telas (tabela B do FALTA): etiquetas e fichas de campo, cadastros de Coletas, plano de rodízio, cadastro de material e equipamento, kits, reajuste de preços, vidraria quebrada, transferências, normas e editais, documento controlado, arquivo por ano.
@@ -79,7 +86,7 @@ Fonte: FALTA-DO-EFCLAUDIAN.md (tabelas A, B e C) e features.csv (458 funções: 
 - Nova coleta pedida no rodízio precisa de aprovação do Líder/Principal? (A: sim; B: não).
 - Pedidos de 14/11 ainda não feitos: tabela com só a tabela rolando e cabeçalho fixo; totais sem caixa; mesma fluidez nas abas internas (parte já feita na v0.6.15, conferir o que falta antes de mexer).
 - Pergunta sem resposta: tirar "N amostras" da barra das tabelas no celular?
-- Insumo por amostra no Rateio (custo do material do almoxarifado ÷ amostras do laboratório no mês): trazer ou não (ele não respondeu na página v0.6.17; perguntar de novo ao começar os Relatórios).
+- Insumo por amostra no Rateio (custo do material do almoxarifado ÷ amostras do laboratório no mês): trazer ou não (REPROVADO na v0.6.18, ITEM 78: fica fora).
 - TTL do Firestore nas fotos da ação (precisa combinar com o EFClaudian; não mexer sozinho).
 - Observações do Grok sem mexer: Pareto inclui "Outro"; coluna Prazo da Programação vazia; busca não acha plano de coleta nem erro de digitação; ordem do Apresentar da Auditoria.
 
@@ -103,6 +110,6 @@ Fonte: FALTA-DO-EFCLAUDIAN.md (tabelas A, B e C) e features.csv (458 funções: 
 - O que ele pede "do nada" mas vê na tela vale como ajuste de item aprovado: aplicar, testar e só então publicar.
 
 ## 11. O que está neste pacote
-- `CONTINUAR-EFCwork-v0.6.17.md` (este), `TEXTO-PARA-COLAR.txt`, `FALTA-DO-EFCLAUDIAN.md`, `features.csv`, `DOSSIE-EFCwork-v0.6.15.md` (histórico completo; ler só o fim).
-- `efcwork-v0.6.17.zip` (app publicado, com os Rateios) e `efcwork-v0.6.17-fonte.zip` (código-fonte e ferramentas com os Rateios).
+- `CONTINUAR-EFCwork-v0.6.18.md` (este), `TEXTO-PARA-COLAR.txt`, `FALTA-DO-EFCLAUDIAN.md`, `features.csv`, `DOSSIE-EFCwork-v0.6.15.md` (histórico completo; ler só o fim).
+- `efcwork-v0.6.18-proposta-relatorios.zip` (app publicado, com os Rateios) e `efcwork-v0.6.18-proposta-relatorios-fonte.zip` (código-fonte e ferramentas com os Rateios).
 - `REGRAS-FIREBASE-EFCwork-v0.6.15.md` e a página `aprovacao-efcwork-v0.6.17-rateios.html` (a que está esperando resposta).

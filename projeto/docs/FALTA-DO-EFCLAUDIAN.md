@@ -1,15 +1,15 @@
-# O que ainda falta trazer do EFClaudian para o EFCwork (conferido em 15/11/2026; atualizado às 12h: v0.6.17 Rateios publicada)
+# O que ainda falta trazer do EFClaudian para o EFCwork (conferido em 15/11/2026; atualizado às 16h: v0.6.17 Rateios publicada; v0.6.18 Relatórios › Rateio publicada)
 
 Processo de refazer o EFClaudian no EFCwork: cada função do original está na matriz `features.csv` (must = precisa ter, should = deveria ter, could = pode ter). Conferi abrindo cada área do app (v0.6.15 em andamento) e procurando cada função no código. 20 linhas da matriz estavam como "não feito" mas já existem; atualizei a matriz.
 
 ## A. Telas inteiras que ainda não existem no EFCwork (conferido abrindo o app)
 
 > **Feitas e PUBLICADAS na v0.6.16 (15/11, commit 97c1d41):** Qualidade › Não conformidades (com a folha por pessoa) e Qualidade › Bugs e sugestões (com o relatório). Saíram da tabela abaixo.
+> **Feita e publicada na v0.6.18 (15/11; ITENS 70 a 77 aprovados, 78 reprovado):** Relatórios › Rateio = Painel do rateio do EFClaudian (água: 8 quadros; campo: 7), só leitura, `relatorios.js`. Ficam de fora, por já terem casa no EFCwork: Andamento dos planos de coleta e Bebedouros há mais tempo sem coleta (ITEM 75).
 > **Feita e publicada na v0.6.17 (15/11; ITENS 61 a 69 aprovados):** Rateios › Campo, Água e Calibração numa tabela só + Emitir solicitação de compra (rateio.js; dados sv2_coletas, sv2_aguacol, sv2_alm_cal). Saiu da tabela. O Painel continua abaixo (vai para Relatórios).
 | Prioridade | Do EFClaudian | Vai para | Dados (Firebase) |
 |---|---|---|---|
-| must | Rateios › Painel | Relatórios › Rateio | sv2_coletas, sv2_aguacol (só leitura; dpAguaHTML/dpCampoHTML no EFClaudian) |
-| must | Gestão da Qualidade › Relatórios | Relatórios (Documentos, Rateio, Almoxarifado do mês, Apontamentos, Coletas em aberto) | — |
+| must | Gestão da Qualidade › Relatórios | Relatórios (Documentos, Almoxarifado do mês, Apontamentos, Coletas em aberto; o Rateio já está na v0.6.18) | — |
 | must | Gestão da Qualidade › Semana | Relatórios › Semana (relatório semanal) | sv2_resumos (não usada ainda) |
 | must | Almoxarifado › Apresentação | Relatórios › Almoxarifado do mês | sv2_alm_* |
 | must | Documentos › Relatório | Relatórios › Documentos (gráficos) | sv2_docs, sv2_lanc |

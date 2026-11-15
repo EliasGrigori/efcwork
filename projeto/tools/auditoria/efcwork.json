@@ -236,6 +236,28 @@
      "eval": "gvFechar && S.gv && gvFechar(); location.hash='#/adm/empresa'"
     }
    ]
+  },
+  {
+   "nome": "Relatórios · Rateio · Água",
+   "passos": [
+    {
+     "eval": "location.hash='#/relatorios'; S.rl.tipo='agua'; S.rl.aberto=false; render()"
+    },
+    {
+     "espera": 500
+    }
+   ]
+  },
+  {
+   "nome": "Relatórios · Rateio · Campo",
+   "passos": [
+    {
+     "eval": "location.hash='#/relatorios'; S.rl.tipo='campo'; S.rl.aberto=true; render()"
+    },
+    {
+     "espera": 500
+    }
+   ]
   }
  ],
  "ignorar": [

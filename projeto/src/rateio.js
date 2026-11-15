@@ -21,7 +21,7 @@ TB_OCULTAS_PADRAO['rt-lista'] = ['os', 'ps', 'vl', 'qt', 'nf', 'ds', 'tr', 'cu',
 CS_CARGAS.push(() => {
   if (!rtVe()) return;
   /* quem vê Rateios sem ver Coletas ou o Almoxarifado: carrega aqui o que a tabela precisa */
-  const re = () => { if (S.rota.area === 'rateios' || S.rota.area === 'inicio') render(); else if (S.gv) gvDesenha(); };
+  const re = () => { if (S.rota.area === 'rateios' || S.rota.area === 'relatorios' || S.rota.area === 'inicio') render(); else if (S.gv) gvDesenha(); };
   if (!coVe()) { coOuveColetas(re); csOuve('sv2_analises', l => { S.analises = l; re(); }); }
   if (!alVe()) { csOuve('sv2_alm_cal', l => { S.almCal = l; re(); }); csOuve('sv2_alm_equip', l => { S.almEq = l; re(); }); }
 });

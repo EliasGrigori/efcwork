@@ -6,7 +6,7 @@ const AR_PLANO = {
   inspecoes: ['Cloro', 'Apontamentos, com o relatório como botão', 'Auditoria interna (RNC)'],
   documentos: ['Documentos com o resumo no topo', 'Caixas d’água', 'Histórico (lançamentos e correções, com filtro)'],
   qualidade: ['Semana (relatório semanal)', 'Conversas dentro de cada registro'],
-  relatorios: ['Documentos (gráficos)', 'Rateio', 'Almoxarifado do mês', 'Apontamentos', 'Coletas em aberto', 'Semana']
+  relatorios: ['Documentos (gráficos)', 'Almoxarifado do mês', 'Apontamentos', 'Coletas em aberto', 'Semana']
 };
 function arEmBreve(ar) {
   const aba = ar.abas.find(x => x.id === S.rota.aba);
