@@ -55,6 +55,8 @@ Coluna "Estado": **Conferida** = conferida contra as regras em 06/11; **Trecho**
 | `sv2_prog` | coletas, programação, plano | criar, atualizar | EFClaudian |
 | `sv2_rodizio` | plano, programação | criar, atualizar | EFClaudian; **campos novos na seção 1** |
 | `sv2_analise` | análise, ANP | criar, atualizar | EFClaudian |
+| `sv2_bugs` | bugs e sugestões (v0.6.16) | ler, criar, acrescentar passo no histórico (Administrador) | EFClaudian |
+| `sv2_bugs_foto` | bugs e sugestões (v0.6.16) | ler, criar (a imagem do relato) | EFClaudian |
 | `sv2_analises` | programação | só ler | EFClaudian |
 | `sv2_talhoes` | programação | só ler | EFClaudian |
 | `sv2_fotos` | apontamentos, coletas | ler, gravar, atualizar | EFClaudian |

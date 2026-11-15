@@ -147,6 +147,50 @@
    ]
   },
   {
+   "nome": "Qualidade › Não conformidades",
+   "passos": [
+    {
+     "eval": "location.hash='#/qualidade/nc'"
+    }
+   ]
+  },
+  {
+   "nome": "Folha por pessoa (gaveta)",
+   "passos": [
+    {
+     "eval": "location.hash='#/qualidade/nc'"
+    },
+    {
+     "espera": 400
+    },
+    {
+     "eval": "lcAbrir({ k: 'nqFolha', pes: '', sit: 'abertas' })"
+    }
+   ]
+  },
+  {
+   "nome": "Qualidade › Bugs e sugestões",
+   "passos": [
+    {
+     "eval": "location.hash='#/qualidade/bugs'"
+    }
+   ]
+  },
+  {
+   "nome": "Reportar problema (gaveta)",
+   "passos": [
+    {
+     "eval": "location.hash='#/qualidade/bugs'"
+    },
+    {
+     "espera": 400
+    },
+    {
+     "eval": "bsNovo('bug')"
+    }
+   ]
+  },
+  {
    "nome": "Novo treinamento (gaveta)",
    "passos": [
     {

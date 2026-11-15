@@ -34,7 +34,7 @@ function refHTML(it) {
 function vivoHTML(it) {
   const v = it.vivo;
   return '<div class="vivo" data-n="' + it.n + '"><div class="vbar"><button type="button" class="bt pr" data-v="abre">Ver funcionando no app</button>' +
-    '<span class="vctl" hidden>' + (v.feito ? '<span class="vjafeito">Já está no app (v0.6.15, não publicada)</span>' : '<span class="seg" role="group" aria-label="Versão"><button type="button" data-v="hoje" aria-pressed="false">HOJE</button><button type="button" data-v="prop" aria-pressed="true">PROPOSTA</button></span>') +
+    '<span class="vctl" hidden>' + (v.feito ? '<span class="vjafeito">' + esc(CFG.jaFeito || 'Já está no app (v0.6.15, não publicada)') + '</span>' : '<span class="seg" role="group" aria-label="Versão"><button type="button" data-v="hoje" aria-pressed="false">HOJE</button><button type="button" data-v="prop" aria-pressed="true">PROPOSTA</button></span>') +
     (v.passos ? '<button type="button" class="bt" data-v="denovo">Ver de novo</button>' : '') +
     (v.so ? '' : '<button type="button" class="bt" data-v="ap" data-ap="pc">PC</button><button type="button" class="bt" data-v="ap" data-ap="cel">Celular</button>') +
     '<button type="button" class="bt" data-v="cheia">Tela cheia</button><button type="button" class="bt" data-v="fecha">Fechar o app</button></span></div>' +

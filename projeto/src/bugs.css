@@ -1,0 +1,21 @@
+/* EFCwork · bugs.css — Qualidade › Bugs e sugestões (v0.6.16) */
+.bs-acs{display:contents}
+@media(max-width:899px){.cs-acts:has(.bs-acs){flex:1 1 100%;width:100%}.bs-acs{display:flex;gap:8px;width:100%}.bs-acs .bt:not(.ic-so){flex:1 1 0;min-width:0;justify-content:center}}
+.tb-bar .bt.ic-so.bs-fin.on{border-color:var(--a);color:var(--aTx);background:var(--aS)}
+.bs-clip{display:inline-flex;vertical-align:-2px;color:var(--tx3)}
+.bs-clip svg{width:14px;height:14px}
+.bs-desc{margin:4px 0 14px;font-size:14px;color:var(--tx);white-space:pre-wrap;overflow-wrap:anywhere}
+@media print{
+  .bs-it{border:.5pt solid #999;border-radius:4pt;margin:0 0 6pt;break-inside:avoid;page-break-inside:avoid}
+  .bs-ih{display:flex;gap:8pt;align-items:baseline;padding:4pt 6pt;background:#eee;font-size:10.5pt}
+  .bs-ih span{margin-left:auto;font-size:9pt;color:#333}
+  .bs-ic{display:grid;grid-template-columns:62mm 1fr auto;gap:8pt;padding:5pt 6pt;align-items:start}
+  .bs-kv{border-collapse:collapse;font-size:8.5pt}
+  .bs-kv th{text-align:left;color:#555;font-weight:400;padding:1pt 6pt 1pt 0;white-space:nowrap;vertical-align:top}
+  .bs-kv td{padding:1pt 0;vertical-align:top}
+  .bs-id{font-size:9.5pt}
+  .bs-id p{margin:0 0 4pt}
+  .bs-id ul{margin:0;padding-left:12pt;font-size:8.5pt;color:#333}
+  .bs-if{max-width:70mm;max-height:52mm;object-fit:contain;border:.5pt solid #bbb;border-radius:3pt}
+}
+.tb[data-tb="bs-fin"] .tb-t td.tb-lg{max-width:240px}

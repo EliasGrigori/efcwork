@@ -1783,6 +1783,48 @@ body.au-apr-on{overflow:hidden}
 .tr-av{color:var(--tx3);font-size:13px}
 .tr-pb{background:none;border:0;padding:0;text-align:left;color:var(--tx);font:inherit;font-size:14px;font-weight:500;cursor:pointer;min-height:28px}.tr-pb:hover{text-decoration:underline;text-decoration-color:var(--a);text-underline-offset:3px}
 
+/* ===== nc.css ===== */
+/* EFCwork · nc.css — Qualidade › Não conformidades (v0.6.16) */
+.nq-n{color:var(--tx3);font-size:12.5px;white-space:nowrap}
+@media(max-width:899px){.cs-acts:has([data-act="nq-folha"]){flex:1 1 100%;width:100%}.cs-acts [data-act="nq-folha"]{width:100%;justify-content:center}}
+@media print{
+  body.au-imprimindo #au-imp[data-modo="qualidade"]{font-size:10pt}
+  .nq-ik{display:grid;grid-template-columns:repeat(5,1fr);gap:6pt;margin:0 0 10pt}
+  .nq-ik span{border:.5pt solid #999;border-radius:4pt;padding:5pt 6pt;display:flex;flex-direction:column;font-size:10pt}
+  .nq-ik small{font-size:8pt;color:#555}
+  .nq-itb td{white-space:normal!important}
+  .nq-itb td:first-child,.nq-itb td:nth-child(4),.nq-itb td:nth-child(5){white-space:nowrap!important}
+  .nq-itb small{color:#444;font-size:8.5pt}
+  .nq-ass{display:flex;gap:18mm;margin-top:14mm}
+  .nq-ass span{flex:1;border-top:.75pt solid #333;padding-top:2mm;font-size:9pt}
+}
+.tb[data-tb="nq-lista"] .tb-t td.tb-lg{max-width:240px}
+.nq-venc{color:var(--cr);font-weight:600}
+.tb[data-tb="nq-lista"] .tb-t td.nq-lo{max-width:150px;overflow:hidden;text-overflow:ellipsis}
+
+/* ===== bugs.css ===== */
+/* EFCwork · bugs.css — Qualidade › Bugs e sugestões (v0.6.16) */
+.bs-acs{display:contents}
+@media(max-width:899px){.cs-acts:has(.bs-acs){flex:1 1 100%;width:100%}.bs-acs{display:flex;gap:8px;width:100%}.bs-acs .bt:not(.ic-so){flex:1 1 0;min-width:0;justify-content:center}}
+.tb-bar .bt.ic-so.bs-fin.on{border-color:var(--a);color:var(--aTx);background:var(--aS)}
+.bs-clip{display:inline-flex;vertical-align:-2px;color:var(--tx3)}
+.bs-clip svg{width:14px;height:14px}
+.bs-desc{margin:4px 0 14px;font-size:14px;color:var(--tx);white-space:pre-wrap;overflow-wrap:anywhere}
+@media print{
+  .bs-it{border:.5pt solid #999;border-radius:4pt;margin:0 0 6pt;break-inside:avoid;page-break-inside:avoid}
+  .bs-ih{display:flex;gap:8pt;align-items:baseline;padding:4pt 6pt;background:#eee;font-size:10.5pt}
+  .bs-ih span{margin-left:auto;font-size:9pt;color:#333}
+  .bs-ic{display:grid;grid-template-columns:62mm 1fr auto;gap:8pt;padding:5pt 6pt;align-items:start}
+  .bs-kv{border-collapse:collapse;font-size:8.5pt}
+  .bs-kv th{text-align:left;color:#555;font-weight:400;padding:1pt 6pt 1pt 0;white-space:nowrap;vertical-align:top}
+  .bs-kv td{padding:1pt 0;vertical-align:top}
+  .bs-id{font-size:9.5pt}
+  .bs-id p{margin:0 0 4pt}
+  .bs-id ul{margin:0;padding-left:12pt;font-size:8.5pt;color:#333}
+  .bs-if{max-width:70mm;max-height:52mm;object-fit:contain;border:.5pt solid #bbb;border-radius:3pt}
+}
+.tb[data-tb="bs-fin"] .tb-t td.tb-lg{max-width:240px}
+
 /* ===== programacao.css ===== */
 /* EFCwork · programacao.css — Coletas › Programação (v0.4.4). Prefixo: pg- */
 .pill.info{background:var(--aS);color:var(--aTx)}
@@ -2371,7 +2413,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = Mov;
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.6.15.3';
+const VERSAO = '0.6.16';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -2776,7 +2818,7 @@ const AREAS = [
   { id: 'inspecoes', nome: 'Inspeções', ic: 'lista', versao: 'v0.6', parcial: 'cloro, apontamentos e auditoria interna prontos aqui', abas: [{ id: 'cloro', nome: 'Cloro' }, { id: 'apontamentos', nome: 'Apontamentos' }, { id: 'auditoria', nome: 'Auditoria interna' }] },
   { id: 'documentos', nome: 'Documentos', ic: 'doc', versao: 'v0.5', parcial: 'documentos, caixas d’água, histórico e impressos prontos aqui; o relatório de documentos segue no EFClaudian', abas: [{ id: 'documentos', nome: 'Documentos' }, { id: 'caixas', nome: 'Caixas d’água' }, { id: 'historico', nome: 'Histórico' }, { id: 'impressos', nome: 'Impressos' }] },
   { id: 'almox', nome: 'Almoxarifado', ic: 'caixa', versao: 'v0.3', parcial: 'consultar e lançar prontos aqui; cadastro de material, kits, fotos e inventário seguem no EFClaudian', abas: [{ id: 'painel', nome: 'Painel' }, { id: 'materiais', nome: 'Materiais' }, { id: 'movimentacoes', nome: 'Movimentações' }, { id: 'solicitacoes', nome: 'Solicitações' }, { id: 'equipamentos', nome: 'Equipamentos' }, { id: 'contagem', nome: 'Contagem', oculta: true, pai: () => typeof cgDoEq === 'function' && cgDoEq() ? 'equipamentos' : 'materiais' }, { id: 'calibracao', nome: 'Calibração', oculta: true, pai: 'equipamentos' }] },
-  { id: 'qualidade', nome: 'Qualidade', ic: 'escudo', versao: 'v0.7', parcial: 'Análise de problemas e Treinamentos prontos aqui; Não conformidades e Bugs seguem no EFClaudian', abas: [{ id: 'nc', nome: 'Não conformidades' }, { id: 'analise', nome: 'Análise de problemas' }, { id: 'treinos', nome: 'Treinamentos' }, { id: 'bugs', nome: 'Bugs e sugestões' }] },
+  { id: 'qualidade', nome: 'Qualidade', ic: 'escudo', versao: 'v0.7', parcial: 'Não conformidades, Análise de problemas, Treinamentos e Bugs e sugestões prontos aqui; Semana e Conversas seguem no EFClaudian', abas: [{ id: 'nc', nome: 'Não conformidades' }, { id: 'analise', nome: 'Análise de problemas' }, { id: 'treinos', nome: 'Treinamentos' }, { id: 'bugs', nome: 'Bugs e sugestões' }] },
   { id: 'relatorios', nome: 'Relatórios', ic: 'graf', versao: 'v0.8', grupo: 'Análise', abas: [] },
   { id: 'adm', nome: 'Administração', ic: 'eng', rodape: true, abas: [{ id: 'empresa', nome: 'Empresa' }, { id: 'aparencia', nome: 'Aparência' }, { id: 'atividade', nome: 'Atividade', get negada() { return !isPrincipal(S.user); } }, { id: 'sobre', nome: 'Sobre' }] }
 ];
@@ -3417,7 +3459,7 @@ function tbHTML(cfg) {
   const res = { fl: fl && todas.length !== (cfg.linhas || []).length, tot: totC.map(c => ({ rot: c.rot, geral: fmtT(c, cfg.linhas || []), val: fmtT(c, todas) })), rod: cfg.rodape ? cfg.rodape(todas) : '' };
   let h = '<div class="tb" data-tb="' + esc(cfg.id) + '" data-res="' + esc(JSON.stringify(res)) + '"><div class="tb-bar">' +
     (tbTemFiltroSolto(cfg) ? '<button type="button" class="tb-limpa" data-act="tb-limpa" data-tb="' + esc(cfg.id) + '">' + ic('x') + '<span>Limpar filtro</span></button>' : '') +
-    (cfg.aEsquerda ? cfg.aEsquerda(todas) : '<span class="tb-cont">' + todas.length + (todas.length !== (cfg.linhas || []).length ? ' de ' + (cfg.linhas || []).length : '') +  ' ' + esc(tbUn(cfg, (cfg.linhas || []).length)) + '</span>') + tbTetoHTML(cfg) + '<span class="tb-sp"></span>' + tbTotal(cfg, cols, todas, fl) +
+    (cfg.aEsquerda ? cfg.aEsquerda(todas) : '<span class="tb-cont">' + todas.length + (todas.length !== (cfg.linhas || []).length ? ' de ' + (cfg.linhas || []).length : '') +  ' ' + esc(tbUn(cfg, (cfg.linhas || []).length)) + '</span>') + tbTetoHTML(cfg) + '<span class="tb-sp"></span>' + tbTotal(cfg, cols, todas, fl) + (cfg.antesIcones || '') +
     '<button type="button" class="bt ic-so" data-act="tb-cols" data-tb="' + esc(cfg.id) + '" title="Escolher colunas" aria-label="Escolher colunas">' + ic('colunas') + '</button>' +
     '<button type="button" class="bt ic-so" data-act="tb-xlsx" data-tb="' + esc(cfg.id) + '" title="Baixar planilha (.xlsx)" aria-label="Baixar planilha (.xlsx)">' + ic('planilha') + '</button>' +
     '<button type="button" class="bt ic-so" data-act="tb-imp" data-tb="' + esc(cfg.id) + '" title="Imprimir" aria-label="Imprimir">' + ic('impressora') + '</button></div>';
@@ -3639,7 +3681,8 @@ function tbPlanilha(id) {
   plBaixar(plXlsx(cfg.titulo, d.cab, d.linhas), nome); aviso('Planilha baixada: ' + nome);
 }
 function tbImprimir(id) {
-  const cfg = TB[id]; if (!cfg) return; const d = tbLinhasTexto(cfg), e = S.empresa || {};
+  const cfg = TB[id]; if (!cfg) return; if (cfg.imprimir) { cfg.imprimir(); return; } /* tela com relatório próprio (ex.: Bugs e sugestões) */
+  const d = tbLinhasTexto(cfg), e = S.empresa || {};
   let p = $('#tb-imp'); if (!p) { p = document.createElement('div'); p.id = 'tb-imp'; document.body.appendChild(p); }
   p.innerHTML = '<div class="imp-cab"><b>' + esc(cfg.titulo) + '</b><span>' + esc(e.nome || '') + ' · ' + esc(fmtD(hojeISO())) + ' · ' + d.linhas.length + ' ' + esc(tbUn(cfg, d.linhas.length)) + '</span></div><table><thead><tr>' + d.cab.map(c => '<th>' + esc(c) + '</th>').join('') + '</tr></thead><tbody>' +
     d.linhas.map(l => '<tr>' + l.map(v => '<td' + (typeof v === 'number' ? ' class="n"' : '') + '>' + esc(typeof v === 'number' ? numBR(v) : v) + '</td>').join('') + '</tr>').join('') + '</tbody></table><div class="imp-pe">' + APP_APELIDO + '</div>';
@@ -5725,6 +5768,7 @@ function snAbreRef(n) {
     treinamento: () => typeof trAbre === 'function' && (vai('qualidade', 'treinos'), trAbre(id), true),
     analise: () => typeof anAbrir === 'function' && (vai('qualidade', 'analise'), anAbrir({ t: 'anp', id: id }), true),
     rnc_plano: () => (vai('qualidade', 'analise'), true),
+    bug: () => typeof bsAbre === 'function' && (vai('qualidade', 'bugs'), (S.bugs || []).some(b => b.id === id) && bsAbre(id), true), /* v0.6.16 */
     rnc: () => { S.auRid = id; vai('inspecoes', 'auditoria'); return true; },
     coleta: () => typeof coAbre === 'function' && S.coletas && S.coletas.some(c => c.id === id) ? (vai('coletas', 'amostras'), coAbre(id), true) : (vai('coletas', 'amostras'), true),
     coleta_envio: () => (vai('coletas', 'envio'), true),
@@ -9028,7 +9072,7 @@ const AP_MAX_FOTOS = 5, AP_FOTO_DIAS = 30, AP_REIN_DIAS = 30;
 const AP_FILTROS = [['semana', 'Esta semana'], ['abertos', 'Em aberto'], ['meus', 'Meus'], ['todos', 'Todos']];
 
 CS_CARGAS.push(() => {
-  csOuve('sv2_apont', l => { S.apont = (l || []).filter(a => !a.teste); if (S.rota.area === 'inspecoes') render(); else if (S.gv) gvDesenha(); }, { order: 'criadoEm', limit: 2000 });
+  csOuve('sv2_apont', l => { S.apont = (l || []).filter(a => !a.teste); if (S.rota.area === 'inspecoes' || (S.rota.area === 'qualidade' && S.rota.aba === 'nc')) render(); /* v0.6.16: a aba Não conformidades também lê */ else if (S.gv) gvDesenha(); }, { order: 'criadoEm', limit: 2000 });
 });
 
 const apCat = id => AP_CATS.find(c => c[0] === id) || AP_CATS[AP_CATS.length - 1];
@@ -9439,7 +9483,7 @@ CS_CARGAS.push(() => {
 });
 function auRedesenha() {
   if (typeof auAprDesenha === 'function' && S.auAp && !S.auAp.ed) auAprDesenha(); /* corrigindo: não redesenha (não perde o que está sendo digitado) */
-  if (S.rota.area === 'inspecoes' && S.rota.aba === 'auditoria') render(); else if (S.gv) gvDesenha();
+  if ((S.rota.area === 'inspecoes' && S.rota.aba === 'auditoria') || (S.rota.area === 'qualidade' && S.rota.aba === 'nc')) render(); else if (S.gv) gvDesenha(); /* v0.6.16: Qualidade › Não conformidades */
 }
 
 /* ---------- regras e leitura ---------- */
@@ -10795,6 +10839,314 @@ document.addEventListener('click', e => {
 BG_FONTES.push(q => S.trn.filter(x => bgCasa(q, [x.titulo, x.instrutorNome, x.local, trPart(x).map(p => p.nome).join(' ')].join(' '))).slice(0, 6).map(x => ({ grupo: 'Treinamentos', nome: x.titulo, sub: fmtD(x.data) + ' · ' + (TR_SIT[x.situacao] || TR_SIT.programado)[0] + (x.instrutorNome ? ' · ' + x.instrutorNome : ''), ico: 'pessoas',
   abrir: () => { if (S.rota.area !== 'qualidade' || S.rota.aba !== 'treinos') { S._gvNav = true; ir('qualidade', 'treinos'); } trAbre(x.id); } })));
 
+/* ===== nc.js ===== */
+/* EFCwork · nc.js — Qualidade › Não conformidades (v0.6.16). Prefixo: nq.
+   Como no EFClaudian v2.102.41/50: a aba JUNTA as NCs dos apontamentos (sv2_apont, campo nc) e as das auditorias internas
+   (sv2_rnc, depois de enviada a RNC). Não há coleção nova e nada se grava aqui: a tabela só lê, e cada linha abre a gaveta
+   da origem (o apontamento ou a NC da auditoria), onde ficam as ações de sempre (Fechar NC, Conferir o retorno, Análise).
+   Situação da NC da auditoria: fechada = RNC fechada ou retorno "Resolvida"; vencida = passou do prazo da RNC; senão aberta.
+   Folha por pessoa: as NCs de um responsável ou corresponsável, em A4 em pé, com o "ciente em ___/___/______". */
+const NQ_SIT = { vencida: ['Vencida', 'cr'], aberta: ['Aberta', 'wa'], fechada: ['Fechada', 'ok'] };
+const NQ_GRUPOS = [['vencida', 'Vencidas'], ['aberta', 'Abertas'], ['fechada', 'Fechadas']];
+const NQ_FOLHA = [['abertas', 'Abertas (inclui as vencidas)'], ['vencidas', 'Só as vencidas'], ['fechadas', 'Fechadas'], ['todas', 'Todas']];
+TB_OCULTAS_PADRAO['nq-lista'] = ['co', 'gu', 'tr']; /* Corresponsáveis e Tratamento começam escondidos (estão em Colunas e na gaveta) */
+
+function nqRncSit(r, n) { if (r.situacao === 'fechada' || (n.ret && n.ret.res === 'resolvida')) return 'fechada'; return r.prazo && r.prazo < hojeISO() ? 'vencida' : 'aberta'; }
+function nqItens() {
+  const ap = (S.apont || []).filter(a => a.nc).map(a => ({ key: 'ap|' + a.id, k: 'ap', a: a, prazo: a.nc.prazo || '', sit: apNcSit(a) }));
+  const rn = []; auLista().forEach(r => { if (auSit(r) === 'registro') return; auNcs(r).forEach(n => rn.push({ key: 'au|' + r.id + '|' + n.id, k: 'au', r: r, n: n, prazo: r.prazo || '', sit: nqRncSit(r, n) })); });
+  const gi = s => NQ_GRUPOS.findIndex(g => g[0] === s);
+  return ap.concat(rn).sort((x, y) => gi(x.sit) - gi(y.sit) || (x.sit === 'fechada' ? String(y.prazo).localeCompare(String(x.prazo)) : String(x.prazo).localeCompare(String(y.prazo))) || (x.k === 'au' && y.k === 'au' ? x.n.n - y.n.n : 0));
+}
+const nqResp = x => x.k === 'ap' ? String(x.a.nc.responsavel || '').trim() : String(x.n.respNome || '').trim();
+const nqCoresp = x => x.k === 'au' ? auCoresp(x.n).map(c => String(c.nome).trim()) : [];
+const nqTexto = x => x.k === 'ap' ? apCat(x.a.categoria)[1] + (x.a.obs ? ' · ' + x.a.obs : '') : (x.n.titulo ? x.n.titulo + ' · ' : '') + (x.n.nc || '');
+const nqLocal = x => x.k === 'ap' ? x.a.setor || '' : x.n.local || '';
+const nqAtraso = x => x.sit === 'vencida' && x.prazo ? Math.max(1, Math.round((new Date(hojeISO() + 'T12:00:00') - new Date(x.prazo + 'T12:00:00')) / 864e5)) : 0;
+const nqAtrasoTxt = x => { const d = nqAtraso(x); return d ? 'vencida há ' + d + (d === 1 ? ' dia' : ' dias') : ''; };
+function nqSitPill(x) { const s = NQ_SIT[x.sit] || NQ_SIT.aberta;
+  return '<span class="pill ' + esc(s[1]) + '">' + esc(s[0]) + '</span>' + (x.k === 'au' && x.n.ret && x.sit !== 'fechada' ? ' <span class="pill ' + esc(AU_RES[x.n.ret.res][1]) + '">' + esc(AU_RES[x.n.ret.res][0]) + '</span>' : ''); }
+function nqGravPill(x) { if (x.k === 'ap') { const g = apGrav(x.a.grav); return '<span class="pill ' + esc(g[2]) + '">' + esc(g[1]) + '</span>'; } return auGravPill(x.n); } /* a GUT fica na gaveta da NC (e na coluna Prioridade GUT, escondida) */
+const nqGut = x => { const g = x.k === 'au' && auGut(x.n.id); return g ? g.gut : null; };
+const nqGrav = x => x.k === 'ap' ? apGrav(x.a.grav)[1] : (AU_GRAV[x.n.grav] || AU_GRAV.baixa)[0];
+const nqTrat = x => x.k === 'au' ? AN_TRAT[anTrat(x.n)] : '';
+const nqDe = key => nqItens().find(x => x.key === key) || null;
+/* quem aparece numa NC: o responsável e os corresponsáveis (pelo nome, como no EFClaudian) */
+function nqPapel(x, p) { if (!p) return ''; const k = auNorm(p); if (auNorm(nqResp(x)) === k) return 'resp'; return nqCoresp(x).some(c => auNorm(c) === k) ? 'co' : ''; }
+function nqPessoas(l) { const m = new Map(), add = v => { const t = String(v || '').trim(); if (t.length >= 2 && !m.has(auNorm(t))) m.set(auNorm(t), t); }; l.forEach(x => { add(nqResp(x)); nqCoresp(x).forEach(add); }); return Array.from(m.values()).sort(cmpTxt); }
+
+/* ---------- tela ---------- */
+function nqTela() {
+  const l = nqItens(), ab = l.filter(x => x.sit !== 'fechada'), venc = l.filter(x => x.sit === 'vencida').length;
+  const meta = ['<span>' + ab.length + (ab.length === 1 ? ' aberta' : ' abertas') + ' de ' + esc(l.length) + '</span>', venc ? metaPl(venc + (venc === 1 ? ' vencida' : ' vencidas'), 'cr', 'alerta') : ''];
+  const acoes = l.length ? '<button type="button" class="bt" data-act="nq-folha" title="Imprimir as NCs de uma pessoa, com o ciente">' + ic('impressora') + 'Folha por pessoa</button>' : '';
+  const c = cabecalho({ titulo: 'Não conformidades', abaNome: 'Não conformidades', meta: meta.filter(Boolean), acoes: acoes });
+  if (!l.length) return c + '<section class="pn"><div class="vazio">' + ic('escudo') + '<b>Nenhuma NC ainda.</b><span>Uma NC nasce de um apontamento (Inspeções › Apontamentos › Abrir NC) ou de uma auditoria interna (Inspeções › Auditoria interna, depois de enviar a RNC).</span></div></section>';
+  return c + tbHTML({ id: 'nq-lista', titulo: 'Não conformidades', unidade: 'NCs', unidade1: 'NC', linhas: l, chave: x => x.key, aoClicar: nqAbre,
+    grupos: { v: x => x.sit, ordem: NQ_GRUPOS }, busca: x => [nqTexto(x), nqLocal(x), nqResp(x), nqCoresp(x).join(' '), x.k === 'au' ? x.r.numero + ' ' + auNum(x.n.n) : 'apontamento'].join(' '), vazio: 'Nenhuma NC com este filtro.',
+    cols: [{ k: 'pz', rot: 'Prazo', tipo: 'data', v: x => x.prazo, html: x => x.prazo ? '<span' + (x.sit === 'vencida' ? ' class="nq-venc"' : '') + '>' + esc(fmtD(x.prazo)) + '</span>' : '', titulo: x => nqAtrasoTxt(x) || (x.prazo ? 'prazo ' + fmtD(x.prazo) : '') },
+      { k: 'si', rot: 'Situação', v: x => (NQ_SIT[x.sit] || NQ_SIT.aberta)[0], html: nqSitPill },
+      { k: 'or', rot: 'Origem', v: x => x.k === 'ap' ? 'Apontamento' : x.r.numero, html: x => x.k === 'ap' ? 'Apontamento' : esc(String(x.r.numero || '').replace(/^RNC-\d{4}-/, 'RNC ')) + ' <span class="nq-n">' + esc(auNum(x.n.n)) + '</span>', titulo: x => x.k === 'ap' ? 'Apontamento de ' + fmtD(x.a.data) : x.r.numero + ' · ' + auNum(x.n.n) },
+      { k: 'lo', rot: 'Local', v: nqLocal, cls: 'nq-lo', titulo: nqLocal },
+      { k: 'nc', rot: 'Não conformidade', v: nqTexto, cls: 'forte', longo: true },
+      { k: 'gr', rot: 'Gravidade', v: nqGrav, html: nqGravPill },
+      { k: 're', rot: 'Responsável', v: x => nqResp(x) || 'Sem responsável', html: x => nqResp(x) ? esc(nqResp(x)) : '<span class="nq-n">sem responsável</span>' },
+      { k: 'co', rot: 'Corresponsáveis', v: x => nqCoresp(x).join(', ') },
+      { k: 'gu', rot: 'Prioridade GUT', tipo: 'num', v: nqGut },
+      { k: 'tr', rot: 'Tratamento', v: nqTrat }] });
+}
+const nqQualOrig = TELAS.qualidade;
+TELAS.qualidade = aba => aba === 'nc' ? nqTela() : nqQualOrig(aba);
+
+/* a linha abre a gaveta da origem por cima desta tela; as ações (Fechar NC, Conferir o retorno, Análise) moram lá */
+function nqAbre(key) { const p = String(key || '').split('|'); if (p[0] === 'ap') apAbre(p[1]); else if (p[0] === 'au') auNcAbre(p[1], p[2]); }
+
+/* ---------- folha por pessoa (A4 em pé, com o ciente) ---------- */
+LC_FORM.nqFolha = f => {
+  const ps = nqPessoas(nqItens()), n = nqFolhaLista(f).length;
+  const c = lcMsg() + '<div class="fm-g cl-fm2">' + lcBl('Pessoa', ddHTML('nq:pes', f.pes, [['', ps.length ? 'Escolha…' : 'Ninguém nas NCs']].concat(ps.map(p => [p, p])))) + lcBl('Quais', ddHTML('nq:sit', f.sit, NQ_FOLHA)) + '</div>' +
+    lcAv(f.pes ? '<b>' + n + (n === 1 ? ' NC' : ' NCs') + '</b> de ' + esc(f.pes) + ' (como responsável ou corresponsável). A folha sai com a linha do ciente para a pessoa assinar.' : 'Escolha a pessoa: entram as NCs em que ela é responsável ou corresponsável.');
+  return { ico: 'impressora', sub: 'Qualidade · Não conformidades', titulo: 'Folha por pessoa', corpo: c, rodape: lcPe('nq-folha-ok', 'Imprimir') };
+};
+DD_AO.nq = (k, v) => { if (!S.fm) return; S.fm[k] = v; S.fm.msg = ''; gvDesenha(true); };
+function nqFolhaLista(f) {
+  const F = { abertas: x => x.sit !== 'fechada', vencidas: x => x.sit === 'vencida', fechadas: x => x.sit === 'fechada', todas: () => true };
+  return !f || !f.pes ? [] : nqItens().filter(x => nqPapel(x, f.pes)).filter(F[f.sit] || F.abertas);
+}
+function nqFolhaOk() {
+  const f = S.fm; if (!f) return; if (!f.pes) return lcErro('Escolha a pessoa.');
+  const l = nqFolhaLista(f); if (!l.length) return lcErro('Nenhuma NC de ' + f.pes + ' neste filtro. Troque em "Quais".');
+  const fNome = (NQ_FOLHA.find(x => x[0] === f.sit) || NQ_FOLHA[0])[1], nR = l.filter(x => nqPapel(x, f.pes) === 'resp').length, e = S.empresa || {};
+  const lin = x => '<tr><td>' + (x.k === 'ap' ? 'Apontamento<br>' + esc(fmtD(x.a.data)) : esc(x.r.numero) + '<br><b>' + esc(auNum(x.n.n)) + '</b>') + '</td><td>' + esc(nqLocal(x)) + '</td><td class="nq-it">' + esc(nqTexto(x)) +
+    (x.k === 'au' && (nqCoresp(x).length || nqPapel(x, f.pes) === 'co') ? '<br><small>Resp.: ' + esc(nqResp(x) || '—') + (nqCoresp(x).length ? ' · Corresp.: ' + esc(nqCoresp(x).join(', ')) : '') + '</small>' : '') + '</td><td>' + (nqPapel(x, f.pes) === 'co' ? 'Corresponsável' : 'Responsável') + '</td><td>' + esc(fmtD(x.prazo) || '—') + '</td><td>' + esc((NQ_SIT[x.sit] || NQ_SIT.aberta)[0]) + (x.k === 'au' && x.n.ret ? ' · ' + esc(AU_RES[x.n.ret.res][0]) : '') + '</td></tr>';
+  const html = '<div class="nq-imp"><div class="au-ic"><b>Não conformidades de ' + esc(f.pes) + '</b><span>' + esc([e.nome, 'emitido em ' + fmtD(hojeISO()) + ' por ' + S.user.nome].filter(Boolean).join(' · ')) + '</span></div>' +
+    '<div class="nq-ik"><span><small>Pessoa</small>' + esc(f.pes) + '</span><span><small>Quais</small>' + esc(fNome) + '</span><span><small>NCs</small>' + esc(l.length) + '</span><span><small>Como responsável</small>' + esc(nR) + '</span><span><small>Como corresponsável</small>' + esc((l.length - nR)) + '</span></div>' +
+    '<table class="au-itb nq-itb"><thead><tr><th>Origem</th><th>Local</th><th>Não conformidade</th><th>Papel</th><th>Prazo</th><th>Situação</th></tr></thead><tbody>' + l.map(lin).join('') + '</tbody></table>' +
+    '<div class="nq-ass"><span>' + esc(f.pes) + ' · ciente em ___/___/______</span><span>Qualidade</span></div></div>';
+  Audit.log({ acao: 'imprimir', entidade: 'nc_pessoa', entidadeId: f.pes, resumo: 'Imprimiu as NCs de ' + f.pes + ' (' + fNome + ', ' + esc(l.length) + ')' });
+  lcFim(); nqImprimir(html, 'Não conformidades de ' + f.pes, false);
+}
+/* impressão em A4 (em pé ou deitado), na mesma camada de impressão da Auditoria (#au-imp) */
+function nqImprimir(html, titulo, deitado) {
+  let el = $('#au-imp'); if (!el) { el = document.createElement('div'); el.id = 'au-imp'; document.body.appendChild(el); }
+  el.innerHTML = html; el.setAttribute('data-modo', 'qualidade');
+  let pg = $('#nq-page'); if (!pg) { pg = document.createElement('style'); pg.id = 'nq-page'; document.head.appendChild(pg); }
+  pg.textContent = '@media print{@page{size:A4 ' + (deitado ? 'landscape' : 'portrait') + ';margin:10mm}}';
+  const t0 = document.title; document.title = titulo; document.body.classList.add('au-imprimindo');
+  setTimeout(() => { try { window.print(); } catch {} document.body.classList.remove('au-imprimindo'); document.title = t0; const p2 = $('#nq-page'); if (p2) p2.remove(); }, 80);
+}
+
+document.addEventListener('click', e => {
+  const t = e.target.closest && e.target.closest('[data-act^="nq-"]'); if (!t) return;
+  const a = t.getAttribute('data-act');
+  if (a === 'nq-folha') { const tb = S.tb['nq-lista'], c = tb && tb.cf && tb.cf.re, pes = c && c.sel && c.sel.length === 1 ? c.sel[0] : ''; lcAbrir({ k: 'nqFolha', pes: pes && pes !== 'Sem responsável' ? pes : '', sit: 'abertas' }); }
+  else if (a === 'nq-folha-ok') nqFolhaOk();
+});
+
+/* ===== bugs.js ===== */
+/* EFCwork · bugs.js — Qualidade › Bugs e sugestões (v0.6.16). Prefixo: bs.
+   Mesmo dado do EFClaudian v2.80/v2.92: sv2_bugs (um documento por relato) e sv2_bugs_foto/{id do relato} (a imagem, à parte;
+   o relato guarda temFoto). QUALQUER pessoa reporta um problema ou sugere uma melhoria, com imagem opcional; o app anota sozinho
+   a versão, a tela onde a pessoa estava e o aparelho. O Administrador recebe o aviso e muda a situação (Em análise, Resolvido na
+   versão X, Não procede com motivo, Reabrir); quem reportou é avisado no sino. Nada se apaga. Campo novo só do EFCwork: app
+   ('efcwork'), para saber de qual app veio o relato (o EFClaudian ignora). */
+const BS_TIPOS = { bug: ['Problema', 'cr'], sugestao: ['Sugestão', ''] };
+const BS_SIT = { novo: ['Novo', 'wa'], analise: ['Em análise', ''], resolvido: ['Resolvido', 'ok'], naoprocede: ['Não procede', ''] };
+/* ITEM 57 (15/11): a tabela mostra só o que está em aberto; resolvidos e não procede ficam juntos em Finalizados (botão-ícone só desta aba),
+   na ordem da data em que foram finalizados (finalizadoEm; nos antigos, a data do passo que fechou). */
+const BS_FOTO_MAX = 240000; /* o mesmo teto do EFClaudian para a imagem do relato */
+Object.assign(S, { bugs: [], _bsFotos: {}, _bsFin: false });
+TB_OCULTAS_PADRAO['bs-fin'] = ['dt']; /* nos Finalizados a data que conta é a de finalizado; a de envio fica em Colunas */
+const bsAberto = b => !b.status || b.status === 'novo' || b.status === 'analise';
+const bsDe = id => S.bugs.find(b => b.id === id) || null;
+const bsPode = () => isPrincipal(S.user);
+const bsVersao = () => APP_NOME + ' v' + VERSAO;
+function bsAreaNome(id) { const a = AREAS.find(x => x.id === id && x.id !== 'inicio' && x.id !== 'adm'); return a ? a.nome : 'Geral'; }
+const bsAreasOpc = () => AREAS.filter(a => a.id !== 'inicio' && a.id !== 'adm' && !a.negada).map(a => [a.id, a.nome]).concat([['geral', 'Geral / outra']]);
+
+CS_CARGAS.push(() => {
+  csOuve('sv2_bugs', l => { S.bugs = l || []; if (S.rota.area === 'qualidade' && S.rota.aba === 'bugs') render(); else if (S.gv) gvDesenha(); }, { order: 'ts', limit: 500 });
+});
+/* a tela onde a pessoa estava antes de abrir Bugs e sugestões (para "Em qual parte do app" já vir certo) */
+window.addEventListener('hashchange', e => { const h = String((e.oldURL || '').split('#')[1] || '').replace(/^\//, ''); if (h && h.indexOf('qualidade/bugs') !== 0) S._bsAntes = h.split('?')[0]; });
+
+/* dois envios ao mesmo tempo (ou um sem internet) podem pegar o mesmo número: o mais novo aparece como 12-b (como no EFClaudian) */
+function bsNum(b) {
+  const n = Number(b && b.numero) || 0; if (!n) return '';
+  const l = S.bugs.filter(x => (Number(x.numero) || 0) === n).sort((x, y) => String(x.ts || '').localeCompare(String(y.ts || '')) || String(x.id).localeCompare(String(y.id)));
+  const k = l.findIndex(x => x.id === b.id); return String(n) + (k > 0 ? '-' + String.fromCharCode(97 + Math.min(k, 25)) : '');
+}
+const bsSitPill = b => { const s = BS_SIT[b.status || 'novo'] || BS_SIT.novo; return '<span class="pill ' + esc(s[1]) + '">' + esc(s[0] + (b.status === 'resolvido' && b.versaoResolvido ? ' · ' + b.versaoResolvido : '')) + '</span>'; };
+const bsTipoPill = b => { const t = BS_TIPOS[b.tipo] || BS_TIPOS.bug; return '<span class="pill ' + esc(t[1]) + '">' + esc(t[0]) + '</span>'; };
+function bsFimEm(b) { if (bsAberto(b)) return ''; if (b.finalizadoEm) return b.finalizadoEm; const h = (b.hist || []).filter(x => x.status === b.status).pop(); return (h && h.ts) || b.atualizadoEm || b.ts || ''; }
+
+/* ---------- tela ---------- */
+function bsTela() {
+  const ab = S.bugs.filter(bsAberto).sort((a, b) => String(b.ts).localeCompare(String(a.ts))), fin = S.bugs.filter(b => !bsAberto(b)).sort((a, b) => String(bsFimEm(b)).localeCompare(String(bsFimEm(a))));
+  if (S._bsFin && !fin.length) S._bsFin = false;
+  const vf = S._bsFin, nv = ab.filter(b => (b.status || 'novo') === 'novo').length;
+  const meta = vf ? ['<span>' + esc(fin.length) + (fin.length === 1 ? ' finalizado' : ' finalizados') + ' · ' + esc(ab.length) + ' em aberto</span>'] : ['<span>' + esc(ab.length) + ' em aberto</span>', bsPode() && nv ? metaPl(nv + (nv === 1 ? ' novo para ver' : ' novos para ver'), 'wa', 'alerta') : ''];
+  const tFin = vf ? 'Voltar para os em aberto' : 'Finalizados: resolvidos e não procede (' + fin.length + ')';
+  const acoes = '<div class="bs-acs"><button type="button" class="bt pr" data-act="bs-novo">' + ic('mais') + 'Reportar ou sugerir</button></div>';
+  /* v0.6.16 (Elias, 15/11): o botão Finalizados fica na barra da tabela, ao lado de Colunas, no mesmo tamanho dos outros; a impressora da barra gera o relatório com descrição e imagens */
+  const antes = fin.length ? '<button type="button" class="bt ic-so bs-fin' + (vf ? ' on' : '') + '" data-act="bs-fin" aria-pressed="' + (vf ? 'true' : 'false') + '" title="' + esc(tFin) + '" aria-label="' + esc(tFin) + '">' + ic('ok') + '</button>' : '';
+  const c = cabecalho({ titulo: vf ? 'Bugs e sugestões · Finalizados' : 'Bugs e sugestões', abaNome: 'Bugs e sugestões', meta: meta.filter(Boolean), acoes: acoes });
+  if (!S.bugs.length) return c + '<section class="pn"><div class="vazio">' + ic('alerta') + '<b>Nenhum problema ou sugestão ainda.</b><span>Deu algo errado no app ou tem uma ideia que ajuda no dia a dia? Conte aqui. Um print ajuda muito. O Administrador acompanha e responde.</span></div></section>';
+  const cols = [{ k: 'nu', rot: 'Nº', tipo: 'num', v: b => Number(b.numero) || null, html: b => esc(bsNum(b)) },
+    { k: 'ti', rot: 'Tipo', v: b => (BS_TIPOS[b.tipo] || BS_TIPOS.bug)[0], html: bsTipoPill },
+    { k: 'tt', rot: 'Título', v: b => b.titulo || '', cls: 'forte', longo: true, html: b => esc(b.titulo || '') + (b.foto || b.temFoto ? ' <i class="bs-clip" title="Com imagem">' + ic('imagem') + '</i>' : '') },
+    { k: 'ar', rot: 'Parte do app', v: b => bsAreaNome(b.area) },
+    { k: 'qm', rot: 'Quem', v: b => b.porNome || '' },
+    { k: 'dt', rot: 'Data', tipo: 'data', v: b => b.ts ? diaLocal(b.ts) : '' }];
+  if (vf) cols.push({ k: 'fi', rot: 'Finalizado em', tipo: 'data', v: b => bsFimEm(b) ? diaLocal(bsFimEm(b)) : '' });
+  cols.push({ k: 'st', rot: 'Situação', v: b => (BS_SIT[b.status || 'novo'] || BS_SIT.novo)[0], html: bsSitPill });
+  return c + tbHTML({ id: vf ? 'bs-fin' : 'bs-lista', titulo: vf ? 'Bugs e sugestões finalizados' : 'Bugs e sugestões em aberto', unidade: 'relatos', unidade1: 'relato', linhas: vf ? fin : ab, aoClicar: bsAbre, antesIcones: antes, imprimir: bsPdf,
+    busca: b => [bsNum(b), b.titulo, b.descricao, b.porNome, bsAreaNome(b.area), b.versao, b.versaoResolvido].join(' '), vazio: vf ? 'Nada finalizado com este filtro.' : 'Nada em aberto. Os resolvidos e os que não procedem estão em Finalizados (botão ao lado de Colunas, na barra da tabela).', cols: cols });
+}
+const bsQualOrig = TELAS.qualidade;
+TELAS.qualidade = aba => aba === 'bugs' ? bsTela() : bsQualOrig(aba);
+
+/* ---------- reportar / sugerir ---------- */
+function bsNovo(tipo) { /* ITEM 58 (15/11): um botão só; o tipo se escolhe na janela */
+  const ar = String(S._bsAntes || '').split('/')[0], opc = bsAreasOpc();
+  lcAbrir({ k: 'bsNovo', tipo: tipo === 'sugestao' ? 'sugestao' : 'bug', area: opc.some(o => o[0] === ar) ? ar : 'geral', tela: S._bsAntes || '', titulo: '', desc: '', foto: '' });
+}
+LC_FORM.bsNovo = f => {
+  const bug = f.tipo === 'bug';
+  const c = lcMsg() + apPasso(1, 'O que é') + '<div class="fm-g cl-fm2">' + lcBl('Tipo', ddHTML('bs:tipo', f.tipo, [['bug', 'Problema'], ['sugestao', 'Sugestão']])) + lcBl('Em qual parte do app', ddHTML('bs:area', f.area, bsAreasOpc())) + '</div>' +
+    apPasso(2, bug ? 'O que aconteceu' : 'Como seria') + lcBl('Título curto', lcIn('titulo', f.titulo, ' maxlength="90" placeholder="' + (bug ? 'ex.: a tabela sobe quando seleciono um item' : 'ex.: filtro por laboratório nos laudos') + '"')) +
+    lcBl(bug ? 'Passo a passo, se puder' : 'A ideia e por que ajuda', lcTx('desc', f.desc, bug ? 'o que você fez, o que apareceu e o que esperava' : 'como funcionaria no dia a dia')) +
+    apPasso(3, 'Imagem', 'opcional') + bsFotoBl(f) +
+    lcAv('O app anota sozinho a versão (' + esc(bsVersao()) + '), a tela onde você estava e o aparelho. O Administrador recebe o aviso e responde no sino.');
+  return { ico: bug ? 'alerta' : 'mais', sub: 'Qualidade · Bugs e sugestões · ' + S.user.nome, titulo: 'Reportar ou sugerir', corpo: c, rodape: lcPe('bs-novo-ok', 'Enviar') };
+};
+function bsFotoBl(f) {
+  return '<div class="ap-fot">' + (imgSrc(f.foto) ? '<span class="ap-ft"><img src="' + imgSrc(f.foto) + '" alt="Imagem anexada"><button type="button" class="bt ic-so" data-act="bs-foto-x" title="Tirar a imagem" aria-label="Tirar a imagem">' + ic('x') + '</button></span>'
+    : '<label class="bt">' + ic('imagem') + 'Escolher imagem<input type="file" accept="image/*" data-bsfoto-in hidden></label>') + '</div><small class="cl-nt">Um print da tela ou uma foto do que aconteceu.</small>';
+}
+DD_AO.bs = (k, v) => { if (!S.fm) return; S.fm[k] = v; S.fm.sujo = true; S.fm.msg = ''; gvDesenha(true); };
+/* a imagem fica até 240 KB, como no EFClaudian (lado maior 1280 px, fundo branco para print com transparência) */
+function bsReduz(arq) {
+  return new Promise((ok, erro) => {
+    const r = new FileReader(); r.onerror = () => erro(new Error('Não deu para ler a imagem.'));
+    r.onload = () => { const im = new Image(); im.onerror = () => erro(new Error('Esse arquivo não é uma imagem.')); im.onload = () => {
+      let lado = 1280, q = .82, url = '';
+      for (let n = 0; n < 8; n++) { const k = Math.min(1, lado / Math.max(im.width, im.height)), cv = document.createElement('canvas'); cv.width = Math.max(1, Math.round(im.width * k)); cv.height = Math.max(1, Math.round(im.height * k));
+        const x = cv.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, cv.width, cv.height); x.drawImage(im, 0, 0, cv.width, cv.height); url = cv.toDataURL('image/jpeg', q); if (url.length <= BS_FOTO_MAX) break; q = Math.max(.5, q - .08); lado = Math.round(lado * .85); }
+      url.length <= BS_FOTO_MAX ? ok(url) : erro(new Error('A imagem ficou grande demais. Tente um print menor.')); }; im.src = r.result; };
+    r.readAsDataURL(arq);
+  });
+}
+document.addEventListener('change', async e => {
+  const t = e.target; if (!t || !t.hasAttribute || !t.hasAttribute('data-bsfoto-in') || !S.fm || !t.files || !t.files.length) return;
+  const a = t.files[0]; t.value = '';
+  try { const u = await bsReduz(a); if (!S.fm) return; S.fm.foto = u; S.fm.sujo = true; S.fm.msg = ''; gvDesenha(true); } catch (er) { lcErro(er.message); }
+});
+const bsAparelho = () => (innerWidth < 860 ? 'celular' : 'computador') + ' · ' + innerWidth + '×' + innerHeight;
+async function bsNovoOk() {
+  const f = S.fm, u = S.user; if (!f || !u) return;
+  const tit = String(f.titulo || '').trim(), desc = String(f.desc || '').trim();
+  if (tit.length < 4) return lcErro('Escreva um título curto (pelo menos 4 letras).');
+  if (desc.length < 8) return lcErro('Conte um pouco mais na descrição (pelo menos 8 letras).');
+  if (!lcTravar()) return;
+  const ts = nowISO(), numero = S.bugs.reduce((m, b) => Math.max(m, Number(b.numero) || 0), 0) + 1, id = 'bg' + uid(), bug = f.tipo !== 'sugestao';
+  const o = { numero: numero, tipo: bug ? 'bug' : 'sugestao', area: f.area || 'geral', titulo: tit, descricao: desc, foto: '', status: 'novo', versao: bsVersao(), app: 'efcwork', tela: f.tela || '', aparelho: bsAparelho(),
+    porId: u.id, porNome: u.nome, ts: ts, hist: [{ ts: ts, porNome: u.nome, status: 'novo', texto: 'Enviado' }] };
+  try {
+    if (f.foto) { try { await Data.col('sv2_bugs_foto').set(id, { bugId: id, dataUrl: f.foto, porId: u.id, ts: ts }); S._bsFotos[id] = f.foto; o.temFoto = true; }
+      catch (er) { if (!(er && er.code === 'permission-denied')) throw er; o.foto = f.foto; console.warn('sv2_bugs_foto sem regra: a imagem vai dentro do relato'); } }
+    await Data.col('sv2_bugs').set(id, o);
+    if (!S.bugs.some(b => b.id === id)) S.bugs.push(Object.assign({ id: id }, o));
+    const para = S.users.filter(x => isPrincipal(x) && !x.bloqueado && x.id !== u.id).map(x => x.id);
+    if (para.length) Notif.send({ nivel: bug ? 'aviso' : 'info', titulo: (bug ? 'Problema reportado' : 'Sugestão nova') + ' · nº ' + numero, texto: u.nome + ': ' + tit, para: para, refTipo: 'bug', refId: id }).catch(() => {});
+    Audit.log({ acao: bug ? 'bug_reportar' : 'sugestao_enviar', entidade: 'bug', entidadeId: id, resumo: 'Nº ' + numero + ' · ' + tit });
+    lcFim(); aviso(bug ? 'Problema enviado. Obrigado!' : 'Sugestão enviada. Obrigado!');
+  } catch (er) { if (S.fm) S.fm._trava = 0; lcErro(svErro(er)); }
+}
+
+/* ---------- detalhe ---------- */
+function bsFotoDe(b) { const f = String((b && (b.foto || S._bsFotos[b.id])) || ''); return imgSrc(f) ? f : ''; }
+function bsFotoCarrega(b) { if (!b || !b.temFoto || b.foto || S._bsFotos[b.id] !== undefined) return Promise.resolve();
+  S._bsFotos[b.id] = ''; return Data.col('sv2_bugs_foto').get(b.id).then(d => { S._bsFotos[b.id] = (d && d.dataUrl) || ''; }).catch(() => { delete S._bsFotos[b.id]; }); }
+function bsAbre(id) { S._bsGv = id; const b = bsDe(id); gvAbrir(() => bsGaveta(id)); if (b && b.temFoto && !bsFotoDe(b)) bsFotoCarrega(b).then(() => { if (S._bsGv === id && S.gv) gvDesenha(); }); }
+function bsEtapas(b) {
+  const es = (b.hist || []).map((h, i) => ({ nome: i === 0 ? 'Enviado por ' + (h.porNome || b.porNome || '') : (BS_SIT[h.status] || [h.status || ''])[0], feito: true, data: h.ts ? diaLocal(h.ts) : '', txt: i === 0 ? '' : h.texto || '', quem: i === 0 ? '' : [h.porNome, h.ts ? fmtDT(h.ts) : ''].filter(Boolean).join(' · ') }));
+  if (bsAberto(b)) es.push({ nome: 'Resposta do Administrador', feito: false, atual: true, txt: 'resolvido em uma versão ou não procede, com o motivo' });
+  return es;
+}
+function bsGaveta(id) {
+  const b = bsDe(id); if (!b) { S._bsGv = null; return null; }
+  const f = bsFotoDe(b);
+  let c = '<p class="bs-desc">' + esc(b.descricao || '') + '</p>';
+  if (f) c += '<div class="ap-gal"><button type="button" class="ap-fi" data-act="bs-foto-ver" data-id="' + esc(b.id) + '"><img src="' + imgSrc(f) + '" alt="Imagem anexada"></button></div>';
+  else if (b.temFoto) c += '<p class="cl-nt">' + (S._bsFotos[b.id] === '' ? 'Carregando a imagem…' : 'Não deu para carregar a imagem agora.') + '</p>';
+  c += gvCampos([['Quem', b.porNome || ''], ['Quando', b.ts ? fmtDT(b.ts) : ''], ['Parte do app', bsAreaNome(b.area) + (b.tela ? ' (' + esc(b.tela) + ')' : '')], ['Versão', b.versao || ''], ['Aparelho', b.aparelho || ''], ['Resolvido na versão', b.versaoResolvido || '']]);
+  c += '<p class="gv-h">Andamento</p>' + tlFluido('bs' + b.id, bsEtapas(b));
+  let pe = '';
+  if (bsPode()) pe = bsAberto(b) ? (b.status !== 'analise' ? '<button type="button" class="bt" data-act="bs-sit" data-id="' + esc(b.id) + '" data-s="analise">Em análise</button>' : '') +
+      '<button type="button" class="bt" data-act="bs-sit" data-id="' + esc(b.id) + '" data-s="naoprocede">Não procede</button><button type="button" class="bt pr" data-act="bs-sit" data-id="' + esc(b.id) + '" data-s="resolvido">' + ic('ok') + 'Resolvido</button>'
+    : '<button type="button" class="bt" data-act="bs-sit" data-id="' + esc(b.id) + '" data-s="analise">Reabrir</button>';
+  return { ico: b.tipo === 'sugestao' ? 'mais' : 'alerta', sub: 'Nº ' + bsNum(b) + ' · ' + bsAreaNome(b.area), titulo: b.titulo || '', pill: bsTipoPill(b) + ' ' + bsSitPill(b), corpo: c, rodape: pe ? '<div class="ap-pe">' + pe + '</div>' : '' };
+}
+
+/* ---------- mudar a situação (só o Administrador) ---------- */
+const BS_ST_TIT = { analise: 'Em análise', naoprocede: 'Não procede', resolvido: 'Resolvido' };
+LC_FORM.bsSit = f => { const b = bsDe(f.id); if (!b) return null; const re = !bsAberto(b) && f.st === 'analise';
+  const c = lcMsg() + (f.st === 'resolvido' ? lcBl('Resolvido na versão', lcIn('ver', f.ver, ' maxlength="40" placeholder="ex.: EFCwork v0.6.16"')) : '') +
+    lcBl(f.st === 'naoprocede' ? 'Motivo' : 'Resposta', lcTx('txt', f.txt, f.st === 'naoprocede' ? 'obrigatório · vai para quem reportou' : 'opcional · vai para quem reportou')) +
+    lcAv(b.porNome && b.porId !== S.user.id ? esc(b.porNome) + ' recebe o aviso no sino.' : 'Fica no andamento do relato.');
+  return { ico: f.st === 'resolvido' ? 'ok' : 'lapis', sub: 'Nº ' + bsNum(b) + ' · ' + b.titulo, titulo: re ? 'Reabrir' : BS_ST_TIT[f.st], corpo: c, rodape: lcPe('bs-sit-ok', re ? 'Reabrir' : 'Salvar') }; };
+async function bsSitOk() {
+  const f = S.fm, b = f && bsDe(f.id); if (!b || !bsPode() || !BS_SIT[f.st]) return lcErro('Só o Administrador muda a situação.');
+  const txt = String(f.txt || '').trim(), ver = String(f.ver || '').trim(), st = f.st, re = !bsAberto(b) && st === 'analise';
+  if (st === 'naoprocede' && txt.length < 3) return lcErro('Escreva o motivo de não proceder.');
+  if (st === 'resolvido' && !ver) return lcErro('Diga em qual versão foi resolvido.');
+  if (!lcTravar()) return;
+  const ts = nowISO(), passo = { ts: ts, porNome: S.user.nome, status: st, texto: (re ? 'Reaberto' + (txt ? ': ' : '') : '') + txt + (st === 'resolvido' ? (txt ? ' · ' : '') + 'versão ' + ver : '') };
+  const p = { status: st, atualizadoEm: ts, atualizadoPor: S.user.nome }; if (st === 'resolvido') p.versaoResolvido = ver;
+  if (st === 'resolvido' || st === 'naoprocede') p.finalizadoEm = ts; else p.finalizadoEm = ''; /* ITEM 57: a data guardada como finalizado */
+  try {
+    await Data.col('sv2_bugs').push(b.id, 'hist', passo, p); Object.assign(b, p, { hist: (b.hist || []).concat([passo]) });
+    if (b.porId && b.porId !== S.user.id) Notif.send({ nivel: 'info', titulo: (b.tipo === 'sugestao' ? 'Sua sugestão' : 'Seu problema reportado') + ' nº ' + bsNum(b) + ': ' + (re ? 'reaberto' : BS_SIT[st][0]), texto: b.titulo + (txt ? ' — ' + txt : '') + (st === 'resolvido' ? ' (versão ' + ver + ')' : ''), para: [b.porId], refTipo: 'bug', refId: b.id }).catch(() => {});
+    Audit.log({ acao: 'bug_situacao', entidade: 'bug', entidadeId: b.id, resumo: 'Nº ' + bsNum(b) + ' → ' + (re ? 'reaberto' : BS_SIT[st][0]) + (txt ? ' (' + txt + ')' : ''), antes: { status: b.status }, depois: { status: st } });
+    lcFim(); aviso('Situação atualizada.');
+  } catch (er) { if (S.fm) S.fm._trava = 0; lcErro(svErro(er)); }
+}
+
+/* ---------- relatório (A4 deitado): os relatos da tabela, com descrição, andamento e imagem — para mandar para a IA avaliar ---------- */
+async function bsPdf() {
+  const cfg = TB[S._bsFin ? 'bs-fin' : 'bs-lista'], l = cfg ? tbFiltrar(cfg) : []; if (!l.length) { aviso('Nada para imprimir com este filtro.'); return; }
+  if (l.some(b => b.temFoto && !bsFotoDe(b))) { aviso('Carregando as imagens…'); await Promise.all(l.map(bsFotoCarrega)); }
+  const kv = (k, v) => v ? '<tr><th>' + esc(k) + '</th><td>' + esc(v) + '</td></tr>' : '', e = S.empresa || {};
+  const html = '<div class="bs-imp"><div class="au-ic"><b>Bugs e sugestões</b><span>' + esc([e.nome, l.length + (l.length === 1 ? ' relato' : ' relatos'), 'emitido em ' + fmtD(hojeISO()) + ' por ' + S.user.nome, bsVersao()].filter(Boolean).join(' · ')) + '</span></div>' +
+    l.map(b => '<div class="bs-it"><div class="bs-ih"><b>Nº ' + esc(bsNum(b)) + ' · ' + esc((BS_TIPOS[b.tipo] || BS_TIPOS.bug)[0]) + '</b> ' + esc(b.titulo || '') + '<span>' + esc((BS_SIT[b.status || 'novo'] || BS_SIT.novo)[0]) + '</span></div>' +
+      '<div class="bs-ic"><table class="bs-kv">' + kv('Parte do app', bsAreaNome(b.area) + (b.tela ? ' (' + esc(b.tela) + ')' : '')) + kv('Data', b.ts ? fmtDT(b.ts) : '') + kv('Quem', b.porNome) + kv('Versão', b.versao) + kv('Aparelho', b.aparelho) + kv('Resolvido na', b.versaoResolvido) + '</table>' +
+      '<div class="bs-id"><p>' + esc(b.descricao || '').replace(/\n/g, '<br>') + '</p>' + ((b.hist || []).length > 1 ? '<ul>' + b.hist.map(h => '<li>' + esc((h.ts ? fmtDT(h.ts) : '') + ' · ' + (h.porNome || '') + ' · ' + ((BS_SIT[h.status] || [h.status || ''])[0]) + (h.texto ? ' — ' + h.texto : '')) + '</li>').join('') + '</ul>' : '') + '</div>' +
+      (bsFotoDe(b) ? '<img class="bs-if" src="' + imgSrc(bsFotoDe(b)) + '" alt="">' : '') + '</div></div>').join('') + '</div>';
+  Audit.log({ acao: 'imprimir', entidade: 'bug', entidadeId: 'relatorio', resumo: 'Relatório de Bugs e sugestões (' + esc(l.length) + ' relatos)' });
+  nqImprimir(html, APP_NOME + ' · Bugs e sugestões · ' + fmtD(hojeISO()), true);
+}
+
+document.addEventListener('click', e => {
+  const t = e.target.closest && e.target.closest('[data-act^="bs-"]'); if (!t) return;
+  const a = t.getAttribute('data-act'), id = t.getAttribute('data-id');
+  if (a === 'bs-novo') bsNovo(id);
+  else if (a === 'bs-novo-ok') bsNovoOk();
+  else if (a === 'bs-foto-x') { if (S.fm) { S.fm.foto = ''; S.fm.sujo = true; gvDesenha(true); } }
+  else if (a === 'bs-foto-ver') { const b = bsDe(id), f = bsFotoDe(b); if (f) fedVer({ src: f, marcas: [], titulo: 'Imagem do relato nº ' + bsNum(b), nome: 'relato_' + bsNum(b) }); }
+  else if (a === 'bs-sit') { const b = bsDe(id), st = t.getAttribute('data-s'); if (b && bsPode()) lcAbrir({ k: 'bsSit', id: b.id, st: st, txt: '', ver: st === 'resolvido' ? (b.app === 'efcwork' ? bsVersao() : '') : '' }, () => bsAbre(b.id)); }
+  else if (a === 'bs-sit-ok') bsSitOk();
+  else if (a === 'bs-pdf') bsPdf();
+  else if (a === 'bs-fin') { S._bsFin = !S._bsFin; render(); }
+});
+BG_FONTES.push(q => S.bugs.filter(b => bgCasa(q, [bsNum(b), b.titulo, b.descricao, b.porNome].join(' '))).slice(0, 6).map(b => ({ grupo: 'Bugs e sugestões', nome: 'Nº ' + bsNum(b) + ' · ' + b.titulo, sub: (BS_SIT[b.status || 'novo'] || BS_SIT.novo)[0] + ' · ' + (b.porNome || ''), ico: 'alerta',
+  abrir: () => { if (S.rota.area !== 'qualidade' || S.rota.aba !== 'bugs') { S._gvNav = true; ir('qualidade', 'bugs'); } bsAbre(b.id); } })));
+/* Esc nos Finalizados volta para os em aberto (uma camada de cada vez: gaveta, menu e lista aberta vêm antes) */
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape' || e.defaultPrevented || !S._bsFin || S.rota.area !== 'qualidade' || S.rota.aba !== 'bugs' || (S.camadas && S.camadas.length) || S.tbMenu || document.querySelector('.dd-l:not([hidden]):not(.dd-fant)')) return;
+  S._bsFin = false; render();
+}, true); /* na captura: roda antes do voltar das camadas, que só age quando há camada, menu ou lista aberta */
+
 /* ===== programacao.js ===== */
 /* EFCwork · programacao.js — Coletas › Programação (v0.4.4): tabela de programações e coletas, "Coletado" das programações
    pendentes e coleta avulsa. Regras portadas do EFClaudian v2.102.59 (pgSit, cdNovas, coletadoGravar, saveCol, rzBarrar).
@@ -11927,7 +12279,7 @@ const AR_PLANO = {
   rateios: ['Uma tela só, com o tipo (Campo, Água, Calibração) no filtro', 'Emitir a solicitação de compra direto do rateio', 'Painel do rateio em Relatórios'],
   inspecoes: ['Cloro', 'Apontamentos, com o relatório como botão', 'Auditoria interna (RNC)'],
   documentos: ['Documentos com o resumo no topo', 'Caixas d’água', 'Histórico (lançamentos e correções, com filtro)'],
-  qualidade: ['Não conformidades', 'Análise de problemas', 'Bugs e sugestões'],
+  qualidade: ['Semana (relatório semanal)', 'Conversas dentro de cada registro'],
   relatorios: ['Documentos (gráficos)', 'Rateio', 'Almoxarifado do mês', 'Apontamentos', 'Coletas em aberto', 'Semana']
 };
 function arEmBreve(ar) {

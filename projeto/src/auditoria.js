@@ -31,7 +31,7 @@ CS_CARGAS.push(() => {
 });
 function auRedesenha() {
   if (typeof auAprDesenha === 'function' && S.auAp && !S.auAp.ed) auAprDesenha(); /* corrigindo: não redesenha (não perde o que está sendo digitado) */
-  if (S.rota.area === 'inspecoes' && S.rota.aba === 'auditoria') render(); else if (S.gv) gvDesenha();
+  if ((S.rota.area === 'inspecoes' && S.rota.aba === 'auditoria') || (S.rota.area === 'qualidade' && S.rota.aba === 'nc')) render(); else if (S.gv) gvDesenha(); /* v0.6.16: Qualidade › Não conformidades */
 }
 
 /* ---------- regras e leitura ---------- */

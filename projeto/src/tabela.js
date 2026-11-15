@@ -162,7 +162,7 @@ function tbHTML(cfg) {
   const res = { fl: fl && todas.length !== (cfg.linhas || []).length, tot: totC.map(c => ({ rot: c.rot, geral: fmtT(c, cfg.linhas || []), val: fmtT(c, todas) })), rod: cfg.rodape ? cfg.rodape(todas) : '' };
   let h = '<div class="tb" data-tb="' + esc(cfg.id) + '" data-res="' + esc(JSON.stringify(res)) + '"><div class="tb-bar">' +
     (tbTemFiltroSolto(cfg) ? '<button type="button" class="tb-limpa" data-act="tb-limpa" data-tb="' + esc(cfg.id) + '">' + ic('x') + '<span>Limpar filtro</span></button>' : '') +
-    (cfg.aEsquerda ? cfg.aEsquerda(todas) : '<span class="tb-cont">' + todas.length + (todas.length !== (cfg.linhas || []).length ? ' de ' + (cfg.linhas || []).length : '') +  ' ' + esc(tbUn(cfg, (cfg.linhas || []).length)) + '</span>') + tbTetoHTML(cfg) + '<span class="tb-sp"></span>' + tbTotal(cfg, cols, todas, fl) +
+    (cfg.aEsquerda ? cfg.aEsquerda(todas) : '<span class="tb-cont">' + todas.length + (todas.length !== (cfg.linhas || []).length ? ' de ' + (cfg.linhas || []).length : '') +  ' ' + esc(tbUn(cfg, (cfg.linhas || []).length)) + '</span>') + tbTetoHTML(cfg) + '<span class="tb-sp"></span>' + tbTotal(cfg, cols, todas, fl) + (cfg.antesIcones || '') +
     '<button type="button" class="bt ic-so" data-act="tb-cols" data-tb="' + esc(cfg.id) + '" title="Escolher colunas" aria-label="Escolher colunas">' + ic('colunas') + '</button>' +
     '<button type="button" class="bt ic-so" data-act="tb-xlsx" data-tb="' + esc(cfg.id) + '" title="Baixar planilha (.xlsx)" aria-label="Baixar planilha (.xlsx)">' + ic('planilha') + '</button>' +
     '<button type="button" class="bt ic-so" data-act="tb-imp" data-tb="' + esc(cfg.id) + '" title="Imprimir" aria-label="Imprimir">' + ic('impressora') + '</button></div>';
@@ -384,7 +384,8 @@ function tbPlanilha(id) {
   plBaixar(plXlsx(cfg.titulo, d.cab, d.linhas), nome); aviso('Planilha baixada: ' + nome);
 }
 function tbImprimir(id) {
-  const cfg = TB[id]; if (!cfg) return; const d = tbLinhasTexto(cfg), e = S.empresa || {};
+  const cfg = TB[id]; if (!cfg) return; if (cfg.imprimir) { cfg.imprimir(); return; } /* tela com relatório próprio (ex.: Bugs e sugestões) */
+  const d = tbLinhasTexto(cfg), e = S.empresa || {};
   let p = $('#tb-imp'); if (!p) { p = document.createElement('div'); p.id = 'tb-imp'; document.body.appendChild(p); }
   p.innerHTML = '<div class="imp-cab"><b>' + esc(cfg.titulo) + '</b><span>' + esc(e.nome || '') + ' · ' + esc(fmtD(hojeISO())) + ' · ' + d.linhas.length + ' ' + esc(tbUn(cfg, d.linhas.length)) + '</span></div><table><thead><tr>' + d.cab.map(c => '<th>' + esc(c) + '</th>').join('') + '</tr></thead><tbody>' +
     d.linhas.map(l => '<tr>' + l.map(v => '<td' + (typeof v === 'number' ? ' class="n"' : '') + '>' + esc(typeof v === 'number' ? numBR(v) : v) + '</td>').join('') + '</tr>').join('') + '</tbody></table><div class="imp-pe">' + APP_APELIDO + '</div>';

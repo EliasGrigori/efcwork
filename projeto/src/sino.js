@@ -71,6 +71,7 @@ function snAbreRef(n) {
     treinamento: () => typeof trAbre === 'function' && (vai('qualidade', 'treinos'), trAbre(id), true),
     analise: () => typeof anAbrir === 'function' && (vai('qualidade', 'analise'), anAbrir({ t: 'anp', id: id }), true),
     rnc_plano: () => (vai('qualidade', 'analise'), true),
+    bug: () => typeof bsAbre === 'function' && (vai('qualidade', 'bugs'), (S.bugs || []).some(b => b.id === id) && bsAbre(id), true), /* v0.6.16 */
     rnc: () => { S.auRid = id; vai('inspecoes', 'auditoria'); return true; },
     coleta: () => typeof coAbre === 'function' && S.coletas && S.coletas.some(c => c.id === id) ? (vai('coletas', 'amostras'), coAbre(id), true) : (vai('coletas', 'amostras'), true),
     coleta_envio: () => (vai('coletas', 'envio'), true),
