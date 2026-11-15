@@ -22,10 +22,16 @@ const agBl = (rot, html, dica) => lcBl(rot, html, dica, 'ag-al'); /* .ag-al: lis
 const agCmp = (a, b) => String(a || '').localeCompare(String(b || ''), 'pt-BR', { numeric: true });
 
 /* ---------- carregar ---------- */
+/* v0.6.15.3 (ITEM 51, aprovado 15/11 com "pode descer para mil"): as 1.000 coletas de água mais recentes pela data; "Carregar todas" lê tudo nesta sessão */
+const AG_LIM = 1000;
+Object.assign(S, { _agTudo: false, _agOff: null, _agRe: null });
+const agTeto = () => !S._agTudo && (S.aguacol || []).length >= AG_LIM;
+const agOuveColetas = re => { S._agRe = re; S._agOff = csOuve('sv2_aguacol', l => { S.aguacol = l; re(); if (typeof acLimparUmaVez === 'function') acLimparUmaVez(); }, S._agTudo ? {} : { order: 'data', limit: AG_LIM }); };
+function agTudo() { if (S._agTudo) return; S._agTudo = true; if (S._agOff) S._agOff(); aviso('Carregando todas as coletas de água…'); agOuveColetas(S._agRe); }
 CS_CARGAS.push(() => {
   const re = () => { S.agCarregado = true; if (S.rota.area === 'coletas' || S.rota.area === 'inicio') render(); else if (S.gv) gvDesenha(); };
   /* v0.6.6: as coletas carregam para todos (o responsável por uma ação corretiva pode não ter a atribuição Coletas); a aba continua só com ela */
-  csOuve('sv2_aguacol', l => { S.aguacol = l; re(); if (typeof acLimparUmaVez === 'function') acLimparUmaVez(); });
+  agOuveColetas(re);
   if (!coVe()) return;
   csOuve('sv2_aguaproj', l => { S.aguaproj = l; re(); });
   csOuve('sv2_aguaponto', l => { S.aguapontos = l; re(); });
@@ -186,7 +192,7 @@ function agTabela() {
   const l = S.aguacol.slice().sort((a, b) => String(b.data || '').localeCompare(String(a.data || '')) || String(b.hora || '').localeCompare(String(a.hora || '')) || agCmp(a.pontoNome, b.pontoNome));
   const SITS = [['pend', 'Resultado pendente'], ['atr', 'Laudo atrasado'], ['ok', 'Conforme'], ['nc', 'Não conforme'], ['ac', 'Ação corretiva aberta'], ['cancelada', 'Canceladas']];
   const sit = (c, v) => v === 'cancelada' ? c.situacao === 'cancelada' : c.situacao === 'cancelada' ? false : v === 'pend' ? c.resultado === 'PENDENTE' : v === 'atr' ? agLaudoAtrasado(c) : v === 'ok' ? c.resultado === 'CONFORME' : v === 'nc' ? agNC(c) : !!(c.acao && !c.acao.concluida);
-  return tbHTML({ id: 'ag-col', titulo: 'Coletas de água', unidade: 'coletas', linhas: l, aoClicar: agAbre, selecionado: S._agSel, buscaDica: 'Buscar ponto, análise, laboratório ou O.S',
+  return tbHTML({ id: 'ag-col', titulo: 'Coletas de água', unidade: 'coletas', linhas: l, teto: agTeto() ? { n: AG_LIM, act: 'ag-tudo' } : null, aoClicar: agAbre, selecionado: S._agSel, buscaDica: 'Buscar ponto, análise, laboratório ou O.S',
     busca: c => [c.pontoNome, c.analiseNome, c.lab, c.os, c.numSolicitacao, agAgenteTxt(c), c.coletor, agTipoTxt(c)].join(' '),
     filtros: [
       { k: 'tipo', rot: 'Tipo', opcoes: Object.keys(AG_TIPOS).map(k => [k, AG_TIPOS[k]]), teste: (c, v) => (c.tipoColeta || 'avulsa') === v },
@@ -419,6 +425,7 @@ document.addEventListener('click', ev => {
   const t = ev.target.closest && ev.target.closest('[data-act^="ag-"]'); if (!t) return;
   const a = t.getAttribute('data-act'), id = t.getAttribute('data-id'), f = S.fm, vol = S.gv && !S.gvForm ? S.gv : null, volta = vol ? () => gvAbrir(vol) : null;
   const c = id ? S.aguacol.find(x => x.id === id) : null;
+  if (a === 'ag-tudo') { agTudo(); return; }
   if (a === 'ag-nova') { if (!agPode()) return; lcAbrir(agNovoEstado(t.getAttribute('data-tipo') || '', t.getAttribute('data-oc') || '', t.getAttribute('data-pid') || ''), volta); }
   else if (a === 'ag-nova-ok') agNovaOk();
   else if (a === 'ag-ck' && f) { const g = t.getAttribute('data-g'); if (g === 'bebs') f.bebs[id] = !f.bebs[id]; else if (g === 'recs') f.recs[id] = !f.recs[id]; else if (g === 'ppt') f.ppt[id] = !f.ppt[id]; else if (g === 'pan') f.pan[id] = !f.pan[id]; else if (g === 'pt') { f.pontos[id] = !f.pontos[id]; f.avisado = ''; } else if (g === 'an') { f.ans[id] = !f.ans[id]; f.avisado = ''; } else if (g === 'ag') { const i = f.agente.indexOf(id); if (i >= 0) f.agente.splice(i, 1); else f.agente.push(id); } f.sujo = true; f.msg = ''; gvDesenha(true); }

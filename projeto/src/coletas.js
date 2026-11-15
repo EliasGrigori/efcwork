@@ -16,10 +16,28 @@ const coPode = () => coVe() && podeLancar(S.user);
 const coDif = (a, b) => Math.round((new Date(b + 'T12:00:00') - new Date(a + 'T12:00:00')) / 864e5);
 
 /* ---------- carregar ---------- */
+/* v0.6.15.3 (ITEM 50): carrega as 3.000 amostras mais recentes pela data da coleta (como o EFClaudian faz na água).
+   Abaixo disso nada muda. Passando, a barra da tabela mostra só o botão "Carregar todas" (sem texto, ITEM 50) e ele lê tudo nesta sessão. */
+const CO_LIM = 3000;
+Object.assign(S, { _coTudo: false, _coOff: null });
+const coTeto = () => !S._coTudo && (S.coletas || []).length >= CO_LIM;
+const coOuveColetas = re => { S._coOff = csOuve('sv2_coletas', l => { S.coletas = l; re(); }, S._coTudo ? {} : { order: 'data', limit: CO_LIM }); };
+const coReColetas = () => { S.colCarregado = true; if (S.rota.area === 'coletas' || S.rota.area === 'inicio') render(); };
+function coTudo() { if (S._coTudo) return; S._coTudo = true; if (S._coOff) S._coOff(); aviso('Carregando todas as amostras…'); coOuveColetas(coReColetas); }
+/* nº das amostras novas: com o teto, uma amostra antiga (fora das 3.000) pode ter o mesmo nº; confere no servidor antes de gravar e muda o nº se já existir */
+async function coIdsSeguros(ops) {
+  if (!coTeto()) return ops; const corte = S.coletas.reduce((m, c) => (c.data && (!m || c.data < m) ? c.data : m), '');
+  for (const o of ops) {
+    if (o.col !== 'sv2_coletas' || o.tipo !== 'set' || S.coletas.some(c => c.id === o.id) || !(o.dados && o.dados.data <= corte)) continue;
+    let id = o.id, n = 2; while (await Data.col('sv2_coletas').get(id).catch(() => null) || ops.some(x => x !== o && x.id === id)) id = o.id + '_' + (n++);
+    o.id = id;
+  }
+  return ops;
+}
 CS_CARGAS.push(() => {
   if (!coVe()) return;
-  const re = () => { S.colCarregado = true; if (S.rota.area === 'coletas' || S.rota.area === 'inicio') render(); };
-  csOuve('sv2_coletas', l => { S.coletas = l; re(); });
+  const re = coReColetas;
+  coOuveColetas(re);
   csOuve('sv2_prog', l => { S.prog = l; re(); });
 });
 
@@ -87,7 +105,7 @@ TELAS.coletas = function (aba) {
 function coTabAmostras() {
   const l = S.coletas.filter(c => CO_TXT[c.tipo] && c.tipo !== 'AGUA').sort((a, b) => String(b.data || '').localeCompare(String(a.data || '')) || cmpTxt(coNome(a), coNome(b)));
   const SITS = [['naoenv', 'Não enviadas'], ['aguarda', 'Aguardando laudo'], ['atrasado', 'Laudo atrasado'], ['laudo', 'Laudo baixado'], ['encerrada', 'Encerradas'], ['cancelada', 'Canceladas'], ['abertas', 'Em aberto (não encerradas)']];
-  return tbHTML({ id: 'co-am', titulo: 'Amostras', unidade: 'amostras', linhas: l, aoClicar: coAbre, selecionado: S._coSel, buscaDica: 'Buscar talhão, análise, laboratório, O.S ou NF',
+  return tbHTML({ id: 'co-am', titulo: 'Amostras', unidade: 'amostras', linhas: l, teto: coTeto() ? { n: CO_LIM, act: 'co-tudo' } : null, aoClicar: coAbre, selecionado: S._coSel, buscaDica: 'Buscar talhão, análise, laboratório, O.S ou NF',
     busca: c => [coNome(c), c.analiseNome, c.sigla, c.lab, c.os, c.nfEnvio, c.rastreio, c.pedidoSankhya, c.coletor].join(' '),
     filtros: [
       { k: 'mat', rot: 'Material', opcoes: CO_MAT, teste: (c, v) => c.tipo === v },
@@ -113,7 +131,7 @@ function coRemessas() {
     .sort((a, b) => String(b.envio).localeCompare(String(a.envio)) || cmpTxt(a.lab, b.lab));
 }
 function coTabRemessas() {
-  return tbHTML({ id: 'co-rem', titulo: 'Remessas', unidade: 'remessas', linhas: coRemessas(), aoClicar: coAbreLote, selecionado: S._coSel, buscaDica: 'Buscar laboratório, O.S, NF ou rastreio',
+  return tbHTML({ id: 'co-rem', titulo: 'Remessas', unidade: 'remessas', linhas: coRemessas(), teto: coTeto() ? { n: CO_LIM, act: 'co-tudo', de: 'amostras' } : null, aoClicar: coAbreLote, selecionado: S._coSel, buscaDica: 'Buscar laboratório, O.S, NF ou rastreio',
     busca: r => [r.lab, r.os, r.nf, r.rastreio, r.mats].join(' '),
     filtros: [{ k: 'sit', rot: 'Situação', opcoes: [['semos', 'Sem O.S'], ['semnf', 'Sem NF do envio'], ['semras', 'Sem rastreio'], ['laudo', 'Faltam laudos'], ['atras', 'Laudo atrasado'], ['ok', 'Todos os laudos baixados']], teste: (r, v) => v === 'semos' ? !r.os : v === 'semnf' ? !r.nf : v === 'semras' ? !r.rastreio : v === 'laudo' ? r.lau < r.n : v === 'atras' ? r.at : r.lau === r.n }],
     cols: [
@@ -356,6 +374,7 @@ document.addEventListener('change', e => { const t = e.target; if (t && t.getAtt
 document.addEventListener('click', ev => {
   const t = ev.target.closest && ev.target.closest('[data-act^="co-"]'); if (!t) return;
   const a = t.getAttribute('data-act'), id = t.getAttribute('data-id'), k = t.getAttribute('data-k'), f = S.fm, vol = S.gv && !S.gvForm ? S.gv : null, volta = vol ? () => gvAbrir(vol) : null;
+  if (a === 'co-tudo') { coTudo(); return; }
   if (a === 'co-env') { if (!coPode()) return; const sel = {}; if (id) sel[id] = true; lcAbrir({ k: 'coenv', sel: sel, mat: id ? ((S.coletas.find(x => x.id === id) || {}).tipo || '') : '', data: hojeISO(), lab: '', nf: '', rastreio: '', obs: '', cupom: '' }, volta); }
   else if (a === 'co-ck' && f) { f.sel[id] = !f.sel[id]; f.sujo = true; t.classList.toggle('on', f.sel[id]); t.setAttribute('aria-pressed', f.sel[id]); t.querySelector('.cb-box').innerHTML = f.sel[id] ? ic('ok') : ''; if (f.k === 'coenv') gvDesenha(true); else { const n = $('#co-n'); if (n) n.textContent = Object.keys(f.sel).filter(x => f.sel[x]).length + ' marcada(s)'; } }
   else if (a === 'co-todas' && f) { coNaoEnviadas().filter(c => !f.mat || c.tipo === f.mat).forEach(c => { f.sel[c.id] = true; }); f.sujo = true; gvDesenha(true); }

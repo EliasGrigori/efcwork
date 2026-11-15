@@ -75,6 +75,9 @@ const numBR = (n, dec) => Number(n).toLocaleString('pt-BR', { minimumFractionDig
 const brl = n => 'R$ ' + Number(n || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 /* filtro ativo em cada coluna (filtro pronto ou do menu) */
 function tbColFiltrada(cfg, k) { const st = tbEstado(cfg.id); return tbCfAtivo(st.cf[k]) || tbPresetsDe(cfg, k).some(f => !tbVazio(st.filtros[f.k])); }
+/* v0.6.15.3: lista que só carregou os N registros mais recentes (teto: {n, act, de}); avisa na barra e oferece carregar todos */
+/* ITEM 50 (15/11): sem texto de aviso, só o botão, e só quando passou do teto */
+const tbTetoHTML = cfg => cfg.teto ? '<button type="button" class="bt lk tb-tetob" data-act="' + esc(cfg.teto.act) + '" title="' + esc('Foram carregadas as ' + cfg.teto.n.toLocaleString('pt-BR') + ' ' + (cfg.teto.de || tbUn(cfg, 2)) + ' mais recentes') + '">Carregar todas</button>' : '';
 function tbTemFiltro(cfg) { const st = tbEstado(cfg.id); return !!st.busca || (cfg.cols || []).some(c => tbColFiltrada(cfg, c.k)); }
 function tbTemFiltroSolto(cfg) { const st = tbEstado(cfg.id); return !!st.busca || (cfg.cols || []).some(c => !st.trava[c.k] && tbColFiltrada(cfg, c.k)); }
 /* total (v0.4.8, refeito 08/11 15:00): na barra de cima, na linha dos ícones; cada valor fica exatamente acima da sua coluna
@@ -159,7 +162,7 @@ function tbHTML(cfg) {
   const res = { fl: fl && todas.length !== (cfg.linhas || []).length, tot: totC.map(c => ({ rot: c.rot, geral: fmtT(c, cfg.linhas || []), val: fmtT(c, todas) })), rod: cfg.rodape ? cfg.rodape(todas) : '' };
   let h = '<div class="tb" data-tb="' + esc(cfg.id) + '" data-res="' + esc(JSON.stringify(res)) + '"><div class="tb-bar">' +
     (tbTemFiltroSolto(cfg) ? '<button type="button" class="tb-limpa" data-act="tb-limpa" data-tb="' + esc(cfg.id) + '">' + ic('x') + '<span>Limpar filtro</span></button>' : '') +
-    (cfg.aEsquerda ? cfg.aEsquerda(todas) : '<span class="tb-cont">' + todas.length + (todas.length !== (cfg.linhas || []).length ? ' de ' + (cfg.linhas || []).length : '') + ' ' + esc(tbUn(cfg, (cfg.linhas || []).length)) + '</span>') + '<span class="tb-sp"></span>' + tbTotal(cfg, cols, todas, fl) +
+    (cfg.aEsquerda ? cfg.aEsquerda(todas) : '<span class="tb-cont">' + todas.length + (todas.length !== (cfg.linhas || []).length ? ' de ' + (cfg.linhas || []).length : '') +  ' ' + esc(tbUn(cfg, (cfg.linhas || []).length)) + '</span>') + tbTetoHTML(cfg) + '<span class="tb-sp"></span>' + tbTotal(cfg, cols, todas, fl) +
     '<button type="button" class="bt ic-so" data-act="tb-cols" data-tb="' + esc(cfg.id) + '" title="Escolher colunas" aria-label="Escolher colunas">' + ic('colunas') + '</button>' +
     '<button type="button" class="bt ic-so" data-act="tb-xlsx" data-tb="' + esc(cfg.id) + '" title="Baixar planilha (.xlsx)" aria-label="Baixar planilha (.xlsx)">' + ic('planilha') + '</button>' +
     '<button type="button" class="bt ic-so" data-act="tb-imp" data-tb="' + esc(cfg.id) + '" title="Imprimir" aria-label="Imprimir">' + ic('impressora') + '</button></div>';

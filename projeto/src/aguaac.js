@@ -11,6 +11,9 @@ Object.assign(S, { _acFotos: {}, _acLimpou: false });
 const acEhResp = a => !!(a && S.user && a.responsavelId === S.user.id);
 const acPode = a => !!S.user && (isSup(S.user) || acEhResp(a));
 const acFotosVencem = a => a && a.concluida && a.concluidaEm ? addDias(agDia(a.concluidaEm), AC_FOTO_DIAS) : '';
+/* v0.6.15.3 (ITEM 52): passou o prazo, as fotos saem da tela e do PDF para todos no mesmo dia, mesmo antes de um Líder ★/Administrador abrir o app e eliminá-las de vez */
+const acFotosFora = a => !!(a && a.concluida && (a.fotosApagadas || (acFotosVencem(a) && acFotosVencem(a) <= hojeISO())));
+const acFotosFimTxt = a => a.fotosApagadas ? 'eliminada(s) em ' + fmtD(agDia(a.fotosApagadas)) : 'vencida(s) em ' + fmtD(acFotosVencem(a));
 const acPill = a => { const s = agAcSit(a); return alPill(s === 'concluida' ? 'Ação concluída' : s === 'vencida' ? 'Ação vencida' : 'Ação aberta', s === 'concluida' ? 'ok' : s === 'vencida' ? 'cr' : 'wa'); };
 const acPessoas = () => S.users.filter(u => !u.bloqueado && u.perfil !== 'visitante').sort((a, b) => agCmp(a.nome, b.nome));
 
@@ -22,7 +25,7 @@ function acFotoGet(id) {
 function acFotosCarrega(raiz) { $$('img[data-acfoto]', raiz || document).forEach(im => { if (im.getAttribute('src')) return; acFotoGet(im.getAttribute('data-acfoto')).then(d => { if (d && imgSrc(d.dataUrl)) im.src = imgSrc(d.dataUrl); else { const q = im.closest('.ac-th'); if (q) q.classList.add('vz'); } }); }); }
 GV_DEPOIS.push(g => acFotosCarrega(g));
 function acFotoVer(cid, fid) {
-  const c = S.aguacol.find(x => x.id === cid); acFotoGet(fid).then(d => { if (!d) return;
+  const c = S.aguacol.find(x => x.id === cid); if (c && acFotosFora(c.acao)) return; acFotoGet(fid).then(d => { if (!d) return;
     fedVer({ src: d.dataUrl, base: d.base || '', marcas: d.marcas || [], marcadoPor: d.marcadoPor, marcadoEm: d.marcadoEm, titulo: 'Ação corretiva · ' + ((c && c.pontoNome) || ''), nome: 'acao-agua' }); });
 }
 
@@ -46,7 +49,7 @@ function acTratHTML(c, a) {
   const et = a.etapas || [];
   if (!et.length) return '<p class="ag-dc">Nenhuma etapa ainda.</p>';
   return '<ol class="ac-tl">' + et.map((e, i) => '<li class="' + (e.final ? 'fim' : '') + '"><div class="ac-eh"><b>' + (e.final ? 'Conclusão' : 'Etapa ' + (i + 1)) + '</b><small>' + esc(fmtDT(e.ts) + ' · ' + (e.porNome || '')) + '</small></div><p>' + esc(e.texto) + '</p>' +
-    ((e.fotos || []).length ? (a.fotosApagadas ? '<small class="ac-apag">' + e.fotos.length + ' foto(s) eliminada(s) em ' + esc(fmtD(agDia(a.fotosApagadas))) + '</small>' : '<div class="ac-ths">' + e.fotos.map((f, k) => '<button type="button" class="ac-th" data-act="ac-foto" data-id="' + esc(c.id) + '" data-f="' + esc(f) + '"><img ' + (S._acFotos[f] && imgSrc(S._acFotos[f].dataUrl) ? 'src="' + imgSrc(S._acFotos[f].dataUrl) + '"' : 'data-acfoto="' + esc(f) + '"') + ' alt="Foto ' + (k + 1) + '"></button>').join('') + '</div>') : '') + '</li>').join('') + '</ol>';
+    ((e.fotos || []).length ? (acFotosFora(a) ? '<small class="ac-apag">' + e.fotos.length + ' foto(s) ' + esc(acFotosFimTxt(a)) + '</small>' : '<div class="ac-ths">' + e.fotos.map((f, k) => '<button type="button" class="ac-th" data-act="ac-foto" data-id="' + esc(c.id) + '" data-f="' + esc(f) + '"><img ' + (S._acFotos[f] && imgSrc(S._acFotos[f].dataUrl) ? 'src="' + imgSrc(S._acFotos[f].dataUrl) + '"' : 'data-acfoto="' + esc(f) + '"') + ' alt="Foto ' + (k + 1) + '"></button>').join('') + '</div>') : '') + '</li>').join('') + '</ol>';
 }
 function acAbre(id) {
   S._agSel = id; gvAbrir(() => {
@@ -55,7 +58,7 @@ function acAbre(id) {
     let pe = coVe() ? '<button type="button" class="bt" data-act="ag-abre" data-id="' + esc(c.id) + '">' + ic('frasco') + 'Coleta</button>' : '';
     if (pode) pe += '<button type="button" class="bt" data-act="ac-concluir" data-id="' + esc(c.id) + '">' + ic('ok') + 'Concluir</button><button type="button" class="bt pr" data-act="ac-etapa" data-id="' + esc(c.id) + '">' + ic('mais') + 'Registrar etapa</button>';
     return { ico: 'lista', cabAcoes: cab, sub: 'Ação corretiva · ' + (agAgenteTxt(c) || 'não conforme') + (c.gravidade ? ' · ' + c.gravidade : ''), titulo: c.pontoNome || 'Coleta de água', pill: acPill(a),
-      corpo: (a.concluida && !a.fotosApagadas && vence ? lcAv('<b>Fotos até ' + esc(fmtD(vence)) + '.</b> Depois disso as fotos são eliminadas e ficam só os textos. Imprima antes, se precisar.', 'wa') : '') +
+      corpo: (a.concluida && !acFotosFora(a) && vence ? lcAv('<b>Fotos até ' + esc(fmtD(addDias(vence, -1))) + '.</b> Depois disso as fotos são eliminadas e ficam só os textos. Imprima antes, se precisar.', 'wa') : '') +
         gvCampos([['Responsável', a.responsavelNome], ['Prazo', fmtD(a.prazo) + (agAcSit(a) === 'vencida' ? ' (venceu)' : '')], ['O que fazer', a.orientacao], ['Aberta por', (a.abertaPorNome || '') + (a.abertaEm ? ', ' + fmtDT(a.abertaEm) : '')], ['Concluída', a.concluida ? (a.concluidaPorNome || '') + ', ' + fmtDT(a.concluidaEm) : ''], ['Coleta', fmtD(c.data) + ' · ' + agTipoTxt(c) + ' · ' + (c.analiseNome || '') + (c.laudoEm ? ' · laudo ' + fmtD(c.laudoEm) : '')]]) +
         '<p class="gv-h">Tratativas (' + (a.etapas || []).length + ')</p>' + acTratHTML(c, a),
       rodape: pe };
@@ -132,12 +135,12 @@ const acCab = t => '<div class="au-ic"><b>' + esc(t) + '</b><span>' + esc([(S.em
 async function acPdf(id) {
   const c = S.aguacol.find(x => x.id === id), a = c && c.acao; if (!a) return;
   const ids = (a.etapas || []).reduce((l, e) => l.concat(e.fotos || []), []);
-  if (ids.length && !a.fotosApagadas) { aviso('Preparando as fotos…'); await Promise.all(ids.map(acFotoGet)); }
+  if (ids.length && !acFotosFora(a)) { aviso('Preparando as fotos…'); await Promise.all(ids.map(acFotoGet)); }
   const im = f => S._acFotos[f] && imgSrc(S._acFotos[f].dataUrl) ? '<img src="' + imgSrc(S._acFotos[f].dataUrl) + '" alt="">' : '';
   const kv = [['Ponto', c.pontoNome], ['Coleta', fmtD(c.data) + ' ' + (c.hora || '') + ' · ' + agTipoTxt(c)], ['Análise', [c.analiseNome, c.lab].filter(Boolean).join(' · ') || '—'], ['Resultado', String(c.resultado || '').toLowerCase() + (c.laudoEm ? ' · laudo ' + fmtD(c.laudoEm) : '')], ['Agente', agAgenteTxt(c) || '—'], ['Gravidade', c.gravidade || '—'],
     ['Responsável', a.responsavelNome], ['Prazo', fmtD(a.prazo)], ['Situação', a.concluida ? 'Concluída por ' + a.concluidaPorNome + ' em ' + fmtD(agDia(a.concluidaEm)) : agAcSit(a) === 'vencida' ? 'Vencida' : 'Aberta'], ['Aberta por', (a.abertaPorNome || '') + ' · ' + fmtD(agDia(a.abertaEm))]];
-  const et = (a.etapas || []).map((e, i) => { const fs = a.fotosApagadas ? [] : (e.fotos || []).map(im).filter(Boolean);
-    return '<tr><td><b>' + (e.final ? 'Conclusão' : 'Etapa ' + (i + 1)) + '</b></td><td>' + esc(fmtDT(e.ts)) + '</td><td>' + esc(e.porNome || '') + '</td><td>' + esc(e.texto) + (a.fotosApagadas && (e.fotos || []).length ? '<br><i>' + e.fotos.length + ' foto(s) eliminada(s) depois da conclusão</i>' : '') + (fs.length ? '<div class="ac-ifs">' + fs.join('') + '</div>' : '') + '</td></tr>'; }).join('');
+  const et = (a.etapas || []).map((e, i) => { const fs = acFotosFora(a) ? [] : (e.fotos || []).map(im).filter(Boolean);
+    return '<tr><td><b>' + (e.final ? 'Conclusão' : 'Etapa ' + (i + 1)) + '</b></td><td>' + esc(fmtDT(e.ts)) + '</td><td>' + esc(e.porNome || '') + '</td><td>' + esc(e.texto) + (acFotosFora(a) && (e.fotos || []).length ? '<br><i>' + e.fotos.length + ' foto(s) eliminada(s) depois da conclusão</i>' : '') + (fs.length ? '<div class="ac-ifs">' + fs.join('') + '</div>' : '') + '</td></tr>'; }).join('');
   Audit.log({ acao: 'imprimir', entidade: 'coleta_agua', entidadeId: id, resumo: 'PDF da ação corretiva da água ' + c.pontoNome });
   acImprimir('<section class="au-fl au-fli">' + acCab('Ação corretiva · água') + '<div class="au-ikv ac-ikv">' + kv.map(x => '<span><small>' + esc(x[0]) + '</small>' + esc(x[1]) + '</span>').join('') + '</div>' +
     '<p class="au-itx"><b>O que fazer:</b> ' + esc(a.orientacao || '') + '</p><h3 class="ac-ih">Tratativas</h3>' + (et ? '<table class="au-itb ac-itb ac-iet"><colgroup><col style="width:22mm"><col style="width:32mm"><col style="width:40mm"><col></colgroup><thead><tr><th>Etapa</th><th>Data</th><th>Por</th><th>O que foi feito</th></tr></thead><tbody>' + et + '</tbody></table>' : '<p>Nenhuma etapa registrada.</p>') + '</section>', 'Ação corretiva — água · ' + c.pontoNome);

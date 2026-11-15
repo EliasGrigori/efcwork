@@ -703,6 +703,8 @@ body.tb-arrastando,body.tb-arrastando *{cursor:grabbing!important;user-select:no
 .tb-t td,.tb-t th{border-right:1px solid color-mix(in srgb,var(--bd) 70%,transparent)}
 .tb-t td:last-child,.tb-t th:last-child{border-right:0}
 .tb-t tbody tr.tb-gr td,.tb-t td.tb-vz{border-right:0}
+/* v0.6.15.3: lista com teto (só os N mais recentes): botão “Carregar todas” */
+.tb-tetob{font-size:13px;white-space:nowrap}
 
 /* ===== almox.css ===== */
 /* EFCwork · almox.css — Prefixo: al- */
@@ -2369,7 +2371,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = Mov;
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.6.15.2';
+const VERSAO = '0.6.15.3';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -3328,6 +3330,9 @@ const numBR = (n, dec) => Number(n).toLocaleString('pt-BR', { minimumFractionDig
 const brl = n => 'R$ ' + Number(n || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 /* filtro ativo em cada coluna (filtro pronto ou do menu) */
 function tbColFiltrada(cfg, k) { const st = tbEstado(cfg.id); return tbCfAtivo(st.cf[k]) || tbPresetsDe(cfg, k).some(f => !tbVazio(st.filtros[f.k])); }
+/* v0.6.15.3: lista que só carregou os N registros mais recentes (teto: {n, act, de}); avisa na barra e oferece carregar todos */
+/* ITEM 50 (15/11): sem texto de aviso, só o botão, e só quando passou do teto */
+const tbTetoHTML = cfg => cfg.teto ? '<button type="button" class="bt lk tb-tetob" data-act="' + esc(cfg.teto.act) + '" title="' + esc('Foram carregadas as ' + cfg.teto.n.toLocaleString('pt-BR') + ' ' + (cfg.teto.de || tbUn(cfg, 2)) + ' mais recentes') + '">Carregar todas</button>' : '';
 function tbTemFiltro(cfg) { const st = tbEstado(cfg.id); return !!st.busca || (cfg.cols || []).some(c => tbColFiltrada(cfg, c.k)); }
 function tbTemFiltroSolto(cfg) { const st = tbEstado(cfg.id); return !!st.busca || (cfg.cols || []).some(c => !st.trava[c.k] && tbColFiltrada(cfg, c.k)); }
 /* total (v0.4.8, refeito 08/11 15:00): na barra de cima, na linha dos ícones; cada valor fica exatamente acima da sua coluna
@@ -3412,7 +3417,7 @@ function tbHTML(cfg) {
   const res = { fl: fl && todas.length !== (cfg.linhas || []).length, tot: totC.map(c => ({ rot: c.rot, geral: fmtT(c, cfg.linhas || []), val: fmtT(c, todas) })), rod: cfg.rodape ? cfg.rodape(todas) : '' };
   let h = '<div class="tb" data-tb="' + esc(cfg.id) + '" data-res="' + esc(JSON.stringify(res)) + '"><div class="tb-bar">' +
     (tbTemFiltroSolto(cfg) ? '<button type="button" class="tb-limpa" data-act="tb-limpa" data-tb="' + esc(cfg.id) + '">' + ic('x') + '<span>Limpar filtro</span></button>' : '') +
-    (cfg.aEsquerda ? cfg.aEsquerda(todas) : '<span class="tb-cont">' + todas.length + (todas.length !== (cfg.linhas || []).length ? ' de ' + (cfg.linhas || []).length : '') + ' ' + esc(tbUn(cfg, (cfg.linhas || []).length)) + '</span>') + '<span class="tb-sp"></span>' + tbTotal(cfg, cols, todas, fl) +
+    (cfg.aEsquerda ? cfg.aEsquerda(todas) : '<span class="tb-cont">' + todas.length + (todas.length !== (cfg.linhas || []).length ? ' de ' + (cfg.linhas || []).length : '') +  ' ' + esc(tbUn(cfg, (cfg.linhas || []).length)) + '</span>') + tbTetoHTML(cfg) + '<span class="tb-sp"></span>' + tbTotal(cfg, cols, todas, fl) +
     '<button type="button" class="bt ic-so" data-act="tb-cols" data-tb="' + esc(cfg.id) + '" title="Escolher colunas" aria-label="Escolher colunas">' + ic('colunas') + '</button>' +
     '<button type="button" class="bt ic-so" data-act="tb-xlsx" data-tb="' + esc(cfg.id) + '" title="Baixar planilha (.xlsx)" aria-label="Baixar planilha (.xlsx)">' + ic('planilha') + '</button>' +
     '<button type="button" class="bt ic-so" data-act="tb-imp" data-tb="' + esc(cfg.id) + '" title="Imprimir" aria-label="Imprimir">' + ic('impressora') + '</button></div>';
@@ -5866,10 +5871,28 @@ const coPode = () => coVe() && podeLancar(S.user);
 const coDif = (a, b) => Math.round((new Date(b + 'T12:00:00') - new Date(a + 'T12:00:00')) / 864e5);
 
 /* ---------- carregar ---------- */
+/* v0.6.15.3 (ITEM 50): carrega as 3.000 amostras mais recentes pela data da coleta (como o EFClaudian faz na água).
+   Abaixo disso nada muda. Passando, a barra da tabela mostra só o botão "Carregar todas" (sem texto, ITEM 50) e ele lê tudo nesta sessão. */
+const CO_LIM = 3000;
+Object.assign(S, { _coTudo: false, _coOff: null });
+const coTeto = () => !S._coTudo && (S.coletas || []).length >= CO_LIM;
+const coOuveColetas = re => { S._coOff = csOuve('sv2_coletas', l => { S.coletas = l; re(); }, S._coTudo ? {} : { order: 'data', limit: CO_LIM }); };
+const coReColetas = () => { S.colCarregado = true; if (S.rota.area === 'coletas' || S.rota.area === 'inicio') render(); };
+function coTudo() { if (S._coTudo) return; S._coTudo = true; if (S._coOff) S._coOff(); aviso('Carregando todas as amostras…'); coOuveColetas(coReColetas); }
+/* nº das amostras novas: com o teto, uma amostra antiga (fora das 3.000) pode ter o mesmo nº; confere no servidor antes de gravar e muda o nº se já existir */
+async function coIdsSeguros(ops) {
+  if (!coTeto()) return ops; const corte = S.coletas.reduce((m, c) => (c.data && (!m || c.data < m) ? c.data : m), '');
+  for (const o of ops) {
+    if (o.col !== 'sv2_coletas' || o.tipo !== 'set' || S.coletas.some(c => c.id === o.id) || !(o.dados && o.dados.data <= corte)) continue;
+    let id = o.id, n = 2; while (await Data.col('sv2_coletas').get(id).catch(() => null) || ops.some(x => x !== o && x.id === id)) id = o.id + '_' + (n++);
+    o.id = id;
+  }
+  return ops;
+}
 CS_CARGAS.push(() => {
   if (!coVe()) return;
-  const re = () => { S.colCarregado = true; if (S.rota.area === 'coletas' || S.rota.area === 'inicio') render(); };
-  csOuve('sv2_coletas', l => { S.coletas = l; re(); });
+  const re = coReColetas;
+  coOuveColetas(re);
   csOuve('sv2_prog', l => { S.prog = l; re(); });
 });
 
@@ -5937,7 +5960,7 @@ TELAS.coletas = function (aba) {
 function coTabAmostras() {
   const l = S.coletas.filter(c => CO_TXT[c.tipo] && c.tipo !== 'AGUA').sort((a, b) => String(b.data || '').localeCompare(String(a.data || '')) || cmpTxt(coNome(a), coNome(b)));
   const SITS = [['naoenv', 'Não enviadas'], ['aguarda', 'Aguardando laudo'], ['atrasado', 'Laudo atrasado'], ['laudo', 'Laudo baixado'], ['encerrada', 'Encerradas'], ['cancelada', 'Canceladas'], ['abertas', 'Em aberto (não encerradas)']];
-  return tbHTML({ id: 'co-am', titulo: 'Amostras', unidade: 'amostras', linhas: l, aoClicar: coAbre, selecionado: S._coSel, buscaDica: 'Buscar talhão, análise, laboratório, O.S ou NF',
+  return tbHTML({ id: 'co-am', titulo: 'Amostras', unidade: 'amostras', linhas: l, teto: coTeto() ? { n: CO_LIM, act: 'co-tudo' } : null, aoClicar: coAbre, selecionado: S._coSel, buscaDica: 'Buscar talhão, análise, laboratório, O.S ou NF',
     busca: c => [coNome(c), c.analiseNome, c.sigla, c.lab, c.os, c.nfEnvio, c.rastreio, c.pedidoSankhya, c.coletor].join(' '),
     filtros: [
       { k: 'mat', rot: 'Material', opcoes: CO_MAT, teste: (c, v) => c.tipo === v },
@@ -5963,7 +5986,7 @@ function coRemessas() {
     .sort((a, b) => String(b.envio).localeCompare(String(a.envio)) || cmpTxt(a.lab, b.lab));
 }
 function coTabRemessas() {
-  return tbHTML({ id: 'co-rem', titulo: 'Remessas', unidade: 'remessas', linhas: coRemessas(), aoClicar: coAbreLote, selecionado: S._coSel, buscaDica: 'Buscar laboratório, O.S, NF ou rastreio',
+  return tbHTML({ id: 'co-rem', titulo: 'Remessas', unidade: 'remessas', linhas: coRemessas(), teto: coTeto() ? { n: CO_LIM, act: 'co-tudo', de: 'amostras' } : null, aoClicar: coAbreLote, selecionado: S._coSel, buscaDica: 'Buscar laboratório, O.S, NF ou rastreio',
     busca: r => [r.lab, r.os, r.nf, r.rastreio, r.mats].join(' '),
     filtros: [{ k: 'sit', rot: 'Situação', opcoes: [['semos', 'Sem O.S'], ['semnf', 'Sem NF do envio'], ['semras', 'Sem rastreio'], ['laudo', 'Faltam laudos'], ['atras', 'Laudo atrasado'], ['ok', 'Todos os laudos baixados']], teste: (r, v) => v === 'semos' ? !r.os : v === 'semnf' ? !r.nf : v === 'semras' ? !r.rastreio : v === 'laudo' ? r.lau < r.n : v === 'atras' ? r.at : r.lau === r.n }],
     cols: [
@@ -6206,6 +6229,7 @@ document.addEventListener('change', e => { const t = e.target; if (t && t.getAtt
 document.addEventListener('click', ev => {
   const t = ev.target.closest && ev.target.closest('[data-act^="co-"]'); if (!t) return;
   const a = t.getAttribute('data-act'), id = t.getAttribute('data-id'), k = t.getAttribute('data-k'), f = S.fm, vol = S.gv && !S.gvForm ? S.gv : null, volta = vol ? () => gvAbrir(vol) : null;
+  if (a === 'co-tudo') { coTudo(); return; }
   if (a === 'co-env') { if (!coPode()) return; const sel = {}; if (id) sel[id] = true; lcAbrir({ k: 'coenv', sel: sel, mat: id ? ((S.coletas.find(x => x.id === id) || {}).tipo || '') : '', data: hojeISO(), lab: '', nf: '', rastreio: '', obs: '', cupom: '' }, volta); }
   else if (a === 'co-ck' && f) { f.sel[id] = !f.sel[id]; f.sujo = true; t.classList.toggle('on', f.sel[id]); t.setAttribute('aria-pressed', f.sel[id]); t.querySelector('.cb-box').innerHTML = f.sel[id] ? ic('ok') : ''; if (f.k === 'coenv') gvDesenha(true); else { const n = $('#co-n'); if (n) n.textContent = Object.keys(f.sel).filter(x => f.sel[x]).length + ' marcada(s)'; } }
   else if (a === 'co-todas' && f) { coNaoEnviadas().filter(c => !f.mat || c.tipo === f.mat).forEach(c => { f.sel[c.id] = true; }); f.sujo = true; gvDesenha(true); }
@@ -6259,10 +6283,16 @@ const agBl = (rot, html, dica) => lcBl(rot, html, dica, 'ag-al'); /* .ag-al: lis
 const agCmp = (a, b) => String(a || '').localeCompare(String(b || ''), 'pt-BR', { numeric: true });
 
 /* ---------- carregar ---------- */
+/* v0.6.15.3 (ITEM 51, aprovado 15/11 com "pode descer para mil"): as 1.000 coletas de água mais recentes pela data; "Carregar todas" lê tudo nesta sessão */
+const AG_LIM = 1000;
+Object.assign(S, { _agTudo: false, _agOff: null, _agRe: null });
+const agTeto = () => !S._agTudo && (S.aguacol || []).length >= AG_LIM;
+const agOuveColetas = re => { S._agRe = re; S._agOff = csOuve('sv2_aguacol', l => { S.aguacol = l; re(); if (typeof acLimparUmaVez === 'function') acLimparUmaVez(); }, S._agTudo ? {} : { order: 'data', limit: AG_LIM }); };
+function agTudo() { if (S._agTudo) return; S._agTudo = true; if (S._agOff) S._agOff(); aviso('Carregando todas as coletas de água…'); agOuveColetas(S._agRe); }
 CS_CARGAS.push(() => {
   const re = () => { S.agCarregado = true; if (S.rota.area === 'coletas' || S.rota.area === 'inicio') render(); else if (S.gv) gvDesenha(); };
   /* v0.6.6: as coletas carregam para todos (o responsável por uma ação corretiva pode não ter a atribuição Coletas); a aba continua só com ela */
-  csOuve('sv2_aguacol', l => { S.aguacol = l; re(); if (typeof acLimparUmaVez === 'function') acLimparUmaVez(); });
+  agOuveColetas(re);
   if (!coVe()) return;
   csOuve('sv2_aguaproj', l => { S.aguaproj = l; re(); });
   csOuve('sv2_aguaponto', l => { S.aguapontos = l; re(); });
@@ -6423,7 +6453,7 @@ function agTabela() {
   const l = S.aguacol.slice().sort((a, b) => String(b.data || '').localeCompare(String(a.data || '')) || String(b.hora || '').localeCompare(String(a.hora || '')) || agCmp(a.pontoNome, b.pontoNome));
   const SITS = [['pend', 'Resultado pendente'], ['atr', 'Laudo atrasado'], ['ok', 'Conforme'], ['nc', 'Não conforme'], ['ac', 'Ação corretiva aberta'], ['cancelada', 'Canceladas']];
   const sit = (c, v) => v === 'cancelada' ? c.situacao === 'cancelada' : c.situacao === 'cancelada' ? false : v === 'pend' ? c.resultado === 'PENDENTE' : v === 'atr' ? agLaudoAtrasado(c) : v === 'ok' ? c.resultado === 'CONFORME' : v === 'nc' ? agNC(c) : !!(c.acao && !c.acao.concluida);
-  return tbHTML({ id: 'ag-col', titulo: 'Coletas de água', unidade: 'coletas', linhas: l, aoClicar: agAbre, selecionado: S._agSel, buscaDica: 'Buscar ponto, análise, laboratório ou O.S',
+  return tbHTML({ id: 'ag-col', titulo: 'Coletas de água', unidade: 'coletas', linhas: l, teto: agTeto() ? { n: AG_LIM, act: 'ag-tudo' } : null, aoClicar: agAbre, selecionado: S._agSel, buscaDica: 'Buscar ponto, análise, laboratório ou O.S',
     busca: c => [c.pontoNome, c.analiseNome, c.lab, c.os, c.numSolicitacao, agAgenteTxt(c), c.coletor, agTipoTxt(c)].join(' '),
     filtros: [
       { k: 'tipo', rot: 'Tipo', opcoes: Object.keys(AG_TIPOS).map(k => [k, AG_TIPOS[k]]), teste: (c, v) => (c.tipoColeta || 'avulsa') === v },
@@ -6656,6 +6686,7 @@ document.addEventListener('click', ev => {
   const t = ev.target.closest && ev.target.closest('[data-act^="ag-"]'); if (!t) return;
   const a = t.getAttribute('data-act'), id = t.getAttribute('data-id'), f = S.fm, vol = S.gv && !S.gvForm ? S.gv : null, volta = vol ? () => gvAbrir(vol) : null;
   const c = id ? S.aguacol.find(x => x.id === id) : null;
+  if (a === 'ag-tudo') { agTudo(); return; }
   if (a === 'ag-nova') { if (!agPode()) return; lcAbrir(agNovoEstado(t.getAttribute('data-tipo') || '', t.getAttribute('data-oc') || '', t.getAttribute('data-pid') || ''), volta); }
   else if (a === 'ag-nova-ok') agNovaOk();
   else if (a === 'ag-ck' && f) { const g = t.getAttribute('data-g'); if (g === 'bebs') f.bebs[id] = !f.bebs[id]; else if (g === 'recs') f.recs[id] = !f.recs[id]; else if (g === 'ppt') f.ppt[id] = !f.ppt[id]; else if (g === 'pan') f.pan[id] = !f.pan[id]; else if (g === 'pt') { f.pontos[id] = !f.pontos[id]; f.avisado = ''; } else if (g === 'an') { f.ans[id] = !f.ans[id]; f.avisado = ''; } else if (g === 'ag') { const i = f.agente.indexOf(id); if (i >= 0) f.agente.splice(i, 1); else f.agente.push(id); } f.sujo = true; f.msg = ''; gvDesenha(true); }
@@ -6694,6 +6725,9 @@ Object.assign(S, { _acFotos: {}, _acLimpou: false });
 const acEhResp = a => !!(a && S.user && a.responsavelId === S.user.id);
 const acPode = a => !!S.user && (isSup(S.user) || acEhResp(a));
 const acFotosVencem = a => a && a.concluida && a.concluidaEm ? addDias(agDia(a.concluidaEm), AC_FOTO_DIAS) : '';
+/* v0.6.15.3 (ITEM 52): passou o prazo, as fotos saem da tela e do PDF para todos no mesmo dia, mesmo antes de um Líder ★/Administrador abrir o app e eliminá-las de vez */
+const acFotosFora = a => !!(a && a.concluida && (a.fotosApagadas || (acFotosVencem(a) && acFotosVencem(a) <= hojeISO())));
+const acFotosFimTxt = a => a.fotosApagadas ? 'eliminada(s) em ' + fmtD(agDia(a.fotosApagadas)) : 'vencida(s) em ' + fmtD(acFotosVencem(a));
 const acPill = a => { const s = agAcSit(a); return alPill(s === 'concluida' ? 'Ação concluída' : s === 'vencida' ? 'Ação vencida' : 'Ação aberta', s === 'concluida' ? 'ok' : s === 'vencida' ? 'cr' : 'wa'); };
 const acPessoas = () => S.users.filter(u => !u.bloqueado && u.perfil !== 'visitante').sort((a, b) => agCmp(a.nome, b.nome));
 
@@ -6705,7 +6739,7 @@ function acFotoGet(id) {
 function acFotosCarrega(raiz) { $$('img[data-acfoto]', raiz || document).forEach(im => { if (im.getAttribute('src')) return; acFotoGet(im.getAttribute('data-acfoto')).then(d => { if (d && imgSrc(d.dataUrl)) im.src = imgSrc(d.dataUrl); else { const q = im.closest('.ac-th'); if (q) q.classList.add('vz'); } }); }); }
 GV_DEPOIS.push(g => acFotosCarrega(g));
 function acFotoVer(cid, fid) {
-  const c = S.aguacol.find(x => x.id === cid); acFotoGet(fid).then(d => { if (!d) return;
+  const c = S.aguacol.find(x => x.id === cid); if (c && acFotosFora(c.acao)) return; acFotoGet(fid).then(d => { if (!d) return;
     fedVer({ src: d.dataUrl, base: d.base || '', marcas: d.marcas || [], marcadoPor: d.marcadoPor, marcadoEm: d.marcadoEm, titulo: 'Ação corretiva · ' + ((c && c.pontoNome) || ''), nome: 'acao-agua' }); });
 }
 
@@ -6729,7 +6763,7 @@ function acTratHTML(c, a) {
   const et = a.etapas || [];
   if (!et.length) return '<p class="ag-dc">Nenhuma etapa ainda.</p>';
   return '<ol class="ac-tl">' + et.map((e, i) => '<li class="' + (e.final ? 'fim' : '') + '"><div class="ac-eh"><b>' + (e.final ? 'Conclusão' : 'Etapa ' + (i + 1)) + '</b><small>' + esc(fmtDT(e.ts) + ' · ' + (e.porNome || '')) + '</small></div><p>' + esc(e.texto) + '</p>' +
-    ((e.fotos || []).length ? (a.fotosApagadas ? '<small class="ac-apag">' + e.fotos.length + ' foto(s) eliminada(s) em ' + esc(fmtD(agDia(a.fotosApagadas))) + '</small>' : '<div class="ac-ths">' + e.fotos.map((f, k) => '<button type="button" class="ac-th" data-act="ac-foto" data-id="' + esc(c.id) + '" data-f="' + esc(f) + '"><img ' + (S._acFotos[f] && imgSrc(S._acFotos[f].dataUrl) ? 'src="' + imgSrc(S._acFotos[f].dataUrl) + '"' : 'data-acfoto="' + esc(f) + '"') + ' alt="Foto ' + (k + 1) + '"></button>').join('') + '</div>') : '') + '</li>').join('') + '</ol>';
+    ((e.fotos || []).length ? (acFotosFora(a) ? '<small class="ac-apag">' + e.fotos.length + ' foto(s) ' + esc(acFotosFimTxt(a)) + '</small>' : '<div class="ac-ths">' + e.fotos.map((f, k) => '<button type="button" class="ac-th" data-act="ac-foto" data-id="' + esc(c.id) + '" data-f="' + esc(f) + '"><img ' + (S._acFotos[f] && imgSrc(S._acFotos[f].dataUrl) ? 'src="' + imgSrc(S._acFotos[f].dataUrl) + '"' : 'data-acfoto="' + esc(f) + '"') + ' alt="Foto ' + (k + 1) + '"></button>').join('') + '</div>') : '') + '</li>').join('') + '</ol>';
 }
 function acAbre(id) {
   S._agSel = id; gvAbrir(() => {
@@ -6738,7 +6772,7 @@ function acAbre(id) {
     let pe = coVe() ? '<button type="button" class="bt" data-act="ag-abre" data-id="' + esc(c.id) + '">' + ic('frasco') + 'Coleta</button>' : '';
     if (pode) pe += '<button type="button" class="bt" data-act="ac-concluir" data-id="' + esc(c.id) + '">' + ic('ok') + 'Concluir</button><button type="button" class="bt pr" data-act="ac-etapa" data-id="' + esc(c.id) + '">' + ic('mais') + 'Registrar etapa</button>';
     return { ico: 'lista', cabAcoes: cab, sub: 'Ação corretiva · ' + (agAgenteTxt(c) || 'não conforme') + (c.gravidade ? ' · ' + c.gravidade : ''), titulo: c.pontoNome || 'Coleta de água', pill: acPill(a),
-      corpo: (a.concluida && !a.fotosApagadas && vence ? lcAv('<b>Fotos até ' + esc(fmtD(vence)) + '.</b> Depois disso as fotos são eliminadas e ficam só os textos. Imprima antes, se precisar.', 'wa') : '') +
+      corpo: (a.concluida && !acFotosFora(a) && vence ? lcAv('<b>Fotos até ' + esc(fmtD(addDias(vence, -1))) + '.</b> Depois disso as fotos são eliminadas e ficam só os textos. Imprima antes, se precisar.', 'wa') : '') +
         gvCampos([['Responsável', a.responsavelNome], ['Prazo', fmtD(a.prazo) + (agAcSit(a) === 'vencida' ? ' (venceu)' : '')], ['O que fazer', a.orientacao], ['Aberta por', (a.abertaPorNome || '') + (a.abertaEm ? ', ' + fmtDT(a.abertaEm) : '')], ['Concluída', a.concluida ? (a.concluidaPorNome || '') + ', ' + fmtDT(a.concluidaEm) : ''], ['Coleta', fmtD(c.data) + ' · ' + agTipoTxt(c) + ' · ' + (c.analiseNome || '') + (c.laudoEm ? ' · laudo ' + fmtD(c.laudoEm) : '')]]) +
         '<p class="gv-h">Tratativas (' + (a.etapas || []).length + ')</p>' + acTratHTML(c, a),
       rodape: pe };
@@ -6815,12 +6849,12 @@ const acCab = t => '<div class="au-ic"><b>' + esc(t) + '</b><span>' + esc([(S.em
 async function acPdf(id) {
   const c = S.aguacol.find(x => x.id === id), a = c && c.acao; if (!a) return;
   const ids = (a.etapas || []).reduce((l, e) => l.concat(e.fotos || []), []);
-  if (ids.length && !a.fotosApagadas) { aviso('Preparando as fotos…'); await Promise.all(ids.map(acFotoGet)); }
+  if (ids.length && !acFotosFora(a)) { aviso('Preparando as fotos…'); await Promise.all(ids.map(acFotoGet)); }
   const im = f => S._acFotos[f] && imgSrc(S._acFotos[f].dataUrl) ? '<img src="' + imgSrc(S._acFotos[f].dataUrl) + '" alt="">' : '';
   const kv = [['Ponto', c.pontoNome], ['Coleta', fmtD(c.data) + ' ' + (c.hora || '') + ' · ' + agTipoTxt(c)], ['Análise', [c.analiseNome, c.lab].filter(Boolean).join(' · ') || '—'], ['Resultado', String(c.resultado || '').toLowerCase() + (c.laudoEm ? ' · laudo ' + fmtD(c.laudoEm) : '')], ['Agente', agAgenteTxt(c) || '—'], ['Gravidade', c.gravidade || '—'],
     ['Responsável', a.responsavelNome], ['Prazo', fmtD(a.prazo)], ['Situação', a.concluida ? 'Concluída por ' + a.concluidaPorNome + ' em ' + fmtD(agDia(a.concluidaEm)) : agAcSit(a) === 'vencida' ? 'Vencida' : 'Aberta'], ['Aberta por', (a.abertaPorNome || '') + ' · ' + fmtD(agDia(a.abertaEm))]];
-  const et = (a.etapas || []).map((e, i) => { const fs = a.fotosApagadas ? [] : (e.fotos || []).map(im).filter(Boolean);
-    return '<tr><td><b>' + (e.final ? 'Conclusão' : 'Etapa ' + (i + 1)) + '</b></td><td>' + esc(fmtDT(e.ts)) + '</td><td>' + esc(e.porNome || '') + '</td><td>' + esc(e.texto) + (a.fotosApagadas && (e.fotos || []).length ? '<br><i>' + e.fotos.length + ' foto(s) eliminada(s) depois da conclusão</i>' : '') + (fs.length ? '<div class="ac-ifs">' + fs.join('') + '</div>' : '') + '</td></tr>'; }).join('');
+  const et = (a.etapas || []).map((e, i) => { const fs = acFotosFora(a) ? [] : (e.fotos || []).map(im).filter(Boolean);
+    return '<tr><td><b>' + (e.final ? 'Conclusão' : 'Etapa ' + (i + 1)) + '</b></td><td>' + esc(fmtDT(e.ts)) + '</td><td>' + esc(e.porNome || '') + '</td><td>' + esc(e.texto) + (acFotosFora(a) && (e.fotos || []).length ? '<br><i>' + e.fotos.length + ' foto(s) eliminada(s) depois da conclusão</i>' : '') + (fs.length ? '<div class="ac-ifs">' + fs.join('') + '</div>' : '') + '</td></tr>'; }).join('');
   Audit.log({ acao: 'imprimir', entidade: 'coleta_agua', entidadeId: id, resumo: 'PDF da ação corretiva da água ' + c.pontoNome });
   acImprimir('<section class="au-fl au-fli">' + acCab('Ação corretiva · água') + '<div class="au-ikv ac-ikv">' + kv.map(x => '<span><small>' + esc(x[0]) + '</small>' + esc(x[1]) + '</span>').join('') + '</div>' +
     '<p class="au-itx"><b>O que fazer:</b> ' + esc(a.orientacao || '') + '</p><h3 class="ac-ih">Tratativas</h3>' + (et ? '<table class="au-itb ac-itb ac-iet"><colgroup><col style="width:22mm"><col style="width:32mm"><col style="width:40mm"><col></colgroup><thead><tr><th>Etapa</th><th>Data</th><th>Por</th><th>O que foi feito</th></tr></thead><tbody>' + et + '</tbody></table>' : '<p>Nenhuma etapa registrada.</p>') + '</section>', 'Ação corretiva — água · ' + c.pontoNome);
@@ -11128,7 +11162,7 @@ async function pgCdOk() {
       const kk = k; logs.push(() => Audit.log({ acao: p._rz ? 'coletado_plano' : 'coletado_programacao', entidade: p._rz ? 'coleta' : 'programacao', entidadeId: p._rz ? p.talhao : p.id, resumo: 'Coletado: ' + p.tipo + ' ' + p.talhao + ' em ' + fmtD(d.data) + (coletor ? ' por ' + coletor : '') + ' — ' + kk + ' amostra(s)', depois: { coletadaEm: d.data, coletor: coletor, prof: prof, estadio: estadio, amostras: kk } }));
       n += k;
     }
-    for (let i = 0; i < ops.length; i += 450) await Data.lote(ops.slice(i, i + 450));
+    await coIdsSeguros(ops); for (let i = 0; i < ops.length; i += 450) await Data.lote(ops.slice(i, i + 450));
     logs.forEach(x => { try { x(); } catch (e) {} });
     lcFim(); aviso(ps.length + ' área(s) coletada(s) · ' + n + ' amostra(s) em Amostras.');
   } catch (e) { lcErro(svErro(e)); }
@@ -11182,7 +11216,7 @@ async function pgAvOk() {
   if (cp) Object.assign(comum, { loteComp: up(f.lote), dataFabr: f.fabr || '', identif: up(f.identif) || 'COMPOSTO', fertilizante: up(f.fert) || 'COMPOSTO ORGANICO', dadosCompl: up(f.dc) });
   try {
     ids.forEach(aid => ops.push({ col: 'sv2_coletas', tipo: 'set', id: pgColIdLivre(pgColId({ talhao: tal || up(f.lote) }, aid, f.data), ops), dados: pgNovaColeta(m, Object.assign({}, comum, { analiseId: aid })) }));
-    await Data.lote(ops);
+    await coIdsSeguros(ops); await Data.lote(ops);
     ops.forEach(o => Audit.log({ acao: 'criar_coleta', entidade: 'coleta', entidadeId: o.id, resumo: 'Coleta ' + (lote ? 'em lote ' : 'avulsa ') + (CO_TXT[m] || m) + ' ' + (tal || o.dados.loteComp) + ' em ' + fmtD(f.data) + ' — ' + o.dados.analiseNome, depois: { data: f.data, talhao: tal, analise: o.dados.analiseNome, valor: o.dados.valor } }));
     lcFim(); aviso(ids.length > 1 ? 'Lançadas ' + ids.length + ' amostras.' : 'Coleta lançada.');
   } catch (e) { lcErro(svErro(e)); }
@@ -11362,7 +11396,7 @@ async function ppLancOk() {
       n += k;
     }
     if (!ops.length) return lcErro('Nada novo para gravar.');
-    for (let i = 0; i < ops.length; i += 450) await Data.lote(ops.slice(i, i + 450));
+    await coIdsSeguros(ops); for (let i = 0; i < ops.length; i += 450) await Data.lote(ops.slice(i, i + 450));
     logs.forEach(y => { try { y(); } catch (e) {} });
     const sel = ppSel(x.r.id); ps.forEach(p => { delete sel[p.talhao]; });
     lcFim(); aviso(ps.length + ' área(s) coletada(s) · ' + n + ' amostra(s) em Amostras.');

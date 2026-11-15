@@ -364,7 +364,7 @@ async function pgCdOk() {
       const kk = k; logs.push(() => Audit.log({ acao: p._rz ? 'coletado_plano' : 'coletado_programacao', entidade: p._rz ? 'coleta' : 'programacao', entidadeId: p._rz ? p.talhao : p.id, resumo: 'Coletado: ' + p.tipo + ' ' + p.talhao + ' em ' + fmtD(d.data) + (coletor ? ' por ' + coletor : '') + ' — ' + kk + ' amostra(s)', depois: { coletadaEm: d.data, coletor: coletor, prof: prof, estadio: estadio, amostras: kk } }));
       n += k;
     }
-    for (let i = 0; i < ops.length; i += 450) await Data.lote(ops.slice(i, i + 450));
+    await coIdsSeguros(ops); for (let i = 0; i < ops.length; i += 450) await Data.lote(ops.slice(i, i + 450));
     logs.forEach(x => { try { x(); } catch (e) {} });
     lcFim(); aviso(ps.length + ' área(s) coletada(s) · ' + n + ' amostra(s) em Amostras.');
   } catch (e) { lcErro(svErro(e)); }
@@ -418,7 +418,7 @@ async function pgAvOk() {
   if (cp) Object.assign(comum, { loteComp: up(f.lote), dataFabr: f.fabr || '', identif: up(f.identif) || 'COMPOSTO', fertilizante: up(f.fert) || 'COMPOSTO ORGANICO', dadosCompl: up(f.dc) });
   try {
     ids.forEach(aid => ops.push({ col: 'sv2_coletas', tipo: 'set', id: pgColIdLivre(pgColId({ talhao: tal || up(f.lote) }, aid, f.data), ops), dados: pgNovaColeta(m, Object.assign({}, comum, { analiseId: aid })) }));
-    await Data.lote(ops);
+    await coIdsSeguros(ops); await Data.lote(ops);
     ops.forEach(o => Audit.log({ acao: 'criar_coleta', entidade: 'coleta', entidadeId: o.id, resumo: 'Coleta ' + (lote ? 'em lote ' : 'avulsa ') + (CO_TXT[m] || m) + ' ' + (tal || o.dados.loteComp) + ' em ' + fmtD(f.data) + ' — ' + o.dados.analiseNome, depois: { data: f.data, talhao: tal, analise: o.dados.analiseNome, valor: o.dados.valor } }));
     lcFim(); aviso(ids.length > 1 ? 'Lançadas ' + ids.length + ' amostras.' : 'Coleta lançada.');
   } catch (e) { lcErro(svErro(e)); }

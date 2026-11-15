@@ -135,7 +135,7 @@ async function ppLancOk() {
       n += k;
     }
     if (!ops.length) return lcErro('Nada novo para gravar.');
-    for (let i = 0; i < ops.length; i += 450) await Data.lote(ops.slice(i, i + 450));
+    await coIdsSeguros(ops); for (let i = 0; i < ops.length; i += 450) await Data.lote(ops.slice(i, i + 450));
     logs.forEach(y => { try { y(); } catch (e) {} });
     const sel = ppSel(x.r.id); ps.forEach(p => { delete sel[p.talhao]; });
     lcFim(); aviso(ps.length + ' área(s) coletada(s) · ' + n + ' amostra(s) em Amostras.');

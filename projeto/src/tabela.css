@@ -224,3 +224,5 @@ body.tb-arrastando,body.tb-arrastando *{cursor:grabbing!important;user-select:no
 .tb-t td,.tb-t th{border-right:1px solid color-mix(in srgb,var(--bd) 70%,transparent)}
 .tb-t td:last-child,.tb-t th:last-child{border-right:0}
 .tb-t tbody tr.tb-gr td,.tb-t td.tb-vz{border-right:0}
+/* v0.6.15.3: lista com teto (só os N mais recentes): botão “Carregar todas” */
+.tb-tetob{font-size:13px;white-space:nowrap}
