@@ -476,6 +476,23 @@ button.cs-sync:focus-visible{outline:2px solid var(--a);outline-offset:1px}
 .cs-app-l img{width:24px;height:24px;border-radius:6px;box-shadow:0 1px 3px rgba(0,0,0,.18)}
 .cs-app-l .cs-app-x{opacity:.7}
 
+/* v0.6.21 (Elias, 20/11; ITENS 99, 100 e 102 aprovados, a OPÇÃO 2 do 101 reprovada): sem a barra de cima no PC. A busca, a nuvem, o tema e o sino ficam na linha do título, à direita;
+   os botões da tela (ações) ficam na linha de baixo, à direita, alinhados à linha das pílulas. */
+@media(min-width:900px){
+  /* o título e as pílulas viram itens da grade (display:contents): linha 1 = título | ferramentas; linha 2 = pílulas | botões da tela */
+  .cs-phr:has(>.cs-fer){display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:16px;row-gap:6px;align-items:center;min-height:0}
+  .cs-phr:has(>.cs-fer)>.cs-pht{display:contents}
+  .cs-phr:has(>.cs-fer)>.cs-pht>h1,.cs-phr:has(>.cs-fer)>.cs-pht>.cs-ht{grid-column:1;grid-row:1;align-self:end}
+  .cs-phr:has(>.cs-fer)>.cs-pht>.cs-meta{grid-column:1;grid-row:2}
+  .cs-phr>.cs-fer{grid-column:2;grid-row:1;justify-self:end}
+  .cs-phr:has(>.cs-fer)>.cs-acts{grid-column:2;grid-row:2;justify-self:end;margin-left:0}
+  .cs-fer{display:flex;align-items:center;gap:6px}
+  .cs-fer .cs-busca{width:220px;flex:none}
+  .cs-fer .cs-sp{display:none}
+  .cs-fer.solta{justify-content:flex-end;margin:0 0 12px}
+  .gv{top:0}
+}
+
 /* ===== tabela.css ===== */
 /* EFCwork · tabela.css — tabela padrão, janela retrátil, gaveta e impressão. Prefixos: tb-, dd-, gv- */
 .tb{display:flex;flex-direction:column;gap:10px;min-width:0}
@@ -562,7 +579,7 @@ body.dd-arrastando{cursor:grabbing;-webkit-user-select:none;user-select:none}
 .gv-tl small{display:block;color:var(--tx3);font-size:13px}
 .gv-lotes{display:flex;flex-direction:column;gap:6px}
 .gv-lote{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:7px 10px;border:1px solid var(--bd);border-radius:var(--rs);font-size:14px;background:var(--bg0)}
-@media(min-width:900px){.gv{top:56px}}
+@media(min-width:900px){.gv{top:0}} /* v0.6.21: sem a barra de cima no PC, a gaveta vai até o alto */
 @media(max-width:899px){.gv{width:100vw;border-left:0}.tb-busca{width:100%}.tb-pf{min-width:0;flex:1 1 160px}}
 /* impressão */
 #tb-imp{display:none}
@@ -2088,6 +2105,21 @@ body:has(#gv) .pp-bar{display:none}
 }
 @media print{.sm-ent *{animation:none!important}.sm-sec{border-color:#bbb;border-radius:0;background:#fff;break-inside:auto}.sm-t th{background:#fff}.sm-t th{position:static;color:#000}.sm-t tr{break-inside:avoid}.sm-imp .sm-sec+.sm-sec{margin-top:6mm}.sm-imp h2{break-after:avoid}}
 
+/* ===== almmes.css ===== */
+/* EFCwork · almmes.css — Prefixo: am- (Relatórios › Almoxarifado do mês). Usa as peças da Semana (sm-sec, sm-t) e só tokens do app. */
+.am-fp{grid-template-columns:minmax(0,320px)}
+.am-n{font-variant-numeric:tabular-nums;white-space:nowrap}
+.am-t .n{text-align:right}
+.am-t th:empty{width:40%} /* a coluna da barra fica entre o nome e o valor (ITEM 106) */
+.am-br{display:block;height:6px;border-radius:3px;background:var(--bg2);min-width:60px}
+.am-br i{display:block;height:100%;border-radius:3px;background:var(--a)}
+.am-lei{margin:0;padding-left:18px;display:grid;gap:4px;font-size:14px;color:var(--tx)}
+.am-2{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:12px 20px;align-items:start}
+.am-eq{display:flex;align-items:center;gap:8px;margin:10px 0 0;font-size:13px;color:var(--tx2)}
+.am-eq .ic{width:16px;height:16px;flex:none;color:var(--tx3)}
+@media(max-width:700px){.am-2{grid-template-columns:minmax(0,1fr)}.am-fp{grid-template-columns:minmax(0,1fr)}.am-t th:empty{width:30%}}
+@media print{.am-br{background:#e6e6e6;-webkit-print-color-adjust:exact;print-color-adjust:exact}.am-br i{background:#777}.am-lei{font-size:9.5pt}}
+
 /* ===== entrar.css ===== */
 /* EFCwork · entrar.css — tela de entrar com a garota-propaganda (v0.4.2). Prefixo: en-
    .en-rev = tema Escuro (Revista) · .en-avi = tema Claro (Avisos flutuando). PC: arte no fundo inteiro e formulário à direita.
@@ -2549,7 +2581,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = Mov;
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.6.20';
+const VERSAO = '0.6.21';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -2960,7 +2992,7 @@ const AREAS = [
   { id: 'documentos', nome: 'Documentos', ic: 'doc', versao: 'v0.5', parcial: 'documentos, caixas d’água, histórico e impressos prontos aqui; o relatório de documentos segue no EFClaudian', abas: [{ id: 'documentos', nome: 'Documentos' }, { id: 'caixas', nome: 'Caixas d’água' }, { id: 'historico', nome: 'Histórico' }, { id: 'impressos', nome: 'Impressos' }] },
   { id: 'almox', nome: 'Almoxarifado', ic: 'caixa', versao: 'v0.3', parcial: 'consultar e lançar prontos aqui; cadastro de material, kits, fotos e inventário seguem no EFClaudian', abas: [{ id: 'painel', nome: 'Painel' }, { id: 'materiais', nome: 'Materiais' }, { id: 'movimentacoes', nome: 'Movimentações' }, { id: 'solicitacoes', nome: 'Solicitações' }, { id: 'equipamentos', nome: 'Equipamentos' }, { id: 'contagem', nome: 'Contagem', oculta: true, pai: () => typeof cgDoEq === 'function' && cgDoEq() ? 'equipamentos' : 'materiais' }, { id: 'calibracao', nome: 'Calibração', oculta: true, pai: 'equipamentos' }] },
   { id: 'qualidade', nome: 'Qualidade', ic: 'escudo', versao: 'v0.7', parcial: 'Não conformidades, Análise de problemas, Treinamentos e Bugs e sugestões prontos aqui; Conversas seguem no EFClaudian (a Semana está em Relatórios)', abas: [{ id: 'nc', nome: 'Não conformidades' }, { id: 'analise', nome: 'Análise de problemas' }, { id: 'treinos', nome: 'Treinamentos' }, { id: 'bugs', nome: 'Bugs e sugestões' }] },
-  { id: 'relatorios', nome: 'Relatórios', ic: 'graf', versao: 'v0.8', grupo: 'Análise', parcial: 'o painel do Rateio e a Semana estão prontos aqui; Almoxarifado do mês, Documentos, Apontamentos e Coletas em aberto seguem no EFClaudian', get negada() { return !!S.user && !(rlVe() || smVe()); }, abas: [{ id: 'rateio', nome: 'Rateio', get negada() { return !!S.user && !rlVe(); } }, { id: 'semana', nome: 'Semana', get negada() { return !!S.user && !smVe(); } }] }, /* v0.6.18: Rateio (relatorios.js); sem a atribuição Rateios a área some (as outras abas entram por aqui depois) */
+  { id: 'relatorios', nome: 'Relatórios', ic: 'graf', versao: 'v0.8', grupo: 'Análise', parcial: 'o Rateio, a Semana e o Almoxarifado do mês estão prontos aqui; Documentos, Apontamentos e Coletas em aberto seguem no EFClaudian', get negada() { return !!S.user && !(rlVe() || smVe() || amVe()); }, abas: [{ id: 'rateio', nome: 'Rateio', get negada() { return !!S.user && !rlVe(); } }, { id: 'semana', nome: 'Semana', get negada() { return !!S.user && !smVe(); } }, { id: 'almox', nome: 'Almoxarifado', get negada() { return !!S.user && !amVe(); } }] }, /* v0.6.18: Rateio (relatorios.js); sem a atribuição Rateios a área some (as outras abas entram por aqui depois) */
   { id: 'adm', nome: 'Administração', ic: 'eng', rodape: true, abas: [{ id: 'empresa', nome: 'Empresa' }, { id: 'aparencia', nome: 'Aparência' }, { id: 'atividade', nome: 'Atividade', get negada() { return !isPrincipal(S.user); } }, { id: 'sobre', nome: 'Sobre' }] }
 ];
 const csArea = id => AREAS.find(a => a.id === id) || AREAS[0];
@@ -3132,10 +3164,22 @@ async function csNuvemAtualiza() {
 function csTopo() {
   /* v0.4.15 (Nº 46): o aviso da nuvem virou botão; abre a gaveta com "Atualizar agora". No celular fica só o ícone (cor = situação) */
   const off = S.conexao === false, t = csTema(), con = DEMO ? '<span class="cs-sync">Demonstração</span>' : '<button type="button" class="cs-sync' + (off ? ' off' : '') + '" data-act="cs-nuvem" aria-label="Nuvem: ' + (off ? 'sem internet' : 'sincronizado') + '. Abrir" title="Nuvem · atualizar agora">' + ic('nuvem') + '<i></i><span>' + (off ? 'Sem internet · guardando no aparelho' : 'Sincronizado') + '</span></button>';
-  return '<header class="cs-topo"><button type="button" class="bt ic-so cs-so-cel" data-act="cs-menu" aria-label="Abrir menu">' + ic('menu') + '</button>' +
-    '<button type="button" class="cs-busca" data-act="cs-busca" aria-label="Buscar (tecla /)">' + ic('lupa') + '<span>Buscar documento, material, coleta…</span><kbd>/</kbd></button><span class="cs-sp"></span>' + con +
+  const fer = '<button type="button" class="cs-busca" data-act="cs-busca" aria-label="Buscar (tecla /)">' + ic('lupa') + '<span>Buscar documento, material, coleta…</span><kbd>/</kbd></button><span class="cs-sp"></span>' + con +
     '<button type="button" class="bt ic-so" data-act="cs-tema" aria-label="' + (t === 'escuro' ? 'Usar tema claro' : 'Usar tema escuro') + '" title="' + (t === 'escuro' ? 'Tema claro' : 'Tema escuro') + '">' + ic(t === 'escuro' ? 'sol' : 'lua') + '</button>' +
-    '<button type="button" class="bt ic-so cs-sino" data-act="cs-sino" aria-label="Avisos" title="Avisos">' + ic('sino') + (function () { const n = typeof snConta === 'function' ? snConta() : 0; return '<span class="cs-bdg" id="sn-n"' + (n ? '' : ' hidden') + '>' + (n > 99 ? '99+' : n) + '</span>'; })() + '</button></header>';
+    '<button type="button" class="bt ic-so cs-sino" data-act="cs-sino" aria-label="Avisos" title="Avisos">' + ic('sino') + (function () { const n = typeof snConta === 'function' ? snConta() : 0; return '<span class="cs-bdg" id="sn-n"' + (n ? '' : ' hidden') + '>' + (n > 99 ? '99+' : n) + '</span>'; })() + '</button>';
+  /* v0.6.21 (Elias, 20/11): no PC a barra de cima sai inteira (o caminho some) e a busca, a nuvem, o tema e o sino descem para a
+     linha do título da tela (csFerPoe, depois de montar a tela). No celular a barra continua: ela segura o botão do menu. */
+  S._csFerPC = csFerPC(); /* o resize compara com o jeito em que a tela foi montada */
+  if (csFerPC()) { S._csFer = fer; return ''; }
+  S._csFer = '';
+  return '<header class="cs-topo"><button type="button" class="bt ic-so cs-so-cel" data-act="cs-menu" aria-label="Abrir menu">' + ic('menu') + '</button>' + fer + '</header>';
+}
+const csFerPC = () => innerWidth >= 900;
+/* põe as ferramentas na linha do título (o 1º cabeçalho da tela); sem cabeçalho, ficam numa linha própria à direita */
+function csFerPoe() {
+  if (!S._csFer || !csFerPC()) return; const ct = document.querySelector('.cs-main > .cs-ct'); if (!ct || ct.querySelector('.cs-fer')) return;
+  const d = document.createElement('div'); d.className = 'cs-fer'; d.innerHTML = S._csFer;
+  const phr = ct.querySelector('.cs-ph .cs-phr'); if (phr) phr.appendChild(d); else { d.classList.add('solta'); ct.insertBefore(d, ct.firstChild); }
 }
 /* cabeçalho de página padrão: caminho, título com traço, situação (meta) e ações; abas sublinhadas embaixo */
 function cabecalho(o) {
@@ -3163,6 +3207,7 @@ function render() {
   try { corpo = f ? f(S.rota.aba) : arEmBreve(ar); } catch (e) { console.error(e); corpo = '<div class="pn"><div class="vazio"><b>Esta tela deu erro ao abrir.</b><span>' + esc(e && e.message || e) + '</span></div></div>'; }
   const foco = document.activeElement && document.activeElement.getAttribute && document.activeElement.getAttribute('data-foco'), sel = foco ? [document.activeElement.selectionStart, document.activeElement.selectionEnd] : null;
   app.innerHTML = '<div class="cs-app' + csMenuClasse() + '">' + csLado() + csPux() + '<div class="cs-fundo" data-act="cs-fecha"></div><main class="cs-main" id="conteudo">' + csTopo() + '<div class="cs-ct">' + corpo + '</div><footer class="cs-rod">' + APP_APELIDO + ' · ' + esc((S.empresa && S.empresa.nome) || 'Sua empresa') + '</footer></main>' + csBaixo() + '</div>';
+  csFerPoe();
   { const on = document.querySelector('.cs-abas a.on'), bar = on && on.parentNode; if (bar && bar.scrollWidth > bar.clientWidth) bar.scrollLeft = Math.max(0, on.offsetLeft - (bar.clientWidth - on.offsetWidth) / 2); } /* v0.6.12: a aba aberta aparece na faixa, mesmo com várias abas no celular */
   const dep = TELAS[ar.id + ':depois']; if (dep) { try { dep(S.rota.aba); } catch (e) { console.error(e); } }
   S._puxEntra = false;
@@ -3233,6 +3278,8 @@ async function csIniciar() {
 }
 render();
 if ('serviceWorker' in navigator && location.protocol === 'https:') { navigator.serviceWorker.register('sw.js').catch(() => {}); }
+/* v0.6.21: ao passar de PC para celular (ou o contrário), a barra de cima volta ou sai */
+addEventListener('resize', () => { if (S._csFerPC !== undefined && csFerPC() !== S._csFerPC && S.user) render(); });
 
 /* ===== servicos.js ===== */
 /* EFCwork · servicos.js — pessoas, auditoria, avisos (sino) e pedidos ao superior. Prefixo: sv (mais os objetos Audit, Notif e Aprov).
@@ -3551,8 +3598,8 @@ function tbAltura() {
   let trava = false;
   if (innerWidth >= 900 && ws.length === 1) {
     const w = ws[0], topo = w.getBoundingClientRect().top + scrollY, alto = innerHeight - topo - 16;
-    if (alto >= 240) { if (scrollY) scrollTo(0, 0); poe(w, alto + 'px', ''); trava = true; } else poe(w, '', (innerHeight - 56 - 32) + 'px');
-  } else ws.forEach(w => poe(w, '', innerWidth >= 900 ? (innerHeight - 56 - 32) + 'px' : ''));
+    if (alto >= 240) { if (scrollY) scrollTo(0, 0); poe(w, alto + 'px', ''); trava = true; } else poe(w, '', (innerHeight - 32) + 'px');
+  } else ws.forEach(w => poe(w, '', innerWidth >= 900 ? (innerHeight - 32) + 'px' : ''));
   H.classList.toggle('pag-fixa', trava);
 }
 /* v0.6.15: com uma tabela só na tela, o total/resumo vira pílula no cabeçalho e (no PC) as ferramentas sobem para a linha das abas */
@@ -12871,6 +12918,175 @@ document.addEventListener('keydown', e => {
   if (S.sm.aberto) { S.sm.aberto = false; render(); }
 });
 
+/* ===== almmes.js ===== */
+/* EFCwork · almmes.js — Relatórios › Almoxarifado do mês (v0.6.21). Prefixo: am.
+   Porte da "Apresentação do almoxarifado" do EFClaudian (viewAlmApre, alApreDados, alApreLeitura, Relatórios › Almoxarifado do mês),
+   no padrão das outras abas de Relatórios (Rateio e Semana): um filtro só (Mês), o resumo em texto no alto, as partes em tabelas
+   simples e a impressora. Sem gráfico de pizza nem caixa de KPI: as barras são finas, dentro da própria tabela. Só leitura: nada grava.
+   ITENS 104 a 111 aprovados (20/11); no 106 o Elias pediu a barra entre o nome (mês, motivo, laboratório) e o valor. */
+const amVe = () => !!S.user && (isSup(S.user) || alVe());
+Object.assign(S, { am: { mes: '', aberto: false } });
+
+CS_CARGAS.push(() => {
+  if (!amVe() || alVe()) return; /* quem tem o Almoxarifado já carrega tudo em almox.js */
+  const re = () => { _alIdx = null; S.almCarregado = true; if (S.rota.area === 'relatorios') render(); };
+  csOuve('sv2_alm_itens', l => { S.almItens = l || []; re(); });
+  if (!smVe()) csOuve('sv2_alm_mov', l => { S.almMov = l || []; re(); }, { order: 'criadoEm', limit: ALM_MOV_LIM });
+  csOuve('sv2_alm_sol', l => { S.almSol = l || []; re(); }, { order: 'criadoEm', limit: 3000 });
+  csOuve('sv2_alm_equip', l => { S.almEq = l || []; re(); });
+});
+
+/* ---------- mês ---------- */
+const amMesAtual = () => hojeISO().slice(0, 7);
+const amMesSel = () => S.am.mes || amMesAtual();
+function amMesAnda(mes, n) { const [a, m] = mes.split('-').map(Number), d = new Date(a, m - 1 + n, 1); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'); }
+const AM_MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+const amMesTxt = mes => AM_MESES[Number(mes.slice(5, 7)) - 1] + ' de ' + mes.slice(0, 4);
+const amMesTit = mes => amMesTxt(mes).charAt(0).toUpperCase() + amMesTxt(mes).slice(1);
+const amMesCurto = mes => AM_MESES[Number(mes.slice(5, 7)) - 1].slice(0, 3) + '/' + mes.slice(2, 4);
+function amOpcoesMes() { const l = [], at = amMesAtual(); for (let k = 0; k < 12; k++) { const m = amMesAnda(at, -k); l.push([m, amMesTit(m) + (k === 0 ? ' (este mês)' : '')]); } if (!l.some(x => x[0] === amMesSel())) l.push([amMesSel(), amMesTit(amMesSel())]); return l; }
+
+/* ---------- dados (mesma conta do EFClaudian) ---------- */
+const amVal = m => (Number(m.qtd) || 0) * (Number(m.preco) || 0);
+const amMovMes = (mes, tipo) => S.almMov.filter(m => !m.anulada && String(m.data || '').slice(0, 7) === mes && (!tipo || m.tipo === tipo));
+const amSemAc = t => String(t == null ? '' : t).normalize('NFD').replace(/[̀-ͯ]/g, '');
+const amTokens = t => ' ' + amSemAc(t).toUpperCase().replace(/[^A-Z0-9]+/g, ' ').trim() + ' ';
+function amLabsConhecidos() {
+  const set = {}, por = n => { const k = String(n || '').trim().toUpperCase(), t = amTokens(k).trim(); if (t.length >= 3) set[t] = k; };
+  ((S.cfgCol && S.cfgCol.labs) || []).forEach(por); ((S.cfgAlm && S.cfgAlm.kits) || []).forEach(k => por(k.lab));
+  return set;
+}
+/* para qual laboratório foi a saída: o que a saída ou o kit diz; senão, o nome do laboratório escrito no kit ou no motivo */
+function amLabDaSaida(m, labs) {
+  if (m.lab) return String(m.lab).toUpperCase();
+  const k = m.kit ? ((S.cfgAlm && S.cfgAlm.kits) || []).find(x => x.nome === m.kit) : null; if (k && k.lab) return String(k.lab).toUpperCase();
+  const t = amTokens((m.kit || '') + ' ' + (m.motivo || '')), achou = Object.keys(labs).find(n => t.indexOf(' ' + n + ' ') >= 0);
+  return achou ? labs[achou] : '';
+}
+function amDados(mes) {
+  const saidas = amMovMes(mes, 'saida'), entradas = amMovMes(mes, 'entrada'), aberturas = amMovMes(mes, 'abrir'), labs = amLabsConhecidos();
+  const gasto = saidas.reduce((s, m) => s + amVal(m), 0), comprado = entradas.reduce((s, m) => s + amVal(m), 0);
+  const porMotivo = {}, porItem = {}, porPessoa = {}, porLab = {}; let semLab = 0;
+  const it = (m) => (porItem[m.itemId] = porItem[m.itemId] || { id: m.itemId, nome: m.itemNome || ((alItem(m.itemId) || {}).nome) || '(material removido)', sq: 0, sv: 0, eq: 0, ev: 0 });
+  saidas.forEach(m => {
+    const lab = amLabDaSaida(m, labs), v = amVal(m); if (lab) porLab[lab] = (porLab[lab] || 0) + v; else semLab += v;
+    const mot = m.motivo || 'Sem motivo'; porMotivo[mot] = (porMotivo[mot] || 0) + v;
+    const x = it(m); x.sq += Number(m.qtd) || 0; x.sv += v;
+    const p = m.porNome || '—'; porPessoa[p] = (porPessoa[p] || 0) + 1;
+  });
+  entradas.forEach(m => { const x = it(m); x.eq += Number(m.qtd) || 0; x.ev += amVal(m); });
+  const serie = []; for (let k = 5; k >= 0; k--) { const mm = amMesAnda(mes, -k); serie.push({ mes: mm, v: amMovMes(mm, 'saida').reduce((s, m) => s + amVal(m), 0) }); }
+  const itens = alAtivos(), venc = [], avenc = [], abaixo = [], zerados = [];
+  itens.forEach(i => {
+    alLotes(i.id).forEach(l => { if (alVencido(l)) venc.push({ i: i, l: l }); else if (alAVencer(l)) avenc.push({ i: i, l: l }); });
+    const s = alSaldo(i.id), u = alDisp(i.id);
+    if (s <= 0 && !alAbertos(i.id).length) zerados.push(i); else if (Number(i.min) > 0 && u < Number(i.min)) abaixo.push({ i: i, s: u });
+  });
+  const abAviso = alAbertos().map(m => ({ m: m, p: alPrazoAberto(m) })).filter(x => x.p && (x.p.vencido || x.p.venc <= addDias(hojeISO(), 7)));
+  const eqs = (S.almEq || []).filter(e => e.situacao !== 'baixa');
+  return { mes: mes, saidas: saidas, entradas: entradas, aberturas: aberturas, gasto: gasto, comprado: comprado, porMotivo: porMotivo, porItem: porItem, porPessoa: porPessoa, porLab: porLab, semLab: semLab, serie: serie,
+    estoque: itens.reduce((s, i) => s + alValorEst(i.id), 0), itensAtivos: itens.length, venc: venc, avenc: avenc, abaixo: abaixo, zerados: zerados, emUso: alAbertos(), abAviso: abAviso,
+    solMes: S.almSol.filter(x => String(x.data || '').slice(0, 7) === mes), solPend: S.almSol.filter(x => x.situacao === 'pendente'), itensMov: Object.keys(porItem).length,
+    eqs: eqs, calV: eqs.filter(e => eqCalSit(e) === 'vencida').length, calS: eqs.filter(e => eqCalSit(e) === 'sem').length, calA: eqs.filter(e => eqCalSit(e) === 'avencer').length };
+}
+/* "Como ler este mês": frases geradas dos próprios lançamentos (como no EFClaudian), com singular e plural certos */
+function amLeitura(d) {
+  const f = [], ant = amMesAnda(d.mes, -1), gAnt = amMovMes(ant, 'saida').reduce((s, m) => s + amVal(m), 0);
+  if (d.gasto || gAnt) { const dif = d.gasto - gAnt, pc = gAnt > 0 ? Math.round(Math.abs(dif) / gAnt * 100) : 0;
+    f.push(gAnt <= 0 ? 'Foram consumidos ' + brl(d.gasto) + ' em material neste mês.' : 'O consumo foi de ' + brl(d.gasto) + ', ' + (dif >= 0 ? 'acima' : 'abaixo') + ' de ' + amMesTxt(ant) + ' (' + brl(gAnt) + (pc ? ', ' + pc + '% ' + (dif >= 0 ? 'a mais' : 'a menos') : '') + ').'); }
+  else f.push('Nenhuma saída de material neste mês nem no anterior.');
+  const mot = Object.keys(d.porMotivo).sort((a, b) => d.porMotivo[b] - d.porMotivo[a])[0];
+  if (mot) f.push('O que mais consumiu foi “' + mot + '”: ' + brl(d.porMotivo[mot]) + ' (' + Math.round(d.porMotivo[mot] / (d.gasto || 1) * 100) + '% do mês).');
+  const top = Object.values(d.porItem).filter(x => x.sv > 0).sort((a, b) => b.sv - a.sv)[0];
+  if (top) f.push('Material de maior valor consumido: ' + top.nome + ' (' + alQ(top.sq) + ((alItem(top.id) || {}).un ? ' ' + alItem(top.id).un : '') + ', ' + brl(top.sv) + ').');
+  if (d.comprado) f.push('Entraram ' + brl(d.comprado) + ' em compras, em ' + smPl(d.entradas.length, 'lançamento', 'lançamentos') + '.');
+  f.push(d.venc.length ? 'Atenção: ' + smPl(d.venc.length, 'lote vencido', 'lotes vencidos') + ' ainda com saldo, para descarte ou baixa.' : 'Nenhum lote vencido com saldo no estoque.');
+  if (d.abaixo.length) f.push(smPl(d.abaixo.length, 'material abaixo', 'materiais abaixo') + ' do estoque mínimo, para repor na próxima solicitação.');
+  if (d.abAviso.length) f.push(smPl(d.abAviso.length, 'frasco aberto', 'frascos abertos') + ' no fim do prazo de uso (ou passado).');
+  if (d.solPend.length) f.push(smPl(d.solPend.length, 'solicitação pendente', 'solicitações pendentes') + ' no almoxarifado central.');
+  return f;
+}
+
+/* ---------- partes ---------- */
+/* tabela simples (as mesmas classes da Semana); as colunas em "num" ficam à direita, no cabeçalho e nas linhas */
+function amTab(cab, linhas, vazio, num) {
+  if (!linhas.length) return '<p class="sm-vz">' + esc(vazio) + '</p>'; const n = k => (num || []).indexOf(k) >= 0 ? ' class="n"' : '';
+  return '<div class="sm-tw"><table class="sm-t am-t"><thead><tr>' + cab.map((c, k) => '<th' + n(k) + '>' + esc(c) + '</th>').join('') + '</tr></thead><tbody>' +
+    linhas.map(l => '<tr>' + l.map((x, k) => '<td' + n(k) + '>' + x + '</td>').join('') + '</tr>').join('') + '</tbody></table></div>';
+}
+const amBarra = (v, max) => '<span class="am-br" aria-hidden="true"><i style="width:' + (max > 0 && v > 0 ? Math.max(2, Math.round(v / max * 100)) : 0) + '%"></i></span>';
+const amPc = (v, t) => t > 0 ? Math.round(v / t * 100) + '%' : '';
+function amPartes(d) {
+  const r = [];
+  r.push(smSec('leitura', 'Como ler este mês', 'gerado dos próprios lançamentos', '<ul class="am-lei">' + amLeitura(d).map(t => '<li>' + esc(t) + '</li>').join('') + '</ul>'));
+  const mx = Math.max.apply(null, d.serie.map(x => x.v).concat([0]));
+  r.push(smSec('serie', 'Consumo mês a mês', 'R$ das saídas nos últimos 6 meses', amTab(['Mês', '', 'Consumo'], d.serie.map(x => [x.mes === d.mes ? '<b>' + esc(amMesCurto(x.mes)) + '</b>' : esc(amMesCurto(x.mes)), amBarra(x.v, mx), '<span class="am-n">' + esc(brl(x.v)) + '</span>']), '', [2])));
+  const mots = Object.keys(d.porMotivo).sort((a, b) => d.porMotivo[b] - d.porMotivo[a]), mm = mots.length ? d.porMotivo[mots[0]] : 0;
+  r.push(smSec('motivo', 'Para que foi usado', 'valor das saídas por motivo', amTab(['Motivo', '', 'Valor', '%'], mots.map(k => [esc(k), amBarra(d.porMotivo[k], mm), '<span class="am-n">' + esc(brl(d.porMotivo[k])) + '</span>', '<span class="am-n">' + esc(amPc(d.porMotivo[k], d.gasto)) + '</span>']), 'Nenhuma saída neste mês.', [2, 3])));
+  const its = Object.values(d.porItem).sort((a, b) => b.sv - a.sv || b.ev - a.ev || a.nome.localeCompare(b.nome, 'pt-BR'));
+  r.push(smSec('material', 'Material a material', smPl(its.length, 'material movimentado', 'materiais movimentados') + ' de ' + d.itensAtivos + ' ativos',
+    amTab(['Material', 'Saiu', 'Saiu (R$)', 'Entrou', 'Entrou (R$)', 'Saldo hoje'], its.map(x => { const i = alItem(x.id), un = i ? ' ' + (i.un || '') : ''; return ['<b>' + esc(x.nome) + '</b>', '<span class="am-n">' + (x.sq ? esc(alQ(x.sq) + un) : '') + '</span>', '<span class="am-n">' + (x.sv ? esc(brl(x.sv)) : '') + '</span>', '<span class="am-n">' + (x.eq ? esc(alQ(x.eq) + un) : '') + '</span>', '<span class="am-n">' + (x.ev ? esc(brl(x.ev)) : '') + '</span>', '<span class="am-n">' + (i ? esc(alQ(alSaldo(i.id)) + un) : '') + '</span>']; }), 'Nenhuma entrada nem saída neste mês.', [1, 2, 3, 4, 5])));
+  const labs = Object.keys(d.porLab).sort((a, b) => d.porLab[b] - d.porLab[a]), ml = labs.length ? d.porLab[labs[0]] : 0;
+  const pes = Object.keys(d.porPessoa).sort((a, b) => d.porPessoa[b] - d.porPessoa[a]);
+  r.push(smSec('lab', 'Por laboratório e por pessoa', 'valor do que saiu para cada laboratório' + (d.semLab > 0 ? ' · ' + brl(d.semLab) + ' sem laboratório' : '') + ' · quem registrou as saídas',
+    '<div class="am-2">' + amTab(['Laboratório', '', 'Valor'], labs.map(k => [esc(k), amBarra(d.porLab[k], ml), '<span class="am-n">' + esc(brl(d.porLab[k])) + '</span>']), 'Nenhuma saída para laboratório neste mês. O laboratório vem do kit ou do nome dele no motivo.', [2]) +
+    amTab(['Pessoa', 'Saídas'], pes.map(k => [esc(k), '<span class="am-n">' + esc(String(d.porPessoa[k])) + '</span>']), 'Sem saídas registradas.', [1]) + '</div>'));
+  const at = d.venc.map(x => ['<b>' + esc(x.i.nome) + '</b>', '<span class="pill cr">Lote vencido</span>', esc('Lote ' + (x.l.lote || 's/ lote') + ' · venceu em ' + fmtD(x.l.validade) + ' · ' + alQ(x.l.saldo) + ' ' + (x.i.un || ''))])
+    .concat(d.zerados.map(i => ['<b>' + esc(i.nome) + '</b>', '<span class="pill cr">Sem saldo</span>', esc('sem saldo e sem frasco aberto')]))
+    .concat(d.abAviso.map(x => ['<b>' + esc(x.m.itemNome || '') + '</b>', '<span class="pill wa">Frasco aberto</span>', esc('aberto em ' + fmtD(x.m.data) + ' · ' + (x.p.vencido ? 'fora do prazo' : 'vale até ' + fmtD(x.p.venc)))]))
+    .concat(d.abaixo.map(x => ['<b>' + esc(x.i.nome) + '</b>', '<span class="pill wa">Abaixo do mínimo</span>', esc('utilizável ' + alQ(x.s) + ' · mínimo ' + alQ(x.i.min))]))
+    .concat(d.avenc.map(x => ['<b>' + esc(x.i.nome) + '</b>', '<span class="pill">Vence logo</span>', esc('Lote ' + (x.l.lote || 's/ lote') + ' · vence em ' + fmtD(x.l.validade))]));
+  r.push(smSec('atencao', 'O que pede atenção', 'situação de hoje · ' + smPl(at.length, 'ponto', 'pontos'), at.length ? amTab(['Material', 'O quê', 'Detalhe'], at, '') : '<p class="sm-vz">Estoque em dia: nada vencido, nada abaixo do mínimo.</p>'));
+  const sol = d.solMes.concat(d.solPend.filter(x => d.solMes.indexOf(x) < 0)).sort((a, b) => String(b.data || '').localeCompare(String(a.data || '')));
+  const eqTxt = d.eqs.length ? smPl(d.eqs.length, 'equipamento', 'equipamentos') + ' · ' + smPl(d.calV, 'calibração vencida', 'calibrações vencidas') + ' · ' + smPl(d.calA, 'vence', 'vencem') + ' em até 40 dias · ' + smPl(d.calS, 'necessário', 'necessários') + ' sem calibração' : 'Nenhum equipamento cadastrado.';
+  r.push(smSec('sol', 'Solicitações e equipamentos', smPl(d.solPend.length, 'solicitação pendente', 'solicitações pendentes') + ' hoje',
+    amTab(['Nº', 'Data', 'Situação', 'Itens', 'Previsão'], sol.map(x => { const s = AL_SOL_ST[x.situacao] || AL_SOL_ST.pendente; return [esc('Nº ' + (x.numero || '')), esc(fmtD(x.data)), '<span class="pill ' + esc(s[1]) + '">' + esc(s[0]) + '</span>', '<span class="am-n">' + ((x.linhas || []).length) + '</span>', esc(x.previsao ? fmtD(x.previsao) : '')]; }), 'Nenhuma solicitação neste mês.', [3]) +
+    '<p class="am-eq">' + ic('eng') + '<span>' + esc(eqTxt) + '</span></p>'));
+  return r.join('');
+}
+function amResumo(d) {
+  return rlResumo([[brl(d.gasto), 'consumo do mês', smPl(d.saidas.length, 'saída', 'saídas')], [brl(d.comprado), 'em compras', smPl(d.entradas.length, 'entrada', 'entradas')],
+    [brl(d.estoque), 'em estoque hoje', 'pelo preço de cada lote'], [String(d.itensMov), 'materiais movimentados', 'de ' + d.itensAtivos + ' ativos'],
+    [String(d.venc.length + d.abaixo.length), 'pontos de atenção', d.venc.length + ' vencido' + (d.venc.length === 1 ? '' : 's') + ' · ' + d.abaixo.length + ' abaixo']]);
+}
+
+/* ---------- tela ---------- */
+function amTela() {
+  const f = S.am, ent = f._ent, mes = amMesSel(); f._ent = false;
+  const c = cabecalho({ titulo: 'Almoxarifado do mês', abaNome: 'Almoxarifado', acoes: '<button type="button" class="bt ic-so" data-act="am-imp" title="Imprimir" aria-label="Imprimir">' + ic('impressora') + '</button>' });
+  const bar = '<div class="sm-bar"><button type="button" class="at-fl" data-act="am-filtro" aria-expanded="' + esc(String(f.aberto)) + '">' + ic('filtro') + '<b>Filtro</b><small>· ' + esc(amMesTit(mes)) + '</small></button></div>' +
+    '<div class="sm-fp am-fp"' + (f.aberto ? '' : ' hidden') + '><label class="cp">Mês' + ddHTML('am:mes', mes, amOpcoesMes()) + '</label></div>';
+  if (!S.almCarregado && !DEMO && !S.almItens.length) return c + bar + '<section class="pn"><div class="vazio"><b>Carregando o almoxarifado…</b></div></section>';
+  if (!S.almItens.length) return c + bar + '<section class="pn"><div class="vazio">' + ic('caixa') + '<b>Nenhum material cadastrado ainda.</b><span>Os materiais são cadastrados no Almoxarifado.</span></div></section>';
+  const d = amDados(mes);
+  return c + '<div class="sm am' + (ent ? ' sm-ent' : '') + '">' + bar + amResumo(d) + amPartes(d) + '</div>';
+}
+const amQual = TELAS.relatorios;
+TELAS.relatorios = aba => aba === 'almox' ? (amVe() ? amTela() : '') : (amQual ? amQual(aba) : '');
+
+/* ---------- papel ---------- */
+function amImprimir() {
+  if (!S.almItens.length) { aviso('Nenhum material cadastrado.', 'erro'); return; }
+  const mes = amMesSel(), d = amDados(mes), e = S.empresa || {}; let p = $('#tb-imp'); if (!p) { p = document.createElement('div'); p.id = 'tb-imp'; document.body.appendChild(p); }
+  p.innerHTML = '<div class="imp-cab"><b>Almoxarifado do mês · ' + esc(amMesTit(mes)) + '</b><span>' + esc([e.nome, 'emitido em ' + fmtD(hojeISO()) + ' por ' + S.user.nome].filter(Boolean).join(' · ')) + '</span></div><div class="sm sm-imp am">' + amResumo(d) + amPartes(d) + '</div><div class="imp-pe">' + esc(APP_APELIDO) + '</div>';
+  Audit.log({ acao: 'imprimir', entidade: 'relatorio_almox', entidadeId: mes, resumo: 'Imprimiu o Almoxarifado do mês de ' + amMesTxt(mes) });
+  document.body.classList.add('imprimindo'); setTimeout(() => { try { window.print(); } catch {} document.body.classList.remove('imprimindo'); }, 50);
+}
+
+/* ---------- eventos ---------- */
+DD_AO.am = (k, v) => { if (k !== 'mes') return; S.am.mes = v === amMesAtual() ? '' : v; S.am._ent = true; render(); };
+document.addEventListener('click', e => {
+  const t = e.target.closest && e.target.closest('[data-act^="am-"]'); if (!t) return;
+  const a = t.getAttribute('data-act');
+  if (a === 'am-filtro') { S.am.aberto = !S.am.aberto; render(); }
+  else if (a === 'am-imp') amImprimir();
+});
+/* Esc fecha uma camada de cada vez: aqui só o painel do filtro */
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape' || S.rota.area !== 'relatorios' || S.rota.aba !== 'almox' || (S.camadas && S.camadas.length) || document.querySelector('.dd-l:not([hidden]):not(.dd-fant)')) return;
+  if (S.am.aberto) { S.am.aberto = false; render(); }
+});
+
 /* ===== entrar.js ===== */
 /* EFCwork · entrar.js — tela de entrar (garota-propaganda: Revista no Escuro, Avisos no Claro) e primeiro acesso. Prefixo: en.
    Usa o mesmo login do EFClaudian (usuário ou e-mail; senha). O primeiro acesso só aparece num projeto/demonstração sem nenhum Principal. */
@@ -13071,7 +13287,7 @@ const AR_PLANO = {
   inspecoes: ['Cloro', 'Apontamentos, com o relatório como botão', 'Auditoria interna (RNC)'],
   documentos: ['Documentos com o resumo no topo', 'Caixas d’água', 'Histórico (lançamentos e correções, com filtro)'],
   qualidade: ['Conversas dentro de cada registro'],
-  relatorios: ['Documentos (gráficos)', 'Almoxarifado do mês', 'Apontamentos', 'Coletas em aberto']
+  relatorios: ['Documentos (gráficos)', 'Apontamentos', 'Coletas em aberto']
 };
 function arEmBreve(ar) {
   const aba = ar.abas.find(x => x.id === S.rota.aba);

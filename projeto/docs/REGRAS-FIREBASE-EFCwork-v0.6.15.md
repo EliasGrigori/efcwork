@@ -13,32 +13,7 @@ O que muda no banco:
 
 **Efeito no EFClaudian:** a tela Bugs e sugestões do EFClaudian lê a coleção inteira; com esta regra, ela deixa de abrir para quem não é Administrador (para o Administrador continua igual). Decisão do Elias: fechar agora.
 
-Trecho (substitui os `match` de `sv2_bugs` e `sv2_bugs_foto` que existem hoje; `usuarioAtivo()` é o do arquivo de regras do Elias):
-
-```
-function bsPrincipal() {
-  return usuarioAtivo() && get(/databases/$(database)/documents/sv2_users/$(request.auth.uid)).data.perfil in ['principal', 'principal_temp'];
-}
-match /sv2_bugs/{id} {
-  allow read: if bsPrincipal() || (usuarioAtivo() && resource.data.get('porId', '') == request.auth.uid);
-  allow create: if usuarioAtivo() && request.resource.data.porId == request.auth.uid;
-  allow update: if bsPrincipal()
-    || (usuarioAtivo() && resource.data.get('porId', '') == request.auth.uid
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['coment']));
-  allow delete: if false;
-}
-match /sv2_bugs_foto/{id} {
-  allow read: if bsPrincipal() || (usuarioAtivo() && (resource.data.get('porId', '') == request.auth.uid || resource.data.get('donoId', '') == request.auth.uid));
-  allow create: if usuarioAtivo() && request.resource.data.porId == request.auth.uid && request.resource.data.dataUrl.size() <= 400000;
-  allow update, delete: if false;
-}
-match /sv2_bugs_seq/{id} {
-  allow read: if usuarioAtivo();
-  allow create, update: if usuarioAtivo() && request.resource.data.ultimo is int
-    && (resource == null || request.resource.data.ultimo > resource.data.ultimo);
-  allow delete: if false;
-}
-```
+**Arquivo completo para colar (20/11):** `REGRAS-FIRESTORE-EFCwork-v0.6.20-COMPLETAS.txt`, montado em cima das regras publicadas que o Elias mandou em 20/11 (cabeçalho v0.6.12). Só mudam os blocos `sv2_bugs` e `sv2_bugs_foto` e entra o `sv2_bugs_seq`, com as funções do próprio arquivo (`principal()`, `meu()`, `soMuda()`, `testeNovo()`, `testeMuda()`, `imagem()`). O resto é idêntico. A regra publicada já tinha `sv2_resumos` (Principal), então o Arquivar da v0.6.19 já funciona.
 
 Teste em dois aparelhos (5 minutos), no Firebase real, depois de publicar:
 1. Como Colaborador: Qualidade › Bugs e sugestões mostra só os seus ("em aberto · só os seus"); reportar um problema com prioridade: o número segue a sequência (não repete o de outra pessoa).

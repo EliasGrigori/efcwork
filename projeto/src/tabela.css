@@ -83,7 +83,7 @@ body.dd-arrastando{cursor:grabbing;-webkit-user-select:none;user-select:none}
 .gv-tl small{display:block;color:var(--tx3);font-size:13px}
 .gv-lotes{display:flex;flex-direction:column;gap:6px}
 .gv-lote{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:7px 10px;border:1px solid var(--bd);border-radius:var(--rs);font-size:14px;background:var(--bg0)}
-@media(min-width:900px){.gv{top:56px}}
+@media(min-width:900px){.gv{top:0}} /* v0.6.21: sem a barra de cima no PC, a gaveta vai até o alto */
 @media(max-width:899px){.gv{width:100vw;border-left:0}.tb-busca{width:100%}.tb-pf{min-width:0;flex:1 1 160px}}
 /* impressão */
 #tb-imp{display:none}

@@ -1,0 +1,13 @@
+/* EFCwork · almmes.css — Prefixo: am- (Relatórios › Almoxarifado do mês). Usa as peças da Semana (sm-sec, sm-t) e só tokens do app. */
+.am-fp{grid-template-columns:minmax(0,320px)}
+.am-n{font-variant-numeric:tabular-nums;white-space:nowrap}
+.am-t .n{text-align:right}
+.am-t th:empty{width:40%} /* a coluna da barra fica entre o nome e o valor (ITEM 106) */
+.am-br{display:block;height:6px;border-radius:3px;background:var(--bg2);min-width:60px}
+.am-br i{display:block;height:100%;border-radius:3px;background:var(--a)}
+.am-lei{margin:0;padding-left:18px;display:grid;gap:4px;font-size:14px;color:var(--tx)}
+.am-2{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:12px 20px;align-items:start}
+.am-eq{display:flex;align-items:center;gap:8px;margin:10px 0 0;font-size:13px;color:var(--tx2)}
+.am-eq .ic{width:16px;height:16px;flex:none;color:var(--tx3)}
+@media(max-width:700px){.am-2{grid-template-columns:minmax(0,1fr)}.am-fp{grid-template-columns:minmax(0,1fr)}.am-t th:empty{width:30%}}
+@media print{.am-br{background:#e6e6e6;-webkit-print-color-adjust:exact;print-color-adjust:exact}.am-br i{background:#777}.am-lei{font-size:9.5pt}}

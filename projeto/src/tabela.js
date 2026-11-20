@@ -113,8 +113,8 @@ function tbAltura() {
   let trava = false;
   if (innerWidth >= 900 && ws.length === 1) {
     const w = ws[0], topo = w.getBoundingClientRect().top + scrollY, alto = innerHeight - topo - 16;
-    if (alto >= 240) { if (scrollY) scrollTo(0, 0); poe(w, alto + 'px', ''); trava = true; } else poe(w, '', (innerHeight - 56 - 32) + 'px');
-  } else ws.forEach(w => poe(w, '', innerWidth >= 900 ? (innerHeight - 56 - 32) + 'px' : ''));
+    if (alto >= 240) { if (scrollY) scrollTo(0, 0); poe(w, alto + 'px', ''); trava = true; } else poe(w, '', (innerHeight - 32) + 'px');
+  } else ws.forEach(w => poe(w, '', innerWidth >= 900 ? (innerHeight - 32) + 'px' : ''));
   H.classList.toggle('pag-fixa', trava);
 }
 /* v0.6.15: com uma tabela só na tela, o total/resumo vira pílula no cabeçalho e (no PC) as ferramentas sobem para a linha das abas */

@@ -1,0 +1,478 @@
+rules_version = '2';
+// EFCwork v0.6.20 (20/11/2026): Bugs e sugestões 2. sv2_bugs: cada um lê só o que lançou (o Principal lê tudo) e quem reportou
+//          só acrescenta comentário (coment); sv2_bugs_foto: lê quem enviou, quem reportou (donoId) e o Principal; + sv2_bugs_seq
+//          (contador do número do relato). Nada mais mudou. ATENÇÃO: com esta regra, a tela de Bugs do EFClaudian deixa de abrir
+//          para quem não é Principal (decisão do Elias, 20/11).
+// EFCwork v0.6.12 (13/11/2026): + sv2_treinos (Qualidade › Treinamentos). Nada mais mudou desde a v0.6.10.
+// EFCwork v0.6.10 (13/11/2026): + efd_docs, efd_partes (Impressos), sv2_impressos (kit do laboratório), sv2_envio_imp (o que saiu em cada remessa). Nada mais mudou.
+// EFClaudian v2.92.0 — REGRAS COMPLETAS DO FIRESTORE (um arquivo só: substitui todos os anteriores).
+// v2.92.0: + sv2_bugs_foto (a foto do bug fica à parte e só é baixada ao abrir o bug). Todo o resto = v2.89.0 passo 2.
+// v2.62.0: + sv2_conquistas (Conquistas). Da v2.54 à v2.61 não houve coleção nova.
+// v2.74.0: + sv2_login e sv2_recup (cadastro completo e recuperação de conta); sv2_users: cada um completa o próprio cadastro.
+// v2.80.0: + sv2_bugs (Bugs e sugestões). Da v2.75 à v2.79 não houve coleção nova.
+// v2.102.42: sv2_rnc_foto — o líder ★/Principal pode esvaziar a foto (Lixeira da RNC, 15 dias). Nada mais mudou.
+// v2.102.20: + sv2_analise (Análise de problemas: apontamento de campo ou reclamação de cliente). Da v2.102.14 à v2.102.19 não houve coleção nova.
+// v2.102.13: + sv2_rnc_plano (análise de cada NC: contenção, 5 Porquês, 6M, causa, outra área, responsável pela resposta).
+// v2.102.12: + sv2_rnc_gut (prioridade GUT das NCs da RNC). Inclui tudo da v2.92.0 (sv2_bugs_foto).
+// v2.81.0: + sv2_tarefas (Tarefas). As rotinas ficam em sv2_cfg/tarefas (regra que já existia: líder ★ ou Principal).
+// v2.89.0: + CONTA DE TESTE (sv2_users.contaTeste): tudo o que ela cria leva testeConta:true; só altera o que tem testeConta:true;
+//          ela mesma só pode se BLOQUEAR (ao sair); desbloquear, só o Principal. Conquistas: a conta de teste não grava.
+//          + NOTIFICAÇÕES: cada aviso tem "dest" (para quem é). O Principal grava "dest" nos avisos antigos (uma vez).
+// v2.70.0: + sv2_normas e sv2_normas_ed (normas, editais e checklist da auditoria interna). Da v2.63 à v2.69 não houve coleção nova.
+// Montadas a partir do que o app grava de verdade em cada coleção (mapa no dossiê, seção 6).
+// v2.2.0 do EFCQuiz (23/10/2026): + efq_chaves, efq_sessoes (itens, part, resp) e efq_msgs, no fim do arquivo. Nada do EFClaudian mudou.
+// PRONTO PARA COLAR INTEIRO (22/10/2026, v2.102.42): o arquivo da v2.102.20 (o que está publicado) + a troca do bloco sv2_rnc_foto.
+// Antes de publicar: COPIE as regras atuais do console para um arquivo (volta em segundos, se precisar).
+// Ninguém apaga documento em nenhuma coleção (allow delete: if false). Coleção não listada = negada.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------- quem é quem ----------
+    function logado() { return request.auth != null; }
+    function temPerfil() { return logado() && exists(/databases/$(database)/documents/sv2_users/$(request.auth.uid)); }
+    function eu() { return get(/databases/$(database)/documents/sv2_users/$(request.auth.uid)).data; }
+    function usuarioAtivo() { return temPerfil() && eu().get('bloqueado', false) != true; }
+    function principal() { return usuarioAtivo() && eu().get('perfil', '') in ['principal', 'principal_temp']; }
+    function liderOuPrincipal() { return principal() || (usuarioAtivo() && eu().get('estrela', false) == true); }
+    function lanca() { return usuarioAtivo() && eu().get('perfil', '') != 'visitante'; }
+    // ---------- ajudantes ----------
+    function novo() { return request.resource.data; }
+    function soMuda(campos) { return request.resource.data.diff(resource.data).affectedKeys().hasOnly(campos); }
+    function meu(campo) { return request.resource.data.get(campo, '') == request.auth.uid; }
+    function imagem(campo, max) { return !(campo in request.resource.data) || (request.resource.data[campo] is string && request.resource.data[campo].size() < max); }
+    function imagemVazia(campo) { return request.resource.data.get(campo, 'x') == ''; }
+    // ---------- v2.89.0: conta de teste ----------
+    function contaTeste() { return eu().get('contaTeste', false) == true; }
+    function testeNovo() { return !contaTeste() || novo().get('testeConta', false) == true; }
+    function testeMuda() { return !contaTeste() || (resource.data.get('testeConta', false) == true && novo().get('testeConta', false) == true); }
+
+    // ==================== APP DOCUMENTOS ANTIGO ====================
+    // (16/10/2026: as regras publicadas não tinham bloco /appdata; o app Documentos antigo continua sem acesso, como já estava.)
+
+    // ==================== INSTALAÇÃO E USUÁRIOS ====================
+    match /sv2_meta/{id} {
+      allow read: if true;                                           // a tela de entrar pergunta se já foi instalado
+      allow create: if logado() && id == 'setup' && novo().get('por', '') == request.auth.uid;
+      allow update, delete: if false;
+    }
+    match /sv2_users/{uid} {
+      allow read: if usuarioAtivo();
+      // 1º acesso: o próprio Principal (junto com sv2_meta/setup) | depois: só o Principal cria contas
+      allow create: if (logado() && uid == request.auth.uid && novo().get('perfil', '') == 'principal'
+                        && !exists(/databases/$(database)/documents/sv2_meta/setup))
+                    || principal();
+      // Principal muda tudo; cada um só o próprio cargo, status e tema
+      // v2.74.0: cada um também completa o próprio cadastro (nome, e-mail, senha trocada)
+      allow update: if principal()
+                    || (usuarioAtivo() && uid == request.auth.uid && soMuda(['cargo', 'status', 'tema', 'nome', 'email', 'emailPendente', 'emailOk', 'precisaCompletar', 'completadoEm', 'senhaTrocadaEm']))
+                    // v2.89.0: a conta de teste se bloqueia ao sair (só pode pôr bloqueado = true)
+                    || (usuarioAtivo() && uid == request.auth.uid && resource.data.get('contaTeste', false) == true
+                        && soMuda(['bloqueado', 'bloqueadoEm', 'motivoBloqueio']) && novo().bloqueado == true);
+      allow delete: if false;
+    }
+    match /sv2_avatar/{uid} {
+      allow read: if usuarioAtivo();
+      allow create, update: if (usuarioAtivo() && uid == request.auth.uid && imagem('img', 60000))
+                            || (principal() && imagemVazia('img'));
+      allow delete: if false;
+    }
+
+    // ==================== AVISOS, AUDITORIA, AUTORIZAÇÕES ====================
+    match /sv2_notifs/{id} {
+      // PASSO 2 (v2.89.0): cada um lê só o que é para ele (o Principal lê tudo)
+      allow read: if usuarioAtivo() && (principal()
+                    || request.auth.uid in resource.data.dest
+                    || 'todos' in resource.data.dest
+                    || ('sup' in resource.data.dest && liderOuPrincipal()));
+      allow create: if usuarioAtivo() && testeNovo() && novo().get('dest', null) is list && novo().dest.size() > 0;
+      // v2.89.0: o Principal completa "dest" nos avisos antigos (só esse campo)
+      allow update: if principal() && soMuda(['dest']) && novo().dest is list;
+      // quem recebe marca só o próprio "lido"/"confirmado"
+      allow update: if usuarioAtivo() && soMuda(['lidaPor', 'confirmadaPor'])
+                    && novo().get('lidaPor', {}).diff(resource.data.get('lidaPor', {})).affectedKeys().hasOnly([request.auth.uid])
+                    && novo().get('confirmadaPor', {}).diff(resource.data.get('confirmadaPor', {})).affectedKeys().hasOnly([request.auth.uid]);
+      allow delete: if false;
+    }
+    match /sv2_audit/{id} {
+      allow read: if principal();
+      allow create: if (usuarioAtivo() && meu('userId')) && testeNovo();
+      allow update, delete: if false;
+    }
+    match /sv2_aprov/{id} {
+      allow read: if usuarioAtivo();
+      allow create: if (usuarioAtivo() && meu('solicitanteId') && novo().get('status', '') == 'pendente') && testeNovo();
+      // decide: quem recebeu o pedido, o líder ★ ou o Principal; só enquanto pendente; só status e decisão
+      allow update: if (usuarioAtivo() && resource.data.status == 'pendente'
+                    && (request.auth.uid in resource.data.get('paraIds', []) || liderOuPrincipal())
+                    && soMuda(['status', 'decisao']) && novo().decisao.por == request.auth.uid) && testeMuda();
+      allow delete: if false;
+    }
+    match /sv2_resumos/{id} {
+      allow read, create, update: if principal();
+      allow delete: if false;
+    }
+    match /sv2_chat/{id} {
+      allow read: if usuarioAtivo();
+      allow create: if (lanca() && meu('porId') && novo().texto is string && novo().texto.size() > 0 && novo().texto.size() <= 1000) && testeNovo();
+      allow update, delete: if false;
+    }
+
+    // ==================== CONFIGURAÇÕES ====================
+    match /sv2_cfg/{doc} {
+      allow read: if usuarioAtivo();
+      allow create: if ((doc in ['doccontrole', 'backup', 'arquivo'] && principal())
+                            || (!(doc in ['doccontrole', 'backup', 'arquivo']) && liderOuPrincipal())
+                            || (doc == 'almox' && lanca() && soMuda(['kits', 'atualizadoEm', 'atualizadoPor', 'srv']))) && testeNovo();
+      allow update: if ((doc in ['doccontrole', 'backup', 'arquivo'] && principal())
+                            || (!(doc in ['doccontrole', 'backup', 'arquivo']) && liderOuPrincipal())
+                            || (doc == 'almox' && lanca() && soMuda(['kits', 'atualizadoEm', 'atualizadoPor', 'srv']))) && testeMuda();
+      allow delete: if false;
+    }
+
+    // ==================== DOCUMENTOS ====================
+    match /sv2_docs/{id} { allow read: if usuarioAtivo(); allow create: if (liderOuPrincipal()) && testeNovo();
+      allow update: if (liderOuPrincipal()) && testeMuda(); allow delete: if false; }
+    match /sv2_caixas/{id} { allow read: if usuarioAtivo(); allow create: if (liderOuPrincipal()) && testeNovo();
+      allow update: if (liderOuPrincipal()) && testeMuda(); allow delete: if false; }
+    match /sv2_lanc/{id} {
+      allow read: if usuarioAtivo();
+      allow create: if (lanca() && meu('lancadoPor')) && testeNovo();
+      // correção de lançamento (quem decide o pedido pode não ser ★)
+      allow update: if (lanca() && soMuda(['data', 'obs', 'alterado', 'historico', 'ultimaAprovId'])) && testeMuda();
+      allow delete: if false;
+    }
+
+    // ==================== CLORO E BEBEDOUROS ====================
+    match /sv2_bebs/{id} {
+      allow read: if usuarioAtivo();
+      allow create: if (lanca()) && testeNovo();
+      allow update: if (liderOuPrincipal() || (lanca() && soMuda(['codigo', 'local', 'situacao', 'descricao', 'aprovId']))) && testeMuda();
+      allow delete: if false;
+    }
+    match /sv2_cloro/{id} { allow read: if usuarioAtivo(); allow create: if (lanca()) && testeNovo();
+      allow update: if (lanca()) && testeMuda(); allow delete: if false; }
+    match /sv2_cloro_falta/{id} { allow read: if usuarioAtivo(); allow create: if (liderOuPrincipal()) && testeNovo();
+      allow update: if (liderOuPrincipal()) && testeMuda(); allow delete: if false; }
+    match /sv2_cloro_foto/{id} {
+      allow read: if usuarioAtivo();
+      allow create: if ((lanca() && imagem('img', 400000)) || (liderOuPrincipal() && imagemVazia('img'))) && testeNovo();
+      allow update: if (liderOuPrincipal() && imagemVazia('img')) && testeMuda();       // eliminar a imagem (24 h depois de "confere")
+      allow delete: if false;
+    }
+
+    // ==================== COLETAS, ÁGUA, CADASTROS ====================
+    match /sv2_talhoes/{id} { allow read: if usuarioAtivo(); allow create: if (liderOuPrincipal()) && testeNovo();
+      allow update: if (liderOuPrincipal()) && testeMuda(); allow delete: if false; }
+    match /sv2_analises/{id} { allow read: if usuarioAtivo(); allow create: if (liderOuPrincipal()) && testeNovo();
+      allow update: if (liderOuPrincipal()) && testeMuda(); allow delete: if false; }
+    match /sv2_etqmodelos/{id} { allow read: if usuarioAtivo(); allow create: if (liderOuPrincipal()) && testeNovo();
+      allow update: if (liderOuPrincipal()) && testeMuda(); allow delete: if false; }
+    match /sv2_prog/{id} { allow read: if usuarioAtivo(); allow create: if (lanca() && meu('criadoPor')) && testeNovo(); allow update: if (lanca()) && testeMuda(); allow delete: if false; }
+    match /sv2_coletas/{id} { allow read: if usuarioAtivo(); allow create: if (lanca() && meu('criadoPor')) && testeNovo(); allow update: if (lanca()) && testeMuda(); allow delete: if false; }
+    match /sv2_aguacol/{id} { allow read: if usuarioAtivo(); allow create: if (lanca() && meu('criadoPor')) && testeNovo(); allow update: if (lanca()) && testeMuda(); allow delete: if false; }
+    match /sv2_rodizio/{id} { allow read: if usuarioAtivo(); allow create: if (lanca()) && testeNovo();
+      allow update: if (lanca()) && testeMuda(); allow delete: if false; }
+    match /sv2_aguaproj/{id} { allow read: if usuarioAtivo(); allow create: if (lanca()) && testeNovo();
+      allow update: if (lanca()) && testeMuda(); allow delete: if false; }
+    match /sv2_aguaponto/{id} { allow read: if usuarioAtivo(); allow create: if (liderOuPrincipal()) && testeNovo();
+      allow update: if (liderOuPrincipal()) && testeMuda(); allow delete: if false; }
+    match /sv2_agua_foto/{id} {
+      allow read: if usuarioAtivo();
+      allow create: if ((lanca() && imagem('dataUrl', 400000)) || (liderOuPrincipal() && imagemVazia('dataUrl'))) && testeNovo();
+      allow update: if (liderOuPrincipal() && imagemVazia('dataUrl')) && testeMuda();   // eliminar 7 dias depois da conclusão
+      allow delete: if false;
+    }
+    match /sv2_proc/{id} {
+      allow read: if usuarioAtivo();
+      allow create: if (liderOuPrincipal() || (lanca() && soMuda(['pedidos']))) && testeNovo();
+      allow update: if (liderOuPrincipal() || (lanca() && soMuda(['pedidos']))) && testeMuda();
+      allow delete: if false;
+    }
+    match /sv2_proc_pag/{id} {
+      allow read: if usuarioAtivo();
+      allow create: if (liderOuPrincipal() && imagem('dataUrl', 1000000)) && testeNovo();
+      allow update: if (liderOuPrincipal() && imagemVazia('dataUrl')) && testeMuda();
+      allow delete: if false;
+    }
+
+    // ==================== APONTAMENTOS E AUDITORIA INTERNA ====================
+    match /sv2_apont/{id} {
+      allow read: if usuarioAtivo();
+      allow create: if (lanca() && meu('porId')) && testeNovo();
+      allow update: if (liderOuPrincipal()
+                    || (lanca() && resource.data.get('porId', '') == request.auth.uid && soMuda(['origem', 'auditoria', 'hist']))) && testeMuda();
+      allow delete: if false;
+    }
+    match /sv2_fotos/{id} {
+      allow read: if usuarioAtivo();
+      allow create: if ((lanca() && imagem('dataUrl', 400000)) || (liderOuPrincipal() && imagemVazia('dataUrl'))) && testeNovo();
+      allow update: if (liderOuPrincipal() && imagemVazia('dataUrl')) && testeMuda();   // apagar 15 dias depois de resolvido (LGPD)
+      allow delete: if false;
+    }
+    match /sv2_rnc/{id} {
+      allow read: if usuarioAtivo();
+      allow create: if (liderOuPrincipal()) && testeNovo();
+      allow update: if (liderOuPrincipal()
+                    || (usuarioAtivo() && resource.data.get('auditorId', '') == request.auth.uid
+                        && novo().get('auditorId', '') == resource.data.get('auditorId', ''))) && testeMuda();
+      allow delete: if false;
+    }
+    match /sv2_rnc_foto/{id} {
+      allow read: if usuarioAtivo();
+      allow create: if (usuarioAtivo() && imagem('dataUrl', 400000)) && testeNovo();
+      // v2.102.42: Lixeira da RNC — com 15 dias o líder ★/Principal só pode ESVAZIAR a foto (dataUrl e base vazios).
+      allow update: if (liderOuPrincipal() && imagemVazia('dataUrl') && request.resource.data.get('base', '') == ''
+                    && soMuda(['dataUrl', 'base', 'apagadaEm'])) && testeMuda();
+      allow delete: if false;
+    }
+    // v2.102.13: análise de cada NC (uma linha por NC, id = id da NC). Só o responsável pela resposta escreve;
+    // o líder ★/Principal só troca o responsável (e pode criar a linha já com o novo responsável). Nada se apaga.
+    match /sv2_rnc_plano/{id} {
+      allow read: if usuarioAtivo();
+      allow create: if (lanca() && (meu('respId') || liderOuPrincipal())) && testeNovo();
+      allow update: if (lanca() && (resource.data.get('respId', '') == request.auth.uid
+                    || (liderOuPrincipal() && soMuda(['respId', 'respNome', 'respHist', 'rev', 'em'])))) && testeMuda();
+      allow delete: if false;
+    }
+    // v2.102.12: prioridade GUT das NCs (uma linha por NC, id = id da NC). Cria quem lança (não visitante), como dono da nota;
+    // muda o dono da nota ou o líder ★/Principal, sem trocar o dono. Nada se apaga (tirar a nota = cancelada).
+    match /sv2_rnc_gut/{id} {
+      allow read: if usuarioAtivo();
+      allow create: if (lanca() && meu('porId')) && testeNovo();
+      allow update: if (lanca() && (resource.data.get('porId', '') == request.auth.uid || liderOuPrincipal())
+                    && novo().get('porId', '') == resource.data.get('porId', '')) && testeMuda();
+      allow delete: if false;
+    }
+    // v2.102.20: Análise de problemas (ferramentas da qualidade fora da RNC). Abre o líder ★ ou o Principal (como dono da abertura).
+    // Escreve a análise e as ações só o responsável pela resposta, sem trocar o responsável nem a situação;
+    // o líder ★/Principal troca o responsável, confere a eficácia, conclui e cancela. Nada se apaga.
+    match /sv2_analise/{id} {
+      allow read: if usuarioAtivo();
+      allow create: if (lanca() && liderOuPrincipal() && meu('abertoPorId')) && testeNovo();
+      allow update: if (lanca() && (liderOuPrincipal()
+                    || (resource.data.get('respId', '') == request.auth.uid
+                        && novo().get('respId', '') == resource.data.get('respId', '')
+                        && novo().get('situacao', '') == resource.data.get('situacao', '')))) && testeMuda();
+      allow delete: if false;
+    }
+
+    // ==================== ALMOXARIFADO ====================
+    match /sv2_alm_itens/{id} { allow read: if usuarioAtivo(); allow create: if (liderOuPrincipal() || lanca()) && testeNovo(); allow update: if (lanca()) && testeMuda(); allow delete: if false; }
+    match /sv2_alm_mov/{id} { allow read: if usuarioAtivo(); allow create: if (lanca()) && testeNovo();
+      allow update: if (lanca()) && testeMuda(); allow delete: if false; }
+    match /sv2_alm_sol/{id} { allow read: if usuarioAtivo(); allow create: if (lanca()) && testeNovo();
+      allow update: if (lanca()) && testeMuda(); allow delete: if false; }
+    match /sv2_alm_pref/{uid} {
+      allow read: if usuarioAtivo() && (uid == request.auth.uid || principal());
+      allow create, update: if usuarioAtivo() && uid == request.auth.uid;
+      allow delete: if false;
+    }
+    // v2.62.0 — Conquistas: um documento por pessoa (cada um grava só o seu) e o 'equipe' (qualquer usuário ativo que
+    // não seja visitante recalcula 1×/dia). Todos leem (sem ranking). Nada se apaga.
+    match /sv2_conquistas/{id} {
+      allow read: if usuarioAtivo();
+      allow create, update: if lanca() && !contaTeste() && (id == request.auth.uid || id == 'equipe');
+      allow delete: if false;
+    }
+    match /sv2_alm_equip/{id} {
+      allow read: if usuarioAtivo();
+      allow create: if (lanca()) && testeNovo();
+      allow update: if (liderOuPrincipal()
+                    || (lanca() && soMuda(['situacao', 'local', 'posicao', 'guardadoEm', 'sitAntes', 'posAntes', 'restricaoCal',
+                                           'qtdLocal', 'qtdGuard', 'trfQtd', 'transito', 'hist', 'atualizadoEm']))) && testeMuda();
+      allow delete: if false;
+    }
+    match /sv2_alm_equip_foto/{id} {
+      allow read: if usuarioAtivo();
+      allow create: if ((lanca() && imagem('dataUrl', 400000)) || (liderOuPrincipal() && imagemVazia('dataUrl'))) && testeNovo();
+      allow update: if (liderOuPrincipal() && imagemVazia('dataUrl')) && testeMuda();
+      allow delete: if false;
+    }
+    match /sv2_alm_cal/{id} { allow read: if usuarioAtivo(); allow create: if (liderOuPrincipal()) && testeNovo();
+      allow update: if (liderOuPrincipal()) && testeMuda(); allow delete: if false; }
+    match /sv2_alm_inv/{id} {
+      allow read: if usuarioAtivo();
+      allow create: if (liderOuPrincipal()) && testeNovo();
+      allow update: if (liderOuPrincipal() || (lanca() && soMuda(['contagens', 'folhas']))) && testeMuda();
+      allow delete: if false;
+    }
+    match /sv2_alm_transf/{id} {
+      allow read: if usuarioAtivo();
+      allow create: if (lanca() && novo().envio.porId == request.auth.uid) && testeNovo();
+      allow update: if (liderOuPrincipal()
+                    || (lanca() && soMuda(['receb', 'situacao', 'atualizadoEm', 'canceladaEm', 'canceladaPor', 'canceladaMotivo']))) && testeMuda();
+      allow delete: if false;
+    }
+    match /sv2_alm_foto/{id} {
+      allow read: if usuarioAtivo();
+      allow create: if ((lanca() && imagem('dataUrl', 400000)) || (liderOuPrincipal() && imagemVazia('dataUrl'))) && testeNovo();
+      allow update: if (liderOuPrincipal() && imagemVazia('dataUrl')) && testeMuda();
+      allow delete: if false;
+    }
+    // v2.70.0 — S10 · Normas e editais da auditoria interna. Líder ★/Principal cadastra e altera (desativar/tirar com motivo
+    // é um update); todos os usuários ativos leem (o checklist aparece na RNC). Nada se apaga.
+    match /sv2_normas/{id} {
+      allow read: if usuarioAtivo();
+      allow create: if (liderOuPrincipal()) && testeNovo();
+      allow update: if (liderOuPrincipal()) && testeMuda();
+      allow delete: if false;
+    }
+    match /sv2_normas_ed/{id} {
+      allow read: if usuarioAtivo();
+      allow create: if (liderOuPrincipal()) && testeNovo();
+      allow update: if (liderOuPrincipal()) && testeMuda();
+      allow delete: if false;
+    }
+    // v2.74.0 — Login → e-mail (para entrar com o login e recuperar a senha). Qualquer um LÊ um documento pelo login exato
+    // (precisa antes de entrar), ninguém lista; só o Principal ou o dono do login grava. Nada se apaga.
+    match /sv2_login/{login} {
+      allow get: if true;
+      allow list: if principal();
+      allow create: if principal() || (logado() && novo().get('uid', '') == request.auth.uid);
+      allow update: if principal() || (logado() && resource.data.get('uid', '') == request.auth.uid && novo().get('uid', '') == request.auth.uid);
+      allow delete: if false;
+    }
+    // v2.74.0 — Pedidos de recuperação de senha: a tela de login (sem estar logado) só CRIA um pedido pequeno (e-mail e
+    // horário); só o Principal lê e marca como visto. Nada se apaga.
+    match /sv2_recup/{id} {
+      allow create: if novo().keys().hasOnly(['email', 'ts', 'srv']) && novo().email is string && novo().email.size() < 120
+                    && novo().ts is string && novo().ts.size() < 40;
+      allow read, update: if principal();
+      allow delete: if false;
+    }
+    // v2.80.0 — Bugs e sugestões: cria em nome dele, sempre como "novo"; só o Principal muda a situação e a prioridade.
+    // EFCwork v0.6.20: cada um LÊ só o que lançou (o Principal lê tudo); quem reportou só acrescenta comentário. Nada se apaga.
+    match /sv2_bugs/{id} {
+      allow read: if principal() || (usuarioAtivo() && resource.data.get('porId', '') == request.auth.uid);
+      allow create: if (usuarioAtivo() && meu('porId') && novo().get('status', '') == 'novo') && testeNovo();
+      allow update: if (principal()
+                    || (usuarioAtivo() && resource.data.get('porId', '') == request.auth.uid && soMuda(['coment']))) && testeMuda();
+      allow delete: if false;
+    }
+    // v2.92.0 — Foto do bug à parte (sv2_bugs_foto/{id do bug}); EFCwork v0.6.20: também a imagem de cada comentário
+    // ({id do bug}_c…, com donoId = quem reportou). Lê quem enviou, quem reportou e o Principal; ninguém altera. Nada se apaga.
+    match /sv2_bugs_foto/{id} {
+      allow read: if principal() || (usuarioAtivo() && (resource.data.get('porId', '') == request.auth.uid
+                                                      || resource.data.get('donoId', '') == request.auth.uid));
+      allow create: if (usuarioAtivo() && meu('porId') && novo().dataUrl is string && imagem('dataUrl', 400000)) && testeNovo();
+      allow update, delete: if false;
+    }
+    // EFCwork v0.6.20 — Contador do número do relato (sv2_bugs_seq/n = { ultimo }): todo usuário ativo lê e só faz o número SUBIR
+    // (o app usa uma transação). Quem não é Principal não vê os outros relatos, por isso o número vem daqui. Nada se apaga.
+    match /sv2_bugs_seq/{id} {
+      allow read: if usuarioAtivo();
+      allow create, update: if usuarioAtivo() && novo().get('ultimo', 0) is int
+                            && (resource == null || novo().ultimo > resource.data.get('ultimo', 0));
+      allow delete: if false;
+    }
+    // v2.81.0 — Tarefas: todo usuário ativo lê; cria a tarefa em nome dele (quem passa) ou para ele mesmo
+    // (a repetição cria a próxima); altera quem é o responsável, quem passou, os superiores do responsável
+    // (gravados em "lideres") ou o Principal. Nada se apaga (cancelar com motivo).
+    match /sv2_tarefas/{id} {
+      allow read: if usuarioAtivo();
+      allow create: if (usuarioAtivo() && (meu('porId') || meu('respId'))) && testeNovo();
+      allow update: if (usuarioAtivo() && (request.auth.uid == resource.data.get('respId', '') || request.auth.uid == resource.data.get('porId', '')
+                    || request.auth.uid in resource.data.get('lideres', []) || principal())) && testeMuda();
+      allow delete: if false;
+    }
+
+    // ==================== EFCwork v0.6.9 / v0.6.10 · IMPRESSOS E KIT DO LABORATÓRIO ====================
+    // efd_docs: ficha de cada impresso (PDF, Word, Excel...). Todos os usuários ativos leem; só líder ★/Principal grava. Nada se apaga.
+    match /efd_docs/{id} {
+      allow read: if usuarioAtivo();
+      allow create: if (liderOuPrincipal() && novo().get('v', 0) == 1 && novo().get('id', '') == id) && testeNovo();
+      allow update: if (liderOuPrincipal() && novo().get('v', 0) == 1 && novo().get('id', '') == id) && testeMuda();
+      allow delete: if false;
+    }
+    // efd_partes: o arquivo em pedaços de até 900.000 caracteres (versão antiga e lixeira gravam b64 vazio).
+    match /efd_partes/{id} {
+      allow read: if usuarioAtivo();
+      allow create: if (liderOuPrincipal() && novo().get('b64', '') is string && novo().get('b64', '').size() <= 900000) && testeNovo();
+      allow update: if (liderOuPrincipal() && novo().get('b64', '') is string && novo().get('b64', '').size() <= 900000) && testeMuda();
+      allow delete: if false;
+    }
+    // sv2_impressos: o kit (papel ligado ao laboratório). Todos leem; líder ★/Principal monta. Nada se apaga.
+    match /sv2_impressos/{id} {
+      allow read: if usuarioAtivo();
+      allow create: if (liderOuPrincipal() && novo().get('v', 0) == 1) && testeNovo();
+      allow update: if (liderOuPrincipal() && novo().get('v', 0) == 1) && testeMuda();
+      allow delete: if false;
+    }
+    // sv2_envio_imp: o que saiu em cada remessa (para reimprimir). Quem lança coletas grava, sempre em nome dele. Nada se apaga.
+    match /sv2_envio_imp/{id} {
+      allow read: if usuarioAtivo();
+      allow create: if (lanca() && meu('porId')) && testeNovo();
+      allow update: if (lanca() && meu('porId')) && testeMuda();
+      allow delete: if false;
+    }
+
+    // sv2_treinos (v0.6.12): Qualidade › Treinamentos, um documento por treinamento (Contrato EFD v1, treino). Todos leem;
+    // líder ★/Principal programa, registra, edita e cancela (cancelar é um update com motivo). Nada se apaga.
+    match /sv2_treinos/{id} {
+      allow read: if usuarioAtivo();
+      allow create: if (liderOuPrincipal()) && testeNovo();
+      allow update: if (liderOuPrincipal()) && testeMuda();
+      allow delete: if false;
+    }
+
+    // ==================== EFCQuiz v2.2.0 (celulares de verdade) ====================
+    // Responsável = Principal ou líder ★ com conta ativa (a mesma do EFClaudian). A turma entra com login ANÔNIMO
+    // do Firebase: só lê a sessão da chave que digitou e só cria a própria entrada e a própria resposta, uma vez.
+    // Usuário anônimo não tem sv2_users, então não lê nem grava nada das coleções sv2_* (usuarioAtivo() = falso).
+    // Nada se apaga (allow delete: if false).
+    function efqSess(sid) { return get(/databases/$(database)/documents/efq_sessoes/$(sid)).data; }
+    function efqDono(sid) { return liderOuPrincipal() && efqSess(sid).dono == request.auth.uid; }
+    function efqAberta(sid) { return efqSess(sid).status != 'encerrada'; }
+    function efqTexto(campo, max) { return !(campo in request.resource.data) || (request.resource.data[campo] is string && request.resource.data[campo].size() <= max); }
+    match /efq_chaves/{chave} {
+      allow get: if logado();
+      allow list: if false;
+      allow create: if liderOuPrincipal() && novo().dono == request.auth.uid && novo().sid is string;
+      // a chave é reaproveitada: pelo mesmo dono, ou por outro quando a anterior foi encerrada ou passou de 2 dias
+      allow update: if liderOuPrincipal() && novo().dono == request.auth.uid
+                    && (resource.data.dono == request.auth.uid || resource.data.get('ativa', false) == false || resource.data.expira < request.time);
+      allow delete: if false;
+    }
+    match /efq_sessoes/{sid} {
+      allow get: if logado();
+      allow list: if liderOuPrincipal();
+      allow create: if liderOuPrincipal() && novo().dono == request.auth.uid;
+      allow update: if liderOuPrincipal() && resource.data.dono == request.auth.uid && novo().dono == request.auth.uid;
+      allow delete: if false;
+      // perguntas da sessão (sem a resposta certa: ela vai no campo "gab" da sessão, só depois do resultado)
+      match /itens/{iid} {
+        allow read: if logado();
+        allow create, update: if efqDono(sid);
+        allow delete: if false;
+      }
+      // quem entrou: cada celular grava só a própria entrada (id = o login anônimo dele)
+      match /part/{pid} {
+        allow get: if logado() && (pid == request.auth.uid || efqDono(sid));
+        allow list: if efqDono(sid);
+        allow create: if logado() && pid == request.auth.uid && efqAberta(sid) && efqSess(sid).entradaAberta == true
+                      && efqTexto('nome', 60) && efqTexto('sobrenome', 80) && efqTexto('setor', 60) && efqTexto('av', 9) && efqTexto('eqNome', 60)
+                      && !('res' in novo()) && !('assin' in novo());
+        allow update: if (logado() && pid == request.auth.uid && soMuda(['av', 'assin', 'local', 'em']))
+                      || (efqDono(sid) && soMuda(['res']));
+        allow delete: if false;
+      }
+      // respostas: uma por pergunta, do próprio celular, enquanto a sessão não foi encerrada; ninguém altera
+      match /resp/{rid} {
+        allow get: if logado() && (rid.split('__')[0] == request.auth.uid || efqDono(sid));
+        allow list: if efqDono(sid);
+        allow create: if logado() && novo().pid == request.auth.uid && rid == request.auth.uid + '__' + novo().item
+                      && efqAberta(sid) && exists(/databases/$(database)/documents/efq_sessoes/$(sid)/part/$(request.auth.uid));
+        allow update, delete: if false;
+      }
+    }
+    // mensagens do perfil (pergunta, sugestão, reclamação): quem mandou e o responsável da sessão leem;
+    // só o responsável responde, marca como lida ou esconde
+    match /efq_msgs/{id} {
+      allow read: if logado() && (resource.data.de == request.auth.uid || (liderOuPrincipal() && resource.data.dono == request.auth.uid));
+      allow create: if logado() && novo().de == request.auth.uid && novo().dono is string && novo().texto is string && novo().texto.size() <= 1000
+                    && novo().get('resposta', '') == '' && novo().get('lida', false) == false && efqTexto('nome', 60) && efqTexto('sobrenome', 80);
+      allow update: if liderOuPrincipal() && resource.data.dono == request.auth.uid && soMuda(['resposta', 'lida', 'respEm', 'respPor', 'oculta']);
+      allow delete: if false;
+    }
+  }
+}

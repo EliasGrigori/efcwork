@@ -12,7 +12,7 @@ const linhas = (p, parte) => p.evaluate(k => [...document.querySelectorAll('.sm-
   console.log('— Relatório da semana (PC)');
   const m = await p.evaluate(() => ({ abas: [...document.querySelectorAll('.cs-abas a')].map(a => a.textContent.trim()), breve: !!document.querySelector('.ar-vz'), fl: document.querySelector('.at-fl').textContent.replace(/\s+/g, ' ').trim(), aberto: !document.querySelector('.sm-fp').hidden,
     limpa: !!document.querySelector('[data-act*="limpa"]'), res: [...document.querySelectorAll('.rl-res li')].map(e => e.querySelector('span').textContent + ':' + e.querySelector('b').textContent), secs: [...document.querySelectorAll('.sm-sec h2')].map(e => e.firstChild.textContent) }));
-  conf(m.abas.join() === 'Rateio,Semana' && !m.breve, 'Relatórios tem as abas Rateio e Semana (' + m.abas.join(', ') + ')');
+  conf(m.abas.slice(0, 2).join() === 'Rateio,Semana' && !m.breve, 'Relatórios tem as abas Rateio e Semana (' + m.abas.join(', ') + ')');
   conf(/Relatório da semana · \d\d\/\d\d a \d\d\/\d\d/.test(m.fl) && !m.aberto && !m.limpa, 'filtro é um botão só, fechado, sem "Limpar filtro" (' + m.fl + ')');
   conf(m.res.join('|') === 'apontamentos:3|verificações de cloro:4|coletadas:2|enviadas:2|movimentações:2', 'resumo no alto bate com os dados: ' + m.res.join(' · '));
   conf(m.secs.join('|') === 'Apontamentos — reunião|Verificações de cloro|Coletas e remessas|Almoxarifado — movimentações', 'quatro partes, na ordem do EFClaudian');

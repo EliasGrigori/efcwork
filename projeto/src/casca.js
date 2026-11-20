@@ -13,7 +13,7 @@ const AREAS = [
   { id: 'documentos', nome: 'Documentos', ic: 'doc', versao: 'v0.5', parcial: 'documentos, caixas d’água, histórico e impressos prontos aqui; o relatório de documentos segue no EFClaudian', abas: [{ id: 'documentos', nome: 'Documentos' }, { id: 'caixas', nome: 'Caixas d’água' }, { id: 'historico', nome: 'Histórico' }, { id: 'impressos', nome: 'Impressos' }] },
   { id: 'almox', nome: 'Almoxarifado', ic: 'caixa', versao: 'v0.3', parcial: 'consultar e lançar prontos aqui; cadastro de material, kits, fotos e inventário seguem no EFClaudian', abas: [{ id: 'painel', nome: 'Painel' }, { id: 'materiais', nome: 'Materiais' }, { id: 'movimentacoes', nome: 'Movimentações' }, { id: 'solicitacoes', nome: 'Solicitações' }, { id: 'equipamentos', nome: 'Equipamentos' }, { id: 'contagem', nome: 'Contagem', oculta: true, pai: () => typeof cgDoEq === 'function' && cgDoEq() ? 'equipamentos' : 'materiais' }, { id: 'calibracao', nome: 'Calibração', oculta: true, pai: 'equipamentos' }] },
   { id: 'qualidade', nome: 'Qualidade', ic: 'escudo', versao: 'v0.7', parcial: 'Não conformidades, Análise de problemas, Treinamentos e Bugs e sugestões prontos aqui; Conversas seguem no EFClaudian (a Semana está em Relatórios)', abas: [{ id: 'nc', nome: 'Não conformidades' }, { id: 'analise', nome: 'Análise de problemas' }, { id: 'treinos', nome: 'Treinamentos' }, { id: 'bugs', nome: 'Bugs e sugestões' }] },
-  { id: 'relatorios', nome: 'Relatórios', ic: 'graf', versao: 'v0.8', grupo: 'Análise', parcial: 'o painel do Rateio e a Semana estão prontos aqui; Almoxarifado do mês, Documentos, Apontamentos e Coletas em aberto seguem no EFClaudian', get negada() { return !!S.user && !(rlVe() || smVe()); }, abas: [{ id: 'rateio', nome: 'Rateio', get negada() { return !!S.user && !rlVe(); } }, { id: 'semana', nome: 'Semana', get negada() { return !!S.user && !smVe(); } }] }, /* v0.6.18: Rateio (relatorios.js); sem a atribuição Rateios a área some (as outras abas entram por aqui depois) */
+  { id: 'relatorios', nome: 'Relatórios', ic: 'graf', versao: 'v0.8', grupo: 'Análise', parcial: 'o Rateio, a Semana e o Almoxarifado do mês estão prontos aqui; Documentos, Apontamentos e Coletas em aberto seguem no EFClaudian', get negada() { return !!S.user && !(rlVe() || smVe() || amVe()); }, abas: [{ id: 'rateio', nome: 'Rateio', get negada() { return !!S.user && !rlVe(); } }, { id: 'semana', nome: 'Semana', get negada() { return !!S.user && !smVe(); } }, { id: 'almox', nome: 'Almoxarifado', get negada() { return !!S.user && !amVe(); } }] }, /* v0.6.18: Rateio (relatorios.js); sem a atribuição Rateios a área some (as outras abas entram por aqui depois) */
   { id: 'adm', nome: 'Administração', ic: 'eng', rodape: true, abas: [{ id: 'empresa', nome: 'Empresa' }, { id: 'aparencia', nome: 'Aparência' }, { id: 'atividade', nome: 'Atividade', get negada() { return !isPrincipal(S.user); } }, { id: 'sobre', nome: 'Sobre' }] }
 ];
 const csArea = id => AREAS.find(a => a.id === id) || AREAS[0];
@@ -185,10 +185,22 @@ async function csNuvemAtualiza() {
 function csTopo() {
   /* v0.4.15 (Nº 46): o aviso da nuvem virou botão; abre a gaveta com "Atualizar agora". No celular fica só o ícone (cor = situação) */
   const off = S.conexao === false, t = csTema(), con = DEMO ? '<span class="cs-sync">Demonstração</span>' : '<button type="button" class="cs-sync' + (off ? ' off' : '') + '" data-act="cs-nuvem" aria-label="Nuvem: ' + (off ? 'sem internet' : 'sincronizado') + '. Abrir" title="Nuvem · atualizar agora">' + ic('nuvem') + '<i></i><span>' + (off ? 'Sem internet · guardando no aparelho' : 'Sincronizado') + '</span></button>';
-  return '<header class="cs-topo"><button type="button" class="bt ic-so cs-so-cel" data-act="cs-menu" aria-label="Abrir menu">' + ic('menu') + '</button>' +
-    '<button type="button" class="cs-busca" data-act="cs-busca" aria-label="Buscar (tecla /)">' + ic('lupa') + '<span>Buscar documento, material, coleta…</span><kbd>/</kbd></button><span class="cs-sp"></span>' + con +
+  const fer = '<button type="button" class="cs-busca" data-act="cs-busca" aria-label="Buscar (tecla /)">' + ic('lupa') + '<span>Buscar documento, material, coleta…</span><kbd>/</kbd></button><span class="cs-sp"></span>' + con +
     '<button type="button" class="bt ic-so" data-act="cs-tema" aria-label="' + (t === 'escuro' ? 'Usar tema claro' : 'Usar tema escuro') + '" title="' + (t === 'escuro' ? 'Tema claro' : 'Tema escuro') + '">' + ic(t === 'escuro' ? 'sol' : 'lua') + '</button>' +
-    '<button type="button" class="bt ic-so cs-sino" data-act="cs-sino" aria-label="Avisos" title="Avisos">' + ic('sino') + (function () { const n = typeof snConta === 'function' ? snConta() : 0; return '<span class="cs-bdg" id="sn-n"' + (n ? '' : ' hidden') + '>' + (n > 99 ? '99+' : n) + '</span>'; })() + '</button></header>';
+    '<button type="button" class="bt ic-so cs-sino" data-act="cs-sino" aria-label="Avisos" title="Avisos">' + ic('sino') + (function () { const n = typeof snConta === 'function' ? snConta() : 0; return '<span class="cs-bdg" id="sn-n"' + (n ? '' : ' hidden') + '>' + (n > 99 ? '99+' : n) + '</span>'; })() + '</button>';
+  /* v0.6.21 (Elias, 20/11): no PC a barra de cima sai inteira (o caminho some) e a busca, a nuvem, o tema e o sino descem para a
+     linha do título da tela (csFerPoe, depois de montar a tela). No celular a barra continua: ela segura o botão do menu. */
+  S._csFerPC = csFerPC(); /* o resize compara com o jeito em que a tela foi montada */
+  if (csFerPC()) { S._csFer = fer; return ''; }
+  S._csFer = '';
+  return '<header class="cs-topo"><button type="button" class="bt ic-so cs-so-cel" data-act="cs-menu" aria-label="Abrir menu">' + ic('menu') + '</button>' + fer + '</header>';
+}
+const csFerPC = () => innerWidth >= 900;
+/* põe as ferramentas na linha do título (o 1º cabeçalho da tela); sem cabeçalho, ficam numa linha própria à direita */
+function csFerPoe() {
+  if (!S._csFer || !csFerPC()) return; const ct = document.querySelector('.cs-main > .cs-ct'); if (!ct || ct.querySelector('.cs-fer')) return;
+  const d = document.createElement('div'); d.className = 'cs-fer'; d.innerHTML = S._csFer;
+  const phr = ct.querySelector('.cs-ph .cs-phr'); if (phr) phr.appendChild(d); else { d.classList.add('solta'); ct.insertBefore(d, ct.firstChild); }
 }
 /* cabeçalho de página padrão: caminho, título com traço, situação (meta) e ações; abas sublinhadas embaixo */
 function cabecalho(o) {
@@ -216,6 +228,7 @@ function render() {
   try { corpo = f ? f(S.rota.aba) : arEmBreve(ar); } catch (e) { console.error(e); corpo = '<div class="pn"><div class="vazio"><b>Esta tela deu erro ao abrir.</b><span>' + esc(e && e.message || e) + '</span></div></div>'; }
   const foco = document.activeElement && document.activeElement.getAttribute && document.activeElement.getAttribute('data-foco'), sel = foco ? [document.activeElement.selectionStart, document.activeElement.selectionEnd] : null;
   app.innerHTML = '<div class="cs-app' + csMenuClasse() + '">' + csLado() + csPux() + '<div class="cs-fundo" data-act="cs-fecha"></div><main class="cs-main" id="conteudo">' + csTopo() + '<div class="cs-ct">' + corpo + '</div><footer class="cs-rod">' + APP_APELIDO + ' · ' + esc((S.empresa && S.empresa.nome) || 'Sua empresa') + '</footer></main>' + csBaixo() + '</div>';
+  csFerPoe();
   { const on = document.querySelector('.cs-abas a.on'), bar = on && on.parentNode; if (bar && bar.scrollWidth > bar.clientWidth) bar.scrollLeft = Math.max(0, on.offsetLeft - (bar.clientWidth - on.offsetWidth) / 2); } /* v0.6.12: a aba aberta aparece na faixa, mesmo com várias abas no celular */
   const dep = TELAS[ar.id + ':depois']; if (dep) { try { dep(S.rota.aba); } catch (e) { console.error(e); } }
   S._puxEntra = false;
@@ -286,3 +299,5 @@ async function csIniciar() {
 }
 render();
 if ('serviceWorker' in navigator && location.protocol === 'https:') { navigator.serviceWorker.register('sw.js').catch(() => {}); }
+/* v0.6.21: ao passar de PC para celular (ou o contrário), a barra de cima volta ou sai */
+addEventListener('resize', () => { if (S._csFerPC !== undefined && csFerPC() !== S._csFerPC && S.user) render(); });

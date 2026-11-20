@@ -53,7 +53,8 @@ async function primeiro(p) {
   console.log('— Cabeçalho');
   conf(await p.evaluate(() => { const h = document.querySelector('.cs-ht'); return h && h.querySelector('h1') && h.querySelector('.pg-i'); }), 'ícone "!" ao lado do título Programação');
   conf(await p.evaluate(() => !/programadas a coletar/.test(document.querySelector('.cs-ph').textContent)), 'saiu "N programadas a coletar"');
-  conf(await p.evaluate(() => { const h = document.querySelector('.cs-ph h1').getBoundingClientRect(), a = document.querySelector('.cs-acts').getBoundingClientRect(); return a.top < h.bottom && a.bottom > h.top; }), 'botões na linha do título (PC)');
+  /* v0.6.21: sem a barra de cima, a linha do título leva as ferramentas (busca, nuvem, tema, sino); os botões da tela ficam na linha de baixo, à direita */
+  conf(await p.evaluate(() => { const h = document.querySelector('.cs-ph h1').getBoundingClientRect(), f = document.querySelector('.cs-fer').getBoundingClientRect(), a = document.querySelector('.cs-acts').getBoundingClientRect(); return f.top < h.bottom && f.bottom > h.top && a.top >= f.bottom - 2 && Math.round(a.right) === Math.round(f.right); }), 'ferramentas na linha do título e botões da tela logo abaixo, à direita (PC)');
   console.log('— Cartões dos planos');
   const rects = () => p.evaluate(() => Array.from(document.querySelectorAll('.pg-pl')).map(c => { const r = c.getBoundingClientRect(); return [Math.round(r.left), Math.round(r.top), Math.round(r.width), Math.round(r.height)].join(','); }).join('|'));
   const antes = await rects();
@@ -124,7 +125,7 @@ async function primeiro(p) {
 
   console.log('— Tamanhos de letra e cantos (Programação, gaveta fechada)');
   await p.evaluate(() => { document.querySelector('#gv') && document.querySelector('#gv').remove(); });
-  const med = await p.evaluate(() => { const fs = new Set(), rd = new Set(); document.querySelectorAll('.cs-ct *').forEach(e => { if (!e.offsetParent && e.tagName !== 'BODY') return; const c = getComputedStyle(e); if (Array.from(e.childNodes).some(n => n.nodeType === 3 && n.textContent.trim())) fs.add(c.fontSize); ['borderTopLeftRadius'].forEach(k => { if (parseFloat(c.borderTopWidth) > 0 || c.backgroundColor !== 'rgba(0, 0, 0, 0)') rd.add(c[k]); }); }); return { fs: Array.from(fs).sort((a, b) => parseFloat(a) - parseFloat(b)), rd: Array.from(rd) }; });
+  const med = await p.evaluate(() => { const fs = new Set(), rd = new Set(); document.querySelectorAll('.cs-ct *').forEach(e => { if ((!e.offsetParent && e.tagName !== 'BODY') || e.closest('.cs-fer')) return; /* v0.6.21: as ferramentas da casca não contam */ const c = getComputedStyle(e); if (Array.from(e.childNodes).some(n => n.nodeType === 3 && n.textContent.trim())) fs.add(c.fontSize); ['borderTopLeftRadius'].forEach(k => { if (parseFloat(c.borderTopWidth) > 0 || c.backgroundColor !== 'rgba(0, 0, 0, 0)') rd.add(c[k]); }); }); return { fs: Array.from(fs).sort((a, b) => parseFloat(a) - parseFloat(b)), rd: Array.from(rd) }; });
   console.log('   letras:', med.fs.join(' '), '| cantos:', med.rd.join(' '));
   conf(med.fs.length <= 7, 'no máximo 7 tamanhos de letra (' + med.fs.length + ')');
   conf(med.rd.filter(r => r !== '0px' && parseFloat(r) < 50).length <= 3, 'no máximo 3 raios de canto, fora círculos (' + med.rd.join(' ') + ')');

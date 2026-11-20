@@ -218,3 +218,20 @@ button.cs-sync:focus-visible{outline:2px solid var(--a);outline-offset:1px}
 :root[data-tema="escuro"] .cs-lado .cs-it.cs-app-l{background:rgba(255,255,255,.04)}
 .cs-app-l img{width:24px;height:24px;border-radius:6px;box-shadow:0 1px 3px rgba(0,0,0,.18)}
 .cs-app-l .cs-app-x{opacity:.7}
+
+/* v0.6.21 (Elias, 20/11; ITENS 99, 100 e 102 aprovados, a OPÇÃO 2 do 101 reprovada): sem a barra de cima no PC. A busca, a nuvem, o tema e o sino ficam na linha do título, à direita;
+   os botões da tela (ações) ficam na linha de baixo, à direita, alinhados à linha das pílulas. */
+@media(min-width:900px){
+  /* o título e as pílulas viram itens da grade (display:contents): linha 1 = título | ferramentas; linha 2 = pílulas | botões da tela */
+  .cs-phr:has(>.cs-fer){display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:16px;row-gap:6px;align-items:center;min-height:0}
+  .cs-phr:has(>.cs-fer)>.cs-pht{display:contents}
+  .cs-phr:has(>.cs-fer)>.cs-pht>h1,.cs-phr:has(>.cs-fer)>.cs-pht>.cs-ht{grid-column:1;grid-row:1;align-self:end}
+  .cs-phr:has(>.cs-fer)>.cs-pht>.cs-meta{grid-column:1;grid-row:2}
+  .cs-phr>.cs-fer{grid-column:2;grid-row:1;justify-self:end}
+  .cs-phr:has(>.cs-fer)>.cs-acts{grid-column:2;grid-row:2;justify-self:end;margin-left:0}
+  .cs-fer{display:flex;align-items:center;gap:6px}
+  .cs-fer .cs-busca{width:220px;flex:none}
+  .cs-fer .cs-sp{display:none}
+  .cs-fer.solta{justify-content:flex-end;margin:0 0 12px}
+  .gv{top:0}
+}

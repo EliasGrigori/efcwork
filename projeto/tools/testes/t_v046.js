@@ -58,7 +58,8 @@ async function primeiro(p) {
   conf(await p.evaluate(() => !!document.querySelector('a.pg-pl[href="#/coletas/plano/r3"]')), 'o cartão do plano é um link para a página dele');
   await p.click('a.pg-pl[href="#/coletas/plano/r3"]'); await p.waitForTimeout(500);
   conf(await p.evaluate(() => location.hash === '#/coletas/plano/r3' && /SOLO\+RAIZ · semestral · 20\d\d/.test(document.querySelector('.cs-ph h1').textContent)), 'abre #/coletas/plano/r3 com o título "SOLO+RAIZ · semestral · ano"');
-  conf(await p.evaluate(() => /Programação/.test(document.querySelector('.cs-abas a.on').textContent) && /Coletas/.test((document.querySelector('.mo-bc') || document.querySelector('.cs-ph')).textContent)), 'a aba Programação continua marcada e o caminho mostra Coletas / Programação');
+  /* v0.6.21: o caminho saiu do PC (pedido do Elias); a área continua marcada no menu lateral */
+  conf(await p.evaluate(() => /Programação/.test(document.querySelector('.cs-abas a.on').textContent) && /Coletas/.test((document.querySelector('.cs-nav .on, .cs-nav [aria-current]') || {}).textContent || '')), 'a aba Programação continua marcada e o menu lateral mostra Coletas');
   conf(await p.evaluate(() => /Em andamento/.test(document.querySelector('.cs-ph').textContent) && /01\/07 a 31\/12/.test(document.querySelector('.cs-ph').textContent)), 'status e período (01/07 a 31/12) no cabeçalho');
   conf(await p.evaluate(() => !document.querySelector('.cs-abas a[href*="calend"], .cs-abas a[href*="hist"]') && !/Calendário|Histórico/.test(document.querySelector('.pp').textContent)), 'sem Calendário e sem Histórico (decisão de 07/11)');
   const est = await p.evaluate(() => Array.from(document.querySelectorAll('.pp-ar')).map(e => e.className.split(' ')[1] + ':' + e.querySelector('b').textContent).join(' '));
