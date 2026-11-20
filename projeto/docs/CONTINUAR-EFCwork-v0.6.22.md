@@ -2,7 +2,7 @@
 
 Este arquivo substitui o CONTINUAR-EFCwork-v0.6.21.md. Ele é autossuficiente: quem ler só ele já sabe o que fazer.
 
-## 0. Estado de 20/11 (09h45): v0.6.22 PUBLICADA (janela do Vértice com abas + Ponte 1; ITENS 112 a 122 aprovados; letra das abas maior e sem o ícone de abrir fora)
+## 0. Estado de 20/11 (09h45): v0.6.22 PUBLICADA, commit dc9a523 (janela do Vértice com abas + Ponte 1; ITENS 112 a 122 aprovados; letra das abas maior e sem o ícone de abrir fora)
 - v0.6.22 = Vértice e Sabiá abrem aqui dentro em abas finas (OPÇÃO 1 + recolher da OPÇÃO 3), Ponte 1 (receber do Vértice; Abrir no Vértice com o arquivo e o resumo do envio), sem travessão nos textos (ITEM 79) e Marcar na imagem do relato novo (item 49).
 - Página: docs/aprovacao-efcwork-v0.6.22-janela-vertice.html (artefato publicado). Com as respostas: aplicar só o aprovado (se o 120 for reprovado, tirar o Sabiá de JN_APPS), bateria, medidor, ZIP, e publicar só com "pode publicar".
 - Testes do Vértice: clonar `EliasGrigori/efcdocs` só para leitura em /home/claude/eliasgrigori/efcdocs (ou VERTICE_DIR); `t_v0622.js` e `captura14.js` servem os dois apps no mesmo endereço.
@@ -12,7 +12,7 @@ Este arquivo substitui o CONTINUAR-EFCwork-v0.6.21.md. Ele é autossuficiente: q
 ## 1. TEXTO PARA COLAR NA CONVERSA NOVA
 (O mesmo texto está em TEXTO-PARA-COLAR.txt.)
 
-> EFCwork, continuando. Anexei o pacote: CONTINUAR-EFCwork-v0.6.22.md, o dossiê, o ZIP do app (efcwork-v0.6.22-proposta.zip), o código-fonte (efcwork-v0.6.22-proposta-fonte.zip) e as respostas da página da v0.6.22 (ITENS 112 a 122). Leia o CONTINUAR inteiro. Responda em 3 linhas: onde parou e qual é a próxima tarefa. Depois sugira o modelo e o esforço dessa tarefa em **negrito** e espere meu "pode iniciar". Siga o "Padrão de trabalho" do CONTINUAR sem eu repetir. Repositório: EliasGrigori/efcwork (anexe com add_repo); para testar a janela, clone EliasGrigori/efcdocs só para leitura. Não abra o OneDrive. Nada no EFClaudian. GitHub só com "pode publicar". Fique em primeiro plano.
+> EFCwork, continuando. Anexei o pacote: CONTINUAR-EFCwork-v0.6.22.md, o dossiê, o ZIP do app (efcwork-v0.6.22.zip) e o código-fonte (efcwork-v0.6.22-fonte.zip). Leia o CONTINUAR inteiro. Responda em 3 linhas: onde parou e qual é a próxima tarefa. Depois sugira o modelo e o esforço dessa tarefa em **negrito** e espere meu "pode iniciar". Siga o "Padrão de trabalho" do CONTINUAR sem eu repetir. Repositório: EliasGrigori/efcwork (anexe com add_repo); para testar a janela, clone EliasGrigori/efcdocs só para leitura. Não abra o OneDrive. Nada no EFClaudian. GitHub só com "pode publicar". Fique em primeiro plano.
 
 ## 2. O que fazer logo ao começar (ordem)
 1. Ler este arquivo, o FALTA-DO-EFCLAUDIAN.md e o fim do dossiê (últimas seções, de "v0.6.17 · Rateios" para cima).
