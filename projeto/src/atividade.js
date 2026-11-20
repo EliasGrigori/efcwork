@@ -16,7 +16,7 @@ function atOuve() {
   const d = S.atFiltro.dias, o = { order: 'ts', limit: AT_TETO };
   if (d !== '0') o.desde = addDias(hojeISO(), -Math.max(Number(d) || 30, 30));
   S._atDias = d; S._atCarregou = false;
-  S._atOff = csOuve('sv2_audit', l => { S.audit = l || []; S._atCarregou = true; if (S.rota.area === 'adm' && S.rota.aba === 'atividade') render(); }, o);
+  S._atOff = csOuve('sv2_audit', l => { S.audit = l || []; S._atCarregou = true; if ((S.rota.area === 'adm' && S.rota.aba === 'atividade') || (S.rota.area === 'relatorios' && S.rota.aba === 'semana')) render(); }, o);
 }
 CS_CARGAS.push(() => { if (!isPrincipal(S.user)) return; S._atOff = null; atOuve(); });
 

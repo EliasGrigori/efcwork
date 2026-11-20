@@ -28,7 +28,7 @@ Aba Gestão da Qualidade › Notificações,Qualidade,must,sim,sim,Sino,v0.3.0: 
 Aba Gestão da Qualidade › Conversas,Qualidade,must,sim,nao,Dentro de cada registro + sino,
 Aba Gestão da Qualidade › Equipe,Qualidade,must,sim,nao,Administração › Pessoas,
 Aba Gestão da Qualidade › Aprovações,Qualidade,must,sim,sim,Início › Esperando você,"v0.3.0: pedidos para decidir no sino; os do Almoxarifado decidem aqui, os outros no EFClaudian; conferido 15/11: a aba existe e funciona"
-Aba Gestão da Qualidade › Semana,Qualidade,must,sim,nao,Relatórios › Semana,
+Aba Gestão da Qualidade › Semana,Qualidade,must,sim,sim,Relatórios › Semana,v0.6.19
 Aba Gestão da Qualidade › Não conformidades,Qualidade,must,sim,sim,Qualidade › Não conformidades,"v0.6.16 (15/11, publicada; ITENS 54 a 60 aprovados) nc.js"
 Aba Gestão da Qualidade › Análise de problemas,Qualidade,must,sim,sim,Qualidade › Análise de problemas,conferido 15/11: a aba existe e funciona
 Aba Gestão da Qualidade › Bugs e sugestões,Qualidade,must,sim,sim,Qualidade › Bugs e sugestões,"v0.6.16 (15/11, publicada; ITENS 54 a 60 aprovados) bugs.js"
@@ -129,7 +129,7 @@ Janela Reclassificar gravidade (openApReclass),Inspeções,should,sim,nao,,rascu
 Janela Abrir não conformidade (openApNC),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
 Janela Fechar a NC (openApNCFechar),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
 Janela Rn Filtro (openRnFiltro),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Relatórios da semana (openRelSemana),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Relatórios da semana (openRelSemana),Geral,should,sim,sim,Relatórios › Semana,v0.6.19 (4 partes em tabelas simples; agrupamento por setor com plano de ação fica na aba Apontamentos)
 Janela Setores dos apontamentos (openApSetores),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
 Janela Al Saida (openAlSaida),Almoxarifado,should,sim,sim,,v0.3.0 lcNovaSaida (sem foto)
 Janela Al Kit (openAlKit),Almoxarifado,should,sim,nao,,próxima: kits

@@ -258,7 +258,9 @@
      "espera": 500
     }
    ]
-  }
+  },
+  {"nome": "Relatórios · Semana · Relatório", "passos": [{"eval": "location.hash='#/relatorios/semana'; S.sm.ver='rel'; S.sm.aberto=false; render()"}, {"espera": 500}]},
+  {"nome": "Relatórios · Semana · Atividade", "passos": [{"eval": "location.hash='#/relatorios/semana'; S.sm.ver='ativ'; S.sm.aberto=true; render()"}, {"espera": 500}]}
  ],
  "ignorar": [
   ".tb-hm",

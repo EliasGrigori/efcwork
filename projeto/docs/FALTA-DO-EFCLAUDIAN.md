@@ -10,7 +10,7 @@ Processo de refazer o EFClaudian no EFCwork: cada função do original está na 
 | Prioridade | Do EFClaudian | Vai para | Dados (Firebase) |
 |---|---|---|---|
 | must | Gestão da Qualidade › Relatórios | Relatórios (Documentos, Almoxarifado do mês, Apontamentos, Coletas em aberto; o Rateio já está na v0.6.18) | — |
-| must | Gestão da Qualidade › Semana | Relatórios › Semana (relatório semanal) | sv2_resumos (não usada ainda) |
+| ~~must~~ feito na v0.6.19 | ~~Gestão da Qualidade › Semana~~ | Relatórios › Semana (relatório semanal e atividade por pessoa) | sv2_resumos (agora usada pelo Arquivar) |
 | must | Almoxarifado › Apresentação | Relatórios › Almoxarifado do mês | sv2_alm_* |
 | must | Documentos › Relatório | Relatórios › Documentos (gráficos) | sv2_docs, sv2_lanc |
 | must | Gestão da Qualidade › Equipe + Usuários, Detalhe da pessoa, Meu perfil | Administração › Pessoas | sv2_users |

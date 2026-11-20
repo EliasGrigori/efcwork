@@ -82,6 +82,7 @@ Coluna "Estado": **Conferida** = conferida contra as regras em 06/11; **Trecho**
 | `sv2_impressos` | kit | criar, atualizar | Trecho |
 | `sv2_envio_imp` | kit | gravar | Trecho |
 | `sv2_treinos` | treinamentos | criar, atualizar | Trecho |
+| `sv2_resumos` | semana (v0.6.19) | ler (Principal), gravar (Principal) | EFClaudian (o mesmo documento `sem_AAAA-SNN` do Arquivar; só o Principal grava) |
 
 ## 4. Trechos de regra prontos (já entregues nas versões; juntos aqui)
 

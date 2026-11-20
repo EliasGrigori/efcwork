@@ -110,6 +110,7 @@ document.addEventListener('click', async e => {
     if (n.refTipo === 'agua_acao' && n.refId && S.aguacol.some(c => c.id === n.refId && c.acao)) { acAbre(n.refId); return; }
     if (n.refTipo === 'coleta_agua' && n.refId && coVe() && S.aguacol.some(c => c.id === n.refId)) { S._gvNav = true; ir('coletas', 'agua'); agAbre(n.refId); return; }
     if (n.refTipo === 'alm_mov' && n.refId && alVe() && S.almMov.some(m => m.id === n.refId)) { S._gvNav = true; ir('almox', 'movimentacoes'); alAbreMov(n.refId); return; }
+    if (n.refTipo === 'rel_semana' && n.refId && smVe()) { S.sm.seg = n.refId; S.sm.ver = 'rel'; S._gvNav = true; ir('relatorios', 'semana'); return; }
     if (snAbreRef(n)) return;
     /* v0.6.15 (Grok D3): o aviso sem tela própria aqui (aprovação, tarefa, relatório semanal, coisas do EFClaudian) abre o detalhe dentro do sino */
     S.snDet = S.snDet === n.id ? null : n.id; gvDesenha(true);
