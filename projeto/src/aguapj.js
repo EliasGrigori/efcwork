@@ -108,7 +108,7 @@ async function pjRealinharOk(modo) {
     const fixas = modo === 'auto' ? Array.from(new Set((p.fixas || []).concat(manuais))) : (p.fixas || []).filter(x => x <= f.oc);
     const realinhos = (p.realinhos || []).concat([{ oc: f.oc, data: f.data, passo: passo, modo: modo, motivo: mot, porId: S.user.id, porNome: S.user.nome, ts: nowISO() }]);
     await Data.col('sv2_aguaproj').update(p.id, { realinhos: realinhos, fixas: fixas }); p.realinhos = realinhos; p.fixas = fixas;
-    Audit.log({ acao: 'agua_projeto_realinhar', entidade: 'agua_projeto', entidadeId: p.id, resumo: p.nome + ': a partir de ' + fmtD(f.data) + ', as seguintes a cada ' + passo + ' dias' + (modo === 'auto' ? ' (as remarcadas à mão ficaram no lugar)' : '') + ' — ' + mot });
+    Audit.log({ acao: 'agua_projeto_realinhar', entidade: 'agua_projeto', entidadeId: p.id, resumo: p.nome + ': a partir de ' + fmtD(f.data) + ', as seguintes a cada ' + passo + ' dias' + (modo === 'auto' ? ' (as remarcadas à mão ficaram no lugar)' : '') + ' · ' + mot });
     lcFim(); aviso('Coleta remarcada; as seguintes contam da nova data.');
   } catch (e) { lcErro(svErro(e)); }
 }
@@ -155,7 +155,7 @@ LC_FORM.pjEd = f => {
   const anSel = ans.find(a => a.id === pjEdAns(f)[0]);
   return { ico: 'calendario', sub: 'Onde, o quê e quando coletar', titulo: f.id ? 'Editar projeto' : 'Novo projeto de coleta de água', corpo: lcMsg() +
     (f.avisado ? lcAv('<b>Mesmo ponto, análise e laboratório em outro projeto:</b> ' + esc(f.avisado) + '. Toque em Salvar de novo para manter assim.', 'wa') : '') +
-    '<p class="gv-h">1 · Nome</p>' + agBl('Nome do projeto', lcIn('nome', f.nome, ' placeholder="Ex.: Canal — mensal"')) +
+    '<p class="gv-h">1 · Nome</p>' + agBl('Nome do projeto', lcIn('nome', f.nome, ' placeholder="Ex.: Canal mensal"')) +
     '<p class="gv-h">2 · Pontos</p><p class="ag-dc">Toque no grupo para abrir. Pode misturar bebedouros, caixas e outros pontos.</p><div class="pj-gs">' + (grp || '<p class="ag-dc">Nenhum ponto de água ativo.</p>') + '</div>' +
     '<p class="gv-h">3 · Como coletar</p><div class="fm-g">' + agBl('Como', ddHTML('pj:modo', f.modo, [['todos', 'Todos os pontos a cada coleta'], ['rodizio', 'Rodízio']])) + (f.modo === 'rodizio' ? agBl('Pontos por vez', lcIn('porVez', f.porVez, ' inputmode="numeric"'), 'os há mais tempo sem coleta; um ponto novo entra primeiro') : '') + '</div>' +
       (f.legado && f.modo === 'rodizio' && soBeb ? '<label class="fm-ck"><input type="checkbox" data-fm="mesclada"' + (f.mesclada ? ' checked' : '') + '> Depois de uma rodada conforme, a próxima é a mesclada</label>' : '') +
@@ -188,7 +188,7 @@ async function pjEdOk() {
     else if (id) await Data.col('sv2_aguaproj').update(id, o);
     else id = await Data.col('sv2_aguaproj').add(Object.assign({ confirmadas: {}, remarcadas: {}, puladas: {}, criadoEm: nowISO(), criadoPor: S.user.id, criadoPorNome: S.user.nome }, o));
     Audit.log({ acao: f.id ? 'alterar_agua_projeto' : 'criar_agua_projeto', entidade: 'agua_projeto', entidadeId: id, resumo: (f.id ? 'Alterou' : 'Criou') + ' o projeto de água ' + o.nome + ' (' + o.pontos.length + ' pontos, ' + pjQuandoTxt(o) + ')', depois: { pontos: o.pontos.map(r => (pjPonto(r) || {}).cod || r).join(', '), porVez: o.porVez, analises: pjAnsTxt(o), lab: o.lab, quando: pjQuandoTxt(o), inicio: o.inicio } });
-    if (iguais.length) Notif.send({ nivel: 'aviso', titulo: 'Projetos de água com o mesmo ponto', texto: o.nome + ' e ' + txtIg + ' — mesma análise e laboratório. Confira se não vai coletar duas vezes.', para: Array.from(new Set(pjResp().concat([S.user.id]))), refTipo: 'agua_proj', refId: id + ':' });
+    if (iguais.length) Notif.send({ nivel: 'aviso', titulo: 'Projetos de água com o mesmo ponto', texto: o.nome + ' e ' + txtIg + ' · mesma análise e laboratório. Confira se não vai coletar duas vezes.', para: Array.from(new Set(pjResp().concat([S.user.id]))), refTipo: 'agua_proj', refId: id + ':' });
     S.fm.volta = () => pjAbre(id); lcFim(); aviso('Projeto salvo.');
   } catch (e) { lcErro(svErro(e)); }
 }

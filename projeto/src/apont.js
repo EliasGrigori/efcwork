@@ -206,7 +206,7 @@ function apAbre(id) {
       ['Setor', a.setor || ''], ['Observação', a.obs || ''], ['O que pode acontecer', a.risco || ''], ['Recomendação', a.recom || ''],
       ['Encarregado da área', a.comunicado ? 'Foi avisado' : 'Não foi avisado'], [apRein(a) >= 2 ? 'Reincidência' : '', apRein(a) >= 2 ? apRein(a) + 'ª vez em ' + AP_REIN_DIAS + ' dias (mesmo setor e categoria)' : ''],
       [a.nc ? 'Responsável da NC' : '', a.nc ? a.nc.responsavel + ' · prazo ' + fmtD(a.nc.prazo) + ' · ' + a.nc.acao : ''],
-      [a.resolucao ? (a.status === 'nao_procede' ? 'Por que não procede' : 'O que foi feito') : '', a.resolucao ? a.resolucao.texto + ' — ' + a.resolucao.porNome + ', ' + fmtDT(a.resolucao.ts) : ''],
+      [a.resolucao ? (a.status === 'nao_procede' ? 'Por que não procede' : 'O que foi feito') : '', a.resolucao ? a.resolucao.texto + ' · ' + a.resolucao.porNome + ', ' + fmtDT(a.resolucao.ts) : ''],
       ['Fotos', apFotoPrazoTxt(a)]];
     corpo += gvCampos(kv.filter(x => x[0]));
     const hist = (a.hist || []).slice().reverse();
@@ -241,7 +241,7 @@ async function apResOk() {
   fotos.forEach((d, i) => { S._apFotos[ids[i]] = d; S._apFotoDoc[ids[i]] = Object.assign({ base: '', marcas: [], marcadoPor: '', marcadoEm: '' }, apMkDoc(f, i)); Data.col('sv2_fotos').set(ids[i], Object.assign({ refTipo: 'apont', refId: a.id, papel: 'depois', dataUrl: d, criadoEm: ts, porId: S.user.id }, apMkDoc(f, i))).catch(er => console.error(er)); });
   const patch = { status: 'resolvido', resolucao: { texto: t, porId: S.user.id, porNome: S.user.nome, ts: ts }, fotosDepois: (a.fotosDepois || []).concat(ids), hist: apHistMais(a, 'Resolvido: ' + t + (ids.length ? ' (com ' + ids.length + ' foto(s) do depois)' : '')) };
   Audit.log({ acao: 'situacao_apontamento', entidade: 'apontamento', entidadeId: a.id, resumo: 'Resolveu o apontamento ' + apCat(a.categoria)[1] + ', ' + a.setor + ': ' + t, antes: { situacao: (AP_ST[a.status] || AP_ST.aberto)[0] }, depois: { situacao: 'Resolvido' } });
-  if (a.porId !== S.user.id) Notif.send({ nivel: 'info', titulo: 'Seu apontamento foi resolvido', texto: apCat(a.categoria)[1] + ' — ' + a.setor + ': ' + t, para: [a.porId], refTipo: 'apont', refId: a.id }).catch(() => {});
+  if (a.porId !== S.user.id) Notif.send({ nivel: 'info', titulo: 'Seu apontamento foi resolvido', texto: apCat(a.categoria)[1] + ' · ' + a.setor + ': ' + t, para: [a.porId], refTipo: 'apont', refId: a.id }).catch(() => {});
   apAplica(a, patch, 'Marcado como resolvido.');
 }
 LC_FORM.apSt = f => { const a = S.apont.find(x => x.id === f.id); if (!a) return null; const reab = f.st === 'reabrir';
@@ -255,8 +255,8 @@ function apStOk() {
   if (!lcTravar()) return;
   const reab = f.st === 'reabrir', patch = { status: reab ? 'aberto' : 'nao_procede', hist: apHistMais(a, (reab ? 'Reaberto' : 'Não procede') + '. Motivo: ' + m) };
   if (!reab) patch.resolucao = { texto: m, porId: S.user.id, porNome: S.user.nome, ts: nowISO() }; else patch.resolucao = null;
-  Audit.log({ acao: 'situacao_apontamento', entidade: 'apontamento', entidadeId: a.id, resumo: (reab ? 'Reabriu' : 'Marcou como não procede') + ' o apontamento ' + apCat(a.categoria)[1] + ', ' + a.setor + ' — ' + m, antes: { situacao: (AP_ST[a.status] || AP_ST.aberto)[0] }, depois: { situacao: reab ? 'Aberto' : 'Não procede' } });
-  if (a.porId !== S.user.id) Notif.send({ nivel: 'info', titulo: reab ? 'Seu apontamento foi reaberto' : 'Seu apontamento foi marcado como não procede', texto: apCat(a.categoria)[1] + ' — ' + a.setor + ': ' + m, para: [a.porId], refTipo: 'apont', refId: a.id }).catch(() => {});
+  Audit.log({ acao: 'situacao_apontamento', entidade: 'apontamento', entidadeId: a.id, resumo: (reab ? 'Reabriu' : 'Marcou como não procede') + ' o apontamento ' + apCat(a.categoria)[1] + ', ' + a.setor + ' · ' + m, antes: { situacao: (AP_ST[a.status] || AP_ST.aberto)[0] }, depois: { situacao: reab ? 'Aberto' : 'Não procede' } });
+  if (a.porId !== S.user.id) Notif.send({ nivel: 'info', titulo: reab ? 'Seu apontamento foi reaberto' : 'Seu apontamento foi marcado como não procede', texto: apCat(a.categoria)[1] + ' · ' + a.setor + ': ' + m, para: [a.porId], refTipo: 'apont', refId: a.id }).catch(() => {});
   apAplica(a, patch, reab ? 'Apontamento reaberto.' : 'Marcado como não procede.');
 }
 
@@ -274,8 +274,8 @@ function apGravOk() {
   const m = String(f.motivo || '').trim(); if (m.length < 3) return lcErro('Escreva o motivo.');
   if (!lcTravar()) return;
   const de = a.grav, patch = { grav: f.nova, gravHist: (a.gravHist || []).concat([{ de: de, para: f.nova, porId: S.user.id, porNome: S.user.nome, ts: nowISO(), motivo: m }]), hist: apHistMais(a, 'Gravidade: ' + apGrav(de)[1] + ' → ' + apGrav(f.nova)[1] + '. Motivo: ' + m) };
-  Audit.log({ acao: 'reclassificar_apontamento', entidade: 'apontamento', entidadeId: a.id, resumo: 'Mudou a gravidade do apontamento (' + apCat(a.categoria)[1] + ', ' + a.setor + ') de ' + apGrav(de)[1] + ' para ' + apGrav(f.nova)[1] + ' — ' + m, antes: { gravidade: apGrav(de)[1] }, depois: { gravidade: apGrav(f.nova)[1] } });
-  if (a.porId !== S.user.id) Notif.send({ nivel: 'info', titulo: 'A gravidade do seu apontamento mudou', texto: apCat(a.categoria)[1] + ' — ' + a.setor + ': ' + apGrav(de)[1] + ' → ' + apGrav(f.nova)[1] + ' por ' + S.user.nome + '. Motivo: ' + m, para: [a.porId], refTipo: 'apont', refId: a.id }).catch(() => {});
+  Audit.log({ acao: 'reclassificar_apontamento', entidade: 'apontamento', entidadeId: a.id, resumo: 'Mudou a gravidade do apontamento (' + apCat(a.categoria)[1] + ', ' + a.setor + ') de ' + apGrav(de)[1] + ' para ' + apGrav(f.nova)[1] + ' · ' + m, antes: { gravidade: apGrav(de)[1] }, depois: { gravidade: apGrav(f.nova)[1] } });
+  if (a.porId !== S.user.id) Notif.send({ nivel: 'info', titulo: 'A gravidade do seu apontamento mudou', texto: apCat(a.categoria)[1] + ' · ' + a.setor + ': ' + apGrav(de)[1] + ' → ' + apGrav(f.nova)[1] + ' por ' + S.user.nome + '. Motivo: ' + m, para: [a.porId], refTipo: 'apont', refId: a.id }).catch(() => {});
   apAplica(a, patch, 'Gravidade alterada.');
 }
 
@@ -300,7 +300,7 @@ function apNCOk() {
   const patch = { nc: nc, hist: apHistMais(a, 'Abriu NC: ' + resp + ', prazo ' + fmtD(prazo) + '. Ação: ' + acao) };
   if (a.status === 'aberto') patch.status = 'andamento';
   const alvo = S.users.find(u => !u.bloqueado && String(u.nome).toLowerCase() === resp.toLowerCase());
-  if (alvo && alvo.id !== S.user.id) Notif.send({ nivel: 'aviso', titulo: 'NC para você: ' + apCat(a.categoria)[1] + ' — ' + a.setor, texto: 'Prazo ' + fmtD(prazo) + '. Ação: ' + acao + ' · aberta por ' + S.user.nome, para: [alvo.id], refTipo: 'apont', refId: a.id }).catch(() => {});
+  if (alvo && alvo.id !== S.user.id) Notif.send({ nivel: 'aviso', titulo: 'NC para você: ' + apCat(a.categoria)[1] + ' · ' + a.setor, texto: 'Prazo ' + fmtD(prazo) + '. Ação: ' + acao + ' · aberta por ' + S.user.nome, para: [alvo.id], refTipo: 'apont', refId: a.id }).catch(() => {});
   Audit.log({ acao: 'abrir_nc', entidade: 'apontamento', entidadeId: a.id, resumo: 'Abriu NC (' + apCat(a.categoria)[1] + ', ' + a.setor + ') para ' + resp + ', prazo ' + fmtD(prazo) + ': ' + acao, depois: { responsavel: resp, prazo: prazo, acao: acao } });
   apAplica(a, patch, 'NC aberta.');
 }
@@ -316,7 +316,7 @@ function apNCFecharOk() {
   const ts = nowISO(), nc = Object.assign({}, a.nc, { fechada: true, fechadaEm: ts, fechadaPor: S.user.id, fechadaPorNome: S.user.nome, verificacao: v });
   const patch = { nc: nc, hist: apHistMais(a, 'Fechou a NC. Verificação: ' + v) };
   if (apAberto(a)) { patch.status = 'resolvido'; patch.resolucao = { texto: 'NC fechada: ' + v, porId: S.user.id, porNome: S.user.nome, ts: ts }; }
-  Audit.log({ acao: 'fechar_nc', entidade: 'apontamento', entidadeId: a.id, resumo: 'Fechou a NC (' + apCat(a.categoria)[1] + ', ' + a.setor + ') — ' + v, antes: { nc: 'aberta' }, depois: { nc: 'fechada', verificacao: v } });
+  Audit.log({ acao: 'fechar_nc', entidade: 'apontamento', entidadeId: a.id, resumo: 'Fechou a NC (' + apCat(a.categoria)[1] + ', ' + a.setor + ') · ' + v, antes: { nc: 'aberta' }, depois: { nc: 'fechada', verificacao: v } });
   apAplica(a, patch, 'NC fechada.');
 }
 

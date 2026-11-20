@@ -108,7 +108,7 @@ const rzLibQuem = l => (l.por ? ' por ' + l.por : '') + (l.ts ? ' em ' + fmtD(St
 const rzColetasDe = (r, p, area) => { const mat = rzMat(r), lib = rzLib(r, p, area); return S.coletas.filter(c => c.situacao !== 'cancelada' && c.tipo === mat && (c.talhao === area || (mat === 'COMPOSTO' && !c.talhao && c.loteComp === area)) && c.data >= p.ini && c.data <= p.fim && (!lib || String(c.criadoEm || c.data) > String(lib.ts || ''))); };
 /* devolve o texto do bloqueio ou '' (igual ao EFClaudian) */
 function rzBarrar(mat, area, iso) {
-  const t = rzTrancado(mat, area, iso); if (t) return area + ': o plano de coleta "' + t.r.nome + '" (' + t.p.nome + ') foi encerrado — não aceita mais coleta.';
+  const t = rzTrancado(mat, area, iso); if (t) return area + ': o plano de coleta "' + t.r.nome + '" (' + t.p.nome + ') foi encerrado e não aceita mais coleta.';
   const x = rzDaArea(mat, area, iso); if (!x) return '';
   const ja = rzColetasDe(x.r, x.p, area).filter(c => c.tipo === mat);
   if (ja.length && !rzLiberada(x.r, x.p, area) && rzLibPend(x.r, x.p, area)) return area + ': a nova coleta pedida' + rzLibQuem(rzLibPend(x.r, x.p, area)) + ' ainda espera a aprovação do Líder ★ ou do Principal. Até lá vale a coleta de ' + fmtD(ja[0].data) + '.';
@@ -361,7 +361,7 @@ async function pgCdOk() {
       if (!k && ca.existem.length) continue;
       if (!k) throw new Error('Nenhuma amostra gravada para ' + p.tipo + ' ' + p.talhao + ' (análise não encontrada).');
       if (!p._rz) ops.push({ col: 'sv2_prog', tipo: 'update', id: p.id, dados: { coletadaEm: d.data, coletadaPor: S.user.nome, coletadaReg: nowISO(), coletor: coletor, prof: prof, estadio: estadio } });
-      const kk = k; logs.push(() => Audit.log({ acao: p._rz ? 'coletado_plano' : 'coletado_programacao', entidade: p._rz ? 'coleta' : 'programacao', entidadeId: p._rz ? p.talhao : p.id, resumo: 'Coletado: ' + p.tipo + ' ' + p.talhao + ' em ' + fmtD(d.data) + (coletor ? ' por ' + coletor : '') + ' — ' + kk + ' amostra(s)', depois: { coletadaEm: d.data, coletor: coletor, prof: prof, estadio: estadio, amostras: kk } }));
+      const kk = k; logs.push(() => Audit.log({ acao: p._rz ? 'coletado_plano' : 'coletado_programacao', entidade: p._rz ? 'coleta' : 'programacao', entidadeId: p._rz ? p.talhao : p.id, resumo: 'Coletado: ' + p.tipo + ' ' + p.talhao + ' em ' + fmtD(d.data) + (coletor ? ' por ' + coletor : '') + ' · ' + kk + ' amostra(s)', depois: { coletadaEm: d.data, coletor: coletor, prof: prof, estadio: estadio, amostras: kk } }));
       n += k;
     }
     await coIdsSeguros(ops); for (let i = 0; i < ops.length; i += 450) await Data.lote(ops.slice(i, i + 450));
@@ -419,7 +419,7 @@ async function pgAvOk() {
   try {
     ids.forEach(aid => ops.push({ col: 'sv2_coletas', tipo: 'set', id: pgColIdLivre(pgColId({ talhao: tal || up(f.lote) }, aid, f.data), ops), dados: pgNovaColeta(m, Object.assign({}, comum, { analiseId: aid })) }));
     await coIdsSeguros(ops); await Data.lote(ops);
-    ops.forEach(o => Audit.log({ acao: 'criar_coleta', entidade: 'coleta', entidadeId: o.id, resumo: 'Coleta ' + (lote ? 'em lote ' : 'avulsa ') + (CO_TXT[m] || m) + ' ' + (tal || o.dados.loteComp) + ' em ' + fmtD(f.data) + ' — ' + o.dados.analiseNome, depois: { data: f.data, talhao: tal, analise: o.dados.analiseNome, valor: o.dados.valor } }));
+    ops.forEach(o => Audit.log({ acao: 'criar_coleta', entidade: 'coleta', entidadeId: o.id, resumo: 'Coleta ' + (lote ? 'em lote ' : 'avulsa ') + (CO_TXT[m] || m) + ' ' + (tal || o.dados.loteComp) + ' em ' + fmtD(f.data) + ' · ' + o.dados.analiseNome, depois: { data: f.data, talhao: tal, analise: o.dados.analiseNome, valor: o.dados.valor } }));
     lcFim(); aviso(ids.length > 1 ? 'Lançadas ' + ids.length + ' amostras.' : 'Coleta lançada.');
   } catch (e) { lcErro(svErro(e)); }
 }

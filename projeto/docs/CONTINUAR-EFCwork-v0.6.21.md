@@ -2,10 +2,9 @@
 
 Este arquivo substitui o CONTINUAR-EFCwork-v0.6.17.md. Ele é autossuficiente: quem ler só ele já sabe o que fazer.
 
-## 0. Estado de 20/11 (07h45): v0.6.20 PUBLICADA (dd3c265) e regras publicadas; v0.6.21 PUBLICADA (20/11 08h; ITENS 99, 100, 102 a 111 aprovados; 101 reprovado)
-- v0.6.21 = sem a barra de cima no PC (ferramentas na linha do título: OPÇÃO 1 no app, OPÇÃO 2 para comparar) + Relatórios › Almoxarifado do mês (almmes.js).
-- Código em `/home/claude/efcwork` (sem commit). Bateria 57/57, medidor 0 defeitos. Página: docs/aprovacao-efcwork-v0.6.21-topo-almox.html.
-- Ao aplicar: ficar só com a opção aprovada (se for a 2, trocar as regras de `:root[data-fer="2"]` para padrão e tirar as da 1); se o 103 for reprovado, decidir o lugar do menu no celular.
+## 0. Estado de 20/11 (07h45): v0.6.20 PUBLICADA (dd3c265) e regras publicadas; v0.6.21 PUBLICADA (commit b190160, 20/11 08h; ITENS 99, 100, 102 a 111 aprovados; 101 reprovado)
+- v0.6.21 = sem a barra de cima no PC (ferramentas na linha do título, OPÇÃO 1; a OPÇÃO 2 foi tirada) + Relatórios › Almoxarifado do mês (almmes.js).
+- Bateria 57/57, medidor 0 defeitos. Página: docs/aprovacao-efcwork-v0.6.21-topo-almox.html.
 - Regras do Firestore v0.6.20 publicadas (arquivo REGRAS-FIRESTORE-EFCwork-v0.6.20-COMPLETAS.txt). O susto de "permissão" era aba velha (v0.6.18) aberta.
 - Em aberto: item 30 (24 regras), 49 (editar imagem do relato), 44, o "não quero esses" do ITEM 79; abas Documentos, Apontamentos e Coletas em aberto.
 

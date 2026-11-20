@@ -45,7 +45,7 @@ function clSitPill(r) {
 }
 const clDosTxt = r => { const d = (r.reverif || []).filter(x => x.dosagemMl != null).map(x => clMl(x.dosagemMl)); if (r.dosagemPendente != null) d.push(clMl(r.dosagemPendente)); return d.join(' + '); };
 const clBebAtivos = () => S.bebs.filter(b => b.situacao === 'ativo');
-const clBebNome = b => b.codigo + (b.local ? ' — ' + b.local : '');
+const clBebNome = b => b.codigo + (b.local ? ' · ' + b.local : '');
 const clPodeCad = () => isSup(S.user);
 const clDiaLocal = iso => { if (!iso) return ''; const d = new Date(iso); return isNaN(d) ? String(iso).slice(0, 10) : d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); };
 const clSemanaIni = iso => { const w = new Date(iso + 'T12:00:00').getDay() || 7; return addDias(iso, 1 - w); };
@@ -191,7 +191,7 @@ function clRegua(v) {
 function clPontos() {
   const bebs = S.bebs.filter(b => b.situacao === 'ativo' || ((b.situacao === 'pendente' || b.situacao === 'recusado') && b.criadoPor === S.user.id)).sort((a, b) => cmpTxt(a.codigo, b.codigo));
   const cxs = (S.caixas || []).filter(c => !c.desativado).sort((a, b) => cmpTxt(a.tag, b.tag));
-  return [['', 'Escolha o ponto…']].concat(bebs.map(b => ['beb:' + b.id, clBebNome(b) + (b.situacao !== 'ativo' ? ' (pendente)' : '')])).concat([['novo', '+ Bebedouro fora da lista']]).concat(cxs.map(c => ['caixa:' + c.id, 'Caixa d’água ' + c.tag + (c.local ? ' — ' + c.local : '')]));
+  return [['', 'Escolha o ponto…']].concat(bebs.map(b => ['beb:' + b.id, clBebNome(b) + (b.situacao !== 'ativo' ? ' (pendente)' : '')])).concat([['novo', '+ Bebedouro fora da lista']]).concat(cxs.map(c => ['caixa:' + c.id, 'Caixa d’água ' + c.tag + (c.local ? ' · ' + c.local : '')]));
 }
 function clProxSug() { const h = hojeISO(), feitos = new Set(S.cloro.filter(r => r.data === h).map(r => r.pontoId)); const b = clBebAtivos().filter(x => !feitos.has(x.id)).sort((a, c) => cmpTxt(a.local || '', c.local || '') || cmpTxt(a.codigo, c.codigo))[0]; return b ? 'beb:' + b.id : ''; }
 /* v0.6.4: marcas da foto do clorímetro (a original em base) */
@@ -274,8 +274,8 @@ async function clNovaOk() {
     if (novoBeb) {
       const bid = await Data.col('sv2_bebs').add({ codigo: novoBeb.codigo, local: novoBeb.local, situacao: pendCad ? 'pendente' : 'ativo', rodizioAuto: true, descricao: '', criadoEm: nowISO(), criadoPor: S.user.id, criadoPorNome: S.user.nome });
       ponto = { id: bid, codigo: novoBeb.codigo, local: novoBeb.local };
-      if (pendCad) { const aid = await Aprov.pedir({ tipo: 'novo_bebedouro', titulo: 'Cadastrar bebedouro ' + novoBeb.codigo + ' — ' + novoBeb.local, descricao: 'Digitado na hora da verificação de cloro.', refTipo: 'bebedouro', refId: bid, payload: { bebId: bid, codigo: novoBeb.codigo, local: novoBeb.local } }); if (aid) await Data.col('sv2_bebs').update(bid, { aprovId: aid }); }
-      Audit.log({ acao: 'criar_bebedouro', entidade: 'bebedouro', entidadeId: bid, resumo: pendCad ? 'Bebedouro ' + novoBeb.codigo + ' digitado na verificação (pendente de aprovação)' : 'Cadastrou o bebedouro ' + novoBeb.codigo + ' — ' + novoBeb.local + ' na hora da verificação (já ativo)', depois: novoBeb });
+      if (pendCad) { const aid = await Aprov.pedir({ tipo: 'novo_bebedouro', titulo: 'Cadastrar bebedouro ' + novoBeb.codigo + ' · ' + novoBeb.local, descricao: 'Digitado na hora da verificação de cloro.', refTipo: 'bebedouro', refId: bid, payload: { bebId: bid, codigo: novoBeb.codigo, local: novoBeb.local } }); if (aid) await Data.col('sv2_bebs').update(bid, { aprovId: aid }); }
+      Audit.log({ acao: 'criar_bebedouro', entidade: 'bebedouro', entidadeId: bid, resumo: pendCad ? 'Bebedouro ' + novoBeb.codigo + ' digitado na verificação (pendente de aprovação)' : 'Cadastrou o bebedouro ' + novoBeb.codigo + ' · ' + novoBeb.local + ' na hora da verificação (já ativo)', depois: novoBeb });
     }
     let reverif = [], dosPend = null, sit; const temV2 = v2 != null;
     if (fx === 'baixo' || fx === 'alto' || (fx === 'conforme' && dos != null)) {
@@ -293,7 +293,7 @@ async function clNovaOk() {
     if (tipo === 'beb') o.foto = foto ? { st: 'pendente', origem: foto.origem } : { st: 'sem_foto', motivo: String(f.semFoto || '').trim() };
     const cid = await Data.col('sv2_cloro').add(o);
     if (foto) { S._clFotos[cid] = foto.img; S._clFotoDoc = S._clFotoDoc || {}; S._clFotoDoc[cid] = Object.assign({ base: '', marcas: [], marcadoPor: '', marcadoEm: '' }, clMkDoc(f)); Data.col('sv2_cloro_foto').set(cid, Object.assign({ img: foto.img, ts: nowISO(), porId: S.user.id, origem: foto.origem }, clMkDoc(f))).catch(e => console.error('foto cloro', e)); }
-    Audit.log({ acao: 'verificar_cloro', entidade: 'cloro', entidadeId: cid, resumo: 'Cloro ' + o.pontoNome + ' (' + (o.local || 'sem local') + '): ' + ppm(v) + ' ppm — ' + clFaixaTxt(fx) + (dos != null ? ' · dosagem ' + dos + ' ml' : '') + (mot ? ' · motivo: ' + mot : '') + (temV2 ? ' · após ' + ppm(v2) : ''), depois: { ponto: o.pontoNome, valor: v, faixa: fx, situacao: sit } });
+    Audit.log({ acao: 'verificar_cloro', entidade: 'cloro', entidadeId: cid, resumo: 'Cloro ' + o.pontoNome + ' (' + (o.local || 'sem local') + '): ' + ppm(v) + ' ppm · ' + clFaixaTxt(fx) + (dos != null ? ' · dosagem ' + dos + ' ml' : '') + (mot ? ' · motivo: ' + mot : '') + (temV2 ? ' · após ' + ppm(v2) : ''), depois: { ponto: o.pontoNome, valor: v, faixa: fx, situacao: sit } });
     const eu = Array.from(new Set(supsOf(S.user).concat([S.user.id])));
     if (fx === 'alto') Notif.send({ nivel: 'critico', titulo: 'Cloro ALTO: ' + o.pontoNome + ' com ' + ppm(v) + ' ppm', texto: (o.local || '') + ' · ' + fmtD(o.data) + ' ' + o.hora + ' · lançado por ' + S.user.nome + '. Acima de 2,00 ppm: nova verificação obrigatória.', para: eu, refTipo: 'cloro', refId: cid });
     else if (fx === 'baixo' && sit === 'aberto') Notif.send({ nivel: 'aviso', titulo: 'Cloro baixo: ' + o.pontoNome + ' com ' + ppm(v) + ' ppm', texto: 'Aplicação obrigatória e nova verificação em até 24 h.', para: [S.user.id], refTipo: 'cloro', refId: cid });
@@ -336,7 +336,7 @@ async function clRvOk() {
   try {
     await Data.col('sv2_cloro').update(r.id, { reverif: rv, dosagemPendente: null, situacao: ok ? 'resolvido' : 'aberto' });
     if (foto) Data.col('sv2_cloro_foto').set(r.id + '_rv' + (rv.length - 1), Object.assign({ img: foto.img, ts: nowISO(), porId: S.user.id, origem: foto.origem }, clMkDoc(f))).catch(e => console.error('foto rv', e));
-    Audit.log({ acao: 'reverificar_cloro', entidade: 'cloro', entidadeId: r.id, resumo: 'Nova verificação ' + r.pontoNome + ': ' + ppm(v) + ' ppm' + (dos != null ? ' após dosagem de ' + dos + ' ml' : '') + (ok ? ' — resolvido' : ' — ainda fora da faixa'), antes: { valor: clValorFinal(r) }, depois: { valor: v, dosagemMl: dos } });
+    Audit.log({ acao: 'reverificar_cloro', entidade: 'cloro', entidadeId: r.id, resumo: 'Nova verificação ' + r.pontoNome + ': ' + ppm(v) + ' ppm' + (dos != null ? ' após dosagem de ' + dos + ' ml' : '') + (ok ? ' · resolvido' : ' · ainda fora da faixa'), antes: { valor: clValorFinal(r) }, depois: { valor: v, dosagemMl: dos } });
     if (!ok && clFaixa(v) === 'alto') Notif.send({ nivel: 'critico', titulo: 'Cloro continua ALTO: ' + r.pontoNome, texto: ppm(v) + ' ppm na nova verificação.', para: Array.from(new Set(supsOf(S.user).concat([S.user.id]))), refTipo: 'cloro', refId: r.id });
     lcFim(); aviso(ok ? 'Resolvido: dentro da faixa.' : 'Ainda fora da faixa. Faça nova aplicação e meça de novo.', ok ? '' : 'erro');
   } catch (e) { f._trava = 0; lcErro(svErro(e)); }
@@ -389,14 +389,14 @@ async function clGravaRetro(rec, aprov) {
   const r = Object.assign({}, rec, aprov ? { aprovadoPor: S.user.nome, aprovId: aprov.id } : {});
   const id = await Data.col('sv2_cloro').add(r);
   Audit.log({ acao: 'cloro_retro', entidade: 'cloro', entidadeId: id, resumo: 'Verificação retroativa ' + r.pontoNome + ' de ' + fmtD(r.data) + ' ' + r.hora + ': ' + ppm(r.valor) + (aprov ? ' (pedido de ' + aprov.solicitanteNome + ')' : ''), depois: { data: r.data, hora: r.hora, valor: r.valor }, autorizadoPor: aprov ? { id: S.user.id, nome: S.user.nome } : '' });
-  if (!isPrincipal(S.user)) clAvisaPrincipal('Verificação de cloro retroativa', r.pontoNome + ' · ' + fmtD(r.data) + ' ' + r.hora + ' · ' + ppm(r.valor) + ' — lançada por ' + (aprov ? aprov.solicitanteNome + ', aprovada por ' + S.user.nome : S.user.nome));
+  if (!isPrincipal(S.user)) clAvisaPrincipal('Verificação de cloro retroativa', r.pontoNome + ' · ' + fmtD(r.data) + ' ' + r.hora + ' · ' + ppm(r.valor) + ' · lançada por ' + (aprov ? aprov.solicitanteNome + ', aprovada por ' + S.user.nome : S.user.nome));
   return id;
 }
 async function clGravaJust(key, doc, aprov) {
   const d = Object.assign({}, doc, { aprovadoPor: S.user.nome, aprovadoEm: nowISO(), aprovId: aprov ? aprov.id : '' });
   await Data.col('sv2_cloro_falta').set(key, d);
-  Audit.log({ acao: 'cloro_justificativa', entidade: 'cloro', entidadeId: key, resumo: 'Dia sem verificação justificado: ' + d.codigo + ' em ' + fmtD(d.data) + ' — ' + d.motivo + (aprov ? ' (pedido de ' + aprov.solicitanteNome + ')' : ''), depois: { data: d.data, motivo: d.motivo }, autorizadoPor: aprov ? { id: S.user.id, nome: S.user.nome } : '' });
-  if (!isPrincipal(S.user)) clAvisaPrincipal('Dia sem verificação de cloro justificado', d.codigo + ' · ' + fmtD(d.data) + ' — ' + d.motivo + ' · por ' + (aprov ? aprov.solicitanteNome + ', aprovado por ' + S.user.nome : S.user.nome));
+  Audit.log({ acao: 'cloro_justificativa', entidade: 'cloro', entidadeId: key, resumo: 'Dia sem verificação justificado: ' + d.codigo + ' em ' + fmtD(d.data) + ' · ' + d.motivo + (aprov ? ' (pedido de ' + aprov.solicitanteNome + ')' : ''), depois: { data: d.data, motivo: d.motivo }, autorizadoPor: aprov ? { id: S.user.id, nome: S.user.nome } : '' });
+  if (!isPrincipal(S.user)) clAvisaPrincipal('Dia sem verificação de cloro justificado', d.codigo + ' · ' + fmtD(d.data) + ' · ' + d.motivo + ' · por ' + (aprov ? aprov.solicitanteNome + ', aprovado por ' + S.user.nome : S.user.nome));
 }
 APROV_APLICA.cloro_retro = (p, a) => clGravaRetro(p.rec, a);
 APROV_APLICA.cloro_just = (p, a) => clGravaJust(p.key, p.doc, a);
@@ -462,7 +462,7 @@ async function clCorrAplicar(id, p, aprov) {
   if ('valor' in p.depois && r.pontoTipo !== 'caixa') up.faixa = clFaixa(p.depois.valor);
   const h = (r.historico || []).slice(); h.push({ ts: nowISO(), antes: p.antes, depois: p.depois, motivo: p.motivo, pedidoPor: aprov ? aprov.solicitanteNome : S.user.nome, aprovadoPor: S.user.nome, aprovId: aprov ? aprov.id : '' });
   await Data.col('sv2_cloro').update(id, Object.assign(up, { alterado: true, historico: h }));
-  Audit.log({ acao: 'corrigir_cloro', entidade: 'cloro', entidadeId: id, resumo: 'Verificação de cloro corrigida: ' + (p.rotulo || r.pontoNome) + ' — ' + clCorrTxt(p) + (aprov ? ' (pedido de ' + aprov.solicitanteNome + ')' : '') + ' · motivo: ' + p.motivo, antes: p.antes, depois: p.depois, autorizadoPor: { id: S.user.id, nome: S.user.nome } });
+  Audit.log({ acao: 'corrigir_cloro', entidade: 'cloro', entidadeId: id, resumo: 'Verificação de cloro corrigida: ' + (p.rotulo || r.pontoNome) + ' · ' + clCorrTxt(p) + (aprov ? ' (pedido de ' + aprov.solicitanteNome + ')' : '') + ' · motivo: ' + p.motivo, antes: p.antes, depois: p.depois, autorizadoPor: { id: S.user.id, nome: S.user.nome } });
 }
 APROV_APLICA.corrigir_cloro = (p, a) => clCorrAplicar(a.refId, p, a);
 async function clCorrOk() {
@@ -503,7 +503,7 @@ function clBebDecide(bid, ok) {
       const pp = (S.aprov || []).find(x => x.tipo === 'novo_bebedouro' && x.status === 'pendente' && x.payload && x.payload.bebId === bid);
       if (pp && Aprov.podeDecidir(pp)) await Data.col('sv2_aprov').update(pp.id, { status: ok ? 'aprovado' : 'reprovado', decisao: { por: S.user.id, nome: S.user.nome, perfil: S.user.perfil, ts: nowISO(), motivo: motivo || 'Liberado na tela do cloro' } });
       if (b.criadoPor && b.criadoPor !== S.user.id) Notif.send({ nivel: ok ? 'info' : 'aviso', titulo: ok ? 'Bebedouro liberado: ' + b.codigo : 'Bebedouro recusado: ' + b.codigo, texto: S.user.nome + (ok ? ' liberou o cadastro; as leituras já contam.' : ' recusou o cadastro' + (motivo ? ': ' + motivo : '.')), para: [b.criadoPor], refTipo: 'bebedouro', refId: bid }).catch(() => {});
-      Audit.log({ acao: ok ? 'liberar_bebedouro' : 'recusar_bebedouro', entidade: 'bebedouro', entidadeId: bid, resumo: (ok ? 'Liberou' : 'Recusou') + ' o bebedouro ' + clBebNome(b) + (motivo ? ' — ' + motivo : ''), antes: { situacao: b.situacao }, depois: { situacao: ok ? 'ativo' : 'recusado' } });
+      Audit.log({ acao: ok ? 'liberar_bebedouro' : 'recusar_bebedouro', entidade: 'bebedouro', entidadeId: bid, resumo: (ok ? 'Liberou' : 'Recusou') + ' o bebedouro ' + clBebNome(b) + (motivo ? ' · ' + motivo : ''), antes: { situacao: b.situacao }, depois: { situacao: ok ? 'ativo' : 'recusado' } });
       aviso(ok ? 'Bebedouro liberado.' : 'Cadastro recusado.');
     } catch (e) { aviso(svErro(e), 'erro'); }
   };

@@ -11,7 +11,7 @@
         "Em qual parte do app": Segurança / Login e Bugs e sugestões.
    29 · comentários com texto e imagem dentro do relato (campo coment); quem reporta comenta e o Administrador é avisado, e
         vice-versa.
-   49 · ITENS 95 e 96 REPROVADOS (20/11): a imagem do relato não ganhou Marcar (nem no visualizador nem antes de enviar).
+   49 · ITENS 95 e 96 reprovados (20/11 de manhã); às 08:25 o Elias aprovou o Marcar na imagem do relato antes de enviar (v0.6.22). No visualizador continua só ver e baixar.
         Ficou só o aprovado no ITEM 94: a imagem do COMENTÁRIO pode ser marcada antes de enviar. */
 const BS_TIPOS = { bug: ['Problema', 'cr'], sugestao: ['Sugestão', ''] };
 const BS_SIT = { novo: ['Novo', 'wa'], analise: ['Em análise', ''], resolvido: ['Resolvido', 'ok'], naoprocede: ['Não procede', ''] };
@@ -105,12 +105,12 @@ LC_FORM.bsNovo = f => {
     lcAv('O app anota sozinho a versão (' + esc(bsVersao()) + '), a tela onde você estava e o aparelho. O Administrador recebe o aviso e responde no sino.');
   return { ico: bug ? 'alerta' : 'mais', sub: 'Qualidade · Bugs e sugestões · ' + S.user.nome, titulo: 'Reportar ou sugerir', corpo: c, rodape: lcPe('bs-novo-ok', 'Enviar') };
 };
-function bsFotoBl(f, nota) { /* o mesmo bloco no relato novo e no comentário; Marcar só no comentário (ITEM 94; o 95 foi reprovado) */
-  return '<div class="ap-fot">' + (imgSrc(f.foto) ? '<span class="ap-ft"><img src="' + imgSrc(f.foto) + '" alt="Imagem anexada">' + (f.k === 'bsCom' ? fedMkBt('bs-foto-mk', 0, (f.fMarcas || []).length) : '') + '<button type="button" class="bt ic-so" data-act="bs-foto-x" title="Tirar a imagem" aria-label="Tirar a imagem">' + ic('x') + '</button></span>'
+function bsFotoBl(f, nota) { /* o mesmo bloco no relato novo e no comentário; Marcar nos dois (comentário: ITEM 94; relato: item 49, aprovado pelo Elias em 20/11 08:25) */
+  return '<div class="ap-fot">' + (imgSrc(f.foto) ? '<span class="ap-ft"><img src="' + imgSrc(f.foto) + '" alt="Imagem anexada">' + (f.k === 'bsCom' || f.k === 'bsNovo' ? fedMkBt('bs-foto-mk', 0, (f.fMarcas || []).length) : '') + '<button type="button" class="bt ic-so" data-act="bs-foto-x" title="Tirar a imagem" aria-label="Tirar a imagem">' + ic('x') + '</button></span>'
     : '<label class="bt">' + ic('imagem') + 'Escolher imagem<input type="file" accept="image/*" data-bsfoto-in hidden></label>') + '</div><small class="cl-nt">' + esc(nota) + '</small>';
 }
-function bsFotoMk() { const f = S.fm; if (!f || f.k !== 'bsCom' || !imgSrc(f.foto)) return;
-  fedAbrir({ src: f.foto, base: f.fBase || f.foto, marcas: f.fMarcas || [], sub: 'Comentário' }).then(r => { if (!r || S.fm !== f) return; f.foto = r.img; f.fBase = r.marcas.length ? r.base : ''; f.fMarcas = r.marcas; f.fPor = r.marcadoPor; f.fEm = r.marcadoEm; f.sujo = true; gvDesenha(true); }); }
+function bsFotoMk() { const f = S.fm; if (!f || (f.k !== 'bsCom' && f.k !== 'bsNovo') || !imgSrc(f.foto)) return;
+  fedAbrir({ src: f.foto, base: f.fBase || f.foto, marcas: f.fMarcas || [], sub: f.k === 'bsNovo' ? 'Relato' : 'Comentário' }).then(r => { if (!r || S.fm !== f) return; f.foto = r.img; f.fBase = r.marcas.length ? r.base : ''; f.fMarcas = r.marcas; f.fPor = r.marcadoPor; f.fEm = r.marcadoEm; f.sujo = true; gvDesenha(true); }); }
 DD_AO.bs = (k, v) => { if (!S.fm) return; S.fm[k] = v; S.fm.sujo = true; S.fm.msg = ''; gvDesenha(true); };
 /* a imagem fica até 240 KB, como no EFClaudian (lado maior 1280 px, fundo branco para print com transparência) */
 function bsReduz(arq) {
@@ -254,7 +254,7 @@ async function bsSitOk() {
   if (st === 'resolvido' || st === 'naoprocede') p.finalizadoEm = ts; else p.finalizadoEm = ''; /* ITEM 57: a data guardada como finalizado */
   try {
     await Data.col('sv2_bugs').push(b.id, 'hist', passo, p); Object.assign(b, p, { hist: (b.hist || []).concat([passo]) });
-    if (b.porId && b.porId !== S.user.id) Notif.send({ nivel: 'info', titulo: (b.tipo === 'sugestao' ? 'Sua sugestão' : 'Seu problema reportado') + ' nº ' + bsNum(b) + ': ' + (re ? 'reaberto' : BS_SIT[st][0]), texto: b.titulo + (txt ? ' — ' + txt : '') + (st === 'resolvido' ? ' (versão ' + ver + ')' : ''), para: [b.porId], refTipo: 'bug', refId: b.id }).catch(() => {});
+    if (b.porId && b.porId !== S.user.id) Notif.send({ nivel: 'info', titulo: (b.tipo === 'sugestao' ? 'Sua sugestão' : 'Seu problema reportado') + ' nº ' + bsNum(b) + ': ' + (re ? 'reaberto' : BS_SIT[st][0]), texto: b.titulo + (txt ? ' · ' + txt : '') + (st === 'resolvido' ? ' (versão ' + ver + ')' : ''), para: [b.porId], refTipo: 'bug', refId: b.id }).catch(() => {});
     Audit.log({ acao: 'bug_situacao', entidade: 'bug', entidadeId: b.id, resumo: 'Nº ' + bsNum(b) + ' → ' + (re ? 'reaberto' : BS_SIT[st][0]) + (txt ? ' (' + txt + ')' : ''), antes: { status: b.status }, depois: { status: st } });
     lcFim(); aviso('Situação atualizada.');
   } catch (er) { if (S.fm) S.fm._trava = 0; lcErro(svErro(er)); }
@@ -268,8 +268,8 @@ async function bsPdf() {
   const html = '<div class="bs-imp"><div class="au-ic"><b>Bugs e sugestões</b><span>' + esc([e.nome, l.length + (l.length === 1 ? ' relato' : ' relatos'), 'emitido em ' + fmtD(hojeISO()) + ' por ' + S.user.nome, bsVersao()].filter(Boolean).join(' · ')) + '</span></div>' +
     l.map(b => '<div class="bs-it"><div class="bs-ih"><b>Nº ' + esc(bsNum(b)) + ' · ' + esc((BS_TIPOS[b.tipo] || BS_TIPOS.bug)[0]) + '</b> ' + esc(b.titulo || '') + '<span>' + esc((BS_SIT[b.status || 'novo'] || BS_SIT.novo)[0]) + '</span></div>' +
       '<div class="bs-ic"><table class="bs-kv">' + kv('Parte do app', bsAreaNome(b.area) + (b.tela ? ' (' + esc(b.tela) + ')' : '')) + kv('Data', b.ts ? fmtDT(b.ts) : '') + kv('Quem', b.porNome) + kv('Prioridade', bsPriNome(b)) + kv('Versão', b.versao) + kv('Aparelho', b.aparelho) + kv('Resolvido na', b.versaoResolvido) + '</table>' +
-      '<div class="bs-id"><p>' + esc(b.descricao || '').replace(/\n/g, '<br>') + '</p>' + ((b.hist || []).length > 1 ? '<ul>' + b.hist.map(h => '<li>' + esc((h.ts ? fmtDT(h.ts) : '') + ' · ' + (h.porNome || '') + ' · ' + ((BS_SIT[h.status] || [h.status || ''])[0]) + (h.texto ? ' — ' + h.texto : '')) + '</li>').join('') + '</ul>' : '') +
-      ((b.coment || []).length ? '<p class="bs-ic-h">Comentários</p><ul>' + b.coment.map(x => '<li>' + esc((x.ts ? fmtDT(x.ts) : '') + ' · ' + (x.porNome || '') + (x.texto ? ' — ' + x.texto : '') + (x.fotoId || x.foto ? ' (com imagem)' : '')) + '</li>').join('') + '</ul>' : '') + '</div>' +
+      '<div class="bs-id"><p>' + esc(b.descricao || '').replace(/\n/g, '<br>') + '</p>' + ((b.hist || []).length > 1 ? '<ul>' + b.hist.map(h => '<li>' + esc((h.ts ? fmtDT(h.ts) : '') + ' · ' + (h.porNome || '') + ' · ' + ((BS_SIT[h.status] || [h.status || ''])[0]) + (h.texto ? ' · ' + h.texto : '')) + '</li>').join('') + '</ul>' : '') +
+      ((b.coment || []).length ? '<p class="bs-ic-h">Comentários</p><ul>' + b.coment.map(x => '<li>' + esc((x.ts ? fmtDT(x.ts) : '') + ' · ' + (x.porNome || '') + (x.texto ? ' · ' + x.texto : '') + (x.fotoId || x.foto ? ' (com imagem)' : '')) + '</li>').join('') + '</ul>' : '') + '</div>' +
       (bsFotoDe(b) ? '<img class="bs-if" src="' + imgSrc(bsFotoDe(b)) + '" alt="">' : '') + '</div></div>').join('') + '</div>';
   Audit.log({ acao: 'imprimir', entidade: 'bug', entidadeId: 'relatorio', resumo: 'Relatório de Bugs e sugestões (' + esc(l.length) + ' relatos)' });
   nqImprimir(html, APP_NOME + ' · Bugs e sugestões · ' + fmtD(hojeISO()), true);

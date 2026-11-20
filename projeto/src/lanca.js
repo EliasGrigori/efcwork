@@ -62,7 +62,7 @@ function alMinAvisa(lista) {
 function alCritAvisar(itens, movId) {
   const para = alConfirmadores().map(u => u.id).filter(id => id !== S.user.id);
   if (!para.length || !itens.length) return;
-  Notif.send({ nivel: 'aviso', titulo: 'Confirmar saída de produto crítico', texto: S.user.nome + ' registrou a saída de ' + itens.map(x => alQ(x.q) + ' ' + (x.i.un || '') + ' de ' + x.i.nome).join(', ') + ' — ' + itens[0].mot + '. Confirme no almoxarifado.', para: para, refTipo: 'alm_mov', refId: movId }).catch(() => {});
+  Notif.send({ nivel: 'aviso', titulo: 'Confirmar saída de produto crítico', texto: S.user.nome + ' registrou a saída de ' + itens.map(x => alQ(x.q) + ' ' + (x.i.un || '') + ' de ' + x.i.nome).join(', ') + ' · ' + itens[0].mot + '. Confirme no almoxarifado.', para: para, refTipo: 'alm_mov', refId: movId }).catch(() => {});
 }
 const alCritNovo = vencConfirmado => vencConfirmado ? { st: 'confirmada', porId: S.user.id, porNome: S.user.nome, ts: nowISO(), vencido: true, proprio: true } : { st: 'pendente' };
 function alCritTxt(c) {
@@ -154,30 +154,30 @@ async function lcAplicar(p, aprov) {
   if (p.acao === 'item_desat' || p.acao === 'item_reativar') {
     const i = alItem(p.refId); if (!i) throw new Error('Item não encontrado.'); const on = p.acao === 'item_reativar';
     await Data.col('sv2_alm_itens').update(p.refId, Object.assign({ ativo: on, motivoInativo: on ? '' : p.motivo, desativadoEm: on ? '' : agora }, marca));
-    Audit.log({ acao: on ? 'reativar_item_almox' : 'desativar_item_almox', entidade: 'almox_item', entidadeId: p.refId, resumo: (on ? 'Reativou ' : 'Desativou ') + i.nome + (p.motivo ? ' — motivo: ' + p.motivo : ''), antes: { ativo: i.ativo !== false }, depois: { ativo: on } }); return;
+    Audit.log({ acao: on ? 'reativar_item_almox' : 'desativar_item_almox', entidade: 'almox_item', entidadeId: p.refId, resumo: (on ? 'Reativou ' : 'Desativou ') + i.nome + (p.motivo ? ' · motivo: ' + p.motivo : ''), antes: { ativo: i.ativo !== false }, depois: { ativo: on } }); return;
   }
   if (p.acao === 'prazo_aberto') { const i = alItem(p.refId); if (!i) throw new Error('Item não encontrado.'); await Data.col('sv2_alm_itens').update(p.refId, Object.assign({ prazoAberto: p.dias || 0 }, marca)); Audit.log({ acao: 'editar_item_almox', entidade: 'almox_item', entidadeId: p.refId, resumo: 'Prazo depois de aberto de ' + i.nome + ': ' + (p.dias ? p.dias + ' dia(s)' : 'sem prazo'), antes: { prazoAberto: i.prazoAberto || 0 }, depois: { prazoAberto: p.dias || 0 } }); return; }
   if (p.acao === 'ajuste') {
     const i = alItem(p.refId); if (!i) throw new Error('Item não encontrado.');
     for (const l of p.linhas) await Data.col('sv2_alm_mov').set(uid(), Object.assign({ tipo: 'ajuste', itemId: i.id, itemNome: i.nome, lotRef: l.lotRef, lote: l.lote || '', validade: l.validade || '', qtd: l.qtd, preco: l.preco || 0, motivo: p.motivo, data: p.data, criadoEm: agora, por: aprov ? aprov.solicitanteId : S.user.id, porNome: quem }, marca));
-    Audit.log({ acao: 'ajuste_almox', entidade: 'almox_item', entidadeId: i.id, resumo: 'Ajuste de ' + i.nome + ': ' + p.linhas.map(l => (l.lote || 's/ lote') + ' ' + (l.qtd > 0 ? '+' : '') + alQ(l.qtd)).join(', ') + ' — ' + p.motivo + (aprov ? ' (pedido de ' + quem + ')' : ''), depois: { linhas: p.linhas, motivo: p.motivo } }); return;
+    Audit.log({ acao: 'ajuste_almox', entidade: 'almox_item', entidadeId: i.id, resumo: 'Ajuste de ' + i.nome + ': ' + p.linhas.map(l => (l.lote || 's/ lote') + ' ' + (l.qtd > 0 ? '+' : '') + alQ(l.qtd)).join(', ') + ' · ' + p.motivo + (aprov ? ' (pedido de ' + quem + ')' : ''), depois: { linhas: p.linhas, motivo: p.motivo } }); return;
   }
   if (p.acao === 'saida_crit_venc') {
     const i = alItem(p.itemId); if (!i) throw new Error('Item não encontrado.');
     const a = alAlocar(i.id, Number(p.qtd) || 1, p.lotId); if (a.erro) throw new Error(a.erro);
     const crit = { st: 'confirmada', porId: S.user.id, porNome: S.user.nome, ts: nowISO(), vencido: true, aprovId: aprov ? aprov.id : '' }, grupo = a.partes.length > 1 ? uid() : '';
     for (const pt of a.partes) await Data.col('sv2_alm_mov').set(uid(), Object.assign({ tipo: p.tipo === 'abrir' ? 'abrir' : 'saida', itemId: i.id, itemNome: i.nome, lotRef: pt.l.id, lote: pt.l.lote, validade: pt.l.validade, qtd: pt.q, preco: pt.l.preco, motivo: p.motivo, obs: p.obs || '', data: p.data, grupo: grupo, vencidoMotivo: p.vencMot, critico: crit, criadoEm: nowISO(), por: aprov ? aprov.solicitanteId : S.user.id, porNome: quem }, marca));
-    Audit.log({ acao: 'saida_almox', entidade: 'almox_item', entidadeId: i.id, resumo: 'Saída de lote VENCIDO de produto crítico: ' + alQ(p.qtd) + ' ' + (i.un || '') + ' de ' + i.nome + ' — ' + p.motivo + ' · liberada por ' + S.user.nome + (aprov ? ' (pedido de ' + quem + ')' : ''), depois: p }); return;
+    Audit.log({ acao: 'saida_almox', entidade: 'almox_item', entidadeId: i.id, resumo: 'Saída de lote VENCIDO de produto crítico: ' + alQ(p.qtd) + ' ' + (i.un || '') + ' de ' + i.nome + ' · ' + p.motivo + ' · liberada por ' + S.user.nome + (aprov ? ' (pedido de ' + quem + ')' : ''), depois: p }); return;
   }
   if (p.acao === 'corrigir_mov' || p.acao === 'anular_mov') {
     const m = S.almMov.find(x => x.id === p.refId); if (!m) throw new Error('Movimentação não encontrada.');
     if (p.acao === 'anular_mov') {
       await Data.col('sv2_alm_mov').update(m.id, Object.assign({ anulada: true, anuladaEm: agora, anuladaPor: S.user.nome, anuladaMotivo: p.motivo }, marca));
-      Audit.log({ acao: 'anular_mov_almox', entidade: 'almox_item', entidadeId: m.itemId, resumo: 'Anulou ' + (AL_TIPO[m.tipo] || m.tipo).toLowerCase() + ' de ' + alQ(m.qtd) + ' ' + m.itemNome + ' — motivo: ' + p.motivo, antes: { anulada: false }, depois: { anulada: true } }); return;
+      Audit.log({ acao: 'anular_mov_almox', entidade: 'almox_item', entidadeId: m.itemId, resumo: 'Anulou ' + (AL_TIPO[m.tipo] || m.tipo).toLowerCase() + ' de ' + alQ(m.qtd) + ' ' + m.itemNome + ' · motivo: ' + p.motivo, antes: { anulada: false }, depois: { anulada: true } }); return;
     }
     const h = (m.historico || []).concat([{ ts: agora, por: quem, porId: aprov ? aprov.solicitanteId : S.user.id, motivo: p.motivo, antes: p.antes, depois: p.depois, aprovadoPor: aprov ? S.user.nome : '' }]);
     await Data.col('sv2_alm_mov').update(m.id, Object.assign({}, p.depois, { historico: h }));
-    Audit.log({ acao: 'corrigir_mov_almox', entidade: 'almox_item', entidadeId: m.itemId, resumo: 'Corrigiu ' + (AL_TIPO[m.tipo] || m.tipo).toLowerCase() + ' de ' + m.itemNome + ' — motivo: ' + p.motivo, antes: p.antes, depois: p.depois }); return;
+    Audit.log({ acao: 'corrigir_mov_almox', entidade: 'almox_item', entidadeId: m.itemId, resumo: 'Corrigiu ' + (AL_TIPO[m.tipo] || m.tipo).toLowerCase() + ' de ' + m.itemNome + ' · motivo: ' + p.motivo, antes: p.antes, depois: p.depois }); return;
   }
   throw new Error('Ação desconhecida.');
 }
@@ -264,7 +264,7 @@ function lcSaidaOk() {
     if (alVencido(p.l)) o.vencidoMotivo = String(f.vencMot).trim(); if (critObj) o.critico = critObj;
     const mid = uid(); ids.push(mid); ps.push(Data.col('sv2_alm_mov').set(mid, o));
   });
-  Audit.log({ acao: 'saida_almox', entidade: 'almox_item', entidadeId: i.id, resumo: 'Saída: ' + alQ(q) + ' ' + (i.un || '') + ' de ' + i.nome + ' — ' + mot + (venc ? ' · LOTE VENCIDO: ' + String(f.vencMot).trim() : '') + (crit ? ' · PRODUTO CRÍTICO' + (critObj.st === 'pendente' ? ' (aguardando confirmação)' : ' (lote vencido confirmado pelo líder)') : ''), depois: { qtd: q, motivo: mot, lotes: a.partes.map(p => p.l.lote || 's/ lote'), critico: critObj ? critObj.st : '' } });
+  Audit.log({ acao: 'saida_almox', entidade: 'almox_item', entidadeId: i.id, resumo: 'Saída: ' + alQ(q) + ' ' + (i.un || '') + ' de ' + i.nome + ' · ' + mot + (venc ? ' · LOTE VENCIDO: ' + String(f.vencMot).trim() : '') + (crit ? ' · PRODUTO CRÍTICO' + (critObj.st === 'pendente' ? ' (aguardando confirmação)' : ' (lote vencido confirmado pelo líder)') : ''), depois: { qtd: q, motivo: mot, lotes: a.partes.map(p => p.l.lote || 's/ lote'), critico: critObj ? critObj.st : '' } });
   alMotivoUsado('item:' + i.id, mot, guardar);
   if (critObj && critObj.st === 'pendente') alCritAvisar([{ i: i, q: q, mot: mot }], ids[0]);
   lcGrava(ps, 'Saída registrada: ' + alQ(q) + ' ' + (i.un || '') + ' de ' + i.nome + '.' + (critObj && critObj.st === 'pendente' ? ' Produto crítico: aguardando confirmação.' : ''));
@@ -309,7 +309,7 @@ function lcMultiOk() {
   const pr = S.almPref || {}, favs = Array.isArray(pr.favs) ? pr.favs.slice() : [], itens = usar.map(u => ({ itemId: u.i.id, qtd: u.q }));
   if (salvar) alPrefGravar({ favs: favs.concat([{ id: uid().slice(0, 8), nome: nomeFav, motivo: mot, itens: itens }]) });
   else if (f.favMeu && f.atualizaFav === '1') alPrefGravar({ favs: favs.map(x => 'p:' + x.id === f.favId ? Object.assign({}, x, { motivo: mot, itens: itens }) : x) });
-  Audit.log({ acao: 'saida_almox', entidade: 'almox_kit', entidadeId: f.favId || grupo, resumo: 'Saída ' + (nome ? 'do favorito ' + nome : 'de vários itens') + ': ' + usar.map(u => alQ(u.q) + ' ' + u.i.nome).join(', ') + ' — ' + mot + (f.obs ? ' · ' + String(f.obs).trim() : '') + (crits.length ? ' · PRODUTO CRÍTICO aguardando confirmação: ' + crits.map(x => x.i.nome).join(', ') : ''), depois: { itens: usar.map(u => ({ item: u.i.nome, qtd: u.q })), motivo: mot, obs: String(f.obs || '').trim() } });
+  Audit.log({ acao: 'saida_almox', entidade: 'almox_kit', entidadeId: f.favId || grupo, resumo: 'Saída ' + (nome ? 'do favorito ' + nome : 'de vários itens') + ': ' + usar.map(u => alQ(u.q) + ' ' + u.i.nome).join(', ') + ' · ' + mot + (f.obs ? ' · ' + String(f.obs).trim() : '') + (crits.length ? ' · PRODUTO CRÍTICO aguardando confirmação: ' + crits.map(x => x.i.nome).join(', ') : ''), depois: { itens: usar.map(u => ({ item: u.i.nome, qtd: u.q })), motivo: mot, obs: String(f.obs || '').trim() } });
   alMotivoUsado(ctx, mot, guardarMot);
   if (crits.length) alCritAvisar(crits, critId);
   lcGrava(ps, (nome ? 'Saída do favorito ' + nome + ' registrada.' : 'Saída de ' + usar.length + ' materiais registrada.') + (salvar ? ' Favorito guardado.' : '') + (crits.length ? ' Produto crítico: aguardando confirmação.' : ''));
@@ -435,7 +435,7 @@ async function lcAjusteOk() {
   if (!lcTravar()) return;
   const linhas = ds.map(x => ({ lotRef: x.l.id, lote: x.l.lote, validade: x.l.validade, qtd: x.d, preco: x.l.preco }));
   lcFim();
-  await lcPedirOuFazer('ajuste', i.id, { linhas: linhas, motivo: m, data: hojeISO() }, 'Ajustar o saldo de ' + i.nome, ds.map(x => (x.l.lote || 's/ lote') + ' ' + (x.d > 0 ? '+' : '') + alQ(x.d)).join(', ') + ' — ' + m, 'Saldo ajustado.');
+  await lcPedirOuFazer('ajuste', i.id, { linhas: linhas, motivo: m, data: hojeISO() }, 'Ajustar o saldo de ' + i.nome, ds.map(x => (x.l.lote || 's/ lote') + ' ' + (x.d > 0 ? '+' : '') + alQ(x.d)).join(', ') + ' · ' + m, 'Saldo ajustado.');
 }
 
 /* ---------- corrigir e anular (nunca apagar) ---------- */
@@ -466,12 +466,12 @@ async function lcCorrOk() {
   if (!Object.keys(depois).length) return lcErro('Nada foi mudado.');
   const mot = String(f.motivoG || '').trim(); if (mot.length < 3) return lcErro('Escreva por que está corrigindo.');
   if (!lcTravar()) return;
-  if (!alCorrigeDireto(m)) { lcFim(); await lcPedirOuFazer('corrigir_mov', m.id, { antes: antes, depois: depois, motivo: mot }, 'Corrigir ' + (AL_TIPO[m.tipo] || '').toLowerCase() + ' de ' + m.itemNome, Object.keys(depois).map(k => k + ': ' + antes[k] + ' → ' + depois[k]).join(' · ') + ' — ' + mot, ''); return; }
+  if (!alCorrigeDireto(m)) { lcFim(); await lcPedirOuFazer('corrigir_mov', m.id, { antes: antes, depois: depois, motivo: mot }, 'Corrigir ' + (AL_TIPO[m.tipo] || '').toLowerCase() + ' de ' + m.itemNome, Object.keys(depois).map(k => k + ': ' + antes[k] + ' → ' + depois[k]).join(' · ') + ' · ' + mot, ''); return; }
   const h = (m.historico || []).concat([{ ts: nowISO(), por: S.user.nome, porId: S.user.id, motivo: mot, antes: antes, depois: depois }]);
   const ps = [Data.col('sv2_alm_mov').update(m.id, Object.assign({}, depois, { historico: h }))];
   /* a saída guarda uma cópia do lote e da validade: acompanha a correção da entrada */
   if (m.tipo !== 'saida' && ('lote' in depois || 'validade' in depois || 'preco' in depois)) S.almMov.filter(x => x.lotRef === m.id && !x.anulada).forEach(x => { const p = {}; ['lote', 'validade', 'preco'].forEach(k => { if (k in depois) p[k] = depois[k]; }); ps.push(Data.col('sv2_alm_mov').update(x.id, p)); });
-  Audit.log({ acao: 'corrigir_mov_almox', entidade: 'almox_item', entidadeId: m.itemId, resumo: 'Corrigiu ' + AL_TIPO[m.tipo].toLowerCase() + ' de ' + m.itemNome + ' (' + fmtD(m.data) + '): ' + Object.keys(depois).map(k => k + ' ' + antes[k] + ' → ' + depois[k]).join(', ') + ' — motivo: ' + mot, antes: antes, depois: depois });
+  Audit.log({ acao: 'corrigir_mov_almox', entidade: 'almox_item', entidadeId: m.itemId, resumo: 'Corrigiu ' + AL_TIPO[m.tipo].toLowerCase() + ' de ' + m.itemNome + ' (' + fmtD(m.data) + '): ' + Object.keys(depois).map(k => k + ' ' + antes[k] + ' → ' + depois[k]).join(', ') + ' · motivo: ' + mot, antes: antes, depois: depois });
   lcGrava(ps, 'Corrigido. O valor antigo ficou no histórico.');
 }
 LC_FORM.anular = f => {
@@ -485,7 +485,7 @@ async function lcAnularOk() {
   if (m.tipo === 'ajuste' && m.qtd > 0) { const l = alIdx().lots[m.lotRef]; if (l && l.saldo < m.qtd - 1e-9) return lcErro('Desfazer este ajuste deixaria o lote negativo (tem ' + alQ(l.saldo) + ').'); }
   if (!lcTravar()) return;
   if (!alCorrigeDireto(m)) { lcFim(); await lcPedirOuFazer('anular_mov', m.id, { motivo: mot }, 'Anular ' + (AL_TIPO[m.tipo] || '').toLowerCase() + ' de ' + m.itemNome, 'Motivo: ' + mot, ''); return; }
-  Audit.log({ acao: 'anular_mov_almox', entidade: 'almox_item', entidadeId: m.itemId, resumo: 'Anulou ' + AL_TIPO[m.tipo].toLowerCase() + ' de ' + alQ(m.qtd) + ' ' + m.itemNome + ' (' + fmtD(m.data) + ') — motivo: ' + mot, antes: { anulada: false }, depois: { anulada: true } });
+  Audit.log({ acao: 'anular_mov_almox', entidade: 'almox_item', entidadeId: m.itemId, resumo: 'Anulou ' + AL_TIPO[m.tipo].toLowerCase() + ' de ' + alQ(m.qtd) + ' ' + m.itemNome + ' (' + fmtD(m.data) + ') · motivo: ' + mot, antes: { anulada: false }, depois: { anulada: true } });
   lcGrava([Data.col('sv2_alm_mov').update(m.id, { anulada: true, anuladaEm: nowISO(), anuladaPor: S.user.nome, anuladaMotivo: mot })], 'Anulada. O registro continua visível, riscado.');
 }
 
@@ -503,7 +503,7 @@ function lcCritDecidir(id, ok, motivo) {
   const c = { st: ok ? 'confirmada' : 'nao_confere', porId: S.user.id, porNome: S.user.nome, ts: nowISO(), proprio: m.por === S.user.id }; if (!ok) c.motivo = mot;
   const qt = alR(alvo.reduce((s, x) => s + (Number(x.qtd) || 0), 0));
   const ps = alvo.map(x => Data.col('sv2_alm_mov').update(x.id, { critico: Object.assign({}, x.critico, c) }));
-  Audit.log({ acao: ok ? 'critico_confirmar' : 'critico_nao_confere', entidade: 'almox_item', entidadeId: m.itemId, resumo: (ok ? 'Confirmou' : 'Não confere:') + ' saída de produto crítico ' + alQ(qt) + ' ' + m.itemNome + ' (' + fmtD(m.data) + ', lançada por ' + (m.porNome || '') + ')' + (c.proprio ? ' — confirmada por quem lançou' : '') + (mot ? ' — ' + mot : ''), antes: { critico: 'pendente' }, depois: { critico: c.st } });
+  Audit.log({ acao: ok ? 'critico_confirmar' : 'critico_nao_confere', entidade: 'almox_item', entidadeId: m.itemId, resumo: (ok ? 'Confirmou' : 'Não confere:') + ' saída de produto crítico ' + alQ(qt) + ' ' + m.itemNome + ' (' + fmtD(m.data) + ', lançada por ' + (m.porNome || '') + ')' + (c.proprio ? ' · confirmada por quem lançou' : '') + (mot ? ' · ' + mot : ''), antes: { critico: 'pendente' }, depois: { critico: c.st } });
   if (m.por && m.por !== S.user.id) Notif.send({ nivel: ok ? 'info' : 'aviso', titulo: ok ? 'Saída confirmada: ' + m.itemNome : 'Saída NÃO confere: ' + m.itemNome, texto: S.user.nome + (ok ? ' confirmou' : ' marcou que não confere') + ' a saída de ' + alQ(qt) + ' ' + m.itemNome + ' de ' + fmtD(m.data) + (mot ? ': ' + mot : '') + '.', para: [m.por], refTipo: 'alm_mov', refId: m.id }).catch(() => {});
   if (S.fm) lcGrava(ps, ok ? 'Saída confirmada.' : 'Marcada como não confere. Quem lançou foi avisado.');
   else { aviso(ok ? 'Saída confirmada.' : 'Marcada como não confere.'); Promise.all(ps).catch(e => aviso(svErro(e), 'erro')); }
@@ -538,7 +538,7 @@ function lcSolCancOk() {
   const f = S.fm, x = S.almSol.find(y => y.id === f.solId); if (!x) return;
   const m = String(f.motivoG || '').trim(); if (m.length < 3) return lcErro('Escreva o motivo.');
   if (!lcTravar()) return;
-  Audit.log({ acao: 'cancelar_solicitacao_almox', entidade: 'almox_sol', entidadeId: x.id, resumo: 'Cancelou a solicitação ' + x.numero + ' — motivo: ' + m, antes: { situacao: x.situacao }, depois: { situacao: 'cancelada' } });
+  Audit.log({ acao: 'cancelar_solicitacao_almox', entidade: 'almox_sol', entidadeId: x.id, resumo: 'Cancelou a solicitação ' + x.numero + ' · motivo: ' + m, antes: { situacao: x.situacao }, depois: { situacao: 'cancelada' } });
   lcGrava([Data.col('sv2_alm_sol').update(x.id, { situacao: 'cancelada', canceladaEm: nowISO(), canceladaPor: S.user.nome, canceladaMotivo: m })], 'Solicitação cancelada.');
 }
 function lcSolAtender(id) {

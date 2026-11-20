@@ -264,7 +264,7 @@ async function cbCancOk() {
   const f = S.fm, c = cbDe(f.id); if (!c || !alSup() || (c.itens || []).some(i => i.aplicado)) return;
   const m = String(f.motivoG || '').trim(); if (m.length < 5) return lcErro('Escreva o motivo.');
   if (!lcTravar()) return;
-  try { await Data.col('sv2_alm_cal').update(c.id, { situacao: 'cancelada', canceladaMotivo: m, canceladaEm: nowISO(), canceladaPor: S.user.nome }); Audit.log({ acao: 'calibracao_cancelar', entidade: 'almox_cal', entidadeId: c.id, resumo: 'Cancelou a ' + c.numero + ' — ' + m }); lcFim(); aviso(c.numero + ' cancelada.'); }
+  try { await Data.col('sv2_alm_cal').update(c.id, { situacao: 'cancelada', canceladaMotivo: m, canceladaEm: nowISO(), canceladaPor: S.user.nome }); Audit.log({ acao: 'calibracao_cancelar', entidade: 'almox_cal', entidadeId: c.id, resumo: 'Cancelou a ' + c.numero + ' · ' + m }); lcFim(); aviso(c.numero + ' cancelada.'); }
   catch (e) { lcErro(svErro(e)); }
 }
 function cbPrint(id) {

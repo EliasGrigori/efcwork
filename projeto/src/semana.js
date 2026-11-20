@@ -83,7 +83,7 @@ function smApLinha(a) { return [esc(smDc(a.data)), esc(a.setor || ''), esc(apCat
 const ncRot = a => a.nc.fechada ? 'NC fechada' : (a.nc.prazo && a.nc.prazo < hojeISO() ? 'NC vencida' : 'NC aberta');
 const SM_AP_CAB = ['Data', 'Setor', 'Categoria', 'Gravidade', 'Situação', 'Observação', 'NC'];
 function smParte(id, d) {
-  if (id === 'apont') return smSec(id, 'Apontamentos — reunião', d.ap.length + ' na semana · ' + smPl(d.apAnt.length, 'pendente', 'pendentes') + ' de semanas anteriores',
+  if (id === 'apont') return smSec(id, 'Apontamentos da reunião', d.ap.length + ' na semana · ' + smPl(d.apAnt.length, 'pendente', 'pendentes') + ' de semanas anteriores',
     smH3('Na semana') + smTab(SM_AP_CAB, d.ap.map(smApLinha), 'Nenhum apontamento nesta semana.') + (d.apAnt.length ? smH3('Pendentes de semanas anteriores') + smTab(SM_AP_CAB, d.apAnt.map(smApLinha), '') : ''));
   if (id === 'cloro') return smSec(id, 'Verificações de cloro', smPl(d.cloro.length, 'verificação', 'verificações') + ' · ' + smForaFaixa(d.cloro) + ' fora da faixa',
     smTab(['Data', 'Hora', 'Ponto', 'Local', 'Cloro (ppm)', 'Faixa', 'Por'], d.cloro.map(r => [esc(smDc(r.data)), esc(r.hora || ''), esc(r.pontoNome || ''), esc(r.local || ''), esc(ppm(r.valor)), esc(clFaixaTxt(clFaixaDe(r))), esc(r.lancadoPorNome || '')]), 'Nenhuma verificação nesta semana.'));
@@ -91,7 +91,7 @@ function smParte(id, d) {
     smH3('Coletadas na semana') + smTab(['Data', 'Tipo', 'Talhão / local', 'Análise', 'Coletor', 'Laboratório', 'Enviada'], d.col.map(c => [esc(smDc(c.data)), esc(CO_TXT[c.tipo] || c.tipo || ''), esc(coNome(c)), esc(c.analiseNome || ''), esc(c.coletor || ''), esc(c.lab || ''), c.enviado ? esc(smDc(diaLocal(c.envio))) : 'não']), 'Nenhuma coleta nesta semana.') +
     smH3('Enviadas na semana') + smTab(['Envio', 'Tipo', 'Talhão / local', 'Análise', 'Laboratório', 'O.S', 'Laudo previsto'], d.env.map(c => [esc(smDc(diaLocal(c.envio))), esc(CO_TXT[c.tipo] || c.tipo || ''), esc(coNome(c)), esc(c.analiseNome || ''), esc(c.lab || ''), esc(c.os || '—'), esc(smDc(addDias(diaLocal(c.envio), coLabPrazo(c.lab))))]), 'Nenhum envio nesta semana.') +
     (d.agua.length ? smH3('Coletas de água') + smTab(['Data', 'Tipo', 'Ponto', 'Análise', 'Laboratório', 'Resultado'], d.agua.map(a => [esc(smDc(a.data)), esc(agTipoTxt(a)), esc(a.pontoNome || ''), esc(a.analiseNome || ''), esc(a.lab || ''), esc((a.resultado || '') + (agNC(a) ? ' · ' + agAgenteTxt(a) + (a.gravidade ? ' · ' + a.gravidade : '') : ''))]), '') : ''));
-  return smSec(id, 'Almoxarifado — movimentações', smPl(d.mov.length, 'movimentação', 'movimentações'),
+  return smSec(id, 'Movimentações do almoxarifado', smPl(d.mov.length, 'movimentação', 'movimentações'),
     smTab(['Data', 'Tipo', 'Item', 'Qtd', 'Lote', 'Motivo / documento', 'Por'], d.mov.map(m => [esc(smDc(m.data)), esc(AL_TIPO[m.tipo] || m.tipo || ''), esc(m.itemNome || ''), esc((m.tipo === 'saida' || m.tipo === 'abrir' ? '−' : '') + alQ(m.qtd)), esc(m.lote || ''), esc(m.motivo || (m.doc ? 'Doc. ' + m.doc : '')), esc(m.porNome || '')]), 'Nenhuma movimentação nesta semana.'));
 }
 const smPartesOn = () => SM_PARTES.map(p => p[0]).filter(k => S.sm.partes[k]);

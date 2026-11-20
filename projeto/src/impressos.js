@@ -130,7 +130,7 @@ function ipTela() {
   const meta = ['<span>' + l.length + (l.length === 1 ? ' impresso' : ' impressos') + '</span>',
     pct >= 0.8 ? metaPl(ipMB(esp) + ' de 150 MB', pct >= 1 ? 'cr' : 'wa', 'alerta') : '<span title="Espaço que os impressos ocupam na nuvem (o banco grátis tem 1 GB para tudo)">' + ipMB(esp) + ' de 150 MB</span>'];
   const acoes = '<div class="ip-acs">' + (l.length ? '<button type="button" class="bt" data-act="ip-reserva" title="Baixar todos num arquivo ZIP">' + ic('caixa') + 'Reserva</button>' : '') +
-    (ipPode() ? '<button type="button" class="bt" data-act="ip-importar">' + ic('mais') + 'Importar</button><a class="bt pr ip-vt" href="' + IP_VERTICE + '" target="_blank" rel="noopener" data-act="ip-vertice">' + ic('externo') + 'Novo no Vértice</a>' : '') + '</div>';
+    (ipPode() ? '<button type="button" class="bt" data-act="ip-importar">' + ic('mais') + 'Importar</button><a class="bt pr ip-vt" href="' + IP_VERTICE + '" target="_blank" rel="noopener" data-app="docs" data-act="ip-vertice">' + ic('externo') + 'Novo no Vértice</a>' : '') + '</div>';
   let h = cabecalho({ titulo: 'Impressos', abaNome: 'Impressos', meta: meta, acoes: acoes });
   if (!l.length) return h + '<section class="pn"><div class="vazio">' + ic('impressora') + '<b>Nenhum impresso ainda.</b><span>' + (ipPode() ? 'Importe um PDF, uma foto, um arquivo do Excel ou do Word, ou um link. Fichas, custódias e formulários feitos no Vértice Docs também vão aparecer aqui.' : 'Quando o Administrador ou o Líder cadastrar fichas, custódias e formulários, eles aparecem aqui para imprimir.') + '</span></div></section>';
   setTimeout(ipPreBaixar, 600);
@@ -214,12 +214,16 @@ async function ipBaixar(id, qual) {
   try { const buf = await ipArquivo(d, qual), ext = qual === 'orig' ? (d.orig.formato === 'imagem' ? 'jpg' : d.orig.formato) : 'pdf'; ipSalvar(URL.createObjectURL(new Blob([buf], { type: IP_MIME[ext] || 'application/octet-stream' })), qual === 'orig' && d.orig.nomeArquivo ? d.orig.nomeArquivo : ipNomeArq(d, ext)); }
   catch (e) { aviso(e.message, 'erro'); }
 }
-/* v0.6.9: até a ponte com o Vértice (v0.6.11), "Abrir no Vértice" baixa o arquivo e abre o Vértice numa aba nova */
-async function ipNoVertice(id) {
+/* v0.6.22 (Ponte 1): "Abrir no Vértice" passa o Excel pela caixa de troca e abre o Vértice na janela de dentro, já com o arquivo.
+   Word ainda não abre no Vértice (o módulo Documento é a v0.7.0 dele): baixa o arquivo, como antes. "dados" = resumo do envio (kit). */
+async function ipNoVertice(id, dados) {
   const d = S.ipDocs.find(x => x.id === id); if (!d || !d.orig) return;
-  const w = window.open(IP_VERTICE, '_blank', 'noopener');
+  if (d.orig.formato === 'xlsx' && typeof ptAbrirNoVertice === 'function' && ptTem()) {
+    try { await ptAbrirNoVertice(d, dados); return; } catch (e) { console.error(e); aviso('Não deu para passar o arquivo ao Vértice: ' + (e.message || e) + '. Vou baixar o arquivo.', 'erro'); }
+  }
   await ipBaixar(id, 'orig');
-  aviso(w ? 'O arquivo foi baixado. No Vértice Docs, abra o arquivo baixado para editar.' : 'O arquivo foi baixado. Abra o Vértice Docs e, nele, o arquivo baixado.');
+  if (typeof jnAbrir === 'function') jnAbrir('docs');
+  aviso(d.orig.formato === 'docx' ? 'O Word ainda não abre direto no Vértice: o arquivo foi baixado para você abrir nele.' : 'O arquivo foi baixado. No Vértice Docs, abra o arquivo baixado para editar.');
 }
 
 /* ---------- Reserva: ZIP com todos (sem compressão, para abrir em qualquer computador) ---------- */

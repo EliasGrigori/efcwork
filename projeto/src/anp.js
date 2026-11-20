@@ -59,7 +59,7 @@ function anpNovaOk() {
   const p = Data.col('sv2_analise').add(doc);
   p.then(id => { if (!S.anl.some(x => x.id === id)) S.anl.push(Object.assign({ id: id }, doc));
     Audit.log({ acao: 'anl_abrir', entidade: 'analise', entidadeId: id, resumo: 'Abriu a ' + doc.numero + ' (' + ANP_ORIG[doc.origem] + '): ' + doc.titulo + ' · responsável ' + doc.respNome + ' até ' + fmtD(doc.prazo) });
-    if (doc.respId !== u.id) Notif.send({ nivel: 'aviso', titulo: 'Análise de problema para você', texto: doc.numero + ': ' + doc.titulo + ' — prazo ' + fmtD(doc.prazo) + '. Aberta por ' + u.nome + '.', para: [doc.respId], refTipo: 'analise', refId: id }).catch(() => {}); });
+    if (doc.respId !== u.id) Notif.send({ nivel: 'aviso', titulo: 'Análise de problema para você', texto: doc.numero + ': ' + doc.titulo + ' · prazo ' + fmtD(doc.prazo) + '. Aberta por ' + u.nome + '.', para: [doc.respId], refTipo: 'analise', refId: id }).catch(() => {}); });
   lcGrava([p], doc.numero + ' aberta.', () => p.then(id => anAbrir({ t: 'anp', id: id }))); /* abre por cima da tela em que a pessoa está (vindo do apontamento, fica nele) */
 }
 LC_FORM.anpCanc = f => { const x = anpDe(f.id); if (!x) return null;
@@ -68,7 +68,7 @@ function anpCancOk() {
   const f = S.fm, I = f && anInfo({ t: 'anp', id: f.id }); if (!I || !I.podeLider) return lcErro('Só o líder ★ cancela a análise.');
   const m = String(f.motivo || '').trim(); if (m.length < 5) return lcErro('Escreva o motivo.');
   if (!lcTravar()) return;
-  S.fm.volta = null; lcGrava([anGravar(I, { t: 'anp', id: f.id }, { situacao: 'cancelada', cancEm: hojeISO(), cancPor: S.user.nome, cancMotivo: m }, 'cancelada — ' + m, null)], I.x.numero + ' cancelada.', () => { if (S.gv) gvFechar(); });
+  S.fm.volta = null; lcGrava([anGravar(I, { t: 'anp', id: f.id }, { situacao: 'cancelada', cancEm: hojeISO(), cancPor: S.user.nome, cancMotivo: m }, 'cancelada · ' + m, null)], I.x.numero + ' cancelada.', () => { if (S.gv) gvFechar(); });
 }
 /* do apontamento: abre a análise que já existe ou começa uma nova com os dados dele */
 function anpDoApontAbre(apId) { const x = anpDoApont(apId); if (x) { anAbrir({ t: 'anp', id: x.id }); return; }

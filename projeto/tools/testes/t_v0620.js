@@ -33,7 +33,7 @@ const extra = async () => { const C = Data.col.bind(Data), ag = d => new Date(Da
   conf(!(await p.$('#gv [data-dd="bs:pri"]')), 'sugestão: a janela não pede prioridade');
   await p.evaluate(() => { DD_AO.bs('tipo', 'bug'); DD_AO.bs('pri', 'alta'); DD_AO.bs('area', 'login'); S.fm.titulo = 'Senha não aceita depois de trocar'; S.fm.desc = 'Troquei a senha e o app diz que está errada.'; gvDesenha(true); }); await p.waitForTimeout(250);
   await p.setInputFiles('#gv input[data-bsfoto-in]', { name: 'p.png', mimeType: 'image/png', buffer: PNG }); await p.waitForTimeout(700);
-  conf(!(await p.$('#gv [data-act="bs-foto-mk"]')), 'ITEM 95 reprovado: a imagem do relato novo não tem Marcar');
+  conf(!!(await p.$('#gv [data-act="bs-foto-mk"]')), 'item 49 (aprovado 20/11 08:25): a imagem do relato novo tem Marcar');
   await p.click('[data-act="bs-novo-ok"]'); await p.waitForTimeout(900);
   const nv = await p.evaluate(() => { const x = S.bugs.find(b => b.titulo === 'Senha não aceita depois de trocar'); return x && { id: x.id, n: x.numero, pr: x.prioridade, ar: x.area, tem: x.temFoto }; });
   const fd = nv && (await demo(p, 'sv2_bugs_foto')).find(x => x.id === nv.id);

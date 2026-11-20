@@ -39,7 +39,7 @@ function ktRemetente(u) {
   return { razao: String(e.razao || e.nome || '').trim(), nome: String(x.nome || (u === 'filial' ? 'Filial' : 'Matriz')).trim(), end: String(x.end || '').trim(), bairro: String(x.bairro || '').trim(), cep: String(x.cep || '').trim(), mun: String(x.mun || '').trim(), uf: String(x.uf || '').trim() };
 }
 const ktRemOk = r => !!(r.razao && r.end);
-const ktDestLinhas = i => !i ? [] : [i.end, i.bairro ? 'Bairro: ' + i.bairro : '', [i.cidade, i.uf].filter(Boolean).join(' – ') + (i.cep ? ' - CEP ' + i.cep : ''), i.contato].filter(x => String(x || '').trim());
+const ktDestLinhas = i => !i ? [] : [i.end, i.bairro ? 'Bairro: ' + i.bairro : '', [i.cidade, i.uf].filter(Boolean).join('/') + (i.cep ? ' - CEP ' + i.cep : ''), i.contato].filter(x => String(x || '').trim());
 
 /* ---------- Envio › Laboratórios ---------- */
 function ktLinhas() {
@@ -173,7 +173,7 @@ LC_FORM.ktPap = f => {
 /* rótulo: A4 em pé, uma folha por caixa (port do fxEtiqueta do EFClaudian, com os endereços vindos do cadastro) */
 function ktRotuloHTML(lab, unid, caixas, amostras) {
   const i = ktInfo(lab) || {}, r = ktRemetente(unid), n = Math.max(1, Math.min(20, Number(caixas) || 1)), pags = [];
-  const rem = '<b>' + esc(r.razao) + '</b>' + [r.end, r.bairro ? 'Bairro: ' + r.bairro : '', [r.mun, r.uf].filter(Boolean).join(' – ') + (r.cep ? ' - CEP ' + r.cep : '')].filter(x => x.trim()).map(x => '<div>' + esc(x) + '</div>').join('');
+  const rem = '<b>' + esc(r.razao) + '</b>' + [r.end, r.bairro ? 'Bairro: ' + r.bairro : '', [r.mun, r.uf].filter(Boolean).join('/') + (r.cep ? ' - CEP ' + r.cep : '')].filter(x => x.trim()).map(x => '<div>' + esc(x) + '</div>').join('');
   const dest = '<b>' + esc(i.nome || lab) + '</b>' + ktDestLinhas(i).map(x => '<div>' + esc(x) + '</div>').join('');
   for (let k = 1; k <= n; k++) pags.push('<section class="kt-pg"><div class="kt-etq"><div class="kt-b"><i>REMETENTE</i>' + rem + '</div><div class="kt-b kt-dest"><i>DESTINATÁRIO</i>' + dest + '</div>' +
     '<div class="kt-b"><i>CONTEÚDO</i>' + (i.conteudo ? '<div>' + esc(i.conteudo) + '</div>' : '') + '<div>' + (amostras ? esc(amostras) + ' amostra(s) · ' : '') + 'Caixa ' + k + ' de ' + n + '</div></div></div></section>');
@@ -208,7 +208,7 @@ async function ktImprimir() {
   if (rot) await ktImprimeHTML(ktRotuloHTML(lab, f.unid, caixas, amostras), 'Rótulo ' + lab + ' ' + k.split('|')[0]);
   for (const x of it.filter(y => y.d)) {
     const n = x.copias === 'porCaixa' ? caixas : Number(x.copias) || 1;
-    if (!x.d.pub) { await ipNoVertice(x.d.id); continue; }
+    if (!x.d.pub) { await ipNoVertice(x.d.id, typeof ptResumoEnvio === 'function' ? ptResumoEnvio(k, dados, x.d) : null); continue; }
     for (let c = 0; c < n; c++) { await ipImprimir(x.d.id); await new Promise(r => setTimeout(r, 400)); }
   }
   aviso('Papéis enviados para a impressão.');

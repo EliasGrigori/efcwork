@@ -129,7 +129,7 @@ function trEdOk() {
     p = Data.col('sv2_treinos').add(o);
     p.then(id => { if (!S.trn.some(y => y.id === id)) S.trn.push(Object.assign({ id: id }, o));
       Audit.log({ acao: 'treino_criar', entidade: 'treinamento', entidadeId: id, resumo: (o.situacao === 'realizado' ? 'Registrou' : 'Programou') + ' o treinamento ' + titulo + ' (' + fmtD(o.data) + ') · instrutor ' + instr });
-      if (o.situacao === 'programado' && ins && ins.id !== u.id) Notif.send({ nivel: 'aviso', titulo: 'Treinamento programado para você', texto: titulo + ' — ' + fmtD(o.data) + '. Programado por ' + u.nome + '.', para: [ins.id], refTipo: 'treinamento', refId: id }).catch(() => {}); });
+      if (o.situacao === 'programado' && ins && ins.id !== u.id) Notif.send({ nivel: 'aviso', titulo: 'Treinamento programado para você', texto: titulo + ' · ' + fmtD(o.data) + '. Programado por ' + u.nome + '.', para: [ins.id], refTipo: 'treinamento', refId: id }).catch(() => {}); });
   }
   const aberto = x ? x.id : null; f.volta = null;
   lcGrava([p], x ? 'Treinamento salvo.' : (o.situacao === 'realizado' ? 'Treinamento registrado.' : 'Treinamento programado.'), () => { if (aberto) trAbre(aberto); else if (S.gv) gvFecharSo(); });

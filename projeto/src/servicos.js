@@ -111,7 +111,7 @@ const Aprov = {
       const cp = S.users.filter(x => isPrincipal(x) && !x.bloqueado && x.id !== u.id && para.indexOf(x.id) < 0).map(x => x.id);
       if (cp.length) await Notif.send({ nivel: 'info', titulo: 'Pedido do almoxarifado', texto: u.nome + ' pediu: ' + p.titulo + ' · aguarda ' + para.map(nomeDe).join(', '), para: cp, refTipo: 'aprovacao', refId: id }).catch(() => {});
     }
-    Audit.log({ acao: 'pedir_autorizacao', entidade: 'aprovacao', entidadeId: id, resumo: 'Pediu autorização: ' + p.titulo + ' — para ' + para.map(nomeDe).join(', '), depois: { titulo: p.titulo, descricao: p.descricao || '', para: para.map(nomeDe).join(', ') } });
+    Audit.log({ acao: 'pedir_autorizacao', entidade: 'aprovacao', entidadeId: id, resumo: 'Pediu autorização: ' + p.titulo + ' · para ' + para.map(nomeDe).join(', '), depois: { titulo: p.titulo, descricao: p.descricao || '', para: para.map(nomeDe).join(', ') } });
     return id;
   },
   podeDecidir(a) { const u = S.user; return !!u && a.status === 'pendente' && ((isSup(u) && (a.paraIds || []).indexOf(u.id) >= 0) || isPrincipal(u)); },
@@ -129,8 +129,8 @@ const Aprov = {
     const dec = { por: S.user.id, nome: S.user.nome, perfil: S.user.perfil, ts: nowISO(), motivo: motivo || '' };
     try { await Data.col('sv2_aprov').update(id, { status: ok ? 'aprovado' : 'reprovado', decisao: dec }); } catch (e) { aviso(svErro(e), 'erro'); return false; }
     if (ok && a.payload) { try { await APROV_APLICA[a.tipo](a.payload, Object.assign({ id: id }, a)); } catch (e) { aviso('Aprovado, mas não foi aplicado: ' + (e.message || svErro(e)), 'erro'); } }
-    Notif.send({ nivel: ok ? 'info' : 'aviso', titulo: ok ? 'Autorização aprovada' : 'Autorização reprovada', texto: S.user.nome + (ok ? ' aprovou: ' : ' reprovou: ') + a.titulo + (motivo ? ' — ' + motivo : ''), para: [a.solicitanteId], refTipo: 'aprovacao', refId: id }).catch(() => {});
-    Audit.log({ acao: ok ? 'aprovar' : 'reprovar', entidade: 'aprovacao', entidadeId: id, resumo: (ok ? 'Aprovou' : 'Reprovou') + ' o pedido de ' + a.solicitanteNome + ': ' + a.titulo + (motivo ? ' — motivo: ' + motivo : ''), antes: { status: 'pendente' }, depois: { status: ok ? 'aprovado' : 'reprovado', decidido_por: S.user.nome, motivo: motivo || '' }, autorizadoPor: { id: S.user.id, nome: S.user.nome } });
+    Notif.send({ nivel: ok ? 'info' : 'aviso', titulo: ok ? 'Autorização aprovada' : 'Autorização reprovada', texto: S.user.nome + (ok ? ' aprovou: ' : ' reprovou: ') + a.titulo + (motivo ? ' · ' + motivo : ''), para: [a.solicitanteId], refTipo: 'aprovacao', refId: id }).catch(() => {});
+    Audit.log({ acao: ok ? 'aprovar' : 'reprovar', entidade: 'aprovacao', entidadeId: id, resumo: (ok ? 'Aprovou' : 'Reprovou') + ' o pedido de ' + a.solicitanteNome + ': ' + a.titulo + (motivo ? ' · motivo: ' + motivo : ''), antes: { status: 'pendente' }, depois: { status: ok ? 'aprovado' : 'reprovado', decidido_por: S.user.nome, motivo: motivo || '' }, autorizadoPor: { id: S.user.id, nome: S.user.nome } });
     aviso(ok ? 'Aprovado.' : 'Reprovação registrada.');
     return true;
   }

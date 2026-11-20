@@ -99,7 +99,7 @@ const lgPendentes = e => S.aprov.filter(a => a.status === 'pendente' && a.tipo =
 const lgPrecisaPedir = () => !alSup();
 /* monta a mudança a partir do pedido e do equipamento como ele está AGORA (na hora de aplicar) */
 function lgMontar(p, e) {
-  const quem = p.porNome ? ' (pedido de ' + p.porNome + ')' : '', por = p.motivo ? ' — ' + p.motivo : '';
+  const quem = p.porNome ? ' (pedido de ' + p.porNome + ')' : '', por = p.motivo ? ' · ' + p.motivo : '';
   if (p.acao === 'lg_guardar') { const patch = { situacao: 'armazenado', guardadoEm: hojeISO(), posicao: p.lugar, posGuarda: p.lugar }; if (!e.posUso && e.posicao && !lgGuardado(e)) patch.posUso = lgNome(e.posicao);
     return { patch: patch, ev: { tipo: 'guardar', texto: 'Guardado em ' + p.lugar + por + quem, antes: { situacao: e.situacao || 'ativo', posicao: e.posicao || '' } }, resumo: 'guardado em ' + p.lugar + quem, ok: eqNomeC(e) + ' guardado em ' + p.lugar + '.' }; }
   if (p.acao === 'lg_usar') { const pb = lgCalProblema(e), patch = { situacao: pb ? 'restricao' : 'ativo', guardadoEm: '', posicao: p.lugar, posUso: p.lugar }; if (!e.posGuarda && e.posicao && lgGuardado(e)) patch.posGuarda = lgNome(e.posicao);
@@ -118,7 +118,7 @@ async function lgAplicar(p, aprov) {
   const r = lgMontar(Object.assign({}, p, aprov ? { porNome: aprov.solicitanteNome } : {}), e);
   const ev = Object.assign({ ts: nowISO(), porId: aprov ? aprov.solicitanteId : S.user.id, porNome: aprov ? aprov.solicitanteNome : S.user.nome, data: hojeISO() }, r.ev, aprov ? { confirmadoPor: S.user.nome, aprovId: aprov.id } : {});
   await Data.col('sv2_alm_equip').update(e.id, Object.assign({}, r.patch, { hist: (e.hist || []).concat([ev]), atualizadoEm: nowISO() }));
-  Audit.log({ acao: 'equip_' + r.ev.tipo, entidade: 'almox_equip', entidadeId: e.id, resumo: eqNomeC(e) + ': ' + r.resumo + (aprov ? ' · confirmado por ' + S.user.nome : '') + (p.motivo ? ' — ' + p.motivo : ''), depois: r.patch, autorizadoPor: aprov ? S.user.nome : null });
+  Audit.log({ acao: 'equip_' + r.ev.tipo, entidade: 'almox_equip', entidadeId: e.id, resumo: eqNomeC(e) + ': ' + r.resumo + (aprov ? ' · confirmado por ' + S.user.nome : '') + (p.motivo ? ' · ' + p.motivo : ''), depois: r.patch, autorizadoPor: aprov ? S.user.nome : null });
   if (r.pb && !aprov) { const sp = supsOf(S.user).filter(id => id !== S.user.id); if (sp.length) Notif.send({ nivel: 'aviso', titulo: 'Em uso com restrição: ' + eqNomeC(e), texto: S.user.nome + ' pôs em uso um equipamento guardado: ' + r.pb + '. Lugar: ' + p.lugar + '.', para: sp, refTipo: 'equip', refId: e.id }).catch(() => {}); }
   return r.ok;
 }

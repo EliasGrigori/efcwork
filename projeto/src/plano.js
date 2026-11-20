@@ -131,7 +131,7 @@ async function ppLancOk() {
       if (!k) continue;
       if (p.id && !p._rz) ops.push({ col: 'sv2_prog', tipo: 'update', id: p.id, dados: { coletadaEm: d.data, coletadaPor: S.user.nome, coletadaReg: nowISO(), coletor: coletor, prof: prof, estadio: estadio } });
       const kk = k, dir = !p.id || !!p._rz;
-      logs.push(() => Audit.log({ acao: dir ? 'coletado_plano' : 'coletado_programacao', entidade: dir ? 'coleta' : 'programacao', entidadeId: p.id || p.talhao, resumo: 'Coletado' + (dir ? ' (plano ' + (x.r.nome || x.r.tipo) + ')' : '') + ': ' + p.tipo + ' ' + p.talhao + ' em ' + fmtD(d.data) + (coletor ? ' por ' + coletor : '') + ' — ' + kk + ' amostra(s)', depois: { data: d.data, coletor: coletor, prof: prof, estadio: estadio, amostras: kk, plano: x.r.id } }));
+      logs.push(() => Audit.log({ acao: dir ? 'coletado_plano' : 'coletado_programacao', entidade: dir ? 'coleta' : 'programacao', entidadeId: p.id || p.talhao, resumo: 'Coletado' + (dir ? ' (plano ' + (x.r.nome || x.r.tipo) + ')' : '') + ': ' + p.tipo + ' ' + p.talhao + ' em ' + fmtD(d.data) + (coletor ? ' por ' + coletor : '') + ' · ' + kk + ' amostra(s)', depois: { data: d.data, coletor: coletor, prof: prof, estadio: estadio, amostras: kk, plano: x.r.id } }));
       n += k;
     }
     if (!ops.length) return lcErro('Nada novo para gravar.');
@@ -195,7 +195,7 @@ function ppAjustes(r, p, ar) {
   const lib = (r.liberadas && r.liberadas[p.k]) || {}, libsT = Object.keys(lib).sort((a, b) => String(lib[b].ts || '').localeCompare(String(lib[a].ts || ''))), pend = ppRecPend(r.id, p.k);
   const libP = libsT.filter(a => rzLibSit(lib[a]) === 'pendente'), libs = libsT.filter(a => rzLibSit(lib[a]) !== 'pendente');
   const cols = ar.filter(x => x.k === 'c' && !pend.some(y => y.refId === ppRecRef(r.id, p.k, x.a)));
-  const linhas = pend.map(y => { const a = String(y.refId).split(':').pop(); return '<tr><td>' + esc(a) + '</td><td class="l">' + esc(String(y.descricao || '').split(' — ').slice(1).join(' — ')) + '</td><td>' + esc(y.solicitanteNome || '') + '<small>aguardando confirmação</small></td><td>' + esc(fmtD(String(y.ts).slice(0, 10)).slice(0, 5)) + '</td></tr>'; })
+  const linhas = pend.map(y => { const a = String(y.refId).split(':').pop(); return '<tr><td>' + esc(a) + '</td><td class="l">' + esc(String(y.descricao || '').split(/ — | · /).slice(1).join(' · ')) + '</td><td>' + esc(y.solicitanteNome || '') + '<small>aguardando confirmação</small></td><td>' + esc(fmtD(String(y.ts).slice(0, 10)).slice(0, 5)) + '</td></tr>'; })
     .concat(libs.map(a => { const l = lib[a] || {}; return '<tr' + (l.recusadaEm ? ' class="pp-rcz"' : '') + '><td>' + esc(a) + '</td><td class="l">' + esc(l.motivo || '') + (l.recusadaEm ? '<small>recusada' + (l.recusaMotivo ? ': ' + esc(l.recusaMotivo) : '') + '</small>' : '') + '</td><td>' + esc(l.por || '') + (l.recusadaEm ? '<small>recusada por ' + esc(l.recusadaPor || '') + '</small>' : l.aprovadoPor ? '<small>confirmado por ' + esc(l.aprovadoPor) + '</small>' : '') + '</td><td>' + (l.ts ? esc(fmtD(String(l.ts).slice(0, 10)).slice(0, 5)) : '') + '</td></tr>'; }));
   const rec = cad('Recoletas', esc(p.nome), (libP.length ? ppLibPendHTML(r, p, libP.map(a => ({ a: a, l: lib[a], ja: (rzColetasDe(r, p, a)[0] || {}).data || '' })), !fch) : '') +
     (coPode() && !fch ? (cols.length ? lcBl('Liberar recoleta de', ddHTML('pp:rec:' + r.id, '', [['', 'Escolha a área coletada']].concat(cols.map(x => [x.a, x.a + ' · coletada ' + fmtD(x.d).slice(0, 5)])))) : '<p class="pp-nada">Nenhuma área coletada para liberar.</p>') + (sup ? '' : '<p class="pp-nota">O pedido vai para o Líder ★ ou o Administrador confirmar.</p>') : '') +
@@ -280,7 +280,7 @@ async function ppRecGrava(pl, ped) {
   const r = ppPlano(pl.rid); if (!r) throw new Error('Plano não encontrado.');
   const up = {}; up['liberadas.' + pl.pk + '.' + pl.area] = { motivo: pl.motivo, por: ped ? ped.solicitanteNome : S.user.nome, porId: ped ? (ped.solicitanteId || '') : S.user.id, porSup: !ped && isSup(S.user), ts: nowISO(), aprovadoPor: ped ? S.user.nome : '', aprovadoPorId: ped ? S.user.id : '', aprovadoEm: ped ? nowISO() : '' };
   await Data.col('sv2_rodizio').update(r.id, up);
-  Audit.log({ acao: 'recoleta_rodizio', entidade: 'rodizio', entidadeId: r.id, resumo: 'Recoleta liberada: ' + pl.area + ' no ' + pl.pk + ' (' + (r.nome || r.tipo) + ') — ' + pl.motivo + (ped ? ' · pedido de ' + ped.solicitanteNome : '') });
+  Audit.log({ acao: 'recoleta_rodizio', entidade: 'rodizio', entidadeId: r.id, resumo: 'Recoleta liberada: ' + pl.area + ' no ' + pl.pk + ' (' + (r.nome || r.tipo) + ') · ' + pl.motivo + (ped ? ' · pedido de ' + ped.solicitanteNome : '') });
 }
 APROV_APLICA.recoleta_plano = (pl, ped) => ppRecGrava(pl, ped);
 async function ppRecOk() {
@@ -292,7 +292,7 @@ async function ppRecOk() {
   if (!lcTravar()) return;
   if (ppSup()) { try { await ppRecGrava(pl, null); lcFim(); aviso('Recoleta liberada: ' + a.a + '.'); } catch (e) { lcErro(svErro(e)); } return; }
   if (ppRecPend(x.r.id, x.p.k).some(y => y.refId === ppRecRef(x.r.id, x.p.k, a.a))) return lcErro('Já existe um pedido de recoleta de ' + a.a + ' esperando.');
-  const id = await Aprov.pedir({ tipo: 'recoleta_plano', titulo: 'Recoleta de ' + a.a + ' (' + (x.r.nome || x.r.tipo) + ')', descricao: x.p.nome + ' — ' + motivo, refTipo: 'rodizio', refId: ppRecRef(x.r.id, x.p.k, a.a), payload: pl });
+  const id = await Aprov.pedir({ tipo: 'recoleta_plano', titulo: 'Recoleta de ' + a.a + ' (' + (x.r.nome || x.r.tipo) + ')', descricao: x.p.nome + ' · ' + motivo, refTipo: 'rodizio', refId: ppRecRef(x.r.id, x.p.k, a.a), payload: pl });
   if (id) { lcFim(); aviso('Pedido de recoleta enviado.'); } else lcErro('Não deu para enviar o pedido.');
 }
 DD_AO.pp = (k, v) => { if (k.indexOf('rec:') === 0 && v && coPode()) lcAbrir({ k: 'pprec', rid: k.slice(4), area: v, mot: '', det: '' }); };
@@ -325,7 +325,7 @@ async function ppLibDecide(k, sim, motivo) {
   else { up[base + 'recusadaPor'] = S.user.nome; up[base + 'recusadaPorId'] = S.user.id; up[base + 'recusadaEm'] = agora; up[base + 'recusaMotivo'] = motivo; }
   try {
     await Data.col('sv2_rodizio').update(rid, up);
-    Audit.log({ acao: sim ? 'aprovar_recoleta_rodizio' : 'recusar_recoleta_rodizio', entidade: 'rodizio', entidadeId: rid, resumo: (sim ? 'Aprovou' : 'Recusou') + ' a nova coleta de ' + a + ' no ' + pk + ' (' + (r.nome || r.tipo) + ')' + (l.por ? ', pedida por ' + l.por : '') + (sim ? '' : ' — ' + motivo) });
+    Audit.log({ acao: sim ? 'aprovar_recoleta_rodizio' : 'recusar_recoleta_rodizio', entidade: 'rodizio', entidadeId: rid, resumo: (sim ? 'Aprovou' : 'Recusou') + ' a nova coleta de ' + a + ' no ' + pk + ' (' + (r.nome || r.tipo) + ')' + (l.por ? ', pedida por ' + l.por : '') + (sim ? '' : ' · ' + motivo) });
     const u = rzLibUsr(l); if (u && u.id !== S.user.id) Notif.send({ nivel: 'info', titulo: 'Nova coleta de ' + a + (sim ? ' aprovada' : ' recusada'), texto: (r.nome || r.tipo) + ' · ' + (sim ? 'pode programar e coletar de novo.' : 'vale a coleta já feita. Motivo: ' + motivo), para: [u.id], refTipo: 'rodizio', refId: rid });
     aviso(sim ? 'Nova coleta de ' + a + ' aprovada.' : 'Nova coleta de ' + a + ' recusada.'); return true;
   } catch (e) { aviso(svErro(e), 'erro'); return false; }

@@ -83,7 +83,7 @@ const abre = async (p, id) => { await p.evaluate(() => { location.hash = '#/cole
   await p.click('[data-act="co-env-ok"]'); await p.waitForTimeout(100);
   conf(/Marque pelo menos/.test(await msg(p)), 'sem marcar: "Marque pelo menos uma amostra"');
   await p.click('#gv [data-act="co-todas"]'); await p.waitForTimeout(100);
-  conf(/2 marcada/.test(await p.textContent('#co-n')) && /BIOAGRI: 1 · IBRA: 1 — cada laboratório vira uma remessa/.test(await p.textContent('#gv')), 'marcar todas: 2, e avisa que cada laboratório vira uma remessa');
+  conf(/2 marcada/.test(await p.textContent('#co-n')) && /BIOAGRI: 1 · IBRA: 1 · cada laboratório vira uma remessa/.test(await p.textContent('#gv')), 'marcar todas: 2, e avisa que cada laboratório vira uma remessa');
   const ontem4 = await p.evaluate(() => addDias(hojeISO(), -4));
   await p.fill('#gv [data-fm="data"]', ontem4); await p.dispatchEvent('#gv [data-fm="data"]', 'change'); await p.waitForTimeout(100); await p.click('[data-act="co-env-ok"]'); await p.waitForTimeout(100);
   conf(/antes da coleta/.test(await msg(p)), 'envio antes da data da coleta: recusado');

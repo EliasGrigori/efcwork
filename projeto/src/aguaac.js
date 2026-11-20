@@ -143,7 +143,7 @@ async function acPdf(id) {
     return '<tr><td><b>' + (e.final ? 'Conclusão' : 'Etapa ' + (i + 1)) + '</b></td><td>' + esc(fmtDT(e.ts)) + '</td><td>' + esc(e.porNome || '') + '</td><td>' + esc(e.texto) + (acFotosFora(a) && (e.fotos || []).length ? '<br><i>' + e.fotos.length + ' foto(s) eliminada(s) depois da conclusão</i>' : '') + (fs.length ? '<div class="ac-ifs">' + fs.join('') + '</div>' : '') + '</td></tr>'; }).join('');
   Audit.log({ acao: 'imprimir', entidade: 'coleta_agua', entidadeId: id, resumo: 'PDF da ação corretiva da água ' + c.pontoNome });
   acImprimir('<section class="au-fl au-fli">' + acCab('Ação corretiva · água') + '<div class="au-ikv ac-ikv">' + kv.map(x => '<span><small>' + esc(x[0]) + '</small>' + esc(x[1]) + '</span>').join('') + '</div>' +
-    '<p class="au-itx"><b>O que fazer:</b> ' + esc(a.orientacao || '') + '</p><h3 class="ac-ih">Tratativas</h3>' + (et ? '<table class="au-itb ac-itb ac-iet"><colgroup><col style="width:22mm"><col style="width:32mm"><col style="width:40mm"><col></colgroup><thead><tr><th>Etapa</th><th>Data</th><th>Por</th><th>O que foi feito</th></tr></thead><tbody>' + et + '</tbody></table>' : '<p>Nenhuma etapa registrada.</p>') + '</section>', 'Ação corretiva — água · ' + c.pontoNome);
+    '<p class="au-itx"><b>O que fazer:</b> ' + esc(a.orientacao || '') + '</p><h3 class="ac-ih">Tratativas</h3>' + (et ? '<table class="au-itb ac-itb ac-iet"><colgroup><col style="width:22mm"><col style="width:32mm"><col style="width:40mm"><col></colgroup><thead><tr><th>Etapa</th><th>Data</th><th>Por</th><th>O que foi feito</th></tr></thead><tbody>' + et + '</tbody></table>' : '<p>Nenhuma etapa registrada.</p>') + '</section>', 'Ação corretiva · água · ' + c.pontoNome);
 }
 
 /* ---------- relatório de água por local ---------- */
@@ -173,7 +173,7 @@ function agrOk() {
   Audit.log({ acao: 'imprimir', entidade: 'relatorio_agua', entidadeId: f.de + '_' + f.ate, resumo: 'Relatório de água por local de ' + fmtD(f.de) + ' a ' + fmtD(f.ate) + ' (' + cs.length + ' coletas)' });
   const per = 'de ' + fmtD(f.de) + ' a ' + fmtD(f.ate) + (f.av === '0' ? ' · sem as avulsas' : '');
   lcFim();
-  acImprimir('<section class="au-fl au-fli">' + acCab('Água por local') + '<p class="au-itx">Período ' + esc(per) + '</p>' + (cs.length ? resumo + det : '<p>Nenhuma coleta de água no período.</p>') + '</section>', 'Água por local — ' + fmtD(f.de) + ' a ' + fmtD(f.ate));
+  acImprimir('<section class="au-fl au-fli">' + acCab('Água por local') + '<p class="au-itx">Período ' + esc(per) + '</p>' + (cs.length ? resumo + det : '<p>Nenhuma coleta de água no período.</p>') + '</section>', 'Água por local · ' + fmtD(f.de) + ' a ' + fmtD(f.ate));
 }
 
 /* ======================= eventos ======================= */

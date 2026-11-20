@@ -58,7 +58,7 @@ async function abre(br, o) {
   await fontes(ctx);
   const p = await ctx.newPage(); p._er = [];
   p.on('pageerror', e => p._er.push(String(e).slice(0, 300)));
-  await p.goto('file://' + path.join(o.raiz, o.arq || 'dist/index.html') + '?demo=1'); await p.waitForTimeout(700);
+  await p.goto(o.url ? o.url + '?demo=1' : 'file://' + path.join(o.raiz, o.arq || 'dist/index.html') + '?demo=1'); /* v0.6.22: o.url para abrir por um servidor (janelas no mesmo endereço) */ await p.waitForTimeout(700);
   if (await p.$('#en-senha2')) {
     await p.fill('#en-nome', 'Joana Silva'); await p.fill('#en-login', 'joana.silva'); await p.fill('#en-senha', 'senha1234'); await p.fill('#en-senha2', 'senha1234');
     await p.click('[data-form="en-primeiro"] button[type=submit]'); await p.waitForTimeout(900);

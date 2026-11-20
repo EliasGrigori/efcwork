@@ -254,7 +254,7 @@ async function cgConcluir() { CG_EQ_COP = {};
     for (const a of pr.difs) {
       const c = pr.ct[a.k], r = cgRs(inv, a.k);
       if (a.parte !== 'mat') {
-        const e = cgEqCopia(a.e.id); if (!e) continue; const mot = 'Contagem ' + inv.numero + ': ' + (r.tipo === 'nao_achado' ? 'não encontrado' : r.tipo) + (r.obs ? ' — ' + r.obs : '');
+        const e = cgEqCopia(a.e.id); if (!e) continue; const mot = 'Contagem ' + inv.numero + ': ' + (r.tipo === 'nao_achado' ? 'não encontrado' : r.tipo) + (r.obs ? ' · ' + r.obs : '');
         let patch = {}, ev;
         if (a.parte === 'vid') { /* o total do laboratório muda pela diferença; o lugar contado fica com o que foi contado */
           const qn = Object.assign({}, e.qtdLocal || {}), d = cgDif(c), esp = Number((c.esp || {}).total) || 0; qn[a.vloc] = Math.max(0, alR((Number(qn[a.vloc]) || 0) + d)); patch = { qtdLocal: qn };
@@ -274,7 +274,7 @@ async function cgConcluir() { CG_EQ_COP = {};
         for (const x of linhas) {
           if (x.d < 0) {
             const q = Math.min(-x.d, Math.max(0, x.l.saldo)); if (!(q > 0)) continue;
-            await Data.col('sv2_alm_mov').set(uid(), { tipo: 'saida', itemId: i.id, itemNome: i.nome, lotRef: x.l.id, lote: x.l.lote, validade: x.l.validade, qtd: alR(q), preco: x.l.preco, motivo: r.motivo, obs: 'Saída esquecida, achada na contagem ' + inv.numero + (r.obs ? ' — ' + r.obs : ''), data: r.data, grupo: grupo, criadoEm: nowISO(), por: S.user.id, porNome: S.user.nome,
+            await Data.col('sv2_alm_mov').set(uid(), { tipo: 'saida', itemId: i.id, itemNome: i.nome, lotRef: x.l.id, lote: x.l.lote, validade: x.l.validade, qtd: alR(q), preco: x.l.preco, motivo: r.motivo, obs: 'Saída esquecida, achada na contagem ' + inv.numero + (r.obs ? ' · ' + r.obs : ''), data: r.data, grupo: grupo, criadoEm: nowISO(), por: S.user.id, porNome: S.user.nome,
               retroativa: { invId: inv.id, contagem: inv.numero, lancadaEm: hojeISO() }, erro: { tipo: 'saida_nao_lancada', responsavelId: r.respId || '', responsavelNome: r.respNome || '', reclamacao: r.reclamacao || '', registradoPor: S.user.nome, ts: nowISO() } });
           } else await Data.col('sv2_alm_mov').set(uid(), { tipo: 'ajuste', itemId: i.id, itemNome: i.nome, lotRef: x.l.id, lote: x.l.lote || '', validade: x.l.validade || '', qtd: x.d, preco: x.l.preco || 0, motivo: 'Contagem ' + inv.numero + ': sobra no lote', data: hojeISO(), criadoEm: nowISO(), por: S.user.id, porNome: S.user.nome });
         }
@@ -282,7 +282,7 @@ async function cgConcluir() { CG_EQ_COP = {};
         if (r.respId && r.respId !== S.user.id) Notif.send({ nivel: 'aviso', titulo: 'Saída não lançada: ' + i.nome, texto: 'Na contagem ' + inv.numero + ', faltou ' + alQ(-cgDif(c)) + ' ' + (i.un || '') + ' de ' + i.nome + '. A saída de ' + fmtD(r.data) + ' foi lançada agora e ficou registrada como erro de lançamento' + (r.reclamacao ? '. Reclamação de ' + S.user.nome + ': ' + r.reclamacao : '') + '.', para: [r.respId], refTipo: 'inventario', refId: inv.id }).catch(() => {});
       } else {
         const ls = linhas.map(x => ({ lotRef: x.l.id, lote: x.l.lote, validade: x.l.validade, qtd: x.d, preco: x.l.preco }));
-        if (ls.length) { await lcAplicar({ acao: 'ajuste', refId: i.id, linhas: ls, motivo: 'Contagem ' + inv.numero + ': ' + r.tipo + (r.obs ? ' — ' + r.obs : ''), data: hojeISO() }, null); res.ajustes.push(i.nome + ' ' + ls.map(l => (l.qtd > 0 ? '+' : '') + alQ(l.qtd)).join(' ') + ' (' + r.tipo + ')'); }
+        if (ls.length) { await lcAplicar({ acao: 'ajuste', refId: i.id, linhas: ls, motivo: 'Contagem ' + inv.numero + ': ' + r.tipo + (r.obs ? ' · ' + r.obs : ''), data: hojeISO() }, null); res.ajustes.push(i.nome + ' ' + ls.map(l => (l.qtd > 0 ? '+' : '') + alQ(l.qtd)).join(' ') + ' (' + r.tipo + ')'); }
       }
     }
     /* equipamento que estava marcado "não encontrado" e foi achado: tira a marca */
@@ -327,7 +327,7 @@ LC_FORM.cgcanc = f => { const inv = cgAberta(); if (!inv) return null; return { 
 async function cgCancOk() {
   const f = S.fm, inv = cgAberta(); if (!inv || !alSup()) return; const m = String(f.motivoG || '').trim(); if (m.length < 5) return lcErro('Escreva o motivo.');
   if (!lcTravar()) return;
-  try { await Data.col('sv2_alm_inv').update(inv.id, { situacao: 'cancelado', canceladoEm: nowISO(), canceladoPor: S.user.nome, canceladoMotivo: m }); Audit.log({ acao: 'inventario_cancelar', entidade: 'almox_inv', entidadeId: inv.id, resumo: 'Cancelou a ' + inv.numero + ' — ' + m }); lcFim(); aviso(inv.numero + ' cancelada.'); }
+  try { await Data.col('sv2_alm_inv').update(inv.id, { situacao: 'cancelado', canceladoEm: nowISO(), canceladoPor: S.user.nome, canceladoMotivo: m }); Audit.log({ acao: 'inventario_cancelar', entidade: 'almox_inv', entidadeId: inv.id, resumo: 'Cancelou a ' + inv.numero + ' · ' + m }); lcFim(); aviso(inv.numero + ' cancelada.'); }
   catch (e) { lcErro(svErro(e)); }
 }
 function cgAbreResumo(id) {
@@ -336,7 +336,7 @@ function cgAbreResumo(id) {
     const erros = S.almMov.filter(m => m.retroativa && m.retroativa.invId === id && !m.anulada);
     return { ico: 'lista', sub: (x.tipo === 'contagem' ? 'Contagem' : 'Inventário') + ' · ' + (x.local || ''), titulo: x.numero, pill: alPill(x.situacao === 'concluido' ? 'Concluída' : 'Cancelada', x.situacao === 'concluido' ? 'ok' : ''),
       corpo: (x.situacao === 'concluido' ? gvNums([[(r.contados || 0) + '/' + (r.total || 0), 'contados'], [String(r.difs || 0), 'diferenças', r.difs ? 'wa' : ''], [String(r.erros || 0), 'erros de lançamento', r.erros ? 'cr' : '']]) : '') +
-        gvCampos([['Aberta', (x.porNome || '') + ' · ' + fmtDT(x.abertoEm)], ['Quem contou', x.contadorNome], ['Bateram na recontagem', r.bateramNaRecontagem ? String(r.bateramNaRecontagem) : ''], ['Concluída', x.concluidoEm ? (x.concluidoPor || '') + ' · ' + fmtDT(x.concluidoEm) : ''], ['Cancelada', x.situacao === 'cancelado' ? (x.canceladoPor || '') + ' — ' + (x.canceladoMotivo || '') : '']]) +
+        gvCampos([['Aberta', (x.porNome || '') + ' · ' + fmtDT(x.abertoEm)], ['Quem contou', x.contadorNome], ['Bateram na recontagem', r.bateramNaRecontagem ? String(r.bateramNaRecontagem) : ''], ['Concluída', x.concluidoEm ? (x.concluidoPor || '') + ' · ' + fmtDT(x.concluidoEm) : ''], ['Cancelada', x.situacao === 'cancelado' ? (x.canceladoPor || '') + ' · ' + (x.canceladoMotivo || '') : '']]) +
         ((r.ajustes || []).length ? '<p class="gv-h">O que foi lançado</p>' + gvLinha(r.ajustes.map(t => [t, ''])) : '') +
         (erros.length ? '<p class="gv-h">Erros de lançamento</p>' + gvLinha(erros.map(m => [alQ(m.qtd) + ' ' + m.itemNome + ' · saída de ' + fmtD(m.data), ((m.erro || {}).responsavelNome || 'responsável não informado') + ((m.erro || {}).reclamacao ? ' · "' + m.erro.reclamacao + '"' : '')])) : '') };
   });

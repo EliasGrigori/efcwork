@@ -225,7 +225,7 @@ LC_FORM.coenv = f => {
     '<div class="cb-selh"><p class="gv-h">1 · Amostras · <span id="co-n">' + sel.length + ' marcada(s)</span></p>' + ddHTML('lc:comat', f.mat || '', [['', 'Todos os materiais']].concat(CO_MAT)) + '</div>' +
     '<div class="co-selb"><button type="button" class="bt lk" data-act="co-todas">Marcar as ' + l.length + ' da lista</button><button type="button" class="bt lk" data-act="co-limpa">Limpar</button></div>' +
     '<div class="fm-pk"><div class="fm-pkl co-pkl">' + (l.length ? l.map(c => { const on = !!f.sel[c.id]; return '<button type="button" class="fm-pki cb-ck' + (on ? ' on' : '') + '" data-act="co-ck" data-id="' + esc(c.id) + '" aria-pressed="' + on + '"><span class="cb-box">' + (on ? ic('ok') : '') + '</span><span><b>' + esc(coNome(c)) + '</b><small>' + esc([CO_TXT[c.tipo], c.sigla || c.analiseNome, c.lab, 'coleta ' + fmtD(c.data)].filter(Boolean).join(' · ')) + '</small></span></button>'; }).join('') : '<p class="cg-ob">Nenhuma amostra para enviar' + (f.mat ? ' deste material' : '') + '.</p>') + '</div></div>' +
-    (sel.length ? '<p class="cg-ob">' + Object.keys(porLab).sort().map(x => esc(x) + ': ' + porLab[x]).join(' · ') + (Object.keys(porLab).length > 1 ? ' — cada laboratório vira uma remessa' : '') + '</p>' : '') +
+    (sel.length ? '<p class="cg-ob">' + Object.keys(porLab).sort().map(x => esc(x) + ': ' + porLab[x]).join(' · ') + (Object.keys(porLab).length > 1 ? ' · cada laboratório vira uma remessa' : '') + '</p>' : '') +
     '<p class="gv-h">2 · Envio</p><div class="fm-g">' + lcBl('Data do envio', lcData('data', f.data, true)) + lcBl('Laboratório', ddHTML('lc:colab', f.lab || '', [['', 'O de cada amostra']].concat(labs.map(x => [x, x])))) + '</div>' +
     (f.data && f.data < hojeISO() ? lcAv('Data anterior a hoje: ' + (isSup(S.user) ? 'o Administrador e os superiores são avisados.' : 'fica aguardando a confirmação do Líder ★ ou do Administrador; as amostras continuam como não enviadas até lá.'), 'wa') : '') +
     '<p class="gv-h">3 · NF, cupom e rastreio <small>pode deixar para depois</small></p><div class="fm-g">' + lcBl('NF do envio', lcIn('nf', f.nf, ' placeholder="Correios, se o pacote foi com nota"')) + lcBl('Código de rastreio', lcIn('rastreio', f.rastreio, ' placeholder="Ex.: AB123456789BR" autocapitalize="characters"')) + '</div>' +
@@ -307,7 +307,7 @@ async function coAnxOk() {
       const o = {}; if (nf !== (c.nfEnvio || '')) o.nfEnvio = nf; if (ras !== (c.rastreio || '')) o.rastreio = ras; if (obs !== (c.obsEnvio || '')) o.obsEnvio = obs; if (foto) o.cupomFoto = foto;
       if (!Object.keys(o).length) continue; const antes = {}; Object.keys(o).forEach(k => { antes[k] = c[k] == null ? '' : c[k]; });
       await Data.col('sv2_coletas').update(c.id, o); n++;
-      Audit.log({ acao: 'envio_coleta', entidade: 'coleta', entidadeId: c.id, resumo: 'Envio de ' + fmtD(c.envio) + ' · ' + (c.lab || '') + ': ' + Object.keys(o).map(k => ({ nfEnvio: 'NF', rastreio: 'rastreio', obsEnvio: 'observação', cupomFoto: 'cupom' }[k])).join(', ') + ' — ' + coNome(c), antes: antes, depois: o });
+      Audit.log({ acao: 'envio_coleta', entidade: 'coleta', entidadeId: c.id, resumo: 'Envio de ' + fmtD(c.envio) + ' · ' + (c.lab || '') + ': ' + Object.keys(o).map(k => ({ nfEnvio: 'NF', rastreio: 'rastreio', obsEnvio: 'observação', cupomFoto: 'cupom' }[k])).join(', ') + ' · ' + coNome(c), antes: antes, depois: o });
     }
     lcFim(); aviso(n ? 'Guardado em ' + n + ' amostra(s).' : 'Nada mudou.');
   } catch (e) { lcErro(svErro(e)); }

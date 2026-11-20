@@ -90,7 +90,7 @@ const eq = (p, id) => p.evaluate(i => JSON.parse(JSON.stringify(S.almEq.find(x =
   await p.click('[data-act="lg-usar-ok"]'); await p.waitForTimeout(350);
   let m2 = await eq(p, 'mp2');
   conf(m2.situacao === 'ativo' && m2.posicao === 'Bancada 1' && m2.posUso === 'Bancada 1' && m2.posGuarda === 'Gaveta 02' && !m2.guardadoEm, 'em uso na Bancada 1; o lugar de guarda (Gaveta 02) fica lembrado');
-  conf(/Posto em uso em Bancada 1 — substitui/.test(m2.hist.slice(-1)[0].texto) && m2.hist.slice(-1)[0].tipo === 'usar', 'histórico: "Posto em uso em Bancada 1 — substitui a MP-01…"');
+  conf(/Posto em uso em Bancada 1 · substitui/.test(m2.hist.slice(-1)[0].texto) && m2.hist.slice(-1)[0].tipo === 'usar', 'histórico: "Posto em uso em Bancada 1 · substitui a MP-01…"');
   conf(/Micropipeta/.test(await titulo(p)) && /Em uso/.test(await p.textContent('#gv .lg-agora')), 'volta para a gaveta do equipamento, já atualizada');
 
   console.log('— Guardar');

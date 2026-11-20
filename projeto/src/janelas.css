@@ -1,0 +1,36 @@
+/* ITEM 112 (20/11): letra das abas 13 px no PC e 14 px no toque.
+   EFCwork · janelas.css — abas dos apps da família (v0.6.22). OPÇÃO 1 (linha fina sublinhada) com o recolher da OPÇÃO 3 (fio de 6 px).
+   Movimento pela escala da família: abrir 150 ms, fechar 150 ms, troca de janela 150 ms; só transform e opacity. */
+.jn{position:fixed;top:0;left:0;right:0;z-index:79;height:26px;transform:translateY(-20px);transition:transform 150ms var(--ease-smooth-out);
+  background:var(--jn-bg,var(--bg0));color:var(--jn-tx,var(--tx));border-bottom:1px solid var(--jn-bd,var(--bd));font-family:var(--f)}
+.jn.aberta{transform:none;box-shadow:0 6px 18px rgba(0,0,0,.12)}
+/* no celular, o fio é fino de ver e largo de tocar */
+.jn-faixa{display:flex;align-items:stretch;height:100%;padding:0 8px;gap:2px}
+.jn-aw{position:relative;display:flex;align-items:stretch}
+.jn-ab{appearance:none;border:0;background:transparent;color:inherit;font:600 13px/1 var(--f);letter-spacing:.1px;padding:0 12px;cursor:pointer;opacity:.62;
+  position:relative;transition:opacity 150ms ease}
+.jn-ab::after{content:"";position:absolute;left:8px;right:8px;bottom:0;height:2px;border-radius:2px 2px 0 0;background:var(--jn-ac,currentColor);opacity:.28;transition:opacity 150ms ease}
+.jn-aw.on .jn-ab{opacity:1}
+.jn-aw.on .jn-ab::after{opacity:1}
+.jn-ab:hover,.jn-ab:focus-visible{opacity:1}
+.jn-ab:focus-visible{outline:2px solid var(--jn-ac);outline-offset:-3px;border-radius:4px}
+/* o conteúdo da faixa só aparece aberta; recolhida fica só o traço (o fio mostra onde está a janela da frente) */
+.jn-ab,.jn-x{transition:opacity 150ms ease}
+.jn:not(.aberta) .jn-ab{color:transparent}
+.jn:not(.aberta) .jn-x{opacity:0;pointer-events:none}
+.jn-x{appearance:none;border:0;background:transparent;color:inherit;display:grid;place-items:center;width:22px;height:22px;margin:2px 0;border-radius:5px;cursor:pointer;opacity:.55;padding:0}
+.jn-x svg{width:13px;height:13px}
+.jn-x:hover,.jn-x:focus-visible{opacity:1;background:var(--jn-bd)}
+.jn-x{margin-left:-6px;margin-right:2px}
+/* as janelas: por cima do EFCwork, abaixo do fio; a que não está na frente continua viva (só some da vista) */
+.jn-fr{position:fixed;left:0;right:0;bottom:0;top:6px;z-index:78;opacity:0;visibility:hidden;pointer-events:none;transition:opacity 150ms ease,visibility 0s linear 150ms}
+.jn-fr.on{opacity:1;visibility:visible;pointer-events:auto;transition:opacity 150ms ease,visibility 0s}
+.jn-fr iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:var(--jn-bg,var(--bg1));visibility:hidden}
+.jn-fr iframe.on{visibility:visible}
+/* com um app na frente: os avisos do EFCwork (ex.: "Recebido do Vértice") continuam aparecendo por cima */
+body.jn-fora-on .av-pilha{z-index:81}
+body.jn-fora-on{overflow:hidden}
+/* no toque: o fio continua de 6 px, mas a faixa aberta tem 40 px (dedo; nada abaixo de 36 px no celular) e o fio ganha 12 px invisíveis para acertar */
+@media(pointer:coarse){.jn{height:40px;transform:translateY(-34px)}.jn.aberta{transform:none}.jn-ab{font-size:14px;padding:0 14px}.jn-x{width:36px;height:36px}
+  .jn::after{content:"";position:absolute;left:0;right:0;top:100%;height:12px}.jn.aberta::after{display:none}}
+@media(prefers-reduced-motion:reduce){.jn,.jn-ab,.jn-ab::after,.jn-x,.jn-fr,.jn-fr.on{transition:none}}

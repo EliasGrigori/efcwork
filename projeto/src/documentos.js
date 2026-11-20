@@ -42,7 +42,7 @@ const dcPill = (s, caixa) => DC_ST[s][1] ? '<span class="pill ' + DC_ST[s][1] + 
 const dcPillG = (s, caixa) => '<span class="pill ' + (DC_ST[s][1] || '') + '">' + esc(dcStTxt(s, caixa)) + '</span>'; /* na gaveta, sempre como selo */
 const dcCont = l => { const c = { venc: 0, aten: 0, sem: 0, ok: 0 }; l.forEach(r => { if (r._s.st in c) c[r._s.st]++; }); return c; };
 const dcPer = p => p ? p.charAt(0) + p.slice(1).toLowerCase() : '';
-const dcNome = (tipo, it) => tipo === 'caixa' ? it.tag + ' — ' + it.local : (it.codigo ? it.codigo + ' — ' : '') + it.titulo;
+const dcNome = (tipo, it) => tipo === 'caixa' ? it.tag + ' · ' + it.local : (it.codigo ? it.codigo + ' · ' : '') + it.titulo;
 const dcPodeCad = () => isSup(S.user);
 const dcGrupo = d => d.desativado ? 'D' : d.tipo === 'REGULATORIO' ? 'R' : 'F';
 const DC_GRUPOS = [['F', 'Formulários'], ['R', 'Regulatórios'], ['D', 'Desativados']];
@@ -104,7 +104,7 @@ function dcCalendario(aba, lista) {
       l.slice(0, 2).map(r => '<em class="' + (passou ? 'cr' : 'wa') + '">' + esc(cod(r)) + '</em>').join('') + (l.length > 2 ? '<em>+' + (l.length - 2) + '</em>' : '') + '</button>';
   }
   const doDia = lista.filter(r => r._s.prox === dia).sort((a, b) => cmpTxt(cod(a), cod(b))), atr = lista.filter(r => r._s.st === 'venc').sort((a, b) => a._s.dias - b._s.dias);
-  const li = r => '<button type="button" class="dc-li" data-act="' + abre + '" data-id="' + esc(r.id) + '"><span class="t"><b>' + esc(caixa ? r.tag + ' — ' + r.local : r.titulo) + '</b><small>' + esc(caixa ? [r.tipo, dcPer(r.periodo)].filter(Boolean).join(' · ') : [r.codigo, r.setor, dcPer(r.periodo)].filter(Boolean).join(' · ')) + '</small></span><span class="p ' + (DC_ST[r._s.st][1] || '') + '">' + esc(dcPrazo(r._s)) + '</span>' + ic('seta') + '</button>';
+  const li = r => '<button type="button" class="dc-li" data-act="' + abre + '" data-id="' + esc(r.id) + '"><span class="t"><b>' + esc(caixa ? r.tag + ' · ' + r.local : r.titulo) + '</b><small>' + esc(caixa ? [r.tipo, dcPer(r.periodo)].filter(Boolean).join(' · ') : [r.codigo, r.setor, dcPer(r.periodo)].filter(Boolean).join(' · ')) + '</small></span><span class="p ' + (DC_ST[r._s.st][1] || '') + '">' + esc(dcPrazo(r._s)) + '</span>' + ic('seta') + '</button>';
   const nAtr = 8;
   return '<div class="dc-bar">' + dcVistaHTML(aba) + '</div><div class="dc-cal"><section class="dc-mes pn"><div class="dc-mh"><button type="button" class="bt ic-so" data-act="dc-mes" data-aba="' + aba + '" data-d="-1" title="Mês anterior" aria-label="Mês anterior">' + ic('volta') + '</button><b>' + MESES[mo] + ' de ' + y + '</b>' +
     (mes !== hj.slice(0, 7) ? '<button type="button" class="bt" data-act="dc-mes" data-aba="' + aba + '" data-d="0">Hoje</button>' : '') + '<button type="button" class="bt ic-so" data-act="dc-mes" data-aba="' + aba + '" data-d="1" title="Próximo mês" aria-label="Próximo mês">' + ic('seta') + '</button></div>' +
@@ -149,7 +149,7 @@ function dcAbreCaixa(id) {
   S._dcSel = id; gvAbrir(() => {
     const c = S.caixas.find(x => x.id === id); if (!c) return null;
     const s = dcSit('caixa', c), cad = dcPodeCad();
-    return { ico: 'doc', sub: 'Caixa d’água · ' + (c.tipo || ''), titulo: c.tag + ' — ' + (c.local || ''), pill: dcPillG(s.st, true),
+    return { ico: 'doc', sub: 'Caixa d’água · ' + (c.tipo || ''), titulo: c.tag + ' · ' + (c.local || ''), pill: dcPillG(s.st, true),
       cabAcoes: cad ? '<button type="button" class="bt ic-so" data-act="dc-edita" data-t="caixa" data-id="' + esc(id) + '" title="Editar o cadastro" aria-label="Editar o cadastro">' + ic('lapis') + '</button>' : '',
       lixeira: cad && !c.desativado ? { act: 'dc-desativa', id: id, titulo: 'Desativar caixa' } : null,
       corpo: gvCampos([['Água', c.tipo || '—'], ['Local', c.local || '—'], ['Limpeza', dcPer(c.periodo) || '—'], ['Última limpeza', s.ult ? fmtD(s.ult) : '—'], ['Próxima', s.prox ? fmtD(s.prox) + ' · ' + dcPrazo(s) : '—']]) +
@@ -213,7 +213,7 @@ function dcLancOk() {
   if (doc) { o.entreguePor = quem; o.entregueEm = hojeISO(); }
   const txt = doc ? 'Lançou entrega de ' + o.alvoNome + ': preenchido em ' + fmtD(data) + ', entregue por ' + quem + ' em ' + fmtD(o.entregueEm) : 'Lançou limpeza de ' + o.alvoNome + ' em ' + fmtD(data);
   const ps = [Data.col('sv2_lanc').add(o).then(lid => Audit.log({ acao: doc ? 'lancar_entrega' : 'lancar_limpeza', entidade: 'lancamento', entidadeId: lid, resumo: txt, depois: { item: o.alvoNome, data: data, entreguePor: quem, entregueEm: o.entregueEm || '', obs: obs } }))];
-  if (nv && doc && dcPodeCad()) ps.push(Data.col('sv2_docs').update(f.id, { vencimento: nv }).then(() => Audit.log({ acao: 'alterar_documento', entidade: 'documento', entidadeId: f.id, resumo: 'Validade atualizada na entrega: ' + o.alvoNome + ' — ' + fmtD(it.vencimento) + ' → ' + fmtD(nv), antes: { vencimento: it.vencimento }, depois: { vencimento: nv }, autorizadoPor: { id: S.user.id, nome: S.user.nome } })));
+  if (nv && doc && dcPodeCad()) ps.push(Data.col('sv2_docs').update(f.id, { vencimento: nv }).then(() => Audit.log({ acao: 'alterar_documento', entidade: 'documento', entidadeId: f.id, resumo: 'Validade atualizada na entrega: ' + o.alvoNome + ' · ' + fmtD(it.vencimento) + ' → ' + fmtD(nv), antes: { vencimento: it.vencimento }, depois: { vencimento: nv }, autorizadoPor: { id: S.user.id, nome: S.user.nome } })));
   lcGrava(ps, doc ? 'Entrega lançada.' : 'Limpeza lançada.');
 }
 LC_FORM.dcCad = f => {
@@ -241,7 +241,7 @@ function dcCadOk() {
     if (S.caixas.some(x => x.id !== f.id && x.tag === o.tag)) return lcErro('Já existe uma caixa com esse número.');
   }
   if (!lcTravar()) return;
-  const nome = doc ? (o.codigo ? o.codigo + ' — ' : '') + o.titulo : o.tag;
+  const nome = doc ? (o.codigo ? o.codigo + ' · ' : '') + o.titulo : o.tag;
   if (ant) {
     const antes = {}, depois = {}; Object.keys(o).forEach(k => { if ((ant[k] || '') !== o[k]) { antes[k] = ant[k] || ''; depois[k] = o[k]; } });
     if (!Object.keys(depois).length) { lcFim(); return; }
@@ -259,7 +259,7 @@ function dcDesatOk() {
   const f = S.fm, it = f && dcAlvo(f.t, f.id); if (!it) return;
   const mot = String(f.motivo || '').trim(); if (mot.length < 5) return lcErro('Escreva o motivo (pelo menos 5 letras).'); if (!lcTravar()) return;
   const ent = f.t === 'caixa' ? 'caixa' : 'documento';
-  lcGrava([Data.col(f.t === 'caixa' ? 'sv2_caixas' : 'sv2_docs').update(f.id, { desativado: true }).then(() => Audit.log({ acao: 'desativar', entidade: ent, entidadeId: f.id, resumo: 'Desativou ' + dcNome(f.t, it) + ' — motivo: ' + mot, antes: { desativado: false }, depois: { desativado: true, motivo: mot }, autorizadoPor: { id: S.user.id, nome: S.user.nome } }))], ent === 'caixa' ? 'Caixa desativada.' : 'Documento desativado.');
+  lcGrava([Data.col(f.t === 'caixa' ? 'sv2_caixas' : 'sv2_docs').update(f.id, { desativado: true }).then(() => Audit.log({ acao: 'desativar', entidade: ent, entidadeId: f.id, resumo: 'Desativou ' + dcNome(f.t, it) + ' · motivo: ' + mot, antes: { desativado: false }, depois: { desativado: true, motivo: mot }, autorizadoPor: { id: S.user.id, nome: S.user.nome } }))], ent === 'caixa' ? 'Caixa desativada.' : 'Documento desativado.');
 }
 LC_FORM.dcCorr = f => {
   const l = S.lanc.find(x => x.id === f.id); if (!l) return null;
@@ -289,16 +289,16 @@ async function dcAplicaCorr(lid, p, aprov) {
   const h = (l.historico || []).slice();
   h.push({ ts: nowISO(), antes: p.antes, depois: p.depois, motivo: p.motivo, pedidoPor: aprov ? aprov.solicitanteNome : S.user.nome, aprovadoPor: S.user.nome, aprovId: aprov ? aprov.id : '' });
   await Data.col('sv2_lanc').update(lid, { data: p.depois.data, obs: p.depois.obs, alterado: true, historico: h, ultimaAprovId: aprov ? aprov.id : '' });
-  Audit.log({ acao: 'corrigir_lancamento', entidade: 'lancamento', entidadeId: lid, resumo: 'Lançamento corrigido: ' + l.alvoNome + ' — ' + dcMudanca(p) + (aprov ? ' (pedido de ' + aprov.solicitanteNome + ')' : ''), antes: p.antes, depois: p.depois, autorizadoPor: { id: S.user.id, nome: S.user.nome } });
+  Audit.log({ acao: 'corrigir_lancamento', entidade: 'lancamento', entidadeId: lid, resumo: 'Lançamento corrigido: ' + l.alvoNome + ' · ' + dcMudanca(p) + (aprov ? ' (pedido de ' + aprov.solicitanteNome + ')' : ''), antes: p.antes, depois: p.depois, autorizadoPor: { id: S.user.id, nome: S.user.nome } });
 }
 APROV_APLICA.corrigir_lancamento = (p, a) => dcAplicaCorr(a.refId, p, a);
 /* mover de grupo (pedido de 09/11 18:25): Formulários ↔ Regulatórios; é o mesmo campo "tipo" do EFClaudian */
 function dcMover(id) {
   const d = S.docs.find(x => x.id === id); if (!d || !dcPodeCad()) return;
   const para = d.tipo === 'REGULATORIO' ? 'FORMULARIO' : 'REGULATORIO', nome = para === 'REGULATORIO' ? 'Regulatórios' : 'Formulários';
-  csConfirma({ titulo: 'Mover para ' + nome + '?', texto: (d.codigo ? d.codigo + ' — ' : '') + d.titulo + (para === 'FORMULARIO' && d.vencimento ? '. A validade informada deixa de valer; ele passa a vencer pelo período.' : '.'), sim: 'Mover', nao: 'Cancelar' }, () => {
+  csConfirma({ titulo: 'Mover para ' + nome + '?', texto: (d.codigo ? d.codigo + ' · ' : '') + d.titulo + (para === 'FORMULARIO' && d.vencimento ? '. A validade informada deixa de valer; ele passa a vencer pelo período.' : '.'), sim: 'Mover', nao: 'Cancelar' }, () => {
     const o = { tipo: para }; if (para === 'FORMULARIO' && d.vencimento) o.vencimento = '';
-    Data.col('sv2_docs').update(id, o).then(() => { Audit.log({ acao: 'alterar_documento', entidade: 'documento', entidadeId: id, resumo: 'Moveu ' + (d.codigo ? d.codigo + ' — ' : '') + d.titulo + ' para ' + nome, antes: { tipo: d.tipo, vencimento: d.vencimento || '' }, depois: o, autorizadoPor: { id: S.user.id, nome: S.user.nome } }); aviso('Movido para ' + nome + '.'); }).catch(e => aviso(svErro(e), 'erro'));
+    Data.col('sv2_docs').update(id, o).then(() => { Audit.log({ acao: 'alterar_documento', entidade: 'documento', entidadeId: id, resumo: 'Moveu ' + (d.codigo ? d.codigo + ' · ' : '') + d.titulo + ' para ' + nome, antes: { tipo: d.tipo, vencimento: d.vencimento || '' }, depois: o, autorizadoPor: { id: S.user.id, nome: S.user.nome } }); aviso('Movido para ' + nome + '.'); }).catch(e => aviso(svErro(e), 'erro'));
   });
 }
 function dcReativa(t, id) {
@@ -333,6 +333,6 @@ document.addEventListener('click', e => {
 /* busca geral: documentos e caixas */
 BG_FONTES.push(q => {
   const d = S.docs.filter(x => bgCasa(q, [x.codigo, x.titulo, x.setor, x.responsavel].join(' '))).slice(0, 6).map(x => { const s = dcSit('doc', x); return { grupo: 'Documentos', nome: x.titulo, sub: [x.codigo, x.setor, s.st === 'venc' || s.st === 'aten' ? dcPrazo(s) : ''].filter(Boolean).join(' · '), ico: 'doc', abrir: () => { if (S.rota.area !== 'documentos' || S.rota.aba !== 'documentos') { S._gvNav = true; ir('documentos', 'documentos'); } dcAbreDoc(x.id); } }; });
-  const c = S.caixas.filter(x => bgCasa(q, [x.tag, x.local, 'caixa'].join(' '))).slice(0, 4).map(x => ({ grupo: 'Caixas d’água', nome: x.tag + ' — ' + x.local, sub: dcPrazo(dcSit('caixa', x)), ico: 'doc', abrir: () => { if (S.rota.area !== 'documentos' || S.rota.aba !== 'caixas') { S._gvNav = true; ir('documentos', 'caixas'); } dcAbreCaixa(x.id); } }));
+  const c = S.caixas.filter(x => bgCasa(q, [x.tag, x.local, 'caixa'].join(' '))).slice(0, 4).map(x => ({ grupo: 'Caixas d’água', nome: x.tag + ' · ' + x.local, sub: dcPrazo(dcSit('caixa', x)), ico: 'doc', abrir: () => { if (S.rota.area !== 'documentos' || S.rota.aba !== 'caixas') { S._gvNav = true; ir('documentos', 'caixas'); } dcAbreCaixa(x.id); } }));
   return d.concat(c);
 });

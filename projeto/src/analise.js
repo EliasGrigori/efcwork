@@ -223,7 +223,7 @@ function anAcOk() {
   const lista = velha ? l.map(x => x.id === f.acId ? Object.assign({}, x, o, { hist: (x.hist || []).concat([{ ts: ts, porNome: S.user.nome, o: 'editou', antes: { oque: x.oque, quemNome: x.quemNome, quando: x.quando } }]) }) : x)
     : l.concat([Object.assign({ id: uid(), st: 'aberta', criadoEm: ts, porNome: S.user.nome, hist: [] }, o)]);
   const p = anGravar(I, f.ctx, { acoes: lista }, (velha ? 'ação editada: ' : 'nova ação: ') + o.oque + ' · ' + o.quemNome + ' até ' + fmtD(o.quando), f.rev0);
-  if (us.id !== S.user.id && (!velha || velha.quemId !== us.id)) Notif.send({ nivel: 'aviso', titulo: 'Ação para você', texto: I.ref + ': ' + o.oque + ' — até ' + fmtD(o.quando) + '. Responsável pela resposta: ' + I.resp.nome + '.', para: [us.id], refTipo: f.ctx.t === 'nc' ? 'rnc_acao' : 'analise', refId: f.ctx.t === 'nc' ? I.r.id : I.x.id }).catch(() => {});
+  if (us.id !== S.user.id && (!velha || velha.quemId !== us.id)) Notif.send({ nivel: 'aviso', titulo: 'Ação para você', texto: I.ref + ': ' + o.oque + ' · até ' + fmtD(o.quando) + '. Responsável pela resposta: ' + I.resp.nome + '.', para: [us.id], refTipo: f.ctx.t === 'nc' ? 'rnc_acao' : 'analise', refId: f.ctx.t === 'nc' ? I.r.id : I.x.id }).catch(() => {});
   anFimSub([p], velha ? 'Ação alterada.' : 'Ação criada.');
 }
 LC_FORM.anAcSt = f => { const I = anInfo(f.ctx); const a = I && ((I.doc || {}).acoes || []).find(x => x.id === f.acId); if (!a) return null; const fe = f.st === 'feita';
@@ -237,7 +237,7 @@ function anAcStOk() {
   else { if (t.length < 5) return lcErro('Escreva o motivo.'); muda = { st: 'cancelada', cancEm: hojeISO(), cancPor: S.user.nome, cancMotivo: t }; }
   if (!lcTravar()) return;
   const a = I.doc.acoes.find(x => x.id === f.acId), ts = nowISO(), lista = I.doc.acoes.map(x => x.id === f.acId ? Object.assign({}, x, muda, { hist: (x.hist || []).concat([{ ts: ts, porNome: S.user.nome, o: muda.st, motivo: t }]) }) : x);
-  anFimSub([anGravar(I, f.ctx, { acoes: lista }, (fe ? 'ação feita: ' : 'ação cancelada: ') + a.oque + (t ? ' — ' + t : ''), f.rev0)], fe ? 'Ação concluída.' : 'Ação cancelada.');
+  anFimSub([anGravar(I, f.ctx, { acoes: lista }, (fe ? 'ação feita: ' : 'ação cancelada: ') + a.oque + (t ? ' · ' + t : ''), f.rev0)], fe ? 'Ação concluída.' : 'Ação cancelada.');
 }
 
 /* ---------- eficácia (o auditor ou o líder confere depois) ---------- */
@@ -256,8 +256,8 @@ function anEfOk() {
   const ef = { res: f.res, texto: t, data: f.data, porId: S.user.id, porNome: S.user.nome, ts: nowISO() }, d = I.doc || {};
   const patch = { efic: ef, eficHist: (d.eficHist || []).concat(d.efic ? [d.efic] : []) };
   if (I.t === 'anp' && f.res === 'eficaz') Object.assign(patch, { situacao: 'concluida', concluidaEm: nowISO(), concluidaPor: S.user.nome });
-  const p = anGravar(I, f.ctx, patch, (f.res === 'eficaz' ? 'eficaz' : 'não eficaz, análise reaberta') + ' — ' + t, null);
-  if (I.resp.id && I.resp.id !== S.user.id) Notif.send({ nivel: f.res === 'nao' ? 'aviso' : 'info', titulo: f.res === 'eficaz' ? 'Ação eficaz' : 'Ação não foi eficaz: análise reaberta', texto: I.ref + ' — ' + t, para: [I.resp.id], refTipo: f.ctx.t === 'nc' ? 'rnc_plano' : 'analise', refId: f.ctx.t === 'nc' ? I.r.id : I.x.id }).catch(() => {});
+  const p = anGravar(I, f.ctx, patch, (f.res === 'eficaz' ? 'eficaz' : 'não eficaz, análise reaberta') + ' · ' + t, null);
+  if (I.resp.id && I.resp.id !== S.user.id) Notif.send({ nivel: f.res === 'nao' ? 'aviso' : 'info', titulo: f.res === 'eficaz' ? 'Ação eficaz' : 'Ação não foi eficaz: análise reaberta', texto: I.ref + ' · ' + t, para: [I.resp.id], refTipo: f.ctx.t === 'nc' ? 'rnc_plano' : 'analise', refId: f.ctx.t === 'nc' ? I.r.id : I.x.id }).catch(() => {});
   anFimSub([p], f.res === 'eficaz' ? (I.t === 'anp' ? I.x.numero + ' concluída.' : 'Eficácia registrada.') : 'Registrado: não eficaz. A análise foi reaberta.');
 }
 

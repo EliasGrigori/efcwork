@@ -360,7 +360,7 @@ function auTirarOk() {
   const m = String(f.motivo || '').trim(); if (m.length < 3) return lcErro('Escreva o motivo.');
   if (!lcTravar()) return;
   const ncs = (r.ncs || []).map(x => x.id === n.id ? Object.assign({}, x, { cancelada: { motivo: m, porNome: S.user.nome, ts: nowISO() } }) : x); r.ncs = ncs;
-  Audit.log({ acao: 'rnc_nc_tirar', entidade: 'rnc', entidadeId: r.id, resumo: r.numero + ' · tirou a ' + auNum(n.n) + ' — ' + m });
+  Audit.log({ acao: 'rnc_nc_tirar', entidade: 'rnc', entidadeId: r.id, resumo: r.numero + ' · tirou a ' + auNum(n.n) + ' · ' + m });
   S.fm.volta = null; lcGrava([Data.col('sv2_rnc').update(r.id, { ncs: ncs })], auNum(n.n) + ' tirada.', () => { if (S.gv) gvFechar(); });
 }
 
@@ -378,7 +378,7 @@ function auEnviarOk() {
   const patch = { situacao: 'enviada', enviadaEm: nowISO(), enviadaPor: S.user.nome }; Object.assign(r, patch);
   Audit.log({ acao: 'rnc_enviar', entidade: 'rnc', entidadeId: r.id, resumo: 'Enviou a ' + r.numero + ' (' + l.length + ' NCs, prazo ' + fmtD(r.prazo) + ')' });
   const porU = {}; l.forEach(n => { if (n.respId && n.respId !== S.user.id) (porU[n.respId] = porU[n.respId] || []).push(n); });
-  Object.keys(porU).forEach(id => Notif.send({ nivel: porU[id].some(n => n.grav === 'maior') ? 'aviso' : 'info', titulo: 'Não conformidade para resolver até ' + fmtD(r.prazo), texto: r.numero + ' (' + r.tipo + '): ' + porU[id].map(n => auNum(n.n) + ' — ' + (n.titulo || n.nc)).join(' · ') + '. Resolva e avise o auditor (' + r.auditorNome + ').', para: [id], refTipo: 'rnc', refId: r.id }).catch(() => {}));
+  Object.keys(porU).forEach(id => Notif.send({ nivel: porU[id].some(n => n.grav === 'maior') ? 'aviso' : 'info', titulo: 'Não conformidade para resolver até ' + fmtD(r.prazo), texto: r.numero + ' (' + r.tipo + '): ' + porU[id].map(n => auNum(n.n) + ' · ' + (n.titulo || n.nc)).join(' · ') + '. Resolva e avise o auditor (' + r.auditorNome + ').', para: [id], refTipo: 'rnc', refId: r.id }).catch(() => {}));
   lcGrava([Data.col('sv2_rnc').update(r.id, patch)], r.numero + ' enviada.' + (Object.keys(porU).length ? ' Os responsáveis foram avisados.' : ''));
 }
 
@@ -416,7 +416,7 @@ function auConfOk() {
   const ret = { res: f.res, texto: t, fotosDepois: fo.ids, ts: ts, data: hojeISO(), porId: S.user.id, porNome: S.user.nome };
   if (lib) ret.lib = lib;
   const ncs = (r.ncs || []).map(y => y.id === x.id ? Object.assign({}, y, { ret: ret, retHist: (y.retHist || []).concat(y.ret ? [y.ret] : []) }) : y); r.ncs = ncs;
-  Audit.log({ acao: 'rnc_conferir', entidade: 'rnc', entidadeId: r.id, resumo: r.numero + ' · ' + auNum(x.n) + ': ' + AU_RES[f.res][0] + ' — ' + t + (lib ? ' · LIBERADA por ' + S.user.nome + ' (' + lib.pend.join('; ') + '): ' + lib.motivo : '') + (fo.ids.length ? ' · ' + fo.ids.length + ' foto(s) do depois' : ''), depois: ret });
+  Audit.log({ acao: 'rnc_conferir', entidade: 'rnc', entidadeId: r.id, resumo: r.numero + ' · ' + auNum(x.n) + ': ' + AU_RES[f.res][0] + ' · ' + t + (lib ? ' · LIBERADA por ' + S.user.nome + ' (' + lib.pend.join('; ') + '): ' + lib.motivo : '') + (fo.ids.length ? ' · ' + fo.ids.length + ' foto(s) do depois' : ''), depois: ret });
   const seq = auNcs(r), prox = seq.slice(seq.findIndex(y => y.id === x.id) + 1).find(y => !y.ret) || seq.find(y => !y.ret);
   lcGrava(fo.ps.concat([Data.col('sv2_rnc').update(r.id, { ncs: ncs, atualizadoEm: ts })]), auNum(x.n) + ': ' + AU_RES[f.res][0].toLowerCase() + '.' + (prox ? '' : ' Todas conferidas: falta fechar a RNC.'), prox ? () => auConfAbre(r.id, prox.id) : null);
 }
@@ -452,7 +452,7 @@ function auPrazoOk() {
   const m = String(f.motivo || '').trim(); if (m.length < 3) return lcErro('Escreva o motivo.');
   if (!lcTravar()) return;
   const patch = { prazo: f.prazo, prazoHist: (r.prazoHist || []).concat([{ de: r.prazo, para: f.prazo, motivo: m, porNome: S.user.nome, ts: nowISO() }]) };
-  Audit.log({ acao: 'rnc_prorrogar', entidade: 'rnc', entidadeId: r.id, resumo: r.numero + ': prazo ' + fmtD(r.prazo) + ' → ' + fmtD(f.prazo) + ' — ' + m }); Object.assign(r, patch);
+  Audit.log({ acao: 'rnc_prorrogar', entidade: 'rnc', entidadeId: r.id, resumo: r.numero + ': prazo ' + fmtD(r.prazo) + ' → ' + fmtD(f.prazo) + ' · ' + m }); Object.assign(r, patch);
   lcGrava([Data.col('sv2_rnc').update(r.id, patch)], 'Prazo prorrogado.');
 }
 LC_FORM.auCanc = f => { const r = auDe(f.rid); if (!r) return null;
@@ -462,7 +462,7 @@ function auCancOk() {
   const m = String(f.motivo || '').trim(); if (m.length < 3) return lcErro('Escreva o motivo.');
   if (!lcTravar()) return;
   const patch = { situacao: 'cancelada', canceladaEm: nowISO(), canceladaPor: S.user.nome, canceladaMotivo: m }; Object.assign(r, patch);
-  Audit.log({ acao: 'rnc_cancelar', entidade: 'rnc', entidadeId: r.id, resumo: 'Cancelou a ' + r.numero + ' — ' + m });
+  Audit.log({ acao: 'rnc_cancelar', entidade: 'rnc', entidadeId: r.id, resumo: 'Cancelou a ' + r.numero + ' · ' + m });
   S.fm.volta = null; lcGrava([Data.col('sv2_rnc').update(r.id, patch)], r.numero + ' cancelada.', () => { if (S.gv) gvFechar(); });
 }
 

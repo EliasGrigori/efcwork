@@ -15,7 +15,7 @@ const linhas = (p, parte) => p.evaluate(k => [...document.querySelectorAll('.sm-
   conf(m.abas.slice(0, 2).join() === 'Rateio,Semana' && !m.breve, 'Relatórios tem as abas Rateio e Semana (' + m.abas.join(', ') + ')');
   conf(/Relatório da semana · \d\d\/\d\d a \d\d\/\d\d/.test(m.fl) && !m.aberto && !m.limpa, 'filtro é um botão só, fechado, sem "Limpar filtro" (' + m.fl + ')');
   conf(m.res.join('|') === 'apontamentos:3|verificações de cloro:4|coletadas:2|enviadas:2|movimentações:2', 'resumo no alto bate com os dados: ' + m.res.join(' · '));
-  conf(m.secs.join('|') === 'Apontamentos — reunião|Verificações de cloro|Coletas e remessas|Almoxarifado — movimentações', 'quatro partes, na ordem do EFClaudian');
+  conf(m.secs.join('|') === 'Apontamentos da reunião|Verificações de cloro|Coletas e remessas|Movimentações do almoxarifado', 'quatro partes, na ordem do EFClaudian');
   const ap = await linhas(p, 'apont');
   conf(ap.length === 4 && /Packing House/.test(ap[0]) && /Urgente/.test(ap[0]) && /NC vencida/.test(ap[0]), 'apontamentos da semana por gravidade (urgente primeiro, com NC vencida)');
   conf(/Almoxarifado/.test(ap[3]) && /Grave/.test(ap[3]) && !ap.some(x => /Placa solta/.test(x)), 'pendente de semana anterior aparece; o resolvido antigo não');

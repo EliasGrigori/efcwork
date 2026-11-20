@@ -15,7 +15,7 @@ const AG_RES = [['PENDENTE', 'Pendente'], ['CONFORME', 'Conforme'], ['NÃO CONFO
 const PJ_DIAS = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'], PJ_DIAS3 = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'];
 const PJ_SIT = { aguardando: ['A confirmar', ''], confirmada: ['Confirmada', 'ok'], remarcada: ['Remarcada', ''], atrasada: ['Atrasada', 'cr'], lancada: ['Lançada', 'ok'], pulada: ['Não houve', ''] };
 const PJ_TIPO1 = { bebedouro: 'Bebedouro', caixa: 'Caixa d’água', tratamento: 'Tratamento', reservatorio: 'Açude ou reservatório', bacia: 'Bacia', poco: 'Poço', outro: 'Outro' };
-const agNome = b => b.codigo + (b.local ? ' — ' + b.local : '');
+const agNome = b => b.codigo + (b.local ? ' · ' + b.local : '');
 const agDia = ts => { if (/^\d{4}-\d{2}-\d{2}$/.test(String(ts || ''))) return String(ts); const d = new Date(ts); return isNaN(d) ? String(ts || '').slice(0, 10) : d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); };
 const agDif = (a, b) => coDif(a, b);
 const agBl = (rot, html, dica) => lcBl(rot, html, dica, 'ag-al'); /* .ag-al: lista retrátil com a mesma altura do campo ao lado */
@@ -96,8 +96,8 @@ const pjDe = id => id === 'legado' ? pjLegado() : (S.aguaproj || []).find(p => p
 function pjPontos() {
   const cmp = (a, b) => agCmp(a.cod, b.cod);
   const bs = (S.bebs || []).filter(b => b.situacao === 'ativo').map(b => ({ ref: 'beb:' + b.id, tipo: 'bebedouro', cod: b.codigo, nome: agNome(b), local: b.local || '' }));
-  const cx = (S.caixas || []).filter(c => !c.desativado).map(c => ({ ref: 'caixa:' + c.id, tipo: 'caixa', cod: c.tag, nome: c.tag + ' — ' + (c.local || ''), local: [c.local, c.tipo].filter(Boolean).join(' · ') }));
-  const ou = (S.aguapontos || []).filter(p => p.ativo !== false).map(p => ({ ref: 'ponto:' + p.id, tipo: p.tipo || 'outro', cod: p.nome, nome: p.nome + (p.local ? ' — ' + p.local : ''), local: p.local || '' }));
+  const cx = (S.caixas || []).filter(c => !c.desativado).map(c => ({ ref: 'caixa:' + c.id, tipo: 'caixa', cod: c.tag, nome: c.tag + ' · ' + (c.local || ''), local: [c.local, c.tipo].filter(Boolean).join(' · ') }));
+  const ou = (S.aguapontos || []).filter(p => p.ativo !== false).map(p => ({ ref: 'ponto:' + p.id, tipo: p.tipo || 'outro', cod: p.nome, nome: p.nome + (p.local ? ' · ' + p.local : ''), local: p.local || '' }));
   return bs.sort(cmp).concat(cx.sort(cmp), ou.sort(cmp));
 }
 const pjPonto = ref => pjPontos().find(p => p.ref === ref) || null;
@@ -252,7 +252,7 @@ function agAbre(id) {
     const a = c.acao, acBl = a ? '<p class="gv-h">Ação corretiva</p><button type="button" class="ac-res" data-act="ac-abre" data-id="' + esc(c.id) + '"><span><b>' + esc(a.responsavelNome || '') + '</b><small>' + esc('prazo ' + fmtD(a.prazo) + ' · ' + (a.etapas || []).length + ' etapa(s)' + (a.orientacao ? ' · ' + a.orientacao : '')) + '</small></span>' + acPill(a) + '</button>' : nc && !canc && isSup(S.user) ? '<p class="gv-h">Ação corretiva</p><button type="button" class="bt pr ac-abrir" data-act="ac-nova" data-id="' + esc(c.id) + '">' + ic('lista') + 'Abrir ação corretiva</button>' : '';
     return { ico: 'frasco', cabAcoes: cab, sub: (c.analiseNome || '') + ' · ' + agTipoTxt(c), titulo: c.pontoNome || 'Coleta de água', pill: canc ? alPill('Cancelada') : agLaudoAtrasado(c) ? alPill('Laudo atrasado', 'cr') : alPill(c.resultado === 'PENDENTE' ? 'Pendente' : c.resultado === 'CONFORME' ? 'Conforme' : 'Não conforme', c.resultado === 'CONFORME' ? 'ok' : nc ? 'cr' : 'wa'),
       corpo: (canc ? '' : tlFluido('ag-' + c.id, agEtapas(c))) + '<p class="gv-h">Coleta</p>' + gvCampos([['Semana', c.semana ? 'semana ' + c.semana : ''], ['Tipo', agTipoTxt(c) + (orig ? ' · recoleta de ' + fmtD(orig.data) + ' (' + String(orig.resultado || '').toLowerCase() + ')' : '')], ['Bebedouros', bebs.length > 1 ? bebs.join(', ') : ''], ['Quantidade', c.qtd ? String(c.qtd) : ''], ['Laboratório', c.lab], ['Valor', c.valor ? brl(c.valor) : ''],
-        ['Recoleta', filha ? 'lançada em ' + fmtD(filha.data) + ' · ' + String(filha.resultado || '').toLowerCase() : c.recoletaPedida ? 'pedida: ' + c.recoletaPedida.motivo + ' — ' + (c.recoletaPedida.porNome || '') + ', ' + fmtDT(c.recoletaPedida.ts) : ''],
+        ['Recoleta', filha ? 'lançada em ' + fmtD(filha.data) + ' · ' + String(filha.resultado || '').toLowerCase() : c.recoletaPedida ? 'pedida: ' + c.recoletaPedida.motivo + ' · ' + (c.recoletaPedida.porNome || '') + ', ' + fmtDT(c.recoletaPedida.ts) : ''],
         ['Ação corretiva', !a && nc && !canc && !isSup(S.user) ? 'ainda não aberta (o Líder ★ ou o Administrador abre)' : ''], ['Observação', c.obs], ['Cancelada', canc ? c.canceladaMotivo || 'sim' : '']]) + acBl,
       rodape: pe };
   });
@@ -332,7 +332,7 @@ async function agNovaOk() {
   try {
     for (const o of regs) {
       const nid = await Data.col('sv2_aguacol').add(o);
-      Audit.log({ acao: 'criar_coleta_agua', entidade: 'coleta_agua', entidadeId: nid, resumo: AG_TIPOS[tipo] + (pj ? ' ' + pj.nome : '') + ': coleta de água ' + o.pontoNome + ' — ' + o.analiseNome + ' (' + qtd + ') em ' + fmtD(f.data) + (o.recoletaDe ? ' (recoleta)' : ''), depois: { tipo: tipo, ponto: o.pontoNome, analise: o.analiseNome, qtd: qtd } });
+      Audit.log({ acao: 'criar_coleta_agua', entidade: 'coleta_agua', entidadeId: nid, resumo: AG_TIPOS[tipo] + (pj ? ' ' + pj.nome : '') + ': coleta de água ' + o.pontoNome + ' · ' + o.analiseNome + ' (' + qtd + ') em ' + fmtD(f.data) + (o.recoletaDe ? ' (recoleta)' : ''), depois: { tipo: tipo, ponto: o.pontoNome, analise: o.analiseNome, qtd: qtd } });
     }
     lcFim(); aviso(regs.length > 1 ? regs.length + ' coletas de água lançadas.' : 'Coleta de água lançada.');
   } catch (e) { lcErro(svErro(e)); }
@@ -375,7 +375,7 @@ async function agResOk() {
   if (!lcTravar()) return;
   try {
     await Data.col('sv2_aguacol').update(c.id, o);
-    Audit.log({ acao: 'alterar_coleta_agua', entidade: 'coleta_agua', entidadeId: c.id, resumo: 'Atualizou a coleta de água ' + c.pontoNome + (depois.resultado ? ' — resultado ' + o.resultado : '') + (nc ? ' · ' + agAgenteTxt(o) + ' · ' + o.gravidade : ''), antes: antes, depois: depois });
+    Audit.log({ acao: 'alterar_coleta_agua', entidade: 'coleta_agua', entidadeId: c.id, resumo: 'Atualizou a coleta de água ' + c.pontoNome + (depois.resultado ? ' · resultado ' + o.resultado : '') + (nc ? ' · ' + agAgenteTxt(o) + ' · ' + o.gravidade : ''), antes: antes, depois: depois });
     if (nc && (depois.resultado || depois.gravidade || depois.agente)) {
       const ate = addDias(o.laudoEm || hojeISO(), agCfg().recoletaDias), para = Array.from(new Set(supsOf(S.user).concat([S.user.id]).concat(S.users.filter(x => isPrincipal(x) && !x.bloqueado).map(x => x.id))));
       Notif.send({ nivel: o.gravidade === 'grave' ? 'critico' : 'aviso', titulo: 'Água NÃO CONFORME: ' + c.pontoNome, texto: c.analiseNome + ' (coleta de ' + fmtD(c.data) + ') · ' + agAgenteTxt(o) + ' · ' + (o.gravidade === 'grave' ? 'grave' : 'leve') + '. Recoleta nos mesmos bebedouros até ' + fmtD(ate) + '.', para: para, refTipo: 'coleta_agua', refId: c.id });
