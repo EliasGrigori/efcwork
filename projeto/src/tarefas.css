@@ -1,0 +1,9 @@
+/* EFCwork · tarefas.css — Prefixo: tf- (Meu dia). Só tokens do app. */
+.tf-li,.tf-mais{width:100%;text-align:left;background:none;border:0;border-top:1px solid var(--bd);font:inherit;color:inherit;cursor:pointer}
+@media(hover:hover){.tf-li:hover{background:var(--aS)}}
+.tf-li:focus-visible,.tf-mais:focus-visible{outline:2px solid var(--a);outline-offset:-2px}
+.tf-pn .hd .dd{min-width:0}
+.tf-ds{margin:0 0 12px;font-size:14px;color:var(--tx);white-space:pre-wrap;overflow-wrap:anywhere}
+.tf-gh{margin:0;padding:10px 16px 4px;font:600 12px var(--f);color:var(--tx3);text-transform:none;border-top:1px solid var(--bd)}
+.tf-gh em{font-style:normal;margin-left:4px}
+.tf-gh+.tf-li{border-top:0}

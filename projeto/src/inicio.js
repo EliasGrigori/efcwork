@@ -13,11 +13,7 @@ TELAS.inicio = function () {
     meta: ['<span>' + dataLonga() + '</span>', metaPl(hoje + (hoje === 1 ? ' tarefa hoje' : ' tarefas hoje'), '', 'relogio')].concat(venc ? [metaPl(venc + (venc === 1 ? ' vencida' : ' vencidas'), 'cr', 'alerta')] : []),
     acoes: '<a class="bt" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener">' + ic('externo') + 'Abrir o EFClaudian</a>' });
   /* tarefas */
-  const lis = l.slice(0, 8).map(t => '<div class="li"><span class="ico' + (t._v ? ' ini-cr' : t._h ? ' ini-wa' : '') + '">' + ic(t._v ? 'alerta' : 'relogio') + '</span><span class="tx"><b>' + esc(t.titulo || '(sem título)') + '</b><small>' + (t.prazo ? 'prazo ' + fmtD(t.prazo) + (t.hora ? ' às ' + esc(t.hora) : '') : 'sem prazo') + '</small></span>' +
-    '<span class="pill ' + (t._v ? 'cr' : t._h ? 'wa' : 'ok') + '">' + (t._v ? 'vencida' : t._h ? 'hoje' : 'no prazo') + '</span></div>').join('');
-  const tarefas = '<section class="pn"><div class="hd"><h3>Minhas tarefas</h3><em>' + l.length + '</em><span class="sp"></span></div>' +
-    (l.length ? lis + (l.length > 8 ? '<div class="li"><span class="tx"><small>+ ' + (l.length - 8) + ' tarefas. A lista completa está no EFClaudian.</small></span></div>' : '') :
-      '<div class="vazio">' + ic('ok') + '<b>Nada pendente com o seu nome.</b><span>As tarefas que o EFClaudian atribuir a você aparecem aqui.</span></div>') + '</section>';
+  const tarefas = tfPainel(); /* v0.6.28 (tarefas.js): criar, atribuir, andar e concluir aqui */
   /* voltar para / mais usadas */
   const o = csUsoLer(), atual = S.rota.area + (S.rota.aba ? '/' + S.rota.aba : '');
   /* v0.6.17: tela sem autorização some também dos atalhos (ex.: Rateios sem a atribuição, Atividade para quem não é Principal) */

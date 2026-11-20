@@ -806,6 +806,16 @@ textarea.fm-i{height:auto;min-height:64px;padding:9px 12px;resize:vertical}
 .fm-pk .tb-busca{flex-shrink:0}
 @media(max-width:899px){.fm-pk .tb-busca{min-height:44px}}
 
+/* ===== almcad.css ===== */
+/* EFCwork · almcad.css — Prefixo: mc- (cadastros do Almoxarifado). Só tokens do app. */
+.mc-ks{list-style:none;margin:0;padding:0}
+.mc-ks li+li{border-top:1px solid var(--bd)}
+.mc-k{display:flex;flex-direction:column;gap:2px;width:100%;text-align:left;padding:10px 8px;background:none;border:0;cursor:pointer;color:var(--tx);font:inherit;min-height:44px}
+.mc-k small{color:var(--tx3);font-size:13px}
+@media(hover:hover){.mc-k:hover{background:var(--aS)}}
+.mc-kl{display:grid;grid-template-columns:minmax(0,1fr) 96px auto;gap:8px;align-items:center;margin:0 0 8px}
+.mc-kl .dd-b,.mc-kq{height:var(--campo,36px)}
+
 /* ===== contagem.css ===== */
 /* EFCwork · contagem.css — contagem às cegas. Prefixo: cg- (e ini-cg no Início) */
 .cg-em{font-style:normal;font-size:12px;font-weight:600;color:var(--wa);background:var(--waS);border-radius:5px;padding:0 6px;margin-left:2px}
@@ -2326,6 +2336,17 @@ body:has(#gv) .pp-bar{display:none}
 .ini-li>.ic{color:var(--tx3)}
 @media(max-width:1099px){.ini-gr{grid-template-columns:1fr}}
 
+/* ===== tarefas.css ===== */
+/* EFCwork · tarefas.css — Prefixo: tf- (Meu dia). Só tokens do app. */
+.tf-li,.tf-mais{width:100%;text-align:left;background:none;border:0;border-top:1px solid var(--bd);font:inherit;color:inherit;cursor:pointer}
+@media(hover:hover){.tf-li:hover{background:var(--aS)}}
+.tf-li:focus-visible,.tf-mais:focus-visible{outline:2px solid var(--a);outline-offset:-2px}
+.tf-pn .hd .dd{min-width:0}
+.tf-ds{margin:0 0 12px;font-size:14px;color:var(--tx);white-space:pre-wrap;overflow-wrap:anywhere}
+.tf-gh{margin:0;padding:10px 16px 4px;font:600 12px var(--f);color:var(--tx3);text-transform:none;border-top:1px solid var(--bd)}
+.tf-gh em{font-style:normal;margin-left:4px}
+.tf-gh+.tf-li{border-top:0}
+
 /* ===== areas.css ===== */
 /* EFCwork · areas.css — Prefixo: ar- */
 .ar-vz{padding:32px 16px}
@@ -2669,7 +2690,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = Mov;
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.6.26';
+const VERSAO = '0.6.28';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -4180,7 +4201,7 @@ function alPainel() {
 function alTabMateriais() {
   const linhas = S.almItens.slice().sort((a, b) => String(a.nome).localeCompare(b.nome, 'pt-BR'));
   const locais = Array.from(new Set(linhas.map(i => i.local).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'pt-BR'));
-  return tbHTML({ id: 'al-mat', titulo: 'Materiais', unidade: 'itens', linhas: linhas, aoClicar: alAbreItem, selecionado: S._alSel, buscaDica: 'Buscar item, código ou local',
+  return tbHTML({ id: 'al-mat', antesIcones: typeof mcIconesMat === 'function' ? mcIconesMat() : '', titulo: 'Materiais', unidade: 'itens', linhas: linhas, aoClicar: alAbreItem, selecionado: S._alSel, buscaDica: 'Buscar item, código ou local',
     busca: i => [i.nome, i.codigo, i.local].join(' '),
     filtros: [
       { k: 'sit', rot: 'Situação', opcoes: [['atencao', 'Pedem atenção'], ['min', 'Abaixo do mínimo'], ['zero', 'Sem saldo'], ['vencido', 'Lote vencido'], ['avencer', 'Vence em até 30 dias'], ['ok', 'Em dia'], ['inativo', 'Inativos']], teste: (i, v) => v === 'atencao' ? alAtencao(i) : alSit(i).id === v },
@@ -4233,7 +4254,7 @@ function alTabSol() {
 }
 function alTabEq() {
   const linhas = S.almEq.slice().sort((a, b) => eqNomeC(a).localeCompare(eqNomeC(b), 'pt-BR'));
-  return tbHTML({ id: 'al-eq', titulo: 'Equipamentos', unidade: 'equipamentos', linhas: linhas, aoClicar: alAbreEq, selecionado: S._alSel, buscaDica: 'Buscar TAG, nome, marca ou local',
+  return tbHTML({ id: 'al-eq', antesIcones: typeof mcIconesEq === 'function' ? mcIconesEq() : '', titulo: 'Equipamentos', unidade: 'equipamentos', linhas: linhas, aoClicar: alAbreEq, selecionado: S._alSel, buscaDica: 'Buscar TAG, nome, marca ou local',
     busca: e => [e.tag, e.nome, e.marca, e.modelo, e.serie, e.local, e.posicao].join(' '),
     filtros: [
       { k: 'sit', rot: 'Situação', opcoes: Object.keys(EQ_SIT).map(k => [k, EQ_SIT[k][0]]), teste: (e, v) => (e.situacao || 'ativo') === v },
@@ -4274,7 +4295,7 @@ function alAbreItem(id) {
     const s = alSit(i), ls = alLotes(i.id), d = alDisp(i.id), min = Number(i.min) || 0;
     const movs = S.almMov.filter(m => m.itemId === i.id).sort((a, b) => String(b.criadoEm || b.data || '').localeCompare(String(a.criadoEm || a.data || ''))).slice(0, 10);
     const consumo = (function () { const de = addDias(hojeISO(), -90); const q = S.almMov.filter(m => m.itemId === i.id && !m.anulada && m.tipo === 'saida' && String(m.data || '') >= de).reduce((s2, m) => s2 + (Number(m.qtd) || 0), 0); return q ? numBR(q / 3, 1) + ' ' + (i.un || '') + '/mês' : ''; })();
-    return { ico: 'caixa', icoCls: s.cor === 'cr' ? 'ini-cr' : s.cor === 'wa' ? 'ini-wa' : '', sub: 'Material' + (i.codigo ? ' · código ' + i.codigo : ''), titulo: i.nome, pill: alPill(s.txt, s.cor),
+    return { ico: 'caixa', icoCls: s.cor === 'cr' ? 'ini-cr' : s.cor === 'wa' ? 'ini-wa' : '', sub: 'Material' + (i.codigo ? ' · código ' + i.codigo : ''), titulo: i.nome, pill: alPill(s.txt, s.cor), cabAcoes: typeof mcCabItem === 'function' ? mcCabItem(i) : '', lixeira: typeof mcLxItem === 'function' ? mcLxItem(i) : null, /* v0.6.27: editar e desativar (almcad.js) */
       corpo: gvNums([[alQ(d), 'utilizável (' + (i.un || 'un') + ')', d <= 0 ? 'cr' : min && d < min ? 'wa' : ''], [min ? alQ(min) : '—', 'mínimo'], [brl(alValorEst(i.id)), 'em estoque']]) +
         gvCampos([['Local', i.local], ['Unidade', i.un], ['Embalagem', alFator(i) > 1 ? '1 ' + (i.unCompra || 'emb.') + ' = ' + alFator(i) + ' ' + (i.un || '') : ''], ['Consumo', consumo ? consumo + ' (média de 90 dias)' : 'sem saídas em 90 dias'], ['Por frasco', i.porFrasco ? 'sim (abre e termina frasco)' : '']]) +
         '<p class="gv-h">Lotes com saldo</p>' + (ls.length ? '<div class="gv-lotes">' + ls.map(l => '<div class="gv-lote"><span>' + esc(l.lote || 'sem lote') + (l.validade ? ' · vence ' + fmtD(l.validade) : '') + '</span><span class="num">' + alQ(l.saldo) + ' ' + esc(i.un || '') + (alVencido(l) ? ' ' + alPill('vencido', 'cr') : alAVencer(l) ? ' ' + alPill('vence logo', 'wa') : '') + '</span></div>').join('') + '</div>' : '<p class="tb-nada">Sem saldo.</p>') +
@@ -4314,7 +4335,7 @@ function alAbreSol(id) {
 function alAbreEq(id) {
   S._alSel = id; gvAbrir(() => {
     const e = S.almEq.find(y => y.id === id); if (!e) return null; const st = EQ_SIT[e.situacao] || EQ_SIT.ativo, c = eqCalSit(e), cal = e.cal || {};
-    return { ico: 'eng', sub: (e.tipo === 'qtd' ? 'Vidraria' : 'Equipamento') + (e.tag ? ' · ' + e.tag : ''), titulo: e.nome, cabAcoes: lgCab(e), pill: alPill(st[0], st[1]) + (c ? ' ' + alPill(EQ_CAL[c][0], EQ_CAL[c][1]) : ''),
+    return { ico: 'eng', sub: (e.tipo === 'qtd' ? 'Vidraria' : 'Equipamento') + (e.tag ? ' · ' + e.tag : ''), titulo: e.nome, cabAcoes: lgCab(e) + (typeof mcCabEq === 'function' ? mcCabEq(e) : ''), pill: alPill(st[0], st[1]) + (c ? ' ' + alPill(EQ_CAL[c][0], EQ_CAL[c][1]) : ''),
       corpo: (e.naoAchado ? lcAv('<b>Não encontrado</b> na contagem ' + esc(e.naoAchado) + '. Some a marca quando ele for achado numa próxima contagem.', 'cr') : '') + (e.precisaCal ? gvNums([[cal.ultima ? fmtD(cal.ultima) : '—', 'última calibração'], [eqProxima(e) ? fmtD(eqProxima(e)) : '—', 'próxima', c === 'vencida' || c === 'sem' ? 'cr' : c === 'avencer' ? 'wa' : ''], [(cal.freqMeses || 12) + ' meses', 'frequência']]) : '') +
         lgOndeHTML(e) + gvCampos([['Laboratório', e.tipo === 'qtd' ? '' : e.local], ['Marca', e.marca], ['Modelo', e.modelo], ['Nº de série', e.serie], ['Quantidade', e.tipo === 'qtd' ? String(eqQtd(e)) : ''], ['Resultado', cal.resultado === 'aprovado' ? 'Aprovado para uso' : cal.resultado === 'reprovado' ? 'Reprovado' : ''], ['Certificado', cal.certificado || cal.cert || ''], ['Válido até', cal.validade ? fmtD(cal.validade) : ''], ['Quem calibrou', [cal.tecnico, cal.prestador].filter(Boolean).join(' · ')], ['Observação', e.obs]]) + (typeof cbHistEquip === 'function' && e.precisaCal ? cbHistEquip(e) : ''),
       rodape: lgBotoes(e) + (typeof alSup === 'function' && alSup() && e.precisaCal && e.situacao !== 'baixa' && !(typeof cbAbertas === 'function' && cbAbertas().some(c => (c.itens || []).some(i => i.equipId === e.id && !i.aplicado))) ? '<button type="button" class="bt pr" data-act="cb-pedir" data-id="' + esc(e.id) + '">' + ic('eng') + 'Pedir calibração</button>' : '') };
@@ -4966,6 +4987,185 @@ document.addEventListener('click', e => {
   else if (a === 'lc-sol-rm') { f.linhas.splice(Number(id), 1); f.sujo = true; gvDesenha(true); }
   else if (a === 'lc-sol-ok') lcSolOk();
   else if (a === 'lc-solcanc-ok') lcSolCancOk();
+});
+
+/* ===== almcad.js ===== */
+/* EFCwork · almcad.js — Almoxarifado: cadastro de material, de equipamento e os kits (v0.6.27). Prefixo: mc.
+   O que ainda só se fazia no EFClaudian. Mesmos documentos e campos:
+   - sv2_alm_itens: nome, codigo, un, local, min, critico, controlaVal, porFrasco, prazoAberto, unCompra, fator, ativo, motivoInativo, criadoEm, criadoPor.
+     O saldo não é campo: entra pela Entrada (ou Ajuste), como sempre.
+   - sv2_alm_equip: tag, nome, tipo ('qtd' = vidraria contada por quantidade), marca, modelo, serie, local, precisaCal, cal {ultima, freqMeses}, obs, situacao.
+   - sv2_cfg/almox.kits: [{ id, nome, motivo, lab, itens: [{ itemId, qtd }] }] (os kits da Saída).
+   Quem cadastra: Líder ★ e Administrador (alSup), como no EFClaudian. Nada se apaga: material sai com "desativar" e motivo; equipamento sai pela Baixa que já existe. */
+const mcPode = () => typeof alSup === 'function' && alSup() && alVe();
+const mcIcBt = (act, icone, tit) => '<button type="button" class="bt ic-so" data-act="' + esc(act) + '" title="' + esc(tit) + '" aria-label="' + esc(tit) + '">' + ic(icone) + '</button>';
+const mcIconesMat = () => mcPode() ? mcIcBt('mc-novo', 'mais', 'Novo material') + mcIcBt('mc-kits', 'lista', 'Kits da saída') : '';
+const mcIconesEq = () => mcPode() ? mcIcBt('mc-eq-novo', 'mais', 'Novo equipamento') : '';
+const mcCabItem = i => mcPode() ? '<button type="button" class="bt ic-so" data-act="mc-editar" data-id="' + esc(i.id) + '" title="Editar o cadastro" aria-label="Editar o cadastro">' + ic('lapis') + '</button>' +
+  (i.ativo === false ? '<button type="button" class="bt ic-so" data-act="mc-reativar" data-id="' + esc(i.id) + '" title="Reativar" aria-label="Reativar">' + ic('recontar') + '</button>' : '') : '';
+const mcLxItem = i => mcPode() && i.ativo !== false ? { act: 'mc-desat', id: i.id, titulo: 'Desativar o material' } : null;
+const mcCabEq = e => mcPode() ? '<button type="button" class="bt ic-so" data-act="mc-eq-editar" data-id="' + esc(e.id) + '" title="Editar o cadastro" aria-label="Editar o cadastro">' + ic('lapis') + '</button>' : '';
+const mcNum = v => { const n = Number(String(v == null ? '' : v).replace(',', '.')); return isNaN(n) ? NaN : n; };
+const mcLocais = () => Array.from(new Set(S.almItens.map(i => String(i.local || '').trim()).filter(Boolean))).sort(cmpTxt);
+const mcUns = () => Array.from(new Set(['Un', 'mL', 'L', 'g', 'kg', 'Cx', 'Pct', 'Rolo', 'Par'].concat(S.almItens.map(i => i.un).filter(Boolean)))).sort(cmpTxt);
+const mcSn = (campo, v, txt) => '<label class="fm-ck"><input type="checkbox" data-fm="' + esc(campo) + '"' + (v === '1' ? ' checked' : '') + '> ' + esc(txt) + '</label>';
+function mcDl(id, l) { return '<datalist id="' + esc(id) + '">' + l.map(x => '<option value="' + esc(x) + '">').join('') + '</datalist>'; }
+
+/* ---------- material ---------- */
+function mcNovo() { if (!mcPode()) return; lcAbrir({ k: 'mcItem', id: '', nome: '', codigo: '', un: 'Un', local: '', min: '', critico: '0', controlaVal: '1', porFrasco: '0', prazoAberto: '', unCompra: '', fator: '' }); }
+function mcEditar(id) {
+  const i = alItem(id); if (!i || !mcPode()) return; const sn = v => v ? '1' : '0';
+  lcAbrir({ k: 'mcItem', id: i.id, nome: i.nome || '', codigo: i.codigo || '', un: i.un || '', local: i.local || '', min: i.min == null ? '' : String(i.min), critico: sn(i.critico), controlaVal: sn(i.controlaVal !== false), porFrasco: sn(i.porFrasco), prazoAberto: i.prazoAberto ? String(i.prazoAberto) : '', unCompra: i.unCompra || '', fator: alFator(i) > 1 ? String(alFator(i)) : '' }, () => alAbreItem(i.id));
+}
+LC_FORM.mcItem = f => {
+  const novo = !f.id;
+  const c = lcMsg() + apPasso(1, 'O material') + lcBl('Nome', lcIn('nome', f.nome, ' maxlength="100" placeholder="ex.: Ácido sulfúrico P.A."')) +
+    '<div class="fm-g cl-fm2">' + lcBl('Código', lcIn('codigo', f.codigo, ' maxlength="30" placeholder="opcional"')) + lcBl('Local', lcIn('local', f.local, ' list="mc-dl-loc" maxlength="60" placeholder="ex.: ARMÁRIO 03"') + mcDl('mc-dl-loc', mcLocais())) + '</div>' +
+    apPasso(2, 'Quantidade') + '<div class="fm-g cl-fm2">' + lcBl('Unidade de uso', lcIn('un', f.un, ' list="mc-dl-un" maxlength="12"') + mcDl('mc-dl-un', mcUns())) + lcBl('Estoque mínimo', lcIn('min', f.min, ' inputmode="decimal" placeholder="0 = sem mínimo"')) + '</div>' +
+    '<div class="fm-g cl-fm2">' + lcBl('Compra em', lcIn('unCompra', f.unCompra, ' maxlength="12" placeholder="ex.: Cx (opcional)"')) + lcBl('Quantas unidades vêm em 1', lcIn('fator', f.fator, ' inputmode="decimal" placeholder="ex.: 12"')) + '</div>' +
+    apPasso(3, 'Controles') + mcSn('controlaVal', f.controlaVal, 'Controla lote e validade') + mcSn('critico', f.critico, 'Produto crítico (a saída pede conferência)') + mcSn('porFrasco', f.porFrasco, 'Usa por frasco (abre e termina frasco)') +
+    (f.porFrasco === '1' ? lcBl('Prazo depois de aberto (dias)', lcIn('prazoAberto', f.prazoAberto, ' inputmode="numeric" placeholder="0 = não cobra"')) : '') +
+    (novo ? lcAv('O saldo entra pela <b>Entrada</b> depois de cadastrar, com lote e validade.') : '');
+  return { ico: 'caixa', sub: 'Almoxarifado · Materiais', titulo: novo ? 'Novo material' : 'Editar ' + (f.nome || ''), corpo: c, rodape: lcPe('mc-item-ok', novo ? 'Cadastrar' : 'Salvar') };
+};
+function mcItemOk() {
+  const f = S.fm; if (!f || !mcPode()) return lcErro('Só o Líder ★ ou o Administrador cadastra material.');
+  const nome = String(f.nome || '').replace(/\s+/g, ' ').trim(), codigo = String(f.codigo || '').trim(), un = String(f.un || '').trim(), min = f.min === '' ? 0 : mcNum(f.min), fator = f.fator === '' ? 1 : mcNum(f.fator), pz = f.prazoAberto === '' ? 0 : mcNum(f.prazoAberto);
+  if (nome.length < 2) return lcErro('Escreva o nome do material.');
+  if (!un) return lcErro('Diga a unidade de uso (ex.: Un, mL, g).');
+  if (isNaN(min) || min < 0) return lcErro('O estoque mínimo é um número, 0 ou mais.');
+  if (isNaN(fator) || fator < 1) return lcErro('"Quantas unidades vêm em 1" é um número, 1 ou mais.');
+  if (f.unCompra && fator === 1) return lcErro('Diga quantas unidades vêm em 1 ' + f.unCompra + '.');
+  if (isNaN(pz) || pz < 0) return lcErro('O prazo depois de aberto é em dias, 0 ou mais.');
+  const x = f.id ? alItem(f.id) : null, n = tbNorm(nome);
+  if (S.almItens.some(i => i.id !== f.id && i.ativo !== false && tbNorm(i.nome) === n)) return lcErro('Já existe um material ativo com esse nome.');
+  if (codigo && S.almItens.some(i => i.id !== f.id && String(i.codigo || '').trim() === codigo)) return lcErro('O código ' + codigo + ' já é de outro material.');
+  if (!lcTravar()) return;
+  const o = { nome, codigo, un, local: String(f.local || '').trim(), min, critico: f.critico === '1', controlaVal: f.controlaVal === '1', porFrasco: f.porFrasco === '1', prazoAberto: f.porFrasco === '1' ? pz : 0, unCompra: fator > 1 ? String(f.unCompra || '').trim() : '', fator: fator > 1 ? fator : 1, atualizadoEm: nowISO(), atualizadoPor: S.user.nome };
+  if (x) {
+    Audit.log({ acao: 'editar_item', entidade: 'item', entidadeId: x.id, resumo: 'Alterou o cadastro do material ' + nome });
+    f.volta = null; lcGrava([Data.col('sv2_alm_itens').update(x.id, o)], 'Material salvo.', () => alAbreItem(x.id));
+  } else {
+    const id = Data.novoId('sv2_alm_itens'); Object.assign(o, { ativo: true, criadoEm: nowISO(), criadoPor: S.user.id, criadoPorNome: S.user.nome });
+    Audit.log({ acao: 'criar_item', entidade: 'item', entidadeId: id, resumo: 'Cadastrou o material ' + nome + (codigo ? ' (' + codigo + ')' : '') });
+    lcGrava([Data.col('sv2_alm_itens').set(id, o)], 'Material cadastrado. Dê a Entrada para pôr o saldo.', () => { if (!S.almItens.some(i => i.id === id)) S.almItens.push(Object.assign({ id }, o)); alAbreItem(id); });
+  }
+}
+function mcDesat(id) { const i = alItem(id); if (!i || !mcPode()) return; lcAbrir({ k: 'mcDesat', id: i.id, motivo: '' }, () => alAbreItem(i.id)); }
+LC_FORM.mcDesat = f => { const i = alItem(f.id); if (!i) return null; const d = alSaldo(i.id);
+  return { ico: 'caixa', sub: i.nome, titulo: 'Desativar o material', corpo: lcMsg() + (d > 0 ? lcAv('Ainda há ' + alQ(d) + ' ' + esc(i.un || '') + ' em estoque. Dê a saída ou o ajuste antes, ou desative mesmo assim (o saldo fica guardado).', 'wa') : '') +
+    lcAv('Sai das listas de entrada e saída. O histórico continua, e dá para reativar depois.') + lcBl('Motivo', lcTx('motivo', f.motivo, 'ex.: não é mais usado')), rodape: lcPe('mc-desat-ok', 'Desativar') }; };
+function mcDesatOk() {
+  const f = S.fm, i = f && alItem(f.id); if (!i || !mcPode()) return; const m = String(f.motivo || '').trim();
+  if (m.length < 3) return lcErro('Escreva o motivo.'); if (!lcTravar()) return;
+  Audit.log({ acao: 'desativar_item', entidade: 'item', entidadeId: i.id, resumo: 'Desativou o material ' + i.nome + ': ' + m });
+  f.volta = null; lcGrava([Data.col('sv2_alm_itens').update(i.id, { ativo: false, motivoInativo: m, inativadoEm: nowISO(), inativadoPor: S.user.nome })], 'Material desativado.', () => alAbreItem(i.id));
+}
+function mcReativar(id) {
+  const i = alItem(id); if (!i || !mcPode()) return;
+  Data.col('sv2_alm_itens').update(i.id, { ativo: true, motivoInativo: '' }).then(() => { Audit.log({ acao: 'reativar_item', entidade: 'item', entidadeId: i.id, resumo: 'Reativou o material ' + i.nome }); aviso('Material reativado.'); }).catch(() => aviso('Não deu para reativar agora.', 'erro'));
+}
+
+/* ---------- equipamento ---------- */
+function mcEqNovo() { if (!mcPode()) return; lcAbrir({ k: 'mcEq', id: '', tipo: 'un', tag: '', nome: '', marca: '', modelo: '', serie: '', local: '', precisaCal: '0', freq: '12', ultima: '', obs: '' }); }
+function mcEqEditar(id) {
+  const e = S.almEq.find(x => x.id === id); if (!e || !mcPode()) return; const c = e.cal || {};
+  lcAbrir({ k: 'mcEq', id: e.id, tipo: e.tipo === 'qtd' ? 'qtd' : 'un', tag: e.tag || '', nome: e.nome || '', marca: e.marca || '', modelo: e.modelo || '', serie: e.serie || '', local: e.local || '', precisaCal: e.precisaCal ? '1' : '0', freq: String(c.freqMeses || 12), ultima: c.ultima || '', obs: e.obs || '' }, () => alAbreEq(e.id));
+}
+LC_FORM.mcEq = f => {
+  const novo = !f.id, labs = Array.from(new Set(S.almEq.map(e => e.local).filter(Boolean))).sort(cmpTxt);
+  const c = lcMsg() + apPasso(1, 'O equipamento') + (novo ? lcBl('Tipo', ddHTML('mc:tipo', f.tipo, [['un', 'Equipamento (um por cadastro)'], ['qtd', 'Vidraria ou peça contada por quantidade']])) : '') +
+    lcBl('Nome', lcIn('nome', f.nome, ' maxlength="100" placeholder="ex.: Balança analítica"')) +
+    '<div class="fm-g cl-fm2">' + lcBl('Tag', lcIn('tag', f.tag, ' maxlength="30" placeholder="ex.: BAL-01"')) + lcBl('Laboratório', lcIn('local', f.local, ' list="mc-dl-lab" maxlength="60"') + mcDl('mc-dl-lab', labs)) + '</div>' +
+    (f.tipo === 'qtd' ? '' : '<div class="fm-g cl-fm2">' + lcBl('Marca', lcIn('marca', f.marca, ' maxlength="40"')) + lcBl('Modelo', lcIn('modelo', f.modelo, ' maxlength="40"')) + '</div>' + lcBl('Nº de série', lcIn('serie', f.serie, ' maxlength="40"'))) +
+    (f.tipo === 'qtd' ? '' : apPasso(2, 'Calibração') + mcSn('precisaCal', f.precisaCal, 'Precisa de calibração') +
+      (f.precisaCal === '1' ? '<div class="fm-g cl-fm2">' + lcBl('A cada (meses)', lcIn('freq', f.freq, ' inputmode="numeric"')) + lcBl('Última calibração', lcData('ultima', f.ultima)) + '</div>' : '')) +
+    lcBl('Observação', lcTx('obs', f.obs, 'opcional')) + (novo && f.tipo === 'qtd' ? lcAv('As quantidades de cada lugar entram pela contagem (Inventário).') : '');
+  return { ico: 'eng', sub: 'Almoxarifado · Equipamentos', titulo: novo ? 'Novo equipamento' : 'Editar ' + (f.nome || ''), corpo: c, rodape: lcPe('mc-eq-ok', novo ? 'Cadastrar' : 'Salvar') };
+};
+function mcEqOk() {
+  const f = S.fm; if (!f || !mcPode()) return lcErro('Só o Líder ★ ou o Administrador cadastra equipamento.');
+  const nome = String(f.nome || '').replace(/\s+/g, ' ').trim(), tag = String(f.tag || '').trim().toUpperCase(), cal = f.tipo !== 'qtd' && f.precisaCal === '1', freq = mcNum(f.freq);
+  if (nome.length < 2) return lcErro('Escreva o nome do equipamento.');
+  if (tag && S.almEq.some(e => e.id !== f.id && String(e.tag || '').toUpperCase() === tag && e.situacao !== 'baixa')) return lcErro('A tag ' + tag + ' já é de outro equipamento.');
+  if (cal && (isNaN(freq) || freq < 1 || freq > 120)) return lcErro('A frequência é em meses, de 1 a 120.');
+  if (cal && f.ultima && f.ultima > hojeISO()) return lcErro('A última calibração não pode ser no futuro.');
+  if (!lcTravar()) return;
+  const x = f.id ? S.almEq.find(e => e.id === f.id) : null, ca = (x && x.cal) || {};
+  const o = { nome, tag, local: String(f.local || '').trim(), obs: String(f.obs || '').trim(), atualizadoEm: nowISO() };
+  if (f.tipo !== 'qtd') Object.assign(o, { marca: String(f.marca || '').trim(), modelo: String(f.modelo || '').trim(), serie: String(f.serie || '').trim(), precisaCal: cal, cal: Object.assign({}, ca, cal ? { freqMeses: freq, ultima: f.ultima || ca.ultima || '' } : {}) });
+  if (x) {
+    Audit.log({ acao: 'editar_equipamento', entidade: 'equipamento', entidadeId: x.id, resumo: 'Alterou o cadastro de ' + eqNomeC(Object.assign({}, x, o)) });
+    f.volta = null; lcGrava([Data.col('sv2_alm_equip').update(x.id, o)], 'Equipamento salvo.', () => alAbreEq(x.id));
+  } else {
+    const id = Data.novoId('sv2_alm_equip'); Object.assign(o, { tipo: f.tipo === 'qtd' ? 'qtd' : 'un', situacao: 'ativo', hist: [], criadoEm: nowISO(), criadoPor: S.user.id, criadoPorNome: S.user.nome }); if (f.tipo === 'qtd') o.qtdLocal = {};
+    Audit.log({ acao: 'criar_equipamento', entidade: 'equipamento', entidadeId: id, resumo: 'Cadastrou ' + eqNomeC(o) });
+    lcGrava([Data.col('sv2_alm_equip').set(id, o)], 'Equipamento cadastrado.', () => { if (!S.almEq.some(e => e.id === id)) S.almEq.push(Object.assign({ id }, o)); alAbreEq(id); });
+  }
+}
+
+/* ---------- kits da saída (sv2_cfg/almox.kits) ---------- */
+const mcKits = () => (S.cfgAlm && Array.isArray(S.cfgAlm.kits) ? S.cfgAlm.kits : []);
+function mcKitsAbre() { if (!mcPode()) return; gvAbrir(mcKitsGaveta); }
+function mcKitsGaveta() {
+  const ks = mcKits();
+  const c = (ks.length ? '<ul class="mc-ks">' + ks.map(k => '<li><button type="button" class="mc-k" data-act="mc-kit" data-id="' + esc(k.id) + '"><b>' + esc(k.nome) + '</b><small>' + esc((k.itens || []).map(x => { const i = alItem(x.itemId); return alQ(x.qtd) + ' ' + (i ? i.nome : '(material removido)'); }).join(' · ')) + '</small></button></li>').join('') + '</ul>'
+    : '<p class="tb-nada">Nenhum kit ainda. Um kit junta os materiais que sempre saem juntos (ex.: envio de água: frascos, gelo e luvas) para a Saída lançar tudo de uma vez.</p>');
+  return { ico: 'lista', sub: 'Almoxarifado · Materiais', titulo: 'Kits da saída', corpo: c, rodape: '<span class="au-pesp"></span><button type="button" class="bt pr" data-act="mc-kit-novo">' + ic('mais') + 'Novo kit</button>' };
+}
+function mcKitEd(id) {
+  const k = id ? mcKits().find(x => x.id === id) : null;
+  lcAbrir({ k: 'mcKit', id: k ? k.id : '', nome: k ? k.nome : '', motivo: k ? (k.motivo || '') : '', linhas: k ? (k.itens || []).map(x => ({ itemId: x.itemId, qtd: String(x.qtd) })) : [{ itemId: '', qtd: '1' }] }, () => mcKitsAbre());
+}
+LC_FORM.mcKit = f => {
+  const opc = [['', 'Escolha o material']].concat(alAtivos().map(i => [i.id, i.nome + (i.un ? ' (' + i.un + ')' : '')]));
+  const c = lcMsg() + lcBl('Nome do kit', lcIn('nome', f.nome, ' maxlength="60" placeholder="ex.: Envio de água"')) + lcBl('Motivo da saída', lcIn('motivo', f.motivo, ' maxlength="60" placeholder="ex.: Envio de amostras"'), 'vem preenchido na Saída') +
+    '<p class="gv-h">Materiais</p>' + f.linhas.map((l, n) => '<div class="mc-kl">' + ddHTML('mc:kit:' + String(n), l.itemId, opc) + lcIn('linhas.' + String(n) + '.qtd', l.qtd, ' inputmode="decimal" class="fm-i mc-kq" aria-label="Quantidade"') +
+      '<button type="button" class="bt ic-so" data-act="mc-kl-tira" data-n="' + esc(String(n)) + '" title="Tirar esta linha" aria-label="Tirar esta linha">' + ic('x') + '</button></div>').join('') +
+    '<button type="button" class="bt" data-act="mc-kl-mais">' + ic('mais') + 'Mais um material</button>';
+  return { ico: 'lista', sub: 'Almoxarifado · Kits', titulo: f.id ? 'Editar o kit' : 'Novo kit', corpo: c, cabAcoes: '', lixeira: f.id ? { act: 'mc-kit-tira', id: f.id, titulo: 'Tirar o kit' } : null, rodape: lcPe('mc-kit-ok', 'Salvar') };
+};
+function mcKitsGrava(kits, msg) {
+  const cfg = Object.assign({}, S.cfgAlm || {}); delete cfg.id; delete cfg.srv; cfg.kits = kits;
+  return Data.col('sv2_cfg').set('almox', cfg).then(() => { S.cfgAlm = Object.assign({ id: 'almox' }, cfg); if (msg) aviso(msg); });
+}
+function mcKitOk() {
+  const f = S.fm; if (!f || !mcPode()) return; const nome = String(f.nome || '').trim();
+  const itens = f.linhas.filter(l => l.itemId).map(l => ({ itemId: l.itemId, qtd: mcNum(l.qtd) }));
+  if (nome.length < 2) return lcErro('Dê um nome ao kit.');
+  if (!itens.length) return lcErro('Escolha pelo menos um material.');
+  if (itens.some(x => isNaN(x.qtd) || x.qtd <= 0)) return lcErro('Cada quantidade precisa ser maior que zero.');
+  if (new Set(itens.map(x => x.itemId)).size !== itens.length) return lcErro('Um material aparece duas vezes. Junte numa linha só.');
+  if (mcKits().some(k => k.id !== f.id && tbNorm(k.nome) === tbNorm(nome))) return lcErro('Já existe um kit com esse nome.');
+  if (!lcTravar()) return;
+  const k = { id: f.id || uid(), nome, motivo: String(f.motivo || '').trim(), lab: '', itens }, l = mcKits().filter(x => x.id !== k.id).concat([k]);
+  Audit.log({ acao: f.id ? 'editar_kit' : 'criar_kit', entidade: 'kit', entidadeId: k.id, resumo: (f.id ? 'Alterou' : 'Criou') + ' o kit ' + nome + ' (' + itens.length + ' materiais)' });
+  f.volta = null; lcGrava([mcKitsGrava(l)], 'Kit salvo.', () => mcKitsAbre());
+}
+function mcKitTira(id) {
+  const k = mcKits().find(x => x.id === id); if (!k) return;
+  csConfirma({ titulo: 'Tirar o kit ' + k.nome + '?', texto: 'As saídas já lançadas com ele continuam iguais.', sim: 'Tirar', nao: 'Voltar' }, () => {
+    if (S.fm) { S.fm.volta = null; S.fm.sujo = false; }
+    mcKitsGrava(mcKits().filter(x => x.id !== id), 'Kit tirado.').then(() => { Audit.log({ acao: 'remover_kit', entidade: 'kit', entidadeId: id, resumo: 'Tirou o kit ' + k.nome }); mcKitsAbre(); }).catch(() => aviso('Não deu para salvar agora.', 'erro'));
+  });
+}
+
+/* ---------- eventos ---------- */
+DD_AO.mc = (k, v) => {
+  const f = S.fm; if (!f) return; f.sujo = true; f.msg = '';
+  if (k === 'tipo') { f.tipo = v; gvDesenha(true); }
+  else if (k.indexOf('kit:') === 0) { const l = f.linhas[Number(k.slice(4))]; if (l) { l.itemId = v; gvDesenha(true); } }
+};
+document.addEventListener('change', e => { const t = e.target; if (t && t.getAttribute && S.fm && /^(porFrasco|precisaCal)$/.test(t.getAttribute('data-fm') || '') && /^mc/.test(S.fm.k || '')) gvDesenha(true); });
+document.addEventListener('click', e => {
+  const t = e.target.closest && e.target.closest('[data-act^="mc-"]'); if (!t) return;
+  const a = t.getAttribute('data-act'), id = t.getAttribute('data-id'), f = S.fm;
+  if (a === 'mc-novo') mcNovo(); else if (a === 'mc-editar') mcEditar(id); else if (a === 'mc-item-ok') mcItemOk();
+  else if (a === 'mc-desat') mcDesat(id); else if (a === 'mc-desat-ok') mcDesatOk(); else if (a === 'mc-reativar') mcReativar(id);
+  else if (a === 'mc-eq-novo') mcEqNovo(); else if (a === 'mc-eq-editar') mcEqEditar(id); else if (a === 'mc-eq-ok') mcEqOk();
+  else if (a === 'mc-kits') mcKitsAbre(); else if (a === 'mc-kit') mcKitEd(id); else if (a === 'mc-kit-novo') mcKitEd(''); else if (a === 'mc-kit-ok') mcKitOk(); else if (a === 'mc-kit-tira') mcKitTira(id);
+  else if (a === 'mc-kl-mais' && f) { f.linhas.push({ itemId: '', qtd: '1' }); f.sujo = true; gvDesenha(true); }
+  else if (a === 'mc-kl-tira' && f) { f.linhas.splice(Number(t.getAttribute('data-n')), 1); if (!f.linhas.length) f.linhas.push({ itemId: '', qtd: '1' }); f.sujo = true; gvDesenha(true); }
 });
 
 /* ===== contagem.js ===== */
@@ -6061,7 +6261,8 @@ function snAbreRef(n) {
     lancamento: () => (vai('documentos', 'historico'), true),
     impresso: () => (vai('documentos', 'impressos'), true),
     inventario: () => (vai('almox', 'contagem'), true),
-    almox: () => (vai('almox', 'solicitacoes'), true)
+    almox: () => (vai('almox', 'solicitacoes'), true),
+    tarefa: () => typeof tfAbre === 'function' && (S.tarefas || []).some(t => t.id === id) && (vai('inicio', ''), tfAbre(id), true) /* v0.6.28: Meu dia */
   };
   const f = T[n.refTipo]; if (!f) return false;
   try { return !!f(); } catch (e) { console.warn('sino: abrir', n.refTipo, e); return false; }
@@ -14058,11 +14259,7 @@ TELAS.inicio = function () {
     meta: ['<span>' + dataLonga() + '</span>', metaPl(hoje + (hoje === 1 ? ' tarefa hoje' : ' tarefas hoje'), '', 'relogio')].concat(venc ? [metaPl(venc + (venc === 1 ? ' vencida' : ' vencidas'), 'cr', 'alerta')] : []),
     acoes: '<a class="bt" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener">' + ic('externo') + 'Abrir o EFClaudian</a>' });
   /* tarefas */
-  const lis = l.slice(0, 8).map(t => '<div class="li"><span class="ico' + (t._v ? ' ini-cr' : t._h ? ' ini-wa' : '') + '">' + ic(t._v ? 'alerta' : 'relogio') + '</span><span class="tx"><b>' + esc(t.titulo || '(sem título)') + '</b><small>' + (t.prazo ? 'prazo ' + fmtD(t.prazo) + (t.hora ? ' às ' + esc(t.hora) : '') : 'sem prazo') + '</small></span>' +
-    '<span class="pill ' + (t._v ? 'cr' : t._h ? 'wa' : 'ok') + '">' + (t._v ? 'vencida' : t._h ? 'hoje' : 'no prazo') + '</span></div>').join('');
-  const tarefas = '<section class="pn"><div class="hd"><h3>Minhas tarefas</h3><em>' + l.length + '</em><span class="sp"></span></div>' +
-    (l.length ? lis + (l.length > 8 ? '<div class="li"><span class="tx"><small>+ ' + (l.length - 8) + ' tarefas. A lista completa está no EFClaudian.</small></span></div>' : '') :
-      '<div class="vazio">' + ic('ok') + '<b>Nada pendente com o seu nome.</b><span>As tarefas que o EFClaudian atribuir a você aparecem aqui.</span></div>') + '</section>';
+  const tarefas = tfPainel(); /* v0.6.28 (tarefas.js): criar, atribuir, andar e concluir aqui */
   /* voltar para / mais usadas */
   const o = csUsoLer(), atual = S.rota.area + (S.rota.aba ? '/' + S.rota.aba : '');
   /* v0.6.17: tela sem autorização some também dos atalhos (ex.: Rateios sem a atribuição, Atividade para quem não é Principal) */
@@ -14089,6 +14286,153 @@ TELAS.inicio = function () {
     cg = '<a class="pn ini-cg" href="#/almox/contagem"><span class="ico ini-wa">' + ic('lista') + '</span><span class="tx"><b>' + (minha ? (pr.recontar.length ? 'Recontar ' + pr.recontar.length + ' material(is) · ' : 'Contagem para você · ') : 'Contagem para conferir · ') + esc(c.numero) + '</b><small>' + pr.feitos + ' de ' + pr.total + ' contados · ' + pct + '%</small></span><span class="ini-cgb"><i style="width:' + pct + '%"></i></span>' + ic('seta') + '</a>'; } }
   return h + cg + nums + '<div class="ini-gr"><div class="ini-col">' + tarefas + plano + '</div><div class="ini-col">' + atalhos + '</div></div>';
 };
+
+/* ===== tarefas.js ===== */
+/* EFCwork · tarefas.js — Meu dia: as tarefas na Início (v0.6.28). Prefixo: tf.
+   Antes o EFCwork só lia as tarefas do EFClaudian. Agora cria, atribui, anda e conclui aqui, no mesmo sv2_tarefas:
+   titulo, descricao, respId, respNome, prazo, hora, status (todo | doing | done | cancelada), criadoPor, criadoPorNome, criadoEm,
+   concluidaEm, concluidaPorNome, canceladaMotivo, hist[]. Os campos que a Início já lia (titulo, respId, prazo, hora, status, excluida) não mudam.
+   Quem passa tarefa para outra pessoa: Líder ★ e Administrador (para os liderados e para quem quiser); o Colaborador cria só para si.
+   Quem mexe: o responsável (andar, concluir), quem criou e o Administrador (editar, cancelar). Aviso no sino para quem recebe e, ao concluir, para quem passou. */
+/* v0.6.28 (pedido do Elias 20/11 14:39): tarefas que se repetem e agenda. Campo repete: util (seg a sex) | diaria | semanal | quinzenal | mensal | anual,
+   serieId (a mesma em todas as vezes). Ao concluir ou cancelar "só esta vez", a próxima nasce sozinha com o prazo seguinte (dias perdidos não se acumulam:
+   a próxima é a primeira data a partir de hoje). Quem programa para outra pessoa: o Administrador para todos; o Líder ★ para os liderados dele. */
+const TF_REP = [['', 'Não repete'], ['util', 'Todo dia útil (seg a sex)'], ['diaria', 'Todo dia'], ['semanal', 'Toda semana'], ['quinzenal', 'A cada 15 dias'], ['mensal', 'Todo mês'], ['anual', 'Todo ano']];
+const TF_REP_CURTO = { util: 'todo dia útil', diaria: 'todo dia', semanal: 'toda semana', quinzenal: 'a cada 15 dias', mensal: 'todo mês', anual: 'todo ano' };
+function tfPasso(iso, rep) {
+  if (rep === 'diaria') return addDias(iso, 1); if (rep === 'semanal') return addDias(iso, 7); if (rep === 'quinzenal') return addDias(iso, 14);
+  if (rep === 'mensal') return eqAddMeses(iso, 1); if (rep === 'anual') return eqAddMeses(iso, 12);
+  let d = addDias(iso, 1); while ([0, 6].indexOf(new Date(d + 'T12:00:00').getDay()) >= 0) d = addDias(d, 1); return d; /* util */
+}
+function tfProxima(t) { const h = hojeISO(); let d = tfPasso(t.prazo || h, t.repete), n = 0; while (d < h && n++ < 4000) d = tfPasso(d, t.repete); return d; }
+const TF_ST = { todo: ['A fazer', ''], doing: ['Em andamento', 'wa'], done: ['Concluída', 'ok'], cancelada: ['Cancelada', ''] };
+Object.assign(S, { tfVer: 'minhas', tfTodas: false });
+const tfAberta = t => t.status !== 'done' && t.status !== 'cancelada' && !t.excluida;
+const tfDe = id => (S.tarefas || []).find(t => t.id === id) || null;
+const tfPodeDar = () => !!S.user && isSup(S.user);
+const tfPodeEditar = t => !!S.user && (t.criadoPor === S.user.id || isPrincipal(S.user));
+const tfPodeAndar = t => !!S.user && (t.respId === S.user.id || tfPodeEditar(t)) && podeLancar(S.user);
+const tfOrd = (a, b) => String(a.prazo || '9999').localeCompare(String(b.prazo || '9999')) || String(a.hora || '').localeCompare(String(b.hora || '')) || String(a.criadoEm || '').localeCompare(String(b.criadoEm || ''));
+const tfHist = (t, txt) => (Array.isArray(t.hist) ? t.hist : []).concat([{ ts: nowISO(), porNome: S.user.nome, txt }]);
+const tfRepTxt = t => t.repete && TF_REP_CURTO[t.repete] ? 'repete ' + TF_REP_CURTO[t.repete] : '';
+function tfLista() {
+  const me = S.user.id, l = (S.tarefas || []).filter(tfAberta);
+  return (S.tfVer === 'passei' ? l.filter(t => t.criadoPor === me && t.respId !== me) : l.filter(t => t.respId === me)).sort(tfOrd);
+}
+/* agenda: Atrasadas · Hoje · Próximos 7 dias · Mais adiante · Sem prazo */
+function tfGrupo(t) { const h = hojeISO(); if (!t.prazo) return 'sem'; if (t.prazo < h) return 'atr'; if (t.prazo === h) return 'hoje'; return t.prazo <= addDias(h, 7) ? 'sem7' : 'depois'; }
+const TF_GR = [['atr', 'Atrasadas'], ['hoje', 'Hoje'], ['sem7', 'Próximos 7 dias'], ['depois', 'Mais adiante'], ['sem', 'Sem prazo']];
+function tfLinha(t) {
+  const g = tfGrupo(t), quem = S.tfVer === 'passei' ? 'para ' + (t.respNome || nomeDe(t.respId)) : (t.criadoPor && t.criadoPor !== S.user.id ? 'de ' + (t.criadoPorNome || nomeDe(t.criadoPor)) : '');
+  const quando = t.prazo ? (g === 'hoje' ? 'hoje' : fmtD(t.prazo)) + (t.hora ? ' às ' + t.hora : '') : 'sem prazo';
+  const pill = g === 'atr' ? ['vencida', 'cr'] : t.status === 'doing' ? ['em andamento', 'wa'] : g === 'hoje' ? ['hoje', 'wa'] : ['no prazo', 'ok'];
+  return '<button type="button" class="li tf-li" data-act="tf-abre" data-id="' + esc(t.id) + '"><span class="ico' + (g === 'atr' ? ' ini-cr' : g === 'hoje' ? ' ini-wa' : '') + '">' + ic(t.repete ? 'recontar' : g === 'atr' ? 'alerta' : 'relogio') + '</span><span class="tx"><b>' + esc(t.titulo || '(sem título)') + '</b><small>' +
+    esc([quem, quando, tfRepTxt(t)].filter(Boolean).join(' · ')) + '</small></span><span class="pill ' + esc(pill[1]) + '">' + esc(pill[0]) + '</span></button>';
+}
+function tfPainel() {
+  const l = tfLista(), lim = S.tfTodas ? 1e9 : 10; let n = 0, corpo = '';
+  TF_GR.forEach(gr => { const g = l.filter(t => tfGrupo(t) === gr[0]); if (!g.length) return; const urg = gr[0] === 'atr' || gr[0] === 'hoje', v = urg ? g : g.slice(0, Math.max(0, lim - n)); if (!v.length) return; n += v.length;
+    corpo += '<p class="tf-gh">' + esc(gr[1]) + ' <em>' + esc(String(g.length)) + '</em></p>' + v.map(tfLinha).join(''); });
+  const resto = l.length - n;
+  return '<section class="pn tf-pn"><div class="hd">' + (tfPodeDar() ? ddHTML('tf:ver', S.tfVer, [['minhas', 'Minhas tarefas'], ['passei', 'Que eu passei']]) : '<h3>Minhas tarefas</h3>') + '<em>' + esc(String(l.length)) + '</em><span class="sp"></span>' +
+    (podeLancar(S.user) ? '<button type="button" class="bt ic-so" data-act="tf-nova" title="Nova tarefa ou rotina" aria-label="Nova tarefa ou rotina">' + ic('mais') + '</button>' : '') + '</div>' +
+    (l.length ? corpo + (resto > 0 ? '<button type="button" class="li tf-mais" data-act="tf-todas"><span class="tx"><small>Mostrar as outras ' + esc(String(resto)) + '</small></span></button>' : '')
+      : '<div class="vazio">' + ic('ok') + '<b>' + (S.tfVer === 'passei' ? 'Nenhuma tarefa sua com outra pessoa.' : 'Nada pendente com o seu nome.') + '</b><span>Toque no + para anotar uma tarefa ou criar uma rotina' + (tfPodeDar() ? ', para você ou para a sua equipe' : '') + '.</span></div>') + '</section>';
+}
+
+/* ---------- detalhe ---------- */
+function tfAbre(id) { gvAbrir(() => tfGaveta(id)); }
+function tfGaveta(id) {
+  const t = tfDe(id); if (!t) return null; const s = TF_ST[t.status] || TF_ST.todo, ab = tfAberta(t);
+  let c = (t.descricao ? '<p class="tf-ds">' + esc(t.descricao) + '</p>' : '') + gvCampos([['Responsável', t.respNome || nomeDe(t.respId)], ['Prazo', t.prazo ? fmtD(t.prazo) + (t.hora ? ' às ' + t.hora : '') : 'sem prazo'],
+    ['Repete', t.repete ? (TF_REP.find(r => r[0] === t.repete) || ['', ''])[1] + (ab ? ' · a próxima será em ' + fmtD(tfProxima(t)) : '') : ''], ['Criada por', (t.criadoPorNome || nomeDe(t.criadoPor)) + (t.criadoEm ? ' · ' + fmtD(diaLocal(t.criadoEm)) : '')],
+    ['Concluída', t.status === 'done' ? (t.concluidaPorNome || '') + (t.concluidaEm ? ' · ' + fmtD(diaLocal(t.concluidaEm)) : '') : ''], ['Cancelada', t.status === 'cancelada' ? (t.canceladaMotivo || '') : '']]);
+  const hs = (Array.isArray(t.hist) ? t.hist : []).slice(-6);
+  if (hs.length) c += '<p class="gv-h">Andamento</p>' + tlFluido('tf-' + t.id, hs.map(x => ({ nome: x.txt, feito: true, data: diaLocal(x.ts), quem: x.porNome })));
+  const pe = ab && tfPodeAndar(t) ? (t.status !== 'doing' ? '<button type="button" class="bt" data-act="tf-andar" data-id="' + esc(t.id) + '">' + ic('relogio') + 'Comecei</button>' : '') + '<span class="au-pesp"></span><button type="button" class="bt pr" data-act="tf-ok" data-id="' + esc(t.id) + '">' + ic('ok') + 'Concluir</button>' : '';
+  return { ico: t.repete ? 'recontar' : 'relogio', sub: 'Meu dia' + (t.repete ? ' · rotina' : ''), titulo: t.titulo || '(sem título)', pill: '<span class="pill ' + esc(s[1]) + '">' + esc(s[0]) + '</span>',
+    cabAcoes: ab && tfPodeEditar(t) ? '<button type="button" class="bt ic-so" data-act="tf-editar" data-id="' + esc(t.id) + '" title="Editar" aria-label="Editar">' + ic('lapis') + '</button>' : '',
+    lixeira: ab && tfPodeEditar(t) ? { act: 'tf-canc', id: t.id, titulo: 'Cancelar a tarefa' } : null, corpo: c, rodape: pe };
+}
+
+/* ---------- nova e editar ---------- */
+const tfPessoas = () => S.users.filter(u => !u.bloqueado && u.ativo !== false && u.perfil !== 'visitante' && (isPrincipal(S.user) || u.id === S.user.id || (u.superiores || []).indexOf(S.user.id) >= 0)).sort((a, b) => (a.id !== S.user.id) - (b.id !== S.user.id) || cmpTxt(a.nome, b.nome));
+function tfNova() { if (!podeLancar(S.user)) return; lcAbrir({ k: 'tfEd', id: '', titulo: '', descricao: '', resp: S.user.id, prazo: hojeISO(), hora: '', repete: '' }); }
+function tfEditar(id) { const t = tfDe(id); if (!t || !tfPodeEditar(t)) return; lcAbrir({ k: 'tfEd', id: t.id, titulo: t.titulo || '', descricao: t.descricao || '', resp: t.respId, prazo: t.prazo || '', hora: t.hora || '', repete: t.repete || '' }, () => tfAbre(t.id)); }
+LC_FORM.tfEd = f => {
+  const ps = tfPessoas(), dica = f.repete && f.prazo ? 'Depois de ' + fmtD(f.prazo) + ', a próxima será em ' + fmtD(tfPasso(f.prazo, f.repete)) + (f.repete === 'semanal' || f.repete === 'quinzenal' ? ' (' + DIAS[new Date(f.prazo + 'T12:00:00').getDay()] + ')' : '') + '. Ao concluir uma, a seguinte aparece sozinha.' : '';
+  const c = lcMsg() + lcBl('O que fazer', lcIn('titulo', f.titulo, ' maxlength="120" placeholder="ex.: Conferir o cloro dos bebedouros"')) + lcBl('Detalhes', lcTx('descricao', f.descricao, 'opcional')) +
+    (tfPodeDar() && ps.length > 1 ? lcBl('Para quem', ddHTML('tf:resp', f.resp, ps.map(u => [u.id, u.nome + (u.id === S.user.id ? ' (eu)' : '')])), isPrincipal(S.user) ? '' : 'você e os seus liderados') : '') +
+    '<div class="fm-g cl-fm2">' + lcBl(f.repete ? 'Primeira vez' : 'Prazo', lcData('prazo', f.prazo, true)) + lcBl('Hora', '<input class="fm-i" type="time" data-fm="hora" value="' + esc(f.hora || '') + '">', 'opcional') + '</div>' +
+    lcBl('Repete', ddHTML('tf:repete', f.repete, TF_REP)) + (dica ? lcAv(esc(dica)) : '');
+  return { ico: 'relogio', sub: 'Meu dia', titulo: f.id ? 'Editar a tarefa' : 'Nova tarefa ou rotina', corpo: c, rodape: lcPe('tf-ed-ok', f.id ? 'Salvar' : 'Criar') };
+};
+function tfEdOk() {
+  const f = S.fm; if (!f) return; const titulo = String(f.titulo || '').replace(/\s+/g, ' ').trim(), resp = tfPodeDar() ? f.resp : S.user.id, ru = userById(resp);
+  if (titulo.length < 3) return lcErro('Escreva o que precisa ser feito.');
+  if (!ru || !tfPessoas().some(u => u.id === ru.id)) return lcErro('Escolha para quem é a tarefa (você ou um liderado seu).');
+  if (f.prazo && !dataOk(f.prazo)) return lcErro('Data do prazo inválida.');
+  if (f.repete && !f.prazo) return lcErro('Uma rotina precisa da data da primeira vez.');
+  if (!f.id && f.prazo && f.prazo < hojeISO()) return lcErro('O prazo não pode ser antes de hoje.');
+  if (!lcTravar()) return;
+  const x = f.id ? tfDe(f.id) : null, o = { titulo, descricao: String(f.descricao || '').trim(), respId: ru.id, respNome: ru.nome, prazo: f.prazo || '', hora: f.hora || '', repete: f.repete || '', alteradoEm: nowISO() };
+  const avisa = id => { if (ru.id !== S.user.id && (!x || x.respId !== ru.id)) Notif.send({ nivel: 'aviso', titulo: (o.repete ? 'Rotina para você: ' : 'Tarefa para você: ') + titulo, texto: (o.prazo ? (o.repete ? 'Começa em ' : 'Prazo ') + fmtD(o.prazo) + (o.hora ? ' às ' + o.hora : '') + '. ' : '') + (o.repete ? 'Repete ' + TF_REP_CURTO[o.repete] + '. ' : '') + 'Passada por ' + S.user.nome + '.', para: [ru.id], refTipo: 'tarefa', refId: id }).catch(() => {}); };
+  if (x) {
+    o.hist = tfHist(x, x.respId !== ru.id ? 'Passou para ' + ru.nome : 'Editou a tarefa'); if (o.repete && !x.serieId) o.serieId = x.id;
+    Audit.log({ acao: 'editar_tarefa', entidade: 'tarefa', entidadeId: x.id, resumo: 'Editou a tarefa ' + titulo });
+    avisa(x.id); f.volta = null; lcGrava([Data.col('sv2_tarefas').update(x.id, o)], 'Tarefa salva.', () => tfAbre(x.id));
+  } else {
+    const id = Data.novoId('sv2_tarefas'); Object.assign(o, { status: 'todo', serieId: o.repete ? id : '', criadoPor: S.user.id, criadoPorNome: S.user.nome, criadoEm: nowISO(), hist: [{ ts: nowISO(), porNome: S.user.nome, txt: (o.repete ? 'Criou a rotina (' + TF_REP_CURTO[o.repete] + ')' : 'Anotou a tarefa') + (ru.id === S.user.id ? '' : ' para ' + ru.nome) }] });
+    Audit.log({ acao: 'criar_tarefa', entidade: 'tarefa', entidadeId: id, resumo: 'Criou ' + (o.repete ? 'a rotina ' : 'a tarefa ') + titulo + (ru.id !== S.user.id ? ' para ' + ru.nome : '') + (o.repete ? ' (' + TF_REP_CURTO[o.repete] + ')' : '') });
+    avisa(id); lcGrava([Data.col('sv2_tarefas').set(id, o)], (o.repete ? 'Rotina criada' : 'Tarefa anotada') + (ru.id === S.user.id ? '.' : ' para ' + ru.nome + '.'), () => { if (!S.tarefas.some(t => t.id === id)) S.tarefas.push(Object.assign({ id }, o)); if (S.gv) gvFecharSo(); render(); });
+  }
+}
+
+/* ---------- andar, concluir, cancelar; a rotina gera a próxima ---------- */
+function tfGrava(t, patch, msg, depois) { return Data.col('sv2_tarefas').update(t.id, patch).then(() => { Object.assign(t, patch); aviso(msg); if (depois) depois(); }).catch(e => aviso(svErro(e), 'erro')); }
+function tfSeguinte(t) {
+  if (!t.repete) return null; const id = Data.novoId('sv2_tarefas'), pz = tfProxima(t);
+  const o = { titulo: t.titulo, descricao: t.descricao || '', respId: t.respId, respNome: t.respNome || nomeDe(t.respId), prazo: pz, hora: t.hora || '', repete: t.repete, serieId: t.serieId || t.id, status: 'todo',
+    criadoPor: t.criadoPor || S.user.id, criadoPorNome: t.criadoPorNome || S.user.nome, criadoEm: nowISO(), hist: [{ ts: nowISO(), porNome: S.user.nome, txt: 'Rotina: próxima vez' }] };
+  Data.col('sv2_tarefas').set(id, o).then(() => { if (!S.tarefas.some(x => x.id === id)) S.tarefas.push(Object.assign({ id }, o)); render(); }).catch(e => aviso(svErro(e), 'erro'));
+  return pz;
+}
+function tfAndar(id) { const t = tfDe(id); if (!t || !tfPodeAndar(t)) return; tfGrava(t, { status: 'doing', hist: tfHist(t, 'Começou') }, 'Marcada como em andamento.', () => { if (S.gv) gvDesenha(); render(); }); }
+function tfConcluir(id) {
+  const t = tfDe(id); if (!t || !tfPodeAndar(t)) return;
+  tfGrava(t, { status: 'done', concluidaEm: nowISO(), concluidaPor: S.user.id, concluidaPorNome: S.user.nome, hist: tfHist(t, 'Concluiu') }, 'Tarefa concluída.', () => {
+    const pz = tfSeguinte(t); if (pz) aviso('Concluída. A próxima fica para ' + fmtD(pz) + '.');
+    Audit.log({ acao: 'concluir_tarefa', entidade: 'tarefa', entidadeId: t.id, resumo: 'Concluiu a tarefa ' + t.titulo });
+    if (t.criadoPor && t.criadoPor !== S.user.id && !t.repete) Notif.send({ nivel: 'info', titulo: 'Tarefa concluída: ' + t.titulo, texto: 'Concluída por ' + S.user.nome + '.', para: [t.criadoPor], refTipo: 'tarefa', refId: t.id }).catch(() => {});
+    if (S.gv) gvFecharSo(); render(); });
+}
+function tfCanc(id) { const t = tfDe(id); if (!t || !tfPodeEditar(t)) return; lcAbrir({ k: 'tfCanc', id: t.id, motivo: '', alcance: t.repete ? 'esta' : '' }, () => tfAbre(t.id)); }
+LC_FORM.tfCanc = f => { const t = tfDe(f.id); if (!t) return null;
+  return { ico: 'relogio', sub: t.titulo, titulo: 'Cancelar a tarefa', corpo: lcMsg() + (t.repete ? lcBl('O que cancelar', ddHTML('tf:alcance', f.alcance, [['esta', 'Só esta vez (a rotina continua)'], ['todas', 'Esta e as próximas (a rotina para)']])) : '') +
+    lcAv('Nada se apaga.') + lcBl('Motivo', lcTx('motivo', f.motivo, 'ex.: não precisa mais')), rodape: lcPe('tf-canc-ok', 'Cancelar') }; };
+function tfCancOk() {
+  const f = S.fm, t = f && tfDe(f.id); if (!t) return; const m = String(f.motivo || '').trim(); if (m.length < 3) return lcErro('Escreva o motivo.'); if (!lcTravar()) return;
+  const para = t.repete && f.alcance === 'todas';
+  Audit.log({ acao: 'cancelar_tarefa', entidade: 'tarefa', entidadeId: t.id, resumo: (para ? 'Parou a rotina ' : 'Cancelou a tarefa ') + t.titulo + ': ' + m });
+  if (t.respId !== S.user.id) Notif.send({ nivel: 'info', titulo: (para ? 'Rotina parada: ' : 'Tarefa cancelada: ') + t.titulo, texto: 'Por ' + S.user.nome + ': ' + m, para: [t.respId], refTipo: 'tarefa', refId: t.id }).catch(() => {});
+  if (t.repete && !para) tfSeguinte(t);
+  f.volta = null; lcGrava([Data.col('sv2_tarefas').update(t.id, { status: 'cancelada', canceladaMotivo: m, canceladaEm: nowISO(), canceladaPor: S.user.nome, hist: tfHist(t, (para ? 'Parou a rotina: ' : 'Cancelou: ') + m) })], para ? 'Rotina parada.' : 'Tarefa cancelada.', () => { if (S.gv) gvFecharSo(); render(); });
+}
+
+/* ---------- eventos ---------- */
+DD_AO.tf = (k, v) => {
+  if (k === 'ver') { S.tfVer = v; S.tfTodas = false; render(); return; }
+  if (!S.fm) return; S.fm.sujo = true;
+  if (k === 'resp') S.fm.resp = v; else if (k === 'repete') { S.fm.repete = v; gvDesenha(true); } else if (k === 'alcance') S.fm.alcance = v;
+};
+document.addEventListener('change', e => { const t = e.target; if (t && t.getAttribute && t.getAttribute('data-fm') === 'prazo' && S.fm && S.fm.k === 'tfEd' && S.fm.repete) gvDesenha(true); });
+document.addEventListener('click', e => {
+  const t = e.target.closest && e.target.closest('[data-act^="tf-"]'); if (!t) return;
+  const a = t.getAttribute('data-act'), id = t.getAttribute('data-id');
+  if (a === 'tf-abre') tfAbre(id); else if (a === 'tf-nova') tfNova(); else if (a === 'tf-editar') tfEditar(id); else if (a === 'tf-ed-ok') tfEdOk();
+  else if (a === 'tf-andar') tfAndar(id); else if (a === 'tf-ok') tfConcluir(id); else if (a === 'tf-canc') tfCanc(id); else if (a === 'tf-canc-ok') tfCancOk();
+  else if (a === 'tf-todas') { S.tfTodas = true; render(); }
+});
 
 /* ===== areas.js ===== */
 /* EFCwork · areas.js — telas das áreas que ainda não foram refeitas. Mostram o que a área vai ter e levam ao EFClaudian. Prefixo: ar.

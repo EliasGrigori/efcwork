@@ -135,7 +135,7 @@ function alPainel() {
 function alTabMateriais() {
   const linhas = S.almItens.slice().sort((a, b) => String(a.nome).localeCompare(b.nome, 'pt-BR'));
   const locais = Array.from(new Set(linhas.map(i => i.local).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'pt-BR'));
-  return tbHTML({ id: 'al-mat', titulo: 'Materiais', unidade: 'itens', linhas: linhas, aoClicar: alAbreItem, selecionado: S._alSel, buscaDica: 'Buscar item, código ou local',
+  return tbHTML({ id: 'al-mat', antesIcones: typeof mcIconesMat === 'function' ? mcIconesMat() : '', titulo: 'Materiais', unidade: 'itens', linhas: linhas, aoClicar: alAbreItem, selecionado: S._alSel, buscaDica: 'Buscar item, código ou local',
     busca: i => [i.nome, i.codigo, i.local].join(' '),
     filtros: [
       { k: 'sit', rot: 'Situação', opcoes: [['atencao', 'Pedem atenção'], ['min', 'Abaixo do mínimo'], ['zero', 'Sem saldo'], ['vencido', 'Lote vencido'], ['avencer', 'Vence em até 30 dias'], ['ok', 'Em dia'], ['inativo', 'Inativos']], teste: (i, v) => v === 'atencao' ? alAtencao(i) : alSit(i).id === v },
@@ -188,7 +188,7 @@ function alTabSol() {
 }
 function alTabEq() {
   const linhas = S.almEq.slice().sort((a, b) => eqNomeC(a).localeCompare(eqNomeC(b), 'pt-BR'));
-  return tbHTML({ id: 'al-eq', titulo: 'Equipamentos', unidade: 'equipamentos', linhas: linhas, aoClicar: alAbreEq, selecionado: S._alSel, buscaDica: 'Buscar TAG, nome, marca ou local',
+  return tbHTML({ id: 'al-eq', antesIcones: typeof mcIconesEq === 'function' ? mcIconesEq() : '', titulo: 'Equipamentos', unidade: 'equipamentos', linhas: linhas, aoClicar: alAbreEq, selecionado: S._alSel, buscaDica: 'Buscar TAG, nome, marca ou local',
     busca: e => [e.tag, e.nome, e.marca, e.modelo, e.serie, e.local, e.posicao].join(' '),
     filtros: [
       { k: 'sit', rot: 'Situação', opcoes: Object.keys(EQ_SIT).map(k => [k, EQ_SIT[k][0]]), teste: (e, v) => (e.situacao || 'ativo') === v },
@@ -229,7 +229,7 @@ function alAbreItem(id) {
     const s = alSit(i), ls = alLotes(i.id), d = alDisp(i.id), min = Number(i.min) || 0;
     const movs = S.almMov.filter(m => m.itemId === i.id).sort((a, b) => String(b.criadoEm || b.data || '').localeCompare(String(a.criadoEm || a.data || ''))).slice(0, 10);
     const consumo = (function () { const de = addDias(hojeISO(), -90); const q = S.almMov.filter(m => m.itemId === i.id && !m.anulada && m.tipo === 'saida' && String(m.data || '') >= de).reduce((s2, m) => s2 + (Number(m.qtd) || 0), 0); return q ? numBR(q / 3, 1) + ' ' + (i.un || '') + '/mês' : ''; })();
-    return { ico: 'caixa', icoCls: s.cor === 'cr' ? 'ini-cr' : s.cor === 'wa' ? 'ini-wa' : '', sub: 'Material' + (i.codigo ? ' · código ' + i.codigo : ''), titulo: i.nome, pill: alPill(s.txt, s.cor),
+    return { ico: 'caixa', icoCls: s.cor === 'cr' ? 'ini-cr' : s.cor === 'wa' ? 'ini-wa' : '', sub: 'Material' + (i.codigo ? ' · código ' + i.codigo : ''), titulo: i.nome, pill: alPill(s.txt, s.cor), cabAcoes: typeof mcCabItem === 'function' ? mcCabItem(i) : '', lixeira: typeof mcLxItem === 'function' ? mcLxItem(i) : null, /* v0.6.27: editar e desativar (almcad.js) */
       corpo: gvNums([[alQ(d), 'utilizável (' + (i.un || 'un') + ')', d <= 0 ? 'cr' : min && d < min ? 'wa' : ''], [min ? alQ(min) : '—', 'mínimo'], [brl(alValorEst(i.id)), 'em estoque']]) +
         gvCampos([['Local', i.local], ['Unidade', i.un], ['Embalagem', alFator(i) > 1 ? '1 ' + (i.unCompra || 'emb.') + ' = ' + alFator(i) + ' ' + (i.un || '') : ''], ['Consumo', consumo ? consumo + ' (média de 90 dias)' : 'sem saídas em 90 dias'], ['Por frasco', i.porFrasco ? 'sim (abre e termina frasco)' : '']]) +
         '<p class="gv-h">Lotes com saldo</p>' + (ls.length ? '<div class="gv-lotes">' + ls.map(l => '<div class="gv-lote"><span>' + esc(l.lote || 'sem lote') + (l.validade ? ' · vence ' + fmtD(l.validade) : '') + '</span><span class="num">' + alQ(l.saldo) + ' ' + esc(i.un || '') + (alVencido(l) ? ' ' + alPill('vencido', 'cr') : alAVencer(l) ? ' ' + alPill('vence logo', 'wa') : '') + '</span></div>').join('') + '</div>' : '<p class="tb-nada">Sem saldo.</p>') +
@@ -269,7 +269,7 @@ function alAbreSol(id) {
 function alAbreEq(id) {
   S._alSel = id; gvAbrir(() => {
     const e = S.almEq.find(y => y.id === id); if (!e) return null; const st = EQ_SIT[e.situacao] || EQ_SIT.ativo, c = eqCalSit(e), cal = e.cal || {};
-    return { ico: 'eng', sub: (e.tipo === 'qtd' ? 'Vidraria' : 'Equipamento') + (e.tag ? ' · ' + e.tag : ''), titulo: e.nome, cabAcoes: lgCab(e), pill: alPill(st[0], st[1]) + (c ? ' ' + alPill(EQ_CAL[c][0], EQ_CAL[c][1]) : ''),
+    return { ico: 'eng', sub: (e.tipo === 'qtd' ? 'Vidraria' : 'Equipamento') + (e.tag ? ' · ' + e.tag : ''), titulo: e.nome, cabAcoes: lgCab(e) + (typeof mcCabEq === 'function' ? mcCabEq(e) : ''), pill: alPill(st[0], st[1]) + (c ? ' ' + alPill(EQ_CAL[c][0], EQ_CAL[c][1]) : ''),
       corpo: (e.naoAchado ? lcAv('<b>Não encontrado</b> na contagem ' + esc(e.naoAchado) + '. Some a marca quando ele for achado numa próxima contagem.', 'cr') : '') + (e.precisaCal ? gvNums([[cal.ultima ? fmtD(cal.ultima) : '—', 'última calibração'], [eqProxima(e) ? fmtD(eqProxima(e)) : '—', 'próxima', c === 'vencida' || c === 'sem' ? 'cr' : c === 'avencer' ? 'wa' : ''], [(cal.freqMeses || 12) + ' meses', 'frequência']]) : '') +
         lgOndeHTML(e) + gvCampos([['Laboratório', e.tipo === 'qtd' ? '' : e.local], ['Marca', e.marca], ['Modelo', e.modelo], ['Nº de série', e.serie], ['Quantidade', e.tipo === 'qtd' ? String(eqQtd(e)) : ''], ['Resultado', cal.resultado === 'aprovado' ? 'Aprovado para uso' : cal.resultado === 'reprovado' ? 'Reprovado' : ''], ['Certificado', cal.certificado || cal.cert || ''], ['Válido até', cal.validade ? fmtD(cal.validade) : ''], ['Quem calibrou', [cal.tecnico, cal.prestador].filter(Boolean).join(' · ')], ['Observação', e.obs]]) + (typeof cbHistEquip === 'function' && e.precisaCal ? cbHistEquip(e) : ''),
       rodape: lgBotoes(e) + (typeof alSup === 'function' && alSup() && e.precisaCal && e.situacao !== 'baixa' && !(typeof cbAbertas === 'function' && cbAbertas().some(c => (c.itens || []).some(i => i.equipId === e.id && !i.aplicado))) ? '<button type="button" class="bt pr" data-act="cb-pedir" data-id="' + esc(e.id) + '">' + ic('eng') + 'Pedir calibração</button>' : '') };

@@ -1,0 +1,8 @@
+/* EFCwork · almcad.css — Prefixo: mc- (cadastros do Almoxarifado). Só tokens do app. */
+.mc-ks{list-style:none;margin:0;padding:0}
+.mc-ks li+li{border-top:1px solid var(--bd)}
+.mc-k{display:flex;flex-direction:column;gap:2px;width:100%;text-align:left;padding:10px 8px;background:none;border:0;cursor:pointer;color:var(--tx);font:inherit;min-height:44px}
+.mc-k small{color:var(--tx3);font-size:13px}
+@media(hover:hover){.mc-k:hover{background:var(--aS)}}
+.mc-kl{display:grid;grid-template-columns:minmax(0,1fr) 96px auto;gap:8px;align-items:center;margin:0 0 8px}
+.mc-kl .dd-b,.mc-kq{height:var(--campo,36px)}

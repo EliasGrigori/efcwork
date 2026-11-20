@@ -81,7 +81,8 @@ function snAbreRef(n) {
     lancamento: () => (vai('documentos', 'historico'), true),
     impresso: () => (vai('documentos', 'impressos'), true),
     inventario: () => (vai('almox', 'contagem'), true),
-    almox: () => (vai('almox', 'solicitacoes'), true)
+    almox: () => (vai('almox', 'solicitacoes'), true),
+    tarefa: () => typeof tfAbre === 'function' && (S.tarefas || []).some(t => t.id === id) && (vai('inicio', ''), tfAbre(id), true) /* v0.6.28: Meu dia */
   };
   const f = T[n.refTipo]; if (!f) return false;
   try { return !!f(); } catch (e) { console.warn('sino: abrir', n.refTipo, e); return false; }

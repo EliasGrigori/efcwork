@@ -266,6 +266,11 @@
 ,
   {"nome": "Administração · Pessoas", "passos": [{"eval": "location.hash='#/adm/pessoas'"}, {"espera": 600}]},
   {"nome": "Administração · Meu perfil", "passos": [{"eval": "location.hash='#/adm/perfil'"}, {"espera": 600}]}
+,
+  {"nome": "Novo material (gaveta)", "passos": [{"eval": "location.hash='#/almox/materiais'"}, {"espera": 500}, {"eval": "mcNovo()"}, {"espera": 500}]},
+  {"nome": "Novo kit (gaveta)", "passos": [{"eval": "location.hash='#/almox/materiais'"}, {"espera": 500}, {"eval": "mcKitEd('')"}, {"espera": 500}]},
+  {"nome": "Novo equipamento (gaveta)", "passos": [{"eval": "location.hash='#/almox/equipamentos'"}, {"espera": 500}, {"eval": "mcEqNovo()"}, {"espera": 500}]},
+  {"nome": "Nova tarefa ou rotina (gaveta)", "passos": [{"eval": "location.hash='#/inicio'"}, {"espera": 500}, {"eval": "tfNova(); DD_AO.tf('repete','semanal')"}, {"espera": 500}]}
  ],
  "ignorar": [
   ".tb-hm",
