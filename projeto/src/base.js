@@ -1,7 +1,7 @@
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.6.19';
+const VERSAO = '0.6.20';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -156,6 +156,7 @@ const Data = (function () {
     let a = dLoad(n);
     if (o && o.desde && o.order) a = a.filter(x => String(x[o.order] || '') >= o.desde);
     if (o && o.contem) a = a.filter(x => Array.isArray(x[o.contem[0]]) && x[o.contem[0]].indexOf(o.contem[1]) >= 0); /* v2.89.0 */
+    if (o && o.igual) a = a.filter(x => x[o.igual[0]] === o.igual[1]); /* v0.6.20: só os registros de uma pessoa (Bugs e sugestões) */
     if (o && o.order) a = a.slice().sort((x, y) => String(y[o.order]).localeCompare(String(x[o.order])));
     if (o && o.limit) a = a.slice(0, o.limit);
     return a;
@@ -186,6 +187,7 @@ const Data = (function () {
     let q = fdb.collection(name);
     if (o.desde && o.order) q = q.where(o.order, '>=', o.desde);
     if (o.contem) q = q.where(o.contem[0], 'array-contains', o.contem[1]); /* v2.89.0 */
+    if (o.igual) q = q.where(o.igual[0], '==', o.igual[1]); /* v0.6.20: sem orderBy junto, para não pedir índice composto */
     if (o.order) q = q.orderBy(o.order, 'desc');
     if (o.limit) q = q.limit(o.limit);
     return q;
@@ -206,6 +208,7 @@ const Data = (function () {
         push(id, campo, item, extra) { const a = dLoad(name); const it = a.find(x => x.id === id); if (!it) return Promise.reject(new Error('nf')); it[campo] = (Array.isArray(it[campo]) ? it[campo] : []).concat([clean({ v: item }).v]); Object.keys(extra || {}).forEach(k => setPath(it, k, clean({ v: extra[k] }).v)); dSave(name, a); dNotify(name); return Promise.resolve(); },
         get(id) { return Promise.resolve(dLoad(name).find(x => x.id === id) || null); },
         fresco(id) { return Promise.resolve(dLoad(name).find(x => x.id === id) || null); }, /* v2.89.1 */
+        seq(id, min) { const a = dLoad(name); let it = a.find(x => x.id === id); if (!it) { it = { id: id, ultimo: 0 }; a.push(it); } it.ultimo = Math.max(Number(it.ultimo) || 0, Number(min) || 0) + 1; dSave(name, a); return Promise.resolve(it.ultimo); },
         all() { return Promise.resolve(dLoad(name)); }
       };
     }
@@ -229,6 +232,8 @@ const Data = (function () {
       push(id, campo, item, extra) { const p = Object.assign({}, extra || {}); p[campo] = firebase.firestore.FieldValue.arrayUnion(clean({ v: item }).v); return fdb.collection(name).doc(id).update(p); },
       get(id) { return fbGet(fdb.collection(name).doc(id)); },
       fresco(id) { return fdb.collection(name).doc(id).get({ source: 'server' }).then(fbDoc); }, /* v2.89.1: direto do servidor */
+      /* v0.6.20: contador (o próximo número), numa transação: dois envios ao mesmo tempo não pegam o mesmo número */
+      seq(id, min) { const ref = fdb.collection(name).doc(id); return fdb.runTransaction(t => t.get(ref).then(d => { const n = Math.max(Number(d.exists && d.data().ultimo) || 0, Number(min) || 0) + 1; t.set(ref, { ultimo: n, ts: nowISO(), porId: (S.user && S.user.id) || '' }); return n; })); },
       all() { return fdb.collection(name).get().then(q => q.docs.map(d => Object.assign({ id: d.id }, d.data()))); }
     };
   }

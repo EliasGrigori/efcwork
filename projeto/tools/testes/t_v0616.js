@@ -48,7 +48,7 @@ const linhas = p => p.evaluate(() => [...document.querySelectorAll('.tb-t tbody 
   await ir(p, 'qualidade/bugs', 900);
   const b = await p.evaluate(() => ({ cab: [...document.querySelectorAll('.tb-t thead th')].map(e => e.textContent.trim()), gr: [...document.querySelectorAll('.tb-gr b')].map(e => e.textContent), lin: [...document.querySelectorAll('.tb-t tbody tr[data-id]')].map(e => e.dataset.id), clip: document.querySelectorAll('.bs-clip').length, meta: document.querySelector('.cs-meta').textContent,
     bts: [...document.querySelectorAll('.cs-acts .bt')].map(e => e.getBoundingClientRect()).map(r => [Math.round(r.top), Math.round(r.height)]) }));
-  conf(b.cab.join() === 'Nº,Tipo,Título,Parte do app,Quem,Data,Situação', 'colunas: ' + b.cab.join(', '));
+  conf(b.cab.join() === 'Nº,Tipo,Título,Prioridade,Parte do app,Quem,Data,Situação', 'colunas: ' + b.cab.join(', '));
   conf(b.lin.join() === 'b4,b2,b3', 'ITEM 57: a tabela mostra só os em aberto, do mais novo (' + b.lin.join(',') + ')');
   conf(b.clip === 1, 'o relato com imagem mostra o clipe');
   conf(/novos para ver/.test(b.meta), 'o Administrador vê os novos para ver (' + b.meta + ')');

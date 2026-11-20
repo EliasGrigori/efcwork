@@ -4,6 +4,48 @@ Este documento junta, em um lugar só, tudo o que o EFCwork grava no Firestore. 
 
 > Limite desta conferência: eu leio o **código**; não vejo as regras que estão publicadas no seu console. As regras que o Elias mandou em 06/11 (EFClaudian v2.102.42) foram a base das conferências antigas; as de depois estão nos trechos das versões v0.6.9, v0.6.10 e v0.6.12. Se quiser uma conferência linha a linha das regras de hoje, cole o arquivo de regras inteiro na conversa.
 
+## 0. v0.6.20 · Bugs e sugestões 2: regra para publicar (decisão do Elias de 20/11: "Regra agora")
+
+O que muda no banco:
+- `sv2_bugs`: cada pessoa lê só os relatos que ela enviou (`porId`); o Administrador (Principal) lê todos. Campos novos: `prioridade` ('alta' | 'media' | 'baixa', só nos problemas), `coment` (lista de comentários: `id, ts, porId, porNome, texto, fotoId`). Valores novos em `area`: 'login' (Segurança / Login) e 'bugs' (Bugs e sugestões).
+- `sv2_bugs_foto`: documentos novos `{relato}_c…` (imagem de comentário; se foi marcada antes de enviar, leva `base` = original e `marcas`). Campo novo `donoId` (quem reportou), para essa pessoa ler a imagem que o Administrador mandou no comentário. O documento original do relato nunca é regravado.
+- `sv2_bugs_seq/n`: coleção nova, um documento só, `{ ultimo }` = o maior número já usado. O app pega o próximo número numa transação (quem não é Administrador não vê os números dos outros). O Administrador acerta o contador sozinho ao abrir a tela, se estiver atrás.
+
+**Efeito no EFClaudian:** a tela Bugs e sugestões do EFClaudian lê a coleção inteira; com esta regra, ela deixa de abrir para quem não é Administrador (para o Administrador continua igual). Decisão do Elias: fechar agora.
+
+Trecho (substitui os `match` de `sv2_bugs` e `sv2_bugs_foto` que existem hoje; `usuarioAtivo()` é o do arquivo de regras do Elias):
+
+```
+function bsPrincipal() {
+  return usuarioAtivo() && get(/databases/$(database)/documents/sv2_users/$(request.auth.uid)).data.perfil in ['principal', 'principal_temp'];
+}
+match /sv2_bugs/{id} {
+  allow read: if bsPrincipal() || (usuarioAtivo() && resource.data.get('porId', '') == request.auth.uid);
+  allow create: if usuarioAtivo() && request.resource.data.porId == request.auth.uid;
+  allow update: if bsPrincipal()
+    || (usuarioAtivo() && resource.data.get('porId', '') == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['coment']));
+  allow delete: if false;
+}
+match /sv2_bugs_foto/{id} {
+  allow read: if bsPrincipal() || (usuarioAtivo() && (resource.data.get('porId', '') == request.auth.uid || resource.data.get('donoId', '') == request.auth.uid));
+  allow create: if usuarioAtivo() && request.resource.data.porId == request.auth.uid && request.resource.data.dataUrl.size() <= 400000;
+  allow update, delete: if false;
+}
+match /sv2_bugs_seq/{id} {
+  allow read: if usuarioAtivo();
+  allow create, update: if usuarioAtivo() && request.resource.data.ultimo is int
+    && (resource == null || request.resource.data.ultimo > resource.data.ultimo);
+  allow delete: if false;
+}
+```
+
+Teste em dois aparelhos (5 minutos), no Firebase real, depois de publicar:
+1. Como Colaborador: Qualidade › Bugs e sugestões mostra só os seus ("em aberto · só os seus"); reportar um problema com prioridade: o número segue a sequência (não repete o de outra pessoa).
+2. Como Administrador: vê todos; muda a prioridade na gaveta; comenta com imagem → o Colaborador recebe o aviso e vê a imagem no comentário.
+3. Como Colaborador: comenta no próprio relato (com imagem marcada antes de enviar) → o Administrador é avisado e vê a imagem.
+4. Se aparecer "permissão negada": ao abrir a tela, é a leitura de `sv2_bugs`; ao enviar, é `sv2_bugs_seq` (o app usa o maior número visível como reserva) ou `sv2_bugs_foto` (a imagem vai dentro do relato, como antes); ao comentar, é o `update` de `sv2_bugs`.
+
 ## 1. O que fazer agora (v0.6.15)
 
 A v0.6.15 **não cria coleção nova** e **não precisa de regra nova** se as regras da v0.6.12 já estão publicadas. Confira só estes dois pontos:
@@ -55,8 +97,9 @@ Coluna "Estado": **Conferida** = conferida contra as regras em 06/11; **Trecho**
 | `sv2_prog` | coletas, programação, plano | criar, atualizar | EFClaudian |
 | `sv2_rodizio` | plano, programação | criar, atualizar | EFClaudian; **campos novos na seção 1** |
 | `sv2_analise` | análise, ANP | criar, atualizar | EFClaudian |
-| `sv2_bugs` | bugs e sugestões (v0.6.16) | ler, criar, acrescentar passo no histórico (Administrador) | EFClaudian |
-| `sv2_bugs_foto` | bugs e sugestões (v0.6.16) | ler, criar (a imagem do relato) | EFClaudian |
+| `sv2_bugs` | bugs e sugestões (v0.6.16; v0.6.20) | ler (só os próprios, salvo o Administrador), criar, passo no histórico e prioridade (Administrador), comentar (quem reportou) | Trecho |
+| `sv2_bugs_foto` | bugs e sugestões (v0.6.16; v0.6.20) | ler (quem enviou, quem reportou e o Administrador), criar (imagem do relato e do comentário) | Trecho |
+| `sv2_bugs_seq` | bugs e sugestões (v0.6.20) | ler, criar e subir o contador do número | Trecho |
 | `sv2_analises` | programação | só ler | EFClaudian |
 | `sv2_talhoes` | programação | só ler | EFClaudian |
 | `sv2_fotos` | apontamentos, coletas | ler, gravar, atualizar | EFClaudian |
