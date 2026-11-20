@@ -1,4 +1,4 @@
-# EFCwork · CONTINUAR (20/11/2026, 11h) · estado: v0.6.23 PUBLICADA; próxima: aprovações no sino (o Elias autorizou publicar sem página de aprovação)
+# EFCwork · CONTINUAR (20/11/2026, 11h30) · estado: v0.6.24 PUBLICADA (aprovações decididas aqui); próxima: abas Apontamentos e Coletas em aberto
 
 Este arquivo substitui o CONTINUAR-EFCwork-v0.6.22.md. Ele é autossuficiente: quem ler só ele já sabe o que fazer.
 

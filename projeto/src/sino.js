@@ -21,7 +21,7 @@ function snToastNovos() {
   if (!S._snVistos) { S._snVistos = {}; pend.forEach(a => { S._snVistos[a.id] = 1; }); return; }
   const novos = pend.filter(a => !S._snVistos[a.id]); novos.forEach(a => { S._snVistos[a.id] = 1; });
   const ab = $('#sn-toast'); if (ab && !pend.some(a => a.id === ab.getAttribute('data-id'))) ab.remove();
-  if (!novos.length || snAberto()) return; const a = novos[novos.length - 1], aqui = !!APROV_APLICA[a.tipo];
+  if (!novos.length || snAberto()) return; const a = novos[novos.length - 1], aqui = aprovDecideAqui(a);
   let d = $('#sn-toast'); if (!d) { d = document.createElement('div'); d.id = 'sn-toast'; d.className = 'sn-toast'; d.setAttribute('role', 'alert'); document.body.appendChild(d); }
   d.setAttribute('data-id', a.id);
   d.innerHTML = '<div class="sn-tc">' + ic('sino') + '<span><small>Pedido para você confirmar' + (novos.length > 1 ? ' · +' + (novos.length - 1) + ' no sino' : '') + '</small><b>' + esc(a.titulo) + '</b>' + (a.descricao ? '<em>' + esc(a.descricao) + '</em>' : '') + '<small>' + esc(a.solicitanteNome || '') + ' · ' + fmtDT(a.ts) + '</small></span><button type="button" class="bt ic-so" data-act="sn-tx" aria-label="Fechar">' + ic('x') + '</button></div>' +
@@ -39,11 +39,11 @@ function snGaveta() {
   const pend = Aprov.pendentesParaMim().slice().sort((a, b) => String(b.ts).localeCompare(String(a.ts))), meus = Aprov.meusPendentes(), todos = Notif.mine(), lim = S.snLim || SN_LIM, ns = todos.filter((n, i) => i < lim || !Notif.isRead(n)), nl = Notif.unread().length; /* v0.6.15 (Grok D2): não lido nunca fica de fora da lista */
   let c = '';
   if (pend.length) c += '<p class="gv-h">Para você decidir · ' + pend.length + '</p>' + pend.map(a => {
-    const aqui = !!APROV_APLICA[a.tipo];
+    const aqui = aprovDecideAqui(a);
     return '<div class="sn-pd"><b>' + esc(a.titulo) + '</b>' + (a.descricao ? '<span>' + esc(a.descricao) + '</span>' : '') + '<small>Pedido por ' + esc(a.solicitanteNome || '') + ' · ' + fmtDT(a.ts) + '</small>' +
       (S.snRep === a.id ? '<div class="fm-c"><span class="fm-r">Por que recusa?</span><textarea class="fm-i" id="sn-mot" rows="2"></textarea></div><div class="sn-bts"><button type="button" class="bt" data-act="sn-rep-x">Voltar</button><button type="button" class="bt pr" data-act="sn-rep-ok" data-id="' + esc(a.id) + '">Recusar</button></div>'
         : aqui ? '<div class="sn-bts"><button type="button" class="bt" data-act="sn-rep" data-id="' + esc(a.id) + '">Recusar</button><button type="button" class="bt pr" data-act="sn-apr" data-id="' + esc(a.id) + '">' + ic('ok') + 'Confirmar</button></div>'
-        : '<div class="sn-bts"><a class="bt" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener">' + ic('externo') + 'Decidir no EFClaudian</a></div>') + '</div>';
+        : '<small class="sn-nd">Tipo de pedido ainda não decidido aqui. Avise o Administrador.</small>') + '</div>'; /* v0.6.24: todos os tipos do EFClaudian já são decididos aqui; sem link para o EFClaudian */
   }).join('');
   const lp = snLibP();
   if (lp.length) c += '<p class="gv-h">Novas coletas para aprovar · ' + lp.length + '</p>' + lp.map(y => { const rep = S.snRepLib === y.k, ja = (rzColetasDe(y.r, y.p, y.a)[0] || {}).data;

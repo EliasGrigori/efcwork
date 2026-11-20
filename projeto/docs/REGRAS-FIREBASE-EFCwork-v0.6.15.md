@@ -78,6 +78,7 @@ Coluna "Estado": **Conferida** = conferida contra as regras em 06/11; **Trecho**
 | `sv2_analises` | programação | só ler | EFClaudian |
 | `sv2_talhoes` | programação | só ler | EFClaudian |
 | `sv2_fotos` | apontamentos, coletas | ler, gravar, atualizar | EFClaudian |
+| `sv2_etqmodelos` | aprovações (desativar ou reativar modelo de etiqueta pedido no EFClaudian, v0.6.24) | ler, atualizar | EFClaudian (regra publicada: Líder e Principal atualizam) |
 | `sv2_apont` | apontamentos | criar, atualizar | EFClaudian |
 | `sv2_cloro` | inspeções | criar, atualizar | EFClaudian |
 | `sv2_cloro_falta` | inspeções | gravar | EFClaudian |

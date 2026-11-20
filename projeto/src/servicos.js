@@ -94,6 +94,8 @@ const Notif = {
 };
 
 /* ---------- pedidos ao superior (autorizações) ---------- */
+const APROV_RECUSA = {}; /* v0.6.24: APROV_RECUSA[tipo] = (payload, pedido) => … ; o que muda quando o pedido é reprovado (aprovar.js) */
+const aprovDecideAqui = a => !!(a && (APROV_APLICA[a.tipo] || !a.payload)); /* pedido sem payload (pedido geral) só muda a situação */
 const APROV_APLICA = {}; /* APROV_APLICA[tipo] = async (payload, pedido) => … ; só os tipos com tela refeita aqui podem ser decididos no EFCwork */
 const Aprov = {
   async pedir(p) { /* v0.6.8 (varredura): se a gravação falhar, avisa e devolve null (antes falhava em silêncio, sem mensagem nenhuma) */
@@ -124,11 +126,12 @@ const Aprov = {
     const a = S.aprov.find(x => x.id === id); if (!a) return false;
     if (a.status !== 'pendente') { aviso('Esse pedido já foi decidido por ' + ((a.decisao && a.decisao.nome) || 'outra pessoa') + '.'); return false; }
     if (!Aprov.podeDecidir(a)) { aviso('Só quem foi indicado como superior (ou o Administrador) pode decidir.', 'erro'); return false; }
-    if (!APROV_APLICA[a.tipo]) { aviso('Este pedido ainda é decidido no EFClaudian.', 'erro'); return false; }
+    if (!aprovDecideAqui(a)) { aviso('Este tipo de pedido ainda não é decidido aqui. Avise o Administrador.', 'erro'); return false; }
     if (!ok && !motivo) { aviso('Escreva o motivo da reprovação.', 'erro'); return false; }
     const dec = { por: S.user.id, nome: S.user.nome, perfil: S.user.perfil, ts: nowISO(), motivo: motivo || '' };
     try { await Data.col('sv2_aprov').update(id, { status: ok ? 'aprovado' : 'reprovado', decisao: dec }); } catch (e) { aviso(svErro(e), 'erro'); return false; }
     if (ok && a.payload) { try { await APROV_APLICA[a.tipo](a.payload, Object.assign({ id: id }, a)); } catch (e) { aviso('Aprovado, mas não foi aplicado: ' + (e.message || svErro(e)), 'erro'); } }
+    if (!ok && APROV_RECUSA[a.tipo]) { try { await APROV_RECUSA[a.tipo](a.payload, Object.assign({ id: id }, a)); } catch (e) { aviso('Reprovado, mas não foi aplicado: ' + (e.message || svErro(e)), 'erro'); } }
     Notif.send({ nivel: ok ? 'info' : 'aviso', titulo: ok ? 'Autorização aprovada' : 'Autorização reprovada', texto: S.user.nome + (ok ? ' aprovou: ' : ' reprovou: ') + a.titulo + (motivo ? ' · ' + motivo : ''), para: [a.solicitanteId], refTipo: 'aprovacao', refId: id }).catch(() => {});
     Audit.log({ acao: ok ? 'aprovar' : 'reprovar', entidade: 'aprovacao', entidadeId: id, resumo: (ok ? 'Aprovou' : 'Reprovou') + ' o pedido de ' + a.solicitanteNome + ': ' + a.titulo + (motivo ? ' · motivo: ' + motivo : ''), antes: { status: 'pendente' }, depois: { status: ok ? 'aprovado' : 'reprovado', decidido_por: S.user.nome, motivo: motivo || '' }, autorizadoPor: { id: S.user.id, nome: S.user.nome } });
     aviso(ok ? 'Aprovado.' : 'Reprovação registrada.');
