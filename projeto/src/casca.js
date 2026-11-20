@@ -10,10 +10,10 @@ const AREAS = [
   { id: 'coletas', nome: 'Coletas', ic: 'frasco', versao: 'v0.4', parcial: 'amostras, água, programação, envio e pontos de água prontos aqui; fichas, etiquetas e os outros cadastros seguem no EFClaudian', abas: [{ id: 'amostras', nome: 'Amostras' }, { id: 'agua', nome: 'Água' }, { id: 'programacao', nome: 'Programação' }, { id: 'envio', nome: 'Envio' }, { id: 'cadastros', nome: 'Cadastros' }, { id: 'plano', nome: 'Plano de coleta', oculta: true, pai: 'programacao' }] },
   { id: 'rateios', nome: 'Rateios', ic: 'pizza', get negada() { return !!S.user && !rtVe(); }, abas: [] }, /* v0.6.17: tela única (rateio.js); sem a atribuição Rateios, a área some */
   { id: 'inspecoes', nome: 'Inspeções', ic: 'lista', versao: 'v0.6', parcial: 'cloro, apontamentos e auditoria interna prontos aqui', abas: [{ id: 'cloro', nome: 'Cloro' }, { id: 'apontamentos', nome: 'Apontamentos' }, { id: 'auditoria', nome: 'Auditoria interna' }] },
-  { id: 'documentos', nome: 'Documentos', ic: 'doc', versao: 'v0.5', parcial: 'documentos, caixas d’água, histórico e impressos prontos aqui; o relatório de documentos segue no EFClaudian', abas: [{ id: 'documentos', nome: 'Documentos' }, { id: 'caixas', nome: 'Caixas d’água' }, { id: 'historico', nome: 'Histórico' }, { id: 'impressos', nome: 'Impressos' }] },
+  { id: 'documentos', nome: 'Documentos', ic: 'doc', versao: 'v0.5', parcial: 'documentos, caixas d’água, histórico e impressos prontos aqui; o relatório fica em Relatórios › Documentos', abas: [{ id: 'documentos', nome: 'Documentos' }, { id: 'caixas', nome: 'Caixas d’água' }, { id: 'historico', nome: 'Histórico' }, { id: 'impressos', nome: 'Impressos' }] },
   { id: 'almox', nome: 'Almoxarifado', ic: 'caixa', versao: 'v0.3', parcial: 'consultar e lançar prontos aqui; cadastro de material, kits, fotos e inventário seguem no EFClaudian', abas: [{ id: 'painel', nome: 'Painel' }, { id: 'materiais', nome: 'Materiais' }, { id: 'movimentacoes', nome: 'Movimentações' }, { id: 'solicitacoes', nome: 'Solicitações' }, { id: 'equipamentos', nome: 'Equipamentos' }, { id: 'contagem', nome: 'Contagem', oculta: true, pai: () => typeof cgDoEq === 'function' && cgDoEq() ? 'equipamentos' : 'materiais' }, { id: 'calibracao', nome: 'Calibração', oculta: true, pai: 'equipamentos' }] },
   { id: 'qualidade', nome: 'Qualidade', ic: 'escudo', versao: 'v0.7', parcial: 'Não conformidades, Análise de problemas, Treinamentos e Bugs e sugestões prontos aqui; Conversas seguem no EFClaudian (a Semana está em Relatórios)', abas: [{ id: 'nc', nome: 'Não conformidades' }, { id: 'analise', nome: 'Análise de problemas' }, { id: 'treinos', nome: 'Treinamentos' }, { id: 'bugs', nome: 'Bugs e sugestões' }] },
-  { id: 'relatorios', nome: 'Relatórios', ic: 'graf', versao: 'v0.8', grupo: 'Análise', parcial: 'o Rateio, a Semana e o Almoxarifado do mês estão prontos aqui; Documentos, Apontamentos e Coletas em aberto seguem no EFClaudian', get negada() { return !!S.user && !(rlVe() || smVe() || amVe()); }, abas: [{ id: 'rateio', nome: 'Rateio', get negada() { return !!S.user && !rlVe(); } }, { id: 'semana', nome: 'Semana', get negada() { return !!S.user && !smVe(); } }, { id: 'almox', nome: 'Almoxarifado', get negada() { return !!S.user && !amVe(); } }] }, /* v0.6.18: Rateio (relatorios.js); sem a atribuição Rateios a área some (as outras abas entram por aqui depois) */
+  { id: 'relatorios', nome: 'Relatórios', ic: 'graf', versao: 'v0.8', grupo: 'Análise', parcial: 'o Rateio, a Semana, o Almoxarifado do mês e os Documentos estão prontos aqui; Apontamentos e Coletas em aberto seguem no EFClaudian', get negada() { return !!S.user && !(rlVe() || smVe() || amVe() || rdVe()); }, abas: [{ id: 'rateio', nome: 'Rateio', get negada() { return !!S.user && !rlVe(); } }, { id: 'semana', nome: 'Semana', get negada() { return !!S.user && !smVe(); } }, { id: 'almox', nome: 'Almoxarifado', get negada() { return !!S.user && !amVe(); } }, { id: 'documentos', nome: 'Documentos', get negada() { return !!S.user && !rdVe(); } }] }, /* v0.6.18: Rateio (relatorios.js); sem a atribuição Rateios a área some (as outras abas entram por aqui depois) */
   { id: 'adm', nome: 'Administração', ic: 'eng', rodape: true, abas: [{ id: 'empresa', nome: 'Empresa' }, { id: 'aparencia', nome: 'Aparência' }, { id: 'atividade', nome: 'Atividade', get negada() { return !isPrincipal(S.user); } }, { id: 'sobre', nome: 'Sobre' }] }
 ];
 const csArea = id => AREAS.find(a => a.id === id) || AREAS[0];
@@ -196,6 +196,13 @@ function csTopo() {
   return '<header class="cs-topo"><button type="button" class="bt ic-so cs-so-cel" data-act="cs-menu" aria-label="Abrir menu">' + ic('menu') + '</button>' + fer + '</header>';
 }
 const csFerPC = () => innerWidth >= 900;
+/* v0.6.23 (ITEM 130): ícones marcados com data-ic-aba (a impressora dos Relatórios) vão para a linha das abas, à direita, como os das tabelas. No celular ficam no cabeçalho */
+function csIcAba() {
+  if (!csFerPC()) return; const ics = $$('.cs-ct .cs-acts [data-ic-aba]'), abas = $('.cs-ct .cs-abas'); if (!ics.length || !abas) return;
+  let w = abas.parentNode.classList.contains('cs-abas-l') ? abas.parentNode : null;
+  if (!w) { w = document.createElement('div'); w.className = 'cs-abas-l'; abas.parentNode.insertBefore(w, abas); w.appendChild(abas); }
+  const b = document.createElement('div'); b.className = 'tb-bar tb-bar-sobe cs-ic-aba'; ics.forEach(x => b.appendChild(x)); w.appendChild(b);
+}
 /* põe as ferramentas na linha do título (o 1º cabeçalho da tela); sem cabeçalho, ficam numa linha própria à direita */
 function csFerPoe() {
   if (!S._csFer || !csFerPC()) return; const ct = document.querySelector('.cs-main > .cs-ct'); if (!ct || ct.querySelector('.cs-fer')) return;
@@ -228,7 +235,7 @@ function render() {
   try { corpo = f ? f(S.rota.aba) : arEmBreve(ar); } catch (e) { console.error(e); corpo = '<div class="pn"><div class="vazio"><b>Esta tela deu erro ao abrir.</b><span>' + esc(e && e.message || e) + '</span></div></div>'; }
   const foco = document.activeElement && document.activeElement.getAttribute && document.activeElement.getAttribute('data-foco'), sel = foco ? [document.activeElement.selectionStart, document.activeElement.selectionEnd] : null;
   app.innerHTML = '<div class="cs-app' + csMenuClasse() + '">' + csLado() + csPux() + '<div class="cs-fundo" data-act="cs-fecha"></div><main class="cs-main" id="conteudo">' + csTopo() + '<div class="cs-ct">' + corpo + '</div><footer class="cs-rod">' + APP_APELIDO + ' · ' + esc((S.empresa && S.empresa.nome) || 'Sua empresa') + '</footer></main>' + csBaixo() + '</div>';
-  csFerPoe();
+  csFerPoe(); csIcAba();
   { const on = document.querySelector('.cs-abas a.on'), bar = on && on.parentNode; if (bar && bar.scrollWidth > bar.clientWidth) bar.scrollLeft = Math.max(0, on.offsetLeft - (bar.clientWidth - on.offsetWidth) / 2); } /* v0.6.12: a aba aberta aparece na faixa, mesmo com várias abas no celular */
   const dep = TELAS[ar.id + ':depois']; if (dep) { try { dep(S.rota.aba); } catch (e) { console.error(e); } }
   S._puxEntra = false;

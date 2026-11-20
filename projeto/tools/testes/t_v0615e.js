@@ -17,17 +17,17 @@ const mede = p => p.evaluate(() => { const a = document.querySelector('.cs-acts'
 (async () => { const b = await chromium.launch();
   let p = await entra(b, 390);
   console.log('— Celular 390 px: Almoxarifado › Materiais (3 botões + ícone)'); await vai(p, '/almox/materiais'); let m = await mede(p);
-  conf(m.ext, 'o ícone do EFClaudian existe no cabeçalho'); conf(Math.abs((m.extTop + m.extAlt / 2) - (m.bcTop + m.bcBot) / 2) <= 6, 'o ícone fica na linha do caminho (centro a ' + Math.round(Math.abs((m.extTop + m.extAlt / 2) - (m.bcTop + m.bcBot) / 2)) + ' px)');
-  conf(m.extRight <= m.viewW, 'o ícone não passa da borda da tela'); conf(m.extAlt >= 44, 'área de toque do ícone com 44 px ou mais');
+  conf(!m.ext, 'sem o ícone do EFClaudian no cabeçalho (só na Início, 20/11)');
+
   conf(m.linhas === 1 && m.alturas === 1, 'os 3 botões na mesma linha e com a mesma altura'); conf(m.lar.length === 3 && Math.max.apply(null, m.lar) - Math.min.apply(null, m.lar) <= 1, 'os 3 botões com a mesma largura (' + m.lar.join(' / ') + ')');
   conf(!m.corta && !m.sobra, 'nada cortado e sem rolagem lateral');
   console.log('— Coletas › Envio (lista retrátil + botão)'); await vai(p, '/coletas/envio'); m = await mede(p);
-  conf(m.linhas === 1 && m.lar.length === 2 && Math.abs(m.lar[0] - m.lar[1]) <= 1, 'lista e botão com a mesma largura (' + m.lar.join(' / ') + ')'); conf(m.ext && m.extTop < m.bcBot + 8, 'ícone também na linha do caminho');
+  conf(m.linhas === 1 && m.lar.length === 2 && Math.abs(m.lar[0] - m.lar[1]) <= 1, 'lista e botão com a mesma largura (' + m.lar.join(' / ') + ')');
   console.log('— Coletas › Água (botão com ícones soltos não vira grade)'); await vai(p, '/coletas/agua'); m = await mede(p);
   conf(m.linhas === 1 && !m.corta, 'o botão “Nova coleta de água” e os ícones seguem numa linha, sem corte'); conf(m.lar[0] > 120, 'o botão principal mantém o tamanho do texto (' + m.lar[0] + ' px)');
   console.log('— Inspeções › Apontamentos (texto grande passa para a linha de baixo)'); await vai(p, '/inspecoes/apontamentos'); m = await mede(p);
   conf(!m.corta && !m.sobra, 'nenhum botão cortado');
   conf(p._er.length === 0, 'sem erro de JavaScript'); await p.context().close();
   console.log('— PC 1280 px: nada muda'); p = await entra(b, 1280); await vai(p, '/almox/materiais'); m = await mede(p);
-  conf(m.linhas === 1 && m.extTop > m.bcBot, 'no PC o ícone continua na fileira de ações (abaixo do caminho)'); await p.context().close();
+  conf(!m.ext, 'no PC também sem o ícone do EFClaudian'); await p.context().close();
   await b.close(); console.log('\n' + ok + ' ok, ' + falhas + ' falha(s)'); process.exit(falhas ? 1 : 0); })();

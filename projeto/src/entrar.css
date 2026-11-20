@@ -14,7 +14,8 @@
 .en-form{display:flex;flex-direction:column;gap:14px;margin-top:6px}
 .en-sen{display:flex;gap:6px}.en-sen input{flex:1}.en-sen .bt{height:42px;width:42px}
 .en-lin{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:var(--tx2);gap:10px;flex-wrap:wrap}
-.en-lin a{color:var(--aTx);font-weight:600;text-decoration:none}
+.en-lin a,.en-esq{color:var(--aTx);font-weight:600;text-decoration:none}
+.en-esq{appearance:none;border:0;background:none;padding:0;font:inherit;font-weight:600;cursor:pointer}
 .en-ck{display:flex;gap:8px;align-items:center;cursor:pointer}
 .en-ck input{width:18px;height:18px;accent-color:var(--a)}
 .en-msg{min-height:20px;margin:0;color:var(--cr);font-size:14px}

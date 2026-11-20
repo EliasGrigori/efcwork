@@ -132,7 +132,7 @@ function amResumo(d) {
 /* ---------- tela ---------- */
 function amTela() {
   const f = S.am, ent = f._ent, mes = amMesSel(); f._ent = false;
-  const c = cabecalho({ titulo: 'Almoxarifado do mês', abaNome: 'Almoxarifado', acoes: '<button type="button" class="bt ic-so" data-act="am-imp" title="Imprimir" aria-label="Imprimir">' + ic('impressora') + '</button>' });
+  const c = cabecalho({ titulo: 'Almoxarifado do mês', abaNome: 'Almoxarifado', acoes: '<button type="button" class="bt ic-so" data-act="am-imp" data-ic-aba title="Imprimir" aria-label="Imprimir">' + ic('impressora') + '</button>' });
   const bar = '<div class="sm-bar"><button type="button" class="at-fl" data-act="am-filtro" aria-expanded="' + esc(String(f.aberto)) + '">' + ic('filtro') + '<b>Filtro</b><small>· ' + esc(amMesTit(mes)) + '</small></button></div>' +
     '<div class="sm-fp am-fp"' + (f.aberto ? '' : ' hidden') + '><label class="cp">Mês' + ddHTML('am:mes', mes, amOpcoesMes()) + '</label></div>';
   if (!S.almCarregado && !DEMO && !S.almItens.length) return c + bar + '<section class="pn"><div class="vazio"><b>Carregando o almoxarifado…</b></div></section>';

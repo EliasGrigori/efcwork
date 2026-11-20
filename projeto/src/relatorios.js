@@ -124,7 +124,7 @@ function rlFiltroHTML() {
 }
 function rlTela() {
   const f = S.rl, ent = f._ent; f._ent = false; RL_MP = null;
-  const c = cabecalho({ titulo: 'Rateio', acoes: '<button type="button" class="bt ic-so" data-act="rl-imp" title="Imprimir" aria-label="Imprimir">' + ic('impressora') + '</button>' });
+  const c = cabecalho({ titulo: 'Rateio', acoes: '<button type="button" class="bt ic-so" data-act="rl-imp" data-ic-aba title="Imprimir" aria-label="Imprimir">' + ic('impressora') + '</button>' });
   return c + '<div class="rl' + (ent ? ' rl-ent' : '') + '"><div class="rl-bar"><button type="button" class="at-fl" data-act="rl-filtro" aria-expanded="' + esc(String(f.aberto)) + '">' + ic('filtro') + '<b>Filtro</b><small>· ' + esc(rlResumoFiltro()) + '</small></button></div>' + rlFiltroHTML() + rlAviso() + (f.tipo === 'agua' ? rlAgua() : rlCampo()) + '</div>';
 }
 const rlQualOrig = TELAS.relatorios;

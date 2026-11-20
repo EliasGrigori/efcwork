@@ -16,7 +16,9 @@ const srv = http.createServer((q, r) => {
 let ok = 0, falhas = 0; const conf = (c, m) => { if (c) { ok++; console.log('  ok  ' + m); } else { falhas++; console.log('  FALHA  ' + m); } };
 const est = p => p.evaluate(() => { const j = document.querySelector('#jn'), fr = document.querySelector('.jn-fr'), r = j && j.getBoundingClientRect();
   return { tem: !!j, aberta: !!(j && j.classList.contains('aberta')), vis: r ? Math.round(r.bottom) : 0, ativa: S.jnAtiva, frOn: !!(fr && fr.classList.contains('on')), ifr: [...document.querySelectorAll('.jn-fr iframe')].map(f => f.getAttribute('data-j')),
-    abas: [...document.querySelectorAll('.jn-ab')].map(b => b.textContent), on: (document.querySelector('.jn-aw.on .jn-ab') || {}).textContent, bg: j ? getComputedStyle(j).backgroundColor : '', cam: S.camadas.map(c => c.nome) }; });
+    abas: [...document.querySelectorAll('.jn-ab')].map(b => b.textContent), on: (document.querySelector('.jn-aw.on .jn-ab') || {}).textContent, bg: j ? j.style.getPropertyValue('--jn-bg') : '', cam: S.camadas.map(c => c.nome) }; });
+const meio = p => p.evaluate(() => { const r = document.querySelector('#jn .jn-faixa').getBoundingClientRect(); return { x: Math.round(r.left + r.width / 2), l: Math.round(r.left), r: Math.round(r.right) }; });
+const noFio = async p => { const m = await meio(p); await p.mouse.move(m.x, 3); };
 const vertPronto = (p, ms) => p.waitForFunction(() => { const f = document.querySelector('.jn-fr iframe[data-j="docs"]'); try { const d = f && f.contentDocument; return !!(d && d.body && d.readyState === 'complete' && !d.querySelector('#abertura:not(.sai)') && d.body.children.length > 1); } catch (e) { return false; } }, null, { timeout: ms || 20000 }).then(() => true, () => false);
 
 (async () => {
@@ -31,27 +33,39 @@ const vertPronto = (p, ms) => p.waitForFunction(() => { const f = document.query
   let e = await est(p);
   conf(pronto, 'o Vértice de verdade carregou dentro da janela');
   await p.waitForTimeout(1300);
-  const fio = await p.evaluate(() => { const d = document.querySelector('.jn-fr iframe').contentDocument; return [getComputedStyle(document.querySelector('#jn')).backgroundColor, getComputedStyle(d.body).backgroundColor]; });
+  const fio = await p.evaluate(() => { const d = document.querySelector('.jn-fr iframe').contentDocument; return [document.querySelector('#jn').style.getPropertyValue('--jn-bg'), getComputedStyle(d.body).backgroundColor]; });
   conf(fio[0] === fio[1], 'o fio recolhido já tem a cor do Vértice (' + fio.join(' = ') + ')');
   conf(e.tem && e.ativa === 'docs' && e.frOn && e.ifr.join() === 'docs', 'a janela do Vértice ficou na frente');
   conf(!e.aberta && e.vis === 6, 'a faixa fica recolhida: só o fio de 6 px no alto (' + e.vis + ' px)');
   conf(e.cam.indexOf('janela') >= 0, 'abrir um app conta como uma camada (Esc e voltar)');
-  await p.mouse.move(400, 3); await p.waitForTimeout(400); e = await est(p);
-  conf(e.aberta && e.vis === 26, 'passar o mouse no fio abre a faixa de 26 px');
+  { const m = await meio(p); conf(m.l === 0 && m.r < 400 && (await p.evaluate(() => Math.round(document.querySelector('#jn').getBoundingClientRect().width))) === 1280, 'a faixa vai de ponta a ponta, e a área que reage é só a das abas (0 a ' + m.r + ' px)');
+    await p.mouse.move(1150, 3); await p.waitForTimeout(500); conf(!(await est(p)).aberta, 'mouse no alto fora das abas: nada abre');
+    await p.mouse.move(m.x, 3); await p.waitForTimeout(40); await p.mouse.move(m.x, 300); await p.waitForTimeout(400); conf(!(await est(p)).aberta, 'passar de raspão pelo fio não abre (espera o mouse parar)'); }
+  await noFio(p); await p.waitForTimeout(700); e = await est(p);
+  conf(e.aberta && e.vis === 26, 'parar o mouse no fio abre a faixa de 26 px, o tamanho de antes (' + e.vis + ')');
+  conf(await p.evaluate(() => { const x = document.elementFromPoint(1150, 12); return !!x && x.tagName === 'IFRAME'; }), 'com a faixa aberta, o canto direito do alto continua sendo do app de baixo (o clique passa)');
+  const tr0 = await p.evaluate(() => { const i = document.querySelector('.jn-ind').getBoundingClientRect(), b = document.querySelector('.jn-aw.on .jn-ab').getBoundingClientRect(); return i.left >= b.left && i.right <= b.right; });
+  conf(tr0, 'o traço fica embaixo da aba da frente');
+  const rel = await p.evaluate(() => { const s = getComputedStyle(document.querySelector('#jn')); return { g: /gradient/.test(s.backgroundImage), sh: (s.boxShadow.match(/rgba?\(/g) || []).length }; });
+  conf(rel.g && rel.sh >= 4, 'textura e relevo: degradê, luz em cima e sombra em duas camadas');
   conf(e.abas.join('|') === 'EFCwork|Vértice Docs' && e.on === 'Vértice Docs', 'abas: EFCwork e Vértice Docs, com o Vértice marcado');
   const corV = await p.evaluate(() => { const d = document.querySelector('.jn-fr iframe').contentDocument; return getComputedStyle(d.body).backgroundColor; });
   conf(e.bg === corV, 'a faixa tem a cor da janela da frente (Vértice: ' + corV + ')');
-  const tr = await p.evaluate(() => { const a = document.querySelector('.jn-aw.on .jn-ab'), s = getComputedStyle(a, '::after'); return { h: s.height, op: s.opacity, ac: getComputedStyle(a).getPropertyValue('--jn-ac') }; });
-  conf(tr.h === '2px' && tr.op === '1' && tr.ac, 'a aba da frente tem o traço de 2 px na cor de destaque do app (' + tr.ac + ')');
-  await p.mouse.move(640, 400); await p.waitForTimeout(600); e = await est(p);
-  conf(!e.aberta, 'tirar o mouse recolhe a faixa');
+  const tr = await p.evaluate(() => { const i = document.querySelector('.jn-ind'), s = getComputedStyle(i); return { h: s.height, ac: document.querySelector('#jn').querySelector('.jn-aw.on .jn-ab').style.getPropertyValue('--jn-ac') || getComputedStyle(i).backgroundColor }; });
+  conf(tr.h === '2px' && tr.ac, 'a aba da frente tem o traço de 2 px na cor de destaque do app (' + tr.ac + ')');
+  await p.mouse.move(640, 400); await p.waitForTimeout(200); conf((await est(p)).aberta, 'tirar o mouse não fecha na hora (espera um pouco)');
+  await p.waitForTimeout(800); e = await est(p);
+  conf(!e.aberta, 'e depois recolhe a faixa');
   /* o Vértice guarda algo na tela dele: ao alternar, nada se perde */
   await p.evaluate(() => { document.querySelector('.jn-fr iframe').contentWindow._marca = 'vivo'; });
-  await p.mouse.move(400, 3); await p.waitForTimeout(300); await p.click('.jn-ab[data-j="efcwork"]'); await p.waitForTimeout(400); e = await est(p);
+  await noFio(p); await p.waitForTimeout(700); const xi0 = await p.evaluate(() => document.querySelector('.jn-ind').getBoundingClientRect().left);
+  await p.click('.jn-ab[data-j="efcwork"]'); await p.waitForTimeout(400); e = await est(p);
+  const xi1 = await p.evaluate(() => { const i = document.querySelector('.jn-ind').getBoundingClientRect(), b = document.querySelector('.jn-ab[data-j="efcwork"]').getBoundingClientRect(); return { l: i.left, ok: i.left >= b.left && i.right <= b.right, el: !!document.querySelector('#jn .jn-ind') }; });
+  conf(xi1.el && xi1.l < xi0 && xi1.ok, 'o traço desliza para a aba EFCwork (o mesmo traço, não um novo)');
   const corW = await p.evaluate(() => getComputedStyle(document.body).backgroundColor);
   conf(e.ativa === 'efcwork' && !e.frOn && e.ifr.length === 1, 'aba EFCwork: o EFCwork volta para a frente e o Vértice continua aberto atrás');
   conf(e.bg === corW && e.cam.indexOf('janela') < 0, 'a faixa troca para a cor do EFCwork e a camada sai');
-  await p.mouse.move(400, 3); await p.waitForTimeout(300); await p.click('.jn-ab[data-j="docs"]'); await p.waitForTimeout(400);
+  await noFio(p); await p.waitForTimeout(700); await p.click('.jn-ab[data-j="docs"]'); await p.waitForTimeout(400);
   conf(await p.evaluate(() => document.querySelector('.jn-fr iframe').contentWindow._marca === 'vivo'), 'voltar ao Vértice: a mesma janela, sem recarregar (o que estava aberto continua)');
   await p.evaluate(() => document.querySelector('.jn-ab[data-j="docs"]').focus()); await p.keyboard.press('Escape'); await p.waitForTimeout(500); e = await est(p);
   conf(e.ativa === 'efcwork', 'Esc (com o foco no EFCwork) volta do Vértice para o EFCwork');
@@ -117,7 +131,7 @@ const vertPronto = (p, ms) => p.waitForFunction(() => { const f = document.query
   conf(rs && rs.o['lab.nome'] && rs.o['envio.caixas'] === 2 && rs.o['envio.amostras'] === 3 && Array.isArray(rs.o['amostras[]']) && rs.o['amostras[]'].length > 0 && rs.o['usuario.nome'] === 'Joana Silva', JSON.stringify(rs && rs.o).slice(0, 300) + ' · resumo com laboratório, caixas, amostras, a lista das amostras e quem está imprimindo');
 
   console.log('— Fechar');
-  await p.mouse.move(400, 3); await p.waitForTimeout(300); await p.click('.jn-x[data-j="docs"]'); await p.waitForTimeout(300);
+  await noFio(p); await p.waitForTimeout(700); await p.click('.jn-x[data-j="docs"]'); await p.waitForTimeout(300);
   conf(!!(await p.$('#cf')), 'o X pede confirmação antes de fechar');
   await p.click('#cf [data-act="cf-sim"]'); await p.waitForTimeout(400); e = await est(p);
   conf(!e.tem && e.ifr.length === 0 && e.ativa === 'efcwork', 'fechado: some a janela e a faixa');
@@ -130,15 +144,15 @@ const vertPronto = (p, ms) => p.waitForFunction(() => { const f = document.query
   let c = await abre(br, { raiz: RAIZ, url: base + '/efcwork/', w: 390, h: 820 });
   await c.evaluate(() => jnAbrir('docs')); await vertPronto(c); await c.waitForTimeout(1500); e = await est(c);
   conf(e.ativa === 'docs' && !e.aberta && e.vis === 6, 'no celular: o Vértice em tela cheia, faixa recolhida em 6 px');
-  const zona = await c.evaluate(() => { const s = getComputedStyle(document.querySelector('#jn'), '::after'); return s.height; });
+  const zona = await c.evaluate(() => { const s = getComputedStyle(document.querySelector('#jn .jn-faixa'), '::after'); return s.height; });
   conf(zona === '12px', 'no toque, o fio tem 12 px a mais de área invisível para acertar o dedo');
-  await c.touchscreen.tap(200, 8); await c.waitForTimeout(350); e = await est(c);
+  { const m = await meio(c); await c.touchscreen.tap(m.x, 8); } await c.waitForTimeout(600); e = await est(c);
   conf(e.aberta && e.vis === 40, 'tocar o fio abre a faixa (40 px no toque: ' + e.vis + ')');
-  const btA = await c.evaluate(() => [...document.querySelectorAll('.jn-ab,.jn-x,.jn-fora')].map(b => Math.round(b.getBoundingClientRect().height)));
+  const btA = await c.evaluate(() => [...document.querySelectorAll('.jn-ab,.jn-x')].map(b => Math.round(b.getBoundingClientRect().height)));
   conf(btA.every(h => h >= 36), 'no toque, abas e botões da faixa com 36 px ou mais (' + btA.join(', ') + ')');
   const alt = await c.evaluate(() => [...document.querySelectorAll('.jn-ab')].map(b => Math.round(b.getBoundingClientRect().height)));
   conf(alt.every(h => h === alt[0]), 'abas com a mesma altura');
-  await c.touchscreen.tap(40, 20); await c.waitForTimeout(1200); e = await est(c);
+  await c.tap('.jn-ab[data-j="efcwork"]'); await c.waitForTimeout(1200); e = await est(c);
   conf(e.ativa === 'efcwork' && !e.aberta, 'tocar na aba EFCwork volta e a faixa recolhe');
   await c.evaluate(() => jnIr('docs')); await c.waitForTimeout(300);
   await c.goBack().catch(() => {}); await c.waitForTimeout(600); e = await est(c);
@@ -148,7 +162,7 @@ const vertPronto = (p, ms) => p.waitForFunction(() => { const f = document.query
 
   console.log('— Tema escuro');
   await c.evaluate(() => csTrocaTema('escuro')); await c.waitForTimeout(300);
-  const esc = await c.evaluate(() => ({ bg: getComputedStyle(document.querySelector('#jn')).backgroundColor, body: getComputedStyle(document.body).backgroundColor }));
+  const esc = await c.evaluate(() => ({ bg: document.querySelector('#jn').style.getPropertyValue('--jn-bg'), body: getComputedStyle(document.body).backgroundColor }));
   conf(esc.bg === esc.body, 'trocar o tema do EFCwork muda a cor da faixa junto');
 
   await br.close(); srv.close();

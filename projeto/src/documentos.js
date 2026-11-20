@@ -12,7 +12,7 @@ const DC_ATENCAO = 15;
 const DC_ST = { venc: ['Vencido', 'cr'], aten: ['Vence em breve', 'wa'], ok: ['Em dia', ''], sem: ['Sem data', ''], des: ['Desativado', ''] };
 
 CS_CARGAS.push(() => {
-  const re = () => { if (S.rota.area === 'documentos') render(); else if (S.gv) gvDesenha(); };
+  const re = () => { if (S.rota.area === 'documentos' || (S.rota.area === 'relatorios' && S.rota.aba === 'documentos')) render(); else if (S.gv) gvDesenha(); }; /* v0.6.23: Relatórios › Documentos usa os mesmos dados */
   csOuve('sv2_docs', l => { S.docs = l || []; re(); });
   csOuve('sv2_caixas', l => { S.caixas = l || []; re(); });
   csOuve('sv2_lanc', l => { S.lanc = l || []; S._dcUltRef = null; re(); }, { order: 'ts', limit: 3000 });

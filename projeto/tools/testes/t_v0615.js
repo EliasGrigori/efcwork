@@ -83,7 +83,7 @@ async function login(p) {
   conf(sn.cad, 'o aviso antigo não lido ("Cadastro completo") aparece na lista');
   conf(sn.mais, 'há "Mostrar mais" para os avisos antigos já lidos');
   await p.click('[data-act="sn-abre"][data-id="nt1"]'); await p.waitForTimeout(400);
-  conf(await p.evaluate(() => { const d = document.querySelector('#gv .sn-det'); return !!d && /Ana Souza pediu/.test(d.textContent) && !!d.querySelector('a.bt'); }), 'tocar em "Autorização pedida" abre o detalhe com o texto e "Abrir no EFClaudian"');
+  conf(await p.evaluate(() => { const d = document.querySelector('#gv .sn-det'); return !!d && /Ana Souza pediu/.test(d.textContent) && !d.querySelector('a[href*="efclaudian"]'); }), 'tocar em "Autorização pedida" abre o detalhe com o texto (sem link para o EFClaudian, 20/11)');
   await p.click('[data-act="sn-mais"]'); await p.waitForTimeout(300);
   conf(await p.evaluate(() => !document.querySelector('[data-act="sn-mais"]') || document.querySelectorAll('#gv .sn-n').length > 40), '"Mostrar mais" traz os avisos seguintes');
   await esc(p); await esc(p);

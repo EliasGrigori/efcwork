@@ -30,9 +30,8 @@ function snToastNovos() {
 const SN_LIM = 40;
 /* detalhe do aviso dentro do sino: texto inteiro, de quem e quando; o que é do EFClaudian leva para lá */
 function snDetHTML(n) {
-  const fora = !n.refTipo || /^(aprovacao|tarefa|relatorio|semanal)/.test(n.refTipo);
   return '<div class="sn-det">' + (n.texto ? '<p>' + esc(n.texto) + '</p>' : '') + '<small>' + esc((n.origem ? 'De ' + n.origem + ' · ' : '') + fmtDT(n.ts)) + '</small>' +
-    (fora ? '<a class="bt" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener">' + ic('externo') + 'Abrir no EFClaudian</a>' : '') + '</div>';
+    '</div>'; /* v0.6.23: sem link para o EFClaudian (só na tela Início) */
 }
 const snNivel = { critico: ['Crítico', 'cr'], aviso: ['Aviso', 'wa'], info: ['', ''] };
 function snGaveta() {

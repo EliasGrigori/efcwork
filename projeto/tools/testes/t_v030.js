@@ -54,7 +54,7 @@ const movs = (p, f) => p.evaluate(f => S.almMov.filter(new Function('m', 'return
   console.log('— Cabeçalho');
   await p.evaluate(() => { location.hash = '#/almox/materiais'; }); await p.waitForTimeout(200);
   conf(/Saída/.test(await p.textContent('.cs-acts .bt.pr')) && /Entrada/.test(await p.textContent('.cs-acts')), 'Materiais: botões Saída (principal) e Entrada no cabeçalho');
-  conf((await p.$$('.cs-acts a[href*="efclaudian"]')).length === 1, 'atalho só com ícone para o EFClaudian (cadastro, kits, fotos, inventário)');
+  conf((await p.$$('.cs-acts a[href*="efclaudian"]')).length === 0, 'sem atalho para o EFClaudian (só na Início, 20/11)');
 
   console.log('— Saída');
   await p.click('.cs-acts [data-act="lc-sai"]'); await p.waitForTimeout(150);

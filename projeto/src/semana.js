@@ -146,7 +146,7 @@ function smTela() {
       busca: x => x.nome + ' ' + x.semana, cols: [{ k: 'se', rot: 'Semana', v: x => x.semana }, { k: 'pe', rot: 'Pessoa', v: x => x.nome, cls: 'forte' }, { k: 'ac', rot: 'Ações', tipo: 'num', v: x => x.acoes }, { k: 'ul', rot: 'Última ação', tipo: 'data', v: x => x.ultima, html: x => esc(fmtDT(x.ultima)) }, { k: 'or', rot: 'Origem', v: x => x.origem }] }) + '</div>';
   }
   const d = smDados(smSegSel());
-  const c = cabecalho({ titulo: 'Semana', abaNome: 'Semana', acoes: '<button type="button" class="bt ic-so" data-act="sm-imp" title="Imprimir" aria-label="Imprimir">' + ic('impressora') + '</button>' });
+  const c = cabecalho({ titulo: 'Semana', abaNome: 'Semana', acoes: '<button type="button" class="bt ic-so" data-act="sm-imp" data-ic-aba title="Imprimir" aria-label="Imprimir">' + ic('impressora') + '</button>' });
   return c + '<div class="sm' + (ent ? ' sm-ent' : '') + '">' + bar + smResumo(d) + smCorpo(d) + '</div>';
 }
 const smQual = TELAS.relatorios;

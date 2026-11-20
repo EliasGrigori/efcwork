@@ -46,7 +46,8 @@ function jnPinta() {
 
 /* ---------- a faixa ---------- */
 function jnFaixaHTML() {
-  const ab = (id, nome, x) => '<span class="jn-aw' + (id === S.jnAtiva ? ' on' : '') + '"><button type="button" role="tab" class="jn-ab" data-act="jn-ir" data-j="' + esc(id) + '" aria-selected="' + (id === S.jnAtiva) + '">' + esc(nome) + '</button>' +
+  let k = 0; /* --k: a ordem em que as abas entram (40 ms uma da outra) */
+  const ab = (id, nome, x) => '<span class="jn-aw' + (id === S.jnAtiva ? ' on' : '') + '" style="--k:' + (k++) + '"' + '><button type="button" role="tab" class="jn-ab" data-act="jn-ir" data-j="' + esc(id) + '" aria-selected="' + (id === S.jnAtiva) + '">' + esc(nome) + '</button>' +
     (x ? '<button type="button" class="jn-x" data-act="jn-fecha" data-j="' + esc(id) + '" title="Fechar o ' + esc(nome) + '" aria-label="Fechar o ' + esc(nome) + '">' + ic('x') + '</button>' : '') + '</span>';
   return '<div class="jn-faixa" role="tablist" aria-label="Janelas abertas">' + ab('efcwork', 'EFCwork', false) + S.jnAbertas.map(id => ab(id, JN_APPS[id].nome, true)).join('') +
     '</div>'; /* ITEM 114 (20/11): sem o ícone de abrir numa aba do navegador no topo; para isso, Ctrl + clique no menu */
@@ -55,14 +56,26 @@ function jnDesenha() {
   let el = $('#jn'), fr = $('.jn-fr');
   if (!S.jnAbertas.length) { if (el) el.remove(); if (fr) fr.remove(); document.body.classList.remove('jn-tem', 'jn-fora-on'); return; }
   if (!fr) { fr = document.createElement('div'); fr.className = 'jn-fr'; document.body.appendChild(fr); }
-  if (!el) { el = document.createElement('div'); el.id = 'jn'; el.className = 'jn'; document.body.appendChild(el); jnLiga(el); }
-  el.innerHTML = jnFaixaHTML();
+  if (!el) { el = document.createElement('div'); el.id = 'jn'; el.className = 'jn'; el.innerHTML = '<div class="jn-faixa"></div><i class="jn-ind" aria-hidden="true"></i>'; document.body.appendChild(el); jnLiga(el); }
+  el.querySelector('.jn-faixa').outerHTML = jnFaixaHTML(); /* o traço (.jn-ind) fica: é ele que desliza de uma aba para a outra */
+  jnTraco();
   document.body.classList.add('jn-tem'); document.body.classList.toggle('jn-fora-on', S.jnAtiva !== 'efcwork');
   fr.querySelectorAll('iframe').forEach(f => { const on = f.getAttribute('data-j') === S.jnAtiva; f.classList.toggle('on', on); f.setAttribute('aria-hidden', on ? 'false' : 'true'); if (on) f.removeAttribute('tabindex'); else f.setAttribute('tabindex', '-1'); });
   fr.classList.toggle('on', S.jnAtiva !== 'efcwork');
   jnPinta();
 }
-/* abre ao passar o mouse (PC) ou ao tocar o fio (celular); fecha sozinha */
+/* põe o traço embaixo da aba da frente (o CSS faz ele deslizar) */
+function jnTraco() {
+  const el = $('#jn'), b = el && el.querySelector('.jn-aw.on .jn-ab'); if (!b) return;
+  const r = b.getBoundingClientRect(), f = el.getBoundingClientRect(), m = 8;
+  el.style.setProperty('--ix', Math.round(r.left - f.left + m) + 'px'); el.style.setProperty('--iw', Math.max(12, Math.round(r.width - 2 * m)) + 'px');
+}
+/* abre quando o mouse para um instante sobre as abas (passar de raspão não abre) e espera um pouco antes de fechar; no toque, abre ao tocar */
+function jnQuer(sim) {
+  const el = $('#jn'); if (!el) return; clearTimeout(S._jnQ);
+  if (sim === el.classList.contains('aberta')) { clearTimeout(S._jnT); return; }
+  S._jnQ = setTimeout(() => jnMostra(sim), sim ? 120 : 450);
+}
 function jnMostra(sim) {
   const el = $('#jn'); if (!el) return; clearTimeout(S._jnT);
   el.classList.toggle('aberta', !!sim);
@@ -70,14 +83,17 @@ function jnMostra(sim) {
   if (sim && jnEhToque()) S._jnT = setTimeout(() => jnMostra(false), 4000);
 }
 function jnLiga(el) {
-  el.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') jnMostra(true); });
-  el.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') { clearTimeout(S._jnT); S._jnT = setTimeout(() => jnMostra(false), 350); } });
+  /* só a área das abas (.jn-faixa) recebe o mouse; o resto da faixa deixa passar (pointer-events no CSS) */
+  const naAba = x => !!(x && x.closest && x.closest('.jn-faixa'));
+  el.addEventListener('pointerover', e => { if (e.pointerType === 'mouse' && naAba(e.target)) jnQuer(true); });
+  el.addEventListener('pointerout', e => { if (e.pointerType === 'mouse' && !naAba(e.relatedTarget)) jnQuer(false); });
   el.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse' && !el.classList.contains('aberta')) { e.preventDefault(); jnMostra(true); } });
   el.addEventListener('focusin', () => jnMostra(true));
   el.addEventListener('focusout', () => { setTimeout(() => { if (!el.contains(document.activeElement)) jnMostra(false); }, 0); });
 }
 /* tocar dentro do app da frente (o quadro tira o foco do EFCwork) recolhe a faixa */
-window.addEventListener('blur', () => { if ($('#jn')) setTimeout(() => jnMostra(false), 0); });
+window.addEventListener('blur', () => { if ($('#jn')) setTimeout(() => { clearTimeout(S._jnQ); jnMostra(false); }, 0); });
+window.addEventListener('resize', () => jnTraco());
 document.addEventListener('pointerdown', e => { const el = $('#jn'); if (el && el.classList.contains('aberta') && !el.contains(e.target)) jnMostra(false); }, true);
 
 /* ---------- abrir, alternar, fechar ---------- */

@@ -83,7 +83,7 @@ function coResumo() { const a = coAtivas(), s = a.map(coSit); return { a: a, nao
 TELAS.coletas = function (aba) {
   if (!coVe()) return cabecalho({ titulo: 'Coletas' }) + '<section class="pn"><div class="vazio">' + ic('frasco') + '<b>Você não tem acesso às Coletas.</b><span>Peça ao administrador para marcar a atribuição Coletas no seu cadastro.</span></div></section>';
   const ar = csArea('coletas'), t = ar.abas.find(x => x.id === aba) || ar.abas[0], r = coResumo();
-  const ext = '<a class="bt ic-so cs-ext" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener" title="No EFClaudian: nova programação e planos de coleta" aria-label="Abrir o EFClaudian (nova programação e planos de coleta)">' + ic('externo') + '</a>';
+  const ext = ''; /* v0.6.23: sem link para o EFClaudian (só na tela Início, pedido do Elias 20/11) */
   const pl = (n, um, mais) => n + ' ' + (n === 1 ? um : mais);
   const meta = [r.naoenv ? metaPl(pl(r.naoenv, 'não enviada', 'não enviadas'), 'wa') : '', r.aguarda ? '<span>' + r.aguarda + ' aguardando laudo</span>' : '', r.atras ? metaPl(pl(r.atras, 'laudo atrasado', 'laudos atrasados'), 'cr', 'alerta') : ''].filter(Boolean);
   const acoes = (t.id === 'envio' ? ddHTML('kt:vista', S.coEnvVista === 'lab' ? 'lab' : 'rem', [['rem', 'Remessas'], ['lab', 'Laboratórios']]) : '') + (coPode() && r.naoenv ? '<button type="button" class="bt pr" data-act="co-env">' + ic('sai') + 'Enviar</button>' : '') + ext;

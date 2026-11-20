@@ -1,36 +1,43 @@
-/* ITEM 112 (20/11): letra das abas 13 px no PC e 14 px no toque.
-   EFCwork · janelas.css — abas dos apps da família (v0.6.22). OPÇÃO 1 (linha fina sublinhada) com o recolher da OPÇÃO 3 (fio de 6 px).
-   Movimento pela escala da família: abrir 150 ms, fechar 150 ms, troca de janela 150 ms; só transform e opacity. */
-.jn{position:fixed;top:0;left:0;right:0;z-index:79;height:26px;transform:translateY(-20px);transition:transform 150ms var(--ease-smooth-out);
-  background:var(--jn-bg,var(--bg0));color:var(--jn-tx,var(--tx));border-bottom:1px solid var(--jn-bd,var(--bd));font-family:var(--f)}
-.jn.aberta{transform:none;box-shadow:0 6px 18px rgba(0,0,0,.12)}
-/* no celular, o fio é fino de ver e largo de tocar */
-.jn-faixa{display:flex;align-items:stretch;height:100%;padding:0 8px;gap:2px}
-.jn-aw{position:relative;display:flex;align-items:stretch}
-.jn-ab{appearance:none;border:0;background:transparent;color:inherit;font:600 13px/1 var(--f);letter-spacing:.1px;padding:0 12px;cursor:pointer;opacity:.62;
-  position:relative;transition:opacity 150ms ease}
-.jn-ab::after{content:"";position:absolute;left:8px;right:8px;bottom:0;height:2px;border-radius:2px 2px 0 0;background:var(--jn-ac,currentColor);opacity:.28;transition:opacity 150ms ease}
-.jn-aw.on .jn-ab{opacity:1}
-.jn-aw.on .jn-ab::after{opacity:1}
-.jn-ab:hover,.jn-ab:focus-visible{opacity:1}
-.jn-ab:focus-visible{outline:2px solid var(--jn-ac);outline-offset:-3px;border-radius:4px}
-/* o conteúdo da faixa só aparece aberta; recolhida fica só o traço (o fio mostra onde está a janela da frente) */
-.jn-ab,.jn-x{transition:opacity 150ms ease}
-.jn:not(.aberta) .jn-ab{color:transparent}
-.jn:not(.aberta) .jn-x{opacity:0;pointer-events:none}
-.jn-x{appearance:none;border:0;background:transparent;color:inherit;display:grid;place-items:center;width:22px;height:22px;margin:2px 0;border-radius:5px;cursor:pointer;opacity:.55;padding:0}
+/* EFCwork · janelas.css — abas dos apps da família (v0.6.22; ajustada na v0.6.23 a pedido do Elias, 20/11 09:55 e 10:13:
+   mesmo tamanho de antes (faixa de ponta a ponta, 26 px no PC, 40 px no toque), com textura e relevo (degradê, luz em cima, sombra),
+   efeito ao abrir (desliza 400 ms; as abas entram uma a uma, 40 ms entre elas; fecha em 250 ms), o traço que desliza entre as abas,
+   e só a área das abas reage: o resto do alto deixa o clique passar para o app (fechar algo no canto não faz a faixa baixar).
+   Letra 13 px no PC e 14 px no toque (ITEM 112). Escala de movimento da família; só transform e opacity. */
+.jn{position:fixed;top:0;left:0;right:0;z-index:79;height:26px;pointer-events:none;
+  transform:translateY(-20px);transition:transform var(--duration-fast) var(--ease-smooth-out),box-shadow var(--duration-fast) var(--ease-out);
+  background:linear-gradient(180deg,color-mix(in srgb,var(--jn-bg,var(--bg1)) 82%,#fff) 0%,var(--jn-bg,var(--bg1)) 55%,color-mix(in srgb,var(--jn-bg,var(--bg1)) 94%,#000) 100%);
+  color:var(--jn-tx,var(--tx));border-bottom:1px solid var(--jn-bd,var(--bd));font-family:var(--f);
+  box-shadow:0 1px 0 rgba(255,255,255,.4) inset,0 1px 3px rgba(0,0,0,.08)}
+.jn.aberta{transform:none;transition:transform var(--duration-slow) var(--ease-smooth-out),box-shadow var(--duration-slow) var(--ease-out);
+  box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 -1px 0 rgba(0,0,0,.04) inset,0 2px 4px rgba(0,0,0,.06),0 10px 24px rgba(0,0,0,.14)}
+/* só as abas reagem (o resto da faixa deixa o clique passar para o app de baixo); a área das abas ganha 8 px abaixo do fio para o mouse e o dedo acertarem */
+.jn-faixa::after{content:"";position:absolute;left:0;right:0;top:100%;height:8px}
+.jn.aberta .jn-faixa::after{height:4px}
+.jn-faixa{display:inline-flex;align-items:stretch;height:100%;gap:2px;position:relative;padding:0 8px;pointer-events:auto}
+.jn-aw{position:relative;display:flex;align-items:center}
+.jn-ab{appearance:none;border:0;background:transparent;color:inherit;font:600 13px/1 var(--f);letter-spacing:.1px;padding:0 12px;height:100%;cursor:pointer;white-space:nowrap;
+  opacity:0;transform:translateY(-4px);transition:opacity var(--duration-quick) var(--ease-out),transform var(--duration-quick) var(--ease-out)}
+.jn.aberta .jn-ab{opacity:.62;transform:none;transition:opacity var(--duration-fast) var(--ease-out) calc(var(--k,0) * var(--duration-stagger) + 80ms),transform var(--duration-fast) var(--ease-smooth-out) calc(var(--k,0) * var(--duration-stagger) + 80ms)}
+.jn.aberta .jn-aw.on .jn-ab,.jn.aberta .jn-ab:hover,.jn.aberta .jn-ab:focus-visible{opacity:1}
+.jn-ab:focus-visible{outline:2px solid var(--jn-ac);outline-offset:-4px;border-radius:6px}
+.jn-x{appearance:none;border:0;background:transparent;color:inherit;display:grid;place-items:center;width:20px;height:20px;margin:0 4px 0 -6px;border-radius:6px;cursor:pointer;padding:0;
+  opacity:0;pointer-events:none;transition:opacity var(--duration-quick) var(--ease-out),background var(--duration-quick) var(--ease-out)}
+.jn.aberta .jn-x{opacity:.5;pointer-events:auto;transition-delay:calc(var(--k,0) * var(--duration-stagger) + 120ms)}
+.jn.aberta .jn-x:hover,.jn.aberta .jn-x:focus-visible{opacity:1;background:var(--jn-bd);transition-delay:0s}
 .jn-x svg{width:13px;height:13px}
-.jn-x:hover,.jn-x:focus-visible{opacity:1;background:var(--jn-bd)}
-.jn-x{margin-left:-6px;margin-right:2px}
-/* as janelas: por cima do EFCwork, abaixo do fio; a que não está na frente continua viva (só some da vista) */
-.jn-fr{position:fixed;left:0;right:0;bottom:0;top:6px;z-index:78;opacity:0;visibility:hidden;pointer-events:none;transition:opacity 150ms ease,visibility 0s linear 150ms}
-.jn-fr.on{opacity:1;visibility:visible;pointer-events:auto;transition:opacity 150ms ease,visibility 0s}
+/* o traço da aba da frente: um só, desliza entre as abas; recolhida, é ele que aparece no fio */
+.jn-ind{position:absolute;left:0;bottom:0;height:2px;width:var(--iw,0);border-radius:2px 2px 0 0;background:var(--jn-ac,currentColor);pointer-events:none;
+  transform:translateX(var(--ix,0));transition:transform var(--duration-fast) var(--ease-smooth-out),width var(--duration-fast) var(--ease-smooth-out),background var(--duration-fast) var(--ease-out)}
+.jn:not(.aberta) .jn-ind{height:3px;border-radius:2px}
+/* as janelas: por cima do EFCwork; a que não está na frente continua viva (só some da vista) */
+.jn-fr{position:fixed;inset:0;z-index:78;opacity:0;visibility:hidden;pointer-events:none;transition:opacity var(--duration-fast) var(--ease-out),visibility 0s linear var(--duration-fast)}
+.jn-fr.on{opacity:1;visibility:visible;pointer-events:auto;transition:opacity var(--duration-fast) var(--ease-out),visibility 0s}
 .jn-fr iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:var(--jn-bg,var(--bg1));visibility:hidden}
 .jn-fr iframe.on{visibility:visible}
-/* com um app na frente: os avisos do EFCwork (ex.: "Recebido do Vértice") continuam aparecendo por cima */
+/* com um app na frente: os avisos do EFCwork continuam aparecendo por cima */
 body.jn-fora-on .av-pilha{z-index:81}
 body.jn-fora-on{overflow:hidden}
-/* no toque: o fio continua de 6 px, mas a faixa aberta tem 40 px (dedo; nada abaixo de 36 px no celular) e o fio ganha 12 px invisíveis para acertar */
-@media(pointer:coarse){.jn{height:40px;transform:translateY(-34px)}.jn.aberta{transform:none}.jn-ab{font-size:14px;padding:0 14px}.jn-x{width:36px;height:36px}
-  .jn::after{content:"";position:absolute;left:0;right:0;top:100%;height:12px}.jn.aberta::after{display:none}}
-@media(prefers-reduced-motion:reduce){.jn,.jn-ab,.jn-ab::after,.jn-x,.jn-fr,.jn-fr.on{transition:none}}
+/* no toque: faixa de 40 px aberta (dedo), fio de 6 px e 12 px a mais para acertar */
+@media(pointer:coarse){.jn{height:40px;transform:translateY(-34px)}.jn.aberta{transform:none}.jn-ab{font-size:14px;padding:0 14px}.jn-x{width:36px;height:36px;margin-left:-10px}
+  .jn-faixa::after{height:12px}}
+@media(prefers-reduced-motion:reduce){.jn,.jn.aberta,.jn-ab,.jn.aberta .jn-ab,.jn-x,.jn.aberta .jn-x,.jn-ind,.jn-fr,.jn-fr.on{transition:none}}

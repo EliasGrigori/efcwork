@@ -10,7 +10,7 @@ const AR_PLANO = {
 };
 function arEmBreve(ar) {
   const aba = ar.abas.find(x => x.id === S.rota.aba);
-  return cabecalho({ titulo: aba ? aba.nome : ar.nome, abaNome: aba && ar.abas.length > 1 ? aba.nome : '', meta: [metaPl('chega na ' + (ar.versao || 'próxima versão'), 'wa', 'relogio')], acoes: '<a class="bt pr" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener">' + ic('externo') + 'Usar no EFClaudian</a>' }) +
+  return cabecalho({ titulo: aba ? aba.nome : ar.nome, abaNome: aba && ar.abas.length > 1 ? aba.nome : '', meta: [metaPl('chega na ' + (ar.versao || 'próxima versão'), 'wa', 'relogio')] }) +
     '<section class="pn"><div class="vazio ar-vz">' + ic(ar.ic) + '<b>Esta área está sendo refeita no ' + APP_NOME + '.</b><span>Enquanto isso, ela continua funcionando no EFClaudian, com os mesmos dados.</span></div>' +
     (AR_PLANO[ar.id] ? '<div class="cpo ar-pl"><p class="ini-sub">O que vem aqui</p><ul>' + AR_PLANO[ar.id].map(x => '<li>' + esc(x) + '</li>').join('') + '</ul></div>' : '') + '</section>';
 }

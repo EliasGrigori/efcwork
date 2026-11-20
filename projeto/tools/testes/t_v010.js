@@ -46,7 +46,7 @@ const conf = (c, msg) => { if (c) { ok++; console.log('  ok  ' + msg); } else { 
   await p.evaluate(() => { location.hash = '#/coletas/envio'; }); await p.waitForTimeout(150);
   conf(await p.isVisible('.cs-it.on[href="#/coletas"]') && await p.isVisible('.cs-abas a.on[href="#/coletas/envio"]'), 'área e aba atuais marcadas no menu e nas abas');
   await p.evaluate(() => { AREAS.push({ id: 'zz', nome: 'Área de teste', ic: 'graf', versao: 'v9', abas: [] }); location.hash = '#/zz'; }); await p.waitForTimeout(150); /* v0.6.18: não sobrou área por refazer; uma área de mentira prova a tela */
-  conf(/EFClaudian/.test(await p.textContent('.cs-ct')) && await p.isVisible('.cs-acts a[href*="efclaudian"]'), 'área ainda não refeita leva ao EFClaudian');
+  conf(/EFClaudian/.test(await p.textContent('.cs-ct')) && !(await p.$('.cs-acts a[href*="efclaudian"]')), 'área ainda não refeita explica, sem link para o EFClaudian (só na Início, 20/11)');
   await p.evaluate(() => { AREAS.pop(); location.hash = '#/coletas'; }); await p.waitForTimeout(150);
   await p.screenshot({ path: path.join(SHOTS, 'pc-claro-coletas.png') });
   /* temas */

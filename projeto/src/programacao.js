@@ -272,7 +272,7 @@ function pgAcoes() {
   const pode = coPode(), np = pgPendentes().length, semCad = !pgTalhoes().length || !pgAnalises().length;
   return (pode && !semCad ? '<button type="button" class="bt" data-act="pg-av">' + ic('mais') + 'Coleta avulsa</button>' + (np ? '<button type="button" class="bt pr" data-act="pg-cd">' + ic('ok') + 'Coletado</button>' : '') : '') +
     (ppSup() && !semCad ? '<button type="button" class="bt" data-act="pp-novo">' + ic('mais') + 'Novo plano</button>' : '') +
-    '<a class="bt ic-so cs-ext" href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener" title="Abrir o EFClaudian" aria-label="Abrir o EFClaudian">' + ic('externo') + '</a>';
+    '';
 }
 function pgAbre(id) {
   if (String(id).indexOf('c|') === 0) { const c = S.coletas.find(x => x.id === id.slice(2)); if (c) { S._pgSel = id; coAbre(c.id); } return; }

@@ -1,0 +1,8 @@
+/* EFCwork · reldocs.css — Prefixo: rd- (Relatórios › Documentos). Usa as peças da Semana e do Almoxarifado do mês (sm-, am-) e só tokens do app. */
+.rd-fp{grid-template-columns:repeat(3,minmax(0,240px))}
+.rd-t tbody tr{cursor:pointer}
+.rd-t tbody tr:hover td{background:var(--aS)}
+.rd-t tbody tr:focus-visible{outline:2px solid var(--a);outline-offset:-2px}
+.rd-pz{color:var(--tx3);font-size:12px;white-space:nowrap}
+@media(max-width:700px){.rd-fp{grid-template-columns:minmax(0,1fr)}}
+@media print{.rd-t tbody tr:hover td{background:none}.rd-pz{font-size:8.5pt}}

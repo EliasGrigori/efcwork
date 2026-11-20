@@ -30,11 +30,11 @@ const caixa = (p, s) => p.evaluate(q => { const e = document.querySelector(q); i
   console.log('— Relatórios › Almoxarifado do mês');
   await ir(p, 'relatorios/almox', 1200);
   const a = await p.evaluate(() => ({ abas: [...document.querySelectorAll('.cs-abas a')].map(e => e.textContent.trim()), t: document.querySelector('.cs-ph h1').textContent, res: [...document.querySelectorAll('.am .rl-res li')].map(e => e.textContent),
-    sec: [...document.querySelectorAll('.am .sm-sec h2')].map(e => e.firstChild.textContent), lado: document.documentElement.scrollWidth > innerWidth, imp: !!document.querySelector('.cs-acts [data-act="am-imp"]'), fil: document.querySelector('[data-act="am-filtro"]').textContent }));
-  conf(a.abas.join() === 'Rateio,Semana,Almoxarifado' && a.t === 'Almoxarifado do mês', 'aba Almoxarifado ao lado de Rateio e Semana');
+    sec: [...document.querySelectorAll('.am .sm-sec h2')].map(e => e.firstChild.textContent), lado: document.documentElement.scrollWidth > innerWidth, imp: !!document.querySelector('.cs-abas-l [data-act="am-imp"]'), fil: document.querySelector('[data-act="am-filtro"]').textContent }));
+  conf(a.abas.slice(0, 3).join() === 'Rateio,Semana,Almoxarifado' && a.t === 'Almoxarifado do mês', 'aba Almoxarifado ao lado de Rateio e Semana');
   conf(a.res.length === 5 && /R\$ 116,00consumo do mês1 saída/.test(a.res[0]) && /em compras1 entrada/.test(a.res[1]) && /pontos de atenção1 vencido · 2 abaixo/.test(a.res[4]), 'resumo: consumo, compras, estoque, movimentados e atenção (' + a.res[0] + ' | ' + a.res[4] + ')');
   conf(a.sec.join('|') === 'Como ler este mês|Consumo mês a mês|Para que foi usado|Material a material|Por laboratório e por pessoa|O que pede atenção|Solicitações e equipamentos', 'as sete partes: ' + a.sec.join(', '));
-  conf(a.imp && /Novembro de 2026/.test(a.fil) && !a.lado, 'impressora no cabeçalho, filtro com o mês, sem rolar para o lado');
+  conf(a.imp && /Novembro de 2026/.test(a.fil) && !a.lado, 'impressora na linha das abas (ITEM 130), filtro com o mês, sem rolar para o lado');
   const lei = await p.evaluate(() => [...document.querySelectorAll('.am-lei li')].map(e => e.textContent));
   conf(lei.some(x => /Luva nitrílica M \(4 Cx, R\$ 116,00\)/.test(x)) && lei.some(x => /1 lote vencido ainda com saldo/.test(x)) && !lei.some(x => /\(s\)|\(ões\)/.test(x)), 'Como ler: frases com unidade e singular/plural certos');
   const al = await p.evaluate(() => [...document.querySelectorAll('.am-t')].every(t => [...t.querySelectorAll('thead th')].every((th, k) => { const td = t.querySelector('tbody tr td:nth-child(' + (k + 1) + ')'); const n = x => x === 'start' ? 'left' : x === 'end' ? 'right' : x; return !td || n(getComputedStyle(th).textAlign) === n(getComputedStyle(td).textAlign); })));

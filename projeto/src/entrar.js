@@ -67,7 +67,7 @@ function enTela() {
     '<form class="en-form" data-form="en-entrar" novalidate>' +
     '<label class="cp">Usuário ou e-mail<input id="en-login" autocomplete="username" autocapitalize="none" value="' + esc(Store.get('cw-ultimo-login') || '') + '" required></label>' +
     '<label class="cp">Senha<span class="en-sen"><input id="en-senha" type="password" autocomplete="current-password" required><button type="button" class="bt ic-so" data-act="en-ver" aria-label="Mostrar a senha">' + ic('olho') + '</button></span></label>' +
-    '<div class="en-lin"><label class="en-ck"><input type="checkbox" id="en-lembrar"' + (Store.get('cw-ultimo-login') ? ' checked' : '') + '> Lembrar usuário</label><a href="' + EFCLAUDIAN_URL + '" target="_blank" rel="noopener">Esqueci a senha</a></div>' +
+    '<div class="en-lin"><label class="en-ck"><input type="checkbox" id="en-lembrar"' + (Store.get('cw-ultimo-login') ? ' checked' : '') + '> Lembrar usuário</label><button type="button" class="en-esq" data-act="en-esqueci">Esqueci a senha</button></div>' +
     '<p class="en-msg" id="en-msg" role="alert">' + esc(S._erroEntrar || '') + '</p><button class="bt pr en-bt" type="submit">Entrar</button></form>';
   return '<div class="en ' + (escuro ? 'en-rev' : 'en-avi') + (c.padrao ? ' padrao' : '') + '" style="--n:' + n + ';--h:' + (n > 6 ? Math.ceil(n / 2) : n) + (c.foto && c.recorte ? ';--foto:url(' + c.foto + ')' : '') + '">' +
     '<section class="en-arte">' + enArte(c, escuro) + '</section>' +
@@ -139,3 +139,5 @@ document.addEventListener('submit', async e => {
     await csCarregaUsuario(id);
   } catch (er) { enMsg(enErro(er)); bt.disabled = false; bt.textContent = 'Criar e entrar'; }
 });
+/* v0.6.23: sem link para o EFClaudian; quem esqueceu a senha pede ao Administrador (ele troca em Administração › Pessoas) */
+document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('[data-act="en-esqueci"]'); if (t) aviso('Peça ao Administrador para trocar a sua senha.'); });
