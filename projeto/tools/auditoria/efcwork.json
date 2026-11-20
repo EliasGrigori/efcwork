@@ -263,6 +263,9 @@
   {"nome": "Relatórios · Semana · Atividade", "passos": [{"eval": "location.hash='#/relatorios/semana'; S.sm.ver='ativ'; S.sm.aberto=true; render()"}, {"espera": 500}]},
   {"nome": "Relatórios · Almoxarifado do mês", "passos": [{"eval": "location.hash='#/relatorios/almox'; S.am.aberto=true; render()"}, {"espera": 600}]},
   {"nome": "Relatórios · Apontamentos", "passos": [{"eval": "location.hash='#/relatorios/apontamentos'; S.rp.aberto=true; render()"}, {"espera": 600}]}
+,
+  {"nome": "Administração · Pessoas", "passos": [{"eval": "location.hash='#/adm/pessoas'"}, {"espera": 600}]},
+  {"nome": "Administração · Meu perfil", "passos": [{"eval": "location.hash='#/adm/perfil'"}, {"espera": 600}]}
  ],
  "ignorar": [
   ".tb-hm",

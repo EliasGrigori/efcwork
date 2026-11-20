@@ -1,4 +1,4 @@
-# EFCwork · CONTINUAR (20/11/2026, 12h45) · estado: v0.6.25 PUBLICADA (Relatórios › Apontamentos); próxima: Relatórios › Coletas em aberto
+# EFCwork · CONTINUAR (20/11/2026, 12h45) · estado: v0.6.26 PUBLICADA (Administração › Pessoas e Meu perfil); próxima: cadastros do Almoxarifado
 
 Este arquivo substitui o CONTINUAR-EFCwork-v0.6.24.md. Ele é autossuficiente: quem ler só ele já sabe o que fazer.
 
@@ -6,7 +6,7 @@ Este arquivo substitui o CONTINUAR-EFCwork-v0.6.24.md. Ele é autossuficiente: q
 - **No ar:** v0.6.25 · Relatórios › Apontamentos (ITENS 136 a 146 aprovados em 20/11 12:59, publicada em seguida). Antes: v0.6.24 (5499dbc, aprovações decididas no EFCwork).
 - **Acesso ao GitHub:** o `add_repo` com `push` pode ser negado na primeira tentativa; quando o Elias autoriza a publicação, tentar de novo (em 20/11 funcionou assim).
 - **Item 30 resolvido (20/11 11:59):** as 24 regras foram substituídas pelo Método Sabiá. Saiu das pendências.
-- **Próximas:** Relatórios › Coletas em aberto (**Opus 5.5 · médio**); depois item 22 (estorno no Rateio), Pessoas e perfis.
+- **Prioridade do Elias (20/11 13:37): o que o app precisa para funcionar sozinho.** Relatórios encerrados (Coletas em aberto cancelada). Ordem: ~~1 Pessoas e perfis (v0.6.26, feita)~~ · 2 Cadastros do Almoxarifado (material, equipamento, kits) · 3 Meu dia · 4 Backup e exportação · 5 Cadastros de Coletas por último. Menos voltas, menos tokens; aprovação por prints quando a mudança for simples.
 - **Em aberto com o Elias:** item 44, "N amostras" no celular.
 - Testes da janela: clonar EliasGrigori/efcdocs só para leitura em /home/claude/eliasgrigori/efcdocs. Bateria 61/61, medidor 0 defeitos. Firebase: nada novo.
 
@@ -64,8 +64,7 @@ Este arquivo substitui o CONTINUAR-EFCwork-v0.6.24.md. Ele é autossuficiente: q
 
 ## 6. Próximas tarefas (ordem sugerida; cada uma só começa com "pode iniciar")
 Fonte: FALTA-DO-EFCLAUDIAN.md (tabelas A, B e C) e features.csv (458 funções: 18 "must" ainda "não").
-1. **Relatórios › Coletas em aberto** (a última aba de Relatórios; Rateio, Semana, Almoxarifado, Documentos e Apontamentos já feitos).
-2. **Administração › Pessoas e perfis** ("Só ver" / "Ver e alterar" por área; detalhe da pessoa; meu perfil).
+1. **Cadastros do Almoxarifado** (material, equipamento, kits). 2. **Meu dia**. 3. **Backup e exportação**. 4. **Cadastros de Coletas** (por último). Relatórios encerrados; Pessoas feita na v0.6.26.
 3. **Backup e exportação**; **Conversas** (chat dentro de cada registro + sino); **Meu dia** (tarefas no Início).
 4. Partes de telas (tabela B do FALTA): etiquetas e fichas de campo, cadastros de Coletas, plano de rodízio, cadastro de material e equipamento, kits, reajuste de preços, vidraria quebrada, transferências, normas e editais, documento controlado, arquivo por ano.
 5. Outros: ponte com o Vértice Docs (v0.6.11 e v0.6.13; ler `integracao-cwork-vertice-v0.6.18.zip`, que o Elias precisa anexar); entrega do resumo de treinamento ao Sabiá; mandar ao Grok os roteiros v0.6.14.1 e v0.6.14.2.

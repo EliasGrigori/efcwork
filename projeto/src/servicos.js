@@ -146,7 +146,7 @@ CS_CARGAS.push(() => {
     S.users = l; const me = l.find(x => x.id === S.user.id); if (!me) return;
     if (me.bloqueado || me.ativo === false) { csSair(); return; }
     const mudou = me.perfil !== S.user.perfil || !!me.estrela !== !!S.user.estrela || JSON.stringify(me.atrib || null) !== JSON.stringify(S.user.atrib || null);
-    S.user = Object.assign({ id: S.user.id }, me); if (mudou) { notifLigar(); render(); }
+    S.user = Object.assign({ id: S.user.id }, me); if (mudou) { notifLigar(); render(); } else if (S.rota.area === 'adm') { if (S.gv && !S.fm) gvDesenha(); else if (!S.gv) render(); } /* v0.6.26: a tela Pessoas acompanha as mudanças */
   });
   csOuve('sv2_aprov', l => { S.aprov = l; snAtualiza(); }, { order: 'ts', limit: 400 });
 });

@@ -9,7 +9,7 @@ import os, re, shutil, sys
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC, DIST = os.path.join(RAIZ, 'src'), os.path.join(RAIZ, 'dist')
 # ordem importa: base primeiro (ajudantes, dados), depois a casca e as telas
-MODULOS = ['movimento', 'base', 'casca', 'servicos', 'planilha', 'tabela', 'almox', 'lanca', 'contagem', 'calibracao', 'lugares', 'nota', 'sino', 'busca', 'coletas', 'agua', 'aguaac', 'aguapj', 'documentos', 'efd', 'efdponte', 'impressos', 'ponte', 'janelas', 'kit', 'fotoed', 'inspecoes', 'apont', 'auditoria', 'auapres', 'analise', 'anp', 'treino', 'nc', 'bugs', 'aprovar', 'programacao', 'plano', 'rateio', 'relatorios', 'semana', 'almmes', 'reldocs', 'relapont', 'entrar', 'inicio', 'areas', 'atividade', 'adm', 'fluidez', 'moderno']
+MODULOS = ['movimento', 'base', 'casca', 'servicos', 'planilha', 'tabela', 'almox', 'lanca', 'contagem', 'calibracao', 'lugares', 'nota', 'sino', 'busca', 'coletas', 'agua', 'aguaac', 'aguapj', 'documentos', 'efd', 'efdponte', 'impressos', 'ponte', 'janelas', 'kit', 'fotoed', 'inspecoes', 'apont', 'auditoria', 'auapres', 'analise', 'anp', 'treino', 'nc', 'bugs', 'aprovar', 'programacao', 'plano', 'rateio', 'relatorios', 'semana', 'almmes', 'reldocs', 'relapont', 'entrar', 'inicio', 'areas', 'atividade', 'adm', 'pessoas', 'fluidez', 'moderno']
 
 # módulos que moram fora de src/ (arquivo comum da família, não duplicar)
 DE_FORA = {'efd': os.path.join('tools', 'contrato', 'efd-v1.js'), 'efdponte': os.path.join('tools', 'contrato', 'efd-ponte.js'), 'movimento': os.path.join('tools', 'visual', 'efc-movimento.js')}
