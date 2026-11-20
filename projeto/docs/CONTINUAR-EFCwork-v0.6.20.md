@@ -2,7 +2,7 @@
 
 Este arquivo substitui o CONTINUAR-EFCwork-v0.6.17.md. Ele é autossuficiente: quem ler só ele já sabe o que fazer.
 
-## 0. Estado de 20/11 (06h45): v0.6.20 · Bugs e sugestões 2 PUBLICADA
+## 0. Estado de 20/11 (06h45): v0.6.20 · Bugs e sugestões 2 PUBLICADA (commit dd3c265)
 - Aprovados 89 a 94, 97 e 98; reprovados 95 e 96 (Marcar na imagem do relato): retirados. Ficou: só os seus + regra (23), prioridade e partes novas (25), comentários com imagem marcável (29).
 - **Elias precisa publicar no console do Firebase a regra da seção 0 do REGRAS-FIREBASE-EFCwork-v0.6.15.md** (sv2_bugs, sv2_bugs_foto, sv2_bugs_seq) e fazer o teste em dois aparelhos.
 - Em aberto: item 30 (texto das 24 regras), item 49 (editar a imagem do relato: o jeito proposto foi reprovado; perguntar o que ele quer), item 44 (Meu dia › Semana), o "não quero esses" do ITEM 79.
