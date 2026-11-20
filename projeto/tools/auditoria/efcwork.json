@@ -259,18 +259,191 @@
     }
    ]
   },
-  {"nome": "Relatórios · Semana · Relatório", "passos": [{"eval": "location.hash='#/relatorios/semana'; S.sm.ver='rel'; S.sm.aberto=false; render()"}, {"espera": 500}]},
-  {"nome": "Relatórios · Semana · Atividade", "passos": [{"eval": "location.hash='#/relatorios/semana'; S.sm.ver='ativ'; S.sm.aberto=true; render()"}, {"espera": 500}]},
-  {"nome": "Relatórios · Almoxarifado do mês", "passos": [{"eval": "location.hash='#/relatorios/almox'; S.am.aberto=true; render()"}, {"espera": 600}]},
-  {"nome": "Relatórios · Apontamentos", "passos": [{"eval": "location.hash='#/relatorios/apontamentos'; S.rp.aberto=true; render()"}, {"espera": 600}]}
-,
-  {"nome": "Administração · Pessoas", "passos": [{"eval": "location.hash='#/adm/pessoas'"}, {"espera": 600}]},
-  {"nome": "Administração · Meu perfil", "passos": [{"eval": "location.hash='#/adm/perfil'"}, {"espera": 600}]}
-,
-  {"nome": "Novo material (gaveta)", "passos": [{"eval": "location.hash='#/almox/materiais'"}, {"espera": 500}, {"eval": "mcNovo()"}, {"espera": 500}]},
-  {"nome": "Novo kit (gaveta)", "passos": [{"eval": "location.hash='#/almox/materiais'"}, {"espera": 500}, {"eval": "mcKitEd('')"}, {"espera": 500}]},
-  {"nome": "Novo equipamento (gaveta)", "passos": [{"eval": "location.hash='#/almox/equipamentos'"}, {"espera": 500}, {"eval": "mcEqNovo()"}, {"espera": 500}]},
-  {"nome": "Nova tarefa ou rotina (gaveta)", "passos": [{"eval": "location.hash='#/inicio'"}, {"espera": 500}, {"eval": "tfNova(); DD_AO.tf('repete','semanal')"}, {"espera": 500}]}
+  {
+   "nome": "Relatórios · Semana · Relatório",
+   "passos": [
+    {
+     "eval": "location.hash='#/relatorios/semana'; S.sm.ver='rel'; S.sm.aberto=false; render()"
+    },
+    {
+     "espera": 500
+    }
+   ]
+  },
+  {
+   "nome": "Relatórios · Semana · Atividade",
+   "passos": [
+    {
+     "eval": "location.hash='#/relatorios/semana'; S.sm.ver='ativ'; S.sm.aberto=true; render()"
+    },
+    {
+     "espera": 500
+    }
+   ]
+  },
+  {
+   "nome": "Relatórios · Almoxarifado do mês",
+   "passos": [
+    {
+     "eval": "location.hash='#/relatorios/almox'; S.am.aberto=true; render()"
+    },
+    {
+     "espera": 600
+    }
+   ]
+  },
+  {
+   "nome": "Relatórios · Apontamentos",
+   "passos": [
+    {
+     "eval": "location.hash='#/relatorios/apontamentos'; S.rp.aberto=true; render()"
+    },
+    {
+     "espera": 600
+    }
+   ]
+  },
+  {
+   "nome": "Administração · Pessoas",
+   "passos": [
+    {
+     "eval": "location.hash='#/adm/pessoas'"
+    },
+    {
+     "espera": 600
+    }
+   ]
+  },
+  {
+   "nome": "Administração · Meu perfil",
+   "passos": [
+    {
+     "eval": "location.hash='#/adm/perfil'"
+    },
+    {
+     "espera": 600
+    }
+   ]
+  },
+  {
+   "nome": "Novo material (gaveta)",
+   "passos": [
+    {
+     "eval": "location.hash='#/almox/materiais'"
+    },
+    {
+     "espera": 500
+    },
+    {
+     "eval": "mcNovo()"
+    },
+    {
+     "espera": 500
+    }
+   ]
+  },
+  {
+   "nome": "Novo kit (gaveta)",
+   "passos": [
+    {
+     "eval": "location.hash='#/almox/materiais'"
+    },
+    {
+     "espera": 500
+    },
+    {
+     "eval": "mcKitEd('')"
+    },
+    {
+     "espera": 500
+    }
+   ]
+  },
+  {
+   "nome": "Novo equipamento (gaveta)",
+   "passos": [
+    {
+     "eval": "location.hash='#/almox/equipamentos'"
+    },
+    {
+     "espera": 500
+    },
+    {
+     "eval": "mcEqNovo()"
+    },
+    {
+     "espera": 500
+    }
+   ]
+  },
+  {
+   "nome": "Nova tarefa ou rotina (gaveta)",
+   "passos": [
+    {
+     "eval": "location.hash='#/inicio'"
+    },
+    {
+     "espera": 500
+    },
+    {
+     "eval": "tfNova(); DD_AO.tf('repete','semanal')"
+    },
+    {
+     "espera": 500
+    }
+   ]
+  },
+  {
+   "nome": "Nova pessoa (gaveta)",
+   "passos": [
+    {
+     "eval": "location.hash='#/adm/pessoas'"
+    },
+    {
+     "espera": 500
+    },
+    {
+     "eval": "pesNovo()"
+    },
+    {
+     "espera": 500
+    }
+   ]
+  },
+  {
+   "nome": "Crie a sua senha (primeiro acesso)",
+   "passos": [
+    {
+     "eval": "location.hash='#/inicio'"
+    },
+    {
+     "espera": 500
+    },
+    {
+     "eval": "S.user.precisaCompletar=true; render()"
+    },
+    {
+     "espera": 600
+    }
+   ]
+  },
+  {
+   "nome": "Esqueci a senha",
+   "passos": [
+    {
+     "eval": "S.user.precisaCompletar=false; Data.auth.signOut()"
+    },
+    {
+     "espera": 600
+    },
+    {
+     "eval": "enRecupAbre()"
+    },
+    {
+     "espera": 500
+    }
+   ]
+  }
  ],
  "ignorar": [
   ".tb-hm",

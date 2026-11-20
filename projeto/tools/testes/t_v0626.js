@@ -17,7 +17,7 @@ const msg = p => p.evaluate(() => (document.querySelector('#gv .fm-msg') || {}).
   conf(/nome/.test(await msg(p)), 'sem nome não cadastra');
   await fm(p, 'nome', 'Maria Souza'); await fm(p, 'login', 'maria souza'); await fm(p, 'cargo', 'Técnica'); await fm(p, 'senha', '123');
   await p.click('[data-act="pes-ed-ok"]'); await p.waitForTimeout(200);
-  conf(/6 letras/.test(await msg(p)), 'senha curta não cadastra');
+  conf(/no mínimo 8/.test(await msg(p)), 'senha curta não cadastra'); /* v0.6.29: a regra passou de 6 para 8 (varredura S3) */
   await fm(p, 'senha', 'segredo1'); await p.click('[data-act="pes-ed-ok"]'); await p.waitForTimeout(200);
   conf(/pelo menos uma área/.test(await msg(p)), 'sem área marcada não cadastra');
   await fm(p, 'at.coletas', true); await fm(p, 'at.cloro', true);
@@ -66,7 +66,7 @@ const msg = p => p.evaluate(() => (document.querySelector('#gv .fm-msg') || {}).
   await p.evaluate(() => DD_AO.pes('status', 'ausente')); await p.waitForTimeout(500);
   conf(await p.evaluate(() => userById(S.user.id).status === 'ausente'), 'Meu perfil marca ausente');
   await p.fill('#pes-s1', 'abc'); await p.click('[data-act="pes-senha"]'); await p.waitForTimeout(200);
-  conf(await p.evaluate(() => /6 letras/.test(document.querySelector('#pes-smsg').textContent)), 'senha curta não troca');
+  conf(await p.evaluate(() => /no mínimo 8/.test(document.querySelector('#pes-smsg').textContent)), 'senha curta não troca'); /* v0.6.29: 8 caracteres */
   await p.fill('#pes-s1', 'novasenha1'); await p.fill('#pes-s2', 'novasenha1'); await p.click('[data-act="pes-senha"]'); await p.waitForTimeout(400);
   conf(await p.evaluate(() => { const a = JSON.parse(localStorage.getItem('sv2demo_auth') || '{}'); return Object.values(a).some(x => x.pass === 'novasenha1'); }), 'troca a senha');
   conf(p._er.length === 0, 'sem erro de JavaScript' + (p._er.length ? ': ' + p._er[0] : ''));

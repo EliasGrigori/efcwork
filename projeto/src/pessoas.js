@@ -5,7 +5,10 @@
    superiores[], atrib {coletas, rateios, cloro, apont, docs, qualidade, almox} (sem atrib = vê tudo, como no EFClaudian), cargo,
    status (ativo | ausente), bloqueado, criadoEm. A conta de acesso é criada sem trocar a sessão de quem está logado
    (Data.auth.createAccount, app "sec"). Quem cadastra, edita e bloqueia: o Administrador. O Líder ★ vê a equipe, sem alterar.
-   Meu perfil: cada um muda o próprio cargo, a situação (presente / ausente) e a senha. Nenhuma coleção nova. */
+   Meu perfil: cada um muda o próprio cargo, a situação (presente / ausente) e a senha. Nenhuma coleção nova.
+   v0.6.29 (varredura S2 e S3): senha de no mínimo 8 em todo lugar; a pessoa nova nasce com precisaCompletar = true e cria a
+   própria senha no primeiro acesso (entrar.js); Meu perfil guarda o e-mail para recuperar a senha (o Firebase confirma por link)
+   e grava a ligação login → e-mail em sv2_login, como o EFClaudian. */
 const pesVe = () => !!S.user && isSup(S.user);
 const pesPode = () => !!S.user && isPrincipal(S.user);
 const PES_ATRIB = [['coletas', 'Coletas'], ['rateios', 'Rateios'], ['cloro', 'Cloro'], ['apont', 'Apontamentos e auditoria'], ['docs', 'Documentos'], ['qualidade', 'Qualidade'], ['almox', 'Almoxarifado']];
@@ -61,7 +64,7 @@ LC_FORM.pesEd = f => {
   const ck = (campo, on, txt) => '<label class="fm-ck"><input type="checkbox" data-fm="' + esc(campo) + '"' + (on ? ' checked' : '') + '> ' + esc(txt) + '</label>';
   const c = lcMsg() + apPasso(1, 'Quem é') + lcBl('Nome', lcIn('nome', f.nome, ' maxlength="80" placeholder="ex.: Maria Souza"')) +
     '<div class="fm-g cl-fm2">' + lcBl('Login', lcIn('login', f.login, ' maxlength="40" autocapitalize="off" spellcheck="false" placeholder="ex.: maria.souza"' + (novo ? '' : ' disabled')), novo ? 'para entrar' : 'não muda') + lcBl('Cargo', lcIn('cargo', f.cargo, ' maxlength="60" placeholder="ex.: Técnica de laboratório"')) + '</div>' +
-    (novo ? lcBl('Senha inicial', lcIn('senha', f.senha, ' type="text" maxlength="40" autocomplete="new-password" placeholder="mínimo 6 letras ou números"'), 'a pessoa troca em Meu perfil') : '') +
+    (novo ? lcBl('Senha inicial', '<span class="pes-sen">' + lcIn('senha', f.senha, ' type="password" maxlength="40" autocomplete="new-password" placeholder="mínimo ' + esc(SENHA_MIN) + ' caracteres"') + '<button type="button" class="bt ic-so" data-act="pes-ver" aria-label="Mostrar a senha">' + ic('olho') + '</button></span>', 'vale só para o primeiro acesso') : '') +
     apPasso(2, 'O que pode fazer') + lcBl('Perfil', ddHTML('pes:perfil', f.perfil, PES_PERFIL)) +
     lcAv(adm ? 'Administrador vê e altera tudo, cadastra pessoas e decide qualquer pedido.' : f.perfil === 'lider' ? 'Líder ★ lança, decide os pedidos dos liderados e vê os relatórios.' : f.perfil === 'visitante' ? 'Consulta vê as áreas marcadas, mas não lança nem altera nada.' : 'Colaborador lança; o que precisa de aprovação vai para os superiores.') +
     (adm ? '' : lcBl('Áreas que vê', '<div class="pes-cks">' + PES_ATRIB.map(a => ck('at.' + a[0], f.at[a[0]] === '1', a[1])).join('') + '</div>')) +
@@ -75,7 +78,7 @@ async function pesEdOk() {
   if (novo) {
     if (login.length < 3) return lcErro('O login precisa de pelo menos 3 letras (sem espaço nem acento).');
     if (S.users.some(u => slugLogin(u.login) === login)) return lcErro('Já existe uma pessoa com o login ' + login + '.');
-    if (String(f.senha || '').length < 6) return lcErro('A senha inicial precisa de pelo menos 6 letras ou números.');
+    if (String(f.senha || '').length < SENHA_MIN) return lcErro('A senha inicial precisa de no mínimo ' + SENHA_MIN + ' caracteres.');
   }
   const atrib = {}; PES_ATRIB.forEach(a => { atrib[a[0]] = (f.at || {})[a[0]] === '1'; });
   if (!adm && !Object.values(atrib).some(Boolean)) return lcErro('Marque pelo menos uma área que a pessoa vê.');
@@ -89,10 +92,10 @@ async function pesEdOk() {
   if (novo) {
     let id;
     try { id = await Data.auth.createAccount(login, String(f.senha)); }
-    catch (e) { f._trava = 0; const cd = e && e.code || ''; return lcErro(/email-already-in-use/.test(cd) ? 'Esse login já tem conta de acesso. Use outro login.' : /weak-password/.test(cd) ? 'Senha fraca: use pelo menos 6 letras ou números.' : 'Não deu para criar a conta de acesso agora (' + (cd || 'sem internet?') + ').'); }
-    const o = Object.assign({ id, login, status: 'ativo', bloqueado: false, criadoEm: nowISO(), criadoPor: S.user.id, criadoPorNome: S.user.nome }, dados);
+    catch (e) { f._trava = 0; const cd = e && e.code || ''; return lcErro(/email-already-in-use/.test(cd) ? 'Esse login já tem conta de acesso. Use outro login.' : /weak-password/.test(cd) ? 'Senha fraca: use no mínimo ' + SENHA_MIN + ' caracteres.' : 'Não deu para criar a conta de acesso agora (' + (cd || 'sem internet?') + ').'); }
+    const o = Object.assign({ id, login, status: 'ativo', bloqueado: false, precisaCompletar: true, criadoEm: nowISO(), criadoPor: S.user.id, criadoPorNome: S.user.nome }, dados); /* v0.6.29: cria a própria senha no primeiro acesso */
     Audit.log({ acao: 'criar_usuario', entidade: 'usuario', entidadeId: id, resumo: 'Cadastrou ' + nome + ' (' + login + ') como ' + perfilLabel(o) });
-    lcGrava([Data.col('sv2_users').set(id, o)], nome + ' cadastrado. Passe o login e a senha para a pessoa.', () => { if (S.gv) gvFecharSo(); });
+    lcGrava([Data.col('sv2_users').set(id, o)], nome + ' cadastrado. Passe o login e a senha inicial: no primeiro acesso a pessoa cria a dela.', () => { if (S.gv) gvFecharSo(); });
   } else {
     Audit.log({ acao: 'editar_usuario', entidade: 'usuario', entidadeId: x.id, resumo: 'Alterou o cadastro de ' + nome + ' (' + perfilLabel(Object.assign({}, x, dados)) + ')', antes: { perfil: x.perfil, estrela: !!x.estrela, atrib: x.atrib || null, superiores: x.superiores || [] }, depois: { perfil: dados.perfil, estrela: dados.estrela, atrib: dados.atrib, superiores } });
     f.volta = null; lcGrava([Data.col('sv2_users').update(x.id, dados)], 'Cadastro salvo.', () => pesAbre(x.id));
@@ -131,15 +134,44 @@ function pesMeuPerfil() {
     '<label class="cp">Situação' + ddHTML('pes:status', me.status === 'ausente' ? 'ausente' : 'ativo', [['ativo', 'Presente'], ['ausente', 'Ausente (férias, folga): os pedidos vão para os Administradores']]) + '</label>' +
     '<div><button type="button" class="bt pr" data-act="pes-mp-ok">Salvar</button></div></div></section>' +
     '<section class="pn"><div class="hd"><h3>Trocar a senha</h3></div><div class="cpo"><label class="cp">Senha nova<input id="pes-s1" type="password" autocomplete="new-password" maxlength="40"></label>' +
-    '<label class="cp">Repita a senha nova<input id="pes-s2" type="password" autocomplete="new-password" maxlength="40"></label><p class="en-msg" id="pes-smsg" role="alert"></p><div><button type="button" class="bt" data-act="pes-senha">Trocar a senha</button></div></div></section></div>';
+    '<label class="cp">Repita a senha nova<input id="pes-s2" type="password" autocomplete="new-password" maxlength="40"></label><p class="en-msg" id="pes-smsg" role="alert"></p><div><button type="button" class="bt" data-act="pes-senha">Trocar a senha</button></div></div></section>' + pesEmailPainel(me) + '</div>';
 }
 async function pesMpOk() {
   const cargo = ($('#pes-cargo') || {}).value || '';
   try { await Data.col('sv2_users').update(S.user.id, { cargo: cargo.trim() }); aviso('Perfil salvo.'); } catch (e) { aviso('Não deu para salvar agora.', 'erro'); }
 }
+/* ---------- e-mail para recuperar a senha ---------- */
+function pesEmailPainel(me) {
+  const ok = emailReal(DEMO ? (me.emailOk ? me.email : '') : Data.auth.emailAtual()) || (me.emailOk ? emailReal(me.email) : ''), pend = emailReal(me.emailPendente);
+  const sit = ok ? '<b>' + esc(ok) + '</b> confirmado.' : pend ? 'Aguardando a confirmação de <b>' + esc(pend) + '</b>: abra o link que chegou nesse e-mail.' : 'Sem e-mail: quem esquece a senha não consegue recuperar sozinho.';
+  return '<section class="pn"><div class="hd"><h3>E-mail para recuperar a senha</h3></div><div class="cpo"><p class="pes-esit">' + sit + '</p>' +
+    '<label class="cp">' + (ok || pend ? 'Trocar o e-mail' : 'E-mail') + '<input id="pes-email" type="email" autocomplete="email" maxlength="120" placeholder="ex.: nome@gmail.com"></label>' +
+    '<p class="en-msg" id="pes-emsg" role="alert"></p><div><button type="button" class="bt" data-act="pes-email">Salvar o e-mail</button></div></div></section>';
+}
+/* grava o e-mail (Meu perfil e primeiro acesso). Nuvem: o Firebase manda um link e só troca depois do clique (volta false);
+   demonstração: fica confirmado na hora (volta true). */
+async function pesDefinirEmail(email) {
+  const e = emailReal(email); if (!e) throw new Error('email-invalido');
+  const conf = await Data.auth.definirEmail(e);
+  await Data.col('sv2_users').update(S.user.id, conf ? { email: e, emailOk: true, emailPendente: '' } : { emailPendente: e, emailOk: false });
+  try { await Data.auth.ligarLogin(S.user.login, conf ? { email: e, emailNovo: '' } : { emailNovo: e }); } catch (er) { console.warn('sv2_login', er); }
+  Audit.log({ acao: 'definir_email', entidade: 'usuario', entidadeId: S.user.id, resumo: conf ? 'Cadastrou o e-mail para recuperar a senha' : 'Pediu a confirmação do e-mail para recuperar a senha' });
+  return conf;
+}
+async function pesEmail() {
+  const v = (($('#pes-email') || {}).value || '').trim(), m = $('#pes-emsg'); if (!m) return;
+  if (!emailReal(v)) { m.textContent = 'Digite um e-mail válido (ex.: nome@gmail.com).'; return; }
+  try { const conf = await pesDefinirEmail(v); m.textContent = ''; aviso(conf ? 'E-mail salvo.' : 'Mandamos um link para ' + emailReal(v) + '. O e-mail vale depois que você abrir o link.'); render(); }
+  catch (e) { m.textContent = /recent-login/.test(e && e.code || '') ? 'Por segurança, saia e entre de novo antes de trocar o e-mail.' : /email-already-in-use/.test(e && e.code || '') ? 'Este e-mail já é de outra conta.' : 'Não deu para salvar o e-mail agora.'; }
+}
+/* nuvem: depois que a pessoa abre o link, o e-mail da conta muda; na entrada seguinte o cadastro e a ligação ficam confirmados */
+CS_CARGAS.push(() => {
+  const me = S.user, pend = me && emailReal(me.emailPendente); if (DEMO || !pend || emailReal(Data.auth.emailAtual()) !== pend) return;
+  Data.col('sv2_users').update(me.id, { email: pend, emailOk: true, emailPendente: '' }).then(() => Data.auth.ligarLogin(me.login, { email: pend, emailNovo: '' })).catch(e => console.warn('email', e));
+});
 async function pesSenha() {
   const a = ($('#pes-s1') || {}).value || '', b = ($('#pes-s2') || {}).value || '', m = $('#pes-smsg');
-  if (a.length < 6) { m.textContent = 'A senha precisa de pelo menos 6 letras ou números.'; return; }
+  if (a.length < SENHA_MIN) { m.textContent = 'A senha precisa de no mínimo ' + SENHA_MIN + ' caracteres.'; return; }
   if (a !== b) { m.textContent = 'As duas senhas não são iguais.'; return; }
   try { await Data.auth.trocarSenha(a); m.textContent = ''; $('#pes-s1').value = ''; $('#pes-s2').value = ''; aviso('Senha trocada.'); Audit.log({ acao: 'trocar_senha', entidade: 'usuario', entidadeId: S.user.id, resumo: 'Trocou a própria senha' }); }
   catch (e) { m.textContent = /recent-login/.test(e && e.code || '') ? 'Por segurança, saia e entre de novo antes de trocar a senha.' : 'Não deu para trocar a senha agora.'; }
@@ -157,5 +189,6 @@ document.addEventListener('click', e => {
   const a = t.getAttribute('data-act'), id = t.getAttribute('data-id');
   if (a === 'pes-novo') pesNovo(); else if (a === 'pes-editar') pesEditar(id); else if (a === 'pes-ed-ok') pesEdOk();
   else if (a === 'pes-bloq') pesBloq(id); else if (a === 'pes-bloq-ok') pesBloqOk(); else if (a === 'pes-liberar') pesLiberar(id);
-  else if (a === 'pes-mp-ok') pesMpOk(); else if (a === 'pes-senha') pesSenha();
+  else if (a === 'pes-mp-ok') pesMpOk(); else if (a === 'pes-senha') pesSenha(); else if (a === 'pes-email') pesEmail();
+  else if (a === 'pes-ver') { const i = t.parentNode.querySelector('input'); if (i) i.type = i.type === 'password' ? 'text' : 'password'; }
 });

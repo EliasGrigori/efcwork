@@ -50,16 +50,36 @@ function enArte(c, escuro) {
 /* v0.6.14 (Modelo 4 · Pólen, escolhido em 13/11/2026): uma linha diz o que é o app; entra palavra por palavra saindo do desfoque */
 const EN_DIZ = 'Coletas, inspeções, documentos e almoxarifado num lugar só.';
 const enDiz = () => '<p class="en-diz"><small>Qualidade da fazenda</small><b>' + EN_DIZ.split(' ').map((w, i) => '<span style="--i:' + i + '">' + esc(w) + '</span>').join(' ') + '</b></p>';
+/* v0.6.29 (varredura S2 e S3): "Esqueci a senha" manda o link do Firebase para o e-mail cadastrado; a pessoa nova cria
+   a própria senha no primeiro acesso (precisaCompletar, gravado pelo cadastro de Pessoas). As duas telas usam a mesma caixa do Entrar. */
+const enTrocaPendente = () => !!S.user && S.user.precisaCompletar === true;
+const enSenhaCampo = (id, auto, ver) => '<span class="en-sen"><input id="' + esc(id) + '" type="password" autocomplete="' + esc(auto) + '" maxlength="40" required>' + (ver ? '<button type="button" class="bt ic-so" data-act="en-ver" aria-label="Mostrar a senha">' + ic('olho') + '</button>' : '') + '</span>';
+function enFormRecup() {
+  return '<h2>Esqueci a senha</h2><p>O link para criar uma senha nova vai para o e-mail cadastrado em Meu perfil.</p>' +
+    '<form class="en-form" data-form="en-recup" novalidate>' +
+    '<label class="cp">Usuário ou e-mail<input id="en-rlogin" autocomplete="username" autocapitalize="none" value="' + esc(S._enRlogin || '') + '" required></label>' +
+    '<p class="en-msg" id="en-msg" role="alert"></p><div class="en-bts"><button type="button" class="bt en-bt" data-act="en-voltar">Voltar</button><button class="bt pr en-bt" type="submit">Enviar o link</button></div></form>';
+}
+function enFormTrocar() {
+  const nome = String(S.user.nome || '').split(/\s+/)[0];
+  return '<h2>Crie a sua senha</h2><p>' + (nome ? 'Olá, ' + esc(nome) + '. ' : '') + 'A senha que você recebeu vale só para o primeiro acesso.</p>' +
+    '<form class="en-form" data-form="en-trocar" novalidate>' +
+    '<label class="cp">Senha nova' + enSenhaCampo('en-senha', 'new-password', true) + '<small>No mínimo ' + esc(SENHA_MIN) + ' caracteres.</small></label>' +
+    '<label class="cp">Repita a senha nova' + enSenhaCampo('en-senha2', 'new-password', true) + '</label>' +
+    '<label class="cp">E-mail para recuperar a senha<input id="en-email" type="email" autocomplete="email" maxlength="120"><small>Opcional. Sem ele, quem esquece a senha não consegue recuperar sozinho.</small></label>' +
+    '<p class="en-msg" id="en-msg" role="alert"></p><div class="en-bts"><button type="button" class="bt en-bt" data-act="en-sair">Sair</button><button class="bt pr en-bt" type="submit">Salvar e entrar</button></div></form>';
+}
 function enTela() {
   const primeiro = S._setup === false, c = enCfg(), escuro = csTema() === 'escuro';
   const n = c.palavra.length;
-  const form = primeiro ?
+  const modo = enTrocaPendente() ? 'trocar' : S._enModo === 'recup' && !primeiro ? 'recup' : primeiro ? 'primeiro' : 'entrar';
+  const form = modo === 'trocar' ? enFormTrocar() : modo === 'recup' ? enFormRecup() : primeiro ?
     '<h2>Primeiro acesso</h2><p>Crie a conta do Administrador. Depois ele cadastra as outras pessoas.</p>' +
     '<form class="en-form" data-form="en-primeiro" novalidate>' +
     '<label class="cp">Nome completo<input id="en-nome" autocomplete="name" required></label>' +
     '<label class="cp">Usuário<input id="en-login" autocomplete="username" autocapitalize="none" required><small>Só letras, números e ponto. Ex.: joana.silva</small></label>' +
     '<label class="cp">E-mail<input id="en-email" type="email" autocomplete="email"><small>Para recuperar a senha.</small></label>' +
-    '<label class="cp">Senha<input id="en-senha" type="password" autocomplete="new-password" required><small>No mínimo 8 caracteres.</small></label>' +
+    '<label class="cp">Senha<input id="en-senha" type="password" autocomplete="new-password" required><small>No mínimo ' + esc(SENHA_MIN) + ' caracteres.</small></label>' +
     '<label class="cp">Repita a senha<input id="en-senha2" type="password" autocomplete="new-password" required></label>' +
     '<p class="en-msg" id="en-msg" role="alert"></p><button class="bt pr en-bt" type="submit">Criar e entrar</button></form>'
     :
@@ -102,16 +122,18 @@ function enPolen() {
   if (Mov.reduzido()) { for (let i = 0; i < 3; i++) desenha(0); return; } raf = requestAnimationFrame(passo);
 }
 function enDepois() { try { enPolen(); } catch (e) { console.error(e); } const i = $('#en-login'); if (i && !i.value) { try { i.focus(); } catch {} } else { const s = $('#en-senha'); if (s) try { s.focus(); } catch {} } }
-function enMsg(t) { const m = $('#en-msg'); if (m) m.textContent = t || ''; }
+function enMsg(t, ok) { const m = $('#en-msg'); if (m) { m.textContent = t || ''; m.classList.toggle('ok', !!ok); } }
 
 document.addEventListener('click', e => {
   const t = e.target.closest && e.target.closest('[data-act="en-ver"]'); if (!t) return;
-  const i = $('#en-senha'); if (i) i.type = i.type === 'password' ? 'text' : 'password';
+  const i = $('#en-senha'), j = $('#en-senha2'); if (!i) return; const tp = i.type === 'password' ? 'text' : 'password'; i.type = tp; if (j && t.closest('[data-form="en-trocar"]')) j.type = tp; /* v0.6.29: na tela de criar a senha, o olho mostra as duas */
 });
 document.addEventListener('submit', async e => {
   const f = e.target.closest && e.target.closest('[data-form^="en-"]'); if (!f) return;
   e.preventDefault();
   const bt = f.querySelector('button[type=submit]');
+  if (f.getAttribute('data-form') === 'en-recup') return enRecuperar(bt);
+  if (f.getAttribute('data-form') === 'en-trocar') return enTrocar(bt);
   if (f.getAttribute('data-form') === 'en-entrar') {
     const login = $('#en-login').value.trim(), senha = $('#en-senha').value;
     if (!login || !senha) return enMsg('Preencha o usuário e a senha.');
@@ -129,15 +151,52 @@ document.addEventListener('submit', async e => {
   if (nome.split(/\s+/).filter(Boolean).length < 2) return enMsg('Informe o nome completo (nome e sobrenome).');
   if (login.length < 3) return enMsg('O usuário precisa de pelo menos 3 letras ou números.');
   if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return enMsg('Digite um e-mail válido ou deixe em branco.');
-  if (s1.length < 8) return enMsg('A senha precisa de no mínimo 8 caracteres.');
+  if (s1.length < SENHA_MIN) return enMsg('A senha precisa de no mínimo ' + SENHA_MIN + ' caracteres.');
   if (s1 !== s2) return enMsg('As senhas não são iguais.');
   bt.disabled = true; bt.textContent = 'Criando…';
   try {
     const id = await Data.auth.createFirst(login, s1, email);
     await Data.firstSetup({ id: id, nome: nome, login: login, perfil: 'principal', estrela: false, bloqueado: false, criadoEm: nowISO(), email: email, emailOk: DEMO, emailPendente: '', precisaCompletar: false });
+    if (email) Data.auth.ligarLogin(login, { email: email }).catch(er => console.warn('sv2_login', er)); /* v0.6.29: sem a ligação, o Administrador só entrava digitando o e-mail */
     S._setup = true; Store.set('cw-ultimo-login', login);
     await csCarregaUsuario(id);
   } catch (er) { enMsg(enErro(er)); bt.disabled = false; bt.textContent = 'Criar e entrar'; }
 });
-/* v0.6.23: sem link para o EFClaudian; quem esqueceu a senha pede ao Administrador (ele troca em Administração › Pessoas) */
-document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('[data-act="en-esqueci"]'); if (t) aviso('Peça ao Administrador para trocar a sua senha.'); });
+/* v0.6.29 (varredura S2): antes o "Esqueci a senha" só dizia para pedir ao Administrador, que não tem como trocar a senha de outra pessoa */
+function enRecupAbre() { const l = $('#en-login'); S._enRlogin = l ? l.value.trim() : ''; S._enModo = 'recup'; csCamadaAbre('recup', () => { S._enModo = ''; render(); }); render(); const i = $('#en-rlogin'); if (i) try { i.focus(); } catch {} }
+async function enRecuperar(bt) {
+  const ent = ($('#en-rlogin').value || '').trim(); S._enRlogin = ent;
+  if (!ent) return enMsg('Digite o seu usuário ou o e-mail.');
+  let email = ent.indexOf('@') >= 0 ? emailReal(ent) : '';
+  if (ent.indexOf('@') >= 0 && !email) return enMsg('Digite um e-mail válido, ou o seu usuário.');
+  bt.disabled = true; bt.textContent = 'Enviando…'; enMsg('');
+  try {
+    /* ITEM 147 (20/11): a mesma frase exista ou não a conta, com ou sem e-mail (OWASP); o app só manda o link quando há e-mail */
+    if (!email) email = await Data.auth.emailDoLogin(ent);
+    if (email) { try { await Data.auth.recuperar(email); } catch (er) { if (er && /too-many-requests|network-request-failed/.test(er.code || '')) throw er; } }
+    enMsg('Se houver um e-mail cadastrado para este acesso, o link chega em alguns minutos. Confira também o spam. Se não chegar, fale com o Administrador.', true);
+  } catch (er) { enMsg(er && er.code === 'auth/too-many-requests' ? 'Muitos pedidos. Aguarde alguns minutos.' : er && er.code === 'auth/network-request-failed' ? 'Sem conexão. Conecte-se à internet.' : 'Não deu para mandar o link agora. Tente de novo.'); }
+  bt.disabled = false; bt.textContent = 'Enviar o link';
+}
+/* primeiro acesso da pessoa cadastrada em Pessoas: cria a própria senha (diferente da inicial) e, se quiser, o e-mail de recuperar */
+async function enTrocar(bt) {
+  const s1 = $('#en-senha').value, s2 = $('#en-senha2').value, email = ($('#en-email').value || '').trim();
+  if (s1.length < SENHA_MIN) return enMsg('A senha precisa de no mínimo ' + SENHA_MIN + ' caracteres.');
+  if (s1 !== s2) return enMsg('As senhas não são iguais.');
+  if (email && !emailReal(email)) return enMsg('Digite um e-mail válido ou deixe em branco.');
+  bt.disabled = true; bt.textContent = 'Salvando…'; enMsg('');
+  try {
+    if (await Data.auth.verificar(s1)) { bt.disabled = false; bt.textContent = 'Salvar e entrar'; return enMsg('Use uma senha diferente da inicial.'); }
+    await Data.auth.trocarSenha(s1);
+    const ag = nowISO(); await Data.col('sv2_users').update(S.user.id, { precisaCompletar: false, completadoEm: ag, senhaTrocadaEm: ag });
+    Audit.log({ acao: 'trocar_senha', entidade: 'usuario', entidadeId: S.user.id, resumo: 'Criou a própria senha no primeiro acesso' });
+    let aviso2 = 'Senha criada.';
+    if (email) { try { aviso2 += await pesDefinirEmail(email) ? '' : ' Abra o link que chegou em ' + emailReal(email) + ' para confirmar o e-mail.'; } catch (er) { aviso2 += ' O e-mail ficou para depois (Meu perfil).'; } }
+    S.user.precisaCompletar = false; render(); aviso(aviso2);
+  } catch (er) { bt.disabled = false; bt.textContent = 'Salvar e entrar'; enMsg(/recent-login/.test(er && er.code || '') ? 'Por segurança, saia e entre de novo com a senha inicial.' : 'Não deu para salvar agora. Tente de novo.'); }
+}
+document.addEventListener('click', e => {
+  const t = e.target.closest && e.target.closest('[data-act="en-esqueci"],[data-act="en-voltar"],[data-act="en-sair"]'); if (!t) return;
+  const a = t.getAttribute('data-act');
+  if (a === 'en-esqueci') enRecupAbre(); else if (a === 'en-voltar') csVolta(); else Data.auth.signOut().catch(() => {});
+});

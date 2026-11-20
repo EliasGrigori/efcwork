@@ -2228,7 +2228,7 @@ body:has(#gv) .pp-bar{display:none}
 .en-caixa h2{font-size:30px}
 .en-caixa>p{margin:0;color:var(--tx2)}
 .en-form{display:flex;flex-direction:column;gap:14px;margin-top:6px}
-.en-sen{display:flex;gap:6px}.en-sen input{flex:1}.en-sen .bt{height:42px;width:42px}
+.en-sen{display:flex;gap:6px}.en-sen input{flex:1;min-width:0}.en-sen .bt{height:auto;align-self:stretch;aspect-ratio:1;width:auto;flex:none} /* v0.6.29: o olho com a altura do campo (era 42 px fixo) */
 .en-lin{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:var(--tx2);gap:10px;flex-wrap:wrap}
 .en-lin a,.en-esq{color:var(--aTx);font-weight:600;text-decoration:none}
 .en-esq{appearance:none;border:0;background:none;padding:0;font:inherit;font-weight:600;cursor:pointer}
@@ -2236,6 +2236,8 @@ body:has(#gv) .pp-bar{display:none}
 .en-ck input{width:18px;height:18px;accent-color:var(--a)}
 .en-msg{min-height:20px;margin:0;color:var(--cr);font-size:14px}
 .en-bt{height:46px;font-size:16px}
+.en-bts{display:grid;grid-template-columns:1fr 1fr;gap:10px}.en-bts .bt{justify-content:center;width:100%} /* v0.6.29: Voltar e Enviar lado a lado, do mesmo tamanho */
+.en-msg.ok{color:var(--ok)}
 .en-rod{margin-top:14px;font-size:13px;color:var(--tx3);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
 @keyframes en-entra{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
 /* v0.6.14 · Pólen: o fundo vivo fica entre a cor de fundo e a arte; a linha que diz o que é o app entra palavra por palavra */
@@ -2318,6 +2320,7 @@ body:has(#gv) .pp-bar{display:none}
 }
 /* v0.4.5: em telas baixas (800 px) o formulário do primeiro acesso cabe inteiro */
 @media(min-width:900px) and (max-height:880px){.en-caixa{padding:22px 26px 18px;gap:8px}.en-caixa h2{font-size:26px}.en-form{gap:9px;margin-top:2px}.en-mk{margin-bottom:2px}}
+.en-form .cp small{font-size:12px} /* v0.6.29: dica do campo com o mesmo tamanho das outras letras pequenas da caixa (era 11,7 px) */
 
 /* ===== inicio.css ===== */
 /* EFCwork · inicio.css — Prefixo: ini- */
@@ -2426,6 +2429,8 @@ body:has(#gv) .pp-bar{display:none}
 /* ===== pessoas.css ===== */
 .pes-cks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 12px}
 @media(max-width:700px){.pes-cks{grid-template-columns:minmax(0,1fr)}}
+.pes-sen{display:flex;gap:6px;align-items:center}.pes-sen .fm-i{flex:1 1 auto}.pes-sen .bt{flex:none;height:var(--campo);width:var(--campo)} /* v0.6.29 */
+.pes-esit{margin:0 0 4px;color:var(--tx2);font-size:14px}.pes-esit b{color:var(--tx);font-weight:600}
 
 /* ===== fluidez.css ===== */
 /* EFCwork · fluidez.css — v0.6.14 "Movimento". Só tokens da escala comum (tools/visual/efc-movimento.css). */
@@ -2690,7 +2695,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = Mov;
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.6.28';
+const VERSAO = '0.6.29';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -2764,6 +2769,10 @@ const $ = (s, r) => (r || document).querySelector(s);
 const $$ = (s, r) => Array.prototype.slice.call((r || document).querySelectorAll(s));
 const esc = v => v == null ? '' : String(v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const imgSrc = u => { const s = String(u == null ? '' : u).trim(); return /^(data:image\/[a-z0-9.+-]+[;,]|blob:|https:\/\/)/i.test(s) ? esc(s) : ''; };
+/* v0.6.29 (varredura S5): endereço que vira link clicável só se for https (o dado pode ter sido gravado fora do app) */
+const linkSeguro = u => { const s = String(u == null ? '' : u).trim(); return /^https:\/\/[^\s"'<>]+$/i.test(s) ? esc(s) : ''; };
+const SENHA_MIN = 8; /* v0.6.29 (varredura S3): a mesma regra no primeiro acesso, no cadastro de pessoa e em Meu perfil */
+const emailReal = e => { const s = String(e || '').trim().toLowerCase(); return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(s) && !/@efclaudian\.app$/.test(s) ? s : ''; };
 /* modo demonstração: as mesmas listas das regras do Firestore (06/11) para quem não é líder ★/Administrador, para os testes pegarem permissão negada */
 const DEMO_REGRAS = { sv2_alm_inv: ['contagens', 'folhas'], sv2_alm_equip: ['situacao', 'local', 'posicao', 'guardadoEm', 'sitAntes', 'posAntes', 'restricaoCal', 'qtdLocal', 'qtdGuard', 'trfQtd', 'transito', 'hist', 'atualizadoEm'], sv2_alm_cal: [] };
 function demoRegraNega(col, chaves) { const l = DEMO_REGRAS[col], u = S.user; if (!l || !u || typeof isSup !== 'function' || isSup(u)) return ''; return chaves.map(k => k.split('.')[0]).find(k => l.indexOf(k) < 0) || ''; }
@@ -2997,6 +3006,20 @@ const Data = (function () {
       await fauth.currentUser.verifyBeforeUpdateEmail(email); return false;
     },
     async recuperar(email) { if (DEMO) return; await fauth.sendPasswordResetEmail(email); },
+    /* v0.6.29 (varredura S2): o e-mail confirmado de um login, para o "Esqueci a senha" (sv2_login é lido sem estar logado, só pelo login exato) */
+    async emailDoLogin(login) {
+      const k = slugLogin(login); if (!k) return '';
+      if (DEMO) { const r = dAuth()[k]; return emailReal(r && r.email); }
+      try { const d = await fdb.collection('sv2_login').doc(k).get(); return d.exists ? emailReal(d.data().email) : ''; } catch (e) { return ''; }
+    },
+    /* grava a ligação login → e-mail sem apagar o que o EFClaudian já guardou nela (lê e junta) */
+    async ligarLogin(login, campos) {
+      const k = slugLogin(login); if (!k || DEMO || !fauth.currentUser) return;
+      const ref = fdb.collection('sv2_login').doc(k); let atual = {};
+      try { const d = await ref.get(); if (d.exists) atual = d.data(); } catch (e) {}
+      if (atual.uid && atual.uid !== fauth.currentUser.uid) return;
+      await ref.set(Object.assign({}, atual, { uid: fauth.currentUser.uid, interno: atual.interno || emailOf(k) }, campos, { em: nowISO() }));
+    },
     emailAtual() { if (DEMO) { const r = dAuth()[slugLogin(S.user && S.user.login)]; return r && r.email || ''; } return fauth && fauth.currentUser ? fauth.currentUser.email || '' : ''; }
   };
   return {
@@ -3317,7 +3340,7 @@ function csBaixo() {
 function render() {
   const app = $('#app'); if (!app) return;
   if (!S.pronto) { app.innerHTML = '<div class="cs-carregando">' + ic('broto') + '<span>Abrindo o ' + APP_NOME + '…</span></div>'; return; }
-  if (!S.user) { app.innerHTML = enTela(); try { enDepois(); } catch (e) { console.error(e); } return; }
+  if (!S.user || enTrocaPendente()) { app.innerHTML = enTela(); /* v0.6.29: a pessoa nova cria a senha antes de ver o app */ try { enDepois(); } catch (e) { console.error(e); } return; }
   const ar = csArea(S.rota.area), f = TELAS[ar.id];
   let corpo = '';
   try { corpo = f ? f(S.rota.aba) : arEmBreve(ar); } catch (e) { console.error(e); corpo = '<div class="pn"><div class="vazio"><b>Esta tela deu erro ao abrir.</b><span>' + esc(e && e.message || e) + '</span></div></div>'; }
@@ -8390,7 +8413,8 @@ function ipGaveta(id) {
   const f = ipFmt(d), link = d.tipo === 'link', p = d.pub, o = d.orig, aqui = p && S.ipAparelho[d.id] === p.sha256;
   if (p && !aqui) ipNoAparelho(d).then(x => { if (x && S.gv && S._ipGv === d.id) gvDesenha(); });
   let c = '';
-  if (link) c += '<p class="gv-h">Endereço</p><p class="ip-link"><a href="' + esc(d.link) + '" target="_blank" rel="noopener">' + esc(d.link) + '</a></p>';
+  const lk = link ? linkSeguro(d.link) : ''; /* v0.6.29 (varredura S5): só https vira link, mesmo que o dado tenha sido gravado fora do app */
+  if (link) c += '<p class="gv-h">Endereço</p><p class="ip-link">' + (lk ? '<a href="' + lk + '" target="_blank" rel="noopener">' + lk + '</a>' : esc(d.link)) + '</p>' + (lk ? '' : lcAv('Este endereço não começa com https://, por isso não abre daqui. Corrija no lápis.', 'cr'));
   else if (p && ipVeNoApp()) c += '<p class="gv-h">Cópia de impressão</p><div class="ip-prev" data-ip-prev="' + esc(d.id) + '"><span class="ip-prevm">Abrindo o PDF…</span></div>';
   else if (p) c += '<button type="button" class="ip-abrirpdf" data-act="ip-ver" data-id="' + esc(d.id) + '">' + ic('doc') + '<span><b>Ver o PDF</b><small>' + p.paginas + (p.paginas === 1 ? ' página' : ' páginas') + ' · ' + ipTam(p.bytes) + '</small></span>' + ic('externo') + '</button>';
   if (d.status === 'obsoleto') c += lcAv('<b>Obsoleto:</b> este papel não imprime mais. Use a versão vigente.', 'cr');
@@ -8407,7 +8431,7 @@ function ipGaveta(id) {
     (o ? '<button type="button" class="bt" data-act="ip-baixar" data-id="' + esc(d.id) + '" data-q="orig">' + ic('baixar') + 'Baixar o ' + IP_FMT[o.formato] + '</button>' : '') + '</div>';
   const cab = (ipPode() ? '<button type="button" class="bt ic-so" data-act="ip-editar" data-id="' + esc(d.id) + '" title="Editar ou trocar o arquivo" aria-label="Editar">' + ic('lapis') + '</button>' : '');
   const vert = (d.tipo === 'planilha' || d.tipo === 'docx') && o ? '<button type="button" class="bt" data-act="ip-no-vertice" data-id="' + esc(d.id) + '">' + ic('externo') + 'Abrir no Vértice</button>' : '';
-  const pe = link ? '<span class="au-pesp"></span><a class="bt pr" href="' + esc(d.link) + '" target="_blank" rel="noopener">' + ic('externo') + 'Abrir o link</a>'
+  const pe = link ? (lk ? '<span class="au-pesp"></span><a class="bt pr" href="' + lk + '" target="_blank" rel="noopener">' + ic('externo') + 'Abrir o link</a>' : '')
     : vert + '<span class="au-pesp"></span><button type="button" class="bt pr" data-act="ip-imprimir" data-id="' + esc(d.id) + '"' + (ipImprime(d) ? '' : ' disabled') + '>' + ic('impressora') + 'Imprimir</button>';
   return { ico: link ? 'externo' : f === 'xlsx' ? 'planilha' : 'doc', sub: [d.codigo, ipFmtTxt(d), link ? '' : 'versão ' + d.rev].filter(Boolean).join(' · '), titulo: d.nome, pill: ipPill(d), cabAcoes: cab,
     lixeira: ipPode() ? { act: 'ip-lixo', id: d.id, titulo: 'Mandar para a lixeira' } : null, corpo: c, rodape: pe };
@@ -10023,9 +10047,9 @@ async function apNovoOk() {
     fotos.forEach((d, i) => { S._apFotos[ids[i]] = d; S._apFotoDoc[ids[i]] = Object.assign({ base: '', marcas: [], marcadoPor: '', marcadoEm: '' }, apMkDoc(f, i)); Data.col('sv2_fotos').set(ids[i], Object.assign({ refTipo: 'apont', refId: id, papel: 'antes', dataUrl: d, criadoEm: ts, porId: u.id }, apMkDoc(f, i))).catch(er => console.error('foto apont', er)); });
     const sups = supsOf(u).filter(x => x !== u.id);
     const txt = (o.obs || 'Sem observação') + ' · por ' + u.nome + (o.comunicado ? ' · encarregado avisado' : ' · encarregado NÃO avisado');
-    if (sups.length && f.grav === 'urgente') Notif.send({ nivel: 'critico', titulo: 'Apontamento URGENTE: ' + c[1] + ' — ' + setor, texto: txt, para: sups, refTipo: 'apont', refId: id });
-    else if (sups.length && f.grav === 'grave') Notif.send({ nivel: 'aviso', titulo: 'Apontamento grave: ' + c[1] + ' — ' + setor, texto: txt, para: sups, refTipo: 'apont', refId: id });
-    Audit.log({ acao: 'apontamento', entidade: 'apontamento', entidadeId: id, resumo: 'Registrou apontamento (' + g[1] + '): ' + c[1] + ' em ' + setor + (o.obs ? ' — ' + o.obs : ''), depois: { categoria: c[1], setor: setor, gravidade: g[1], origem: o.origem, fotos: ids.length } });
+    if (sups.length && f.grav === 'urgente') Notif.send({ nivel: 'critico', titulo: 'Apontamento URGENTE: ' + c[1] + ' · ' + setor, texto: txt, para: sups, refTipo: 'apont', refId: id });
+    else if (sups.length && f.grav === 'grave') Notif.send({ nivel: 'aviso', titulo: 'Apontamento grave: ' + c[1] + ' · ' + setor, texto: txt, para: sups, refTipo: 'apont', refId: id });
+    Audit.log({ acao: 'apontamento', entidade: 'apontamento', entidadeId: id, resumo: 'Registrou apontamento (' + g[1] + '): ' + c[1] + ' em ' + setor + (o.obs ? ': ' + o.obs : ''), depois: { categoria: c[1], setor: setor, gravidade: g[1], origem: o.origem, fotos: ids.length } });
     lcFim(); aviso('Apontamento enviado.' + (f.grav === 'urgente' || f.grav === 'grave' ? ' O seu superior foi avisado.' : ''));
   } catch (e) { f._trava = 0; lcErro(svErro(e)); }
 }
@@ -14151,16 +14175,36 @@ function enArte(c, escuro) {
 /* v0.6.14 (Modelo 4 · Pólen, escolhido em 13/11/2026): uma linha diz o que é o app; entra palavra por palavra saindo do desfoque */
 const EN_DIZ = 'Coletas, inspeções, documentos e almoxarifado num lugar só.';
 const enDiz = () => '<p class="en-diz"><small>Qualidade da fazenda</small><b>' + EN_DIZ.split(' ').map((w, i) => '<span style="--i:' + i + '">' + esc(w) + '</span>').join(' ') + '</b></p>';
+/* v0.6.29 (varredura S2 e S3): "Esqueci a senha" manda o link do Firebase para o e-mail cadastrado; a pessoa nova cria
+   a própria senha no primeiro acesso (precisaCompletar, gravado pelo cadastro de Pessoas). As duas telas usam a mesma caixa do Entrar. */
+const enTrocaPendente = () => !!S.user && S.user.precisaCompletar === true;
+const enSenhaCampo = (id, auto, ver) => '<span class="en-sen"><input id="' + esc(id) + '" type="password" autocomplete="' + esc(auto) + '" maxlength="40" required>' + (ver ? '<button type="button" class="bt ic-so" data-act="en-ver" aria-label="Mostrar a senha">' + ic('olho') + '</button>' : '') + '</span>';
+function enFormRecup() {
+  return '<h2>Esqueci a senha</h2><p>O link para criar uma senha nova vai para o e-mail cadastrado em Meu perfil.</p>' +
+    '<form class="en-form" data-form="en-recup" novalidate>' +
+    '<label class="cp">Usuário ou e-mail<input id="en-rlogin" autocomplete="username" autocapitalize="none" value="' + esc(S._enRlogin || '') + '" required></label>' +
+    '<p class="en-msg" id="en-msg" role="alert"></p><div class="en-bts"><button type="button" class="bt en-bt" data-act="en-voltar">Voltar</button><button class="bt pr en-bt" type="submit">Enviar o link</button></div></form>';
+}
+function enFormTrocar() {
+  const nome = String(S.user.nome || '').split(/\s+/)[0];
+  return '<h2>Crie a sua senha</h2><p>' + (nome ? 'Olá, ' + esc(nome) + '. ' : '') + 'A senha que você recebeu vale só para o primeiro acesso.</p>' +
+    '<form class="en-form" data-form="en-trocar" novalidate>' +
+    '<label class="cp">Senha nova' + enSenhaCampo('en-senha', 'new-password', true) + '<small>No mínimo ' + esc(SENHA_MIN) + ' caracteres.</small></label>' +
+    '<label class="cp">Repita a senha nova' + enSenhaCampo('en-senha2', 'new-password', true) + '</label>' +
+    '<label class="cp">E-mail para recuperar a senha<input id="en-email" type="email" autocomplete="email" maxlength="120"><small>Opcional. Sem ele, quem esquece a senha não consegue recuperar sozinho.</small></label>' +
+    '<p class="en-msg" id="en-msg" role="alert"></p><div class="en-bts"><button type="button" class="bt en-bt" data-act="en-sair">Sair</button><button class="bt pr en-bt" type="submit">Salvar e entrar</button></div></form>';
+}
 function enTela() {
   const primeiro = S._setup === false, c = enCfg(), escuro = csTema() === 'escuro';
   const n = c.palavra.length;
-  const form = primeiro ?
+  const modo = enTrocaPendente() ? 'trocar' : S._enModo === 'recup' && !primeiro ? 'recup' : primeiro ? 'primeiro' : 'entrar';
+  const form = modo === 'trocar' ? enFormTrocar() : modo === 'recup' ? enFormRecup() : primeiro ?
     '<h2>Primeiro acesso</h2><p>Crie a conta do Administrador. Depois ele cadastra as outras pessoas.</p>' +
     '<form class="en-form" data-form="en-primeiro" novalidate>' +
     '<label class="cp">Nome completo<input id="en-nome" autocomplete="name" required></label>' +
     '<label class="cp">Usuário<input id="en-login" autocomplete="username" autocapitalize="none" required><small>Só letras, números e ponto. Ex.: joana.silva</small></label>' +
     '<label class="cp">E-mail<input id="en-email" type="email" autocomplete="email"><small>Para recuperar a senha.</small></label>' +
-    '<label class="cp">Senha<input id="en-senha" type="password" autocomplete="new-password" required><small>No mínimo 8 caracteres.</small></label>' +
+    '<label class="cp">Senha<input id="en-senha" type="password" autocomplete="new-password" required><small>No mínimo ' + esc(SENHA_MIN) + ' caracteres.</small></label>' +
     '<label class="cp">Repita a senha<input id="en-senha2" type="password" autocomplete="new-password" required></label>' +
     '<p class="en-msg" id="en-msg" role="alert"></p><button class="bt pr en-bt" type="submit">Criar e entrar</button></form>'
     :
@@ -14203,16 +14247,18 @@ function enPolen() {
   if (Mov.reduzido()) { for (let i = 0; i < 3; i++) desenha(0); return; } raf = requestAnimationFrame(passo);
 }
 function enDepois() { try { enPolen(); } catch (e) { console.error(e); } const i = $('#en-login'); if (i && !i.value) { try { i.focus(); } catch {} } else { const s = $('#en-senha'); if (s) try { s.focus(); } catch {} } }
-function enMsg(t) { const m = $('#en-msg'); if (m) m.textContent = t || ''; }
+function enMsg(t, ok) { const m = $('#en-msg'); if (m) { m.textContent = t || ''; m.classList.toggle('ok', !!ok); } }
 
 document.addEventListener('click', e => {
   const t = e.target.closest && e.target.closest('[data-act="en-ver"]'); if (!t) return;
-  const i = $('#en-senha'); if (i) i.type = i.type === 'password' ? 'text' : 'password';
+  const i = $('#en-senha'), j = $('#en-senha2'); if (!i) return; const tp = i.type === 'password' ? 'text' : 'password'; i.type = tp; if (j && t.closest('[data-form="en-trocar"]')) j.type = tp; /* v0.6.29: na tela de criar a senha, o olho mostra as duas */
 });
 document.addEventListener('submit', async e => {
   const f = e.target.closest && e.target.closest('[data-form^="en-"]'); if (!f) return;
   e.preventDefault();
   const bt = f.querySelector('button[type=submit]');
+  if (f.getAttribute('data-form') === 'en-recup') return enRecuperar(bt);
+  if (f.getAttribute('data-form') === 'en-trocar') return enTrocar(bt);
   if (f.getAttribute('data-form') === 'en-entrar') {
     const login = $('#en-login').value.trim(), senha = $('#en-senha').value;
     if (!login || !senha) return enMsg('Preencha o usuário e a senha.');
@@ -14230,18 +14276,55 @@ document.addEventListener('submit', async e => {
   if (nome.split(/\s+/).filter(Boolean).length < 2) return enMsg('Informe o nome completo (nome e sobrenome).');
   if (login.length < 3) return enMsg('O usuário precisa de pelo menos 3 letras ou números.');
   if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return enMsg('Digite um e-mail válido ou deixe em branco.');
-  if (s1.length < 8) return enMsg('A senha precisa de no mínimo 8 caracteres.');
+  if (s1.length < SENHA_MIN) return enMsg('A senha precisa de no mínimo ' + SENHA_MIN + ' caracteres.');
   if (s1 !== s2) return enMsg('As senhas não são iguais.');
   bt.disabled = true; bt.textContent = 'Criando…';
   try {
     const id = await Data.auth.createFirst(login, s1, email);
     await Data.firstSetup({ id: id, nome: nome, login: login, perfil: 'principal', estrela: false, bloqueado: false, criadoEm: nowISO(), email: email, emailOk: DEMO, emailPendente: '', precisaCompletar: false });
+    if (email) Data.auth.ligarLogin(login, { email: email }).catch(er => console.warn('sv2_login', er)); /* v0.6.29: sem a ligação, o Administrador só entrava digitando o e-mail */
     S._setup = true; Store.set('cw-ultimo-login', login);
     await csCarregaUsuario(id);
   } catch (er) { enMsg(enErro(er)); bt.disabled = false; bt.textContent = 'Criar e entrar'; }
 });
-/* v0.6.23: sem link para o EFClaudian; quem esqueceu a senha pede ao Administrador (ele troca em Administração › Pessoas) */
-document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('[data-act="en-esqueci"]'); if (t) aviso('Peça ao Administrador para trocar a sua senha.'); });
+/* v0.6.29 (varredura S2): antes o "Esqueci a senha" só dizia para pedir ao Administrador, que não tem como trocar a senha de outra pessoa */
+function enRecupAbre() { const l = $('#en-login'); S._enRlogin = l ? l.value.trim() : ''; S._enModo = 'recup'; csCamadaAbre('recup', () => { S._enModo = ''; render(); }); render(); const i = $('#en-rlogin'); if (i) try { i.focus(); } catch {} }
+async function enRecuperar(bt) {
+  const ent = ($('#en-rlogin').value || '').trim(); S._enRlogin = ent;
+  if (!ent) return enMsg('Digite o seu usuário ou o e-mail.');
+  let email = ent.indexOf('@') >= 0 ? emailReal(ent) : '';
+  if (ent.indexOf('@') >= 0 && !email) return enMsg('Digite um e-mail válido, ou o seu usuário.');
+  bt.disabled = true; bt.textContent = 'Enviando…'; enMsg('');
+  try {
+    /* ITEM 147 (20/11): a mesma frase exista ou não a conta, com ou sem e-mail (OWASP); o app só manda o link quando há e-mail */
+    if (!email) email = await Data.auth.emailDoLogin(ent);
+    if (email) { try { await Data.auth.recuperar(email); } catch (er) { if (er && /too-many-requests|network-request-failed/.test(er.code || '')) throw er; } }
+    enMsg('Se houver um e-mail cadastrado para este acesso, o link chega em alguns minutos. Confira também o spam. Se não chegar, fale com o Administrador.', true);
+  } catch (er) { enMsg(er && er.code === 'auth/too-many-requests' ? 'Muitos pedidos. Aguarde alguns minutos.' : er && er.code === 'auth/network-request-failed' ? 'Sem conexão. Conecte-se à internet.' : 'Não deu para mandar o link agora. Tente de novo.'); }
+  bt.disabled = false; bt.textContent = 'Enviar o link';
+}
+/* primeiro acesso da pessoa cadastrada em Pessoas: cria a própria senha (diferente da inicial) e, se quiser, o e-mail de recuperar */
+async function enTrocar(bt) {
+  const s1 = $('#en-senha').value, s2 = $('#en-senha2').value, email = ($('#en-email').value || '').trim();
+  if (s1.length < SENHA_MIN) return enMsg('A senha precisa de no mínimo ' + SENHA_MIN + ' caracteres.');
+  if (s1 !== s2) return enMsg('As senhas não são iguais.');
+  if (email && !emailReal(email)) return enMsg('Digite um e-mail válido ou deixe em branco.');
+  bt.disabled = true; bt.textContent = 'Salvando…'; enMsg('');
+  try {
+    if (await Data.auth.verificar(s1)) { bt.disabled = false; bt.textContent = 'Salvar e entrar'; return enMsg('Use uma senha diferente da inicial.'); }
+    await Data.auth.trocarSenha(s1);
+    const ag = nowISO(); await Data.col('sv2_users').update(S.user.id, { precisaCompletar: false, completadoEm: ag, senhaTrocadaEm: ag });
+    Audit.log({ acao: 'trocar_senha', entidade: 'usuario', entidadeId: S.user.id, resumo: 'Criou a própria senha no primeiro acesso' });
+    let aviso2 = 'Senha criada.';
+    if (email) { try { aviso2 += await pesDefinirEmail(email) ? '' : ' Abra o link que chegou em ' + emailReal(email) + ' para confirmar o e-mail.'; } catch (er) { aviso2 += ' O e-mail ficou para depois (Meu perfil).'; } }
+    S.user.precisaCompletar = false; render(); aviso(aviso2);
+  } catch (er) { bt.disabled = false; bt.textContent = 'Salvar e entrar'; enMsg(/recent-login/.test(er && er.code || '') ? 'Por segurança, saia e entre de novo com a senha inicial.' : 'Não deu para salvar agora. Tente de novo.'); }
+}
+document.addEventListener('click', e => {
+  const t = e.target.closest && e.target.closest('[data-act="en-esqueci"],[data-act="en-voltar"],[data-act="en-sair"]'); if (!t) return;
+  const a = t.getAttribute('data-act');
+  if (a === 'en-esqueci') enRecupAbre(); else if (a === 'en-voltar') csVolta(); else Data.auth.signOut().catch(() => {});
+});
 
 /* ===== inicio.js ===== */
 /* EFCwork · inicio.js — Início: saudação, tarefas de hoje (do mesmo Firebase do EFClaudian), voltar para / mais usadas e o plano das áreas. Prefixo: ini. */
@@ -14758,7 +14841,10 @@ csIniciar();
    superiores[], atrib {coletas, rateios, cloro, apont, docs, qualidade, almox} (sem atrib = vê tudo, como no EFClaudian), cargo,
    status (ativo | ausente), bloqueado, criadoEm. A conta de acesso é criada sem trocar a sessão de quem está logado
    (Data.auth.createAccount, app "sec"). Quem cadastra, edita e bloqueia: o Administrador. O Líder ★ vê a equipe, sem alterar.
-   Meu perfil: cada um muda o próprio cargo, a situação (presente / ausente) e a senha. Nenhuma coleção nova. */
+   Meu perfil: cada um muda o próprio cargo, a situação (presente / ausente) e a senha. Nenhuma coleção nova.
+   v0.6.29 (varredura S2 e S3): senha de no mínimo 8 em todo lugar; a pessoa nova nasce com precisaCompletar = true e cria a
+   própria senha no primeiro acesso (entrar.js); Meu perfil guarda o e-mail para recuperar a senha (o Firebase confirma por link)
+   e grava a ligação login → e-mail em sv2_login, como o EFClaudian. */
 const pesVe = () => !!S.user && isSup(S.user);
 const pesPode = () => !!S.user && isPrincipal(S.user);
 const PES_ATRIB = [['coletas', 'Coletas'], ['rateios', 'Rateios'], ['cloro', 'Cloro'], ['apont', 'Apontamentos e auditoria'], ['docs', 'Documentos'], ['qualidade', 'Qualidade'], ['almox', 'Almoxarifado']];
@@ -14814,7 +14900,7 @@ LC_FORM.pesEd = f => {
   const ck = (campo, on, txt) => '<label class="fm-ck"><input type="checkbox" data-fm="' + esc(campo) + '"' + (on ? ' checked' : '') + '> ' + esc(txt) + '</label>';
   const c = lcMsg() + apPasso(1, 'Quem é') + lcBl('Nome', lcIn('nome', f.nome, ' maxlength="80" placeholder="ex.: Maria Souza"')) +
     '<div class="fm-g cl-fm2">' + lcBl('Login', lcIn('login', f.login, ' maxlength="40" autocapitalize="off" spellcheck="false" placeholder="ex.: maria.souza"' + (novo ? '' : ' disabled')), novo ? 'para entrar' : 'não muda') + lcBl('Cargo', lcIn('cargo', f.cargo, ' maxlength="60" placeholder="ex.: Técnica de laboratório"')) + '</div>' +
-    (novo ? lcBl('Senha inicial', lcIn('senha', f.senha, ' type="text" maxlength="40" autocomplete="new-password" placeholder="mínimo 6 letras ou números"'), 'a pessoa troca em Meu perfil') : '') +
+    (novo ? lcBl('Senha inicial', '<span class="pes-sen">' + lcIn('senha', f.senha, ' type="password" maxlength="40" autocomplete="new-password" placeholder="mínimo ' + esc(SENHA_MIN) + ' caracteres"') + '<button type="button" class="bt ic-so" data-act="pes-ver" aria-label="Mostrar a senha">' + ic('olho') + '</button></span>', 'vale só para o primeiro acesso') : '') +
     apPasso(2, 'O que pode fazer') + lcBl('Perfil', ddHTML('pes:perfil', f.perfil, PES_PERFIL)) +
     lcAv(adm ? 'Administrador vê e altera tudo, cadastra pessoas e decide qualquer pedido.' : f.perfil === 'lider' ? 'Líder ★ lança, decide os pedidos dos liderados e vê os relatórios.' : f.perfil === 'visitante' ? 'Consulta vê as áreas marcadas, mas não lança nem altera nada.' : 'Colaborador lança; o que precisa de aprovação vai para os superiores.') +
     (adm ? '' : lcBl('Áreas que vê', '<div class="pes-cks">' + PES_ATRIB.map(a => ck('at.' + a[0], f.at[a[0]] === '1', a[1])).join('') + '</div>')) +
@@ -14828,7 +14914,7 @@ async function pesEdOk() {
   if (novo) {
     if (login.length < 3) return lcErro('O login precisa de pelo menos 3 letras (sem espaço nem acento).');
     if (S.users.some(u => slugLogin(u.login) === login)) return lcErro('Já existe uma pessoa com o login ' + login + '.');
-    if (String(f.senha || '').length < 6) return lcErro('A senha inicial precisa de pelo menos 6 letras ou números.');
+    if (String(f.senha || '').length < SENHA_MIN) return lcErro('A senha inicial precisa de no mínimo ' + SENHA_MIN + ' caracteres.');
   }
   const atrib = {}; PES_ATRIB.forEach(a => { atrib[a[0]] = (f.at || {})[a[0]] === '1'; });
   if (!adm && !Object.values(atrib).some(Boolean)) return lcErro('Marque pelo menos uma área que a pessoa vê.');
@@ -14842,10 +14928,10 @@ async function pesEdOk() {
   if (novo) {
     let id;
     try { id = await Data.auth.createAccount(login, String(f.senha)); }
-    catch (e) { f._trava = 0; const cd = e && e.code || ''; return lcErro(/email-already-in-use/.test(cd) ? 'Esse login já tem conta de acesso. Use outro login.' : /weak-password/.test(cd) ? 'Senha fraca: use pelo menos 6 letras ou números.' : 'Não deu para criar a conta de acesso agora (' + (cd || 'sem internet?') + ').'); }
-    const o = Object.assign({ id, login, status: 'ativo', bloqueado: false, criadoEm: nowISO(), criadoPor: S.user.id, criadoPorNome: S.user.nome }, dados);
+    catch (e) { f._trava = 0; const cd = e && e.code || ''; return lcErro(/email-already-in-use/.test(cd) ? 'Esse login já tem conta de acesso. Use outro login.' : /weak-password/.test(cd) ? 'Senha fraca: use no mínimo ' + SENHA_MIN + ' caracteres.' : 'Não deu para criar a conta de acesso agora (' + (cd || 'sem internet?') + ').'); }
+    const o = Object.assign({ id, login, status: 'ativo', bloqueado: false, precisaCompletar: true, criadoEm: nowISO(), criadoPor: S.user.id, criadoPorNome: S.user.nome }, dados); /* v0.6.29: cria a própria senha no primeiro acesso */
     Audit.log({ acao: 'criar_usuario', entidade: 'usuario', entidadeId: id, resumo: 'Cadastrou ' + nome + ' (' + login + ') como ' + perfilLabel(o) });
-    lcGrava([Data.col('sv2_users').set(id, o)], nome + ' cadastrado. Passe o login e a senha para a pessoa.', () => { if (S.gv) gvFecharSo(); });
+    lcGrava([Data.col('sv2_users').set(id, o)], nome + ' cadastrado. Passe o login e a senha inicial: no primeiro acesso a pessoa cria a dela.', () => { if (S.gv) gvFecharSo(); });
   } else {
     Audit.log({ acao: 'editar_usuario', entidade: 'usuario', entidadeId: x.id, resumo: 'Alterou o cadastro de ' + nome + ' (' + perfilLabel(Object.assign({}, x, dados)) + ')', antes: { perfil: x.perfil, estrela: !!x.estrela, atrib: x.atrib || null, superiores: x.superiores || [] }, depois: { perfil: dados.perfil, estrela: dados.estrela, atrib: dados.atrib, superiores } });
     f.volta = null; lcGrava([Data.col('sv2_users').update(x.id, dados)], 'Cadastro salvo.', () => pesAbre(x.id));
@@ -14884,15 +14970,44 @@ function pesMeuPerfil() {
     '<label class="cp">Situação' + ddHTML('pes:status', me.status === 'ausente' ? 'ausente' : 'ativo', [['ativo', 'Presente'], ['ausente', 'Ausente (férias, folga): os pedidos vão para os Administradores']]) + '</label>' +
     '<div><button type="button" class="bt pr" data-act="pes-mp-ok">Salvar</button></div></div></section>' +
     '<section class="pn"><div class="hd"><h3>Trocar a senha</h3></div><div class="cpo"><label class="cp">Senha nova<input id="pes-s1" type="password" autocomplete="new-password" maxlength="40"></label>' +
-    '<label class="cp">Repita a senha nova<input id="pes-s2" type="password" autocomplete="new-password" maxlength="40"></label><p class="en-msg" id="pes-smsg" role="alert"></p><div><button type="button" class="bt" data-act="pes-senha">Trocar a senha</button></div></div></section></div>';
+    '<label class="cp">Repita a senha nova<input id="pes-s2" type="password" autocomplete="new-password" maxlength="40"></label><p class="en-msg" id="pes-smsg" role="alert"></p><div><button type="button" class="bt" data-act="pes-senha">Trocar a senha</button></div></div></section>' + pesEmailPainel(me) + '</div>';
 }
 async function pesMpOk() {
   const cargo = ($('#pes-cargo') || {}).value || '';
   try { await Data.col('sv2_users').update(S.user.id, { cargo: cargo.trim() }); aviso('Perfil salvo.'); } catch (e) { aviso('Não deu para salvar agora.', 'erro'); }
 }
+/* ---------- e-mail para recuperar a senha ---------- */
+function pesEmailPainel(me) {
+  const ok = emailReal(DEMO ? (me.emailOk ? me.email : '') : Data.auth.emailAtual()) || (me.emailOk ? emailReal(me.email) : ''), pend = emailReal(me.emailPendente);
+  const sit = ok ? '<b>' + esc(ok) + '</b> confirmado.' : pend ? 'Aguardando a confirmação de <b>' + esc(pend) + '</b>: abra o link que chegou nesse e-mail.' : 'Sem e-mail: quem esquece a senha não consegue recuperar sozinho.';
+  return '<section class="pn"><div class="hd"><h3>E-mail para recuperar a senha</h3></div><div class="cpo"><p class="pes-esit">' + sit + '</p>' +
+    '<label class="cp">' + (ok || pend ? 'Trocar o e-mail' : 'E-mail') + '<input id="pes-email" type="email" autocomplete="email" maxlength="120" placeholder="ex.: nome@gmail.com"></label>' +
+    '<p class="en-msg" id="pes-emsg" role="alert"></p><div><button type="button" class="bt" data-act="pes-email">Salvar o e-mail</button></div></div></section>';
+}
+/* grava o e-mail (Meu perfil e primeiro acesso). Nuvem: o Firebase manda um link e só troca depois do clique (volta false);
+   demonstração: fica confirmado na hora (volta true). */
+async function pesDefinirEmail(email) {
+  const e = emailReal(email); if (!e) throw new Error('email-invalido');
+  const conf = await Data.auth.definirEmail(e);
+  await Data.col('sv2_users').update(S.user.id, conf ? { email: e, emailOk: true, emailPendente: '' } : { emailPendente: e, emailOk: false });
+  try { await Data.auth.ligarLogin(S.user.login, conf ? { email: e, emailNovo: '' } : { emailNovo: e }); } catch (er) { console.warn('sv2_login', er); }
+  Audit.log({ acao: 'definir_email', entidade: 'usuario', entidadeId: S.user.id, resumo: conf ? 'Cadastrou o e-mail para recuperar a senha' : 'Pediu a confirmação do e-mail para recuperar a senha' });
+  return conf;
+}
+async function pesEmail() {
+  const v = (($('#pes-email') || {}).value || '').trim(), m = $('#pes-emsg'); if (!m) return;
+  if (!emailReal(v)) { m.textContent = 'Digite um e-mail válido (ex.: nome@gmail.com).'; return; }
+  try { const conf = await pesDefinirEmail(v); m.textContent = ''; aviso(conf ? 'E-mail salvo.' : 'Mandamos um link para ' + emailReal(v) + '. O e-mail vale depois que você abrir o link.'); render(); }
+  catch (e) { m.textContent = /recent-login/.test(e && e.code || '') ? 'Por segurança, saia e entre de novo antes de trocar o e-mail.' : /email-already-in-use/.test(e && e.code || '') ? 'Este e-mail já é de outra conta.' : 'Não deu para salvar o e-mail agora.'; }
+}
+/* nuvem: depois que a pessoa abre o link, o e-mail da conta muda; na entrada seguinte o cadastro e a ligação ficam confirmados */
+CS_CARGAS.push(() => {
+  const me = S.user, pend = me && emailReal(me.emailPendente); if (DEMO || !pend || emailReal(Data.auth.emailAtual()) !== pend) return;
+  Data.col('sv2_users').update(me.id, { email: pend, emailOk: true, emailPendente: '' }).then(() => Data.auth.ligarLogin(me.login, { email: pend, emailNovo: '' })).catch(e => console.warn('email', e));
+});
 async function pesSenha() {
   const a = ($('#pes-s1') || {}).value || '', b = ($('#pes-s2') || {}).value || '', m = $('#pes-smsg');
-  if (a.length < 6) { m.textContent = 'A senha precisa de pelo menos 6 letras ou números.'; return; }
+  if (a.length < SENHA_MIN) { m.textContent = 'A senha precisa de no mínimo ' + SENHA_MIN + ' caracteres.'; return; }
   if (a !== b) { m.textContent = 'As duas senhas não são iguais.'; return; }
   try { await Data.auth.trocarSenha(a); m.textContent = ''; $('#pes-s1').value = ''; $('#pes-s2').value = ''; aviso('Senha trocada.'); Audit.log({ acao: 'trocar_senha', entidade: 'usuario', entidadeId: S.user.id, resumo: 'Trocou a própria senha' }); }
   catch (e) { m.textContent = /recent-login/.test(e && e.code || '') ? 'Por segurança, saia e entre de novo antes de trocar a senha.' : 'Não deu para trocar a senha agora.'; }
@@ -14910,7 +15025,8 @@ document.addEventListener('click', e => {
   const a = t.getAttribute('data-act'), id = t.getAttribute('data-id');
   if (a === 'pes-novo') pesNovo(); else if (a === 'pes-editar') pesEditar(id); else if (a === 'pes-ed-ok') pesEdOk();
   else if (a === 'pes-bloq') pesBloq(id); else if (a === 'pes-bloq-ok') pesBloqOk(); else if (a === 'pes-liberar') pesLiberar(id);
-  else if (a === 'pes-mp-ok') pesMpOk(); else if (a === 'pes-senha') pesSenha();
+  else if (a === 'pes-mp-ok') pesMpOk(); else if (a === 'pes-senha') pesSenha(); else if (a === 'pes-email') pesEmail();
+  else if (a === 'pes-ver') { const i = t.parentNode.querySelector('input'); if (i) i.type = i.type === 'password' ? 'text' : 'password'; }
 });
 
 /* ===== fluidez.js ===== */

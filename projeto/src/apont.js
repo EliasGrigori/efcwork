@@ -167,9 +167,9 @@ async function apNovoOk() {
     fotos.forEach((d, i) => { S._apFotos[ids[i]] = d; S._apFotoDoc[ids[i]] = Object.assign({ base: '', marcas: [], marcadoPor: '', marcadoEm: '' }, apMkDoc(f, i)); Data.col('sv2_fotos').set(ids[i], Object.assign({ refTipo: 'apont', refId: id, papel: 'antes', dataUrl: d, criadoEm: ts, porId: u.id }, apMkDoc(f, i))).catch(er => console.error('foto apont', er)); });
     const sups = supsOf(u).filter(x => x !== u.id);
     const txt = (o.obs || 'Sem observação') + ' · por ' + u.nome + (o.comunicado ? ' · encarregado avisado' : ' · encarregado NÃO avisado');
-    if (sups.length && f.grav === 'urgente') Notif.send({ nivel: 'critico', titulo: 'Apontamento URGENTE: ' + c[1] + ' — ' + setor, texto: txt, para: sups, refTipo: 'apont', refId: id });
-    else if (sups.length && f.grav === 'grave') Notif.send({ nivel: 'aviso', titulo: 'Apontamento grave: ' + c[1] + ' — ' + setor, texto: txt, para: sups, refTipo: 'apont', refId: id });
-    Audit.log({ acao: 'apontamento', entidade: 'apontamento', entidadeId: id, resumo: 'Registrou apontamento (' + g[1] + '): ' + c[1] + ' em ' + setor + (o.obs ? ' — ' + o.obs : ''), depois: { categoria: c[1], setor: setor, gravidade: g[1], origem: o.origem, fotos: ids.length } });
+    if (sups.length && f.grav === 'urgente') Notif.send({ nivel: 'critico', titulo: 'Apontamento URGENTE: ' + c[1] + ' · ' + setor, texto: txt, para: sups, refTipo: 'apont', refId: id });
+    else if (sups.length && f.grav === 'grave') Notif.send({ nivel: 'aviso', titulo: 'Apontamento grave: ' + c[1] + ' · ' + setor, texto: txt, para: sups, refTipo: 'apont', refId: id });
+    Audit.log({ acao: 'apontamento', entidade: 'apontamento', entidadeId: id, resumo: 'Registrou apontamento (' + g[1] + '): ' + c[1] + ' em ' + setor + (o.obs ? ': ' + o.obs : ''), depois: { categoria: c[1], setor: setor, gravidade: g[1], origem: o.origem, fotos: ids.length } });
     lcFim(); aviso('Apontamento enviado.' + (f.grav === 'urgente' || f.grav === 'grave' ? ' O seu superior foi avisado.' : ''));
   } catch (e) { f._trava = 0; lcErro(svErro(e)); }
 }

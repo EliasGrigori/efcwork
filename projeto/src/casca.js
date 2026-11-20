@@ -229,7 +229,7 @@ function csBaixo() {
 function render() {
   const app = $('#app'); if (!app) return;
   if (!S.pronto) { app.innerHTML = '<div class="cs-carregando">' + ic('broto') + '<span>Abrindo o ' + APP_NOME + '…</span></div>'; return; }
-  if (!S.user) { app.innerHTML = enTela(); try { enDepois(); } catch (e) { console.error(e); } return; }
+  if (!S.user || enTrocaPendente()) { app.innerHTML = enTela(); /* v0.6.29: a pessoa nova cria a senha antes de ver o app */ try { enDepois(); } catch (e) { console.error(e); } return; }
   const ar = csArea(S.rota.area), f = TELAS[ar.id];
   let corpo = '';
   try { corpo = f ? f(S.rota.aba) : arEmBreve(ar); } catch (e) { console.error(e); corpo = '<div class="pn"><div class="vazio"><b>Esta tela deu erro ao abrir.</b><span>' + esc(e && e.message || e) + '</span></div></div>'; }

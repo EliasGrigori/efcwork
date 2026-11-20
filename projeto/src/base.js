@@ -1,7 +1,7 @@
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.6.28';
+const VERSAO = '0.6.29';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -75,6 +75,10 @@ const $ = (s, r) => (r || document).querySelector(s);
 const $$ = (s, r) => Array.prototype.slice.call((r || document).querySelectorAll(s));
 const esc = v => v == null ? '' : String(v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const imgSrc = u => { const s = String(u == null ? '' : u).trim(); return /^(data:image\/[a-z0-9.+-]+[;,]|blob:|https:\/\/)/i.test(s) ? esc(s) : ''; };
+/* v0.6.29 (varredura S5): endereço que vira link clicável só se for https (o dado pode ter sido gravado fora do app) */
+const linkSeguro = u => { const s = String(u == null ? '' : u).trim(); return /^https:\/\/[^\s"'<>]+$/i.test(s) ? esc(s) : ''; };
+const SENHA_MIN = 8; /* v0.6.29 (varredura S3): a mesma regra no primeiro acesso, no cadastro de pessoa e em Meu perfil */
+const emailReal = e => { const s = String(e || '').trim().toLowerCase(); return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(s) && !/@efclaudian\.app$/.test(s) ? s : ''; };
 /* modo demonstração: as mesmas listas das regras do Firestore (06/11) para quem não é líder ★/Administrador, para os testes pegarem permissão negada */
 const DEMO_REGRAS = { sv2_alm_inv: ['contagens', 'folhas'], sv2_alm_equip: ['situacao', 'local', 'posicao', 'guardadoEm', 'sitAntes', 'posAntes', 'restricaoCal', 'qtdLocal', 'qtdGuard', 'trfQtd', 'transito', 'hist', 'atualizadoEm'], sv2_alm_cal: [] };
 function demoRegraNega(col, chaves) { const l = DEMO_REGRAS[col], u = S.user; if (!l || !u || typeof isSup !== 'function' || isSup(u)) return ''; return chaves.map(k => k.split('.')[0]).find(k => l.indexOf(k) < 0) || ''; }
@@ -308,6 +312,20 @@ const Data = (function () {
       await fauth.currentUser.verifyBeforeUpdateEmail(email); return false;
     },
     async recuperar(email) { if (DEMO) return; await fauth.sendPasswordResetEmail(email); },
+    /* v0.6.29 (varredura S2): o e-mail confirmado de um login, para o "Esqueci a senha" (sv2_login é lido sem estar logado, só pelo login exato) */
+    async emailDoLogin(login) {
+      const k = slugLogin(login); if (!k) return '';
+      if (DEMO) { const r = dAuth()[k]; return emailReal(r && r.email); }
+      try { const d = await fdb.collection('sv2_login').doc(k).get(); return d.exists ? emailReal(d.data().email) : ''; } catch (e) { return ''; }
+    },
+    /* grava a ligação login → e-mail sem apagar o que o EFClaudian já guardou nela (lê e junta) */
+    async ligarLogin(login, campos) {
+      const k = slugLogin(login); if (!k || DEMO || !fauth.currentUser) return;
+      const ref = fdb.collection('sv2_login').doc(k); let atual = {};
+      try { const d = await ref.get(); if (d.exists) atual = d.data(); } catch (e) {}
+      if (atual.uid && atual.uid !== fauth.currentUser.uid) return;
+      await ref.set(Object.assign({}, atual, { uid: fauth.currentUser.uid, interno: atual.interno || emailOf(k) }, campos, { em: nowISO() }));
+    },
     emailAtual() { if (DEMO) { const r = dAuth()[slugLogin(S.user && S.user.login)]; return r && r.email || ''; } return fauth && fauth.currentUser ? fauth.currentUser.email || '' : ''; }
   };
   return {

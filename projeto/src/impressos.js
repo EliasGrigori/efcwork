@@ -150,7 +150,8 @@ function ipGaveta(id) {
   const f = ipFmt(d), link = d.tipo === 'link', p = d.pub, o = d.orig, aqui = p && S.ipAparelho[d.id] === p.sha256;
   if (p && !aqui) ipNoAparelho(d).then(x => { if (x && S.gv && S._ipGv === d.id) gvDesenha(); });
   let c = '';
-  if (link) c += '<p class="gv-h">Endereço</p><p class="ip-link"><a href="' + esc(d.link) + '" target="_blank" rel="noopener">' + esc(d.link) + '</a></p>';
+  const lk = link ? linkSeguro(d.link) : ''; /* v0.6.29 (varredura S5): só https vira link, mesmo que o dado tenha sido gravado fora do app */
+  if (link) c += '<p class="gv-h">Endereço</p><p class="ip-link">' + (lk ? '<a href="' + lk + '" target="_blank" rel="noopener">' + lk + '</a>' : esc(d.link)) + '</p>' + (lk ? '' : lcAv('Este endereço não começa com https://, por isso não abre daqui. Corrija no lápis.', 'cr'));
   else if (p && ipVeNoApp()) c += '<p class="gv-h">Cópia de impressão</p><div class="ip-prev" data-ip-prev="' + esc(d.id) + '"><span class="ip-prevm">Abrindo o PDF…</span></div>';
   else if (p) c += '<button type="button" class="ip-abrirpdf" data-act="ip-ver" data-id="' + esc(d.id) + '">' + ic('doc') + '<span><b>Ver o PDF</b><small>' + p.paginas + (p.paginas === 1 ? ' página' : ' páginas') + ' · ' + ipTam(p.bytes) + '</small></span>' + ic('externo') + '</button>';
   if (d.status === 'obsoleto') c += lcAv('<b>Obsoleto:</b> este papel não imprime mais. Use a versão vigente.', 'cr');
@@ -167,7 +168,7 @@ function ipGaveta(id) {
     (o ? '<button type="button" class="bt" data-act="ip-baixar" data-id="' + esc(d.id) + '" data-q="orig">' + ic('baixar') + 'Baixar o ' + IP_FMT[o.formato] + '</button>' : '') + '</div>';
   const cab = (ipPode() ? '<button type="button" class="bt ic-so" data-act="ip-editar" data-id="' + esc(d.id) + '" title="Editar ou trocar o arquivo" aria-label="Editar">' + ic('lapis') + '</button>' : '');
   const vert = (d.tipo === 'planilha' || d.tipo === 'docx') && o ? '<button type="button" class="bt" data-act="ip-no-vertice" data-id="' + esc(d.id) + '">' + ic('externo') + 'Abrir no Vértice</button>' : '';
-  const pe = link ? '<span class="au-pesp"></span><a class="bt pr" href="' + esc(d.link) + '" target="_blank" rel="noopener">' + ic('externo') + 'Abrir o link</a>'
+  const pe = link ? (lk ? '<span class="au-pesp"></span><a class="bt pr" href="' + lk + '" target="_blank" rel="noopener">' + ic('externo') + 'Abrir o link</a>' : '')
     : vert + '<span class="au-pesp"></span><button type="button" class="bt pr" data-act="ip-imprimir" data-id="' + esc(d.id) + '"' + (ipImprime(d) ? '' : ' disabled') + '>' + ic('impressora') + 'Imprimir</button>';
   return { ico: link ? 'externo' : f === 'xlsx' ? 'planilha' : 'doc', sub: [d.codigo, ipFmtTxt(d), link ? '' : 'versão ' + d.rev].filter(Boolean).join(' · '), titulo: d.nome, pill: ipPill(d), cabAcoes: cab,
     lixeira: ipPode() ? { act: 'ip-lixo', id: d.id, titulo: 'Mandar para a lixeira' } : null, corpo: c, rodape: pe };
