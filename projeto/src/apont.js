@@ -18,7 +18,7 @@ const AP_MAX_FOTOS = 5, AP_FOTO_DIAS = 30, AP_REIN_DIAS = 30;
 const AP_FILTROS = [['semana', 'Esta semana'], ['abertos', 'Em aberto'], ['meus', 'Meus'], ['todos', 'Todos']];
 
 CS_CARGAS.push(() => {
-  csOuve('sv2_apont', l => { S.apont = (l || []).filter(a => !a.teste); if (S.rota.area === 'inspecoes' || (S.rota.area === 'qualidade' && S.rota.aba === 'nc')) render(); /* v0.6.16: a aba Não conformidades também lê */ else if (S.gv) gvDesenha(); }, { order: 'criadoEm', limit: 2000 });
+  csOuve('sv2_apont', l => { S.apont = (l || []).filter(a => !a.teste); if (S.rota.area === 'inspecoes' || (S.rota.area === 'qualidade' && S.rota.aba === 'nc') || (S.rota.area === 'relatorios' && S.rota.aba === 'apontamentos')) render(); /* v0.6.25: Relatórios › Apontamentos também lê */ /* v0.6.16: a aba Não conformidades também lê */ else if (S.gv) gvDesenha(); }, { order: 'criadoEm', limit: 2000 });
 });
 
 const apCat = id => AP_CATS.find(c => c[0] === id) || AP_CATS[AP_CATS.length - 1];

@@ -11,7 +11,7 @@ const ver = p => p.evaluate(() => ({ abas: [...document.querySelectorAll('.cs-ab
   let p = await abre(br, { raiz: RAIZ, w: 1280, h: 860 }); await p.evaluate(SEM); await p.waitForTimeout(400);
   console.log('— Aba e resumo');
   await ir(p, 'relatorios/documentos', 1200); let v = await ver(p);
-  conf(v.abas.join() === 'Rateio,Semana,Almoxarifado,Documentos' && v.t === 'Relatório de documentos', 'aba Documentos depois do Almoxarifado (' + v.abas.join() + ')');
+  conf(v.abas.join().indexOf('Rateio,Semana,Almoxarifado,Documentos') === 0 && v.t === 'Relatório de documentos', 'aba Documentos depois do Almoxarifado (' + v.abas.join() + ')');
   conf(v.res.length === 5 && /^3vencidosde 9 ativos/.test(v.res[0]) && /^2vencem logo/.test(v.res[1]) && /^3em dia/.test(v.res[2]) && /^1sem data/.test(v.res[3]) && /^1caixa vencidade 5 caixas/.test(v.res[4]), 'resumo: ' + v.res.join(' | '));
   conf(v.sec.join('|') === 'Como ler|Vencidos por responsável|O que vence nas próximas semanas|Caixas d’água · limpeza|Documentos', 'as cinco partes: ' + v.sec.join(', '));
   conf(v.lei.some(x => /3 documentos vencidos de 9 ativos \(2 formulários, 1 regulatório\)/.test(x)) && v.lei.some(x => /primeiro é VERIFICAÇÃO DE LIMPEZA PACKING HOUSE \(faltam 4 d\)/.test(x)) && v.lei.some(x => /1 documento está sem data: precisa do primeiro/.test(x)) && !v.lei.some(x => / — /.test(x)), 'Como ler com singular e plural certos e sem travessão');

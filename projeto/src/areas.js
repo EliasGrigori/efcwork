@@ -6,7 +6,7 @@ const AR_PLANO = {
   inspecoes: ['Cloro', 'Apontamentos, com o relatório como botão', 'Auditoria interna (RNC)'],
   documentos: ['Documentos com o resumo no topo', 'Caixas d’água', 'Histórico (lançamentos e correções, com filtro)'],
   qualidade: ['Conversas dentro de cada registro'],
-  relatorios: ['Documentos (gráficos)', 'Apontamentos', 'Coletas em aberto']
+  relatorios: ['Coletas em aberto']
 };
 function arEmBreve(ar) {
   const aba = ar.abas.find(x => x.id === S.rota.aba);

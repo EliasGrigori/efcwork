@@ -1,0 +1,26 @@
+/* EFCwork · relapont.css — Prefixo: rp- (Relatórios › Apontamentos). Usa as peças da Semana e do Almoxarifado do mês (sm-, am-) e só tokens do app. */
+.rp-fp{grid-template-columns:repeat(5,minmax(0,1fr))}
+.rp-t tbody tr,.rp-ap{cursor:pointer}
+.rp-t tbody tr:hover td{background:var(--aS)}
+.rp-t tbody tr:focus-visible,.rp-ap:focus-visible{outline:2px solid var(--a);outline-offset:-2px}
+.rp-lst{list-style:none;margin:0 0 6px;padding:0}
+.rp-ap{padding:10px 8px;border-top:1px solid var(--bd);transition:background-color var(--duration-fast,150ms) var(--ease-smooth-out,ease-out)}
+.rp-ap:first-child{border-top:0}
+@media(hover:hover){.rp-ap:hover{background:var(--aS)}}
+.rp-c{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;min-width:0}
+.rp-c b{font:700 14px var(--f);color:var(--tx)}
+.rp-d{font-size:13px;color:var(--tx3);font-variant-numeric:tabular-nums}
+.rp-o{margin:6px 0 0;font-size:14px;color:var(--tx);overflow-wrap:anywhere}
+.rp-l{margin:4px 0 0;font-size:13px;color:var(--tx2);overflow-wrap:anywhere}
+.rp-l b{font-weight:600;color:var(--tx);margin-right:4px}
+.rp-q{margin:4px 0 0;font-size:12px;color:var(--tx3)}
+.rp-fx{margin:6px 0 0;font-size:12px;color:var(--tx3)}
+.rp-fs{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 0}
+.rp-ft{margin:0;width:84px}
+.rp-ft img{display:block;width:84px;height:84px;object-fit:cover;border-radius:6px;background:var(--bg2);border:1px solid var(--bd)}
+.rp-ft figcaption{font-size:12px;color:var(--tx3);margin-top:2px}
+@media(max-width:899px){.rp-fp{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:700px){.rp-fp{grid-template-columns:minmax(0,1fr)}.rp-ft,.rp-ft img{width:72px}.rp-ft img{height:72px}}
+@media(prefers-reduced-motion:reduce){.rp-ap{transition:none}}
+@media print{.sm-imp.rp .sm-sec:not([data-parte="lista"]){break-inside:avoid}.rp .sm-h3{break-after:avoid}.rp-t tbody tr:hover td,.rp-ap:hover{background:none}.rp-ap{break-inside:avoid;border-radius:0;padding:2mm 0;border-top-color:#bbb}
+  .rp-o{font-size:10pt}.rp-l{font-size:9pt;color:#222}.rp-q,.rp-fx,.rp-ft figcaption{font-size:8pt;color:#444}.rp-ft,.rp-ft img{width:30mm}.rp-ft img{height:22mm;border-color:#bbb}}

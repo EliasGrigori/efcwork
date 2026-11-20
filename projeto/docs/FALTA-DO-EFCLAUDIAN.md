@@ -9,10 +9,10 @@ Processo de refazer o EFClaudian no EFCwork: cada função do original está na 
 > **Feita e publicada na v0.6.17 (15/11; ITENS 61 a 69 aprovados):** Rateios › Campo, Água e Calibração numa tabela só + Emitir solicitação de compra (rateio.js; dados sv2_coletas, sv2_aguacol, sv2_alm_cal). Saiu da tabela. O Painel continua abaixo (vai para Relatórios).
 | Prioridade | Do EFClaudian | Vai para | Dados (Firebase) |
 |---|---|---|---|
-| must | Gestão da Qualidade › Relatórios | Relatórios (Documentos, Almoxarifado do mês, Apontamentos, Coletas em aberto; o Rateio já está na v0.6.18) | — |
+| must | Gestão da Qualidade › Relatórios | Relatórios › Coletas em aberto (Rateio v0.6.18, Semana v0.6.19, Almoxarifado do mês v0.6.21, Documentos v0.6.23 publicados; Apontamentos v0.6.25 em aprovação) | — |
 | ~~must~~ feito na v0.6.19 | ~~Gestão da Qualidade › Semana~~ | Relatórios › Semana (relatório semanal e atividade por pessoa) | sv2_resumos (agora usada pelo Arquivar) |
 | must | Almoxarifado › Apresentação | Relatórios › Almoxarifado do mês | sv2_alm_* |
-| must | Documentos › Relatório | Relatórios › Documentos (gráficos) | sv2_docs, sv2_lanc |
+| ~~must~~ feito na v0.6.23 | ~~Documentos › Relatório~~ | Relatórios › Documentos | sv2_docs, sv2_lanc |
 | must | Gestão da Qualidade › Equipe + Usuários, Detalhe da pessoa, Meu perfil | Administração › Pessoas | sv2_users |
 | must | Perfis "Só ver" / "Ver e alterar" por área | Administração › Pessoas | sv2_users |
 | must | Gestão da Qualidade › Conversas (chat) | Dentro de cada registro + sino | sv2_chat (não usada ainda) |

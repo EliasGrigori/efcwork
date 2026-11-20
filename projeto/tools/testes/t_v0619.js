@@ -55,7 +55,8 @@ const linhas = (p, parte) => p.evaluate(k => [...document.querySelectorAll('.sm-
   console.log('— Aviso de sexta, 13h');
   const hr = await p.evaluate(() => [new Date('2026-11-18T15:00:00'), new Date('2026-11-20T12:59:00'), new Date('2026-11-20T13:00:00'), new Date('2026-11-21T09:00:00'), new Date('2026-11-22T20:00:00')].map(smHora));
   conf(hr.join() === 'false,false,true,true,true', 'só de sexta 13h até domingo: ' + hr.join());
-  const av = await p.evaluate(async () => { const a = smAviso(new Date('2026-11-20T14:00:00')), b = smAviso(new Date('2026-11-20T14:05:00')); await new Promise(r => setTimeout(r, 600)); const n = (S.notifs || []).filter(x => x.refTipo === 'rel_semana'); return { a, b, n: n.length, t: n[0] && n[0].titulo, r: n[0] && n[0].refId === smSemAtual() }; });
+  /* o app já dispara o aviso ao abrir se o relógio de verdade estiver entre sexta 13h e domingo: aí a primeira chamada devolve 0, mas continua uma só */
+  const av = await p.evaluate(async () => { const antes = (S.notifs || []).filter(x => x.refTipo === 'rel_semana').length; const a = smAviso(new Date('2026-11-20T14:00:00')), b = smAviso(new Date('2026-11-20T14:05:00')); await new Promise(r => setTimeout(r, 600)); const n = (S.notifs || []).filter(x => x.refTipo === 'rel_semana'); return { a: antes ? 1 : a, b, n: n.length, t: n[0] && n[0].titulo, r: n[0] && n[0].refId === smSemAtual() }; });
   conf(av.a === 1 && av.b === 0 && av.n === 1 && /Salvar os relatórios da semana/.test(av.t) && av.r, 'uma notificação por semana (sem repetir), com refTipo rel_semana');
   console.log('— Celular (390 px)');
   await p.close(); p = await abre(br, { raiz: RAIZ, w: 390, h: 800 }); await p.evaluate('(' + SEM + ')()'); await p.waitForTimeout(900); await p.evaluate(() => { location.hash = '#/relatorios/semana'; }); await p.waitForTimeout(900);

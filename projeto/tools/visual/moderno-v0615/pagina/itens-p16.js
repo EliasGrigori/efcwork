@@ -1,0 +1,63 @@
+/* Página v0.6.25 · Relatórios › Apontamentos. ITENS 136 a 146.
+   HOJE = v0.6.24 publicada (a área Relatórios ainda sem a aba); PROPOSTA = o que já está no app (não publicado). */
+const R = {
+  sem: ['Dossiê, v0.6.19 · a Semana deixou para esta aba a reunião agrupada por setor, com o plano de ação das NCs e as fotos', 'o app de hoje'],
+  ap: ['Inspeções › Apontamentos (v0.6.1 e v0.6.15): Pareto com “Outro” no fim, reincidência no mesmo setor e categoria, NC com responsável e prazo', 'o app de hoje'],
+  ca: ['Carbon (IBM) · tabela de dados: texto à esquerda, números à direita', 'https://v9.carbondesignsystem.com/components/data-table/usage'],
+  gov: ['GOV.UK Design System · tabelas: o mais importante primeiro, sem enfeite', 'https://design-system.service.gov.uk/components/table/'],
+  asq: ['ASQ · gráfico de Pareto: ordenar do maior para o menor e olhar os poucos que somam a maior parte', 'https://asq.org/quality-resources/pareto'],
+  iso: ['ISO 9001, 10.2 · não conformidade e ação corretiva: registrar a ação, o responsável e verificar a eficácia', 'https://www.iso.org/standard/62085.html']
+};
+const GRUPOS = { 136: 'Relatórios › Apontamentos' };
+const V = (rota, extra) => Object.assign({ rota: rota, feito: true, so: 'pc', passos: [['espera', 900]] }, extra || {});
+const ITENS = [
+  { n: 136, t: 'A aba Apontamentos em Relatórios e quem vê',
+    p: 'Nova aba depois de Documentos. Como as outras abas de Relatórios, só o Líder ★ e o Administrador veem (o Colaborador continua lançando em Inspeções › Apontamentos). Mesmos dados dos Apontamentos: nada novo no Firebase. HOJE: a área Relatórios ainda sem esta aba.',
+    ref: [R.ap, 'Os mesmos apontamentos, fotos e setores.', R.gov],
+    pares: [['aba', 'Relatórios no PC', false]], vivo: V('relatorios/apontamentos') },
+  { n: 137, t: 'Um filtro só: Período, Setor, Situação, Gravidade e Fotos',
+    p: 'Um botão “Filtro” com o resumo do que está escolhido. Período: últimos 30 ou 90 dias, este mês, mês passado, este ano ou tudo (começa em 30 dias). Setor, Situação (em aberto, resolvidos, não procede), Gravidade (grave e urgente, média, baixa) e Fotos (mostrar ou não, para um papel mais curto). Esc fecha. Sem “Limpar filtro”. Ao trocar, as partes entram com o mesmo movimento das outras abas.',
+    ref: [R.gov, 'Um filtro, o resto em tabelas.', R.ca],
+    pares: [['fil', 'O filtro aberto', false]], vivo: V('relatorios/apontamentos') },
+  { n: 138, t: 'Resumo no alto e “Como ler”',
+    p: 'Cinco números em texto, sem caixas: apontamentos no período (o “não procede” fica à parte), em aberto (quantos graves ou urgentes), resolvidos (em média quantos dias), NCs abertas (quantas vencidas) e reincidências. Embaixo, frases geradas dos próprios apontamentos: setor com mais casos, o que mais se repete, a maior reincidência, as NCs e o que veio de auditoria.',
+    ref: [R.gov, 'O mais importante primeiro.', R.ap],
+    pares: [['res', 'Resumo e Como ler', false]], vivo: V('relatorios/apontamentos') },
+  { n: 139, t: 'Por setor',
+    p: 'Uma linha por setor com a barra fina entre o nome e os números: Total, Em aberto, Graves (grave e urgente) e NCs abertas. Escolhendo um setor no filtro, a comparação continua com todos e o escolhido fica em negrito.',
+    ref: [R.ca, 'Números à direita.', R.gov],
+    pares: [['set', 'Por setor', false]], vivo: V('relatorios/apontamentos') },
+  { n: 140, t: 'O que mais se repete (Pareto por categoria)',
+    p: 'Categorias da maior para a menor, com quantos, a % e o acumulado. Em negrito, as que somam cerca de 80% dos casos (os “poucos vitais”). “Outro” fica sempre no fim e fora dessa conta, a mesma regra que você aprovou no Pareto dos Apontamentos (v0.6.15).',
+    ref: [R.asq, 'Do maior para o menor; os poucos que pesam mais.', R.ap],
+    pares: [['par', 'O que mais se repete', false]], vivo: V('relatorios/apontamentos') },
+  { n: 141, t: 'Mês a mês',
+    p: 'Os últimos 6 meses até o fim do período: quantos foram registrados e quantos foram resolvidos em cada mês, com a barra. Mostra se a fila está crescendo ou diminuindo. O setor e a gravidade do filtro valem aqui.',
+    ref: [R.gov, 'Tabela simples, mês na primeira coluna.', R.ca],
+    pares: [['mes', 'Mês a mês', false]], vivo: V('relatorios/apontamentos') },
+  { n: 142, t: 'Reincidências',
+    p: 'O mesmo problema (categoria) no mesmo setor mais de uma vez no período: setor, categoria, quantas vezes, quantas ainda em aberto e a última data. É o que pede análise de causa em vez de só resolver de novo.',
+    ref: [R.ap, 'Reincidência = mesmo setor e categoria.', R.iso],
+    pares: [['rei', 'Reincidências', false]], vivo: V('relatorios/apontamentos') },
+  { n: 143, t: 'NCs e plano de ação',
+    p: 'Todas as NCs abertas a partir destes apontamentos: setor, categoria, responsável, prazo, ação corretiva e situação. As vencidas primeiro, depois as abertas pelo prazo, depois as fechadas. Tocar numa linha abre o apontamento.',
+    ref: [R.iso, 'Ação, responsável e verificação.', R.sem],
+    pares: [['nc', 'NCs e plano de ação', false]], vivo: V('relatorios/apontamentos') },
+  { n: 144, t: 'Apontamentos por setor (a reunião), com as fotos',
+    p: 'O que a Semana deixou para cá: os apontamentos agrupados por setor (o setor com mais casos primeiro); dentro do setor, os em aberto e os mais graves primeiro. Cada um com o que foi visto, risco, recomendação, NC, resolução, quem registrou e as fotos de antes e depois (as que já foram apagadas pela LGPD aparecem como aviso). Tocar abre a gaveta do apontamento, de onde se resolve ou se abre a NC. Separados por um traço fino, sem cartão e sem cor na lateral.',
+    ref: [R.sem, 'Reunião por setor, com plano de ação e fotos.', R.gov],
+    pares: [['lis', 'Apontamentos por setor', false], ['gv', 'Tocou: a gaveta do apontamento', false]], vivo: V('relatorios/apontamentos') },
+  { n: 145, t: 'Imprimir, com as fotos',
+    p: 'O ícone da impressora, na linha das abas como nas outras abas de Relatórios, imprime o resumo e as sete partes com a data, o filtro, a empresa e quem emitiu. Antes de imprimir o app busca as fotos, para elas saírem no papel (com Fotos = Não mostrar, sai sem). As partes pequenas não se partem entre folhas. Fica no registro de atividade.',
+    ref: [R.sem, 'O papel da reunião.', R.gov],
+    pares: [['imp', 'Folha 1', false], ['im2', 'Folha 3: a reunião com as fotos', false]], vivo: V('relatorios/apontamentos') },
+  { n: 146, t: 'No celular',
+    p: 'Resumo em duas colunas, filtro com 44 px, tabelas largas rolam dentro da própria parte, fotos menores (72 px). Nada rola para o lado.',
+    ref: [R.gov, 'Mesmo conteúdo.', R.ca],
+    pares: [['cel', 'No celular, o alto', true], ['cl2', 'No celular, a reunião', true]], vivo: V('relatorios/apontamentos', { so: 'cel' }) }
+];
+module.exports = { R, GRUPOS, ITENS, img: 'img16', saida: 'docs/aprovacao-efcwork-v0.6.25-apontamentos.html', titulo: 'EFCwork v0.6.25 · Relatórios › Apontamentos',
+  h1: 'Relatórios › Apontamentos', topo: 'EFCwork v0.6.25', copia: 'Respostas EFCwork v0.6.25 · Relatórios › Apontamentos', chave: 'efcwork-v0625', jaFeito: 'Já está no app (v0.6.25, não publicada)',
+  sub: 'O relatório completo dos apontamentos, no padrão das outras abas de Relatórios, com a reunião por setor e as fotos que a Semana deixou para cá. Feito só com os dados que o EFCwork já usa (o EFClaudian não foi aberto). HOJE = como está no ar (v0.6.24). ',
+  semente: require('../../relapont-v0625/semente.js').toString(),
+  fila: ['Próximo: Relatórios › Coletas em aberto, numa versão própria.', 'Com os itens aprovados: aplico só o aprovado, entrego o ZIP e publico só com o seu “pode publicar”. Nada muda no Firebase nesta versão.'] };
