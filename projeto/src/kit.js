@@ -10,7 +10,6 @@
      na ficha?" com amostras, caixas, análise e pontos sugeridos pelo envio. O rótulo sai uma folha por caixa (A4 em pé, "Caixa 1 de 2").
      Fica registrado em sv2_envio_imp (o que saiu, de que versão, quem e quando, e os dados) para Reimprimir (sugestão 3) e para o resumo. */
 Object.assign(S, { ktKit: [], ktImp: [], coEnvVista: 'rem' });
-const KT_QUANDO = [['sempre', 'Sempre'], ['perguntar', 'Perguntar'], ['pedir', 'Só se eu pedir']];
 const KT_ROTULO = '__rotulo';
 
 CS_CARGAS.push(() => {
@@ -26,7 +25,6 @@ const ktInfo = lab => ((S.cfgCol || {}).labInfo || {})[lab] || null;
 const ktTemEnd = i => !!(i && i.nome && i.end);
 const ktKitDe = lab => S.ktKit.filter(x => x.ativo !== false && x.ponto === 'coletas.envio' && (x.lab === lab || !x.lab)).sort((a, b) => (a.ordem || 0) - (b.ordem || 0) || cmpTxt(a.nome, b.nome));
 const ktDoc = id => S.ipDocs.find(d => d.id === id) || null;
-const ktRotQuando = lab => { const i = ktInfo(lab); return (i && i.rotulo) || 'sempre'; };
 const ktImpId = k => k.split('|')[0] + '_' + slugLogin(k.split('|').slice(1).join('|') || 'sem-lab').replace(/\./g, '-').slice(0, 60);
 const ktUltimo = k => S.ktImp.filter(x => x.k === k).sort((a, b) => String(b.em).localeCompare(String(a.em)))[0] || null;
 const ktAnalises = () => Array.from(new Set(S.coletas.map(c => c.analiseNome || c.sigla).filter(Boolean).concat((S.analises || []).map(a => a.nome).filter(Boolean)))).sort(cmpTxt);
@@ -45,7 +43,7 @@ const ktDestLinhas = i => !i ? [] : [i.end, i.bairro ? 'Bairro: ' + i.bairro : '
 function ktLinhas() {
   const nomes = Array.from(new Set(coLabs().concat(Object.keys((S.cfgCol || {}).labInfo || {})))).filter(Boolean).sort(cmpTxt);
   const ult = {}; coAtivas().forEach(c => { if (c.enviado && c.envio && c.lab && (!ult[c.lab] || c.envio > ult[c.lab])) ult[c.lab] = c.envio; });
-  return nomes.map(n => { const i = ktInfo(n), kit = ktKitDe(n).filter(x => ktDoc(x.docId)); return { id: n, nome: n, cid: i ? [i.cidade, i.uf].filter(Boolean).join(' · ') : '', kit: kit.length + (ktRotQuando(n) !== 'pedir' ? 1 : 0), ult: ult[n] || '', st: !ktTemEnd(i) ? 'end' : kit.length ? 'ok' : 'rot' }; });
+  return nomes.map(n => { const i = ktInfo(n), kit = ktKitDe(n).filter(x => ktDoc(x.docId)); return { id: n, nome: n, cid: i ? [i.cidade, i.uf].filter(Boolean).join(' · ') : '', kit: kit.length + (kit.some(x => ktPapel(x) === 'rotulo') ? 0 : 1), ult: ult[n] || '', st: !ktTemEnd(i) && !kit.some(x => ktPapel(x) === 'rotulo') ? 'end' : kit.some(x => ktPapel(x) === 'doc') ? 'ok' : 'rot' }; });
 }
 const KT_ST = { ok: ['Kit pronto', 'ok'], rot: ['Só o rótulo', ''], end: ['Falta o endereço', 'wa'] };
 function ktTabLabs() {
@@ -55,34 +53,33 @@ function ktTabLabs() {
 }
 DD_AO.kt = (k, v) => {
   if (k === 'vista') { S.coEnvVista = v; render(); return; }
-  if (k.indexOf('q:') === 0) return ktQuando(k.slice(2), v);
   const f = S.fm; if (!f) return; f.sujo = true; f.msg = '';
-  if (k === 'doc') f.docId = v; else if (k === 'quando') f.quando = v; else if (k === 'analise') f.analise = v; else if (k === 'copias') f.copias = v; else if (k === 'rem') { ktPapCarrega(f, v); f.sujo = false; } else if (k === 'unid') f.unid = v;
+  if (k === 'doc') f.docId = v; else if (k === 'papel') f.papel = v; else if (k === 'quando') f.quando = v; else if (k === 'analise') f.analise = v; else if (k === 'copias') f.copias = v; else if (k === 'rem') { ktPapCarrega(f, v); f.sujo = false; } else if (k === 'unid') f.unid = v;
   gvDesenha(true);
 };
 /* gaveta do laboratório: endereço e kit */
 function ktAbreLab(nome) { S._ktLab = nome; gvAbrir(() => ktGavLab(nome)); }
+/* v0.6.33: cada laboratório tem até dois papéis no kit: o rótulo do endereço (modelo do Vértice; sem ele, o rótulo do sistema) e
+   a cadeia de custódia OU a ficha. Escolher o papel certo de cada coleta é feito no Vértice (pedido do Elias, 20/11 23:52). */
+const ktPapel = x => x.papel === 'rotulo' ? 'rotulo' : 'doc';
+const KT_PAPEL = [['doc', 'Cadeia de custódia ou ficha'], ['rotulo', 'Rótulo do endereço (modelo)']];
 function ktGavLab(nome) {
-  const i = ktInfo(nome), sup = ktPodeCad(), kit = ktKitDe(nome), linhas = ktDestLinhas(i);
-  const qdd = (id, v) => sup ? ddHTML('kt:q:' + id, v, KT_QUANDO.concat(id === KT_ROTULO ? [] : [['__tirar', 'Tirar do kit']])) : '<span class="kt-q">' + esc((KT_QUANDO.find(x => x[0] === v) || KT_QUANDO[0])[1]) + '</span>';
+  const i = ktInfo(nome), sup = ktPodeCad(), kit = ktKitDe(nome).filter(x => ktDoc(x.docId) && ktDoc(x.docId).status !== 'lixeira'), linhas = ktDestLinhas(i), rot = kit.find(x => ktPapel(x) === 'rotulo');
+  const tira = id => sup ? '<button type="button" class="bt ic-so" data-act="kt-tira" data-id="' + esc(id) + '" title="Tirar do kit" aria-label="Tirar do kit">' + ic('lixo') + '</button>' : '';
   let c = '<p class="gv-h">Destinatário do rótulo</p>' + (ktTemEnd(i) ? gvCampos([['Nome', i.nome], ['Endereço', linhas[0] || ''], ['Bairro', i.bairro || ''], ['Cidade', [i.cidade, i.uf].filter(Boolean).join(' · ')], ['CEP', i.cep || ''], ['Contato', i.contato || ''], ['Conteúdo', i.conteudo || '']])
-    : lcAv('Falta o endereço deste laboratório. ' + (sup ? 'Toque no lápis para cadastrar: ele vai no rótulo da caixa.' : 'Peça ao Administrador ou ao Líder para cadastrar.'), 'wa'));
-  c += '<p class="gv-h">Kit de impressão do envio</p><div class="ag-pn ag-gv kt-kit">' +
-    '<div class="ag-l"><span class="ag-t"><b>Rótulo destinatário e remetente</b><small>Do sistema · uma folha por caixa</small></span>' + qdd(KT_ROTULO, ktRotQuando(nome)) + '</div>' +
-    kit.map(x => { const d = ktDoc(x.docId); if (!d || d.status === 'lixeira') return ''; return '<div class="ag-l"><span class="ag-t"><b>' + esc(d.nome) + '</b><small>' + esc([ipFmtTxt(d), 'versão ' + d.rev, x.analise ? 'só ' + x.analise : '', x.copias === 'porCaixa' ? 'uma por caixa' : Number(x.copias) > 1 ? x.copias + ' cópias' : '', !x.lab ? 'todos os laboratórios' : '', d.status === 'obsoleto' ? 'OBSOLETO' : !d.pub ? 'sem cópia em PDF' : ''].filter(Boolean).join(' · ')) + '</small></span>' + qdd(x.id, x.quando || 'sempre') + '</div>'; }).join('') + '</div>';
-  if (!kit.length) c += '<p class="ag-dc">' + (sup ? 'Anexe a ficha, a cadeia de custódia ou o formulário deste laboratório (eles vêm de Documentos › Impressos).' : 'Só o rótulo, por enquanto.') + '</p>';
-  const st = !ktTemEnd(i) ? 'end' : kit.length ? 'ok' : 'rot';
+    : '<p class="co-nada">' + (rot ? 'O rótulo vem do modelo do Vértice.' : 'Sem endereço: o rótulo do sistema não sai. ' + (sup ? 'Toque no lápis para cadastrar, ou anexe o modelo do rótulo feito no Vértice.' : 'Peça ao Administrador ou ao Líder.')) + '</p>');
+  c += '<p class="gv-h">Papéis do envio</p><div class="ag-pn ag-gv kt-kit">' +
+    (rot ? '' : '<div class="ag-l"><span class="ag-t"><b>Rótulo destinatário e remetente</b><small>Do sistema · uma folha por caixa · até anexar o modelo do Vértice</small></span></div>') +
+    kit.map(x => { const d = ktDoc(x.docId); return '<div class="ag-l"><span class="ag-t"><b>' + esc(d.nome) + '</b><small>' + esc([ktPapel(x) === 'rotulo' ? 'Rótulo do endereço' : 'Custódia ou ficha', ipFmtTxt(d), 'versão ' + d.rev, !x.lab ? 'todos os laboratórios' : '', d.status === 'obsoleto' ? 'OBSOLETO' : ''].filter(Boolean).join(' · ')) + '</small></span>' + tira(x.id) + '</div>'; }).join('') + '</div>';
+  const st = !ktTemEnd(i) && !rot ? 'end' : kit.some(x => ktPapel(x) === 'doc') ? 'ok' : 'rot';
   return { ico: 'predio', sub: 'Coletas › Envio › Laboratórios', titulo: nome, pill: alPill(KT_ST[st][0], KT_ST[st][1]),
     cabAcoes: sup ? '<button type="button" class="bt ic-so" data-act="kt-end" title="Endereço do laboratório" aria-label="Editar o endereço">' + ic('lapis') + '</button>' : '', corpo: c,
     rodape: '<button type="button" class="bt" data-act="gv-fecha">Fechar</button><span class="au-pesp"></span>' + (sup ? '<button type="button" class="bt pr" data-act="kt-anexar">' + ic('mais') + 'Anexar papel</button>' : '') };
 }
-async function ktQuando(id, v) {
-  if (!ktPodeCad()) return; const lab = S._ktLab;
-  try {
-    if (id === KT_ROTULO) { const info = Object.assign({}, ((S.cfgCol || {}).labInfo || {})); info[lab] = Object.assign({}, info[lab] || {}, { rotulo: v }); await ktCfgGrava(info); }
-    else if (v === '__tirar') { const x = S.ktKit.find(y => y.id === id); await Data.col('sv2_impressos').update(id, { ativo: false, alteradoEm: nowISO(), alteradoPor: S.user.nome }); Audit.log({ acao: 'kit_tirar', entidade: 'impresso', entidadeId: id, resumo: 'Tirou do kit de ' + lab + ': ' + (x ? x.nome : '') }); aviso('Tirado do kit.'); }
-    else await Data.col('sv2_impressos').update(id, { quando: v, alteradoEm: nowISO(), alteradoPor: S.user.nome });
-  } catch (e) { aviso(svErro(e), 'erro'); }
+async function ktTira(id) {
+  if (!ktPodeCad()) return; const x = S.ktKit.find(y => y.id === id); if (!x) return;
+  try { await Data.col('sv2_impressos').update(id, { ativo: false, alteradoEm: nowISO(), alteradoPor: S.user.nome }); Audit.log({ acao: 'kit_tirar', entidade: 'impresso', entidadeId: id, resumo: 'Tirou do kit de ' + (x.lab || 'todos') + ': ' + x.nome }); aviso('Tirado do kit.'); }
+  catch (e) { aviso(svErro(e), 'erro'); }
 }
 async function ktCfgGrava(info) {
   const cf = S.cfgCol; if (cf && cf.id) await Data.col('sv2_cfg').update('coletas', { labInfo: info });
@@ -111,65 +108,73 @@ async function ktEndOk() {
     lcFim(); aviso('Endereço salvo.');
   } catch (e) { if (S.fm) S.fm._trava = 0; lcErro(svErro(e)); }
 }
-/* anexar um papel de Documentos › Impressos ao kit */
+/* anexar um papel ao kit (Documentos › Impressos, normalmente o que veio do Vértice): o novo substitui o do mesmo tipo */
 LC_FORM.ktAnexar = f => {
   const docs = ipVivos().filter(d => d.tipo !== 'link' && d.status !== 'obsoleto').sort((a, b) => cmpTxt(ipPasta(a), ipPasta(b)) || cmpTxt(a.nome, b.nome)), ja = ktKitDe(f.lab).map(x => x.docId);
-  const ops = docs.filter(d => ja.indexOf(d.id) < 0).map(d => [d.id, (d.codigo ? d.codigo + ' · ' : '') + d.nome + (d.pub ? '' : ' (sem PDF)')]);
+  const ops = docs.filter(d => ja.indexOf(d.id) < 0).map(d => [d.id, (d.codigo ? d.codigo + ' · ' : '') + d.nome + ' (' + ipFmtTxt(d) + ')']), velho = ktKitDe(f.lab).find(x => x.lab && ktPapel(x) === f.papel);
   let c = lcMsg();
-  if (!ops.length) c += lcAv('Não há papel para anexar. Importe primeiro a ficha ou a custódia em Documentos › Impressos.', 'wa');
-  else c += lcBl('Papel', ddHTML('kt:doc', f.docId || '', [['', 'Escolha o papel']].concat(ops))) +
-    '<div class="fm-g">' + lcBl('Quando sai', ddHTML('kt:quando', f.quando, KT_QUANDO)) + lcBl('Cópias', ddHTML('kt:copias', f.copias, [['uma', '1 cópia'], ['2', '2 cópias'], ['3', '3 cópias'], ['porCaixa', 'Uma por caixa']])) + '</div>' +
-    lcBl('Vale para', ddHTML('kt:analise', f.analise || '', [['', 'Todas as análises']].concat(ktAnalises().map(a => [a, a]))), 'opcional') +
-    (ktPodeCad() ? '<label class="fm-ck"><input type="checkbox" data-fm="todos"' + (f.todos === '1' ? ' checked' : '') + '> Usar em todos os laboratórios</label>' : '');
+  if (!ops.length) c += lcAv('Não há papel para anexar. Compartilhe do Vértice com o Cwork (ou importe em Documentos › Impressos).', 'wa');
+  else c += lcBl('Tipo', ddHTML('kt:papel', f.papel, KT_PAPEL)) + lcBl('Papel', ddHTML('kt:doc', f.docId || '', [['', 'Escolha o papel']].concat(ops))) +
+    (velho ? lcAv('Substitui "' + esc(velho.nome) + '" neste laboratório.') : '');
   return { ico: 'mais', sub: 'Kit · ' + f.lab, titulo: 'Anexar papel', corpo: c, rodape: lcPe('kt-anexar-ok', 'Anexar') };
 };
 async function ktAnexarOk() {
   const f = S.fm; if (!f || !ktPodeCad()) return; const d = ktDoc(f.docId); if (!d) return lcErro('Escolha o papel.');
   if (!lcTravar()) return;
-  const o = { v: 1, ponto: 'coletas.envio', nome: d.nome, docId: d.id, lab: f.todos === '1' ? '' : f.lab, copias: /^\d$/.test(f.copias) ? Number(f.copias) : f.copias, ordem: ktKitDe(f.lab).length + 1, ativo: true, quando: f.quando, analise: f.analise || '', criadoEm: nowISO(), criadoPorId: S.user.id, criadoPor: S.user.nome };
+  const o = { v: 1, ponto: 'coletas.envio', nome: d.nome, docId: d.id, lab: f.lab, papel: f.papel === 'rotulo' ? 'rotulo' : 'doc', copias: f.papel === 'rotulo' ? 'porCaixa' : 'uma', ordem: f.papel === 'rotulo' ? 1 : 2, ativo: true, quando: 'sempre', analise: '', criadoEm: nowISO(), criadoPorId: S.user.id, criadoPor: S.user.nome };
   const e = EFD.impresso(o); if (e.length) { console.error('Contrato EFD', e); S.fm._trava = 0; return lcErro('Não deu para anexar: ' + e[0] + '.'); }
-  try { await Data.col('sv2_impressos').add(o); Audit.log({ acao: 'kit_anexar', entidade: 'impresso', entidadeId: d.id, resumo: 'Anexou ' + d.nome + ' ao kit de ' + (o.lab || 'todos os laboratórios') }); lcFim(); aviso('Papel anexado ao kit.'); }
-  catch (er) { if (S.fm) S.fm._trava = 0; lcErro(svErro(er)); }
+  try {
+    for (const v of ktKitDe(f.lab).filter(x => x.lab === f.lab && ktPapel(x) === o.papel)) await Data.col('sv2_impressos').update(v.id, { ativo: false, alteradoEm: nowISO(), alteradoPor: S.user.nome });
+    await Data.col('sv2_impressos').add(o); Audit.log({ acao: 'kit_anexar', entidade: 'impresso', entidadeId: d.id, resumo: 'Anexou ' + d.nome + ' ao kit de ' + f.lab + ' (' + (o.papel === 'rotulo' ? 'rótulo' : 'custódia ou ficha') + ')' }); lcFim(); aviso('Papel anexado ao kit.');
+  } catch (er) { if (S.fm) S.fm._trava = 0; lcErro(svErro(er)); }
 }
 
 /* ---------- Papéis deste envio ---------- */
 function ktRemNome(k) { const p = k.split('|'); return fmtD(p[0]) + ' · ' + (p.slice(1).join('|') || 'sem laboratório'); }
-function ktPapItens(k, dados) {
-  const lab = k.split('|').slice(1).join('|'), l = coLote(k), ans = Array.from(new Set(l.map(c => c.analiseNome || c.sigla).filter(Boolean)));
-  const it = [{ id: KT_ROTULO, nome: 'Rótulo destinatário e remetente', quando: ktRotQuando(lab) }];
-  ktKitDe(lab).forEach(x => { const d = ktDoc(x.docId); if (!d || d.status === 'lixeira') return; if (x.analise && ans.indexOf(x.analise) < 0) return; it.push({ id: x.id, docId: d.id, nome: d.nome, quando: x.quando || 'sempre', copias: x.copias, d: d }); });
-  return it.filter(x => x.quando !== 'pedir' || (dados && dados.forcar && dados.forcar[x.id]));
+/* os papéis da remessa: o rótulo (modelo do Vértice ou o do sistema) e a custódia ou ficha */
+function ktPapItens(k) {
+  const lab = k.split('|').slice(1).join('|'), it = [], kit = ktKitDe(lab).filter(x => { const d = ktDoc(x.docId); return d && d.status !== 'lixeira'; });
+  const rot = kit.find(x => ktPapel(x) === 'rotulo');
+  if (rot) it.push({ id: rot.id, docId: rot.docId, nome: ktDoc(rot.docId).nome, papel: 'rotulo', copias: rot.copias, d: ktDoc(rot.docId) });
+  else it.push({ id: KT_ROTULO, nome: 'Rótulo destinatário e remetente', papel: 'rotulo' });
+  kit.filter(x => ktPapel(x) === 'doc').forEach(x => it.push({ id: x.id, docId: x.docId, nome: ktDoc(x.docId).nome, papel: 'doc', copias: x.copias, d: ktDoc(x.docId) }));
+  return it;
 }
 function ktPapCarrega(f, k) {
   const l = coLote(k), u = ktUltimo(k), ans = Array.from(new Set(l.map(c => c.analiseNome || c.sigla).filter(Boolean)));
   const pts = Array.from(new Set(l.map(c => coNome(c)).filter(x => x && x !== '—')));
   const d = u && u.dados ? u.dados : { amostras: String(l.length), caixas: '1', analise: ans.join(', '), pontos: pts.join(', '), obs: '', unid: ktUnidade(l) };
-  Object.assign(f, { kRem: k, amostras: d.amostras, caixas: d.caixas, analise: d.analise, pontos: d.pontos, obs: d.obs || '', unid: d.unid || ktUnidade(l), sel: {}, reimp: !!u, msg: '' });
-  const antes = u ? (u.itens || []).reduce((o, x) => { o[x.id] = true; return o; }, {}) : {};
-  ktPapItens(k, { forcar: antes }).forEach(x => { f.sel[x.id] = u ? !!antes[x.id] : x.quando === 'sempre'; });
+  Object.assign(f, { kRem: k, amostras: d.amostras, caixas: d.caixas, analise: d.analise, pontos: d.pontos, obs: d.obs || '', unid: d.unid || ktUnidade(l), sel: {}, fila: [], msg: '' });
+  ktPapItens(k).forEach(x => { f.sel[x.id] = !(x.id === KT_ROTULO && !ktTemEnd(ktInfo(k.split('|').slice(1).join('|')))); });
 }
 function ktPapAbre(ks, volta) {
   ks = (ks || []).filter(k => coLote(k).length); if (!ks.length) return;
-  lcAbrir({ k: 'ktPap', ks: ks, kRem: ks[0], sel: {}, unid: 'matriz' }, volta || null);
+  lcAbrir({ k: 'ktPap', ks: ks, kRem: ks[0], sel: {}, fila: [], unid: 'matriz' }, volta || null);
   ktPapCarrega(S.fm, ks[0]); S.fm.sujo = false; gvDesenha(true);
 }
+/* como cada papel sai: rótulo do sistema e PDF fixo imprimem aqui; planilha e Word abrem no Vértice com os dados da remessa */
+const ktComo = x => !x.d ? 'imprime aqui · uma folha por caixa' : x.d.status === 'obsoleto' ? 'obsoleto: não sai' : x.d.orig && x.d.orig.formato === 'xlsx' ? (typeof drPreenche === 'function' && drPreenche(x.d) ? 'abre no Vértice já preenchido' : 'abre no Vértice com os dados ao lado') : x.d.orig && x.d.orig.formato === 'docx' ? 'Word: baixa com os dados para copiar' : 'PDF: imprime aqui';
+const ktNoVertice = x => !!(x.d && x.d.orig && x.d.orig.formato === 'xlsx' && x.d.status !== 'obsoleto');
 LC_FORM.ktPap = f => {
-  const k = f.kRem, lab = k.split('|').slice(1).join('|'), it = ktPapItens(k, { forcar: f.sel }), i = ktInfo(lab), rem = ktRemetente(f.unid);
-  const box = x => { const on = !!f.sel[x.id], d = x.d, sub = x.id === KT_ROTULO ? (!ktTemEnd(i) ? 'falta o endereço do laboratório' : !ktRemOk(rem) ? 'falta o endereço da unidade (Administração › Empresa no EFClaudian)' : 'uma folha por caixa') : [ipFmtTxt(d), 'versão ' + d.rev, d.status === 'obsoleto' ? 'obsoleto: não imprime' : !d.pub ? 'abre no Vértice para preencher' : x.copias === 'porCaixa' ? 'uma por caixa' : Number(x.copias) > 1 ? x.copias + ' cópias' : ''].filter(Boolean).join(' · ');
-    return '<button type="button" class="fm-pki cb-ck' + (on ? ' on' : '') + '" data-act="kt-ck" data-id="' + esc(x.id) + '" aria-pressed="' + on + '"><span class="cb-box">' + (on ? ic('ok') : '') + '</span><span><b>' + esc(x.nome) + '</b><small>' + esc(sub) + '</small></span></button>'; };
-  const pedir = ktKitDe(lab).filter(x => x.quando === 'pedir' && !it.some(y => y.id === x.id) && ktDoc(x.docId));
+  const k = f.kRem, lab = k.split('|').slice(1).join('|'), it = ktPapItens(k), i = ktInfo(lab), sup = ktPodeCad();
+  it.forEach(x => { if (!(x.id in f.sel)) f.sel[x.id] = !(x.id === KT_ROTULO && !ktTemEnd(i)); }); /* papel anexado agora (ou que trocou o rótulo do sistema) já vem marcado */
+  const box = x => { const on = !!f.sel[x.id], semEnd = x.id === KT_ROTULO && !ktTemEnd(i), feito = f.fila && f.feitos && f.feitos[x.id];
+    return '<div class="kt-pr"><button type="button" class="fm-pki cb-ck' + (on ? ' on' : '') + '" data-act="kt-ck" data-id="' + esc(x.id) + '" aria-pressed="' + on + '"><span class="cb-box">' + (on ? ic('ok') : '') + '</span><span><b>' + esc(x.nome) + '</b><small>' + esc((feito ? 'aberto no Vértice · ' : '') + (semEnd ? 'falta o endereço do laboratório' : ktComo(x))) + '</small></span></button>' +
+      (semEnd && sup ? '<button type="button" class="bt lk" data-act="kt-end-aqui">' + ic('lapis') + 'Cadastrar endereço</button>' : '') + '</div>'; };
   let c = lcMsg();
   if (f.ks.length > 1) c += lcBl('Remessa', ddHTML('kt:rem', k, f.ks.map(x => [x, ktRemNome(x)])), f.ks.length + ' laboratórios neste envio');
-  if (f.reimp) c += lcAv('Já saíram papéis desta remessa. Os mesmos ficam marcados para reimprimir.');
   c += '<div class="fm-pk"><div class="fm-pkl co-pkl">' + it.map(box).join('') + '</div></div>';
-  if (pedir.length) c += '<div class="kt-ped">' + pedir.map(x => '<button type="button" class="bt lk" data-act="kt-pedir" data-id="' + esc(x.id) + '">' + ic('mais') + esc(ktDoc(x.docId).nome) + '</button>').join('') + '</div>';
-  c += '<p class="gv-h">Quer acrescentar algo na ficha? <small>opcional</small></p>' +
+  if (!it.some(x => x.papel === 'doc')) c += '<p class="ag-dc">Este laboratório não tem custódia nem ficha no kit.</p>';
+  if (sup) c += '<button type="button" class="bt lk kt-anx" data-act="kt-anexar-aqui">' + ic('mais') + 'Anexar papel deste laboratório</button>';
+  c += '<p class="gv-h">Dados que vão para o papel <small>opcional</small></p>' +
     '<div class="fm-g">' + lcBl('Amostras', lcIn('amostras', f.amostras, ' inputmode="numeric" maxlength="4"')) + lcBl('Caixas', lcIn('caixas', f.caixas, ' inputmode="numeric" maxlength="2"')) + '</div>' +
     '<div class="fm-g">' + lcBl('Análise', lcIn('analise', f.analise, ' maxlength="140"')) + lcBl('Pontos', lcIn('pontos', f.pontos, ' maxlength="300"')) + '</div>' +
     lcBl('Observação', lcTx('obs', f.obs, 'Ex.: urgência, pedido de cotação, contato')) +
     (((S.empresa || {}).unid || {}).filial ? lcBl('Remetente', ddHTML('kt:unid', f.unid, [['matriz', ktRemetente('matriz').nome], ['filial', ktRemetente('filial').nome]])) : '');
-  return { ico: 'impressora', sub: 'Remessa · ' + ktRemNome(k), titulo: 'Papéis deste envio', corpo: c, rodape: '<button type="button" class="bt" data-act="gv-fecha">Depois</button><span class="au-pesp"></span><button type="button" class="bt pr" data-act="kt-imprimir">' + ic('impressora') + 'Imprimir</button>' };
+  const prox = (f.fila || []).length ? it.find(x => x.id === f.fila[0]) : null;
+  return { ico: 'impressora', sub: 'Remessa · ' + ktRemNome(k), titulo: 'Papéis deste envio', corpo: c, rodape: '<button type="button" class="bt" data-act="gv-fecha">Depois</button><span class="au-pesp"></span><button type="button" class="bt pr" data-act="kt-imprimir">' + ic(prox ? 'abre' : 'impressora') + (prox ? 'Abrir o próximo no Vértice' : 'Imprimir') + '</button>' };
 };
+
 /* rótulo: A4 em pé, uma folha por caixa (port do fxEtiqueta do EFClaudian, com os endereços vindos do cadastro) */
 function ktRotuloHTML(lab, unid, caixas, amostras) {
   const i = ktInfo(lab) || {}, r = ktRemetente(unid), n = Math.max(1, Math.min(20, Number(caixas) || 1)), pags = [];
@@ -189,30 +194,46 @@ function ktImprimeHTML(html, titulo) {
     setTimeout(() => { try { window.print(); } catch {} document.body.classList.remove('au-imprimindo'); document.title = t0; const p2 = $('#kt-page'); if (p2) p2.remove(); ok(); }, 80);
   });
 }
+/* volta à janela dos papéis depois de anexar ou cadastrar o endereço (sem abrir camada nova) */
+function ktVoltaPap(fp) { S.fm = fp; fp._trava = 0; S.gvForm = true; gvAbrir(lcGaveta, true); }
+function ktDadosForm(f) { return { amostras: String(f.amostras || '').trim(), caixas: String(Number(String(f.caixas || '').trim() || 1)), analise: String(f.analise || '').trim(), pontos: String(f.pontos || '').trim(), obs: String(f.obs || '').trim(), unid: f.unid }; }
 async function ktImprimir() {
-  const f = S.fm; if (!f || f.k !== 'ktPap') return; const k = f.kRem, lab = k.split('|').slice(1).join('|'), it = ktPapItens(k, { forcar: f.sel }).filter(x => f.sel[x.id]);
+  const f = S.fm; if (!f || f.k !== 'ktPap') return; const k = f.kRem, lab = k.split('|').slice(1).join('|'), todos = ktPapItens(k);
+  /* "Abrir o próximo no Vértice": um papel do Vértice por vez (a janela de dentro mostra um só) */
+  if ((f.fila || []).length) { const idProx = f.fila.shift(), x = todos.find(y => y.id === idProx); f.feitos = Object.assign(f.feitos || {}, x ? { [x.id]: 1 } : {}); gvDesenha(true); if (x) await ktSaiUm(k, x, ktDadosForm(f)); if (!f.fila.length) lcFim(); return; }
+  const it = todos.filter(x => f.sel[x.id]);
   if (!it.length) return lcErro('Marque pelo menos um papel.');
   const caixas = Number(String(f.caixas || '').trim() || 1), amostras = String(f.amostras || '').trim();
   if (!(caixas >= 1 && caixas <= 20 && Number.isInteger(caixas))) return lcErro('Caixas: de 1 a 20.');
   if (amostras && !/^\d{1,4}$/.test(amostras)) return lcErro('Amostras: só números.');
-  const rot = it.find(x => x.id === KT_ROTULO);
-  if (rot && !ktTemEnd(ktInfo(lab))) return lcErro('Falta o endereço do laboratório para o rótulo. Desmarque o rótulo ou cadastre o endereço (Envio › Laboratórios).');
-  if (rot && !ktRemOk(ktRemetente(f.unid))) return lcErro('Falta o endereço da unidade (remetente). Cadastre no EFClaudian: Administração › Empresa.');
-  const obs = it.filter(x => x.d && x.d.status === 'obsoleto'); if (obs.length) return lcErro('Obsoleto não imprime: ' + obs[0].nome + '. Desmarque ou anexe a versão vigente ao kit.');
+  if (it.some(x => x.id === KT_ROTULO) && !ktTemEnd(ktInfo(lab))) return lcErro('Falta o endereço do laboratório para o rótulo do sistema. Desmarque o rótulo, cadastre o endereço ou anexe o modelo do rótulo feito no Vértice.');
+  if (it.some(x => x.id === KT_ROTULO) && !ktRemOk(ktRemetente(f.unid))) return lcErro('Falta o endereço da unidade (remetente). Cadastre em Administração › Empresa.');
+  const obs = it.filter(x => x.d && x.d.status === 'obsoleto'); if (obs.length) return lcErro('Obsoleto não sai: ' + obs[0].nome + '. Anexe a versão vigente ao kit.');
   if (!lcTravar()) return;
-  const dados = { amostras: amostras, caixas: String(caixas), analise: String(f.analise || '').trim(), pontos: String(f.pontos || '').trim(), obs: String(f.obs || '').trim(), unid: f.unid };
+  const dados = ktDadosForm(f);
   const reg = { k: k, envio: k.split('|')[0], lab: lab, itens: it.map(x => ({ id: x.id, docId: x.docId || '', nome: x.nome, rev: x.d ? x.d.rev : null })), dados: dados, porId: S.user.id, porNome: S.user.nome, em: nowISO() };
-  try { await Data.col('sv2_envio_imp').set(ktImpId(k), reg); } catch (e) { console.warn(e); }
+  try { await Promise.race([Data.col('sv2_envio_imp').set(ktImpId(k), reg), new Promise(r => setTimeout(r, 4000))]); } catch (e) { console.warn(e); }
   Audit.log({ acao: 'imprimir_envio', entidade: 'remessa', entidadeId: k, resumo: 'Papéis do envio ' + ktRemNome(k) + ': ' + it.map(x => x.nome + (x.d ? ' v' + x.d.rev : '')).join(', ') });
-  lcFim();
-  if (rot) await ktImprimeHTML(ktRotuloHTML(lab, f.unid, caixas, amostras), 'Rótulo ' + lab + ' ' + k.split('|')[0]);
-  for (const x of it.filter(y => y.d)) {
-    const n = x.copias === 'porCaixa' ? caixas : Number(x.copias) || 1;
-    if (!x.d.pub) { await ipNoVertice(x.d.id, typeof ptResumoEnvio === 'function' ? ptResumoEnvio(k, dados, x.d) : null); continue; }
-    for (let c = 0; c < n; c++) { await ipImprimir(x.d.id); await new Promise(r => setTimeout(r, 400)); }
-  }
-  aviso('Papéis enviados para a impressão.');
+  const aqui = it.filter(x => !ktNoVertice(x)), vert = it.filter(ktNoVertice);
+  for (const x of aqui) await ktSaiUm(k, x, dados);
+  if (!vert.length) { lcFim(); aviso('Papéis enviados para a impressão.'); return; }
+  f._trava = 0; f.fila = vert.slice(1).map(x => x.id); f.feitos = { [vert[0].id]: 1 }; f.sujo = false; gvDesenha(true);
+  await ktSaiUm(k, vert[0], dados);
+  if (!f.fila.length) lcFim(); else aviso('Imprima no Vértice e volte aqui: o próximo papel abre no botão "Abrir o próximo no Vértice".');
 }
+/* um papel: rótulo do sistema, PDF, Word ou planilha no Vértice (preenchida, ou com os dados ao lado) */
+async function ktSaiUm(k, x, dados) {
+  const lab = k.split('|').slice(1).join('|'), caixas = Math.max(1, Number(dados.caixas) || 1);
+  if (x.id === KT_ROTULO) { await ktImprimeHTML(ktRotuloHTML(lab, dados.unid, caixas, dados.amostras), 'Rótulo ' + lab + ' ' + k.split('|')[0]); if (typeof drGrava === 'function') drGrava({ k: k, item: x.id, nome: x.nome, tipo: 'impresso' }); return; }
+  const d = x.d; if (!d) return;
+  if (ktNoVertice(x)) { if (typeof drPreenche === 'function' && drPreenche(d)) await drPedido(k, x, dados); else await ipNoVertice(d.id, typeof ptResumoEnvio === 'function' ? ptResumoEnvio(k, dados, d) : null); return; }
+  if (d.orig && d.orig.formato === 'docx') { await ipNoVertice(d.id, null); return; }
+  if (!d.pub) return aviso('Sem cópia em PDF: ' + d.nome + '.', 'erro');
+  const n = x.copias === 'porCaixa' ? caixas : Number(x.copias) || 1;
+  for (let c = 0; c < n; c++) { await ipImprimir(d.id); await new Promise(r => setTimeout(r, 400)); }
+  if (typeof drGrava === 'function') drGrava({ k: k, item: x.id, nome: x.nome, tipo: 'impresso', docId: d.id, rev: d.rev });
+}
+
 /* depois de gravar o envio: abre os papéis (como o EFClaudian abre a etiqueta) */
 function ktDepoisEnvio(ks) { setTimeout(() => ktPapAbre(ks), 350); }
 /* na gaveta da remessa: o que já saiu e o resumo (para preencher a ficha no Excel) */
@@ -236,10 +257,12 @@ document.addEventListener('click', ev => {
   const a = t.getAttribute('data-act'), f = S.fm, vol = S.gv && !S.gvForm ? S.gv : null, volta = vol ? () => gvAbrir(vol) : null;
   if (a === 'kt-end') { if (!ktPodeCad()) return; const i = ktInfo(S._ktLab) || {}; lcAbrir(Object.assign({ k: 'ktEnd', lab: S._ktLab }, { nome: i.nome || '', end: i.end || '', bairro: i.bairro || '', cidade: i.cidade || '', uf: i.uf || '', cep: i.cep || '', contato: i.contato || '', conteudo: i.conteudo || '' }), volta); }
   else if (a === 'kt-end-ok') ktEndOk();
-  else if (a === 'kt-anexar') { if (!ktPodeCad()) return; lcAbrir({ k: 'ktAnexar', lab: S._ktLab, docId: '', quando: 'sempre', copias: 'uma', analise: '', todos: '0' }, volta); }
+  else if (a === 'kt-anexar') { if (!ktPodeCad()) return; lcAbrir({ k: 'ktAnexar', lab: S._ktLab, docId: '', papel: 'doc' }, volta); }
+  else if (a === 'kt-anexar-aqui' && f) { if (!ktPodeCad()) return; const fp = f, lab = fp.kRem.split('|').slice(1).join('|'); lcAbrir({ k: 'ktAnexar', lab: lab, docId: '', papel: 'doc' }, () => ktVoltaPap(fp)); }
+  else if (a === 'kt-end-aqui' && f) { if (!ktPodeCad()) return; const fp = f, lab = fp.kRem.split('|').slice(1).join('|'), i = ktInfo(lab) || {}; lcAbrir({ k: 'ktEnd', lab: lab, nome: i.nome || '', end: i.end || '', bairro: i.bairro || '', cidade: i.cidade || '', uf: i.uf || '', cep: i.cep || '', contato: i.contato || '', conteudo: i.conteudo || '' }, () => { fp.sel[KT_ROTULO] = ktTemEnd(ktInfo(lab)); ktVoltaPap(fp); }); }
+  else if (a === 'kt-tira') ktTira(t.getAttribute('data-id'));
   else if (a === 'kt-anexar-ok') ktAnexarOk();
   else if (a === 'kt-ck' && f) { const id = t.getAttribute('data-id'); f.sel[id] = !f.sel[id]; f.sujo = true; gvDesenha(true); }
-  else if (a === 'kt-pedir' && f) { f.sel[t.getAttribute('data-id')] = true; f.sujo = true; gvDesenha(true); }
   else if (a === 'kt-imprimir') ktImprimir();
   else if (a === 'kt-pap') { if (!coPode()) return; ktPapAbre([t.getAttribute('data-k')], volta); }
 });

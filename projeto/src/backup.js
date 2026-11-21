@@ -8,8 +8,8 @@
 const BK_COLS = ['sv2_meta', 'sv2_users', 'sv2_notifs', 'sv2_audit', 'sv2_aprov', 'sv2_resumos', 'sv2_chat', 'sv2_cfg', 'sv2_docs', 'sv2_caixas', 'sv2_lanc', 'sv2_bebs', 'sv2_cloro', 'sv2_cloro_falta',
   'sv2_talhoes', 'sv2_analises', 'sv2_etqmodelos', 'sv2_prog', 'sv2_coletas', 'sv2_aguacol', 'sv2_rodizio', 'sv2_aguaproj', 'sv2_aguaponto', 'sv2_proc', 'sv2_proc_pag', 'sv2_apont', 'sv2_rnc', 'sv2_rnc_plano',
   'sv2_rnc_gut', 'sv2_analise', 'sv2_alm_itens', 'sv2_alm_mov', 'sv2_alm_sol', 'sv2_alm_pref', 'sv2_conquistas', 'sv2_alm_equip', 'sv2_alm_cal', 'sv2_alm_inv', 'sv2_alm_transf', 'sv2_normas', 'sv2_normas_ed',
-  'sv2_bugs', 'sv2_bugs_seq', 'sv2_tarefas', 'efd_docs', 'efd_partes', 'sv2_impressos', 'sv2_envio_imp', 'sv2_treinos'];
-const BK_FOTOS = ['sv2_avatar', 'sv2_cloro_foto', 'sv2_agua_foto', 'sv2_fotos', 'sv2_rnc_foto', 'sv2_alm_equip_foto', 'sv2_alm_foto', 'sv2_bugs_foto'];
+  'sv2_bugs', 'sv2_bugs_seq', 'sv2_tarefas', 'efd_docs', 'efd_partes', 'sv2_impressos', 'sv2_envio_imp', 'sv2_treinos', 'sv2_rem_docs'];
+const BK_FOTOS = ['sv2_avatar', 'sv2_cloro_foto', 'sv2_agua_foto', 'sv2_fotos', 'sv2_rnc_foto', 'sv2_alm_equip_foto', 'sv2_alm_foto', 'sv2_bugs_foto', 'sv2_rem_arq'];
 const bkPode = () => !!S.user && isPrincipal(S.user);
 const bkTemPasta = () => typeof window.showDirectoryPicker === 'function';
 const bkDois = n => String(n).padStart(2, '0');

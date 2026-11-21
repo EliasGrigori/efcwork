@@ -492,6 +492,12 @@ button.cs-sync:focus-visible{outline:2px solid var(--a);outline-offset:1px}
   .cs-fer.solta{justify-content:flex-end;margin:0 0 12px}
   .gv{top:0}
 }
+/* v0.6.31 · Administração no alto do menu (no lugar do cartão da empresa) */
+.cs-adm{justify-content:flex-start;text-align:left;margin:0 4px 10px;height:auto;min-height:48px;padding:6px 10px;border:1px solid var(--sbBd);opacity:1}
+.cs-adm>span{display:flex;flex-direction:column;min-width:0}
+.cs-adm b{font-weight:600;font-size:14px}.cs-adm small{font-size:12px;opacity:.7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(min-width:900px){.m-ic .cs-adm{display:flex;border:0;min-height:38px;height:38px}.m-ic .cs-adm small{display:none}}
+.cs-lado .cs-adm{opacity:1}
 
 /* ===== tabela.css ===== */
 /* EFCwork · tabela.css — tabela padrão, janela retrátil, gaveta e impressão. Prefixos: tb-, dd-, gv- */
@@ -1352,6 +1358,36 @@ body.jn-fora-on{overflow:hidden}
 #au-imp .kt-b b{display:block;font-size:19pt;margin-bottom:2mm}
 #au-imp .kt-dest{border-width:2.4pt;font-size:19pt}
 #au-imp .kt-dest b{font-size:23pt}
+
+/* ===== remdocs.css ===== */
+/* Documentos da remessa (v0.6.33) — só tokens. OPÇÃO 2 aprovada (ITEM 178): etapas por papel. */
+.dr{margin:4px 0 14px}
+.dr-h{display:flex;align-items:baseline;gap:8px}
+.dr-h small{font-weight:500;color:var(--tx3);font-size:13px}
+.dr-l{border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg1);overflow:hidden;margin-top:6px}
+.dr-i{display:flex;align-items:center;gap:10px;padding:8px 12px;min-height:56px;border-bottom:1px solid var(--bd)}
+.dr-i:last-child{border-bottom:0}
+.dr-t{display:flex;flex-direction:column;min-width:0;flex:1}
+.dr-t b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dr-t small{color:var(--tx2);font-size:13px}
+.dr-t small.wa{color:var(--wa)}
+.dr-ac{display:flex;gap:6px;flex:0 0 auto}
+.dr-ac .bt{width:36px;height:36px;padding:0;justify-content:center}
+.dr-ax{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.dr-axb{display:inline-flex;align-items:center;gap:4px;height:28px;padding:0 8px;border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg2);color:var(--tx2);font:inherit;font-size:13px;cursor:pointer}
+.dr-axb .ic{width:15px;height:15px}
+.dr-axb:hover{border-color:var(--bd2);color:var(--tx)}
+/* etapas */
+.dr-et{display:flex;gap:4px;margin-top:4px;flex-wrap:wrap}
+.dr-et i{font-style:normal;font-size:12px;padding:2px 8px;border-radius:999px;background:var(--bg2);color:var(--tx3)}
+.dr-et i.on{background:var(--okS);color:var(--ok)}
+/* foto da via assinada: lixeira e fechar no canto de cima */
+.dr-fv .dr-fva{position:absolute;top:16px;right:16px;display:flex;gap:8px}
+.dr-fv .dr-fva .bt{position:static}
+.dr-fvt{position:absolute;left:16px;bottom:16px;color:var(--onCr);font-size:13px;opacity:.85}
+@media(max-width:899px){
+  .dr-ac .bt{width:44px;height:44px}
+}
 
 /* ===== fotoed.css ===== */
 /* Editor de foto e foto grande (v0.6.4): PC = foto à esquerda e painel à direita; celular = tela escura, ferramentas embaixo */
@@ -2228,7 +2264,7 @@ body:has(#gv) .pp-bar{display:none}
 .en-caixa h2{font-size:30px}
 .en-caixa>p{margin:0;color:var(--tx2)}
 .en-form{display:flex;flex-direction:column;gap:14px;margin-top:6px}
-.en-sen{display:flex;gap:6px}.en-sen input{flex:1}.en-sen .bt{height:42px;width:42px}
+.en-sen{display:flex;gap:6px}.en-sen input{flex:1;min-width:0}.en-sen .bt{height:auto;align-self:stretch;aspect-ratio:1;width:auto;flex:none} /* v0.6.29: o olho com a altura do campo (era 42 px fixo) */
 .en-lin{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:var(--tx2);gap:10px;flex-wrap:wrap}
 .en-lin a,.en-esq{color:var(--aTx);font-weight:600;text-decoration:none}
 .en-esq{appearance:none;border:0;background:none;padding:0;font:inherit;font-weight:600;cursor:pointer}
@@ -2236,6 +2272,8 @@ body:has(#gv) .pp-bar{display:none}
 .en-ck input{width:18px;height:18px;accent-color:var(--a)}
 .en-msg{min-height:20px;margin:0;color:var(--cr);font-size:14px}
 .en-bt{height:46px;font-size:16px}
+.en-bts{display:grid;grid-template-columns:1fr 1fr;gap:10px}.en-bts .bt{justify-content:center;width:100%} /* v0.6.29: Voltar e Enviar lado a lado, do mesmo tamanho */
+.en-msg.ok{color:var(--ok)}
 .en-rod{margin-top:14px;font-size:13px;color:var(--tx3);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
 @keyframes en-entra{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
 /* v0.6.14 · Pólen: o fundo vivo fica entre a cor de fundo e a arte; a linha que diz o que é o app entra palavra por palavra */
@@ -2318,6 +2356,7 @@ body:has(#gv) .pp-bar{display:none}
 }
 /* v0.4.5: em telas baixas (800 px) o formulário do primeiro acesso cabe inteiro */
 @media(min-width:900px) and (max-height:880px){.en-caixa{padding:22px 26px 18px;gap:8px}.en-caixa h2{font-size:26px}.en-form{gap:9px;margin-top:2px}.en-mk{margin-bottom:2px}}
+.en-form .cp small{font-size:12px} /* v0.6.29: dica do campo com o mesmo tamanho das outras letras pequenas da caixa (era 11,7 px) */
 
 /* ===== inicio.css ===== */
 /* EFCwork · inicio.css — Prefixo: ini- */
@@ -2422,10 +2461,34 @@ body:has(#gv) .pp-bar{display:none}
 .adm-avs{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
 .adm-en .cp>span{font-weight:600}
 @media(max-width:899px){.adm-gr{grid-template-columns:1fr}.adm-avs{grid-template-columns:1fr}}
+/* v0.6.31 · Empresa: duas colunas (Dados da empresa + Unidade | Tela de entrar); mensagem vazia não ocupa linha */
+.adm-emp{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
+.adm-col{display:grid;gap:16px;align-content:start;min-width:0}
+.adm-emp .adm-en{margin-top:0;max-width:none}
+.pn .en-msg:empty{display:none}
+@media(max-width:1099px){.adm-emp{grid-template-columns:1fr}}
 
 /* ===== pessoas.css ===== */
 .pes-cks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 12px}
 @media(max-width:700px){.pes-cks{grid-template-columns:minmax(0,1fr)}}
+.pes-sen{display:flex;gap:6px;align-items:center}.pes-sen .fm-i{flex:1 1 auto}.pes-sen .bt{flex:none;height:var(--campo);width:var(--campo)} /* v0.6.29 */
+.pes-esit{margin:0 0 4px;color:var(--tx2);font-size:14px}.pes-esit b{color:var(--tx);font-weight:600}
+
+/* ===== backup.css ===== */
+/* backup.js · Administração › Backup */
+.bk .cpo{display:grid;gap:14px}
+.bk-pasta{display:grid;gap:6px}.bk-rot{color:var(--tx3);font-size:12px}
+.bk-bts{display:flex;gap:8px;flex-wrap:wrap}.bk-bts .bt{min-height:36px}
+.bk-ck{display:flex;align-items:center;gap:8px;min-height:36px;font-size:14px}.bk-ck input{width:18px;height:18px}
+/* celular: botões lado a lado com a mesma largura (regra de 11/11) */
+@media (max-width:600px){.bk-bts{display:grid;grid-template-columns:1fr 1fr}.bk-bts .bt:only-child{grid-column:1/-1}}
+
+/* ===== foto.css ===== */
+/* foto.js · foto do perfil (v0.6.31) */
+.ft-linha{margin-bottom:4px}
+.ft-foto{border-radius:50%;font-weight:700;font-size:20px;color:var(--aTx);background:var(--aS)}
+.ft-foto img{object-fit:cover}
+.cs-av{overflow:hidden}.cs-av img{width:100%;height:100%;object-fit:cover;display:block}
 
 /* ===== fluidez.css ===== */
 /* EFCwork · fluidez.css — v0.6.14 "Movimento". Só tokens da escala comum (tools/visual/efc-movimento.css). */
@@ -2690,7 +2753,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = Mov;
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.6.28';
+const VERSAO = '0.6.33';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -2764,6 +2827,10 @@ const $ = (s, r) => (r || document).querySelector(s);
 const $$ = (s, r) => Array.prototype.slice.call((r || document).querySelectorAll(s));
 const esc = v => v == null ? '' : String(v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const imgSrc = u => { const s = String(u == null ? '' : u).trim(); return /^(data:image\/[a-z0-9.+-]+[;,]|blob:|https:\/\/)/i.test(s) ? esc(s) : ''; };
+/* v0.6.29 (varredura S5): endereço que vira link clicável só se for https (o dado pode ter sido gravado fora do app) */
+const linkSeguro = u => { const s = String(u == null ? '' : u).trim(); return /^https:\/\/[^\s"'<>]+$/i.test(s) ? esc(s) : ''; };
+const SENHA_MIN = 8; /* v0.6.29 (varredura S3): a mesma regra no primeiro acesso, no cadastro de pessoa e em Meu perfil */
+const emailReal = e => { const s = String(e || '').trim().toLowerCase(); return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(s) && !/@efclaudian\.app$/.test(s) ? s : ''; };
 /* modo demonstração: as mesmas listas das regras do Firestore (06/11) para quem não é líder ★/Administrador, para os testes pegarem permissão negada */
 const DEMO_REGRAS = { sv2_alm_inv: ['contagens', 'folhas'], sv2_alm_equip: ['situacao', 'local', 'posicao', 'guardadoEm', 'sitAntes', 'posAntes', 'restricaoCal', 'qtdLocal', 'qtdGuard', 'trfQtd', 'transito', 'hist', 'atualizadoEm'], sv2_alm_cal: [] };
 function demoRegraNega(col, chaves) { const l = DEMO_REGRAS[col], u = S.user; if (!l || !u || typeof isSup !== 'function' || isSup(u)) return ''; return chaves.map(k => k.split('.')[0]).find(k => l.indexOf(k) < 0) || ''; }
@@ -2825,6 +2892,7 @@ const ICS = {
   colunas: '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9.5 4v16M14.5 4v16"/>',
   planilha: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M8.5 12h7M8.5 16h7M12 12v6"/>',
   impressora: '<path d="M7 9V3h10v6M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2"/><rect x="7" y="14" width="10" height="7" rx="1"/>',
+  pasta: '<path d="M3 7.5A1.5 1.5 0 0 1 4.5 6H9l2 2h8.5A1.5 1.5 0 0 1 21 9.5v8A1.5 1.5 0 0 1 19.5 19h-15A1.5 1.5 0 0 1 3 17.5z"/>', /* v0.6.30 */
   baixar: '<path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19h14"/>',
   copia: '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h8"/>',
   lixo: '<path d="M4 7h16M9 7V4.5h6V7M6 7l1 13h10l1-13M10 11v6M14 11v6"/>', imagem: '<rect x="3.5" y="4.5" width="17" height="15" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="m20.5 16-5-5-8 8.5"/>'
@@ -2997,6 +3065,20 @@ const Data = (function () {
       await fauth.currentUser.verifyBeforeUpdateEmail(email); return false;
     },
     async recuperar(email) { if (DEMO) return; await fauth.sendPasswordResetEmail(email); },
+    /* v0.6.29 (varredura S2): o e-mail confirmado de um login, para o "Esqueci a senha" (sv2_login é lido sem estar logado, só pelo login exato) */
+    async emailDoLogin(login) {
+      const k = slugLogin(login); if (!k) return '';
+      if (DEMO) { const r = dAuth()[k]; return emailReal(r && r.email); }
+      try { const d = await fdb.collection('sv2_login').doc(k).get(); return d.exists ? emailReal(d.data().email) : ''; } catch (e) { return ''; }
+    },
+    /* grava a ligação login → e-mail sem apagar o que o EFClaudian já guardou nela (lê e junta) */
+    async ligarLogin(login, campos) {
+      const k = slugLogin(login); if (!k || DEMO || !fauth.currentUser) return;
+      const ref = fdb.collection('sv2_login').doc(k); let atual = {};
+      try { const d = await ref.get(); if (d.exists) atual = d.data(); } catch (e) {}
+      if (atual.uid && atual.uid !== fauth.currentUser.uid) return;
+      await ref.set(Object.assign({}, atual, { uid: fauth.currentUser.uid, interno: atual.interno || emailOf(k) }, campos, { em: nowISO() }));
+    },
     emailAtual() { if (DEMO) { const r = dAuth()[slugLogin(S.user && S.user.login)]; return r && r.email || ''; } return fauth && fauth.currentUser ? fauth.currentUser.email || '' : ''; }
   };
   return {
@@ -3102,7 +3184,7 @@ const AREAS = [
   { id: 'almox', nome: 'Almoxarifado', ic: 'caixa', versao: 'v0.3', parcial: 'consultar e lançar prontos aqui; cadastro de material, kits, fotos e inventário seguem no EFClaudian', abas: [{ id: 'painel', nome: 'Painel' }, { id: 'materiais', nome: 'Materiais' }, { id: 'movimentacoes', nome: 'Movimentações' }, { id: 'solicitacoes', nome: 'Solicitações' }, { id: 'equipamentos', nome: 'Equipamentos' }, { id: 'contagem', nome: 'Contagem', oculta: true, pai: () => typeof cgDoEq === 'function' && cgDoEq() ? 'equipamentos' : 'materiais' }, { id: 'calibracao', nome: 'Calibração', oculta: true, pai: 'equipamentos' }] },
   { id: 'qualidade', nome: 'Qualidade', ic: 'escudo', versao: 'v0.7', parcial: 'Não conformidades, Análise de problemas, Treinamentos e Bugs e sugestões prontos aqui; Conversas seguem no EFClaudian (a Semana está em Relatórios)', abas: [{ id: 'nc', nome: 'Não conformidades' }, { id: 'analise', nome: 'Análise de problemas' }, { id: 'treinos', nome: 'Treinamentos' }, { id: 'bugs', nome: 'Bugs e sugestões' }] },
   { id: 'relatorios', nome: 'Relatórios', ic: 'graf', versao: 'v0.8', grupo: 'Análise', parcial: 'o Rateio, a Semana, o Almoxarifado do mês, os Documentos e os Apontamentos estão prontos aqui; Coletas em aberto vem depois', get negada() { return !!S.user && !(rlVe() || smVe() || amVe() || rdVe() || rpVe()); }, abas: [{ id: 'rateio', nome: 'Rateio', get negada() { return !!S.user && !rlVe(); } }, { id: 'semana', nome: 'Semana', get negada() { return !!S.user && !smVe(); } }, { id: 'almox', nome: 'Almoxarifado', get negada() { return !!S.user && !amVe(); } }, { id: 'documentos', nome: 'Documentos', get negada() { return !!S.user && !rdVe(); } }, { id: 'apontamentos', nome: 'Apontamentos', get negada() { return !!S.user && !rpVe(); } }] }, /* v0.6.18: Rateio (relatorios.js); sem a atribuição Rateios a área some (as outras abas entram por aqui depois) */
-  { id: 'adm', nome: 'Administração', ic: 'eng', rodape: true, abas: [{ id: 'empresa', nome: 'Empresa' }, { id: 'pessoas', nome: 'Pessoas', get negada() { return !!S.user && !pesVe(); } }, { id: 'perfil', nome: 'Meu perfil' }, { id: 'aparencia', nome: 'Aparência' }, { id: 'atividade', nome: 'Atividade', get negada() { return !isPrincipal(S.user); } }, { id: 'sobre', nome: 'Sobre' }] }
+  { id: 'adm', nome: 'Administração', ic: 'eng', rodape: true, abas: [{ id: 'empresa', nome: 'Empresa' }, { id: 'pessoas', nome: 'Pessoas', get negada() { return !!S.user && !pesVe(); } }, { id: 'perfil', nome: 'Meu perfil' }, { id: 'backup', nome: 'Backup', get negada() { return !isPrincipal(S.user); } }, { id: 'atividade', nome: 'Atividade', get negada() { return !isPrincipal(S.user); } }, { id: 'sobre', nome: 'Sobre' }] }
 ];
 const csArea = id => AREAS.find(a => a.id === id) || AREAS[0];
 
@@ -3185,9 +3267,11 @@ function csMarca() {
   const e = S.empresa || {}, logo = imgSrc(e.logo);
   return '<div class="cs-marca"><span class="cs-logo">' + (logo ? '<img src="' + logo + '" alt="">' : ic('broto')) + '</span><span class="cs-nm"><b>' + APP_NOME + '</b><span>família ' + APP_FAMILIA + '</span></span></div>';
 }
+/* v0.6.31: o cartão da empresa virou a entrada da Administração (pedido do Elias, 20/11); a empresa e a unidade ficam na linha de baixo */
 function csEmpresaBloco() {
-  const e = S.empresa || {}, un = (e.unidades || []), u = Store.get('cw-unidade') || (un[0] || '');
-  return '<button type="button" class="cs-emp" data-act="cs-emp" title="Empresa e unidade"><span><b>' + esc(e.nome || 'Sua empresa') + '</b><small>' + esc(un.length ? u : 'Configure em Administração') + '</small></span>' + ic('seta') + '</button>';
+  const e = S.empresa || {}, un = (e.unidades || []), u = Store.get('cw-unidade') || (un[0] || ''), on = S.rota.area === 'adm';
+  const sub = [e.nome || 'Empresa não configurada', un.length ? u : ''].filter(Boolean).join(' · ');
+  return '<a class="cs-it cs-emp cs-adm' + (on ? ' on' : '') + '" href="#/adm"' + (on ? ' aria-current="page"' : '') + ' title="Administração">' + ic('eng') + '<span><b>Administração</b><small>' + esc(sub) + '</small></span></a>';
 }
 /* ---------- menu lateral retrátil (v0.5.3, Nº 48; aprovado 10/11: 3 estados + OPÇÃO 4 "botão que alterna") ----------
    Só no computador (≥ 900 px). Aberto → Só ícones → Recolhido, um toque no botão do topo do menu (os 3 pontinhos mostram onde está).
@@ -3239,9 +3323,9 @@ function csLado() {
     h += '<a class="cs-it' + (a.id === at ? ' on' : '') + '" style="--i:' + (n++) + '" href="#/' + a.id + '"' + (a.id === at ? ' aria-current="page"' : '') + '>' + ic(a.ic) + '<span>' + esc(a.nome) + '</span></a>';
   });
   h += csAppsFamilia(n);
-  const adm = csArea('adm'), u = S.user || {};
-  h += '</nav><div class="cs-pe"><a class="cs-it' + (at === 'adm' ? ' on' : '') + '" href="#/adm">' + ic(adm.ic) + '<span>' + adm.nome + '</span></a>' +
-    '<div class="cs-us"><span class="cs-av">' + esc(iniciais(u.nome)) + '</span><span class="cs-ust"><b>' + esc(u.nome || '') + '</b><small>' + esc(perfilLabel(u)) + '</small></span><button type="button" class="bt ic-so" data-act="cs-sair" title="Sair" aria-label="Sair">' + ic('sair') + '</button></div>' +
+  const u = S.user || {};
+  h += '</nav><div class="cs-pe">' +
+    '<div class="cs-us"><span class="cs-av">' + ftAvatar(u) + '</span><span class="cs-ust"><b>' + esc(u.nome || '') + '</b><small>' + esc(perfilLabel(u)) + '</small></span><button type="button" class="bt ic-so" data-act="cs-sair" title="Sair" aria-label="Sair">' + ic('sair') + '</button></div>' +
     '<div class="cs-cw"><span>' + APP_APELIDO + '</span><span>v' + VERSAO + (DEMO ? ' · demonstração' : '') + '</span></div></div></aside>';
   return h;
 }
@@ -3317,7 +3401,7 @@ function csBaixo() {
 function render() {
   const app = $('#app'); if (!app) return;
   if (!S.pronto) { app.innerHTML = '<div class="cs-carregando">' + ic('broto') + '<span>Abrindo o ' + APP_NOME + '…</span></div>'; return; }
-  if (!S.user) { app.innerHTML = enTela(); try { enDepois(); } catch (e) { console.error(e); } return; }
+  if (!S.user || enTrocaPendente()) { app.innerHTML = enTela(); /* v0.6.29: a pessoa nova cria a senha antes de ver o app */ try { enDepois(); } catch (e) { console.error(e); } return; }
   const ar = csArea(S.rota.area), f = TELAS[ar.id];
   let corpo = '';
   try { corpo = f ? f(S.rota.aba) : arEmBreve(ar); } catch (e) { console.error(e); corpo = '<div class="pn"><div class="vazio"><b>Esta tela deu erro ao abrir.</b><span>' + esc(e && e.message || e) + '</span></div></div>'; }
@@ -6559,7 +6643,7 @@ function coAbreLote(k) {
     const l = coLote(k); if (!l.length) return null; const c0 = l[0], lau = l.filter(c => c.laudo).length, at = l.filter(c => coLaudoSit(c) === 'Atrasado').length, pode = coPode(), aberta = l.some(c => !coEncerrada(c));
     return { ico: 'caixa', cabAcoes: pode ? ktPapBt(k) + coAnxBt(k) : '', sub: 'Remessa · ' + fmtD(c0.envio), titulo: c0.lab || 'Sem laboratório', pill: alPill(lau === l.length ? 'Laudos baixados' : at ? at + ' laudo(s) atrasado(s)' : 'Aguardando laudos', lau === l.length ? 'ok' : at ? 'cr' : ''),
       corpo: gvNums([[String(l.length), 'amostras'], [lau + '/' + l.length, 'laudos'], [lau === l.length ? '—' : fmtD(coPrevisto(c0)), 'laudo previsto', at ? 'cr' : '']]) +
-        gvCampos([['O.S', Array.from(new Set(l.map(c => c.os).filter(Boolean))).join(', ') || 'ainda não informada']]) + coAnexosHTML(l, k) + ktRemessaHTML(k) +
+        gvCampos([['O.S', Array.from(new Set(l.map(c => c.os).filter(Boolean))).join(', ') || 'ainda não informada']]) + coAnexosHTML(l, k) + (typeof drSecao === 'function' ? drSecao(k) : ktRemessaHTML(k)) +
         '<p class="gv-h">Amostras</p><div class="gv-lotes">' + l.sort((a, b) => cmpTxt(a.tipo, b.tipo) || cmpTxt(coNome(a), coNome(b))).map(c => { const s = coSit(c); return '<button type="button" class="gv-lote co-am" data-act="co-abre" data-id="' + esc(c.id) + '"><span><b>' + esc(coNome(c)) + '</b> ' + esc((CO_TXT[c.tipo] || '') + ' · ' + (c.sigla || c.analiseNome || '')) + '</span>' + alPill(s.txt, s.cor) + '</button>'; }).join('') + '</div>',
       rodape: pode && aberta ? (l.some(c => !c.os) ? '<button type="button" class="bt" data-act="co-os" data-k="' + esc(k) + '">' + ic('lapis') + 'Informar O.S</button>' : '<button type="button" class="bt" data-act="co-os" data-k="' + esc(k) + '">' + ic('lapis') + 'Corrigir O.S</button>') +
         (lau < l.length ? '<button type="button" class="bt pr" data-act="co-laudo" data-k="' + esc(k) + '">' + ic('ok') + 'Laudos recebidos</button>' : '') : '' };
@@ -8390,7 +8474,8 @@ function ipGaveta(id) {
   const f = ipFmt(d), link = d.tipo === 'link', p = d.pub, o = d.orig, aqui = p && S.ipAparelho[d.id] === p.sha256;
   if (p && !aqui) ipNoAparelho(d).then(x => { if (x && S.gv && S._ipGv === d.id) gvDesenha(); });
   let c = '';
-  if (link) c += '<p class="gv-h">Endereço</p><p class="ip-link"><a href="' + esc(d.link) + '" target="_blank" rel="noopener">' + esc(d.link) + '</a></p>';
+  const lk = link ? linkSeguro(d.link) : ''; /* v0.6.29 (varredura S5): só https vira link, mesmo que o dado tenha sido gravado fora do app */
+  if (link) c += '<p class="gv-h">Endereço</p><p class="ip-link">' + (lk ? '<a href="' + lk + '" target="_blank" rel="noopener">' + lk + '</a>' : esc(d.link)) + '</p>' + (lk ? '' : lcAv('Este endereço não começa com https://, por isso não abre daqui. Corrija no lápis.', 'cr'));
   else if (p && ipVeNoApp()) c += '<p class="gv-h">Cópia de impressão</p><div class="ip-prev" data-ip-prev="' + esc(d.id) + '"><span class="ip-prevm">Abrindo o PDF…</span></div>';
   else if (p) c += '<button type="button" class="ip-abrirpdf" data-act="ip-ver" data-id="' + esc(d.id) + '">' + ic('doc') + '<span><b>Ver o PDF</b><small>' + p.paginas + (p.paginas === 1 ? ' página' : ' páginas') + ' · ' + ipTam(p.bytes) + '</small></span>' + ic('externo') + '</button>';
   if (d.status === 'obsoleto') c += lcAv('<b>Obsoleto:</b> este papel não imprime mais. Use a versão vigente.', 'cr');
@@ -8407,7 +8492,7 @@ function ipGaveta(id) {
     (o ? '<button type="button" class="bt" data-act="ip-baixar" data-id="' + esc(d.id) + '" data-q="orig">' + ic('baixar') + 'Baixar o ' + IP_FMT[o.formato] + '</button>' : '') + '</div>';
   const cab = (ipPode() ? '<button type="button" class="bt ic-so" data-act="ip-editar" data-id="' + esc(d.id) + '" title="Editar ou trocar o arquivo" aria-label="Editar">' + ic('lapis') + '</button>' : '');
   const vert = (d.tipo === 'planilha' || d.tipo === 'docx') && o ? '<button type="button" class="bt" data-act="ip-no-vertice" data-id="' + esc(d.id) + '">' + ic('externo') + 'Abrir no Vértice</button>' : '';
-  const pe = link ? '<span class="au-pesp"></span><a class="bt pr" href="' + esc(d.link) + '" target="_blank" rel="noopener">' + ic('externo') + 'Abrir o link</a>'
+  const pe = link ? (lk ? '<span class="au-pesp"></span><a class="bt pr" href="' + lk + '" target="_blank" rel="noopener">' + ic('externo') + 'Abrir o link</a>' : '')
     : vert + '<span class="au-pesp"></span><button type="button" class="bt pr" data-act="ip-imprimir" data-id="' + esc(d.id) + '"' + (ipImprime(d) ? '' : ' disabled') + '>' + ic('impressora') + 'Imprimir</button>';
   return { ico: link ? 'externo' : f === 'xlsx' ? 'planilha' : 'doc', sub: [d.codigo, ipFmtTxt(d), link ? '' : 'versão ' + d.rev].filter(Boolean).join(' · '), titulo: d.nome, pill: ipPill(d), cabAcoes: cab,
     lixeira: ipPode() ? { act: 'ip-lixo', id: d.id, titulo: 'Mandar para a lixeira' } : null, corpo: c, rodape: pe };
@@ -8916,7 +9001,6 @@ if (jnSairOrig) csSair = async function () { S.jnAbertas.forEach(id => { const f
      na ficha?" com amostras, caixas, análise e pontos sugeridos pelo envio. O rótulo sai uma folha por caixa (A4 em pé, "Caixa 1 de 2").
      Fica registrado em sv2_envio_imp (o que saiu, de que versão, quem e quando, e os dados) para Reimprimir (sugestão 3) e para o resumo. */
 Object.assign(S, { ktKit: [], ktImp: [], coEnvVista: 'rem' });
-const KT_QUANDO = [['sempre', 'Sempre'], ['perguntar', 'Perguntar'], ['pedir', 'Só se eu pedir']];
 const KT_ROTULO = '__rotulo';
 
 CS_CARGAS.push(() => {
@@ -8932,7 +9016,6 @@ const ktInfo = lab => ((S.cfgCol || {}).labInfo || {})[lab] || null;
 const ktTemEnd = i => !!(i && i.nome && i.end);
 const ktKitDe = lab => S.ktKit.filter(x => x.ativo !== false && x.ponto === 'coletas.envio' && (x.lab === lab || !x.lab)).sort((a, b) => (a.ordem || 0) - (b.ordem || 0) || cmpTxt(a.nome, b.nome));
 const ktDoc = id => S.ipDocs.find(d => d.id === id) || null;
-const ktRotQuando = lab => { const i = ktInfo(lab); return (i && i.rotulo) || 'sempre'; };
 const ktImpId = k => k.split('|')[0] + '_' + slugLogin(k.split('|').slice(1).join('|') || 'sem-lab').replace(/\./g, '-').slice(0, 60);
 const ktUltimo = k => S.ktImp.filter(x => x.k === k).sort((a, b) => String(b.em).localeCompare(String(a.em)))[0] || null;
 const ktAnalises = () => Array.from(new Set(S.coletas.map(c => c.analiseNome || c.sigla).filter(Boolean).concat((S.analises || []).map(a => a.nome).filter(Boolean)))).sort(cmpTxt);
@@ -8951,7 +9034,7 @@ const ktDestLinhas = i => !i ? [] : [i.end, i.bairro ? 'Bairro: ' + i.bairro : '
 function ktLinhas() {
   const nomes = Array.from(new Set(coLabs().concat(Object.keys((S.cfgCol || {}).labInfo || {})))).filter(Boolean).sort(cmpTxt);
   const ult = {}; coAtivas().forEach(c => { if (c.enviado && c.envio && c.lab && (!ult[c.lab] || c.envio > ult[c.lab])) ult[c.lab] = c.envio; });
-  return nomes.map(n => { const i = ktInfo(n), kit = ktKitDe(n).filter(x => ktDoc(x.docId)); return { id: n, nome: n, cid: i ? [i.cidade, i.uf].filter(Boolean).join(' · ') : '', kit: kit.length + (ktRotQuando(n) !== 'pedir' ? 1 : 0), ult: ult[n] || '', st: !ktTemEnd(i) ? 'end' : kit.length ? 'ok' : 'rot' }; });
+  return nomes.map(n => { const i = ktInfo(n), kit = ktKitDe(n).filter(x => ktDoc(x.docId)); return { id: n, nome: n, cid: i ? [i.cidade, i.uf].filter(Boolean).join(' · ') : '', kit: kit.length + (kit.some(x => ktPapel(x) === 'rotulo') ? 0 : 1), ult: ult[n] || '', st: !ktTemEnd(i) && !kit.some(x => ktPapel(x) === 'rotulo') ? 'end' : kit.some(x => ktPapel(x) === 'doc') ? 'ok' : 'rot' }; });
 }
 const KT_ST = { ok: ['Kit pronto', 'ok'], rot: ['Só o rótulo', ''], end: ['Falta o endereço', 'wa'] };
 function ktTabLabs() {
@@ -8961,34 +9044,33 @@ function ktTabLabs() {
 }
 DD_AO.kt = (k, v) => {
   if (k === 'vista') { S.coEnvVista = v; render(); return; }
-  if (k.indexOf('q:') === 0) return ktQuando(k.slice(2), v);
   const f = S.fm; if (!f) return; f.sujo = true; f.msg = '';
-  if (k === 'doc') f.docId = v; else if (k === 'quando') f.quando = v; else if (k === 'analise') f.analise = v; else if (k === 'copias') f.copias = v; else if (k === 'rem') { ktPapCarrega(f, v); f.sujo = false; } else if (k === 'unid') f.unid = v;
+  if (k === 'doc') f.docId = v; else if (k === 'papel') f.papel = v; else if (k === 'quando') f.quando = v; else if (k === 'analise') f.analise = v; else if (k === 'copias') f.copias = v; else if (k === 'rem') { ktPapCarrega(f, v); f.sujo = false; } else if (k === 'unid') f.unid = v;
   gvDesenha(true);
 };
 /* gaveta do laboratório: endereço e kit */
 function ktAbreLab(nome) { S._ktLab = nome; gvAbrir(() => ktGavLab(nome)); }
+/* v0.6.33: cada laboratório tem até dois papéis no kit: o rótulo do endereço (modelo do Vértice; sem ele, o rótulo do sistema) e
+   a cadeia de custódia OU a ficha. Escolher o papel certo de cada coleta é feito no Vértice (pedido do Elias, 20/11 23:52). */
+const ktPapel = x => x.papel === 'rotulo' ? 'rotulo' : 'doc';
+const KT_PAPEL = [['doc', 'Cadeia de custódia ou ficha'], ['rotulo', 'Rótulo do endereço (modelo)']];
 function ktGavLab(nome) {
-  const i = ktInfo(nome), sup = ktPodeCad(), kit = ktKitDe(nome), linhas = ktDestLinhas(i);
-  const qdd = (id, v) => sup ? ddHTML('kt:q:' + id, v, KT_QUANDO.concat(id === KT_ROTULO ? [] : [['__tirar', 'Tirar do kit']])) : '<span class="kt-q">' + esc((KT_QUANDO.find(x => x[0] === v) || KT_QUANDO[0])[1]) + '</span>';
+  const i = ktInfo(nome), sup = ktPodeCad(), kit = ktKitDe(nome).filter(x => ktDoc(x.docId) && ktDoc(x.docId).status !== 'lixeira'), linhas = ktDestLinhas(i), rot = kit.find(x => ktPapel(x) === 'rotulo');
+  const tira = id => sup ? '<button type="button" class="bt ic-so" data-act="kt-tira" data-id="' + esc(id) + '" title="Tirar do kit" aria-label="Tirar do kit">' + ic('lixo') + '</button>' : '';
   let c = '<p class="gv-h">Destinatário do rótulo</p>' + (ktTemEnd(i) ? gvCampos([['Nome', i.nome], ['Endereço', linhas[0] || ''], ['Bairro', i.bairro || ''], ['Cidade', [i.cidade, i.uf].filter(Boolean).join(' · ')], ['CEP', i.cep || ''], ['Contato', i.contato || ''], ['Conteúdo', i.conteudo || '']])
-    : lcAv('Falta o endereço deste laboratório. ' + (sup ? 'Toque no lápis para cadastrar: ele vai no rótulo da caixa.' : 'Peça ao Administrador ou ao Líder para cadastrar.'), 'wa'));
-  c += '<p class="gv-h">Kit de impressão do envio</p><div class="ag-pn ag-gv kt-kit">' +
-    '<div class="ag-l"><span class="ag-t"><b>Rótulo destinatário e remetente</b><small>Do sistema · uma folha por caixa</small></span>' + qdd(KT_ROTULO, ktRotQuando(nome)) + '</div>' +
-    kit.map(x => { const d = ktDoc(x.docId); if (!d || d.status === 'lixeira') return ''; return '<div class="ag-l"><span class="ag-t"><b>' + esc(d.nome) + '</b><small>' + esc([ipFmtTxt(d), 'versão ' + d.rev, x.analise ? 'só ' + x.analise : '', x.copias === 'porCaixa' ? 'uma por caixa' : Number(x.copias) > 1 ? x.copias + ' cópias' : '', !x.lab ? 'todos os laboratórios' : '', d.status === 'obsoleto' ? 'OBSOLETO' : !d.pub ? 'sem cópia em PDF' : ''].filter(Boolean).join(' · ')) + '</small></span>' + qdd(x.id, x.quando || 'sempre') + '</div>'; }).join('') + '</div>';
-  if (!kit.length) c += '<p class="ag-dc">' + (sup ? 'Anexe a ficha, a cadeia de custódia ou o formulário deste laboratório (eles vêm de Documentos › Impressos).' : 'Só o rótulo, por enquanto.') + '</p>';
-  const st = !ktTemEnd(i) ? 'end' : kit.length ? 'ok' : 'rot';
+    : '<p class="co-nada">' + (rot ? 'O rótulo vem do modelo do Vértice.' : 'Sem endereço: o rótulo do sistema não sai. ' + (sup ? 'Toque no lápis para cadastrar, ou anexe o modelo do rótulo feito no Vértice.' : 'Peça ao Administrador ou ao Líder.')) + '</p>');
+  c += '<p class="gv-h">Papéis do envio</p><div class="ag-pn ag-gv kt-kit">' +
+    (rot ? '' : '<div class="ag-l"><span class="ag-t"><b>Rótulo destinatário e remetente</b><small>Do sistema · uma folha por caixa · até anexar o modelo do Vértice</small></span></div>') +
+    kit.map(x => { const d = ktDoc(x.docId); return '<div class="ag-l"><span class="ag-t"><b>' + esc(d.nome) + '</b><small>' + esc([ktPapel(x) === 'rotulo' ? 'Rótulo do endereço' : 'Custódia ou ficha', ipFmtTxt(d), 'versão ' + d.rev, !x.lab ? 'todos os laboratórios' : '', d.status === 'obsoleto' ? 'OBSOLETO' : ''].filter(Boolean).join(' · ')) + '</small></span>' + tira(x.id) + '</div>'; }).join('') + '</div>';
+  const st = !ktTemEnd(i) && !rot ? 'end' : kit.some(x => ktPapel(x) === 'doc') ? 'ok' : 'rot';
   return { ico: 'predio', sub: 'Coletas › Envio › Laboratórios', titulo: nome, pill: alPill(KT_ST[st][0], KT_ST[st][1]),
     cabAcoes: sup ? '<button type="button" class="bt ic-so" data-act="kt-end" title="Endereço do laboratório" aria-label="Editar o endereço">' + ic('lapis') + '</button>' : '', corpo: c,
     rodape: '<button type="button" class="bt" data-act="gv-fecha">Fechar</button><span class="au-pesp"></span>' + (sup ? '<button type="button" class="bt pr" data-act="kt-anexar">' + ic('mais') + 'Anexar papel</button>' : '') };
 }
-async function ktQuando(id, v) {
-  if (!ktPodeCad()) return; const lab = S._ktLab;
-  try {
-    if (id === KT_ROTULO) { const info = Object.assign({}, ((S.cfgCol || {}).labInfo || {})); info[lab] = Object.assign({}, info[lab] || {}, { rotulo: v }); await ktCfgGrava(info); }
-    else if (v === '__tirar') { const x = S.ktKit.find(y => y.id === id); await Data.col('sv2_impressos').update(id, { ativo: false, alteradoEm: nowISO(), alteradoPor: S.user.nome }); Audit.log({ acao: 'kit_tirar', entidade: 'impresso', entidadeId: id, resumo: 'Tirou do kit de ' + lab + ': ' + (x ? x.nome : '') }); aviso('Tirado do kit.'); }
-    else await Data.col('sv2_impressos').update(id, { quando: v, alteradoEm: nowISO(), alteradoPor: S.user.nome });
-  } catch (e) { aviso(svErro(e), 'erro'); }
+async function ktTira(id) {
+  if (!ktPodeCad()) return; const x = S.ktKit.find(y => y.id === id); if (!x) return;
+  try { await Data.col('sv2_impressos').update(id, { ativo: false, alteradoEm: nowISO(), alteradoPor: S.user.nome }); Audit.log({ acao: 'kit_tirar', entidade: 'impresso', entidadeId: id, resumo: 'Tirou do kit de ' + (x.lab || 'todos') + ': ' + x.nome }); aviso('Tirado do kit.'); }
+  catch (e) { aviso(svErro(e), 'erro'); }
 }
 async function ktCfgGrava(info) {
   const cf = S.cfgCol; if (cf && cf.id) await Data.col('sv2_cfg').update('coletas', { labInfo: info });
@@ -9017,65 +9099,73 @@ async function ktEndOk() {
     lcFim(); aviso('Endereço salvo.');
   } catch (e) { if (S.fm) S.fm._trava = 0; lcErro(svErro(e)); }
 }
-/* anexar um papel de Documentos › Impressos ao kit */
+/* anexar um papel ao kit (Documentos › Impressos, normalmente o que veio do Vértice): o novo substitui o do mesmo tipo */
 LC_FORM.ktAnexar = f => {
   const docs = ipVivos().filter(d => d.tipo !== 'link' && d.status !== 'obsoleto').sort((a, b) => cmpTxt(ipPasta(a), ipPasta(b)) || cmpTxt(a.nome, b.nome)), ja = ktKitDe(f.lab).map(x => x.docId);
-  const ops = docs.filter(d => ja.indexOf(d.id) < 0).map(d => [d.id, (d.codigo ? d.codigo + ' · ' : '') + d.nome + (d.pub ? '' : ' (sem PDF)')]);
+  const ops = docs.filter(d => ja.indexOf(d.id) < 0).map(d => [d.id, (d.codigo ? d.codigo + ' · ' : '') + d.nome + ' (' + ipFmtTxt(d) + ')']), velho = ktKitDe(f.lab).find(x => x.lab && ktPapel(x) === f.papel);
   let c = lcMsg();
-  if (!ops.length) c += lcAv('Não há papel para anexar. Importe primeiro a ficha ou a custódia em Documentos › Impressos.', 'wa');
-  else c += lcBl('Papel', ddHTML('kt:doc', f.docId || '', [['', 'Escolha o papel']].concat(ops))) +
-    '<div class="fm-g">' + lcBl('Quando sai', ddHTML('kt:quando', f.quando, KT_QUANDO)) + lcBl('Cópias', ddHTML('kt:copias', f.copias, [['uma', '1 cópia'], ['2', '2 cópias'], ['3', '3 cópias'], ['porCaixa', 'Uma por caixa']])) + '</div>' +
-    lcBl('Vale para', ddHTML('kt:analise', f.analise || '', [['', 'Todas as análises']].concat(ktAnalises().map(a => [a, a]))), 'opcional') +
-    (ktPodeCad() ? '<label class="fm-ck"><input type="checkbox" data-fm="todos"' + (f.todos === '1' ? ' checked' : '') + '> Usar em todos os laboratórios</label>' : '');
+  if (!ops.length) c += lcAv('Não há papel para anexar. Compartilhe do Vértice com o Cwork (ou importe em Documentos › Impressos).', 'wa');
+  else c += lcBl('Tipo', ddHTML('kt:papel', f.papel, KT_PAPEL)) + lcBl('Papel', ddHTML('kt:doc', f.docId || '', [['', 'Escolha o papel']].concat(ops))) +
+    (velho ? lcAv('Substitui "' + esc(velho.nome) + '" neste laboratório.') : '');
   return { ico: 'mais', sub: 'Kit · ' + f.lab, titulo: 'Anexar papel', corpo: c, rodape: lcPe('kt-anexar-ok', 'Anexar') };
 };
 async function ktAnexarOk() {
   const f = S.fm; if (!f || !ktPodeCad()) return; const d = ktDoc(f.docId); if (!d) return lcErro('Escolha o papel.');
   if (!lcTravar()) return;
-  const o = { v: 1, ponto: 'coletas.envio', nome: d.nome, docId: d.id, lab: f.todos === '1' ? '' : f.lab, copias: /^\d$/.test(f.copias) ? Number(f.copias) : f.copias, ordem: ktKitDe(f.lab).length + 1, ativo: true, quando: f.quando, analise: f.analise || '', criadoEm: nowISO(), criadoPorId: S.user.id, criadoPor: S.user.nome };
+  const o = { v: 1, ponto: 'coletas.envio', nome: d.nome, docId: d.id, lab: f.lab, papel: f.papel === 'rotulo' ? 'rotulo' : 'doc', copias: f.papel === 'rotulo' ? 'porCaixa' : 'uma', ordem: f.papel === 'rotulo' ? 1 : 2, ativo: true, quando: 'sempre', analise: '', criadoEm: nowISO(), criadoPorId: S.user.id, criadoPor: S.user.nome };
   const e = EFD.impresso(o); if (e.length) { console.error('Contrato EFD', e); S.fm._trava = 0; return lcErro('Não deu para anexar: ' + e[0] + '.'); }
-  try { await Data.col('sv2_impressos').add(o); Audit.log({ acao: 'kit_anexar', entidade: 'impresso', entidadeId: d.id, resumo: 'Anexou ' + d.nome + ' ao kit de ' + (o.lab || 'todos os laboratórios') }); lcFim(); aviso('Papel anexado ao kit.'); }
-  catch (er) { if (S.fm) S.fm._trava = 0; lcErro(svErro(er)); }
+  try {
+    for (const v of ktKitDe(f.lab).filter(x => x.lab === f.lab && ktPapel(x) === o.papel)) await Data.col('sv2_impressos').update(v.id, { ativo: false, alteradoEm: nowISO(), alteradoPor: S.user.nome });
+    await Data.col('sv2_impressos').add(o); Audit.log({ acao: 'kit_anexar', entidade: 'impresso', entidadeId: d.id, resumo: 'Anexou ' + d.nome + ' ao kit de ' + f.lab + ' (' + (o.papel === 'rotulo' ? 'rótulo' : 'custódia ou ficha') + ')' }); lcFim(); aviso('Papel anexado ao kit.');
+  } catch (er) { if (S.fm) S.fm._trava = 0; lcErro(svErro(er)); }
 }
 
 /* ---------- Papéis deste envio ---------- */
 function ktRemNome(k) { const p = k.split('|'); return fmtD(p[0]) + ' · ' + (p.slice(1).join('|') || 'sem laboratório'); }
-function ktPapItens(k, dados) {
-  const lab = k.split('|').slice(1).join('|'), l = coLote(k), ans = Array.from(new Set(l.map(c => c.analiseNome || c.sigla).filter(Boolean)));
-  const it = [{ id: KT_ROTULO, nome: 'Rótulo destinatário e remetente', quando: ktRotQuando(lab) }];
-  ktKitDe(lab).forEach(x => { const d = ktDoc(x.docId); if (!d || d.status === 'lixeira') return; if (x.analise && ans.indexOf(x.analise) < 0) return; it.push({ id: x.id, docId: d.id, nome: d.nome, quando: x.quando || 'sempre', copias: x.copias, d: d }); });
-  return it.filter(x => x.quando !== 'pedir' || (dados && dados.forcar && dados.forcar[x.id]));
+/* os papéis da remessa: o rótulo (modelo do Vértice ou o do sistema) e a custódia ou ficha */
+function ktPapItens(k) {
+  const lab = k.split('|').slice(1).join('|'), it = [], kit = ktKitDe(lab).filter(x => { const d = ktDoc(x.docId); return d && d.status !== 'lixeira'; });
+  const rot = kit.find(x => ktPapel(x) === 'rotulo');
+  if (rot) it.push({ id: rot.id, docId: rot.docId, nome: ktDoc(rot.docId).nome, papel: 'rotulo', copias: rot.copias, d: ktDoc(rot.docId) });
+  else it.push({ id: KT_ROTULO, nome: 'Rótulo destinatário e remetente', papel: 'rotulo' });
+  kit.filter(x => ktPapel(x) === 'doc').forEach(x => it.push({ id: x.id, docId: x.docId, nome: ktDoc(x.docId).nome, papel: 'doc', copias: x.copias, d: ktDoc(x.docId) }));
+  return it;
 }
 function ktPapCarrega(f, k) {
   const l = coLote(k), u = ktUltimo(k), ans = Array.from(new Set(l.map(c => c.analiseNome || c.sigla).filter(Boolean)));
   const pts = Array.from(new Set(l.map(c => coNome(c)).filter(x => x && x !== '—')));
   const d = u && u.dados ? u.dados : { amostras: String(l.length), caixas: '1', analise: ans.join(', '), pontos: pts.join(', '), obs: '', unid: ktUnidade(l) };
-  Object.assign(f, { kRem: k, amostras: d.amostras, caixas: d.caixas, analise: d.analise, pontos: d.pontos, obs: d.obs || '', unid: d.unid || ktUnidade(l), sel: {}, reimp: !!u, msg: '' });
-  const antes = u ? (u.itens || []).reduce((o, x) => { o[x.id] = true; return o; }, {}) : {};
-  ktPapItens(k, { forcar: antes }).forEach(x => { f.sel[x.id] = u ? !!antes[x.id] : x.quando === 'sempre'; });
+  Object.assign(f, { kRem: k, amostras: d.amostras, caixas: d.caixas, analise: d.analise, pontos: d.pontos, obs: d.obs || '', unid: d.unid || ktUnidade(l), sel: {}, fila: [], msg: '' });
+  ktPapItens(k).forEach(x => { f.sel[x.id] = !(x.id === KT_ROTULO && !ktTemEnd(ktInfo(k.split('|').slice(1).join('|')))); });
 }
 function ktPapAbre(ks, volta) {
   ks = (ks || []).filter(k => coLote(k).length); if (!ks.length) return;
-  lcAbrir({ k: 'ktPap', ks: ks, kRem: ks[0], sel: {}, unid: 'matriz' }, volta || null);
+  lcAbrir({ k: 'ktPap', ks: ks, kRem: ks[0], sel: {}, fila: [], unid: 'matriz' }, volta || null);
   ktPapCarrega(S.fm, ks[0]); S.fm.sujo = false; gvDesenha(true);
 }
+/* como cada papel sai: rótulo do sistema e PDF fixo imprimem aqui; planilha e Word abrem no Vértice com os dados da remessa */
+const ktComo = x => !x.d ? 'imprime aqui · uma folha por caixa' : x.d.status === 'obsoleto' ? 'obsoleto: não sai' : x.d.orig && x.d.orig.formato === 'xlsx' ? (typeof drPreenche === 'function' && drPreenche(x.d) ? 'abre no Vértice já preenchido' : 'abre no Vértice com os dados ao lado') : x.d.orig && x.d.orig.formato === 'docx' ? 'Word: baixa com os dados para copiar' : 'PDF: imprime aqui';
+const ktNoVertice = x => !!(x.d && x.d.orig && x.d.orig.formato === 'xlsx' && x.d.status !== 'obsoleto');
 LC_FORM.ktPap = f => {
-  const k = f.kRem, lab = k.split('|').slice(1).join('|'), it = ktPapItens(k, { forcar: f.sel }), i = ktInfo(lab), rem = ktRemetente(f.unid);
-  const box = x => { const on = !!f.sel[x.id], d = x.d, sub = x.id === KT_ROTULO ? (!ktTemEnd(i) ? 'falta o endereço do laboratório' : !ktRemOk(rem) ? 'falta o endereço da unidade (Administração › Empresa no EFClaudian)' : 'uma folha por caixa') : [ipFmtTxt(d), 'versão ' + d.rev, d.status === 'obsoleto' ? 'obsoleto: não imprime' : !d.pub ? 'abre no Vértice para preencher' : x.copias === 'porCaixa' ? 'uma por caixa' : Number(x.copias) > 1 ? x.copias + ' cópias' : ''].filter(Boolean).join(' · ');
-    return '<button type="button" class="fm-pki cb-ck' + (on ? ' on' : '') + '" data-act="kt-ck" data-id="' + esc(x.id) + '" aria-pressed="' + on + '"><span class="cb-box">' + (on ? ic('ok') : '') + '</span><span><b>' + esc(x.nome) + '</b><small>' + esc(sub) + '</small></span></button>'; };
-  const pedir = ktKitDe(lab).filter(x => x.quando === 'pedir' && !it.some(y => y.id === x.id) && ktDoc(x.docId));
+  const k = f.kRem, lab = k.split('|').slice(1).join('|'), it = ktPapItens(k), i = ktInfo(lab), sup = ktPodeCad();
+  it.forEach(x => { if (!(x.id in f.sel)) f.sel[x.id] = !(x.id === KT_ROTULO && !ktTemEnd(i)); }); /* papel anexado agora (ou que trocou o rótulo do sistema) já vem marcado */
+  const box = x => { const on = !!f.sel[x.id], semEnd = x.id === KT_ROTULO && !ktTemEnd(i), feito = f.fila && f.feitos && f.feitos[x.id];
+    return '<div class="kt-pr"><button type="button" class="fm-pki cb-ck' + (on ? ' on' : '') + '" data-act="kt-ck" data-id="' + esc(x.id) + '" aria-pressed="' + on + '"><span class="cb-box">' + (on ? ic('ok') : '') + '</span><span><b>' + esc(x.nome) + '</b><small>' + esc((feito ? 'aberto no Vértice · ' : '') + (semEnd ? 'falta o endereço do laboratório' : ktComo(x))) + '</small></span></button>' +
+      (semEnd && sup ? '<button type="button" class="bt lk" data-act="kt-end-aqui">' + ic('lapis') + 'Cadastrar endereço</button>' : '') + '</div>'; };
   let c = lcMsg();
   if (f.ks.length > 1) c += lcBl('Remessa', ddHTML('kt:rem', k, f.ks.map(x => [x, ktRemNome(x)])), f.ks.length + ' laboratórios neste envio');
-  if (f.reimp) c += lcAv('Já saíram papéis desta remessa. Os mesmos ficam marcados para reimprimir.');
   c += '<div class="fm-pk"><div class="fm-pkl co-pkl">' + it.map(box).join('') + '</div></div>';
-  if (pedir.length) c += '<div class="kt-ped">' + pedir.map(x => '<button type="button" class="bt lk" data-act="kt-pedir" data-id="' + esc(x.id) + '">' + ic('mais') + esc(ktDoc(x.docId).nome) + '</button>').join('') + '</div>';
-  c += '<p class="gv-h">Quer acrescentar algo na ficha? <small>opcional</small></p>' +
+  if (!it.some(x => x.papel === 'doc')) c += '<p class="ag-dc">Este laboratório não tem custódia nem ficha no kit.</p>';
+  if (sup) c += '<button type="button" class="bt lk kt-anx" data-act="kt-anexar-aqui">' + ic('mais') + 'Anexar papel deste laboratório</button>';
+  c += '<p class="gv-h">Dados que vão para o papel <small>opcional</small></p>' +
     '<div class="fm-g">' + lcBl('Amostras', lcIn('amostras', f.amostras, ' inputmode="numeric" maxlength="4"')) + lcBl('Caixas', lcIn('caixas', f.caixas, ' inputmode="numeric" maxlength="2"')) + '</div>' +
     '<div class="fm-g">' + lcBl('Análise', lcIn('analise', f.analise, ' maxlength="140"')) + lcBl('Pontos', lcIn('pontos', f.pontos, ' maxlength="300"')) + '</div>' +
     lcBl('Observação', lcTx('obs', f.obs, 'Ex.: urgência, pedido de cotação, contato')) +
     (((S.empresa || {}).unid || {}).filial ? lcBl('Remetente', ddHTML('kt:unid', f.unid, [['matriz', ktRemetente('matriz').nome], ['filial', ktRemetente('filial').nome]])) : '');
-  return { ico: 'impressora', sub: 'Remessa · ' + ktRemNome(k), titulo: 'Papéis deste envio', corpo: c, rodape: '<button type="button" class="bt" data-act="gv-fecha">Depois</button><span class="au-pesp"></span><button type="button" class="bt pr" data-act="kt-imprimir">' + ic('impressora') + 'Imprimir</button>' };
+  const prox = (f.fila || []).length ? it.find(x => x.id === f.fila[0]) : null;
+  return { ico: 'impressora', sub: 'Remessa · ' + ktRemNome(k), titulo: 'Papéis deste envio', corpo: c, rodape: '<button type="button" class="bt" data-act="gv-fecha">Depois</button><span class="au-pesp"></span><button type="button" class="bt pr" data-act="kt-imprimir">' + ic(prox ? 'abre' : 'impressora') + (prox ? 'Abrir o próximo no Vértice' : 'Imprimir') + '</button>' };
 };
+
 /* rótulo: A4 em pé, uma folha por caixa (port do fxEtiqueta do EFClaudian, com os endereços vindos do cadastro) */
 function ktRotuloHTML(lab, unid, caixas, amostras) {
   const i = ktInfo(lab) || {}, r = ktRemetente(unid), n = Math.max(1, Math.min(20, Number(caixas) || 1)), pags = [];
@@ -9095,30 +9185,46 @@ function ktImprimeHTML(html, titulo) {
     setTimeout(() => { try { window.print(); } catch {} document.body.classList.remove('au-imprimindo'); document.title = t0; const p2 = $('#kt-page'); if (p2) p2.remove(); ok(); }, 80);
   });
 }
+/* volta à janela dos papéis depois de anexar ou cadastrar o endereço (sem abrir camada nova) */
+function ktVoltaPap(fp) { S.fm = fp; fp._trava = 0; S.gvForm = true; gvAbrir(lcGaveta, true); }
+function ktDadosForm(f) { return { amostras: String(f.amostras || '').trim(), caixas: String(Number(String(f.caixas || '').trim() || 1)), analise: String(f.analise || '').trim(), pontos: String(f.pontos || '').trim(), obs: String(f.obs || '').trim(), unid: f.unid }; }
 async function ktImprimir() {
-  const f = S.fm; if (!f || f.k !== 'ktPap') return; const k = f.kRem, lab = k.split('|').slice(1).join('|'), it = ktPapItens(k, { forcar: f.sel }).filter(x => f.sel[x.id]);
+  const f = S.fm; if (!f || f.k !== 'ktPap') return; const k = f.kRem, lab = k.split('|').slice(1).join('|'), todos = ktPapItens(k);
+  /* "Abrir o próximo no Vértice": um papel do Vértice por vez (a janela de dentro mostra um só) */
+  if ((f.fila || []).length) { const idProx = f.fila.shift(), x = todos.find(y => y.id === idProx); f.feitos = Object.assign(f.feitos || {}, x ? { [x.id]: 1 } : {}); gvDesenha(true); if (x) await ktSaiUm(k, x, ktDadosForm(f)); if (!f.fila.length) lcFim(); return; }
+  const it = todos.filter(x => f.sel[x.id]);
   if (!it.length) return lcErro('Marque pelo menos um papel.');
   const caixas = Number(String(f.caixas || '').trim() || 1), amostras = String(f.amostras || '').trim();
   if (!(caixas >= 1 && caixas <= 20 && Number.isInteger(caixas))) return lcErro('Caixas: de 1 a 20.');
   if (amostras && !/^\d{1,4}$/.test(amostras)) return lcErro('Amostras: só números.');
-  const rot = it.find(x => x.id === KT_ROTULO);
-  if (rot && !ktTemEnd(ktInfo(lab))) return lcErro('Falta o endereço do laboratório para o rótulo. Desmarque o rótulo ou cadastre o endereço (Envio › Laboratórios).');
-  if (rot && !ktRemOk(ktRemetente(f.unid))) return lcErro('Falta o endereço da unidade (remetente). Cadastre no EFClaudian: Administração › Empresa.');
-  const obs = it.filter(x => x.d && x.d.status === 'obsoleto'); if (obs.length) return lcErro('Obsoleto não imprime: ' + obs[0].nome + '. Desmarque ou anexe a versão vigente ao kit.');
+  if (it.some(x => x.id === KT_ROTULO) && !ktTemEnd(ktInfo(lab))) return lcErro('Falta o endereço do laboratório para o rótulo do sistema. Desmarque o rótulo, cadastre o endereço ou anexe o modelo do rótulo feito no Vértice.');
+  if (it.some(x => x.id === KT_ROTULO) && !ktRemOk(ktRemetente(f.unid))) return lcErro('Falta o endereço da unidade (remetente). Cadastre em Administração › Empresa.');
+  const obs = it.filter(x => x.d && x.d.status === 'obsoleto'); if (obs.length) return lcErro('Obsoleto não sai: ' + obs[0].nome + '. Anexe a versão vigente ao kit.');
   if (!lcTravar()) return;
-  const dados = { amostras: amostras, caixas: String(caixas), analise: String(f.analise || '').trim(), pontos: String(f.pontos || '').trim(), obs: String(f.obs || '').trim(), unid: f.unid };
+  const dados = ktDadosForm(f);
   const reg = { k: k, envio: k.split('|')[0], lab: lab, itens: it.map(x => ({ id: x.id, docId: x.docId || '', nome: x.nome, rev: x.d ? x.d.rev : null })), dados: dados, porId: S.user.id, porNome: S.user.nome, em: nowISO() };
-  try { await Data.col('sv2_envio_imp').set(ktImpId(k), reg); } catch (e) { console.warn(e); }
+  try { await Promise.race([Data.col('sv2_envio_imp').set(ktImpId(k), reg), new Promise(r => setTimeout(r, 4000))]); } catch (e) { console.warn(e); }
   Audit.log({ acao: 'imprimir_envio', entidade: 'remessa', entidadeId: k, resumo: 'Papéis do envio ' + ktRemNome(k) + ': ' + it.map(x => x.nome + (x.d ? ' v' + x.d.rev : '')).join(', ') });
-  lcFim();
-  if (rot) await ktImprimeHTML(ktRotuloHTML(lab, f.unid, caixas, amostras), 'Rótulo ' + lab + ' ' + k.split('|')[0]);
-  for (const x of it.filter(y => y.d)) {
-    const n = x.copias === 'porCaixa' ? caixas : Number(x.copias) || 1;
-    if (!x.d.pub) { await ipNoVertice(x.d.id, typeof ptResumoEnvio === 'function' ? ptResumoEnvio(k, dados, x.d) : null); continue; }
-    for (let c = 0; c < n; c++) { await ipImprimir(x.d.id); await new Promise(r => setTimeout(r, 400)); }
-  }
-  aviso('Papéis enviados para a impressão.');
+  const aqui = it.filter(x => !ktNoVertice(x)), vert = it.filter(ktNoVertice);
+  for (const x of aqui) await ktSaiUm(k, x, dados);
+  if (!vert.length) { lcFim(); aviso('Papéis enviados para a impressão.'); return; }
+  f._trava = 0; f.fila = vert.slice(1).map(x => x.id); f.feitos = { [vert[0].id]: 1 }; f.sujo = false; gvDesenha(true);
+  await ktSaiUm(k, vert[0], dados);
+  if (!f.fila.length) lcFim(); else aviso('Imprima no Vértice e volte aqui: o próximo papel abre no botão "Abrir o próximo no Vértice".');
 }
+/* um papel: rótulo do sistema, PDF, Word ou planilha no Vértice (preenchida, ou com os dados ao lado) */
+async function ktSaiUm(k, x, dados) {
+  const lab = k.split('|').slice(1).join('|'), caixas = Math.max(1, Number(dados.caixas) || 1);
+  if (x.id === KT_ROTULO) { await ktImprimeHTML(ktRotuloHTML(lab, dados.unid, caixas, dados.amostras), 'Rótulo ' + lab + ' ' + k.split('|')[0]); if (typeof drGrava === 'function') drGrava({ k: k, item: x.id, nome: x.nome, tipo: 'impresso' }); return; }
+  const d = x.d; if (!d) return;
+  if (ktNoVertice(x)) { if (typeof drPreenche === 'function' && drPreenche(d)) await drPedido(k, x, dados); else await ipNoVertice(d.id, typeof ptResumoEnvio === 'function' ? ptResumoEnvio(k, dados, d) : null); return; }
+  if (d.orig && d.orig.formato === 'docx') { await ipNoVertice(d.id, null); return; }
+  if (!d.pub) return aviso('Sem cópia em PDF: ' + d.nome + '.', 'erro');
+  const n = x.copias === 'porCaixa' ? caixas : Number(x.copias) || 1;
+  for (let c = 0; c < n; c++) { await ipImprimir(d.id); await new Promise(r => setTimeout(r, 400)); }
+  if (typeof drGrava === 'function') drGrava({ k: k, item: x.id, nome: x.nome, tipo: 'impresso', docId: d.id, rev: d.rev });
+}
+
 /* depois de gravar o envio: abre os papéis (como o EFClaudian abre a etiqueta) */
 function ktDepoisEnvio(ks) { setTimeout(() => ktPapAbre(ks), 350); }
 /* na gaveta da remessa: o que já saiu e o resumo (para preencher a ficha no Excel) */
@@ -9142,12 +9248,206 @@ document.addEventListener('click', ev => {
   const a = t.getAttribute('data-act'), f = S.fm, vol = S.gv && !S.gvForm ? S.gv : null, volta = vol ? () => gvAbrir(vol) : null;
   if (a === 'kt-end') { if (!ktPodeCad()) return; const i = ktInfo(S._ktLab) || {}; lcAbrir(Object.assign({ k: 'ktEnd', lab: S._ktLab }, { nome: i.nome || '', end: i.end || '', bairro: i.bairro || '', cidade: i.cidade || '', uf: i.uf || '', cep: i.cep || '', contato: i.contato || '', conteudo: i.conteudo || '' }), volta); }
   else if (a === 'kt-end-ok') ktEndOk();
-  else if (a === 'kt-anexar') { if (!ktPodeCad()) return; lcAbrir({ k: 'ktAnexar', lab: S._ktLab, docId: '', quando: 'sempre', copias: 'uma', analise: '', todos: '0' }, volta); }
+  else if (a === 'kt-anexar') { if (!ktPodeCad()) return; lcAbrir({ k: 'ktAnexar', lab: S._ktLab, docId: '', papel: 'doc' }, volta); }
+  else if (a === 'kt-anexar-aqui' && f) { if (!ktPodeCad()) return; const fp = f, lab = fp.kRem.split('|').slice(1).join('|'); lcAbrir({ k: 'ktAnexar', lab: lab, docId: '', papel: 'doc' }, () => ktVoltaPap(fp)); }
+  else if (a === 'kt-end-aqui' && f) { if (!ktPodeCad()) return; const fp = f, lab = fp.kRem.split('|').slice(1).join('|'), i = ktInfo(lab) || {}; lcAbrir({ k: 'ktEnd', lab: lab, nome: i.nome || '', end: i.end || '', bairro: i.bairro || '', cidade: i.cidade || '', uf: i.uf || '', cep: i.cep || '', contato: i.contato || '', conteudo: i.conteudo || '' }, () => { fp.sel[KT_ROTULO] = ktTemEnd(ktInfo(lab)); ktVoltaPap(fp); }); }
+  else if (a === 'kt-tira') ktTira(t.getAttribute('data-id'));
   else if (a === 'kt-anexar-ok') ktAnexarOk();
   else if (a === 'kt-ck' && f) { const id = t.getAttribute('data-id'); f.sel[id] = !f.sel[id]; f.sujo = true; gvDesenha(true); }
-  else if (a === 'kt-pedir' && f) { f.sel[t.getAttribute('data-id')] = true; f.sujo = true; gvDesenha(true); }
   else if (a === 'kt-imprimir') ktImprimir();
   else if (a === 'kt-pap') { if (!coPode()) return; ktPapAbre([t.getAttribute('data-k')], volta); }
+});
+
+/* ===== remdocs.js ===== */
+/* EFCwork · remdocs.js — Documentos da remessa (v0.6.33). Prefixo: dr (o rd já é do Relatório de documentos).
+   Pedidos do Elias (20/11 22:28, 23:05, 23:44 e 23:52): cada laboratório tem o rótulo do endereço (modelo dele, feito no Vértice;
+   sem modelo, o rótulo do sistema) e a cadeia de custódia OU a ficha. Em "Papéis deste envio" (kit.js) ele marca o que sai; a planilha
+   abre no Vértice com os dados da remessa (já preenchida se tiver campos efc_ marcados), que é o jeito mais preciso.
+   - Aqui: a seção "Documentos da remessa" na gaveta (situação de cada papel), o pedido e a resposta com o Vértice (Ponte 2 dele) e a
+     via assinada (foto reduzida ou PDF) na nuvem: sv2_rem_docs (o registro) e sv2_rem_arq (o arquivo, lido só ao abrir).
+   - Revisor novo (20/11): a resposta só sai da caixa depois de gravada; sem internet não prende; arquivo e registro em lote; duas abas
+     não se atrapalham (navigator.locks e leitura na hora); o pedido leva a versão do modelo.
+   - Quem faz: quem tem acesso às Coletas e lança (coPode); regra [R6] no Firestore. Nada se apaga: tirar um anexo é marcar "removido". */
+Object.assign(S, { drDocs: [] });
+Object.assign(ICS, {
+  clipe: '<path d="M21 11.5l-8.6 8.6a5 5 0 0 1-7.1-7.1l8.6-8.6a3.3 3.3 0 0 1 4.7 4.7l-8.6 8.6a1.7 1.7 0 0 1-2.4-2.4l8-8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>',
+  assina: '<path d="M3 20h18M5 16l9.5-9.5 3 3L8 19H5v-3zM13 8l3 3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>'
+});
+const DR_ARQ_MAX = 900000, DR_PDF_MAX = 650000, DR_PEND = 'efcwork-dr-pedidos';
+
+CS_CARGAS.push(() => {
+  if (!coVe()) return;
+  csOuve('sv2_rem_docs', l => { S.drDocs = l || []; if (S.gv) gvDesenha(); }, { order: 'em', limit: 800 });
+  if (ptTem() && !S._drOuve) { S._drOuve = true; EFDPonte.ouvir(PT_APP, m => { if (m && m.oQue === 'resposta') drRespostas(); }); setTimeout(drRespostas, 1800); }
+});
+
+/* ---------- os papéis da remessa e em que pé estão ---------- */
+const drLab = k => k.split('|').slice(1).join('|');
+const drReg = (k, id) => S.drDocs.filter(x => x.k === k && x.item === id && !x.removido).sort((a, b) => String(b.em).localeCompare(String(a.em)));
+const drPreenche = d => !!(d && d.pub && d.pub.preenche === 'docs' && (d.pub.campos || []).length && d.orig && d.orig.formato === 'xlsx');
+const drItens = k => ktPapItens(k).map(x => Object.assign({}, x, { exige: true }));
+function drSit(k, x) {
+  const r = drReg(k, x.id), ax = r.filter(y => y.tipo === 'foto' || y.tipo === 'pdf'), pr = r.find(y => y.tipo === 'preenchido'), im = r.find(y => y.tipo === 'impresso' || y.tipo === 'aberto');
+  const u = ktUltimo(k), noKit = u && (u.itens || []).some(y => y.id === x.id);
+  if (ax.length) return { t: x.papel === 'rotulo' ? 'Foto anexada' : 'Via assinada anexada', c: 'ok', n: 3, em: ax[0].em, por: ax[0].porNome, ax: ax };
+  if (pr) return { t: 'Preenchido no Vértice', c: 'ok', n: 2, em: pr.em, por: pr.porNome, ax: [], pr: pr };
+  if (im || noKit) return { t: im && im.tipo === 'aberto' ? 'Aberto no Vértice' : 'Impresso', c: '', n: 1, em: im ? im.em : u.em, por: im ? im.porNome : u.porNome, ax: [] };
+  return { t: 'Falta', c: 'wa', n: 0, ax: [] };
+}
+const drFonte = x => typeof ktComo === 'function' ? ktComo(x) : '';
+const drQuando = s => s.em ? fmtDT(s.em) + (s.por ? ' · ' + s.por : '') : '';
+
+/* ---------- a seção na gaveta da remessa: OPÇÃO 2 aprovada (21/11, ITEM 178): etapas por papel ---------- */
+function drSecao(k) {
+  const it = drItens(k), pode = coPode();
+  const l = it.map(x => Object.assign({}, x, { s: drSit(k, x) }));
+  const prontos = l.filter(x => x.s.n >= 1).length, exig = l.length, conta = exig ? [prontos, exig].join(' de ') : '', pct = String(exig ? Math.round(prontos / exig * 100) : 100);
+  let c = '<div class="dr">';
+  const tit = '<p class="gv-h dr-h">Documentos da remessa' + (conta ? ' <small>' + esc(conta) + ' prontos</small>' : '') + '</p>';
+  if (!l.length) return tit + '<p class="co-nada">Este laboratório não pede papéis.</p></div>';
+  const acoes = x => pode ? '<span class="dr-ac">' + drBtImp(k, x) + drBtAnx(k, x) + '</span>' : '';
+  const anexos = x => x.s.ax.length ? '<span class="dr-ax">' + x.s.ax.map(a => '<button type="button" class="dr-axb" data-act="dr-ver" data-id="' + esc(a.id) + '" title="Ver ' + esc(a.nome || '') + '">' + ic(a.tipo === 'pdf' ? 'doc' : 'imagem') + '<span>' + esc(fmtDT(a.em).slice(0, 5)) + '</span></button>').join('') + '</span>' : '';
+  c += tit + '<div class="dr-l">' + l.map(x => { const p = !ktNoVertice(x) ? ['Imprimir', 'Via anexada'] : ['Abrir no Vértice', 'Imprimir', 'Via assinada'], at = x.s.n === 3 ? p.length : x.s.t === 'Aberto no Vértice' ? 1 : x.s.n >= 1 ? p.length - 1 : 0;
+    return '<div class="dr-i" data-sit="' + esc(x.s.t) + '" title="' + esc(x.s.t + (x.s.em ? ' · ' + drQuando(x.s) : '')) + '"><span class="dr-t"><b>' + esc(x.nome) + '</b><span class="dr-et">' + p.map((e, n) => '<i class="' + (n < at ? 'on' : '') + '">' + esc(e) + '</i>').join('') + '</span>' + anexos(x) + '</span>' + acoes(x) + '</div>'; }).join('') + '</div>';
+  return c + '</div>';
+}
+function drBtImp(k, x) {
+  const v = typeof ktNoVertice === 'function' && ktNoVertice(x), t = x.id === KT_ROTULO ? 'Imprimir o rótulo' : v ? 'Abrir no Vértice com os dados da remessa' : 'Imprimir';
+  return '<button type="button" class="bt ic-so" data-act="dr-imp" data-k="' + esc(k) + '" data-id="' + esc(x.id) + '" title="' + esc(t) + '" aria-label="' + esc(t) + '">' + ic(v ? 'assina' : 'impressora') + '</button>';
+}
+const drBtAnx = (k, x) => '<label class="bt ic-so" title="Anexar a via assinada (foto ou PDF)" aria-label="Anexar a via assinada">' + ic('clipe') + '<input type="file" accept="image/*,application/pdf" data-drfile data-k="' + esc(k) + '" data-id="' + esc(x.id) + '" hidden></label>';
+
+/* ---------- sair um papel pela seção (o mesmo caminho da janela Papéis deste envio) ---------- */
+function drDadosEnvio(k) {
+  const u = ktUltimo(k); if (u && u.dados) return u.dados;
+  const l = coLote(k), ans = Array.from(new Set(l.map(c => c.analiseNome || c.sigla).filter(Boolean))), pts = Array.from(new Set(l.map(c => coNome(c)).filter(x => x && x !== '—')));
+  return { amostras: String(l.length), caixas: '1', analise: ans.join(', '), pontos: pts.join(', '), obs: '', unid: ktUnidade(l) };
+}
+/* só o que o documento tem marcado: o Vértice recusa dado sem campo (campo-desconhecido) */
+function drSoCampos(o, campos) {
+  const ch = new Set((campos || []).map(c => c.chave)), lista = new Set((campos || []).filter(c => /\[\]\./.test(c.chave)).map(c => c.chave.split('.')[0])), r = {};
+  Object.keys(o).forEach(k => { if (ch.has(k) || lista.has(k)) r[k] = o[k]; });
+  return r;
+}
+async function drImp(k, id) {
+  if (!coPode()) return; const x = drItens(k).find(y => y.id === id); if (!x) return;
+  const dd = drDadosEnvio(k), lab = drLab(k);
+  if (x.id === KT_ROTULO && !ktTemEnd(ktInfo(lab))) return aviso('Falta o endereço do laboratório (Envio › Laboratórios), ou anexe o modelo do rótulo feito no Vértice.', 'erro');
+  if (x.id === KT_ROTULO && !ktRemOk(ktRemetente(dd.unid))) return aviso('Falta o endereço da unidade (remetente): Administração › Empresa.', 'erro');
+  if (x.d && x.d.status === 'obsoleto') return aviso('Obsoleto não sai: ' + x.d.nome + '. Anexe a versão vigente ao kit.', 'erro');
+  await ktSaiUm(k, x, dd);
+  if (ktNoVertice(x) && !drPreenche(x.d)) drGrava({ k: k, item: x.id, nome: x.nome, tipo: 'aberto', docId: x.d.id, rev: x.d.rev });
+}
+
+/* ---------- pedido e resposta com o Vértice (caixa de troca do aparelho) ---------- */
+const DR_VALIDADE = 30 * 864e5;
+const drPendLe = () => { try { return JSON.parse(localStorage.getItem(DR_PEND) || '{}') || {}; } catch { return {}; } };
+/* lê, muda e grava na hora (duas abas não apagam o pedido uma da outra); tira o que passou de 30 dias */
+function drPendMuda(fn) { const p = drPendLe(), r = fn(p); Object.keys(p).forEach(id => { if (Date.now() - Date.parse(p[id].em || 0) > DR_VALIDADE) delete p[id]; }); try { localStorage.setItem(DR_PEND, JSON.stringify(p)); } catch {} return r; }
+const drTrava = f => navigator.locks && navigator.locks.request ? navigator.locks.request('efcwork-dr', f) : f();
+async function drPedido(k, x, dd, tent) {
+  if (!ptTem()) return aviso('Este navegador não tem a caixa de troca com o Vértice: use Abrir no Vértice e preencha lá.', 'erro');
+  const d = x.d, dados = drSoCampos(ptResumoEnvio(k, dd, d), d.pub.campos);
+  const copias = Math.max(1, Math.min(20, x.copias === 'porCaixa' ? Number(dd.caixas) || 1 : Number(x.copias) || 1));
+  const e = EFD.pedido({ v: 1, pid: 'p00000001', docId: d.id, de: 'efcwork', copias: copias, criadoEm: nowISO(), dados: dados });
+  if (e.length) { console.error('pedido', e); return aviso('Não deu para montar o pedido ao Vértice: ' + e[0] + '.', 'erro'); }
+  try {
+    let pidA = '';
+    if (tent) pidA = await EFDPonte.por({ de: PT_APP, para: 'docs', tipo: 'abrir', original: await ipArquivo(d, 'orig'), nomeArquivo: d.orig.nomeArquivo || ipNomeArq(d, 'xlsx'), docId: d.id });
+    /* rev: o Vértice confere com a versão compartilhada daqui e recusa outra (controle de documentos) */
+    const pid = await EFDPonte.por({ de: PT_APP, para: 'docs', tipo: 'pedido', docId: d.id, copias: copias, dados: dados, rev: d.rev });
+    drPendMuda(p => { p[pid] = { k: k, item: x.id, nome: x.nome, docId: d.id, rev: d.rev, copias: copias, dd: dd, dados: dados, tent: tent || 0, em: nowISO() }; });
+    jnAbrir('docs', pidA ? '#/abrir/' + pidA : '#/pedido/' + pid);
+    return pid;
+  } catch (er) { console.error(er); aviso('Não deu para falar com o Vértice: ' + (er.message || er) + '.', 'erro'); }
+}
+const DR_ERRO = { 'campo-desconhecido': 'o modelo no Vértice deste aparelho não tem os campos que o Cwork mandou. Compartilhe o modelo de novo a partir do Vértice', 'nao-cabe': 'passaria do limite de folhas do Vértice', 'revisao-mudou': 'a versão do modelo no Vértice deste aparelho é outra da que está no Cwork. Compartilhe de novo a partir do Vértice' };
+/* a resposta só sai da caixa DEPOIS de gravada (ou guardada na fila da nuvem); quem não lança deixa para quem lança */
+function drRespostas() {
+  if (!ptTem() || !S.user || !coPode() || S._drOcup) return; S._drOcup = true;
+  return drTrava(async () => {
+    const l = (await EFDPonte.esperando(PT_APP)).filter(i => i.tipo === 'resposta' && i.de === 'docs');
+    for (const i of l) {
+      const q = drPendLe()[i.pedido];
+      if (!q) { await EFDPonte.apagar(i.pid); continue; }
+      if (i.ok) {
+        const id = 'pre_' + i.pedido, dj = JSON.stringify(q.dados || {});
+        const ok = S.drDocs.some(x => x.id === id) || await drGrava({ k: q.k, item: q.item, nome: q.nome, tipo: 'preenchido', docId: q.docId, rev: q.rev, paginas: Number(i.paginas) || 0, copias: q.copias, dadosJson: dj.length <= 200000 ? dj : '' }, id);
+        if (!ok) continue;
+        aviso('Preenchido no Vértice: ' + q.nome + '.');
+      } else if (i.erro === 'sem-documento' && !q.tent) {
+        const x = drItens(q.k).find(y => y.id === q.item);
+        if (x && x.d) { aviso('O Vértice deste aparelho ainda não tinha o modelo de ' + q.nome + ': levei o modelo. Toque em "Ver e imprimir" quando ele avisar.'); await drPedido(q.k, x, q.dd, 1); }
+      } else aviso('Não deu para preencher ' + q.nome + ': ' + (DR_ERRO[i.erro] || i.erro || 'o Vértice recusou') + '.', 'erro');
+      await EFDPonte.apagar(i.pid); drPendMuda(p => { delete p[i.pedido]; });
+    }
+  }).catch(e => console.warn('dr', e)).finally(() => { S._drOcup = false; });
+}
+
+/* ---------- registro na nuvem ---------- */
+/* sem internet a gravação fica na fila do aparelho e vai quando a rede voltar: não prende a tela */
+const drEspera = pr => Promise.race([pr.then(() => true), new Promise(r => setTimeout(() => r(true), 5000))]);
+async function drGrava(o, id) {
+  const r = Object.assign({ v: 1, removido: false, porId: S.user.id, porNome: S.user.nome, em: nowISO() }, o);
+  try { await drEspera(Data.col('sv2_rem_docs').set(id || uid(), r)); Audit.log({ acao: 'remessa_doc', entidade: 'remessa', entidadeId: r.k, resumo: ({ impresso: 'Imprimiu ', aberto: 'Abriu no Vértice ', preenchido: 'Preencheu no Vértice ', foto: 'Anexou a foto de ', pdf: 'Anexou o PDF de ' }[r.tipo] || '') + r.nome + ' · ' + ktRemNome(r.k) }); return true; }
+  catch (e) { aviso('Não deu para guardar na nuvem: ' + svErro(e), 'erro'); return false; }
+}
+/* via assinada: foto reduzida (como o cupom, mais nítida) ou PDF pequeno */
+function drReduz(arq) {
+  return new Promise((ok, erro) => {
+    const r = new FileReader(); r.onerror = () => erro(new Error('Não deu para ler a foto.'));
+    r.onload = () => { const im = new Image(); im.onerror = () => erro(new Error('O arquivo não é uma imagem.')); im.onload = () => {
+      let q = .8, lado = 2000, url = '';
+      for (let n = 0; n < 8; n++) { const f = Math.min(1, lado / Math.max(im.width, im.height)), cv = document.createElement('canvas'); cv.width = Math.round(im.width * f); cv.height = Math.round(im.height * f); cv.getContext('2d').drawImage(im, 0, 0, cv.width, cv.height); url = cv.toDataURL('image/jpeg', q); if (url.length < DR_ARQ_MAX - 20000) break; lado *= .85; q -= .05; }
+      url.length < DR_ARQ_MAX ? ok(url) : erro(new Error('A foto ficou grande demais.')); }; im.src = r.result; };
+    r.readAsDataURL(arq);
+  });
+}
+/* o arquivo e o registro vão juntos (lote): ou entram os dois, ou nenhum */
+async function drAnexa(k, id, arq) {
+  if (!coPode() || !arq) return; const x = drItens(k).find(y => y.id === id); if (!x) return;
+  const pdf = /pdf$/i.test(arq.type) || /\.pdf$/i.test(arq.name);
+  try {
+    let b64;
+    if (pdf) { if (arq.size > DR_PDF_MAX) return aviso('O PDF tem ' + ipTam(arq.size) + ' e o limite é ' + ipTam(DR_PDF_MAX) + '. Tire uma foto da via assinada ou digitalize com menos resolução.', 'erro'); b64 = await new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(String(r.result)); r.onerror = () => no(new Error('Não deu para ler o PDF.')); r.readAsDataURL(arq); }); if (!/^data:application\/pdf;base64,/.test(b64)) return aviso('O arquivo não é um PDF.', 'erro'); }
+    else b64 = await drReduz(arq);
+    aviso('Guardando na nuvem…');
+    const aid = Data.novoId('sv2_rem_arq'), rid = Data.novoId('sv2_rem_docs'), ts = nowISO();
+    const reg = { v: 1, removido: false, porId: S.user.id, porNome: S.user.nome, em: ts, k: k, item: x.id, nome: x.nome, tipo: pdf ? 'pdf' : 'foto', arqId: aid, bytes: b64.length };
+    await drEspera(Data.lote([{ tipo: 'set', col: 'sv2_rem_arq', id: aid, dados: { b64: b64, porId: S.user.id, em: ts } }, { tipo: 'set', col: 'sv2_rem_docs', id: rid, dados: reg }]));
+    DR_ARQ[aid] = b64; Audit.log({ acao: 'remessa_doc', entidade: 'remessa', entidadeId: k, resumo: 'Anexou ' + (pdf ? 'o PDF' : 'a foto') + ' de ' + x.nome + ' · ' + ktRemNome(k) });
+    aviso('Anexado à remessa: ' + x.nome + '.');
+  } catch (e) { aviso(e.message || svErro(e), 'erro'); }
+}
+const DR_ARQ = {};
+function drArq(aid) { if (DR_ARQ[aid]) return Promise.resolve(DR_ARQ[aid]); return Data.col('sv2_rem_arq').get(aid).then(d => { const b = (d && d.b64) || ''; if (b) DR_ARQ[aid] = b; return b; }); }
+async function drVer(id) {
+  const r = S.drDocs.find(x => x.id === id); if (!r) return;
+  let b; try { b = await drArq(r.arqId); } catch (e) { return aviso(svErro(e), 'erro'); }
+  if (!b) return aviso('O arquivo não está na nuvem (ou ainda está subindo).', 'erro');
+  const tira = r.porId === S.user.id || isSup(S.user) || isPrincipal(S.user);
+  if (r.tipo === 'pdf') { try { const bin = atob(b.split(',')[1] || ''), u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i); return ipAbrirFora(URL.createObjectURL(new Blob([u8], { type: 'application/pdf' })), r.nome + '.pdf'); } catch (e) { return aviso('O PDF guardado está com defeito.', 'erro'); } }
+  if (!imgSrc(b)) return aviso('Não foi possível abrir a foto.', 'erro');
+  const d = document.createElement('div'); d.id = 'co-fv'; d.className = 'co-fv dr-fv';
+  d.innerHTML = '<img src="' + imgSrc(b) + '" alt="' + esc(r.nome) + '"><span class="dr-fvt">' + esc(r.nome + ' · ' + fmtDT(r.em) + ' · ' + (r.porNome || '')) + '</span><span class="dr-fva">' + (tira ? '<button type="button" class="bt ic-so" data-act="dr-tira" data-id="' + esc(r.id) + '" title="Tirar da remessa" aria-label="Tirar da remessa">' + ic('lixo') + '</button>' : '') + '<button type="button" class="bt ic-so" data-act="co-fv-x" aria-label="Fechar">' + ic('x') + '</button></span>';
+  document.body.appendChild(d); csCamadaAbre('foto', () => { const x = $('#co-fv'); if (x) x.remove(); });
+}
+async function drTira(id) {
+  const r = S.drDocs.find(x => x.id === id); if (!r || r.removido || !(r.porId === S.user.id || isSup(S.user) || isPrincipal(S.user))) return;
+  try { await drEspera(Data.col('sv2_rem_docs').update(id, { removido: true, removidoEm: nowISO(), removidoPor: S.user.nome, removidoPorId: S.user.id })); Audit.log({ acao: 'remessa_doc_tirar', entidade: 'remessa', entidadeId: r.k, resumo: 'Tirou ' + (r.tipo === 'pdf' ? 'o PDF' : 'a foto') + ' de ' + r.nome + ' · ' + ktRemNome(r.k) }); history.back(); aviso('Tirado da remessa.'); }
+  catch (e) { aviso(svErro(e), 'erro'); }
+}
+
+document.addEventListener('click', ev => {
+  const t = ev.target.closest && ev.target.closest('[data-act^="dr-"]'); if (!t) return;
+  const a = t.getAttribute('data-act');
+  if (a === 'dr-imp') drImp(t.getAttribute('data-k'), t.getAttribute('data-id'));
+  else if (a === 'dr-ver') drVer(t.getAttribute('data-id'));
+  else if (a === 'dr-tira') drTira(t.getAttribute('data-id'));
+});
+document.addEventListener('change', ev => {
+  const t = ev.target; if (!t || !t.hasAttribute || !t.hasAttribute('data-drfile')) return;
+  const f = t.files && t.files[0]; t.value = ''; drAnexa(t.getAttribute('data-k'), t.getAttribute('data-id'), f);
 });
 
 /* ===== fotoed.js ===== */
@@ -10023,9 +10323,9 @@ async function apNovoOk() {
     fotos.forEach((d, i) => { S._apFotos[ids[i]] = d; S._apFotoDoc[ids[i]] = Object.assign({ base: '', marcas: [], marcadoPor: '', marcadoEm: '' }, apMkDoc(f, i)); Data.col('sv2_fotos').set(ids[i], Object.assign({ refTipo: 'apont', refId: id, papel: 'antes', dataUrl: d, criadoEm: ts, porId: u.id }, apMkDoc(f, i))).catch(er => console.error('foto apont', er)); });
     const sups = supsOf(u).filter(x => x !== u.id);
     const txt = (o.obs || 'Sem observação') + ' · por ' + u.nome + (o.comunicado ? ' · encarregado avisado' : ' · encarregado NÃO avisado');
-    if (sups.length && f.grav === 'urgente') Notif.send({ nivel: 'critico', titulo: 'Apontamento URGENTE: ' + c[1] + ' — ' + setor, texto: txt, para: sups, refTipo: 'apont', refId: id });
-    else if (sups.length && f.grav === 'grave') Notif.send({ nivel: 'aviso', titulo: 'Apontamento grave: ' + c[1] + ' — ' + setor, texto: txt, para: sups, refTipo: 'apont', refId: id });
-    Audit.log({ acao: 'apontamento', entidade: 'apontamento', entidadeId: id, resumo: 'Registrou apontamento (' + g[1] + '): ' + c[1] + ' em ' + setor + (o.obs ? ' — ' + o.obs : ''), depois: { categoria: c[1], setor: setor, gravidade: g[1], origem: o.origem, fotos: ids.length } });
+    if (sups.length && f.grav === 'urgente') Notif.send({ nivel: 'critico', titulo: 'Apontamento URGENTE: ' + c[1] + ' · ' + setor, texto: txt, para: sups, refTipo: 'apont', refId: id });
+    else if (sups.length && f.grav === 'grave') Notif.send({ nivel: 'aviso', titulo: 'Apontamento grave: ' + c[1] + ' · ' + setor, texto: txt, para: sups, refTipo: 'apont', refId: id });
+    Audit.log({ acao: 'apontamento', entidade: 'apontamento', entidadeId: id, resumo: 'Registrou apontamento (' + g[1] + '): ' + c[1] + ' em ' + setor + (o.obs ? ': ' + o.obs : ''), depois: { categoria: c[1], setor: setor, gravidade: g[1], origem: o.origem, fotos: ids.length } });
     lcFim(); aviso('Apontamento enviado.' + (f.grav === 'urgente' || f.grav === 'grave' ? ' O seu superior foi avisado.' : ''));
   } catch (e) { f._trava = 0; lcErro(svErro(e)); }
 }
@@ -14151,16 +14451,36 @@ function enArte(c, escuro) {
 /* v0.6.14 (Modelo 4 · Pólen, escolhido em 13/11/2026): uma linha diz o que é o app; entra palavra por palavra saindo do desfoque */
 const EN_DIZ = 'Coletas, inspeções, documentos e almoxarifado num lugar só.';
 const enDiz = () => '<p class="en-diz"><small>Qualidade da fazenda</small><b>' + EN_DIZ.split(' ').map((w, i) => '<span style="--i:' + i + '">' + esc(w) + '</span>').join(' ') + '</b></p>';
+/* v0.6.29 (varredura S2 e S3): "Esqueci a senha" manda o link do Firebase para o e-mail cadastrado; a pessoa nova cria
+   a própria senha no primeiro acesso (precisaCompletar, gravado pelo cadastro de Pessoas). As duas telas usam a mesma caixa do Entrar. */
+const enTrocaPendente = () => !!S.user && S.user.precisaCompletar === true;
+const enSenhaCampo = (id, auto, ver) => '<span class="en-sen"><input id="' + esc(id) + '" type="password" autocomplete="' + esc(auto) + '" maxlength="40" required>' + (ver ? '<button type="button" class="bt ic-so" data-act="en-ver" aria-label="Mostrar a senha">' + ic('olho') + '</button>' : '') + '</span>';
+function enFormRecup() {
+  return '<h2>Esqueci a senha</h2><p>O link para criar uma senha nova vai para o e-mail cadastrado em Meu perfil.</p>' +
+    '<form class="en-form" data-form="en-recup" novalidate>' +
+    '<label class="cp">Usuário ou e-mail<input id="en-rlogin" autocomplete="username" autocapitalize="none" value="' + esc(S._enRlogin || '') + '" required></label>' +
+    '<p class="en-msg" id="en-msg" role="alert"></p><div class="en-bts"><button type="button" class="bt en-bt" data-act="en-voltar">Voltar</button><button class="bt pr en-bt" type="submit">Enviar o link</button></div></form>';
+}
+function enFormTrocar() {
+  const nome = String(S.user.nome || '').split(/\s+/)[0];
+  return '<h2>Crie a sua senha</h2><p>' + (nome ? 'Olá, ' + esc(nome) + '. ' : '') + 'A senha que você recebeu vale só para o primeiro acesso.</p>' +
+    '<form class="en-form" data-form="en-trocar" novalidate>' +
+    '<label class="cp">Senha nova' + enSenhaCampo('en-senha', 'new-password', true) + '<small>No mínimo ' + esc(SENHA_MIN) + ' caracteres.</small></label>' +
+    '<label class="cp">Repita a senha nova' + enSenhaCampo('en-senha2', 'new-password', true) + '</label>' +
+    '<label class="cp">E-mail para recuperar a senha<input id="en-email" type="email" autocomplete="email" maxlength="120"><small>Opcional. Sem ele, quem esquece a senha não consegue recuperar sozinho.</small></label>' +
+    '<p class="en-msg" id="en-msg" role="alert"></p><div class="en-bts"><button type="button" class="bt en-bt" data-act="en-sair">Sair</button><button class="bt pr en-bt" type="submit">Salvar e entrar</button></div></form>';
+}
 function enTela() {
   const primeiro = S._setup === false, c = enCfg(), escuro = csTema() === 'escuro';
   const n = c.palavra.length;
-  const form = primeiro ?
+  const modo = enTrocaPendente() ? 'trocar' : S._enModo === 'recup' && !primeiro ? 'recup' : primeiro ? 'primeiro' : 'entrar';
+  const form = modo === 'trocar' ? enFormTrocar() : modo === 'recup' ? enFormRecup() : primeiro ?
     '<h2>Primeiro acesso</h2><p>Crie a conta do Administrador. Depois ele cadastra as outras pessoas.</p>' +
     '<form class="en-form" data-form="en-primeiro" novalidate>' +
     '<label class="cp">Nome completo<input id="en-nome" autocomplete="name" required></label>' +
     '<label class="cp">Usuário<input id="en-login" autocomplete="username" autocapitalize="none" required><small>Só letras, números e ponto. Ex.: joana.silva</small></label>' +
     '<label class="cp">E-mail<input id="en-email" type="email" autocomplete="email"><small>Para recuperar a senha.</small></label>' +
-    '<label class="cp">Senha<input id="en-senha" type="password" autocomplete="new-password" required><small>No mínimo 8 caracteres.</small></label>' +
+    '<label class="cp">Senha<input id="en-senha" type="password" autocomplete="new-password" required><small>No mínimo ' + esc(SENHA_MIN) + ' caracteres.</small></label>' +
     '<label class="cp">Repita a senha<input id="en-senha2" type="password" autocomplete="new-password" required></label>' +
     '<p class="en-msg" id="en-msg" role="alert"></p><button class="bt pr en-bt" type="submit">Criar e entrar</button></form>'
     :
@@ -14203,16 +14523,18 @@ function enPolen() {
   if (Mov.reduzido()) { for (let i = 0; i < 3; i++) desenha(0); return; } raf = requestAnimationFrame(passo);
 }
 function enDepois() { try { enPolen(); } catch (e) { console.error(e); } const i = $('#en-login'); if (i && !i.value) { try { i.focus(); } catch {} } else { const s = $('#en-senha'); if (s) try { s.focus(); } catch {} } }
-function enMsg(t) { const m = $('#en-msg'); if (m) m.textContent = t || ''; }
+function enMsg(t, ok) { const m = $('#en-msg'); if (m) { m.textContent = t || ''; m.classList.toggle('ok', !!ok); } }
 
 document.addEventListener('click', e => {
   const t = e.target.closest && e.target.closest('[data-act="en-ver"]'); if (!t) return;
-  const i = $('#en-senha'); if (i) i.type = i.type === 'password' ? 'text' : 'password';
+  const i = $('#en-senha'), j = $('#en-senha2'); if (!i) return; const tp = i.type === 'password' ? 'text' : 'password'; i.type = tp; if (j && t.closest('[data-form="en-trocar"]')) j.type = tp; /* v0.6.29: na tela de criar a senha, o olho mostra as duas */
 });
 document.addEventListener('submit', async e => {
   const f = e.target.closest && e.target.closest('[data-form^="en-"]'); if (!f) return;
   e.preventDefault();
   const bt = f.querySelector('button[type=submit]');
+  if (f.getAttribute('data-form') === 'en-recup') return enRecuperar(bt);
+  if (f.getAttribute('data-form') === 'en-trocar') return enTrocar(bt);
   if (f.getAttribute('data-form') === 'en-entrar') {
     const login = $('#en-login').value.trim(), senha = $('#en-senha').value;
     if (!login || !senha) return enMsg('Preencha o usuário e a senha.');
@@ -14230,18 +14552,55 @@ document.addEventListener('submit', async e => {
   if (nome.split(/\s+/).filter(Boolean).length < 2) return enMsg('Informe o nome completo (nome e sobrenome).');
   if (login.length < 3) return enMsg('O usuário precisa de pelo menos 3 letras ou números.');
   if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return enMsg('Digite um e-mail válido ou deixe em branco.');
-  if (s1.length < 8) return enMsg('A senha precisa de no mínimo 8 caracteres.');
+  if (s1.length < SENHA_MIN) return enMsg('A senha precisa de no mínimo ' + SENHA_MIN + ' caracteres.');
   if (s1 !== s2) return enMsg('As senhas não são iguais.');
   bt.disabled = true; bt.textContent = 'Criando…';
   try {
     const id = await Data.auth.createFirst(login, s1, email);
     await Data.firstSetup({ id: id, nome: nome, login: login, perfil: 'principal', estrela: false, bloqueado: false, criadoEm: nowISO(), email: email, emailOk: DEMO, emailPendente: '', precisaCompletar: false });
+    if (email) Data.auth.ligarLogin(login, { email: email }).catch(er => console.warn('sv2_login', er)); /* v0.6.29: sem a ligação, o Administrador só entrava digitando o e-mail */
     S._setup = true; Store.set('cw-ultimo-login', login);
     await csCarregaUsuario(id);
   } catch (er) { enMsg(enErro(er)); bt.disabled = false; bt.textContent = 'Criar e entrar'; }
 });
-/* v0.6.23: sem link para o EFClaudian; quem esqueceu a senha pede ao Administrador (ele troca em Administração › Pessoas) */
-document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('[data-act="en-esqueci"]'); if (t) aviso('Peça ao Administrador para trocar a sua senha.'); });
+/* v0.6.29 (varredura S2): antes o "Esqueci a senha" só dizia para pedir ao Administrador, que não tem como trocar a senha de outra pessoa */
+function enRecupAbre() { const l = $('#en-login'); S._enRlogin = l ? l.value.trim() : ''; S._enModo = 'recup'; csCamadaAbre('recup', () => { S._enModo = ''; render(); }); render(); const i = $('#en-rlogin'); if (i) try { i.focus(); } catch {} }
+async function enRecuperar(bt) {
+  const ent = ($('#en-rlogin').value || '').trim(); S._enRlogin = ent;
+  if (!ent) return enMsg('Digite o seu usuário ou o e-mail.');
+  let email = ent.indexOf('@') >= 0 ? emailReal(ent) : '';
+  if (ent.indexOf('@') >= 0 && !email) return enMsg('Digite um e-mail válido, ou o seu usuário.');
+  bt.disabled = true; bt.textContent = 'Enviando…'; enMsg('');
+  try {
+    /* ITEM 147 (20/11): a mesma frase exista ou não a conta, com ou sem e-mail (OWASP); o app só manda o link quando há e-mail */
+    if (!email) email = await Data.auth.emailDoLogin(ent);
+    if (email) { try { await Data.auth.recuperar(email); } catch (er) { if (er && /too-many-requests|network-request-failed/.test(er.code || '')) throw er; } }
+    enMsg('Se houver um e-mail cadastrado para este acesso, o link chega em alguns minutos. Confira também o spam. Se não chegar, fale com o Administrador.', true);
+  } catch (er) { enMsg(er && er.code === 'auth/too-many-requests' ? 'Muitos pedidos. Aguarde alguns minutos.' : er && er.code === 'auth/network-request-failed' ? 'Sem conexão. Conecte-se à internet.' : 'Não deu para mandar o link agora. Tente de novo.'); }
+  bt.disabled = false; bt.textContent = 'Enviar o link';
+}
+/* primeiro acesso da pessoa cadastrada em Pessoas: cria a própria senha (diferente da inicial) e, se quiser, o e-mail de recuperar */
+async function enTrocar(bt) {
+  const s1 = $('#en-senha').value, s2 = $('#en-senha2').value, email = ($('#en-email').value || '').trim();
+  if (s1.length < SENHA_MIN) return enMsg('A senha precisa de no mínimo ' + SENHA_MIN + ' caracteres.');
+  if (s1 !== s2) return enMsg('As senhas não são iguais.');
+  if (email && !emailReal(email)) return enMsg('Digite um e-mail válido ou deixe em branco.');
+  bt.disabled = true; bt.textContent = 'Salvando…'; enMsg('');
+  try {
+    if (await Data.auth.verificar(s1)) { bt.disabled = false; bt.textContent = 'Salvar e entrar'; return enMsg('Use uma senha diferente da inicial.'); }
+    await Data.auth.trocarSenha(s1);
+    const ag = nowISO(); await Data.col('sv2_users').update(S.user.id, { precisaCompletar: false, completadoEm: ag, senhaTrocadaEm: ag });
+    Audit.log({ acao: 'trocar_senha', entidade: 'usuario', entidadeId: S.user.id, resumo: 'Criou a própria senha no primeiro acesso' });
+    let aviso2 = 'Senha criada.';
+    if (email) { try { aviso2 += await pesDefinirEmail(email) ? '' : ' Abra o link que chegou em ' + emailReal(email) + ' para confirmar o e-mail.'; } catch (er) { aviso2 += ' O e-mail ficou para depois (Meu perfil).'; } }
+    S.user.precisaCompletar = false; render(); aviso(aviso2);
+  } catch (er) { bt.disabled = false; bt.textContent = 'Salvar e entrar'; enMsg(/recent-login/.test(er && er.code || '') ? 'Por segurança, saia e entre de novo com a senha inicial.' : 'Não deu para salvar agora. Tente de novo.'); }
+}
+document.addEventListener('click', e => {
+  const t = e.target.closest && e.target.closest('[data-act="en-esqueci"],[data-act="en-voltar"],[data-act="en-sair"]'); if (!t) return;
+  const a = t.getAttribute('data-act');
+  if (a === 'en-esqueci') enRecupAbre(); else if (a === 'en-voltar') csVolta(); else Data.auth.signOut().catch(() => {});
+});
 
 /* ===== inicio.js ===== */
 /* EFCwork · inicio.js — Início: saudação, tarefas de hoje (do mesmo Firebase do EFClaudian), voltar para / mais usadas e o plano das áreas. Prefixo: ini. */
@@ -14291,7 +14650,8 @@ TELAS.inicio = function () {
 /* EFCwork · tarefas.js — Meu dia: as tarefas na Início (v0.6.28). Prefixo: tf.
    Antes o EFCwork só lia as tarefas do EFClaudian. Agora cria, atribui, anda e conclui aqui, no mesmo sv2_tarefas:
    titulo, descricao, respId, respNome, prazo, hora, status (todo | doing | done | cancelada), criadoPor, criadoPorNome, criadoEm,
-   concluidaEm, concluidaPorNome, canceladaMotivo, hist[]. Os campos que a Início já lia (titulo, respId, prazo, hora, status, excluida) não mudam.
+   concluidaEm, concluidaPorNome, canceladaMotivo, hist[]. v0.6.32: + porId (quem gravou), que a regra do Firestore exige para passar tarefa a outra pessoa
+   (sem ele, o Líder ★ e o Administrador eram barrados ao criar para um liderado e quem passou não conseguia editar nem cancelar). Os campos que a Início já lia (titulo, respId, prazo, hora, status, excluida) não mudam.
    Quem passa tarefa para outra pessoa: Líder ★ e Administrador (para os liderados e para quem quiser); o Colaborador cria só para si.
    Quem mexe: o responsável (andar, concluir), quem criou e o Administrador (editar, cancelar). Aviso no sino para quem recebe e, ao concluir, para quem passou. */
 /* v0.6.28 (pedido do Elias 20/11 14:39): tarefas que se repetem e agenda. Campo repete: util (seg a sex) | diaria | semanal | quinzenal | mensal | anual,
@@ -14379,10 +14739,11 @@ function tfEdOk() {
   const avisa = id => { if (ru.id !== S.user.id && (!x || x.respId !== ru.id)) Notif.send({ nivel: 'aviso', titulo: (o.repete ? 'Rotina para você: ' : 'Tarefa para você: ') + titulo, texto: (o.prazo ? (o.repete ? 'Começa em ' : 'Prazo ') + fmtD(o.prazo) + (o.hora ? ' às ' + o.hora : '') + '. ' : '') + (o.repete ? 'Repete ' + TF_REP_CURTO[o.repete] + '. ' : '') + 'Passada por ' + S.user.nome + '.', para: [ru.id], refTipo: 'tarefa', refId: id }).catch(() => {}); };
   if (x) {
     o.hist = tfHist(x, x.respId !== ru.id ? 'Passou para ' + ru.nome : 'Editou a tarefa'); if (o.repete && !x.serieId) o.serieId = x.id;
+    if (!x.porId && x.criadoPor && isPrincipal(S.user)) o.porId = x.criadoPor; /* v0.6.32: tarefa antiga sem porId (a regra só deixa quem passou mexer se o porId for dele) */
     Audit.log({ acao: 'editar_tarefa', entidade: 'tarefa', entidadeId: x.id, resumo: 'Editou a tarefa ' + titulo });
     avisa(x.id); f.volta = null; lcGrava([Data.col('sv2_tarefas').update(x.id, o)], 'Tarefa salva.', () => tfAbre(x.id));
   } else {
-    const id = Data.novoId('sv2_tarefas'); Object.assign(o, { status: 'todo', serieId: o.repete ? id : '', criadoPor: S.user.id, criadoPorNome: S.user.nome, criadoEm: nowISO(), hist: [{ ts: nowISO(), porNome: S.user.nome, txt: (o.repete ? 'Criou a rotina (' + TF_REP_CURTO[o.repete] + ')' : 'Anotou a tarefa') + (ru.id === S.user.id ? '' : ' para ' + ru.nome) }] });
+    const id = Data.novoId('sv2_tarefas'); Object.assign(o, { status: 'todo', serieId: o.repete ? id : '', porId: S.user.id, criadoPor: S.user.id, criadoPorNome: S.user.nome, criadoEm: nowISO(), hist: [{ ts: nowISO(), porNome: S.user.nome, txt: (o.repete ? 'Criou a rotina (' + TF_REP_CURTO[o.repete] + ')' : 'Anotou a tarefa') + (ru.id === S.user.id ? '' : ' para ' + ru.nome) }] });
     Audit.log({ acao: 'criar_tarefa', entidade: 'tarefa', entidadeId: id, resumo: 'Criou ' + (o.repete ? 'a rotina ' : 'a tarefa ') + titulo + (ru.id !== S.user.id ? ' para ' + ru.nome : '') + (o.repete ? ' (' + TF_REP_CURTO[o.repete] + ')' : '') });
     avisa(id); lcGrava([Data.col('sv2_tarefas').set(id, o)], (o.repete ? 'Rotina criada' : 'Tarefa anotada') + (ru.id === S.user.id ? '.' : ' para ' + ru.nome + '.'), () => { if (!S.tarefas.some(t => t.id === id)) S.tarefas.push(Object.assign({ id }, o)); if (S.gv) gvFecharSo(); render(); });
   }
@@ -14392,7 +14753,7 @@ function tfEdOk() {
 function tfGrava(t, patch, msg, depois) { return Data.col('sv2_tarefas').update(t.id, patch).then(() => { Object.assign(t, patch); aviso(msg); if (depois) depois(); }).catch(e => aviso(svErro(e), 'erro')); }
 function tfSeguinte(t) {
   if (!t.repete) return null; const id = Data.novoId('sv2_tarefas'), pz = tfProxima(t);
-  const o = { titulo: t.titulo, descricao: t.descricao || '', respId: t.respId, respNome: t.respNome || nomeDe(t.respId), prazo: pz, hora: t.hora || '', repete: t.repete, serieId: t.serieId || t.id, status: 'todo',
+  const o = { titulo: t.titulo, descricao: t.descricao || '', respId: t.respId, respNome: t.respNome || nomeDe(t.respId), prazo: pz, hora: t.hora || '', repete: t.repete, serieId: t.serieId || t.id, status: 'todo', porId: S.user.id,
     criadoPor: t.criadoPor || S.user.id, criadoPorNome: t.criadoPorNome || S.user.nome, criadoEm: nowISO(), hist: [{ ts: nowISO(), porNome: S.user.nome, txt: 'Rotina: próxima vez' }] };
   Data.col('sv2_tarefas').set(id, o).then(() => { if (!S.tarefas.some(x => x.id === id)) S.tarefas.push(Object.assign({ id }, o)); render(); }).catch(e => aviso(svErro(e), 'erro'));
   return pz;
@@ -14630,7 +14991,7 @@ document.addEventListener('keydown', e => {
 function admEmpresa() {
   const e = S.empresa || {}, pode = isPrincipal(S.user), un = e.unidades || [], logo = imgSrc(e.logo);
   const minha = Store.get('cw-unidade') || un[0] || '';
-  return '<div class="adm-gr"><section class="pn"><div class="hd"><h3>Dados da empresa</h3><span class="sp"></span>' + (pode ? '' : '<span class="pill">só o Administrador altera</span>') + '</div>' +
+  return '<div class="adm-emp"><div class="adm-col"><section class="pn"><div class="hd"><h3>Dados da empresa</h3><span class="sp"></span>' + (pode ? '' : '<span class="pill">só o Administrador altera</span>') + '</div>' +
     '<form class="cpo" data-form="adm-empresa">' +
     '<div class="adm-logo"><span class="adm-lg">' + (logo ? '<img src="' + logo + '" alt="Logo atual">' : ic('imagem')) + '</span><div><b>Logo</b><small>PNG ou JPG; o app reduz para 256 px.</small>' +
     (pode ? '<div class="adm-lgb"><label class="bt">' + ic('imagem') + 'Escolher<input type="file" id="adm-logo" accept="image/png,image/jpeg,image/webp" hidden></label>' + (logo ? '<button type="button" class="bt ic-so" data-act="adm-tira-logo" title="Tirar a logo" aria-label="Tirar a logo">' + ic('lixo') + '</button>' : '') + '</div>' : '') + '</div></div>' +
@@ -14638,8 +14999,8 @@ function admEmpresa() {
     '<label class="cp">Unidades<textarea id="adm-un" rows="4"' + (pode ? '' : ' disabled') + ' placeholder="Uma por linha. Ex.: Unidade Sede">' + esc(un.join('\n')) + '</textarea><small>Uma por linha. Aparecem no menu e nos filtros.</small></label>' +
     (pode ? '<p class="en-msg" id="adm-msg" role="alert"></p><div><button class="bt pr" type="submit">Salvar</button></div>' : '') + '</form></section>' +
     '<section class="pn"><div class="hd"><h3>Unidade deste aparelho</h3></div><div class="cpo">' +
-    (un.length ? '<p class="ini-vz">Usada como padrão nos filtros, neste aparelho.</p>' + ddHTML('adm:unid', minha, un.map(x => [x, x])) : '<p class="ini-vz">Cadastre as unidades ao lado.</p>') +
-    '</div></section></div>' + admEntrar();
+    (un.length ? '<p class="ini-vz">Usada como padrão nos filtros, neste aparelho.</p>' + ddHTML('adm:unid', minha, un.map(x => [x, x])) : '<p class="ini-vz">Cadastre as unidades em Dados da empresa.</p>') +
+    '</div></section></div><div class="adm-col">' + admEntrar() + '</div></div>'; /* v0.6.31: empresa e tela de entrar juntas, lado a lado */
 }
 /* v0.4.2 — tela de entrar: foto da garota-propaganda, palavra grande (Escuro), faixa (Escuro) e avisos (Claro). Fica em sv2_cfg/entrar. */
 function admEntrar() {
@@ -14698,17 +15059,14 @@ document.addEventListener('submit', e => {
   const avisos = [0, 1, 2].map(i => [$('#adm-av' + i + 't').value.trim(), $('#adm-av' + i + 'd').value.trim()]).filter(x => x[0]);
   admGravaEntrar({ palavra: pal, faixa: faixa, avisos: avisos });
 });
-function admAparencia() {
-  return '<section class="pn adm-uma"><div class="hd"><h3>Tema</h3></div><div class="cpo"><p class="ini-vz">Vale só neste aparelho.</p>' + ddHTML('adm:tema', csTema(), [['claro', 'Claro'], ['escuro', 'Escuro (Dourado)']]) + '</div></section>';
-}
 function admSobre() {
   const l = [['App', APP_NOME + ' · ' + APP_APELIDO], ['Família', APP_FAMILIA], ['Versão', 'v' + VERSAO], ['Dados', DEMO ? 'Demonstração (só neste navegador)' : 'Firebase do EFClaudian (mesmas coleções)'], ['Empresa', (S.empresa && S.empresa.nome) || 'não configurada']];
   return '<section class="pn adm-uma"><div class="hd"><h3>Sobre</h3></div><dl class="adm-dl">' + l.map(x => '<dt>' + esc(x[0]) + '</dt><dd>' + esc(x[1]) + '</dd>').join('') + '</dl></section>';
 }
 TELAS.adm = function (aba) {
-  const t = { empresa: 'Empresa', aparencia: 'Aparência', atividade: 'Atividade', sobre: 'Sobre' }[aba] || 'Empresa';
+  const t = { empresa: 'Empresa', atividade: 'Atividade', sobre: 'Sobre' }[aba] || 'Empresa'; /* v0.6.31: a aba Aparência saiu; o tema fica no botão de lua/sol do topo */
   return cabecalho({ titulo: t, abaNome: t, meta: aba === 'empresa' ? [metaPl(isPrincipal(S.user) ? 'você pode alterar' : 'somente leitura', isPrincipal(S.user) ? 'ok' : '', 'info')] : aba === 'atividade' ? [metaPl('só o Principal vê', '', 'cadeado')] : [] }) +
-    (aba === 'aparencia' ? admAparencia() : aba === 'sobre' ? admSobre() : aba === 'atividade' ? atTela() : admEmpresa());
+    (aba === 'sobre' ? admSobre() : aba === 'atividade' ? atTela() : admEmpresa());
 };
 
 /* logo: reduz no aparelho antes de guardar (máx. 256 px) */
@@ -14758,7 +15116,10 @@ csIniciar();
    superiores[], atrib {coletas, rateios, cloro, apont, docs, qualidade, almox} (sem atrib = vê tudo, como no EFClaudian), cargo,
    status (ativo | ausente), bloqueado, criadoEm. A conta de acesso é criada sem trocar a sessão de quem está logado
    (Data.auth.createAccount, app "sec"). Quem cadastra, edita e bloqueia: o Administrador. O Líder ★ vê a equipe, sem alterar.
-   Meu perfil: cada um muda o próprio cargo, a situação (presente / ausente) e a senha. Nenhuma coleção nova. */
+   Meu perfil: cada um muda o próprio cargo, a situação (presente / ausente) e a senha. Nenhuma coleção nova.
+   v0.6.29 (varredura S2 e S3): senha de no mínimo 8 em todo lugar; a pessoa nova nasce com precisaCompletar = true e cria a
+   própria senha no primeiro acesso (entrar.js); Meu perfil guarda o e-mail para recuperar a senha (o Firebase confirma por link)
+   e grava a ligação login → e-mail em sv2_login, como o EFClaudian. */
 const pesVe = () => !!S.user && isSup(S.user);
 const pesPode = () => !!S.user && isPrincipal(S.user);
 const PES_ATRIB = [['coletas', 'Coletas'], ['rateios', 'Rateios'], ['cloro', 'Cloro'], ['apont', 'Apontamentos e auditoria'], ['docs', 'Documentos'], ['qualidade', 'Qualidade'], ['almox', 'Almoxarifado']];
@@ -14814,7 +15175,7 @@ LC_FORM.pesEd = f => {
   const ck = (campo, on, txt) => '<label class="fm-ck"><input type="checkbox" data-fm="' + esc(campo) + '"' + (on ? ' checked' : '') + '> ' + esc(txt) + '</label>';
   const c = lcMsg() + apPasso(1, 'Quem é') + lcBl('Nome', lcIn('nome', f.nome, ' maxlength="80" placeholder="ex.: Maria Souza"')) +
     '<div class="fm-g cl-fm2">' + lcBl('Login', lcIn('login', f.login, ' maxlength="40" autocapitalize="off" spellcheck="false" placeholder="ex.: maria.souza"' + (novo ? '' : ' disabled')), novo ? 'para entrar' : 'não muda') + lcBl('Cargo', lcIn('cargo', f.cargo, ' maxlength="60" placeholder="ex.: Técnica de laboratório"')) + '</div>' +
-    (novo ? lcBl('Senha inicial', lcIn('senha', f.senha, ' type="text" maxlength="40" autocomplete="new-password" placeholder="mínimo 6 letras ou números"'), 'a pessoa troca em Meu perfil') : '') +
+    (novo ? lcBl('Senha inicial', '<span class="pes-sen">' + lcIn('senha', f.senha, ' type="password" maxlength="40" autocomplete="new-password" placeholder="mínimo ' + esc(SENHA_MIN) + ' caracteres"') + '<button type="button" class="bt ic-so" data-act="pes-ver" aria-label="Mostrar a senha">' + ic('olho') + '</button></span>', 'vale só para o primeiro acesso') : '') +
     apPasso(2, 'O que pode fazer') + lcBl('Perfil', ddHTML('pes:perfil', f.perfil, PES_PERFIL)) +
     lcAv(adm ? 'Administrador vê e altera tudo, cadastra pessoas e decide qualquer pedido.' : f.perfil === 'lider' ? 'Líder ★ lança, decide os pedidos dos liderados e vê os relatórios.' : f.perfil === 'visitante' ? 'Consulta vê as áreas marcadas, mas não lança nem altera nada.' : 'Colaborador lança; o que precisa de aprovação vai para os superiores.') +
     (adm ? '' : lcBl('Áreas que vê', '<div class="pes-cks">' + PES_ATRIB.map(a => ck('at.' + a[0], f.at[a[0]] === '1', a[1])).join('') + '</div>')) +
@@ -14828,7 +15189,7 @@ async function pesEdOk() {
   if (novo) {
     if (login.length < 3) return lcErro('O login precisa de pelo menos 3 letras (sem espaço nem acento).');
     if (S.users.some(u => slugLogin(u.login) === login)) return lcErro('Já existe uma pessoa com o login ' + login + '.');
-    if (String(f.senha || '').length < 6) return lcErro('A senha inicial precisa de pelo menos 6 letras ou números.');
+    if (String(f.senha || '').length < SENHA_MIN) return lcErro('A senha inicial precisa de no mínimo ' + SENHA_MIN + ' caracteres.');
   }
   const atrib = {}; PES_ATRIB.forEach(a => { atrib[a[0]] = (f.at || {})[a[0]] === '1'; });
   if (!adm && !Object.values(atrib).some(Boolean)) return lcErro('Marque pelo menos uma área que a pessoa vê.');
@@ -14842,10 +15203,10 @@ async function pesEdOk() {
   if (novo) {
     let id;
     try { id = await Data.auth.createAccount(login, String(f.senha)); }
-    catch (e) { f._trava = 0; const cd = e && e.code || ''; return lcErro(/email-already-in-use/.test(cd) ? 'Esse login já tem conta de acesso. Use outro login.' : /weak-password/.test(cd) ? 'Senha fraca: use pelo menos 6 letras ou números.' : 'Não deu para criar a conta de acesso agora (' + (cd || 'sem internet?') + ').'); }
-    const o = Object.assign({ id, login, status: 'ativo', bloqueado: false, criadoEm: nowISO(), criadoPor: S.user.id, criadoPorNome: S.user.nome }, dados);
+    catch (e) { f._trava = 0; const cd = e && e.code || ''; return lcErro(/email-already-in-use/.test(cd) ? 'Esse login já tem conta de acesso. Use outro login.' : /weak-password/.test(cd) ? 'Senha fraca: use no mínimo ' + SENHA_MIN + ' caracteres.' : 'Não deu para criar a conta de acesso agora (' + (cd || 'sem internet?') + ').'); }
+    const o = Object.assign({ id, login, status: 'ativo', bloqueado: false, precisaCompletar: true, criadoEm: nowISO(), criadoPor: S.user.id, criadoPorNome: S.user.nome }, dados); /* v0.6.29: cria a própria senha no primeiro acesso */
     Audit.log({ acao: 'criar_usuario', entidade: 'usuario', entidadeId: id, resumo: 'Cadastrou ' + nome + ' (' + login + ') como ' + perfilLabel(o) });
-    lcGrava([Data.col('sv2_users').set(id, o)], nome + ' cadastrado. Passe o login e a senha para a pessoa.', () => { if (S.gv) gvFecharSo(); });
+    lcGrava([Data.col('sv2_users').set(id, o)], nome + ' cadastrado. Passe o login e a senha inicial: no primeiro acesso a pessoa cria a dela.', () => { if (S.gv) gvFecharSo(); });
   } else {
     Audit.log({ acao: 'editar_usuario', entidade: 'usuario', entidadeId: x.id, resumo: 'Alterou o cadastro de ' + nome + ' (' + perfilLabel(Object.assign({}, x, dados)) + ')', antes: { perfil: x.perfil, estrela: !!x.estrela, atrib: x.atrib || null, superiores: x.superiores || [] }, depois: { perfil: dados.perfil, estrela: dados.estrela, atrib: dados.atrib, superiores } });
     f.volta = null; lcGrava([Data.col('sv2_users').update(x.id, dados)], 'Cadastro salvo.', () => pesAbre(x.id));
@@ -14879,20 +15240,49 @@ function pesLiberar(id) {
 /* ---------- Meu perfil (todo mundo) ---------- */
 function pesMeuPerfil() {
   const u = S.user, me = userById(u.id) || u;
-  return '<div class="adm-gr"><section class="pn"><div class="hd"><h3>Meus dados</h3></div><div class="cpo">' + gvCampos([['Nome', me.nome || ''], ['Login', me.login || ''], ['Perfil', perfilLabel(me)], ['Superiores', isPrincipal(me) ? '' : (pesSupTxt(me) || 'os Administradores')], ['Áreas', pesAtribTxt(me)]]) +
+  return '<div class="adm-gr"><section class="pn"><div class="hd"><h3>Meus dados</h3></div><div class="cpo">' + ftLinha() + gvCampos([['Nome', me.nome || ''], ['Login', me.login || ''], ['Perfil', perfilLabel(me)], ['Superiores', isPrincipal(me) ? '' : (pesSupTxt(me) || 'os Administradores')], ['Áreas', pesAtribTxt(me)]]) +
     '<label class="cp">Cargo<input id="pes-cargo" maxlength="60" value="' + esc(me.cargo || '') + '" placeholder="ex.: Técnica de laboratório"></label>' +
     '<label class="cp">Situação' + ddHTML('pes:status', me.status === 'ausente' ? 'ausente' : 'ativo', [['ativo', 'Presente'], ['ausente', 'Ausente (férias, folga): os pedidos vão para os Administradores']]) + '</label>' +
     '<div><button type="button" class="bt pr" data-act="pes-mp-ok">Salvar</button></div></div></section>' +
     '<section class="pn"><div class="hd"><h3>Trocar a senha</h3></div><div class="cpo"><label class="cp">Senha nova<input id="pes-s1" type="password" autocomplete="new-password" maxlength="40"></label>' +
-    '<label class="cp">Repita a senha nova<input id="pes-s2" type="password" autocomplete="new-password" maxlength="40"></label><p class="en-msg" id="pes-smsg" role="alert"></p><div><button type="button" class="bt" data-act="pes-senha">Trocar a senha</button></div></div></section></div>';
+    '<label class="cp">Repita a senha nova<input id="pes-s2" type="password" autocomplete="new-password" maxlength="40"></label><p class="en-msg" id="pes-smsg" role="alert"></p><div><button type="button" class="bt" data-act="pes-senha">Trocar a senha</button></div></div></section>' + pesEmailPainel(me) + '</div>';
 }
 async function pesMpOk() {
   const cargo = ($('#pes-cargo') || {}).value || '';
   try { await Data.col('sv2_users').update(S.user.id, { cargo: cargo.trim() }); aviso('Perfil salvo.'); } catch (e) { aviso('Não deu para salvar agora.', 'erro'); }
 }
+/* ---------- e-mail para recuperar a senha ---------- */
+function pesEmailPainel(me) {
+  const ok = emailReal(DEMO ? (me.emailOk ? me.email : '') : Data.auth.emailAtual()) || (me.emailOk ? emailReal(me.email) : ''), pend = emailReal(me.emailPendente);
+  const sit = ok ? '<b>' + esc(ok) + '</b> confirmado.' : pend ? 'Aguardando a confirmação de <b>' + esc(pend) + '</b>: abra o link que chegou nesse e-mail.' : 'Sem e-mail: quem esquece a senha não consegue recuperar sozinho.';
+  return '<section class="pn"><div class="hd"><h3>E-mail para recuperar a senha</h3></div><div class="cpo"><p class="pes-esit">' + sit + '</p>' +
+    '<label class="cp">' + (ok || pend ? 'Trocar o e-mail' : 'E-mail') + '<input id="pes-email" type="email" autocomplete="email" maxlength="120" placeholder="ex.: nome@gmail.com"></label>' +
+    '<p class="en-msg" id="pes-emsg" role="alert"></p><div><button type="button" class="bt" data-act="pes-email">Salvar o e-mail</button></div></div></section>';
+}
+/* grava o e-mail (Meu perfil e primeiro acesso). Nuvem: o Firebase manda um link e só troca depois do clique (volta false);
+   demonstração: fica confirmado na hora (volta true). */
+async function pesDefinirEmail(email) {
+  const e = emailReal(email); if (!e) throw new Error('email-invalido');
+  const conf = await Data.auth.definirEmail(e);
+  await Data.col('sv2_users').update(S.user.id, conf ? { email: e, emailOk: true, emailPendente: '' } : { emailPendente: e, emailOk: false });
+  try { await Data.auth.ligarLogin(S.user.login, conf ? { email: e, emailNovo: '' } : { emailNovo: e }); } catch (er) { console.warn('sv2_login', er); }
+  Audit.log({ acao: 'definir_email', entidade: 'usuario', entidadeId: S.user.id, resumo: conf ? 'Cadastrou o e-mail para recuperar a senha' : 'Pediu a confirmação do e-mail para recuperar a senha' });
+  return conf;
+}
+async function pesEmail() {
+  const v = (($('#pes-email') || {}).value || '').trim(), m = $('#pes-emsg'); if (!m) return;
+  if (!emailReal(v)) { m.textContent = 'Digite um e-mail válido (ex.: nome@gmail.com).'; return; }
+  try { const conf = await pesDefinirEmail(v); m.textContent = ''; aviso(conf ? 'E-mail salvo.' : 'Mandamos um link para ' + emailReal(v) + '. O e-mail vale depois que você abrir o link.'); render(); }
+  catch (e) { m.textContent = /recent-login/.test(e && e.code || '') ? 'Por segurança, saia e entre de novo antes de trocar o e-mail.' : /email-already-in-use/.test(e && e.code || '') ? 'Este e-mail já é de outra conta.' : 'Não deu para salvar o e-mail agora.'; }
+}
+/* nuvem: depois que a pessoa abre o link, o e-mail da conta muda; na entrada seguinte o cadastro e a ligação ficam confirmados */
+CS_CARGAS.push(() => {
+  const me = S.user, pend = me && emailReal(me.emailPendente); if (DEMO || !pend || emailReal(Data.auth.emailAtual()) !== pend) return;
+  Data.col('sv2_users').update(me.id, { email: pend, emailOk: true, emailPendente: '' }).then(() => Data.auth.ligarLogin(me.login, { email: pend, emailNovo: '' })).catch(e => console.warn('email', e));
+});
 async function pesSenha() {
   const a = ($('#pes-s1') || {}).value || '', b = ($('#pes-s2') || {}).value || '', m = $('#pes-smsg');
-  if (a.length < 6) { m.textContent = 'A senha precisa de pelo menos 6 letras ou números.'; return; }
+  if (a.length < SENHA_MIN) { m.textContent = 'A senha precisa de no mínimo ' + SENHA_MIN + ' caracteres.'; return; }
   if (a !== b) { m.textContent = 'As duas senhas não são iguais.'; return; }
   try { await Data.auth.trocarSenha(a); m.textContent = ''; $('#pes-s1').value = ''; $('#pes-s2').value = ''; aviso('Senha trocada.'); Audit.log({ acao: 'trocar_senha', entidade: 'usuario', entidadeId: S.user.id, resumo: 'Trocou a própria senha' }); }
   catch (e) { m.textContent = /recent-login/.test(e && e.code || '') ? 'Por segurança, saia e entre de novo antes de trocar a senha.' : 'Não deu para trocar a senha agora.'; }
@@ -14910,8 +15300,155 @@ document.addEventListener('click', e => {
   const a = t.getAttribute('data-act'), id = t.getAttribute('data-id');
   if (a === 'pes-novo') pesNovo(); else if (a === 'pes-editar') pesEditar(id); else if (a === 'pes-ed-ok') pesEdOk();
   else if (a === 'pes-bloq') pesBloq(id); else if (a === 'pes-bloq-ok') pesBloqOk(); else if (a === 'pes-liberar') pesLiberar(id);
-  else if (a === 'pes-mp-ok') pesMpOk(); else if (a === 'pes-senha') pesSenha();
+  else if (a === 'pes-mp-ok') pesMpOk(); else if (a === 'pes-senha') pesSenha(); else if (a === 'pes-email') pesEmail();
+  else if (a === 'pes-ver') { const i = t.parentNode.querySelector('input'); if (i) i.type = i.type === 'password' ? 'text' : 'password'; }
 });
+
+/* ===== backup.js ===== */
+/* EFCwork · backup.js — Administração › Backup (v0.6.30). Prefixo: bk.
+   Traz do EFClaudian a função "Backup e exportação" (FALTA-DO-EFCLAUDIAN, linha "must"). Lê as coleções do app (sv2_* e efd_*) com a
+   permissão de quem está logado e grava UM arquivo .json: { app, versao, geradoEm, cols: { coleção: [documentos] }, falhas }.
+   O formato "cols" é o mesmo que o ambiente de teste (Data.importarDemo) já lê. Só o Administrador faz o backup (ele leva a equipe toda).
+   Caminho fixo: no Chrome e no Edge do computador o app guarda a pasta escolhida (File System Access, no IndexedDB) e o botão "Salvar"
+   grava direto nela, sem janela. No celular o navegador não deixa isso: o arquivo vai para Downloads, que também é um lugar fixo.
+   Fora de sv2_login e sv2_recup (sem leitura da lista pelas regras). Fotos entram só se a pessoa marcar. Nenhuma coleção nova. */
+const BK_COLS = ['sv2_meta', 'sv2_users', 'sv2_notifs', 'sv2_audit', 'sv2_aprov', 'sv2_resumos', 'sv2_chat', 'sv2_cfg', 'sv2_docs', 'sv2_caixas', 'sv2_lanc', 'sv2_bebs', 'sv2_cloro', 'sv2_cloro_falta',
+  'sv2_talhoes', 'sv2_analises', 'sv2_etqmodelos', 'sv2_prog', 'sv2_coletas', 'sv2_aguacol', 'sv2_rodizio', 'sv2_aguaproj', 'sv2_aguaponto', 'sv2_proc', 'sv2_proc_pag', 'sv2_apont', 'sv2_rnc', 'sv2_rnc_plano',
+  'sv2_rnc_gut', 'sv2_analise', 'sv2_alm_itens', 'sv2_alm_mov', 'sv2_alm_sol', 'sv2_alm_pref', 'sv2_conquistas', 'sv2_alm_equip', 'sv2_alm_cal', 'sv2_alm_inv', 'sv2_alm_transf', 'sv2_normas', 'sv2_normas_ed',
+  'sv2_bugs', 'sv2_bugs_seq', 'sv2_tarefas', 'efd_docs', 'efd_partes', 'sv2_impressos', 'sv2_envio_imp', 'sv2_treinos', 'sv2_rem_docs'];
+const BK_FOTOS = ['sv2_avatar', 'sv2_cloro_foto', 'sv2_agua_foto', 'sv2_fotos', 'sv2_rnc_foto', 'sv2_alm_equip_foto', 'sv2_alm_foto', 'sv2_bugs_foto', 'sv2_rem_arq'];
+const bkPode = () => !!S.user && isPrincipal(S.user);
+const bkTemPasta = () => typeof window.showDirectoryPicker === 'function';
+const bkDois = n => String(n).padStart(2, '0');
+const bkNome = d => 'efcwork-backup-' + d.getFullYear() + '-' + bkDois(d.getMonth() + 1) + '-' + bkDois(d.getDate()) + '-' + bkDois(d.getHours()) + bkDois(d.getMinutes()) + '.json';
+const bkTam = b => b < 1024 * 1024 ? Math.max(1, Math.round(b / 1024)) + ' KB' : (b / 1048576).toFixed(1).replace('.', ',') + ' MB';
+const bkQuando = iso => { const d = new Date(iso); return isNaN(d) ? '' : bkDois(d.getDate()) + '/' + bkDois(d.getMonth() + 1) + '/' + d.getFullYear() + ' às ' + bkDois(d.getHours()) + ':' + bkDois(d.getMinutes()); };
+
+/* a pasta escolhida fica no IndexedDB do aparelho (só o "ponteiro"; nada de dado) */
+function bkBanco() { return new Promise((ok, no) => { const r = indexedDB.open('efcwork-backup', 1); r.onupgradeneeded = () => r.result.createObjectStore('pasta'); r.onsuccess = () => ok(r.result); r.onerror = () => no(r.error); }); }
+async function bkPasta(modo, val) {
+  try {
+    const db = await bkBanco();
+    return await new Promise(ok => { const t = db.transaction('pasta', modo), s = t.objectStore('pasta'), q = modo === 'readonly' ? s.get('p') : val === undefined ? s.delete('p') : s.put(val, 'p'); let r = null; q.onsuccess = () => { r = q.result; }; t.oncomplete = () => { db.close(); ok(modo === 'readonly' ? r || null : true); }; t.onerror = () => { db.close(); ok(null); }; });
+  } catch (e) { return null; }
+}
+/* a pessoa precisa dar permissão de novo de vez em quando; isso só pode ser pedido dentro de um clique */
+async function bkPermissao(h) {
+  if (!h) return false;
+  try { if ((await h.queryPermission({ mode: 'readwrite' })) === 'granted') return true; return (await h.requestPermission({ mode: 'readwrite' })) === 'granted'; } catch (e) { return false; }
+}
+
+/* lê tudo o que o perfil consegue ler; o que a regra negar vai para "falhas" e não derruba o resto */
+async function bkLer(comFotos, prog) {
+  const nomes = BK_COLS.concat(comFotos ? BK_FOTOS : []), cols = {}, falhas = {}; let feitos = 0;
+  const lim = (p, ms) => Promise.race([p, new Promise((_, no) => setTimeout(() => no(new Error('tempo')), ms))]);
+  const um = async n => { try { cols[n] = await lim(Data.col(n).all(), 30000); } catch (e) { falhas[n] = (e && (e.code || e.message)) || 'erro'; } feitos++; if (prog) prog(feitos, nomes.length); };
+  for (let i = 0; i < nomes.length; i += 6) await Promise.all(nomes.slice(i, i + 6).map(um)); /* 6 de cada vez: não sufoca o celular */
+  return { cols: cols, falhas: falhas };
+}
+function bkArquivo(r, comFotos) {
+  const agora = new Date(), resumo = {}; Object.keys(r.cols).forEach(n => { resumo[n] = r.cols[n].length; });
+  const pac = { app: 'EFCwork', versao: VERSAO, geradoEm: agora.toISOString(), geradoPor: (S.user && S.user.login) || '', modo: DEMO ? 'demonstracao' : 'nuvem', comFotos: !!comFotos, resumo: resumo, falhas: r.falhas, cols: r.cols };
+  /* Timestamp do Firestore vira texto; sem isso o JSON sairia como {seconds, nanoseconds} */
+  /* o JSON.stringify chama o toJSON do Timestamp antes do substituto; por isso olha o valor original (this[k]). Referência de documento vira o caminho. */
+  const txt = JSON.stringify(pac, function (k, v) { const o = this[k]; if (o && typeof o === 'object') { if (typeof o.toDate === 'function') return o.toDate().toISOString(); if (o.firestore && typeof o.path === 'string') return o.path; } return v; });
+  return { nome: bkNome(agora), blob: new Blob([txt], { type: 'application/json' }), docs: Object.keys(resumo).reduce((s, n) => s + resumo[n], 0), cols: Object.keys(resumo).length, falhas: Object.keys(r.falhas) };
+}
+
+/* a mensagem fica no estado (S._bkMsg): a tela é redesenhada depois do backup e a mensagem não pode sumir junto */
+function bkMsg(t, ok) { S._bkMsg = t ? [t, !!ok] : null; const m = $('#bk-msg'); if (!m) return; m.textContent = t || ''; m.classList.toggle('ok', !!ok); }
+async function bkSalvar(bt) {
+  if (!bkPode() || bt.disabled) return;
+  const comFotos = !!($('#bk-fotos') || {}).checked; let h = null;
+  /* a permissão da pasta tem de ser pedida já no clique, antes da leitura demorada */
+  if (bkTemPasta()) { h = await bkPasta('readonly'); if (h && !(await bkPermissao(h))) { bkMsg('O navegador não deixou gravar na pasta. Toque em "Trocar a pasta" e escolha de novo.'); return; } }
+  if (!DEMO && navigator.onLine === false) { bkMsg('Sem internet: o backup sairia só com a cópia guardada neste aparelho. Conecte e tente de novo.'); return; }
+  bt.disabled = true; bt.textContent = 'Lendo…'; bkMsg('');
+  try {
+    const r = await bkLer(comFotos, (a, b) => { bt.textContent = 'Lendo… ' + a + ' de ' + b; });
+    const f = bkArquivo(r, comFotos); let onde = '';
+    if (h) { try { const fh = await h.getFileHandle(f.nome, { create: true }), w = await fh.createWritable(); await w.write(f.blob); await w.close(); onde = 'na pasta "' + h.name + '"'; } catch (e) { h = null; } }
+    if (!h) { const url = URL.createObjectURL(f.blob); ipSalvar(url, f.nome); setTimeout(() => URL.revokeObjectURL(url), 60000); /* celular lento: o arquivo grande demora a começar a baixar */ onde = bkTemPasta() ? 'em Downloads (a pasta não respondeu)' : 'em Downloads'; }
+    Store.set('cw-bk-ultimo', JSON.stringify({ em: new Date().toISOString(), nome: f.nome, docs: f.docs, tam: f.blob.size, onde: onde }));
+    Audit.log({ acao: 'backup', entidade: 'backup', resumo: 'Backup salvo: ' + f.nome + ' (' + f.docs + ' registros)' });
+    bkMsg('Pronto: ' + f.nome + ' (' + f.docs + ' registros, ' + bkTam(f.blob.size) + ') salvo ' + onde + '.' + (f.falhas.length ? ' Sem leitura: ' + f.falhas.join(', ') + '.' : ''), !f.falhas.length);
+  } catch (e) { console.error(e); bkMsg('Não deu para fazer o backup agora. Confira a internet e tente de novo.'); }
+  const t = $('#gv'); if (t && S.rota.area === 'adm' && S.rota.aba === 'backup') render();
+}
+async function bkEscolher() {
+  if (!bkPode() || !bkTemPasta()) return;
+  try { const h = await window.showDirectoryPicker({ id: 'efcwork-backup', mode: 'readwrite', startIn: 'documents' }); await bkPasta('readwrite', h); S._bkPasta = h.name; render(); bkMsg('Pasta "' + h.name + '" guardada. Agora é só tocar em "Salvar backup".', true); }
+  catch (e) { if (!e || e.name !== 'AbortError') bkMsg('Esta pasta não pode ser usada. Crie uma pasta só para os backups (por exemplo, dentro de Documentos) e escolha ela.'); }
+}
+async function bkEsquecer() { await bkPasta('readwrite', undefined); S._bkPasta = ''; render(); }
+
+function bkTela() {
+  if (!bkPode()) return '';
+  const u = (() => { try { return JSON.parse(Store.get('cw-bk-ultimo') || 'null'); } catch (e) { return null; } })(), tem = bkTemPasta();
+  const fx = S._bkPasta; /* nome da pasta, carregado de forma assíncrona abaixo */
+  const rodaPasta = tem
+    ? '<div class="bk-pasta"><span class="bk-rot">Pasta de destino</span><b id="bk-nome">' + esc(fx || 'nenhuma escolhida') + '</b>' +
+      '<div class="bk-bts"><button type="button" class="bt" data-act="bk-escolher">' + ic('pasta') + (fx ? 'Trocar a pasta' : 'Escolher a pasta') + '</button>' + (fx ? '<button type="button" class="bt" data-act="bk-esquecer">Esquecer a pasta</button>' : '') + '</div></div>'
+    : '<p class="ini-vz">Este navegador não deixa o app guardar uma pasta. O backup vai para a pasta Downloads do aparelho, sempre a mesma. No computador, use o Chrome ou o Edge para escolher uma pasta própria.</p>';
+  return '<div class="adm-gr"><section class="pn bk"><div class="hd"><h3>Salvar backup</h3></div><div class="cpo">' +
+    '<p class="ini-vz">Um arquivo só, com todos os registros do app, inclusive os da equipe. Guarde num lugar seguro.</p>' + rodaPasta +
+    '<label class="bk-ck"><input type="checkbox" id="bk-fotos"> Incluir as fotos (o arquivo fica bem maior)</label>' +
+    '<div class="bk-bts"><button type="button" class="bt pr" data-act="bk-salvar">' + ic('baixar') + 'Salvar backup</button></div>' +
+    '<p class="en-msg' + (S._bkMsg && S._bkMsg[1] ? ' ok' : '') + '" id="bk-msg" role="status">' + esc(S._bkMsg ? S._bkMsg[0] : '') + '</p></div></section>' +
+    '<section class="pn bk"><div class="hd"><h3>Último backup</h3></div><div class="cpo">' + (u ? '<dl class="adm-dl"><dt>Quando</dt><dd>' + esc(bkQuando(u.em)) + '</dd><dt>Arquivo</dt><dd>' + esc(u.nome) + '</dd><dt>Registros</dt><dd>' + esc(u.docs) + ' (' + esc(bkTam(u.tam)) + ')</dd><dt>Onde</dt><dd>' + esc(u.onde) + '</dd></dl>' : '<p class="ini-vz">Ainda não foi feito neste aparelho.</p>') + '</div></section></div>';
+}
+if (bkTemPasta()) CS_CARGAS.push(() => { bkPasta('readonly').then(h => { const n = h ? h.name : ''; if (n !== S._bkPasta) { S._bkPasta = n; if (S.rota && S.rota.area === 'adm' && S.rota.aba === 'backup') render(); } }); });
+
+const bkAdmOrig = TELAS.adm;
+TELAS.adm = aba => aba === 'backup' ? cabecalho({ titulo: 'Backup', abaNome: 'Backup', meta: [metaPl('só o Principal vê', '', 'cadeado')] }) + bkTela() : bkAdmOrig(aba);
+document.addEventListener('click', e => {
+  const t = e.target.closest && e.target.closest('[data-act^="bk-"]'); if (!t) return;
+  const a = t.getAttribute('data-act');
+  if (a === 'bk-salvar') bkSalvar(t); else if (a === 'bk-escolher') bkEscolher(); else if (a === 'bk-esquecer') bkEsquecer();
+});
+
+/* ===== foto.js ===== */
+/* EFCwork · foto.js — foto do perfil (v0.6.31). Prefixo: ft.
+   Grava em sv2_avatar/<uid> o campo img (data URL), a mesma coleção e a mesma regra que o EFClaudian já usa: cada pessoa grava só a
+   própria foto, com menos de 60 mil letras; o Administrador só pode apagar (img vazio). Assim a foto vale em todos os apps da família.
+   No aparelho a foto é recortada no centro (quadrada), reduzida a 192 px e salva em JPEG; a qualidade baixa até caber no limite. */
+const FT_MAX = 58000; /* folga sob os 60000 da regra */
+function ftMinha() { return (S._ftFoto && S._ftFoto.uid === (S.user && S.user.id)) ? S._ftFoto.img : ''; }
+/* o que vai na bolinha do menu: a foto, se houver; senão as iniciais */
+function ftAvatar(u) { return imgSrc(ftMinha()) ? '<img src="' + imgSrc(ftMinha()) + '" alt="">' : esc(iniciais((u || {}).nome)); }
+function ftReduz(arq) {
+  return new Promise((ok, no) => {
+    if (!arq || !/^image\//.test(arq.type)) return no(new Error('tipo'));
+    const r = new FileReader(); r.onerror = () => no(new Error('ler'));
+    r.onload = () => { const im = new Image(); im.onerror = () => no(new Error('img')); im.onload = () => {
+      const l = Math.min(im.width, im.height), x = (im.width - l) / 2, y = (im.height - l) / 2;
+      for (const [lado, q] of [[192, 0.86], [192, 0.75], [160, 0.7], [128, 0.65], [96, 0.6]]) {
+        const c = document.createElement('canvas'); c.width = c.height = lado; const g = c.getContext('2d');
+        g.fillStyle = '#fff'; g.fillRect(0, 0, lado, lado); g.drawImage(im, x, y, l, l, 0, 0, lado, lado);
+        const u = c.toDataURL('image/jpeg', q); if (u.length < FT_MAX) return ok(u);
+      }
+      no(new Error('grande')); }; im.src = r.result; };
+    r.readAsDataURL(arq);
+  });
+}
+async function ftGrava(img) {
+  const uid = S.user.id;
+  try { await Data.col('sv2_avatar').set(uid, { img: img }); S._ftFoto = { uid: uid, img: img }; aviso(img ? 'Foto salva. Ela aparece também nos outros apps da família.' : 'Foto tirada.'); render(); }
+  catch (e) { console.error(e); aviso(/permission/i.test((e && (e.code || e.message)) || '') ? 'O Firebase não deixou salvar a foto (permissão).' : 'Não deu para salvar a foto agora.', 'erro'); }
+}
+function ftLinha() {
+  const f = !!imgSrc(ftMinha());
+  return '<div class="adm-logo ft-linha"><span class="adm-lg ft-foto">' + (f ? '<img src="' + imgSrc(ftMinha()) + '" alt="Sua foto">' : esc(iniciais(S.user.nome))) + '</span><div><b>Foto</b><small>Aparece no menu e nos outros apps da família.</small>' +
+    '<div class="adm-lgb"><label class="bt">' + ic('imagem') + (f ? 'Trocar' : 'Escolher') + '<input type="file" id="ft-arq" accept="image/png,image/jpeg,image/webp" hidden></label>' +
+    (f ? '<button type="button" class="bt ic-so" data-act="ft-tira" title="Tirar a foto" aria-label="Tirar a foto">' + ic('lixo') + '</button>' : '') + '</div></div></div>';
+}
+document.addEventListener('change', e => {
+  if (!e.target || e.target.id !== 'ft-arq' || !S.user) return;
+  const a = e.target.files && e.target.files[0]; if (!a) return;
+  ftReduz(a).then(ftGrava).catch(er => aviso(er.message === 'grande' ? 'Esta foto não coube no limite. Tente outra.' : 'Não deu para ler esta imagem. Use PNG ou JPG.', 'erro'));
+});
+document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('[data-act="ft-tira"]'); if (t && S.user) ftGrava(''); });
+CS_CARGAS.push(() => { if (!S.user) return; const uid = S.user.id; Data.col('sv2_avatar').get(uid).then(d => { const img = (d && d.img) || ''; if (!S._ftFoto || S._ftFoto.uid !== uid || S._ftFoto.img !== img) { S._ftFoto = { uid: uid, img: img }; render(); } }).catch(() => {}); });
 
 /* ===== fluidez.js ===== */
 /* EFCwork · fluidez.js — v0.6.14 "Movimento" (aprovado em 13/11/2026). Prefixo: fz.

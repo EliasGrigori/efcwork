@@ -1,0 +1,28 @@
+/* Documentos da remessa (v0.6.33) — só tokens. OPÇÃO 2 aprovada (ITEM 178): etapas por papel. */
+.dr{margin:4px 0 14px}
+.dr-h{display:flex;align-items:baseline;gap:8px}
+.dr-h small{font-weight:500;color:var(--tx3);font-size:13px}
+.dr-l{border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg1);overflow:hidden;margin-top:6px}
+.dr-i{display:flex;align-items:center;gap:10px;padding:8px 12px;min-height:56px;border-bottom:1px solid var(--bd)}
+.dr-i:last-child{border-bottom:0}
+.dr-t{display:flex;flex-direction:column;min-width:0;flex:1}
+.dr-t b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dr-t small{color:var(--tx2);font-size:13px}
+.dr-t small.wa{color:var(--wa)}
+.dr-ac{display:flex;gap:6px;flex:0 0 auto}
+.dr-ac .bt{width:36px;height:36px;padding:0;justify-content:center}
+.dr-ax{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.dr-axb{display:inline-flex;align-items:center;gap:4px;height:28px;padding:0 8px;border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg2);color:var(--tx2);font:inherit;font-size:13px;cursor:pointer}
+.dr-axb .ic{width:15px;height:15px}
+.dr-axb:hover{border-color:var(--bd2);color:var(--tx)}
+/* etapas */
+.dr-et{display:flex;gap:4px;margin-top:4px;flex-wrap:wrap}
+.dr-et i{font-style:normal;font-size:12px;padding:2px 8px;border-radius:999px;background:var(--bg2);color:var(--tx3)}
+.dr-et i.on{background:var(--okS);color:var(--ok)}
+/* foto da via assinada: lixeira e fechar no canto de cima */
+.dr-fv .dr-fva{position:absolute;top:16px;right:16px;display:flex;gap:8px}
+.dr-fv .dr-fva .bt{position:static}
+.dr-fvt{position:absolute;left:16px;bottom:16px;color:var(--onCr);font-size:13px;opacity:.85}
+@media(max-width:899px){
+  .dr-ac .bt{width:44px;height:44px}
+}

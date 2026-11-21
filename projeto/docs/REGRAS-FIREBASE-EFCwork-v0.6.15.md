@@ -101,6 +101,8 @@ Coluna "Estado": **Conferida** = conferida contra as regras em 06/11; **Trecho**
 | `sv2_impressos` | kit | criar, atualizar | Trecho |
 | `sv2_envio_imp` | kit | gravar | Trecho |
 | `sv2_treinos` | treinamentos | criar, atualizar | Trecho |
+| `sv2_rem_docs` | documentos da remessa (v0.6.33) | criar; atualizar só para tirar (removido) | Trecho (quem lança coletas, em nome dele; nada se apaga) |
+| `sv2_rem_arq` | documentos da remessa (v0.6.33) | criar (foto ou PDF da via assinada, até 900 mil letras) | Trecho (nunca muda nem se apaga); no backup só com "Incluir as fotos" |
 | `sv2_resumos` | semana (v0.6.19) | ler (Principal), gravar (Principal) | EFClaudian (o mesmo documento `sem_AAAA-SNN` do Arquivar; só o Principal grava) |
 | `sv2_alm_equip_foto` | backup (v0.6.30) | só ler (Administrador, no backup) | EFClaudian (regra dele; o EFCwork não grava); só entra com "Incluir as fotos" |
 | `sv2_alm_foto` | backup (v0.6.30) | só ler (Administrador, no backup) | EFClaudian (regra dele; o EFCwork não grava); só entra com "Incluir as fotos" |
@@ -138,6 +140,8 @@ match /sv2_envio_imp/{id} {
   allow create, update: if usuarioAtivo() && request.resource.data.porId == request.auth.uid;
   allow delete: if false;
 }
+match /sv2_rem_docs/{id} { ... }   // texto completo: REGRAS-FIRESTORE-EFCwork-v0.6.33-PROPOSTA.txt, bloco [R6]
+match /sv2_rem_arq/{id} { ... }    // idem; leitura só de quem lança coletas
 match /sv2_treinos/{id} {
   allow read: if usuarioAtivo();
   allow create: if liderOuPrincipal() && testeNovo();
