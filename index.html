@@ -492,6 +492,12 @@ button.cs-sync:focus-visible{outline:2px solid var(--a);outline-offset:1px}
   .cs-fer.solta{justify-content:flex-end;margin:0 0 12px}
   .gv{top:0}
 }
+/* v0.6.31 · Administração no alto do menu (no lugar do cartão da empresa) */
+.cs-adm{justify-content:flex-start;text-align:left;margin:0 4px 10px;height:auto;min-height:48px;padding:6px 10px;border:1px solid var(--sbBd);opacity:1}
+.cs-adm>span{display:flex;flex-direction:column;min-width:0}
+.cs-adm b{font-weight:600;font-size:14px}.cs-adm small{font-size:12px;opacity:.7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(min-width:900px){.m-ic .cs-adm{display:flex;border:0;min-height:38px;height:38px}.m-ic .cs-adm small{display:none}}
+.cs-lado .cs-adm{opacity:1}
 
 /* ===== tabela.css ===== */
 /* EFCwork · tabela.css — tabela padrão, janela retrátil, gaveta e impressão. Prefixos: tb-, dd-, gv- */
@@ -2425,6 +2431,12 @@ body:has(#gv) .pp-bar{display:none}
 .adm-avs{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
 .adm-en .cp>span{font-weight:600}
 @media(max-width:899px){.adm-gr{grid-template-columns:1fr}.adm-avs{grid-template-columns:1fr}}
+/* v0.6.31 · Empresa: duas colunas (Dados da empresa + Unidade | Tela de entrar); mensagem vazia não ocupa linha */
+.adm-emp{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
+.adm-col{display:grid;gap:16px;align-content:start;min-width:0}
+.adm-emp .adm-en{margin-top:0;max-width:none}
+.pn .en-msg:empty{display:none}
+@media(max-width:1099px){.adm-emp{grid-template-columns:1fr}}
 
 /* ===== pessoas.css ===== */
 .pes-cks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 12px}
@@ -2440,6 +2452,13 @@ body:has(#gv) .pp-bar{display:none}
 .bk-ck{display:flex;align-items:center;gap:8px;min-height:36px;font-size:14px}.bk-ck input{width:18px;height:18px}
 /* celular: botões lado a lado com a mesma largura (regra de 11/11) */
 @media (max-width:600px){.bk-bts{display:grid;grid-template-columns:1fr 1fr}.bk-bts .bt:only-child{grid-column:1/-1}}
+
+/* ===== foto.css ===== */
+/* foto.js · foto do perfil (v0.6.31) */
+.ft-linha{margin-bottom:4px}
+.ft-foto{border-radius:50%;font-weight:700;font-size:20px;color:var(--aTx);background:var(--aS)}
+.ft-foto img{object-fit:cover}
+.cs-av{overflow:hidden}.cs-av img{width:100%;height:100%;object-fit:cover;display:block}
 
 /* ===== fluidez.css ===== */
 /* EFCwork · fluidez.css — v0.6.14 "Movimento". Só tokens da escala comum (tools/visual/efc-movimento.css). */
@@ -2704,7 +2723,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = Mov;
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.6.30';
+const VERSAO = '0.6.31';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -3135,7 +3154,7 @@ const AREAS = [
   { id: 'almox', nome: 'Almoxarifado', ic: 'caixa', versao: 'v0.3', parcial: 'consultar e lançar prontos aqui; cadastro de material, kits, fotos e inventário seguem no EFClaudian', abas: [{ id: 'painel', nome: 'Painel' }, { id: 'materiais', nome: 'Materiais' }, { id: 'movimentacoes', nome: 'Movimentações' }, { id: 'solicitacoes', nome: 'Solicitações' }, { id: 'equipamentos', nome: 'Equipamentos' }, { id: 'contagem', nome: 'Contagem', oculta: true, pai: () => typeof cgDoEq === 'function' && cgDoEq() ? 'equipamentos' : 'materiais' }, { id: 'calibracao', nome: 'Calibração', oculta: true, pai: 'equipamentos' }] },
   { id: 'qualidade', nome: 'Qualidade', ic: 'escudo', versao: 'v0.7', parcial: 'Não conformidades, Análise de problemas, Treinamentos e Bugs e sugestões prontos aqui; Conversas seguem no EFClaudian (a Semana está em Relatórios)', abas: [{ id: 'nc', nome: 'Não conformidades' }, { id: 'analise', nome: 'Análise de problemas' }, { id: 'treinos', nome: 'Treinamentos' }, { id: 'bugs', nome: 'Bugs e sugestões' }] },
   { id: 'relatorios', nome: 'Relatórios', ic: 'graf', versao: 'v0.8', grupo: 'Análise', parcial: 'o Rateio, a Semana, o Almoxarifado do mês, os Documentos e os Apontamentos estão prontos aqui; Coletas em aberto vem depois', get negada() { return !!S.user && !(rlVe() || smVe() || amVe() || rdVe() || rpVe()); }, abas: [{ id: 'rateio', nome: 'Rateio', get negada() { return !!S.user && !rlVe(); } }, { id: 'semana', nome: 'Semana', get negada() { return !!S.user && !smVe(); } }, { id: 'almox', nome: 'Almoxarifado', get negada() { return !!S.user && !amVe(); } }, { id: 'documentos', nome: 'Documentos', get negada() { return !!S.user && !rdVe(); } }, { id: 'apontamentos', nome: 'Apontamentos', get negada() { return !!S.user && !rpVe(); } }] }, /* v0.6.18: Rateio (relatorios.js); sem a atribuição Rateios a área some (as outras abas entram por aqui depois) */
-  { id: 'adm', nome: 'Administração', ic: 'eng', rodape: true, abas: [{ id: 'empresa', nome: 'Empresa' }, { id: 'pessoas', nome: 'Pessoas', get negada() { return !!S.user && !pesVe(); } }, { id: 'perfil', nome: 'Meu perfil' }, { id: 'aparencia', nome: 'Aparência' }, { id: 'backup', nome: 'Backup', get negada() { return !isPrincipal(S.user); } }, { id: 'atividade', nome: 'Atividade', get negada() { return !isPrincipal(S.user); } }, { id: 'sobre', nome: 'Sobre' }] }
+  { id: 'adm', nome: 'Administração', ic: 'eng', rodape: true, abas: [{ id: 'empresa', nome: 'Empresa' }, { id: 'pessoas', nome: 'Pessoas', get negada() { return !!S.user && !pesVe(); } }, { id: 'perfil', nome: 'Meu perfil' }, { id: 'backup', nome: 'Backup', get negada() { return !isPrincipal(S.user); } }, { id: 'atividade', nome: 'Atividade', get negada() { return !isPrincipal(S.user); } }, { id: 'sobre', nome: 'Sobre' }] }
 ];
 const csArea = id => AREAS.find(a => a.id === id) || AREAS[0];
 
@@ -3218,9 +3237,11 @@ function csMarca() {
   const e = S.empresa || {}, logo = imgSrc(e.logo);
   return '<div class="cs-marca"><span class="cs-logo">' + (logo ? '<img src="' + logo + '" alt="">' : ic('broto')) + '</span><span class="cs-nm"><b>' + APP_NOME + '</b><span>família ' + APP_FAMILIA + '</span></span></div>';
 }
+/* v0.6.31: o cartão da empresa virou a entrada da Administração (pedido do Elias, 20/11); a empresa e a unidade ficam na linha de baixo */
 function csEmpresaBloco() {
-  const e = S.empresa || {}, un = (e.unidades || []), u = Store.get('cw-unidade') || (un[0] || '');
-  return '<button type="button" class="cs-emp" data-act="cs-emp" title="Empresa e unidade"><span><b>' + esc(e.nome || 'Sua empresa') + '</b><small>' + esc(un.length ? u : 'Configure em Administração') + '</small></span>' + ic('seta') + '</button>';
+  const e = S.empresa || {}, un = (e.unidades || []), u = Store.get('cw-unidade') || (un[0] || ''), on = S.rota.area === 'adm';
+  const sub = [e.nome || 'Empresa não configurada', un.length ? u : ''].filter(Boolean).join(' · ');
+  return '<a class="cs-it cs-emp cs-adm' + (on ? ' on' : '') + '" href="#/adm"' + (on ? ' aria-current="page"' : '') + ' title="Administração">' + ic('eng') + '<span><b>Administração</b><small>' + esc(sub) + '</small></span></a>';
 }
 /* ---------- menu lateral retrátil (v0.5.3, Nº 48; aprovado 10/11: 3 estados + OPÇÃO 4 "botão que alterna") ----------
    Só no computador (≥ 900 px). Aberto → Só ícones → Recolhido, um toque no botão do topo do menu (os 3 pontinhos mostram onde está).
@@ -3272,9 +3293,9 @@ function csLado() {
     h += '<a class="cs-it' + (a.id === at ? ' on' : '') + '" style="--i:' + (n++) + '" href="#/' + a.id + '"' + (a.id === at ? ' aria-current="page"' : '') + '>' + ic(a.ic) + '<span>' + esc(a.nome) + '</span></a>';
   });
   h += csAppsFamilia(n);
-  const adm = csArea('adm'), u = S.user || {};
-  h += '</nav><div class="cs-pe"><a class="cs-it' + (at === 'adm' ? ' on' : '') + '" href="#/adm">' + ic(adm.ic) + '<span>' + adm.nome + '</span></a>' +
-    '<div class="cs-us"><span class="cs-av">' + esc(iniciais(u.nome)) + '</span><span class="cs-ust"><b>' + esc(u.nome || '') + '</b><small>' + esc(perfilLabel(u)) + '</small></span><button type="button" class="bt ic-so" data-act="cs-sair" title="Sair" aria-label="Sair">' + ic('sair') + '</button></div>' +
+  const u = S.user || {};
+  h += '</nav><div class="cs-pe">' +
+    '<div class="cs-us"><span class="cs-av">' + ftAvatar(u) + '</span><span class="cs-ust"><b>' + esc(u.nome || '') + '</b><small>' + esc(perfilLabel(u)) + '</small></span><button type="button" class="bt ic-so" data-act="cs-sair" title="Sair" aria-label="Sair">' + ic('sair') + '</button></div>' +
     '<div class="cs-cw"><span>' + APP_APELIDO + '</span><span>v' + VERSAO + (DEMO ? ' · demonstração' : '') + '</span></div></div></aside>';
   return h;
 }
@@ -14723,7 +14744,7 @@ document.addEventListener('keydown', e => {
 function admEmpresa() {
   const e = S.empresa || {}, pode = isPrincipal(S.user), un = e.unidades || [], logo = imgSrc(e.logo);
   const minha = Store.get('cw-unidade') || un[0] || '';
-  return '<div class="adm-gr"><section class="pn"><div class="hd"><h3>Dados da empresa</h3><span class="sp"></span>' + (pode ? '' : '<span class="pill">só o Administrador altera</span>') + '</div>' +
+  return '<div class="adm-emp"><div class="adm-col"><section class="pn"><div class="hd"><h3>Dados da empresa</h3><span class="sp"></span>' + (pode ? '' : '<span class="pill">só o Administrador altera</span>') + '</div>' +
     '<form class="cpo" data-form="adm-empresa">' +
     '<div class="adm-logo"><span class="adm-lg">' + (logo ? '<img src="' + logo + '" alt="Logo atual">' : ic('imagem')) + '</span><div><b>Logo</b><small>PNG ou JPG; o app reduz para 256 px.</small>' +
     (pode ? '<div class="adm-lgb"><label class="bt">' + ic('imagem') + 'Escolher<input type="file" id="adm-logo" accept="image/png,image/jpeg,image/webp" hidden></label>' + (logo ? '<button type="button" class="bt ic-so" data-act="adm-tira-logo" title="Tirar a logo" aria-label="Tirar a logo">' + ic('lixo') + '</button>' : '') + '</div>' : '') + '</div></div>' +
@@ -14731,8 +14752,8 @@ function admEmpresa() {
     '<label class="cp">Unidades<textarea id="adm-un" rows="4"' + (pode ? '' : ' disabled') + ' placeholder="Uma por linha. Ex.: Unidade Sede">' + esc(un.join('\n')) + '</textarea><small>Uma por linha. Aparecem no menu e nos filtros.</small></label>' +
     (pode ? '<p class="en-msg" id="adm-msg" role="alert"></p><div><button class="bt pr" type="submit">Salvar</button></div>' : '') + '</form></section>' +
     '<section class="pn"><div class="hd"><h3>Unidade deste aparelho</h3></div><div class="cpo">' +
-    (un.length ? '<p class="ini-vz">Usada como padrão nos filtros, neste aparelho.</p>' + ddHTML('adm:unid', minha, un.map(x => [x, x])) : '<p class="ini-vz">Cadastre as unidades ao lado.</p>') +
-    '</div></section></div>' + admEntrar();
+    (un.length ? '<p class="ini-vz">Usada como padrão nos filtros, neste aparelho.</p>' + ddHTML('adm:unid', minha, un.map(x => [x, x])) : '<p class="ini-vz">Cadastre as unidades em Dados da empresa.</p>') +
+    '</div></section></div><div class="adm-col">' + admEntrar() + '</div></div>'; /* v0.6.31: empresa e tela de entrar juntas, lado a lado */
 }
 /* v0.4.2 — tela de entrar: foto da garota-propaganda, palavra grande (Escuro), faixa (Escuro) e avisos (Claro). Fica em sv2_cfg/entrar. */
 function admEntrar() {
@@ -14791,17 +14812,14 @@ document.addEventListener('submit', e => {
   const avisos = [0, 1, 2].map(i => [$('#adm-av' + i + 't').value.trim(), $('#adm-av' + i + 'd').value.trim()]).filter(x => x[0]);
   admGravaEntrar({ palavra: pal, faixa: faixa, avisos: avisos });
 });
-function admAparencia() {
-  return '<section class="pn adm-uma"><div class="hd"><h3>Tema</h3></div><div class="cpo"><p class="ini-vz">Vale só neste aparelho.</p>' + ddHTML('adm:tema', csTema(), [['claro', 'Claro'], ['escuro', 'Escuro (Dourado)']]) + '</div></section>';
-}
 function admSobre() {
   const l = [['App', APP_NOME + ' · ' + APP_APELIDO], ['Família', APP_FAMILIA], ['Versão', 'v' + VERSAO], ['Dados', DEMO ? 'Demonstração (só neste navegador)' : 'Firebase do EFClaudian (mesmas coleções)'], ['Empresa', (S.empresa && S.empresa.nome) || 'não configurada']];
   return '<section class="pn adm-uma"><div class="hd"><h3>Sobre</h3></div><dl class="adm-dl">' + l.map(x => '<dt>' + esc(x[0]) + '</dt><dd>' + esc(x[1]) + '</dd>').join('') + '</dl></section>';
 }
 TELAS.adm = function (aba) {
-  const t = { empresa: 'Empresa', aparencia: 'Aparência', atividade: 'Atividade', sobre: 'Sobre' }[aba] || 'Empresa';
+  const t = { empresa: 'Empresa', atividade: 'Atividade', sobre: 'Sobre' }[aba] || 'Empresa'; /* v0.6.31: a aba Aparência saiu; o tema fica no botão de lua/sol do topo */
   return cabecalho({ titulo: t, abaNome: t, meta: aba === 'empresa' ? [metaPl(isPrincipal(S.user) ? 'você pode alterar' : 'somente leitura', isPrincipal(S.user) ? 'ok' : '', 'info')] : aba === 'atividade' ? [metaPl('só o Principal vê', '', 'cadeado')] : [] }) +
-    (aba === 'aparencia' ? admAparencia() : aba === 'sobre' ? admSobre() : aba === 'atividade' ? atTela() : admEmpresa());
+    (aba === 'sobre' ? admSobre() : aba === 'atividade' ? atTela() : admEmpresa());
 };
 
 /* logo: reduz no aparelho antes de guardar (máx. 256 px) */
@@ -14975,7 +14993,7 @@ function pesLiberar(id) {
 /* ---------- Meu perfil (todo mundo) ---------- */
 function pesMeuPerfil() {
   const u = S.user, me = userById(u.id) || u;
-  return '<div class="adm-gr"><section class="pn"><div class="hd"><h3>Meus dados</h3></div><div class="cpo">' + gvCampos([['Nome', me.nome || ''], ['Login', me.login || ''], ['Perfil', perfilLabel(me)], ['Superiores', isPrincipal(me) ? '' : (pesSupTxt(me) || 'os Administradores')], ['Áreas', pesAtribTxt(me)]]) +
+  return '<div class="adm-gr"><section class="pn"><div class="hd"><h3>Meus dados</h3></div><div class="cpo">' + ftLinha() + gvCampos([['Nome', me.nome || ''], ['Login', me.login || ''], ['Perfil', perfilLabel(me)], ['Superiores', isPrincipal(me) ? '' : (pesSupTxt(me) || 'os Administradores')], ['Áreas', pesAtribTxt(me)]]) +
     '<label class="cp">Cargo<input id="pes-cargo" maxlength="60" value="' + esc(me.cargo || '') + '" placeholder="ex.: Técnica de laboratório"></label>' +
     '<label class="cp">Situação' + ddHTML('pes:status', me.status === 'ausente' ? 'ausente' : 'ativo', [['ativo', 'Presente'], ['ausente', 'Ausente (férias, folga): os pedidos vão para os Administradores']]) + '</label>' +
     '<div><button type="button" class="bt pr" data-act="pes-mp-ok">Salvar</button></div></div></section>' +
@@ -15141,6 +15159,49 @@ document.addEventListener('click', e => {
   const a = t.getAttribute('data-act');
   if (a === 'bk-salvar') bkSalvar(t); else if (a === 'bk-escolher') bkEscolher(); else if (a === 'bk-esquecer') bkEsquecer();
 });
+
+/* ===== foto.js ===== */
+/* EFCwork · foto.js — foto do perfil (v0.6.31). Prefixo: ft.
+   Grava em sv2_avatar/<uid> o campo img (data URL), a mesma coleção e a mesma regra que o EFClaudian já usa: cada pessoa grava só a
+   própria foto, com menos de 60 mil letras; o Administrador só pode apagar (img vazio). Assim a foto vale em todos os apps da família.
+   No aparelho a foto é recortada no centro (quadrada), reduzida a 192 px e salva em JPEG; a qualidade baixa até caber no limite. */
+const FT_MAX = 58000; /* folga sob os 60000 da regra */
+function ftMinha() { return (S._ftFoto && S._ftFoto.uid === (S.user && S.user.id)) ? S._ftFoto.img : ''; }
+/* o que vai na bolinha do menu: a foto, se houver; senão as iniciais */
+function ftAvatar(u) { return imgSrc(ftMinha()) ? '<img src="' + imgSrc(ftMinha()) + '" alt="">' : esc(iniciais((u || {}).nome)); }
+function ftReduz(arq) {
+  return new Promise((ok, no) => {
+    if (!arq || !/^image\//.test(arq.type)) return no(new Error('tipo'));
+    const r = new FileReader(); r.onerror = () => no(new Error('ler'));
+    r.onload = () => { const im = new Image(); im.onerror = () => no(new Error('img')); im.onload = () => {
+      const l = Math.min(im.width, im.height), x = (im.width - l) / 2, y = (im.height - l) / 2;
+      for (const [lado, q] of [[192, 0.86], [192, 0.75], [160, 0.7], [128, 0.65], [96, 0.6]]) {
+        const c = document.createElement('canvas'); c.width = c.height = lado; const g = c.getContext('2d');
+        g.fillStyle = '#fff'; g.fillRect(0, 0, lado, lado); g.drawImage(im, x, y, l, l, 0, 0, lado, lado);
+        const u = c.toDataURL('image/jpeg', q); if (u.length < FT_MAX) return ok(u);
+      }
+      no(new Error('grande')); }; im.src = r.result; };
+    r.readAsDataURL(arq);
+  });
+}
+async function ftGrava(img) {
+  const uid = S.user.id;
+  try { await Data.col('sv2_avatar').set(uid, { img: img }); S._ftFoto = { uid: uid, img: img }; aviso(img ? 'Foto salva. Ela aparece também nos outros apps da família.' : 'Foto tirada.'); render(); }
+  catch (e) { console.error(e); aviso(/permission/i.test((e && (e.code || e.message)) || '') ? 'O Firebase não deixou salvar a foto (permissão).' : 'Não deu para salvar a foto agora.', 'erro'); }
+}
+function ftLinha() {
+  const f = !!imgSrc(ftMinha());
+  return '<div class="adm-logo ft-linha"><span class="adm-lg ft-foto">' + (f ? '<img src="' + imgSrc(ftMinha()) + '" alt="Sua foto">' : esc(iniciais(S.user.nome))) + '</span><div><b>Foto</b><small>Aparece no menu e nos outros apps da família.</small>' +
+    '<div class="adm-lgb"><label class="bt">' + ic('imagem') + (f ? 'Trocar' : 'Escolher') + '<input type="file" id="ft-arq" accept="image/png,image/jpeg,image/webp" hidden></label>' +
+    (f ? '<button type="button" class="bt ic-so" data-act="ft-tira" title="Tirar a foto" aria-label="Tirar a foto">' + ic('lixo') + '</button>' : '') + '</div></div></div>';
+}
+document.addEventListener('change', e => {
+  if (!e.target || e.target.id !== 'ft-arq' || !S.user) return;
+  const a = e.target.files && e.target.files[0]; if (!a) return;
+  ftReduz(a).then(ftGrava).catch(er => aviso(er.message === 'grande' ? 'Esta foto não coube no limite. Tente outra.' : 'Não deu para ler esta imagem. Use PNG ou JPG.', 'erro'));
+});
+document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('[data-act="ft-tira"]'); if (t && S.user) ftGrava(''); });
+CS_CARGAS.push(() => { if (!S.user) return; const uid = S.user.id; Data.col('sv2_avatar').get(uid).then(d => { const img = (d && d.img) || ''; if (!S._ftFoto || S._ftFoto.uid !== uid || S._ftFoto.img !== img) { S._ftFoto = { uid: uid, img: img }; render(); } }).catch(() => {}); });
 
 /* ===== fluidez.js ===== */
 /* EFCwork · fluidez.js — v0.6.14 "Movimento" (aprovado em 13/11/2026). Prefixo: fz.

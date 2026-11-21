@@ -14,7 +14,7 @@ const AREAS = [
   { id: 'almox', nome: 'Almoxarifado', ic: 'caixa', versao: 'v0.3', parcial: 'consultar e lançar prontos aqui; cadastro de material, kits, fotos e inventário seguem no EFClaudian', abas: [{ id: 'painel', nome: 'Painel' }, { id: 'materiais', nome: 'Materiais' }, { id: 'movimentacoes', nome: 'Movimentações' }, { id: 'solicitacoes', nome: 'Solicitações' }, { id: 'equipamentos', nome: 'Equipamentos' }, { id: 'contagem', nome: 'Contagem', oculta: true, pai: () => typeof cgDoEq === 'function' && cgDoEq() ? 'equipamentos' : 'materiais' }, { id: 'calibracao', nome: 'Calibração', oculta: true, pai: 'equipamentos' }] },
   { id: 'qualidade', nome: 'Qualidade', ic: 'escudo', versao: 'v0.7', parcial: 'Não conformidades, Análise de problemas, Treinamentos e Bugs e sugestões prontos aqui; Conversas seguem no EFClaudian (a Semana está em Relatórios)', abas: [{ id: 'nc', nome: 'Não conformidades' }, { id: 'analise', nome: 'Análise de problemas' }, { id: 'treinos', nome: 'Treinamentos' }, { id: 'bugs', nome: 'Bugs e sugestões' }] },
   { id: 'relatorios', nome: 'Relatórios', ic: 'graf', versao: 'v0.8', grupo: 'Análise', parcial: 'o Rateio, a Semana, o Almoxarifado do mês, os Documentos e os Apontamentos estão prontos aqui; Coletas em aberto vem depois', get negada() { return !!S.user && !(rlVe() || smVe() || amVe() || rdVe() || rpVe()); }, abas: [{ id: 'rateio', nome: 'Rateio', get negada() { return !!S.user && !rlVe(); } }, { id: 'semana', nome: 'Semana', get negada() { return !!S.user && !smVe(); } }, { id: 'almox', nome: 'Almoxarifado', get negada() { return !!S.user && !amVe(); } }, { id: 'documentos', nome: 'Documentos', get negada() { return !!S.user && !rdVe(); } }, { id: 'apontamentos', nome: 'Apontamentos', get negada() { return !!S.user && !rpVe(); } }] }, /* v0.6.18: Rateio (relatorios.js); sem a atribuição Rateios a área some (as outras abas entram por aqui depois) */
-  { id: 'adm', nome: 'Administração', ic: 'eng', rodape: true, abas: [{ id: 'empresa', nome: 'Empresa' }, { id: 'pessoas', nome: 'Pessoas', get negada() { return !!S.user && !pesVe(); } }, { id: 'perfil', nome: 'Meu perfil' }, { id: 'aparencia', nome: 'Aparência' }, { id: 'backup', nome: 'Backup', get negada() { return !isPrincipal(S.user); } }, { id: 'atividade', nome: 'Atividade', get negada() { return !isPrincipal(S.user); } }, { id: 'sobre', nome: 'Sobre' }] }
+  { id: 'adm', nome: 'Administração', ic: 'eng', rodape: true, abas: [{ id: 'empresa', nome: 'Empresa' }, { id: 'pessoas', nome: 'Pessoas', get negada() { return !!S.user && !pesVe(); } }, { id: 'perfil', nome: 'Meu perfil' }, { id: 'backup', nome: 'Backup', get negada() { return !isPrincipal(S.user); } }, { id: 'atividade', nome: 'Atividade', get negada() { return !isPrincipal(S.user); } }, { id: 'sobre', nome: 'Sobre' }] }
 ];
 const csArea = id => AREAS.find(a => a.id === id) || AREAS[0];
 
@@ -97,9 +97,11 @@ function csMarca() {
   const e = S.empresa || {}, logo = imgSrc(e.logo);
   return '<div class="cs-marca"><span class="cs-logo">' + (logo ? '<img src="' + logo + '" alt="">' : ic('broto')) + '</span><span class="cs-nm"><b>' + APP_NOME + '</b><span>família ' + APP_FAMILIA + '</span></span></div>';
 }
+/* v0.6.31: o cartão da empresa virou a entrada da Administração (pedido do Elias, 20/11); a empresa e a unidade ficam na linha de baixo */
 function csEmpresaBloco() {
-  const e = S.empresa || {}, un = (e.unidades || []), u = Store.get('cw-unidade') || (un[0] || '');
-  return '<button type="button" class="cs-emp" data-act="cs-emp" title="Empresa e unidade"><span><b>' + esc(e.nome || 'Sua empresa') + '</b><small>' + esc(un.length ? u : 'Configure em Administração') + '</small></span>' + ic('seta') + '</button>';
+  const e = S.empresa || {}, un = (e.unidades || []), u = Store.get('cw-unidade') || (un[0] || ''), on = S.rota.area === 'adm';
+  const sub = [e.nome || 'Empresa não configurada', un.length ? u : ''].filter(Boolean).join(' · ');
+  return '<a class="cs-it cs-emp cs-adm' + (on ? ' on' : '') + '" href="#/adm"' + (on ? ' aria-current="page"' : '') + ' title="Administração">' + ic('eng') + '<span><b>Administração</b><small>' + esc(sub) + '</small></span></a>';
 }
 /* ---------- menu lateral retrátil (v0.5.3, Nº 48; aprovado 10/11: 3 estados + OPÇÃO 4 "botão que alterna") ----------
    Só no computador (≥ 900 px). Aberto → Só ícones → Recolhido, um toque no botão do topo do menu (os 3 pontinhos mostram onde está).
@@ -151,9 +153,9 @@ function csLado() {
     h += '<a class="cs-it' + (a.id === at ? ' on' : '') + '" style="--i:' + (n++) + '" href="#/' + a.id + '"' + (a.id === at ? ' aria-current="page"' : '') + '>' + ic(a.ic) + '<span>' + esc(a.nome) + '</span></a>';
   });
   h += csAppsFamilia(n);
-  const adm = csArea('adm'), u = S.user || {};
-  h += '</nav><div class="cs-pe"><a class="cs-it' + (at === 'adm' ? ' on' : '') + '" href="#/adm">' + ic(adm.ic) + '<span>' + adm.nome + '</span></a>' +
-    '<div class="cs-us"><span class="cs-av">' + esc(iniciais(u.nome)) + '</span><span class="cs-ust"><b>' + esc(u.nome || '') + '</b><small>' + esc(perfilLabel(u)) + '</small></span><button type="button" class="bt ic-so" data-act="cs-sair" title="Sair" aria-label="Sair">' + ic('sair') + '</button></div>' +
+  const u = S.user || {};
+  h += '</nav><div class="cs-pe">' +
+    '<div class="cs-us"><span class="cs-av">' + ftAvatar(u) + '</span><span class="cs-ust"><b>' + esc(u.nome || '') + '</b><small>' + esc(perfilLabel(u)) + '</small></span><button type="button" class="bt ic-so" data-act="cs-sair" title="Sair" aria-label="Sair">' + ic('sair') + '</button></div>' +
     '<div class="cs-cw"><span>' + APP_APELIDO + '</span><span>v' + VERSAO + (DEMO ? ' · demonstração' : '') + '</span></div></div></aside>';
   return h;
 }

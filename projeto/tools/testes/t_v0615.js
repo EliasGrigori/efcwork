@@ -113,7 +113,7 @@ async function login(p) {
   console.log('Aprovados por partes (14/11 09:28):');
   await p.evaluate(() => { location.hash = '#/almox/materiais'; }); await p.waitForTimeout(600);
   const ap = await p.evaluate(() => { const g = (s, f) => { const e = document.querySelector(s); return e ? getComputedStyle(e)[f] : ''; };
-    const td = document.querySelector('.tb-t tbody td'); const fam = document.querySelector('.cs-app-l'); const it = document.querySelector('.cs-lado .cs-it:not(.on):not(.cs-app-l)');
+    const td = document.querySelector('.tb-t tbody td'); const fam = document.querySelector('.cs-app-l'); const it = document.querySelector('.cs-lado .cs-it:not(.on):not(.cs-app-l):not(.cs-adm)');
     return { icb: g('.tb-bar .bt.ic-so', 'borderTopColor'), icbg: g('.tb-bar .bt.ic-so', 'backgroundColor'), h1: g('.cs-ph h1', 'fontSize'), row: td ? Math.round(td.getBoundingClientRect().height) : 0, linha: td ? getComputedStyle(td).borderRightWidth : '', famOp: fam ? getComputedStyle(fam).opacity : '1', famBd: fam ? getComputedStyle(fam).borderTopWidth : '1px', itOp: it ? getComputedStyle(it).opacity : '' }; });
   conf(/rgba\(0, 0, 0, 0\)|transparent/.test(ap.icb) && /rgba\(0, 0, 0, 0\)|transparent/.test(ap.icbg), 'ITEM 2: botão só de ícone sem contorno parado');
   conf(ap.h1 === '26px', 'ITEM 6: título da página com 26 px');

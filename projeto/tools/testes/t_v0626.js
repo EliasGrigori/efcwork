@@ -9,7 +9,7 @@ const msg = p => p.evaluate(() => (document.querySelector('#gv .fm-msg') || {}).
   console.log('— Aba e lista');
   await ir(p, 'adm/pessoas', 1000);
   const v = await p.evaluate(() => ({ abas: [...document.querySelectorAll('.cs-abas a')].map(e => e.textContent.trim()), n: document.querySelectorAll('[data-tb="pes-lista"] tbody tr, #tb-pes-lista tbody tr, .tb-w tbody tr').length, bt: !!document.querySelector('[data-act="pes-novo"]'), lado: document.documentElement.scrollWidth > innerWidth }));
-  conf(v.abas.join() === 'Empresa,Pessoas,Meu perfil,Aparência,Backup,Atividade,Sobre', 'abas da Administração: ' + v.abas.join());
+  conf(v.abas.join() === 'Empresa,Pessoas,Meu perfil,Backup,Atividade,Sobre', 'abas da Administração: ' + v.abas.join());
   conf(v.n >= 1 && v.bt && !v.lado, 'tabela de pessoas com "Nova pessoa" para o Administrador (' + v.n + ' linhas)');
   console.log('— Nova pessoa');
   await p.click('[data-act="pes-novo"]'); await p.waitForTimeout(500);

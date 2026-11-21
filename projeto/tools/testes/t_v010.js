@@ -27,9 +27,9 @@ const conf = (c, msg) => { if (c) { ok++; console.log('  ok  ' + msg); } else { 
   conf(await p.isVisible('.cs-lado'), 'depois do primeiro acesso entra no app');
   const h1 = await p.textContent('.cs-ph h1');
   conf(/^(Bom dia|Boa tarde|Boa noite), Joana$/.test(h1.trim()), 'Início saúda pelo primeiro nome: "' + h1.trim() + '"');
-  conf((await p.$$('.cs-nav .cs-it:not(.cs-app-l)')).length === 8 && (await p.$$('.cs-nav .cs-app-l')).length === 2 && await p.isVisible('.cs-pe .cs-it'), 'menu lateral: Início + 6 áreas + Relatórios, os 2 Apps da família (v0.6.9) e Administração no pé');
+  conf((await p.$$('.cs-nav .cs-it:not(.cs-app-l)')).length === 8 && (await p.$$('.cs-nav .cs-app-l')).length === 2 && await p.isVisible('.cs-adm') && !(await p.$('.cs-pe .cs-it')), 'menu lateral: Início + 6 áreas + Relatórios, os 2 Apps da família (v0.6.9) e Administração no alto (v0.6.31; antes no pé)');
   conf(/Cwork Quality/.test(await p.textContent('.cs-cw')) && /Cwork Quality/.test(await p.textContent('.cs-rod')), '"Cwork Quality" no pé do menu e da página');
-  conf(/Sua empresa/.test(await p.textContent('.cs-emp')), 'sem empresa configurada: "Sua empresa"');
+  conf(/Administração/.test(await p.textContent('.cs-emp')) && /Empresa não configurada/.test(await p.textContent('.cs-emp')), 'sem empresa configurada: Administração e "Empresa não configurada" (v0.6.31)');
   await p.screenshot({ path: path.join(SHOTS, 'pc-claro-inicio.png') });
   /* áreas e abas */
   const rotas = await p.evaluate(() => AREAS.map(a => ({ id: a.id, abas: a.abas.filter(x => !x.oculta).map(x => x.id) }))); /* v0.3.2: telas de ação (oculta) não contam como aba */

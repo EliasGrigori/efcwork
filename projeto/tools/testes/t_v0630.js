@@ -9,7 +9,7 @@ const srv = require('child_process').spawn('python3', ['-m', 'http.server', '876
   const erros = []; p.on('pageerror', e => erros.push(String(e))); 
   console.log('— aba e tela');
   await ir(p, 'adm/backup', 900);
-  conf(await p.evaluate(() => VERSAO === '0.6.30'), 'versão 0.6.30');
+  conf(await p.evaluate(() => /^0\.6\.(3\d|[4-9]\d)$/.test(VERSAO)), 'versão 0.6.30 ou mais nova');
   conf(await p.evaluate(() => !!document.querySelector('[data-act="bk-salvar"]')), 'botão Salvar backup na tela');
   conf(await p.evaluate(() => !![...document.querySelectorAll('.cs-abas a')].find(a => /Backup/.test(a.textContent))), 'aba Backup aparece para o Administrador');
 
@@ -19,7 +19,7 @@ const srv = require('child_process').spawn('python3', ['-m', 'http.server', '876
   const nome = dl.suggestedFilename(); const fs = require('fs'); const tmp = '/tmp/bk-teste.json'; await dl.saveAs(tmp);
   const j = JSON.parse(fs.readFileSync(tmp, 'utf8'));
   conf(/^efcwork-backup-\d{4}-\d{2}-\d{2}-\d{4}\.json$/.test(nome), 'nome do arquivo: ' + nome);
-  conf(j.app === 'EFCwork' && j.versao === '0.6.30' && j.cols && typeof j.cols === 'object', 'formato { app, versao, cols }');
+  conf(j.app === 'EFCwork' && j.versao === await p.evaluate(() => VERSAO) && j.cols && typeof j.cols === 'object', 'formato { app, versao, cols }');
   conf(Array.isArray(j.cols.sv2_users) && j.cols.sv2_users.length > 0, 'leva as pessoas: ' + (j.cols.sv2_users || []).length);
   conf(!('sv2_login' in j.cols) && !('sv2_recup' in j.cols), 'sv2_login e sv2_recup fora');
   conf(!('sv2_fotos' in j.cols), 'fotos fora quando a caixa não está marcada');

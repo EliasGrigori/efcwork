@@ -129,7 +129,7 @@ function pesLiberar(id) {
 /* ---------- Meu perfil (todo mundo) ---------- */
 function pesMeuPerfil() {
   const u = S.user, me = userById(u.id) || u;
-  return '<div class="adm-gr"><section class="pn"><div class="hd"><h3>Meus dados</h3></div><div class="cpo">' + gvCampos([['Nome', me.nome || ''], ['Login', me.login || ''], ['Perfil', perfilLabel(me)], ['Superiores', isPrincipal(me) ? '' : (pesSupTxt(me) || 'os Administradores')], ['Áreas', pesAtribTxt(me)]]) +
+  return '<div class="adm-gr"><section class="pn"><div class="hd"><h3>Meus dados</h3></div><div class="cpo">' + ftLinha() + gvCampos([['Nome', me.nome || ''], ['Login', me.login || ''], ['Perfil', perfilLabel(me)], ['Superiores', isPrincipal(me) ? '' : (pesSupTxt(me) || 'os Administradores')], ['Áreas', pesAtribTxt(me)]]) +
     '<label class="cp">Cargo<input id="pes-cargo" maxlength="60" value="' + esc(me.cargo || '') + '" placeholder="ex.: Técnica de laboratório"></label>' +
     '<label class="cp">Situação' + ddHTML('pes:status', me.status === 'ausente' ? 'ausente' : 'ativo', [['ativo', 'Presente'], ['ausente', 'Ausente (férias, folga): os pedidos vão para os Administradores']]) + '</label>' +
     '<div><button type="button" class="bt pr" data-act="pes-mp-ok">Salvar</button></div></div></section>' +

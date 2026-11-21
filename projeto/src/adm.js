@@ -3,7 +3,7 @@
 function admEmpresa() {
   const e = S.empresa || {}, pode = isPrincipal(S.user), un = e.unidades || [], logo = imgSrc(e.logo);
   const minha = Store.get('cw-unidade') || un[0] || '';
-  return '<div class="adm-gr"><section class="pn"><div class="hd"><h3>Dados da empresa</h3><span class="sp"></span>' + (pode ? '' : '<span class="pill">só o Administrador altera</span>') + '</div>' +
+  return '<div class="adm-emp"><div class="adm-col"><section class="pn"><div class="hd"><h3>Dados da empresa</h3><span class="sp"></span>' + (pode ? '' : '<span class="pill">só o Administrador altera</span>') + '</div>' +
     '<form class="cpo" data-form="adm-empresa">' +
     '<div class="adm-logo"><span class="adm-lg">' + (logo ? '<img src="' + logo + '" alt="Logo atual">' : ic('imagem')) + '</span><div><b>Logo</b><small>PNG ou JPG; o app reduz para 256 px.</small>' +
     (pode ? '<div class="adm-lgb"><label class="bt">' + ic('imagem') + 'Escolher<input type="file" id="adm-logo" accept="image/png,image/jpeg,image/webp" hidden></label>' + (logo ? '<button type="button" class="bt ic-so" data-act="adm-tira-logo" title="Tirar a logo" aria-label="Tirar a logo">' + ic('lixo') + '</button>' : '') + '</div>' : '') + '</div></div>' +
@@ -11,8 +11,8 @@ function admEmpresa() {
     '<label class="cp">Unidades<textarea id="adm-un" rows="4"' + (pode ? '' : ' disabled') + ' placeholder="Uma por linha. Ex.: Unidade Sede">' + esc(un.join('\n')) + '</textarea><small>Uma por linha. Aparecem no menu e nos filtros.</small></label>' +
     (pode ? '<p class="en-msg" id="adm-msg" role="alert"></p><div><button class="bt pr" type="submit">Salvar</button></div>' : '') + '</form></section>' +
     '<section class="pn"><div class="hd"><h3>Unidade deste aparelho</h3></div><div class="cpo">' +
-    (un.length ? '<p class="ini-vz">Usada como padrão nos filtros, neste aparelho.</p>' + ddHTML('adm:unid', minha, un.map(x => [x, x])) : '<p class="ini-vz">Cadastre as unidades ao lado.</p>') +
-    '</div></section></div>' + admEntrar();
+    (un.length ? '<p class="ini-vz">Usada como padrão nos filtros, neste aparelho.</p>' + ddHTML('adm:unid', minha, un.map(x => [x, x])) : '<p class="ini-vz">Cadastre as unidades em Dados da empresa.</p>') +
+    '</div></section></div><div class="adm-col">' + admEntrar() + '</div></div>'; /* v0.6.31: empresa e tela de entrar juntas, lado a lado */
 }
 /* v0.4.2 — tela de entrar: foto da garota-propaganda, palavra grande (Escuro), faixa (Escuro) e avisos (Claro). Fica em sv2_cfg/entrar. */
 function admEntrar() {
@@ -71,17 +71,14 @@ document.addEventListener('submit', e => {
   const avisos = [0, 1, 2].map(i => [$('#adm-av' + i + 't').value.trim(), $('#adm-av' + i + 'd').value.trim()]).filter(x => x[0]);
   admGravaEntrar({ palavra: pal, faixa: faixa, avisos: avisos });
 });
-function admAparencia() {
-  return '<section class="pn adm-uma"><div class="hd"><h3>Tema</h3></div><div class="cpo"><p class="ini-vz">Vale só neste aparelho.</p>' + ddHTML('adm:tema', csTema(), [['claro', 'Claro'], ['escuro', 'Escuro (Dourado)']]) + '</div></section>';
-}
 function admSobre() {
   const l = [['App', APP_NOME + ' · ' + APP_APELIDO], ['Família', APP_FAMILIA], ['Versão', 'v' + VERSAO], ['Dados', DEMO ? 'Demonstração (só neste navegador)' : 'Firebase do EFClaudian (mesmas coleções)'], ['Empresa', (S.empresa && S.empresa.nome) || 'não configurada']];
   return '<section class="pn adm-uma"><div class="hd"><h3>Sobre</h3></div><dl class="adm-dl">' + l.map(x => '<dt>' + esc(x[0]) + '</dt><dd>' + esc(x[1]) + '</dd>').join('') + '</dl></section>';
 }
 TELAS.adm = function (aba) {
-  const t = { empresa: 'Empresa', aparencia: 'Aparência', atividade: 'Atividade', sobre: 'Sobre' }[aba] || 'Empresa';
+  const t = { empresa: 'Empresa', atividade: 'Atividade', sobre: 'Sobre' }[aba] || 'Empresa'; /* v0.6.31: a aba Aparência saiu; o tema fica no botão de lua/sol do topo */
   return cabecalho({ titulo: t, abaNome: t, meta: aba === 'empresa' ? [metaPl(isPrincipal(S.user) ? 'você pode alterar' : 'somente leitura', isPrincipal(S.user) ? 'ok' : '', 'info')] : aba === 'atividade' ? [metaPl('só o Principal vê', '', 'cadeado')] : [] }) +
-    (aba === 'aparencia' ? admAparencia() : aba === 'sobre' ? admSobre() : aba === 'atividade' ? atTela() : admEmpresa());
+    (aba === 'sobre' ? admSobre() : aba === 'atividade' ? atTela() : admEmpresa());
 };
 
 /* logo: reduz no aparelho antes de guardar (máx. 256 px) */

@@ -14,3 +14,9 @@
 .adm-avs{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
 .adm-en .cp>span{font-weight:600}
 @media(max-width:899px){.adm-gr{grid-template-columns:1fr}.adm-avs{grid-template-columns:1fr}}
+/* v0.6.31 · Empresa: duas colunas (Dados da empresa + Unidade | Tela de entrar); mensagem vazia não ocupa linha */
+.adm-emp{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
+.adm-col{display:grid;gap:16px;align-content:start;min-width:0}
+.adm-emp .adm-en{margin-top:0;max-width:none}
+.pn .en-msg:empty{display:none}
+@media(max-width:1099px){.adm-emp{grid-template-columns:1fr}}
