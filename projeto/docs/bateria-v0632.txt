@@ -1,0 +1,68 @@
+Bateria EFCwork v0.6.32 · 20/11/2026
+t_html_seg.js :: erros de execução: 0
+t_regras_cobertura.js :: 60 ok, 0 falha(s)
+t_v010.js :: t_v010: 41 ok · 0 falha(s)
+t_v020.js :: t_v020: 49 ok · 0 falha(s)
+t_v030.js :: t_v030: 62 ok · 0 falha(s)
+t_v031.js :: t_v031: 49 ok · 0 falha(s)
+t_v032.js :: t_v032: 48 ok · 0 falha(s)
+t_v033.js :: t_v033: 39 ok · 0 falha(s)
+t_v034.js :: t_v034: 48 ok · 0 falha(s)
+t_v035.js :: t_v035: 35 ok · 0 falha(s)
+t_v036.js :: t_v036: 31 ok · 0 falha(s)
+t_v040.js :: t_v040: 45 ok · 0 falha(s)
+t_v041.js :: t_v041: 28 ok · 0 falha(s)
+t_v0410.js :: 13 ok, 0 falha(s)
+t_v0413.js :: 5 ok, 0 falha(s)
+t_v0414.js :: 41 ok, 0 falha(s)
+t_v0415.js :: 15 ok, 0 falha(s)
+t_v042.js :: t_v042: 36 ok · 0 falha(s)
+t_v044.js :: t_v044: 35 ok · 0 falha(s)
+t_v045.js :: t_v045: 39 ok · 0 falha(s)
+t_v046.js :: t_v046: 40 ok · 0 falha(s)
+t_v047.js :: t_v047: 52 ok · 0 falha(s)
+t_v048.js :: 45 ok, 0 falha(s)
+t_v049.js :: 41 ok, 0 falha(s)
+t_v050.js :: 61 ok, 0 falha(s)
+t_v051.js :: 25 ok, 0 falha(s)
+t_v053.js :: 26 ok, 0 falha(s)
+t_v060.js :: 70 ok, 0 falha(s)
+t_v061.js :: 60 ok, 0 falha(s)
+t_v0610.js :: 36 ok, 0 falhas
+t_v0611.js :: 32 ok, 0 falhas
+t_v0612.js :: 52 ok, 0 falhas
+t_v0614.js :: 47 ok, 0 falhas
+t_v06141.js :: 27 ok, 0 falhas
+t_v06142.js :: 34 ok, 0 falhas
+t_v0615.js :: 34 ok, 0 falhas
+t_v0615b.js :: 14 ok, 0 falhas
+t_v0615c.js :: 19 ok, 0 falhas
+t_v0615d.js :: 20 ok, 0 falha(s)
+t_v0615e.js :: 10 ok, 0 falha(s)
+t_v0615f.js :: 23 ok, 0 falha(s)
+t_v0615g.js :: 20 ok, 0 falha(s)
+t_v0615r.js :: 26 ok, 0 falhas
+t_v0616.js :: 53 ok, 0 falha(s)
+t_v0617.js :: 42 ok, 0 falha(s)
+t_v0618.js :: t_v0618: 29 ok · 0 falha(s)
+t_v0619.js :: t_v0619: 31 ok · 0 falha(s)
+t_v062.js :: 79 ok, 0 falhas
+t_v0620.js :: 35 ok, 0 falha(s)
+t_v0621.js :: 38 ok, 0 falha(s)
+t_v0623.js :: 21 ok, 0 falhas
+t_v0624.js :: 14 ok, 0 falhas
+t_v0625.js :: 32 ok, 0 falhas
+t_v0626.js :: 27 ok, 0 falhas
+t_v0627.js :: 26 ok, 0 falhas
+t_v0628.js :: 28 ok, 0 falhas
+t_v0629.js :: 23 ok, 0 falha(s)
+t_v063.js :: 58 ok, 0 falhas
+t_v0630.js :: 20 ok, 0 falhas
+t_v0631.js :: 17 ok, 0 falhas
+t_v0632.js :: 20 ok, 0 falhas
+t_v064.js :: 30 ok, 0 falhas
+t_v065.js :: 67 ok, 0 falhas
+t_v066.js :: 39 ok, 0 falhas
+t_v067.js :: 46 ok, 0 falhas
+t_v068.js :: 10 ok, 0 falhas
+t_v069.js :: 58 ok, 0 falhas

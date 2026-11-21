@@ -1,7 +1,8 @@
 /* EFCwork · tarefas.js — Meu dia: as tarefas na Início (v0.6.28). Prefixo: tf.
    Antes o EFCwork só lia as tarefas do EFClaudian. Agora cria, atribui, anda e conclui aqui, no mesmo sv2_tarefas:
    titulo, descricao, respId, respNome, prazo, hora, status (todo | doing | done | cancelada), criadoPor, criadoPorNome, criadoEm,
-   concluidaEm, concluidaPorNome, canceladaMotivo, hist[]. Os campos que a Início já lia (titulo, respId, prazo, hora, status, excluida) não mudam.
+   concluidaEm, concluidaPorNome, canceladaMotivo, hist[]. v0.6.32: + porId (quem gravou), que a regra do Firestore exige para passar tarefa a outra pessoa
+   (sem ele, o Líder ★ e o Administrador eram barrados ao criar para um liderado e quem passou não conseguia editar nem cancelar). Os campos que a Início já lia (titulo, respId, prazo, hora, status, excluida) não mudam.
    Quem passa tarefa para outra pessoa: Líder ★ e Administrador (para os liderados e para quem quiser); o Colaborador cria só para si.
    Quem mexe: o responsável (andar, concluir), quem criou e o Administrador (editar, cancelar). Aviso no sino para quem recebe e, ao concluir, para quem passou. */
 /* v0.6.28 (pedido do Elias 20/11 14:39): tarefas que se repetem e agenda. Campo repete: util (seg a sex) | diaria | semanal | quinzenal | mensal | anual,
@@ -89,10 +90,11 @@ function tfEdOk() {
   const avisa = id => { if (ru.id !== S.user.id && (!x || x.respId !== ru.id)) Notif.send({ nivel: 'aviso', titulo: (o.repete ? 'Rotina para você: ' : 'Tarefa para você: ') + titulo, texto: (o.prazo ? (o.repete ? 'Começa em ' : 'Prazo ') + fmtD(o.prazo) + (o.hora ? ' às ' + o.hora : '') + '. ' : '') + (o.repete ? 'Repete ' + TF_REP_CURTO[o.repete] + '. ' : '') + 'Passada por ' + S.user.nome + '.', para: [ru.id], refTipo: 'tarefa', refId: id }).catch(() => {}); };
   if (x) {
     o.hist = tfHist(x, x.respId !== ru.id ? 'Passou para ' + ru.nome : 'Editou a tarefa'); if (o.repete && !x.serieId) o.serieId = x.id;
+    if (!x.porId && x.criadoPor && isPrincipal(S.user)) o.porId = x.criadoPor; /* v0.6.32: tarefa antiga sem porId (a regra só deixa quem passou mexer se o porId for dele) */
     Audit.log({ acao: 'editar_tarefa', entidade: 'tarefa', entidadeId: x.id, resumo: 'Editou a tarefa ' + titulo });
     avisa(x.id); f.volta = null; lcGrava([Data.col('sv2_tarefas').update(x.id, o)], 'Tarefa salva.', () => tfAbre(x.id));
   } else {
-    const id = Data.novoId('sv2_tarefas'); Object.assign(o, { status: 'todo', serieId: o.repete ? id : '', criadoPor: S.user.id, criadoPorNome: S.user.nome, criadoEm: nowISO(), hist: [{ ts: nowISO(), porNome: S.user.nome, txt: (o.repete ? 'Criou a rotina (' + TF_REP_CURTO[o.repete] + ')' : 'Anotou a tarefa') + (ru.id === S.user.id ? '' : ' para ' + ru.nome) }] });
+    const id = Data.novoId('sv2_tarefas'); Object.assign(o, { status: 'todo', serieId: o.repete ? id : '', porId: S.user.id, criadoPor: S.user.id, criadoPorNome: S.user.nome, criadoEm: nowISO(), hist: [{ ts: nowISO(), porNome: S.user.nome, txt: (o.repete ? 'Criou a rotina (' + TF_REP_CURTO[o.repete] + ')' : 'Anotou a tarefa') + (ru.id === S.user.id ? '' : ' para ' + ru.nome) }] });
     Audit.log({ acao: 'criar_tarefa', entidade: 'tarefa', entidadeId: id, resumo: 'Criou ' + (o.repete ? 'a rotina ' : 'a tarefa ') + titulo + (ru.id !== S.user.id ? ' para ' + ru.nome : '') + (o.repete ? ' (' + TF_REP_CURTO[o.repete] + ')' : '') });
     avisa(id); lcGrava([Data.col('sv2_tarefas').set(id, o)], (o.repete ? 'Rotina criada' : 'Tarefa anotada') + (ru.id === S.user.id ? '.' : ' para ' + ru.nome + '.'), () => { if (!S.tarefas.some(t => t.id === id)) S.tarefas.push(Object.assign({ id }, o)); if (S.gv) gvFecharSo(); render(); });
   }
@@ -102,7 +104,7 @@ function tfEdOk() {
 function tfGrava(t, patch, msg, depois) { return Data.col('sv2_tarefas').update(t.id, patch).then(() => { Object.assign(t, patch); aviso(msg); if (depois) depois(); }).catch(e => aviso(svErro(e), 'erro')); }
 function tfSeguinte(t) {
   if (!t.repete) return null; const id = Data.novoId('sv2_tarefas'), pz = tfProxima(t);
-  const o = { titulo: t.titulo, descricao: t.descricao || '', respId: t.respId, respNome: t.respNome || nomeDe(t.respId), prazo: pz, hora: t.hora || '', repete: t.repete, serieId: t.serieId || t.id, status: 'todo',
+  const o = { titulo: t.titulo, descricao: t.descricao || '', respId: t.respId, respNome: t.respNome || nomeDe(t.respId), prazo: pz, hora: t.hora || '', repete: t.repete, serieId: t.serieId || t.id, status: 'todo', porId: S.user.id,
     criadoPor: t.criadoPor || S.user.id, criadoPorNome: t.criadoPorNome || S.user.nome, criadoEm: nowISO(), hist: [{ ts: nowISO(), porNome: S.user.nome, txt: 'Rotina: próxima vez' }] };
   Data.col('sv2_tarefas').set(id, o).then(() => { if (!S.tarefas.some(x => x.id === id)) S.tarefas.push(Object.assign({ id }, o)); render(); }).catch(e => aviso(svErro(e), 'erro'));
   return pz;
