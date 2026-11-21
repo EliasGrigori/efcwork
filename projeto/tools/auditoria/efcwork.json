@@ -411,6 +411,28 @@
    ]
   },
   {
+   "nome": "Backup",
+   "passos": [
+    {
+     "eval": "location.hash='#/adm/backup'"
+    },
+    {
+     "espera": 600
+    }
+   ]
+  },
+  {
+   "nome": "Backup (depois de salvar)",
+   "passos": [
+    {
+     "eval": "Store.set('cw-bk-ultimo', JSON.stringify({em:new Date().toISOString(),nome:'efcwork-backup-2026-11-20-1830.json',docs:1234,tam:845000,onde:'na pasta \"Backups EFCwork\"'})); S._bkPasta='Backups EFCwork'; S._bkMsg=['Pronto: efcwork-backup-2026-11-20-1830.json (1234 registros, 825 KB) salvo na pasta \"Backups EFCwork\".', true]; render()"
+    },
+    {
+     "espera": 500
+    }
+   ]
+  },
+  {
    "nome": "Crie a sua senha (primeiro acesso)",
    "passos": [
     {

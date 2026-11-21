@@ -102,6 +102,16 @@ Coluna "Estado": **Conferida** = conferida contra as regras em 06/11; **Trecho**
 | `sv2_envio_imp` | kit | gravar | Trecho |
 | `sv2_treinos` | treinamentos | criar, atualizar | Trecho |
 | `sv2_resumos` | semana (v0.6.19) | ler (Principal), gravar (Principal) | EFClaudian (o mesmo documento `sem_AAAA-SNN` do Arquivar; só o Principal grava) |
+| `sv2_alm_equip_foto` | backup (v0.6.30) | só ler (Administrador, no backup) | EFClaudian (regra dele; o EFCwork não grava); só entra com "Incluir as fotos" |
+| `sv2_alm_foto` | backup (v0.6.30) | só ler (Administrador, no backup) | EFClaudian (regra dele; o EFCwork não grava); só entra com "Incluir as fotos" |
+| `sv2_alm_transf` | backup (v0.6.30) | só ler (Administrador, no backup) | EFClaudian (regra dele; o EFCwork não grava) |
+| `sv2_avatar` | backup (v0.6.30) | só ler (Administrador, no backup) | EFClaudian (regra dele; o EFCwork não grava); só entra com "Incluir as fotos" |
+| `sv2_chat` | backup (v0.6.30) | só ler (Administrador, no backup) | EFClaudian (regra dele; o EFCwork não grava) |
+| `sv2_conquistas` | backup (v0.6.30) | só ler (Administrador, no backup) | EFClaudian (regra dele; o EFCwork não grava) |
+| `sv2_normas` | backup (v0.6.30) | só ler (Administrador, no backup) | EFClaudian (regra dele; o EFCwork não grava) |
+| `sv2_normas_ed` | backup (v0.6.30) | só ler (Administrador, no backup) | EFClaudian (regra dele; o EFCwork não grava) |
+| `sv2_proc` | backup (v0.6.30) | só ler (Administrador, no backup) | EFClaudian (regra dele; o EFCwork não grava) |
+| `sv2_proc_pag` | backup (v0.6.30) | só ler (Administrador, no backup) | EFClaudian (regra dele; o EFCwork não grava) |
 
 ## 4. Trechos de regra prontos (já entregues nas versões; juntos aqui)
 

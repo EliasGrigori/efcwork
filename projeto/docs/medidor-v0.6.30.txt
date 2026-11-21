@@ -1,0 +1,81 @@
+Medidor da auditoria · EFCwork
+defeitos 0 · decisões 0 · ajustes 163 · avisos 0
+
+[ajuste] CSS · src/analise.css:70 | src/auditoria.css:120 | src/bugs.css:19
+    cor escrita direto: #bbb
+    → Trocar por um token de cor (var(--…)).
+[ajuste] CSS · src/analise.css:71
+    cor escrita direto: #333 #999
+    → Trocar por um token de cor (var(--…)).
+[ajuste] CSS · src/analise.css:72
+    cor escrita direto: #000 #fff
+    → Trocar por um token de cor (var(--…)).
+[ajuste] CSS · src/auditoria.css:91 | src/base.css:95 | src/entrar.css:66 … (+3)
+    cor escrita direto: #fff
+    → Trocar por um token de cor (var(--…)).
+[ajuste] CSS · src/auditoria.css:95 | src/auditoria.css:113 | src/auditoria.css:116 … (+8)
+    cor escrita direto: #000
+    → Trocar por um token de cor (var(--…)).
+[ajuste] CSS · src/auditoria.css:97 | src/auditoria.css:108 | src/auditoria.css:117 … (+1)
+    cor escrita direto: #444
+    → Trocar por um token de cor (var(--…)).
+[ajuste] CSS · src/auditoria.css:101 | src/auditoria.css:105 | src/auditoria.css:114 … (+4)
+    cor escrita direto: #555
+    → Trocar por um token de cor (var(--…)).
+[ajuste] CSS · src/auditoria.css:103 | src/auditoria.css:122 | src/auditoria.css:128 … (+3)
+    cor escrita direto: #999
+    → Trocar por um token de cor (var(--…)).
+[ajuste] CSS · src/auditoria.css:112 | src/auditoria.css:129 | src/bugs.css:10 … (+1)
+    cor escrita direto: #eee
+    → Trocar por um token de cor (var(--…)).
+[ajuste] CSS · src/auditoria.css:125 | src/bugs.css:11 | src/bugs.css:18 … (+1)
+    cor escrita direto: #333
+    → Trocar por um token de cor (var(--…)).
+[ajuste] CSS · src/base.css:46
+    cor escrita direto: #c99d48 #1c1406
+    → Trocar por um token de cor (var(--…)).
+[ajuste] CSS · src/calibracao.css:19
+    cor escrita direto: #f7df9e #d9b46a #b4862f
+    → Trocar por um token de cor (var(--…)).
+[ajuste] CSS · src/casca.css:7 | src/casca.css:163 | src/plano.css:13
+    cor escrita direto: #1c1406
+    → Trocar por um token de cor (var(--…)).
+[ajuste] CSS · src/casca.css:186
+    cor escrita direto: #fff7dc #d9b46a #9a7128
+    → Trocar por um token de cor (var(--…)).
+[ajuste] CSS · src/entrar.css:35
+    cor escrita direto: #f3eee3
+    → Trocar por um token de cor (var(--…)).
+[ajuste] CSS · src/entrar.css:42
+    cor escrita direto: #d9b46a
+    → Trocar por um token de cor (var(--…)).
+[ajuste] CSS · src/entrar.css:46
+    cor escrita direto: #0d0b14
+    → Trocar por um token de cor (var(--…)).
+[ajuste] CSS · src/entrar.css:50
+    cor escrita direto: #f7df9e #b4862f
+    → Trocar por um token de cor (var(--…)).
+[ajuste] CSS · src/entrar.css:60
+    cor escrita direto: #f3d9a6 #e6b46a #b9823a
+    → Trocar por um token de cor (var(--…)).
+[ajuste] CSS · src/fluidez.css:4
+    cor escrita direto: #7fd3a0
+    → Trocar por um token de cor (var(--…)).
+[ajuste] CSS · src/janelas.css:8
+    cor escrita direto: #fff #000
+    → Trocar por um token de cor (var(--…)).
+[ajuste] CSS · src/moderno.css:91 | src/moderno.css:92 | src/moderno.css:106
+    cor escrita direto: #fed
+    → Trocar por um token de cor (var(--…)).
+[ajuste] CSS · src/relapont.css:26
+    cor escrita direto: #222 #444 #bbb
+    → Trocar por um token de cor (var(--…)).
+[ajuste] App · Início · 1280 · claro | Documentos · 1280 · claro | Documentos › Impressos · 1280 · claro … (+54)
+    8 tamanhos de letra (meta: até 7)
+    → Juntar tamanhos parecidos.
+[ajuste] App · Almoxarifado · 1280 · claro | Reportar problema (gaveta) · 1280 · claro | Administração · 1280 · claro … (+7)
+    10 tamanhos de letra (meta: até 7)
+    → Juntar tamanhos parecidos.
+[ajuste] App · Folha por pessoa (gaveta) · 1280 · claro | Novo treinamento (gaveta) · 1280 · claro | Relatórios · Rateio · Água · 1280 · claro … (+29)
+    9 tamanhos de letra (meta: até 7)
+    → Juntar tamanhos parecidos.

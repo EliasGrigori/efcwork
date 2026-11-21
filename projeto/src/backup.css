@@ -1,0 +1,7 @@
+/* backup.js · Administração › Backup */
+.bk .cpo{display:grid;gap:14px}
+.bk-pasta{display:grid;gap:6px}.bk-rot{color:var(--tx3);font-size:12px}
+.bk-bts{display:flex;gap:8px;flex-wrap:wrap}.bk-bts .bt{min-height:36px}
+.bk-ck{display:flex;align-items:center;gap:8px;min-height:36px;font-size:14px}.bk-ck input{width:18px;height:18px}
+/* celular: botões lado a lado com a mesma largura (regra de 11/11) */
+@media (max-width:600px){.bk-bts{display:grid;grid-template-columns:1fr 1fr}.bk-bts .bt:only-child{grid-column:1/-1}}
