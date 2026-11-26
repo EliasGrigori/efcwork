@@ -1,4 +1,4 @@
-# EFCwork · CONTINUAR (26/11/2026, 16h20) · estado: v0.6.36 NO AR (P3c no app + P5, Vértice v0.6.74 em efcwork/vertice/); falta o EFCdocs (endereço antigo) e as regras no Firebase
+# EFCwork · CONTINUAR (26/11/2026, 18h) · estado: v0.6.36 NO AR (efcwork 84e1ddc; Vértice v0.6.74 em vertice/; EFCdocs 12f2466 leva ao endereço novo)
 
 Este arquivo substitui o CONTINUAR-EFCwork-v0.6.34.md. Ele é autossuficiente: quem ler só ele já sabe o que fazer.
 
@@ -15,7 +15,7 @@ Este arquivo substitui o CONTINUAR-EFCwork-v0.6.34.md. Ele é autossuficiente: q
 ## 1. TEXTO PARA COLAR NA CONVERSA NOVA
 
 
-> EFCwork, continuando. Anexei o pacote: CONTINUAR-EFCwork-v0.6.35.md, o dossiê, as pendências (PENDENCIAS-EFCwork-e-Vertice.md), o ZIP do app no ar (efcwork-v0.6.35.zip) e o PEDIDO-P3 refeito às 07:30 (para a P3c). Leia o CONTINUAR inteiro. Responda em 3 linhas: onde parou e qual é a próxima tarefa (P3c). Depois sugira o modelo e o esforço dessa tarefa em **negrito** e espere meu "pode iniciar". Siga o "Padrão de trabalho" do CONTINUAR sem eu repetir. Repositório: EliasGrigori/efcwork (anexe com add_repo; se não der, git clone); para testar a aba, clone EliasGrigori/EFCdocs só para leitura, fora do repositório do Cwork. Não abra o OneDrive. Nada no EFClaudian. GitHub só com "pode publicar". Fique em primeiro plano.
+> EFCwork, continuando. Anexei o pacote: CONTINUAR-EFCwork-v0.6.35.md, o dossiê, as pendências (PENDENCIAS-EFCwork-e-Vertice.md), o ZIP do app no ar (efcwork-v0.6.36.zip). Leia o CONTINUAR inteiro. Responda em 3 linhas: onde parou e qual é a próxima tarefa (aviso de versão nova, depois CSP e SDK). Depois sugira o modelo e o esforço dessa tarefa em **negrito** e espere meu "pode iniciar". Siga o "Padrão de trabalho" do CONTINUAR sem eu repetir. Repositório: EliasGrigori/efcwork (anexe com add_repo; se não der, git clone); o Vértice agora está na pasta vertice/ do próprio efcwork (o código dele é da conversa do Vértice; aqui só leitura). Não abra o OneDrive. Nada no EFClaudian. GitHub só com "pode publicar". Fique em primeiro plano.
 
 ## 2. O que fazer logo ao começar (ordem)
 1. Ler este arquivo e o fim do dossiê (seção "v0.6.25 · Relatórios › Apontamentos" e as anteriores de 20/11).

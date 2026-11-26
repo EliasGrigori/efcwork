@@ -1315,3 +1315,4 @@ Painel do rateio → Relatórios › Rateio (próxima tarefa). Insumo por amostr
 - **Página:** `docs/aprovacao-efcwork-v0.6.36-vertice-endereco.html` (ITENS 221 a 225).
 - **NÃO provado:** no site publicado e no celular de verdade (ícone antigo instalado, sem internet); bateria inteira nesta versão (roda antes de publicar).
 - **Respostas de 26/11 17:24 (ITENS 221 a 225):** todos Aprovado. "Pode iniciar" (17:24) e "Pode publicar" (17:28). Bateria inteira: 75 arquivos, 74 sem falha (t_v067, defeito anterior das datas, aberto). Publicado no efcwork: Cwork v0.6.36 (P3c no app + P5) e Vértice v0.6.74 em `vertice/`. As regras do Firestore v0.6.36 o Elias cola depois do Simulador.
+- **EFCdocs publicado (26/11 ~18h, commit 12f2466):** a raiz tem só a página que leva ao endereço novo, o sw.js que se desliga e o COMO-PUBLICAR apontando para o efcwork. efcwork no commit 84e1ddc.
