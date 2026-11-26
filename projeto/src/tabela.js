@@ -26,14 +26,18 @@ function tbSalvaTrava(id) {
   try { if (Object.keys(o).length) Store.set('cw-tbtrava-' + id, JSON.stringify(o)); else Store.del('cw-tbtrava-' + id); } catch {}
 }
 const tbNorm = s => String(s == null ? '' : s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+/* v0.6.35: busca do menu por palavras, em qualquer ordem, e número sem zero à esquerda ("isopor 5l" acha "CAIXA TERMICA ISOPOR 05L") */
+const tbBNum = s => tbNorm(s).replace(/(^|[^\d.,])0+(?=\d)/g, '$1');
+/* revisor: número da busca casa inteiro pelo começo ("5l" não acha "15l"); o fim pode continuar ("5" acha "5l") */
+function tbAcha(lab, q) { const l = tbBNum(lab); return tbBNum(q).split(/\s+/).filter(Boolean).every(w => { let i = l.indexOf(w); while (i >= 0) { if (!/\d/.test(w[0]) || i === 0 || !/[\d.,]/.test(l[i - 1])) return true; i = l.indexOf(w, i + 1); } return false; }); }
 /* texto que a célula mostra (é o que aparece na lista de valores do menu) */
 function tbRot(c, r) { const v = c.v(r); if (v == null || v === '') return ''; if (c.txt) return String(c.txt(r)); if (c.tipo === 'data') return fmtD(v); if (c.tipo === 'num' && typeof v === 'number') return c.fmtTotal ? c.fmtTotal(v) : numBR(v, c.dec); return String(v); }
 const tbVazio = x => x == null || x === '';
-const tbCfAtivo = f => !!f && (!!f.txt || !!f.sel || !tbVazio(f.min) || !tbVazio(f.max));
+const tbCfAtivo = f => !!f && (!!(f.txt && String(f.txt).trim()) || !!f.sel || !tbVazio(f.min) || !tbVazio(f.max));
 function tbPassaCol(c, f, r) {
   if (!tbCfAtivo(f)) return true; const lab = tbRot(c, r);
-  if (f.txt && tbNorm(lab).indexOf(tbNorm(f.txt)) < 0) return false;
-  if (f.sel && f.sel.indexOf(lab) < 0) return false;
+  /* v0.6.35 (pedido do Elias 26/11 14:24): com itens escolhidos, a busca do menu só serve para achar na lista; quem filtra é a escolha */
+  if (f.sel) { if (f.sel.indexOf(lab) < 0) return false; } else if (f.txt && !tbAcha(lab, f.txt)) return false;
   if (!tbVazio(f.min) || !tbVazio(f.max)) { const v = c.v(r); if (typeof v !== 'number') return false; if (!tbVazio(f.min) && v < Number(f.min)) return false; if (!tbVazio(f.max) && v > Number(f.max)) return false; }
   return true;
 }
@@ -180,7 +184,9 @@ function tbHTML(cfg) {
   h += '</tbody></table>' + (todas.length > l.length ? '<div class="tb-fim" data-tb="' + esc(cfg.id) + '" aria-hidden="true">Carregando mais…</div>' : '') + '</div>';
   h += '<div class="tb-pe" hidden><span>' + (carr ? 'Carregando…' : 'Mostrando <b>' + l.length + '</b> de ' + todas.length) + '</span>' + (cfg.rodape ? '<span>' + cfg.rodape(todas) + '</span>' : '') + (todas.length > l.length ? '<button type="button" class="bt" data-act="tb-mais" data-tb="' + esc(cfg.id) + '">Mostrar mais ' + Math.min(100, todas.length - l.length) + '</button>' : '') + '</div>';
   requestAnimationFrame(() => { tbAlinhaTot(); tbAltura(); });
-  if (mn) { h += (innerWidth < 600 ? '<div class="tb-mn-fundo" data-act="tb-mn-x"></div>' : '') + tbMenuHTML(cfg, mn); requestAnimationFrame(() => { tbPosMenu(); tbMnRestaura(); }); }
+  if (mn) { const ch = cfg.id + '|' + mn, fica = S._tbMnVisto === ch; /* v0.6.35: redesenho com o menu aberto (marcar um item): o menu fica parado, sem entrar de novo */
+    h += (innerWidth < 600 ? '<div class="tb-mn-fundo' + (fica ? ' tb-mn-fica' : '') + '" data-act="tb-mn-x"></div>' : '') + tbMenuHTML(cfg, mn).replace('<div class="tb-mn"', '<div class="tb-mn' + (fica ? ' tb-mn-fica' + (S._tbMnFolha ? ' tb-mn-folha' : '') + (S._tbMnCima ? ' tb-mn-cima' : '') + '" style="' + esc(S._tbMnSt || '') : '') + '"');
+    requestAnimationFrame(() => { tbPosMenu(); tbMnRestaura(); S._tbMnVisto = ch; }); }
   return h + '</div>';
 }
 function tbEsqueleto(cols) { const w = [62, 78, 54, 70, 46, 66, 58, 74]; let h = ''; for (let i = 0; i < 6; i++) h += '<tr class="tb-esq" aria-hidden="true">' + cols.map((c, j) => '<td' + (c.tipo === 'num' ? ' class="n"' : '') + '><i style="width:' + w[(i + j) % w.length] + '%"></i></td>').join('') + '</tr>'; return h; }
@@ -200,7 +206,7 @@ function tbMenuHTML(cfg, k) {
   const st = tbEstado(cfg.id), c = cfg.cols.find(x => x.k === k); if (!c) return '';
   const f = st.cf[k] || {}, tr = !!st.trava[k], dis = tr ? ' disabled' : '', o = st.ordem && st.ordem.k === k ? st.ordem.dir : '', id = esc(cfg.id);
   const nomes = c.tipo === 'num' ? ['Menor para o maior', 'Maior para o menor'] : c.tipo === 'data' ? ['Mais antiga primeiro', 'Mais recente primeiro'] : ['De A a Z', 'De Z a A'];
-  const vals = tbValores(cfg, c), bq = tbNorm(f.txt), vis = bq ? vals.filter(x => tbNorm(x.lab).indexOf(bq) >= 0) : vals, sel = f.sel;
+  const vals = tbValores(cfg, c), bq = tbNorm(f.txt).trim(), vis = bq ? vals.filter(x => tbAcha(x.lab, f.txt)) : vals, sel = f.sel;
   const pos = tbVisiveis(cfg).findIndex(x => x.k === k), nv = tbVisiveis(cfg).length;
   const lin = (act, ico, txt, on, extra) => '<button type="button" class="tb-mn-o' + (on ? ' on' : '') + '" data-act="' + act + '" data-tb="' + id + '" data-k="' + esc(k) + '"' + (extra || '') + dis + '>' + ic(ico) + '<span>' + txt + '</span>' + (on ? '<i>' + ic('ok') + '</i>' : '') + '</button>';
   let h = '<div class="tb-mn" data-tbmn="' + id + '" data-k="' + esc(k) + '" role="dialog" aria-label="Coluna ' + esc(c.rot) + '">' +
@@ -212,9 +218,11 @@ function tbMenuHTML(cfg, k) {
   if (pre.length) h += '<div class="tb-mn-g"><span class="tb-mn-h">Filtros prontos</span>' + pre.map(p => '<div class="tb-mn-pre' + (tr ? ' tb-mn-off' : '') + '">' + (pre.length > 1 || p.rot !== c.rot ? '<small>' + esc(p.rot) + '</small>' : '') + ddHTML('tbf:' + cfg.id + ':' + p.k, st.filtros[p.k] == null ? '' : st.filtros[p.k], [['', 'Todos']].concat(p.opcoes)) + '</div>').join('') + '</div>';
   h += '<div class="tb-mn-g tb-mn-fg"><span class="tb-mn-h">Filtrar</span><label class="tb-mn-bs">' + ic('lupa') + '<input type="search" data-tbmnbusca="' + id + '" data-k="' + esc(k) + '" value="' + esc(f.txt || '') + '" placeholder="Buscar em ' + esc(c.rot) + '" aria-label="Buscar em ' + esc(c.rot) + '"' + dis + '></label>';
   if (c.tipo === 'num') h += '<div class="tb-mn-nr"><label><small>De</small><input type="number" inputmode="decimal" data-tbmnmin="' + id + '" data-k="' + esc(k) + '" value="' + esc(f.min == null ? '' : f.min) + '" placeholder="mínimo"' + dis + '></label><label><small>Até</small><input type="number" inputmode="decimal" data-tbmnmax="' + id + '" data-k="' + esc(k) + '" value="' + esc(f.max == null ? '' : f.max) + '" placeholder="máximo"' + dis + '></label></div>';
-  const todosMarc = vis.length && vis.every(x => !sel || sel.indexOf(x.lab) >= 0), algum = vis.some(x => !sel || sel.indexOf(x.lab) >= 0);
+  /* buscando sem nada escolhido: a lista vem desmarcada para escolher (busca "isopor 5l", marca; busca "ph10", marca…) */
+  const chk = x => sel ? sel.indexOf(x.lab) >= 0 : !bq;
+  const todosMarc = vis.length && vis.every(chk), algum = vis.some(chk);
   h += '<div class="tb-mn-l">' + (vis.length ? '<label class="tb-mn-li tb-mn-all"><input type="checkbox" data-tbmnall="' + id + '" data-k="' + esc(k) + '"' + (todosMarc ? ' checked' : '') + (!todosMarc && algum ? ' data-meio="1"' : '') + dis + '><span>' + (bq ? 'Marcar os encontrados' : 'Marcar todos') + '</span><em>' + vis.reduce((s, x) => s + x.n, 0) + '</em></label>' : '') +
-    vis.slice(0, 400).map(x => '<label class="tb-mn-li"><input type="checkbox" data-tbmnv="' + id + '" data-k="' + esc(k) + '" value="' + esc(x.lab) + '"' + (!sel || sel.indexOf(x.lab) >= 0 ? ' checked' : '') + dis + '><span' + (x.lab === '' ? ' class="tb-mn-vz"' : '') + '>' + esc(x.lab === '' ? '(em branco)' : x.lab) + '</span><em>' + x.n + '</em></label>').join('') +
+    vis.slice(0, 400).map(x => '<label class="tb-mn-li"><input type="checkbox" data-tbmnv="' + id + '" data-k="' + esc(k) + '" value="' + esc(x.lab) + '"' + (chk(x) ? ' checked' : '') + dis + '><span' + (x.lab === '' ? ' class="tb-mn-vz"' : '') + '>' + esc(x.lab === '' ? '(em branco)' : x.lab) + '</span><em>' + x.n + '</em></label>').join('') +
     (!vis.length ? '<p class="tb-mn-nd">Nada com “' + esc(f.txt || '') + '”.</p>' : '') + '</div></div></div>';
   return h;
 }
@@ -226,7 +234,7 @@ function tbPosMenu() {
   const m = document.querySelector('.tb-mn'); if (!m) return;
   const meio = m.querySelector('[data-meio]'); if (meio) meio.indeterminate = true;
   const th = document.querySelector('.tb[data-tb="' + m.getAttribute('data-tbmn') + '"] th[data-tbk="' + m.getAttribute('data-k') + '"]');
-  if (!th || innerWidth < 600) { m.classList.add('tb-mn-folha'); return; }
+  if (!th || innerWidth < 600) { m.classList.add('tb-mn-folha'); tbMnGuarda(m); return; }
   m.classList.remove('tb-mn-folha'); m.style.maxHeight = '';
   let r = th.getBoundingClientRect(); const w = m.offsetWidth, hh = Math.min(m.scrollHeight, 640);
   const falta = r.bottom + 10 + hh - (innerHeight - 8);
@@ -237,7 +245,10 @@ function tbPosMenu() {
   const alt = Math.min(hh, sobe ? cima : baixo), y = sobe ? r.top - 8 - alt : r.bottom + 8;
   m.style.left = x + 'px'; m.style.top = y + 'px'; m.style.maxHeight = Math.max(200, alt) + 'px';
   m.style.setProperty('--tb-pt', Math.max(14, Math.min(w - 14, r.left + Math.min(r.width, 160) / 2 - x)) + 'px');
+  tbMnGuarda(m);
 }
+/* guarda onde o menu está, para o próximo desenho já nascer no mesmo lugar */
+function tbMnGuarda(m) { S._tbMnSt = m.getAttribute('style') || ''; S._tbMnFolha = m.classList.contains('tb-mn-folha'); S._tbMnCima = m.classList.contains('tb-mn-cima'); }
 addEventListener('resize', tbPosMenu); addEventListener('scroll', e => {
   if (!S.tbMenu) return; const t = e.target;
   if (t && t.classList && t.closest && t.closest('.tb-mn')) { if (t.classList.contains('tb-mn-l')) S._tbMnScroll = t.scrollTop; else if (t.classList.contains('tb-mn-corpo')) S._tbMnCorpo = t.scrollTop; return; }
@@ -245,9 +256,9 @@ addEventListener('resize', tbPosMenu); addEventListener('scroll', e => {
 }, true);
 function tbMenuAbre(id, k) {
   if (S.tbMenu && S.tbMenu.id === id && S.tbMenu.k === k) { tbMenuFecha(); return; }
-  const ja = !!S.tbMenu; S.tbMenu = { id: id, k: k, h: location.hash }; S._tbMnScroll = 0; S._tbMnCorpo = 0; S._tbMnRolou = false;
+  const ja = !!S.tbMenu; if (ja) tbMnAoFechar(); S.tbMenu = { id: id, k: k, h: location.hash }; S._tbMnVisto = ''; S._tbMnScroll = 0; S._tbMnCorpo = 0; S._tbMnRolou = false;
   /* no celular o menu é uma folha com camada do "voltar"; no computador não usa o histórico (era ele que engolia o 1º toque ao trocar de aba) */
-  if (!ja && innerWidth < 600) { S._tbMnCam = true; csCamadaAbre('tbmn', () => { S._tbMnCam = false; S.tbMenu = null; render(); tbMnRepassa(); }); }
+  if (!ja && innerWidth < 600) { S._tbMnCam = true; csCamadaAbre('tbmn', () => { S._tbMnCam = false; tbMnAoFechar(); S.tbMenu = null; render(); tbMnRepassa(); }); }
   render(); setTimeout(() => { const i = document.querySelector('.tb-mn [data-tbmnbusca]'); if (i && innerWidth >= 600 && !i.disabled) i.focus(); }, 30);
 }
 /* v0.5.1 (Grok v0.4.11 A2): no celular, tocar no fundo escuro fecha a folha e o mesmo toque segue para o botão ou a aba que estava embaixo
@@ -256,10 +267,14 @@ function tbMenuAbre(id, k) {
 const TB_REPASSA = 'button, a[href], [role="tab"], [data-act]';
 function tbMnAlvo(x, y) { const el = document.elementFromPoint(x, y), b = el && el.closest && el.closest(TB_REPASSA); if (!b || !b.closest('.cs-ct') || b.closest('tr[data-act="tb-lin"]') || b.closest('.tb-mn') || b.classList.contains('tb-mn-fundo') || b.disabled) return null; return b; }
 function tbMnRepassa() { const p = S._tbMnPt; S._tbMnPt = null; if (!p) return; requestAnimationFrame(() => { const b = tbMnAlvo(p.x, p.y); if (b) b.click(); }); }
-function tbMenuFecha() { if (!S.tbMenu) return; if (S._tbMnCam && S.camadas.length && S.camadas[S.camadas.length - 1].nome === 'tbmn') csVolta(); else { S.tbMenu = null; S._tbMnCam = false; render(); } }
+function tbMnAoFechar() {
+  const m = S.tbMenu; S._tbMnVisto = ''; if (!m) return; const st = tbEstado(m.id), f = st.cf[m.k];
+  if (f && f.txt && (f.sel || !f.txt.trim())) { f.txt = ''; tbSalvaTrava(m.id); }
+}
+function tbMenuFecha() { if (!S.tbMenu) return; if (S._tbMnCam && S.camadas.length && S.camadas[S.camadas.length - 1].nome === 'tbmn') csVolta(); else { tbMnAoFechar(); S.tbMenu = null; S._tbMnCam = false; render(); } }
 /* toque fora (computador): some com o menu sem redesenhar a tela nem mexer no histórico; o toque segue para o que foi tocado */
-function tbMenuFechaSolto() { const m = document.querySelector('.tb-mn'); if (m) m.remove(); $$('th.tb-ab').forEach(x => x.classList.remove('tb-ab')); $$('.tb-hm[aria-expanded="true"]').forEach(x => x.setAttribute('aria-expanded', 'false')); S.tbMenu = null; }
-window.addEventListener('hashchange', () => { if (S.tbMenu) { S.tbMenu = null; S._tbMnCam = false; S.camadas = S.camadas.filter(c => c.nome !== 'tbmn'); } });
+function tbMenuFechaSolto() { const m = document.querySelector('.tb-mn'); if (m) m.remove(); $$('th.tb-ab').forEach(x => x.classList.remove('tb-ab')); $$('.tb-hm[aria-expanded="true"]').forEach(x => x.setAttribute('aria-expanded', 'false')); tbMnAoFechar(); S.tbMenu = null; }
+window.addEventListener('hashchange', () => { if (S.tbMenu) { tbMnAoFechar(); S.tbMenu = null; S._tbMnCam = false; S.camadas = S.camadas.filter(c => c.nome !== 'tbmn'); } });
 function tbMuda(id, fn) { const st = tbEstado(id); fn(st); st.limite = 100; tbSalvaTrava(id); render(); }
 function tbMove(id, k, alvo, depois) {
   const cfg = TB[id], st = tbEstado(id); let o = tbOrdenadas(cfg).map(c => c.k).filter(x => x !== k);
@@ -406,11 +421,11 @@ document.addEventListener('change', e => {
   const mv = t.getAttribute('data-tbmnv') || t.getAttribute('data-tbmnall');
   if (mv) {
     const cfg = TB[mv], k = t.getAttribute('data-k'), c = cfg.cols.find(x => x.k === k), st = tbEstado(mv), f = st.cf[k] = st.cf[k] || {};
-    const vals = tbValores(cfg, c).map(x => x.lab), bq = tbNorm(f.txt), vis = bq ? vals.filter(x => tbNorm(x).indexOf(bq) >= 0) : vals;
-    let sel = f.sel ? f.sel.slice() : vals.slice();
+    const vals = tbValores(cfg, c).map(x => x.lab), bq = tbNorm(f.txt).trim(), vis = bq ? vals.filter(x => tbAcha(x, f.txt)) : vals;
+    let sel = f.sel ? f.sel.slice() : bq ? [] : vals.slice(); /* buscando sem nada escolhido: começa a escolher do zero */
     if (t.hasAttribute('data-tbmnall')) { if (t.checked) vis.forEach(x => { if (sel.indexOf(x) < 0) sel.push(x); }); else sel = sel.filter(x => vis.indexOf(x) < 0); }
     else { const v = t.value; if (t.checked) { if (sel.indexOf(v) < 0) sel.push(v); } else sel = sel.filter(x => x !== v); }
-    f.sel = vals.every(x => sel.indexOf(x) >= 0) ? null : sel;
+    f.sel = vals.every(x => sel.indexOf(x) >= 0) ? null : sel; /* revisor: desmarcar o último buscando deixa nada escolhido (não volta a filtrar pela busca) */
     const l = document.querySelector('.tb-mn-l'), cp = document.querySelector('.tb-mn-corpo'); S._tbMnScroll = l ? l.scrollTop : 0; S._tbMnCorpo = cp ? cp.scrollTop : 0;
     tbMuda(mv, () => {}); return;
   }

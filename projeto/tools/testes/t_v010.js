@@ -34,6 +34,7 @@ const conf = (c, msg) => { if (c) { ok++; console.log('  ok  ' + msg); } else { 
   /* áreas e abas */
   const rotas = await p.evaluate(() => AREAS.map(a => ({ id: a.id, abas: a.abas.filter(x => !x.oculta).map(x => x.id) }))); /* v0.3.2: telas de ação (oculta) não contam como aba */
   for (const r of rotas) {
+    if (r.id === 'vertice') continue; /* v0.6.35: o Vértice abre em tela inteira (não é tela do Cwork); provado em t_v0634 */
     for (const aba of (r.abas.length ? r.abas : [''])) {
       await p.evaluate(h => { location.hash = h; }, '#/' + r.id + (aba ? '/' + aba : '')); await p.waitForTimeout(120);
       const t = await p.textContent('.cs-ph h1');
@@ -97,7 +98,7 @@ const conf = (c, msg) => { if (c) { ok++; console.log('  ok  ' + msg); } else { 
   await q.fill('#en-nome', 'Joana Silva'); await q.fill('#en-login', 'joana.silva'); await q.fill('#en-senha', 'senha1234'); await q.fill('#en-senha2', 'senha1234');
   await q.click('[data-form="en-primeiro"] button[type=submit]'); await q.waitForTimeout(600);
   let largo = [];
-  for (const r of rotas) { await q.evaluate(h => { location.hash = h; }, '#/' + r.id); await q.waitForTimeout(120); if (await q.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1)) largo.push(r.id); }
+  for (const r of rotas.filter(x => x.id !== 'vertice')) { await q.evaluate(h => { location.hash = h; }, '#/' + r.id); await q.waitForTimeout(120); if (await q.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1)) largo.push(r.id); }
   conf(!largo.length, 'celular 390 px: nenhuma tela rola para o lado' + (largo.length ? ' (' + largo.join(', ') + ')' : ''));
   await q.evaluate(() => { location.hash = '#/inicio'; }); await q.waitForTimeout(150);
   conf(await q.isVisible('.cs-baixo') && await q.evaluate(() => document.querySelector('.cs-lado').getBoundingClientRect().right <= 0), 'celular: barra de baixo visível e menu lateral escondido');

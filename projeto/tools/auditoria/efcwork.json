@@ -123,10 +123,13 @@
    ]
   },
   {
-   "nome": "Vértice Docs (aba)",
+   "nome": "Vértice Docs (tela inteira)",
    "passos": [
     {
      "eval": "location.hash='#/vertice'"
+    },
+    {
+     "eval": "jnAbrir('docs', '', true)"
     }
    ]
   },
@@ -330,6 +333,14 @@
     },
     {
      "espera": 600
+    }
+   ]
+  },
+  {
+   "nome": "Administração › Pastas do Vértice",
+   "passos": [
+    {
+     "eval": "location.hash='#/adm/vertice'"
     }
    ]
   },

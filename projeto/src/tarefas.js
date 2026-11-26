@@ -16,27 +16,36 @@ function tfPasso(iso, rep) {
   let d = addDias(iso, 1); while ([0, 6].indexOf(new Date(d + 'T12:00:00').getDay()) >= 0) d = addDias(d, 1); return d; /* util */
 }
 function tfProxima(t) { const h = hojeISO(); let d = tfPasso(t.prazo || h, t.repete), n = 0; while (d < h && n++ < 4000) d = tfPasso(d, t.repete); return d; }
-const TF_ST = { todo: ['A fazer', ''], doing: ['Em andamento', 'wa'], done: ['Concluída', 'ok'], cancelada: ['Cancelada', ''] };
+const TF_ST = { todo: ['A fazer', ''], doing: ['Em andamento', 'wa'], review: ['Para conferir', 'wa'], done: ['Concluída', 'ok'], cancelada: ['Cancelada', ''] };
+/* v0.6.35 (pedido do Elias 26/11 14:18, achado no EFClaudian v2.102.60): "Conferir quando terminar" (campo confere, status review, do EFClaudian).
+   Quem passou a tarefa = porId (o EFClaudian grava quem passou nele) ou criadoPor. Regra corrigida aqui no Cwork:
+   - responsável Principal conclui direto, mesmo com a conferência ligada, inclusive nas tarefas que já existem;
+   - parada em "Para conferir": quem passou (ou o Principal) toca em "Conferido"; o responsável Principal tem "Concluir";
+   - os outros responsáveis, com a conferência ligada por quem passou, terminam em "Para conferir" (como no EFClaudian). */
+const tfPassou = t => t.porId || t.criadoPor || '';
+const tfConfere = t => !!t.confere && tfPassou(t) && tfPassou(t) !== t.respId;
 Object.assign(S, { tfVer: 'minhas', tfTodas: false });
 const tfAberta = t => t.status !== 'done' && t.status !== 'cancelada' && !t.excluida;
 const tfDe = id => (S.tarefas || []).find(t => t.id === id) || null;
 const tfPodeDar = () => !!S.user && isSup(S.user);
-const tfPodeEditar = t => !!S.user && (t.criadoPor === S.user.id || isPrincipal(S.user));
+const tfPodeEditar = t => !!S.user && (t.criadoPor === S.user.id || tfPassou(t) === S.user.id || isPrincipal(S.user));
+/* fechar uma tarefa parada em "Para conferir": quem passou, o Principal, ou o próprio responsável se ele for o Principal */
+const tfPodeConferir = t => !!S.user && (tfPassou(t) === S.user.id || isPrincipal(S.user));
 const tfPodeAndar = t => !!S.user && (t.respId === S.user.id || tfPodeEditar(t)) && podeLancar(S.user);
 const tfOrd = (a, b) => String(a.prazo || '9999').localeCompare(String(b.prazo || '9999')) || String(a.hora || '').localeCompare(String(b.hora || '')) || String(a.criadoEm || '').localeCompare(String(b.criadoEm || ''));
 const tfHist = (t, txt) => (Array.isArray(t.hist) ? t.hist : []).concat([{ ts: nowISO(), porNome: S.user.nome, txt }]);
 const tfRepTxt = t => t.repete && TF_REP_CURTO[t.repete] ? 'repete ' + TF_REP_CURTO[t.repete] : '';
 function tfLista() {
   const me = S.user.id, l = (S.tarefas || []).filter(tfAberta);
-  return (S.tfVer === 'passei' ? l.filter(t => t.criadoPor === me && t.respId !== me) : l.filter(t => t.respId === me)).sort(tfOrd);
+  return (S.tfVer === 'passei' ? l.filter(t => tfPassou(t) === me && t.respId !== me) : l.filter(t => t.respId === me)).sort(tfOrd);
 }
 /* agenda: Atrasadas · Hoje · Próximos 7 dias · Mais adiante · Sem prazo */
 function tfGrupo(t) { const h = hojeISO(); if (!t.prazo) return 'sem'; if (t.prazo < h) return 'atr'; if (t.prazo === h) return 'hoje'; return t.prazo <= addDias(h, 7) ? 'sem7' : 'depois'; }
 const TF_GR = [['atr', 'Atrasadas'], ['hoje', 'Hoje'], ['sem7', 'Próximos 7 dias'], ['depois', 'Mais adiante'], ['sem', 'Sem prazo']];
 function tfLinha(t) {
-  const g = tfGrupo(t), quem = S.tfVer === 'passei' ? 'para ' + (t.respNome || nomeDe(t.respId)) : (t.criadoPor && t.criadoPor !== S.user.id ? 'de ' + (t.criadoPorNome || nomeDe(t.criadoPor)) : '');
+  const g = tfGrupo(t), quem = S.tfVer === 'passei' ? 'para ' + (t.respNome || nomeDe(t.respId)) : (tfPassou(t) && tfPassou(t) !== S.user.id ? 'de ' + (t.criadoPor === tfPassou(t) && t.criadoPorNome ? t.criadoPorNome : nomeDe(tfPassou(t))) : '');
   const quando = t.prazo ? (g === 'hoje' ? 'hoje' : fmtD(t.prazo)) + (t.hora ? ' às ' + t.hora : '') : 'sem prazo';
-  const pill = g === 'atr' ? ['vencida', 'cr'] : t.status === 'doing' ? ['em andamento', 'wa'] : g === 'hoje' ? ['hoje', 'wa'] : ['no prazo', 'ok'];
+  const pill = g === 'atr' ? ['vencida', 'cr'] : t.status === 'review' ? ['para conferir', 'wa'] : t.status === 'doing' ? ['em andamento', 'wa'] : g === 'hoje' ? ['hoje', 'wa'] : ['no prazo', 'ok'];
   return '<button type="button" class="li tf-li" data-act="tf-abre" data-id="' + esc(t.id) + '"><span class="ico' + (g === 'atr' ? ' ini-cr' : g === 'hoje' ? ' ini-wa' : '') + '">' + ic(t.repete ? 'recontar' : g === 'atr' ? 'alerta' : 'relogio') + '</span><span class="tx"><b>' + esc(t.titulo || '(sem título)') + '</b><small>' +
     esc([quem, quando, tfRepTxt(t)].filter(Boolean).join(' · ')) + '</small></span><span class="pill ' + esc(pill[1]) + '">' + esc(pill[0]) + '</span></button>';
 }
@@ -56,11 +65,14 @@ function tfAbre(id) { gvAbrir(() => tfGaveta(id)); }
 function tfGaveta(id) {
   const t = tfDe(id); if (!t) return null; const s = TF_ST[t.status] || TF_ST.todo, ab = tfAberta(t);
   let c = (t.descricao ? '<p class="tf-ds">' + esc(t.descricao) + '</p>' : '') + gvCampos([['Responsável', t.respNome || nomeDe(t.respId)], ['Prazo', t.prazo ? fmtD(t.prazo) + (t.hora ? ' às ' + t.hora : '') : 'sem prazo'],
-    ['Repete', t.repete ? (TF_REP.find(r => r[0] === t.repete) || ['', ''])[1] + (ab ? ' · a próxima será em ' + fmtD(tfProxima(t)) : '') : ''], ['Criada por', (t.criadoPorNome || nomeDe(t.criadoPor)) + (t.criadoEm ? ' · ' + fmtD(diaLocal(t.criadoEm)) : '')],
+    ['Repete', t.repete ? (TF_REP.find(r => r[0] === t.repete) || ['', ''])[1] + (ab ? ' · a próxima será em ' + fmtD(tfProxima(t)) : '') : ''], ['Criada por', (t.criadoPor && t.criadoPorNome ? t.criadoPorNome : nomeDe(tfPassou(t))) + (t.criadoEm ? ' · ' + fmtD(diaLocal(t.criadoEm)) : '')],
     ['Concluída', t.status === 'done' ? (t.concluidaPorNome || '') + (t.concluidaEm ? ' · ' + fmtD(diaLocal(t.concluidaEm)) : '') : ''], ['Cancelada', t.status === 'cancelada' ? (t.canceladaMotivo || '') : '']]);
   const hs = (Array.isArray(t.hist) ? t.hist : []).slice(-6);
   if (hs.length) c += '<p class="gv-h">Andamento</p>' + tlFluido('tf-' + t.id, hs.map(x => ({ nome: x.txt, feito: true, data: diaLocal(x.ts), quem: x.porNome })));
-  const pe = ab && tfPodeAndar(t) ? (t.status !== 'doing' ? '<button type="button" class="bt" data-act="tf-andar" data-id="' + esc(t.id) + '">' + ic('relogio') + 'Comecei</button>' : '') + '<span class="au-pesp"></span><button type="button" class="bt pr" data-act="tf-ok" data-id="' + esc(t.id) + '">' + ic('ok') + 'Concluir</button>' : '';
+  let pe = '';
+  if (ab && t.status === 'review') pe = tfPodeConferir(t) ? '<span class="au-pesp"></span><button type="button" class="bt pr" data-act="tf-ok" data-id="' + esc(t.id) + '">' + ic('ok') + (tfPassou(t) === S.user.id ? 'Conferido' : 'Concluir') + '</button>'
+    : '<small class="tf-esp">Esperando a conferência de ' + esc(nomeDe(tfPassou(t))) + '.</small>';
+  else if (ab && tfPodeAndar(t)) pe = (t.status !== 'doing' ? '<button type="button" class="bt" data-act="tf-andar" data-id="' + esc(t.id) + '">' + ic('relogio') + 'Comecei</button>' : '') + '<span class="au-pesp"></span><button type="button" class="bt pr" data-act="tf-ok" data-id="' + esc(t.id) + '">' + ic('ok') + (tfVaiConferir(t) ? 'Terminei, conferir' : 'Concluir') + '</button>';
   return { ico: t.repete ? 'recontar' : 'relogio', sub: 'Meu dia' + (t.repete ? ' · rotina' : ''), titulo: t.titulo || '(sem título)', pill: '<span class="pill ' + esc(s[1]) + '">' + esc(s[0]) + '</span>',
     cabAcoes: ab && tfPodeEditar(t) ? '<button type="button" class="bt ic-so" data-act="tf-editar" data-id="' + esc(t.id) + '" title="Editar" aria-label="Editar">' + ic('lapis') + '</button>' : '',
     lixeira: ab && tfPodeEditar(t) ? { act: 'tf-canc', id: t.id, titulo: 'Cancelar a tarefa' } : null, corpo: c, rodape: pe };
@@ -104,18 +116,29 @@ function tfEdOk() {
 function tfGrava(t, patch, msg, depois) { return Data.col('sv2_tarefas').update(t.id, patch).then(() => { Object.assign(t, patch); aviso(msg); if (depois) depois(); }).catch(e => aviso(svErro(e), 'erro')); }
 function tfSeguinte(t) {
   if (!t.repete) return null; const id = Data.novoId('sv2_tarefas'), pz = tfProxima(t);
-  const o = { titulo: t.titulo, descricao: t.descricao || '', respId: t.respId, respNome: t.respNome || nomeDe(t.respId), prazo: pz, hora: t.hora || '', repete: t.repete, serieId: t.serieId || t.id, status: 'todo', porId: S.user.id,
+  const o = { titulo: t.titulo, descricao: t.descricao || '', respId: t.respId, respNome: t.respNome || nomeDe(t.respId), prazo: pz, hora: t.hora || '', repete: t.repete, serieId: t.serieId || t.id, status: 'todo', porId: t.respId === S.user.id ? (tfPassou(t) || S.user.id) : S.user.id, confere: !!t.confere, /* revisor: a próxima vez mantém quem passou (a regra deixa: quem cria é o responsável) e a conferência */
     criadoPor: t.criadoPor || S.user.id, criadoPorNome: t.criadoPorNome || S.user.nome, criadoEm: nowISO(), hist: [{ ts: nowISO(), porNome: S.user.nome, txt: 'Rotina: próxima vez' }] };
   Data.col('sv2_tarefas').set(id, o).then(() => { if (!S.tarefas.some(x => x.id === id)) S.tarefas.push(Object.assign({ id }, o)); render(); }).catch(e => aviso(svErro(e), 'erro'));
   return pz;
 }
+/* o responsável termina e vai para quem passou conferir? (nunca quando ele é o Principal) */
+const tfVaiConferir = t => tfConfere(t) && t.respId === S.user.id && !isPrincipal(S.user);
 function tfAndar(id) { const t = tfDe(id); if (!t || !tfPodeAndar(t)) return; tfGrava(t, { status: 'doing', hist: tfHist(t, 'Começou') }, 'Marcada como em andamento.', () => { if (S.gv) gvDesenha(); render(); }); }
 function tfConcluir(id) {
   const t = tfDe(id); if (!t || !tfPodeAndar(t)) return;
-  tfGrava(t, { status: 'done', concluidaEm: nowISO(), concluidaPor: S.user.id, concluidaPorNome: S.user.nome, hist: tfHist(t, 'Concluiu') }, 'Tarefa concluída.', () => {
+  if (t.status === 'review' && !tfPodeConferir(t)) return;
+  if (t.status !== 'review' && tfVaiConferir(t)) {
+    tfGrava(t, { status: 'review', terminouEm: nowISO(), hist: tfHist(t, 'Terminou; foi para conferir') }, 'Foi para ' + nomeDe(tfPassou(t)) + ' conferir.', () => {
+      Audit.log({ acao: 'terminar_tarefa', entidade: 'tarefa', entidadeId: t.id, resumo: 'Terminou a tarefa ' + t.titulo + ' (para conferir)' });
+      Notif.send({ nivel: 'info', titulo: 'Para conferir: ' + t.titulo, texto: S.user.nome + ' terminou. Confira e toque em Conferido.', para: [tfPassou(t)], refTipo: 'tarefa', refId: t.id }).catch(() => {});
+      if (S.gv) gvDesenha(); render(); });
+    return;
+  }
+  const conferiu = t.status === 'review' && tfPassou(t) === S.user.id;
+  tfGrava(t, { status: 'done', concluidaEm: nowISO(), concluidaPor: S.user.id, concluidaPorNome: S.user.nome, hist: tfHist(t, conferiu ? 'Conferiu' : 'Concluiu') }, conferiu ? 'Conferida e concluída.' : 'Tarefa concluída.', () => {
     const pz = tfSeguinte(t); if (pz) aviso('Concluída. A próxima fica para ' + fmtD(pz) + '.');
     Audit.log({ acao: 'concluir_tarefa', entidade: 'tarefa', entidadeId: t.id, resumo: 'Concluiu a tarefa ' + t.titulo });
-    if (t.criadoPor && t.criadoPor !== S.user.id && !t.repete) Notif.send({ nivel: 'info', titulo: 'Tarefa concluída: ' + t.titulo, texto: 'Concluída por ' + S.user.nome + '.', para: [t.criadoPor], refTipo: 'tarefa', refId: t.id }).catch(() => {});
+    if (tfPassou(t) && tfPassou(t) !== S.user.id && !t.repete) Notif.send({ nivel: 'info', titulo: 'Tarefa concluída: ' + t.titulo, texto: 'Concluída por ' + S.user.nome + '.', para: [tfPassou(t)], refTipo: 'tarefa', refId: t.id }).catch(() => {});
     if (S.gv) gvFecharSo(); render(); });
 }
 function tfCanc(id) { const t = tfDe(id); if (!t || !tfPodeEditar(t)) return; lcAbrir({ k: 'tfCanc', id: t.id, motivo: '', alcance: t.repete ? 'esta' : '' }, () => tfAbre(t.id)); }

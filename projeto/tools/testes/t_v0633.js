@@ -133,8 +133,9 @@ const vertFr = p => p.frames().find(f => /\/EFCdocs\//.test(f.url()));
     conf(r && !('unidade.nome' in dj) && !('usuario.nome' in dj), 'no pedido foram só as chaves que a custódia tem marcadas (o Vértice recusa as outras)');
     conf(await p.waitForFunction(() => Object.keys(JSON.parse(localStorage.getItem('efcwork-dr-pedidos') || '{}')).length === 0, null, { timeout: 8000 }).then(() => true, () => false), 'a resposta foi lida e apagada da caixa, depois de gravada');
   }
-  await p.evaluate(() => { if (typeof jnFechar === 'function') try { jnFechar('docs'); } catch (e) {} }); await esp(p, 300);
-  { const bt = await p.$('#cf.is-open button:has-text("Fechar")'); if (bt) { await bt.click(); await esp(p, 400); } }
+  { const ab = await p.evaluate(() => ({ n: S.jnAbertas.filter(x => /^docs/.test(x)).length, nomes: S.jnAbertas.map(x => S.jnNome[x] || x), h: (() => { try { return document.querySelector('.jn-fr iframe.on').contentWindow.location.hash; } catch (e) { return ''; } })() }));
+    conf(ab.n >= 1 && ab.n <= 2 && /^#\/(pedido\/.*)?$/.test(ab.h), 'v0.6.35: o segundo papel foi para uma aba do Vértice (a do primeiro, se ela ainda não mostrava arquivo; senão uma nova) (' + JSON.stringify(ab) + ')'); }
+  await p.evaluate(() => { [...S.jnAbertas].forEach(jnTira); }); await esp(p, 300); /* fecha as abas do Vértice (sem perguntar, só no teste) */
   await p.evaluate(k => { if (!S.gv) coAbreLote(k); else gvDesenha(true); }, k); await esp(p, 500); s = await secao(p);
   await foto('gaveta-preenchido');
   conf(/2 de 2 prontos/.test(s.t) && /Preenchido no Vértice/.test(s.t), 'a custódia fica "Preenchido no Vértice"; 2 de 2 prontos');
@@ -180,8 +181,9 @@ const vertFr = p => p.frames().find(f => /\/EFCdocs\//.test(f.url()));
   await p.evaluate(() => { const a = document.querySelector('.jn-ab'); if (a) a.click(); }); await esp(p, 300);
   await p.click('#gv [data-act="kt-imprimir"]'); await esp(p, 900);
   conf(!(await p.$('#gv [data-act="kt-imprimir"]')) && await p.evaluate(() => Object.values(JSON.parse(localStorage.getItem('efcwork-dr-pedidos') || '{}')).some(x => x.nome.indexOf('Cadeia') === 0)), 'o segundo (a custódia) foi como pedido de preencher, e a janela fechou');
-  await p.evaluate(() => { if (typeof jnFechar === 'function') try { jnFechar('docs'); } catch (e) {} }); await esp(p, 300);
-  { const bt = await p.$('#cf.is-open button:has-text("Fechar")'); if (bt) { await bt.click(); await esp(p, 400); } }
+  { const ab = await p.evaluate(() => ({ n: S.jnAbertas.filter(x => /^docs/.test(x)).length, nomes: S.jnAbertas.map(x => S.jnNome[x] || x), h: (() => { try { return document.querySelector('.jn-fr iframe.on').contentWindow.location.hash; } catch (e) { return ''; } })() }));
+    conf(ab.n >= 1 && ab.n <= 2 && /^#\/(pedido\/.*)?$/.test(ab.h), 'v0.6.35: o segundo papel foi para uma aba do Vértice (a do primeiro, se ela ainda não mostrava arquivo; senão uma nova) (' + JSON.stringify(ab) + ')'); }
+  await p.evaluate(() => { [...S.jnAbertas].forEach(jnTira); }); await esp(p, 300); /* fecha as abas do Vértice (sem perguntar, só no teste) */
   console.log('— Laboratório sem endereço e sem kit');
   { const kC = k.split('|')[0] + '|Laboratório C'; await p.evaluate(k => ktPapAbre([k]), kC); await esp(p, 500); const t = await p.textContent('#gv');
     if (FOTOS) await p.screenshot({ path: path.join(OUT, 'v0633-pc-papeis-semend.png') });

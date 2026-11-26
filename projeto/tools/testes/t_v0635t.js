@@ -1,0 +1,68 @@
+/* EFCwork · v0.6.35 · "Conferir quando terminar" corrigido no Cwork (pedido do Elias, 26/11 14:18; achado no EFClaudian v2.102.60).
+   Dados como o EFClaudian grava: confere, porId (quem passou), status review. Uso: NODE_PATH=$(npm root -g) node tools/testes/t_v0635t.js */
+const { chromium, abre, ir } = require('../visual/moderno-v0615/pagina/lib');
+const path = require('path'), RAIZ = path.resolve(__dirname, '..', '..');
+let ok = 0, falhas = 0; const conf = (c, m) => { if (c) { ok++; console.log('  ok  ' + m); } else { falhas++; console.log('  FALHA  ' + m); } };
+const est = (p, id) => p.evaluate(i => { const x = S.tarefas.find(y => y.id === i); return x ? { st: x.status, por: x.concluidaPorNome || '', h: (x.hist || []).map(z => z.txt).join(' | ') } : null; }, id);
+const rod = p => p.evaluate(() => { const r = document.querySelector('#gv .gv-pe') || document.querySelector('#gv'); return { ok: (document.querySelector('#gv [data-act="tf-ok"]') || {}).textContent || '', and: !!document.querySelector('#gv [data-act="tf-andar"]'), esp: (document.querySelector('#gv .tf-esp') || {}).textContent || '', pill: (document.querySelector('#gv .pill') || {}).textContent || '' }; });
+(async () => { const br = await chromium.launch();
+  const p = await abre(br, { raiz: RAIZ, w: 1280, h: 860 }); await p.waitForTimeout(400);
+  const eu = await p.evaluate(() => S.user.id);
+  await p.evaluate(async () => { const h = hojeISO(), me = S.user.id;
+    await Data.col('sv2_users').set('u2', { nome: 'Marcos Lima', login: 'marcos', perfil: 'secundario', estrela: true, superiores: [], status: 'ativo' });
+    await Data.col('sv2_users').set('u3', { nome: 'Rita Souza', login: 'rita', perfil: 'secundario', estrela: false, superiores: ['u2'], status: 'ativo' });
+    /* passada pelo Marcos para mim (Principal), com a conferência ligada, como o EFClaudian faz sozinho */
+    await Data.col('sv2_tarefas').set('a1', { titulo: 'Tarefa passada ao Principal', respId: me, porId: 'u2', prazo: h, status: 'todo', confere: true });
+    /* já parada em "Para conferir" (o caso de hoje) */
+    await Data.col('sv2_tarefas').set('a2', { titulo: 'Parada em Para conferir', respId: me, porId: 'u2', prazo: h, status: 'review', confere: true });
+    /* eu passei para a Rita, com conferência: ela termina, eu confiro */
+    await Data.col('sv2_tarefas').set('a3', { titulo: 'Passei para a Rita', respId: 'u3', porId: me, prazo: h, status: 'review', confere: true }); });
+  await ir(p, 'inicio', 900);
+  console.log('— Responsável Principal');
+  let v = await p.evaluate(() => [...document.querySelectorAll('.tf-li')].map(e => e.textContent));
+  conf(v.some(x => /Parada em Para conferir/.test(x) && /para conferir/.test(x) && /de Marcos Lima/.test(x)), 'a tarefa parada aparece "para conferir", com quem passou (porId do EFClaudian): ' + v.join(' / '));
+  await p.evaluate(() => tfAbre('a1')); await p.waitForTimeout(400);
+  let r = await rod(p);
+  conf(r.ok.trim() === 'Concluir', 'Principal responsável: o botão é "Concluir" (não "Terminei, conferir"), mesmo com a conferência ligada');
+  await p.click('#gv [data-act="tf-ok"]'); await p.waitForTimeout(500);
+  let e = await est(p, 'a1');
+  conf(e.st === 'done' && /Concluiu/.test(e.h), 'concluiu direto, sem ir para "Para conferir" (' + JSON.stringify(e) + ')');
+  await p.evaluate(() => tfAbre('a2')); await p.waitForTimeout(400);
+  r = await rod(p);
+  conf(/Para conferir/.test(r.pill) && r.ok.trim() === 'Concluir' && !r.and, 'parada em "Para conferir": o Principal responsável ganha "Concluir" (sem "Comecei")');
+  await p.click('#gv [data-act="tf-ok"]'); await p.waitForTimeout(500);
+  e = await est(p, 'a2'); conf(e.st === 'done', 'e ela conclui (' + JSON.stringify(e) + ')');
+  console.log('— Quem passou confere');
+  await p.evaluate(() => DD_AO.tf('ver', 'passei')); await p.waitForTimeout(300);
+  v = await p.evaluate(() => [...document.querySelectorAll('.tf-li')].map(e => e.textContent));
+  conf(v.some(x => /Passei para a Rita/.test(x) && /para conferir/.test(x)), '"Que eu passei" mostra a tarefa da Rita esperando a minha conferência');
+  await p.evaluate(() => tfAbre('a3')); await p.waitForTimeout(400);
+  r = await rod(p); conf(r.ok.trim() === 'Conferido', 'quem passou vê "Conferido"');
+  await p.click('#gv [data-act="tf-ok"]'); await p.waitForTimeout(500);
+  e = await est(p, 'a3'); conf(e.st === 'done' && /Conferiu/.test(e.h), 'Conferido conclui e anota "Conferiu" (' + JSON.stringify(e) + ')');
+  await p.evaluate(() => { if (S.gv) gvFecharSo(); DD_AO.tf('ver', 'minhas'); });
+  console.log('— Responsável que não é Principal (a regra do EFClaudian continua)');
+  await p.evaluate(async me => { const h = hojeISO(); await Data.col('sv2_tarefas').set('b1', { titulo: 'Rita com conferência', respId: 'u3', porId: me, prazo: h, status: 'todo', confere: true });
+    await Data.col('sv2_tarefas').set('b2', { titulo: 'Rita sem conferência', respId: 'u3', porId: me, prazo: h, status: 'todo', confere: false }); }, eu);
+  await p.evaluate(() => { S._euP = S.user; S.user = Object.assign({}, S.user, { id: 'u3', nome: 'Rita Souza', perfil: 'secundario', estrela: false, superiores: ['u2'] }); render(); }); await p.waitForTimeout(400);
+  await p.evaluate(() => tfAbre('b1')); await p.waitForTimeout(400);
+  r = await rod(p); conf(r.ok.trim() === 'Terminei, conferir', 'Secundário com a conferência ligada: "Terminei, conferir"');
+  await p.click('#gv [data-act="tf-ok"]'); await p.waitForTimeout(500);
+  e = await est(p, 'b1'); conf(e.st === 'review', 'vai para "Para conferir" (' + JSON.stringify(e) + ')');
+  await p.evaluate(() => tfAbre('b1')); await p.waitForTimeout(400);
+  r = await rod(p); conf(!r.ok && /Esperando a conferência de Joana/.test(r.esp), 'e ela vê "Esperando a conferência de …", sem botão (' + r.esp + ')');
+  await p.evaluate(() => { if (S.gv) gvFecharSo(); tfAbre('b2'); }); await p.waitForTimeout(400);
+  r = await rod(p); conf(r.ok.trim() === 'Concluir', 'sem a conferência ligada: "Concluir" direto');
+  await p.evaluate(() => { if (S.gv) gvFecharSo(); S.user = S._euP; render(); }); await p.waitForTimeout(300);
+  console.log('— Rotina (revisor)');
+  await p.evaluate(async me => { await Data.col('sv2_tarefas').set('r1', { titulo: 'Rotina com conferência', respId: 'u3', porId: me, criadoPor: me, prazo: hojeISO(), status: 'todo', confere: true, repete: 'diaria', serieId: 'r1' }); }, eu);
+  await p.evaluate(() => { S._euP = S.user; S.user = Object.assign({}, S.user, { id: 'u3', nome: 'Rita Souza', perfil: 'secundario', estrela: false, superiores: ['u2'] }); render(); }); await p.waitForTimeout(300);
+  await p.evaluate(() => tfAbre('r1')); await p.waitForTimeout(300); await p.click('#gv [data-act="tf-ok"]'); await p.waitForTimeout(400);
+  await p.evaluate(() => { if (S.gv) gvFecharSo(); S.user = S._euP; render(); }); await p.waitForTimeout(300);
+  await p.evaluate(() => tfAbre('r1')); await p.waitForTimeout(300); await p.click('#gv [data-act="tf-ok"]'); await p.waitForTimeout(600);
+  const prox = await p.evaluate(() => S.tarefas.find(x => x.serieId === 'r1' && x.id !== 'r1'));
+  conf(prox && prox.porId === eu.toString() && prox.confere === true && prox.status === 'todo', 'a próxima vez da rotina mantém quem passou e a conferência (' + JSON.stringify(prox && { porId: prox.porId, confere: prox.confere }) + ')');
+  conf(p._er.length === 0, 'sem erro de JavaScript' + (p._er.length ? ': ' + p._er[0] : ''));
+  await br.close();
+  console.log('\n' + ok + ' ok, ' + falhas + ' falha(s)'); process.exit(falhas ? 1 : 0);
+})().catch(e => { console.error(e); process.exit(1); });

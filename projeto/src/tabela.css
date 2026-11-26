@@ -186,6 +186,8 @@ body.tb-arrastando,body.tb-arrastando *{cursor:grabbing!important;user-select:no
 .tb-mn.tb-mn-folha{left:0!important;right:0;top:auto!important;bottom:0;width:auto;max-height:82vh;border-radius:16px 16px 0 0;animation:tbFolha var(--panel-open-dur) var(--panel-ease);padding-bottom:env(safe-area-inset-bottom,0px)}
 @keyframes tbFolha{from{transform:translateY(100%);opacity:.6}to{transform:none;opacity:1}}
 @media(prefers-reduced-motion:reduce){.tb-mn,.tb-mn.tb-mn-folha{animation:none}}
+/* v0.6.35: redesenho com o menu aberto: sem entrar de novo (antes a janela "tremia" a cada item marcado) */
+.tb-mn.tb-mn-fica,.tb-mn.tb-mn-folha.tb-mn-fica,.tb-mn-fundo.tb-mn-fica{animation:none}
 .tb-mn-bs,.tb-mn-nr,.tb-mn-h{flex-shrink:0}
 /* pontinha do menu apontando para a coluna */
 .tb-mn-pt{position:absolute;top:-6px;left:var(--tb-pt);width:11px;height:11px;margin-left:-5.5px;transform:rotate(45deg);background:var(--bg1);border-left:1px solid var(--bd2);border-top:1px solid var(--bd2);z-index:1}

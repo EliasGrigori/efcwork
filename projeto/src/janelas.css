@@ -1,43 +1,69 @@
-/* EFCwork · janelas.css — abas dos apps da família (v0.6.22; ajustada na v0.6.23 a pedido do Elias, 20/11 09:55 e 10:13:
-   mesmo tamanho de antes (faixa de ponta a ponta, 26 px no PC, 40 px no toque), com textura e relevo (degradê, luz em cima, sombra),
-   efeito ao abrir (desliza 400 ms; as abas entram uma a uma, 40 ms entre elas; fecha em 250 ms), o traço que desliza entre as abas,
-   e só a área das abas reage: o resto do alto deixa o clique passar para o app (fechar algo no canto não faz a faixa baixar).
-   Letra 13 px no PC e 14 px no toque (ITEM 112). Escala de movimento da família; só transform e opacity. */
-.jn{position:fixed;top:0;left:0;right:0;z-index:79;height:26px;pointer-events:none;
-  transform:translateY(-20px);transition:transform var(--duration-fast) var(--ease-smooth-out),box-shadow var(--duration-fast) var(--ease-out);
-  background:linear-gradient(180deg,color-mix(in srgb,var(--jn-bg,var(--bg1)) 82%,#fff) 0%,var(--jn-bg,var(--bg1)) 55%,color-mix(in srgb,var(--jn-bg,var(--bg1)) 94%,#000) 100%);
-  color:var(--jn-tx,var(--tx));border-bottom:1px solid var(--jn-bd,var(--bd));font-family:var(--f);
-  box-shadow:0 1px 0 rgba(255,255,255,.4) inset,0 1px 3px rgba(0,0,0,.08)}
-.jn.aberta{transform:none;transition:transform var(--duration-slow) var(--ease-smooth-out),box-shadow var(--duration-slow) var(--ease-out);
-  box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 -1px 0 rgba(0,0,0,.04) inset,0 2px 4px rgba(0,0,0,.06),0 10px 24px rgba(0,0,0,.14)}
-/* só as abas reagem (o resto da faixa deixa o clique passar para o app de baixo); a área das abas ganha 8 px abaixo do fio para o mouse e o dedo acertarem */
-.jn-faixa::after{content:"";position:absolute;left:0;right:0;top:100%;height:8px}
-.jn.aberta .jn-faixa::after{height:4px}
-.jn-faixa{display:inline-flex;align-items:stretch;height:100%;gap:2px;position:relative;padding:0 8px;pointer-events:auto}
-.jn-aw{position:relative;display:flex;align-items:center}
-.jn-ab{appearance:none;border:0;background:transparent;color:inherit;font:600 13px/1 var(--f);letter-spacing:.1px;padding:0 12px;height:100%;cursor:pointer;white-space:nowrap;
-  opacity:0;transform:translateY(-4px);transition:opacity var(--duration-quick) var(--ease-out),transform var(--duration-quick) var(--ease-out)}
-.jn.aberta .jn-ab{opacity:.62;transform:none;transition:opacity var(--duration-fast) var(--ease-out) calc(var(--k,0) * var(--duration-stagger) + 80ms),transform var(--duration-fast) var(--ease-smooth-out) calc(var(--k,0) * var(--duration-stagger) + 80ms)}
-.jn.aberta .jn-aw.on .jn-ab,.jn.aberta .jn-ab:hover,.jn.aberta .jn-ab:focus-visible{opacity:1}
-.jn-ab:focus-visible{outline:2px solid var(--jn-ac);outline-offset:-4px;border-radius:6px}
-.jn-x{appearance:none;border:0;background:transparent;color:inherit;display:grid;place-items:center;width:20px;height:20px;margin:0 4px 0 -6px;border-radius:6px;cursor:pointer;padding:0;
-  opacity:0;pointer-events:none;transition:opacity var(--duration-quick) var(--ease-out),background var(--duration-quick) var(--ease-out)}
-.jn.aberta .jn-x{opacity:.5;pointer-events:auto;transition-delay:calc(var(--k,0) * var(--duration-stagger) + 120ms)}
-.jn.aberta .jn-x:hover,.jn.aberta .jn-x:focus-visible{opacity:1;background:var(--jn-bd);transition-delay:0s}
-.jn-x svg{width:13px;height:13px}
+/* EFCwork · janelas.css — abas dos apps da família em tela inteira.
+   v0.6.35 (ITEM 200 = OPÇÃO 2, "linha fina sublinhada", e ITEM 201, aprovados em 26/11): faixa de 32 px (40 px no toque), só texto,
+   letra de 12 px (13 px no toque), traço dourado de 2 px embaixo da aba aberta, sem relevo nem degradê, cores do Cwork (claro e escuro).
+   Com muitas abas, elas encolhem (o nome termina em "…") e, no limite, a faixa anda para o lado.
+   Com o Cwork na frente, a faixa recolhe num fio de 6 px. Escala de movimento da família; só transform e opacity. */
+.jn{position:fixed;top:0;left:0;right:0;z-index:79;height:32px;display:flex;align-items:stretch;padding:0 6px;pointer-events:none;
+  background:var(--bg1);color:var(--tx2);box-shadow:inset 0 -1px 0 var(--bd);font-family:var(--f); /* a linha de baixo sem tirar 1 px das abas */
+  transform:translateY(-26px);transition:transform var(--duration-fast) var(--ease-smooth-out)}
+.jn.aberta{transform:none;transition:transform var(--duration-medium) var(--ease-smooth-out)}
+.jn.fixa{transition:none}
+/* só as abas e o "+" reagem; com o Cwork na frente, o resto do alto deixa o clique passar */
+.jn-abas,.jn-mais{pointer-events:auto}
+.jn-abas{display:flex;align-items:stretch;min-width:0;flex:0 1 auto;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;position:relative}
+.jn-abas::-webkit-scrollbar{display:none}
+.jn-aw{position:relative;display:flex;align-items:center;flex:0 1 auto;min-width:76px;max-width:200px}
+.jn-aw.jn-cw{flex:none;min-width:0}
+/* sem espaço para todas: as abas do app encolhem por igual (o nome curto não fica espremido) */
+.jn-abas.apertado .jn-aw:not(.jn-cw){flex:1 1 0}
+.jn-abas.medindo .jn-aw{flex:none}
+.jn-ab{appearance:none;border:0;background:transparent;color:inherit;font:500 12px/1 var(--f);letter-spacing:0;padding:0 10px;height:100%;cursor:pointer;
+  flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left;
+  opacity:0;transform:translateY(-4px);transition:opacity var(--duration-quick) var(--ease-out),transform var(--duration-quick) var(--ease-out),color var(--duration-quick) var(--ease-out)}
+.jn-aw:not(.jn-cw) .jn-ab{padding-right:2px}
+.jn.aberta .jn-ab{opacity:1;transform:none;transition:opacity var(--duration-fast) var(--ease-out) calc(var(--k,0) * var(--duration-stagger) + 40ms),transform var(--duration-fast) var(--ease-smooth-out) calc(var(--k,0) * var(--duration-stagger) + 40ms),color var(--duration-quick) var(--ease-out)}
+.jn.fixa .jn-ab{transition:color var(--duration-quick) var(--ease-out)}
+.jn-aw.on .jn-ab{color:var(--tx);font-weight:600}
+.jn-ab:hover{color:var(--tx)}
+.jn-ab:focus-visible{outline:2px solid var(--a);outline-offset:-5px;border-radius:6px}
+.jn-x{appearance:none;border:0;background:transparent;color:inherit;position:relative;display:grid;place-items:center;flex:none;width:24px;height:100%;margin:0 4px 0 0;cursor:pointer;padding:0;
+  opacity:0;pointer-events:none;transition:opacity var(--duration-quick) var(--ease-out)}
+/* o X e o "+" têm a altura da aba (regra de 11/11); o fundo ao passar o mouse é só o quadradinho do meio */
+.jn-x::before,.jn-mais::before{content:"";position:absolute;left:50%;top:50%;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:6px;background:transparent;transition:background var(--duration-quick) var(--ease-out)}
+.jn-x svg,.jn-mais svg{position:relative}
+.jn.aberta .jn-x{opacity:.55;pointer-events:auto}
+.jn.aberta .jn-x:hover,.jn.aberta .jn-x:focus-visible{opacity:1;color:var(--tx)}
+.jn.aberta .jn-x:hover::before,.jn.aberta .jn-x:focus-visible::before,.jn-mais:hover::before,.jn-mais:focus-visible::before{background:var(--bg2)}
+.jn-x:focus-visible,.jn-mais:focus-visible{outline:0}
+.jn-x:focus-visible::before,.jn-mais:focus-visible::before{box-shadow:0 0 0 2px var(--a)}
+.jn-x svg{width:12px;height:12px}
+.jn-mais{appearance:none;border:0;background:transparent;color:var(--tx2);position:relative;display:grid;place-items:center;flex:none;width:32px;height:100%;margin:0 0 0 2px;cursor:pointer;padding:0;
+  transition:color var(--duration-quick) var(--ease-out)}
+.jn-mais[hidden]{display:none}
+.jn-mais:hover,.jn-mais:focus-visible{color:var(--tx)}
+.jn-mais svg{width:14px;height:14px}
+/* com o Cwork na frente (fio de 6 px), a área das abas ganha 8 px abaixo do fio para o mouse e o dedo acertarem */
+.jn-zona{position:absolute;left:0;top:100%;width:var(--zw,0);height:8px;pointer-events:none}
+.jn:not(.aberta) .jn-zona{pointer-events:auto}
 /* o traço da aba da frente: um só, desliza entre as abas; recolhida, é ele que aparece no fio */
-.jn-ind{position:absolute;left:0;bottom:0;height:2px;width:var(--iw,0);border-radius:2px 2px 0 0;background:var(--jn-ac,currentColor);pointer-events:none;
-  transform:translateX(var(--ix,0));transition:transform var(--duration-fast) var(--ease-smooth-out),width var(--duration-fast) var(--ease-smooth-out),background var(--duration-fast) var(--ease-out)}
+.jn-ind{position:absolute;left:0;bottom:0;height:2px;width:var(--iw,0);border-radius:2px 2px 0 0;background:var(--a);pointer-events:none;
+  transform:translateX(var(--ix,0));transition:transform var(--duration-fast) var(--ease-smooth-out),width var(--duration-fast) var(--ease-smooth-out)}
 .jn:not(.aberta) .jn-ind{height:3px;border-radius:2px}
-/* as janelas: por cima do EFCwork; a que não está na frente continua viva (só some da vista) */
-.jn-fr{position:fixed;inset:0;z-index:78;opacity:0;visibility:hidden;pointer-events:none;transition:opacity var(--duration-fast) var(--ease-out),visibility 0s linear var(--duration-fast)}
+/* as janelas: em tela inteira, abaixo da faixa; a que não está na frente continua viva (só some da vista) */
+.jn-fr{position:fixed;left:0;right:0;bottom:0;top:32px;z-index:78;background:var(--bg1);opacity:0;visibility:hidden;pointer-events:none;transition:opacity var(--duration-fast) var(--ease-out),visibility 0s linear var(--duration-fast)}
 .jn-fr.on{opacity:1;visibility:visible;pointer-events:auto;transition:opacity var(--duration-fast) var(--ease-out),visibility 0s}
-.jn-fr iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:var(--jn-bg,var(--bg1));visibility:hidden}
+.jn-fr iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:var(--bg1);visibility:hidden}
 .jn-fr iframe.on{visibility:visible}
 /* com um app na frente: os avisos do EFCwork continuam aparecendo por cima */
 body.jn-fora-on .av-pilha{z-index:81}
 body.jn-fora-on{overflow:hidden}
-/* no toque: faixa de 40 px aberta (dedo), fio de 6 px e 12 px a mais para acertar */
-@media(pointer:coarse){.jn{height:40px;transform:translateY(-34px)}.jn.aberta{transform:none}.jn-ab{font-size:14px;padding:0 14px}.jn-x{width:36px;height:36px;margin-left:-10px}
-  .jn-faixa::after{height:12px}}
-@media(prefers-reduced-motion:reduce){.jn,.jn.aberta,.jn-ab,.jn.aberta .jn-ab,.jn-x,.jn.aberta .jn-x,.jn-ind,.jn-fr,.jn-fr.on{transition:none}}
+/* no toque: faixa de 40 px (dedo), letra de 13 px; fio de 6 px com 12 px a mais para acertar */
+@media(pointer:coarse){
+  .jn{height:40px;transform:translateY(-34px)}.jn.aberta{transform:none}.jn-fr{top:40px}
+  .jn-ab{font-size:13px;padding:0 12px}.jn-aw{min-width:88px}
+  .jn-x{width:36px;margin:0 2px 0 -4px}.jn-mais{width:44px}
+  .jn-x::before,.jn-mais::before{width:30px;height:30px;margin:-15px 0 0 -15px}
+  .jn-zona{height:12px}
+  /* no celular, o X só na aba aberta: sobra lugar para o nome (para fechar outra, toque nela antes) */
+  .jn-aw:not(.on) .jn-x{display:none}.jn-aw:not(.on):not(.jn-cw) .jn-ab{padding-right:12px}}
+@media(prefers-reduced-motion:reduce){.jn,.jn.aberta,.jn-ab,.jn.aberta .jn-ab,.jn-x,.jn.aberta .jn-x,.jn-ind,.jn-fr,.jn-fr.on,.jn-mais{transition:none}}

@@ -40,10 +40,10 @@ it(186, 'A aba ocupa a tela, e o Vértice continua vivo ao trocar de área',
    [P], par((hj, 'Hoje: janela por cima'), (ab, 'Proposta: área do Cwork')))
 it(187, 'O cabeçalho mostra o arquivo aberto no Vértice',
    'Quando você abre um arquivo no Vértice, o nome aparece na pílula embaixo do título. Sem arquivo: "Nenhum arquivo aberto". O Cwork só aceita esse aviso se vier do próprio quadro do Vértice.',
-   [], um(arq, 'Cabeçalho com o arquivo aberto'))
+   [], um((arq, 'Cabeçalho com o arquivo aberto'), 'Cabeçalho com o arquivo aberto'))
 it(188, 'Volta: o ícone da janela abre o Vértice por cima, como antes',
    'Como você pediu, a janela por cima continua como saída. O ícone no canto do cabeçalho fecha a aba e abre a janela de antes. Nunca ficam os dois vivos ao mesmo tempo. Com a janela aberta, ou com uma gaveta aberta (por exemplo a fila "Abrir o próximo no Vértice" dos Papéis deste envio), os pedidos do Cwork vão para a janela, e a gaveta não se perde.',
-   [P], um(jan, 'Janela por cima aberta pelo ícone'))
+   [P], um((jan, 'Janela por cima aberta pelo ícone'), 'Janela por cima aberta pelo ícone'))
 it(189, 'Com a janela aberta, a área avisa; "Trazer para a aba" pergunta antes',
    'Se a janela por cima estiver aberta, a área Vértice Docs mostra "O Vértice está aberto na janela por cima" e o botão "Trazer para a aba". O botão pergunta antes de fechar a janela (o que estiver sem salvar lá pode se perder); o botão em destaque é o seguro, "Deixar a janela".',
    [], '<div class="ops">' + ''.join('<div class="op">%s</div>' % z(i[0], i[1]) for i in [(vz, 'Área com a janela aberta'), (troca, 'Pergunta ao trazer')]) + '</div>')

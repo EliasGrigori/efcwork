@@ -84,7 +84,7 @@ const drPendLe = () => { try { return JSON.parse(localStorage.getItem(DR_PEND) |
 /* lê, muda e grava na hora (duas abas não apagam o pedido uma da outra); tira o que passou de 30 dias */
 function drPendMuda(fn) { const p = drPendLe(), r = fn(p); Object.keys(p).forEach(id => { if (Date.now() - Date.parse(p[id].em || 0) > DR_VALIDADE) delete p[id]; }); try { localStorage.setItem(DR_PEND, JSON.stringify(p)); } catch {} return r; }
 const drTrava = f => navigator.locks && navigator.locks.request ? navigator.locks.request('efcwork-dr', f) : f();
-async function drPedido(k, x, dd, tent) {
+async function drPedido(k, x, dd, tent, pidVelho) {
   if (!ptTem()) return aviso('Este navegador não tem a caixa de troca com o Vértice: use Abrir no Vértice e preencha lá.', 'erro');
   const d = x.d, dados = drSoCampos(ptResumoEnvio(k, dd, d), d.pub.campos);
   const copias = Math.max(1, Math.min(20, x.copias === 'porCaixa' ? Number(dd.caixas) || 1 : Number(x.copias) || 1));
@@ -96,7 +96,7 @@ async function drPedido(k, x, dd, tent) {
     /* rev: o Vértice confere com a versão compartilhada daqui e recusa outra (controle de documentos) */
     const pid = await EFDPonte.por({ de: PT_APP, para: 'docs', tipo: 'pedido', docId: d.id, copias: copias, dados: dados, rev: d.rev });
     drPendMuda(p => { p[pid] = { k: k, item: x.id, nome: x.nome, docId: d.id, rev: d.rev, copias: copias, dd: dd, dados: dados, tent: tent || 0, em: nowISO() }; });
-    jnAbrir('docs', pidA ? '#/abrir/' + pidA : '#/pedido/' + pid);
+    jnAbrir('docs', pidA ? '#/abrir/' + pidA : '#/pedido/' + pid, false, pidVelho && typeof jnAbaDaRota === 'function' ? jnAbaDaRota('#/pedido/' + pidVelho) : ''); /* v0.6.35: o mesmo documento pedido de novo volta para a aba dele */
     return pid;
   } catch (er) { console.error(er); aviso('Não deu para falar com o Vértice: ' + (er.message || er) + '.', 'erro'); }
 }
@@ -116,7 +116,7 @@ function drRespostas() {
         aviso('Preenchido no Vértice: ' + q.nome + '.');
       } else if (i.erro === 'sem-documento' && !q.tent) {
         const x = drItens(q.k).find(y => y.id === q.item);
-        if (x && x.d) { aviso('O Vértice deste aparelho ainda não tinha o modelo de ' + q.nome + ': levei o modelo. Toque em "Ver e imprimir" quando ele avisar.'); await drPedido(q.k, x, q.dd, 1); }
+        if (x && x.d) { aviso('O Vértice deste aparelho ainda não tinha o modelo de ' + q.nome + ': levei o modelo. Toque em "Ver e imprimir" quando ele avisar.'); await drPedido(q.k, x, q.dd, 1, i.pedido); }
       } else aviso('Não deu para preencher ' + q.nome + ': ' + (DR_ERRO[i.erro] || i.erro || 'o Vértice recusou') + '.', 'erro');
       await EFDPonte.apagar(i.pid); drPendMuda(p => { delete p[i.pedido]; });
     }

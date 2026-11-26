@@ -688,6 +688,8 @@ body.tb-arrastando,body.tb-arrastando *{cursor:grabbing!important;user-select:no
 .tb-mn.tb-mn-folha{left:0!important;right:0;top:auto!important;bottom:0;width:auto;max-height:82vh;border-radius:16px 16px 0 0;animation:tbFolha var(--panel-open-dur) var(--panel-ease);padding-bottom:env(safe-area-inset-bottom,0px)}
 @keyframes tbFolha{from{transform:translateY(100%);opacity:.6}to{transform:none;opacity:1}}
 @media(prefers-reduced-motion:reduce){.tb-mn,.tb-mn.tb-mn-folha{animation:none}}
+/* v0.6.35: redesenho com o menu aberto: sem entrar de novo (antes a janela "tremia" a cada item marcado) */
+.tb-mn.tb-mn-fica,.tb-mn.tb-mn-folha.tb-mn-fica,.tb-mn-fundo.tb-mn-fica{animation:none}
 .tb-mn-bs,.tb-mn-nr,.tb-mn-h{flex-shrink:0}
 /* pontinha do menu apontando para a coluna */
 .tb-mn-pt{position:absolute;top:-6px;left:var(--tb-pt);width:11px;height:11px;margin-left:-5.5px;transform:rotate(45deg);background:var(--bg1);border-left:1px solid var(--bd2);border-top:1px solid var(--bd2);z-index:1}
@@ -1299,62 +1301,88 @@ div.cb-hc{cursor:default}
 @media(max-width:899px){.cs-acts:has(.ip-acs){flex:1 1 100%;width:100%}.ip-acs{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:8px;width:100%}.ip-acs .bt{justify-content:center}.ip-acs .ip-vt{display:none}}
 
 /* ===== janelas.css ===== */
-/* EFCwork · janelas.css — abas dos apps da família (v0.6.22; ajustada na v0.6.23 a pedido do Elias, 20/11 09:55 e 10:13:
-   mesmo tamanho de antes (faixa de ponta a ponta, 26 px no PC, 40 px no toque), com textura e relevo (degradê, luz em cima, sombra),
-   efeito ao abrir (desliza 400 ms; as abas entram uma a uma, 40 ms entre elas; fecha em 250 ms), o traço que desliza entre as abas,
-   e só a área das abas reage: o resto do alto deixa o clique passar para o app (fechar algo no canto não faz a faixa baixar).
-   Letra 13 px no PC e 14 px no toque (ITEM 112). Escala de movimento da família; só transform e opacity. */
-.jn{position:fixed;top:0;left:0;right:0;z-index:79;height:26px;pointer-events:none;
-  transform:translateY(-20px);transition:transform var(--duration-fast) var(--ease-smooth-out),box-shadow var(--duration-fast) var(--ease-out);
-  background:linear-gradient(180deg,color-mix(in srgb,var(--jn-bg,var(--bg1)) 82%,#fff) 0%,var(--jn-bg,var(--bg1)) 55%,color-mix(in srgb,var(--jn-bg,var(--bg1)) 94%,#000) 100%);
-  color:var(--jn-tx,var(--tx));border-bottom:1px solid var(--jn-bd,var(--bd));font-family:var(--f);
-  box-shadow:0 1px 0 rgba(255,255,255,.4) inset,0 1px 3px rgba(0,0,0,.08)}
-.jn.aberta{transform:none;transition:transform var(--duration-slow) var(--ease-smooth-out),box-shadow var(--duration-slow) var(--ease-out);
-  box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 -1px 0 rgba(0,0,0,.04) inset,0 2px 4px rgba(0,0,0,.06),0 10px 24px rgba(0,0,0,.14)}
-/* só as abas reagem (o resto da faixa deixa o clique passar para o app de baixo); a área das abas ganha 8 px abaixo do fio para o mouse e o dedo acertarem */
-.jn-faixa::after{content:"";position:absolute;left:0;right:0;top:100%;height:8px}
-.jn.aberta .jn-faixa::after{height:4px}
-.jn-faixa{display:inline-flex;align-items:stretch;height:100%;gap:2px;position:relative;padding:0 8px;pointer-events:auto}
-.jn-aw{position:relative;display:flex;align-items:center}
-.jn-ab{appearance:none;border:0;background:transparent;color:inherit;font:600 13px/1 var(--f);letter-spacing:.1px;padding:0 12px;height:100%;cursor:pointer;white-space:nowrap;
-  opacity:0;transform:translateY(-4px);transition:opacity var(--duration-quick) var(--ease-out),transform var(--duration-quick) var(--ease-out)}
-.jn.aberta .jn-ab{opacity:.62;transform:none;transition:opacity var(--duration-fast) var(--ease-out) calc(var(--k,0) * var(--duration-stagger) + 80ms),transform var(--duration-fast) var(--ease-smooth-out) calc(var(--k,0) * var(--duration-stagger) + 80ms)}
-.jn.aberta .jn-aw.on .jn-ab,.jn.aberta .jn-ab:hover,.jn.aberta .jn-ab:focus-visible{opacity:1}
-.jn-ab:focus-visible{outline:2px solid var(--jn-ac);outline-offset:-4px;border-radius:6px}
-.jn-x{appearance:none;border:0;background:transparent;color:inherit;display:grid;place-items:center;width:20px;height:20px;margin:0 4px 0 -6px;border-radius:6px;cursor:pointer;padding:0;
-  opacity:0;pointer-events:none;transition:opacity var(--duration-quick) var(--ease-out),background var(--duration-quick) var(--ease-out)}
-.jn.aberta .jn-x{opacity:.5;pointer-events:auto;transition-delay:calc(var(--k,0) * var(--duration-stagger) + 120ms)}
-.jn.aberta .jn-x:hover,.jn.aberta .jn-x:focus-visible{opacity:1;background:var(--jn-bd);transition-delay:0s}
-.jn-x svg{width:13px;height:13px}
+/* EFCwork · janelas.css — abas dos apps da família em tela inteira.
+   v0.6.35 (ITEM 200 = OPÇÃO 2, "linha fina sublinhada", e ITEM 201, aprovados em 26/11): faixa de 32 px (40 px no toque), só texto,
+   letra de 12 px (13 px no toque), traço dourado de 2 px embaixo da aba aberta, sem relevo nem degradê, cores do Cwork (claro e escuro).
+   Com muitas abas, elas encolhem (o nome termina em "…") e, no limite, a faixa anda para o lado.
+   Com o Cwork na frente, a faixa recolhe num fio de 6 px. Escala de movimento da família; só transform e opacity. */
+.jn{position:fixed;top:0;left:0;right:0;z-index:79;height:32px;display:flex;align-items:stretch;padding:0 6px;pointer-events:none;
+  background:var(--bg1);color:var(--tx2);box-shadow:inset 0 -1px 0 var(--bd);font-family:var(--f); /* a linha de baixo sem tirar 1 px das abas */
+  transform:translateY(-26px);transition:transform var(--duration-fast) var(--ease-smooth-out)}
+.jn.aberta{transform:none;transition:transform var(--duration-medium) var(--ease-smooth-out)}
+.jn.fixa{transition:none}
+/* só as abas e o "+" reagem; com o Cwork na frente, o resto do alto deixa o clique passar */
+.jn-abas,.jn-mais{pointer-events:auto}
+.jn-abas{display:flex;align-items:stretch;min-width:0;flex:0 1 auto;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;position:relative}
+.jn-abas::-webkit-scrollbar{display:none}
+.jn-aw{position:relative;display:flex;align-items:center;flex:0 1 auto;min-width:76px;max-width:200px}
+.jn-aw.jn-cw{flex:none;min-width:0}
+/* sem espaço para todas: as abas do app encolhem por igual (o nome curto não fica espremido) */
+.jn-abas.apertado .jn-aw:not(.jn-cw){flex:1 1 0}
+.jn-abas.medindo .jn-aw{flex:none}
+.jn-ab{appearance:none;border:0;background:transparent;color:inherit;font:500 12px/1 var(--f);letter-spacing:0;padding:0 10px;height:100%;cursor:pointer;
+  flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left;
+  opacity:0;transform:translateY(-4px);transition:opacity var(--duration-quick) var(--ease-out),transform var(--duration-quick) var(--ease-out),color var(--duration-quick) var(--ease-out)}
+.jn-aw:not(.jn-cw) .jn-ab{padding-right:2px}
+.jn.aberta .jn-ab{opacity:1;transform:none;transition:opacity var(--duration-fast) var(--ease-out) calc(var(--k,0) * var(--duration-stagger) + 40ms),transform var(--duration-fast) var(--ease-smooth-out) calc(var(--k,0) * var(--duration-stagger) + 40ms),color var(--duration-quick) var(--ease-out)}
+.jn.fixa .jn-ab{transition:color var(--duration-quick) var(--ease-out)}
+.jn-aw.on .jn-ab{color:var(--tx);font-weight:600}
+.jn-ab:hover{color:var(--tx)}
+.jn-ab:focus-visible{outline:2px solid var(--a);outline-offset:-5px;border-radius:6px}
+.jn-x{appearance:none;border:0;background:transparent;color:inherit;position:relative;display:grid;place-items:center;flex:none;width:24px;height:100%;margin:0 4px 0 0;cursor:pointer;padding:0;
+  opacity:0;pointer-events:none;transition:opacity var(--duration-quick) var(--ease-out)}
+/* o X e o "+" têm a altura da aba (regra de 11/11); o fundo ao passar o mouse é só o quadradinho do meio */
+.jn-x::before,.jn-mais::before{content:"";position:absolute;left:50%;top:50%;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:6px;background:transparent;transition:background var(--duration-quick) var(--ease-out)}
+.jn-x svg,.jn-mais svg{position:relative}
+.jn.aberta .jn-x{opacity:.55;pointer-events:auto}
+.jn.aberta .jn-x:hover,.jn.aberta .jn-x:focus-visible{opacity:1;color:var(--tx)}
+.jn.aberta .jn-x:hover::before,.jn.aberta .jn-x:focus-visible::before,.jn-mais:hover::before,.jn-mais:focus-visible::before{background:var(--bg2)}
+.jn-x:focus-visible,.jn-mais:focus-visible{outline:0}
+.jn-x:focus-visible::before,.jn-mais:focus-visible::before{box-shadow:0 0 0 2px var(--a)}
+.jn-x svg{width:12px;height:12px}
+.jn-mais{appearance:none;border:0;background:transparent;color:var(--tx2);position:relative;display:grid;place-items:center;flex:none;width:32px;height:100%;margin:0 0 0 2px;cursor:pointer;padding:0;
+  transition:color var(--duration-quick) var(--ease-out)}
+.jn-mais[hidden]{display:none}
+.jn-mais:hover,.jn-mais:focus-visible{color:var(--tx)}
+.jn-mais svg{width:14px;height:14px}
+/* com o Cwork na frente (fio de 6 px), a área das abas ganha 8 px abaixo do fio para o mouse e o dedo acertarem */
+.jn-zona{position:absolute;left:0;top:100%;width:var(--zw,0);height:8px;pointer-events:none}
+.jn:not(.aberta) .jn-zona{pointer-events:auto}
 /* o traço da aba da frente: um só, desliza entre as abas; recolhida, é ele que aparece no fio */
-.jn-ind{position:absolute;left:0;bottom:0;height:2px;width:var(--iw,0);border-radius:2px 2px 0 0;background:var(--jn-ac,currentColor);pointer-events:none;
-  transform:translateX(var(--ix,0));transition:transform var(--duration-fast) var(--ease-smooth-out),width var(--duration-fast) var(--ease-smooth-out),background var(--duration-fast) var(--ease-out)}
+.jn-ind{position:absolute;left:0;bottom:0;height:2px;width:var(--iw,0);border-radius:2px 2px 0 0;background:var(--a);pointer-events:none;
+  transform:translateX(var(--ix,0));transition:transform var(--duration-fast) var(--ease-smooth-out),width var(--duration-fast) var(--ease-smooth-out)}
 .jn:not(.aberta) .jn-ind{height:3px;border-radius:2px}
-/* as janelas: por cima do EFCwork; a que não está na frente continua viva (só some da vista) */
-.jn-fr{position:fixed;inset:0;z-index:78;opacity:0;visibility:hidden;pointer-events:none;transition:opacity var(--duration-fast) var(--ease-out),visibility 0s linear var(--duration-fast)}
+/* as janelas: em tela inteira, abaixo da faixa; a que não está na frente continua viva (só some da vista) */
+.jn-fr{position:fixed;left:0;right:0;bottom:0;top:32px;z-index:78;background:var(--bg1);opacity:0;visibility:hidden;pointer-events:none;transition:opacity var(--duration-fast) var(--ease-out),visibility 0s linear var(--duration-fast)}
 .jn-fr.on{opacity:1;visibility:visible;pointer-events:auto;transition:opacity var(--duration-fast) var(--ease-out),visibility 0s}
-.jn-fr iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:var(--jn-bg,var(--bg1));visibility:hidden}
+.jn-fr iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:var(--bg1);visibility:hidden}
 .jn-fr iframe.on{visibility:visible}
 /* com um app na frente: os avisos do EFCwork continuam aparecendo por cima */
 body.jn-fora-on .av-pilha{z-index:81}
 body.jn-fora-on{overflow:hidden}
-/* no toque: faixa de 40 px aberta (dedo), fio de 6 px e 12 px a mais para acertar */
-@media(pointer:coarse){.jn{height:40px;transform:translateY(-34px)}.jn.aberta{transform:none}.jn-ab{font-size:14px;padding:0 14px}.jn-x{width:36px;height:36px;margin-left:-10px}
-  .jn-faixa::after{height:12px}}
-@media(prefers-reduced-motion:reduce){.jn,.jn.aberta,.jn-ab,.jn.aberta .jn-ab,.jn-x,.jn.aberta .jn-x,.jn-ind,.jn-fr,.jn-fr.on{transition:none}}
+/* no toque: faixa de 40 px (dedo), letra de 13 px; fio de 6 px com 12 px a mais para acertar */
+@media(pointer:coarse){
+  .jn{height:40px;transform:translateY(-34px)}.jn.aberta{transform:none}.jn-fr{top:40px}
+  .jn-ab{font-size:13px;padding:0 12px}.jn-aw{min-width:88px}
+  .jn-x{width:36px;margin:0 2px 0 -4px}.jn-mais{width:44px}
+  .jn-x::before,.jn-mais::before{width:30px;height:30px;margin:-15px 0 0 -15px}
+  .jn-zona{height:12px}
+  /* no celular, o X só na aba aberta: sobra lugar para o nome (para fechar outra, toque nela antes) */
+  .jn-aw:not(.on) .jn-x{display:none}.jn-aw:not(.on):not(.jn-cw) .jn-ab{padding-right:12px}}
+@media(prefers-reduced-motion:reduce){.jn,.jn.aberta,.jn-ab,.jn.aberta .jn-ab,.jn-x,.jn.aberta .jn-x,.jn-ind,.jn-fr,.jn-fr.on,.jn-mais{transition:none}}
 
 /* ===== vertice.css ===== */
-/* EFCwork · vertice.css — v0.6.34 (P3a): a aba Vértice Docs. O quadro fica fora do #app, por cima do lugar reservado. */
-.vt-lugar{width:100%;min-height:240px;border:1px solid var(--bd);border-radius:8px;background:var(--bg1)}
-.vt-fr{position:fixed;z-index:10;border:1px solid var(--bd);border-radius:8px;overflow:hidden;background:var(--bg1)}
-.vt-fr[hidden]{display:none}
-.vt-fr iframe{display:block;width:100%;height:100%;border:0}
-.vt-vz{display:flex;align-items:center;justify-content:center}
-.vt-vz .bt{margin-top:10px}
-html.vt-area,html.vt-area body{overflow:hidden}
-html.vt-area .cs-rod{display:none}
-/* ITEM 190 (OPÇÃO 2): no celular, na área Vértice, só a barra de baixo do Vértice; o menu do Cwork fica no botão de cima */
-html.vt-area .cs-baixo{display:none}
+/* EFCwork · vertice.css — Administração › Pastas do Vértice (v0.6.35, P3b). O Vértice abre em tela inteira (janelas.css). */
+.vt-ps{list-style:none;margin:0;padding:0}
+.vt-ps li{display:flex;align-items:center;gap:12px;min-height:44px;padding:4px 16px;border-top:1px solid var(--bd)}
+.vt-ps li:first-child{border-top:0}
+.vt-pn-n{display:flex;align-items:center;gap:8px;flex:0 0 220px}
+.vt-pn-q{flex:1;color:var(--tx2)}
+.vt-reg{margin:0;padding:10px 16px 14px;color:var(--tx3);border-top:1px solid var(--bd)}
+.vt-cks{display:flex;flex-direction:column;gap:2px}
+.vt-ck{display:flex;align-items:center;gap:8px;min-height:36px}
+.vt-ck small{margin-left:auto;color:var(--tx3)}
+@media (max-width:600px){.vt-ps li{flex-wrap:wrap;gap:4px 12px;padding:8px 16px}.vt-pn-n{flex:1 1 auto}.vt-pn-q{order:3;flex-basis:100%}.vt-ck{min-height:44px}}
 
 /* ===== kit.css ===== */
 /* Kit do laboratório e papéis do envio (v0.6.10) — só tokens na tela; o rótulo impresso usa preto no branco */
@@ -2398,6 +2426,7 @@ body:has(#gv) .pp-bar{display:none}
 .tf-gh{margin:0;padding:10px 16px 4px;font:600 12px var(--f);color:var(--tx3);text-transform:none;border-top:1px solid var(--bd)}
 .tf-gh em{font-style:normal;margin-left:4px}
 .tf-gh+.tf-li{border-top:0}
+.tf-esp{margin-left:auto;align-self:center;color:var(--tx3)}
 
 /* ===== areas.css ===== */
 /* EFCwork · areas.css — Prefixo: ar- */
@@ -2766,7 +2795,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = Mov;
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.6.34';
+const VERSAO = '0.6.35';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -3727,14 +3756,18 @@ function tbSalvaTrava(id) {
   try { if (Object.keys(o).length) Store.set('cw-tbtrava-' + id, JSON.stringify(o)); else Store.del('cw-tbtrava-' + id); } catch {}
 }
 const tbNorm = s => String(s == null ? '' : s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+/* v0.6.35: busca do menu por palavras, em qualquer ordem, e número sem zero à esquerda ("isopor 5l" acha "CAIXA TERMICA ISOPOR 05L") */
+const tbBNum = s => tbNorm(s).replace(/(^|[^\d.,])0+(?=\d)/g, '$1');
+/* revisor: número da busca casa inteiro pelo começo ("5l" não acha "15l"); o fim pode continuar ("5" acha "5l") */
+function tbAcha(lab, q) { const l = tbBNum(lab); return tbBNum(q).split(/\s+/).filter(Boolean).every(w => { let i = l.indexOf(w); while (i >= 0) { if (!/\d/.test(w[0]) || i === 0 || !/[\d.,]/.test(l[i - 1])) return true; i = l.indexOf(w, i + 1); } return false; }); }
 /* texto que a célula mostra (é o que aparece na lista de valores do menu) */
 function tbRot(c, r) { const v = c.v(r); if (v == null || v === '') return ''; if (c.txt) return String(c.txt(r)); if (c.tipo === 'data') return fmtD(v); if (c.tipo === 'num' && typeof v === 'number') return c.fmtTotal ? c.fmtTotal(v) : numBR(v, c.dec); return String(v); }
 const tbVazio = x => x == null || x === '';
-const tbCfAtivo = f => !!f && (!!f.txt || !!f.sel || !tbVazio(f.min) || !tbVazio(f.max));
+const tbCfAtivo = f => !!f && (!!(f.txt && String(f.txt).trim()) || !!f.sel || !tbVazio(f.min) || !tbVazio(f.max));
 function tbPassaCol(c, f, r) {
   if (!tbCfAtivo(f)) return true; const lab = tbRot(c, r);
-  if (f.txt && tbNorm(lab).indexOf(tbNorm(f.txt)) < 0) return false;
-  if (f.sel && f.sel.indexOf(lab) < 0) return false;
+  /* v0.6.35 (pedido do Elias 26/11 14:24): com itens escolhidos, a busca do menu só serve para achar na lista; quem filtra é a escolha */
+  if (f.sel) { if (f.sel.indexOf(lab) < 0) return false; } else if (f.txt && !tbAcha(lab, f.txt)) return false;
   if (!tbVazio(f.min) || !tbVazio(f.max)) { const v = c.v(r); if (typeof v !== 'number') return false; if (!tbVazio(f.min) && v < Number(f.min)) return false; if (!tbVazio(f.max) && v > Number(f.max)) return false; }
   return true;
 }
@@ -3881,7 +3914,9 @@ function tbHTML(cfg) {
   h += '</tbody></table>' + (todas.length > l.length ? '<div class="tb-fim" data-tb="' + esc(cfg.id) + '" aria-hidden="true">Carregando mais…</div>' : '') + '</div>';
   h += '<div class="tb-pe" hidden><span>' + (carr ? 'Carregando…' : 'Mostrando <b>' + l.length + '</b> de ' + todas.length) + '</span>' + (cfg.rodape ? '<span>' + cfg.rodape(todas) + '</span>' : '') + (todas.length > l.length ? '<button type="button" class="bt" data-act="tb-mais" data-tb="' + esc(cfg.id) + '">Mostrar mais ' + Math.min(100, todas.length - l.length) + '</button>' : '') + '</div>';
   requestAnimationFrame(() => { tbAlinhaTot(); tbAltura(); });
-  if (mn) { h += (innerWidth < 600 ? '<div class="tb-mn-fundo" data-act="tb-mn-x"></div>' : '') + tbMenuHTML(cfg, mn); requestAnimationFrame(() => { tbPosMenu(); tbMnRestaura(); }); }
+  if (mn) { const ch = cfg.id + '|' + mn, fica = S._tbMnVisto === ch; /* v0.6.35: redesenho com o menu aberto (marcar um item): o menu fica parado, sem entrar de novo */
+    h += (innerWidth < 600 ? '<div class="tb-mn-fundo' + (fica ? ' tb-mn-fica' : '') + '" data-act="tb-mn-x"></div>' : '') + tbMenuHTML(cfg, mn).replace('<div class="tb-mn"', '<div class="tb-mn' + (fica ? ' tb-mn-fica' + (S._tbMnFolha ? ' tb-mn-folha' : '') + (S._tbMnCima ? ' tb-mn-cima' : '') + '" style="' + esc(S._tbMnSt || '') : '') + '"');
+    requestAnimationFrame(() => { tbPosMenu(); tbMnRestaura(); S._tbMnVisto = ch; }); }
   return h + '</div>';
 }
 function tbEsqueleto(cols) { const w = [62, 78, 54, 70, 46, 66, 58, 74]; let h = ''; for (let i = 0; i < 6; i++) h += '<tr class="tb-esq" aria-hidden="true">' + cols.map((c, j) => '<td' + (c.tipo === 'num' ? ' class="n"' : '') + '><i style="width:' + w[(i + j) % w.length] + '%"></i></td>').join('') + '</tr>'; return h; }
@@ -3901,7 +3936,7 @@ function tbMenuHTML(cfg, k) {
   const st = tbEstado(cfg.id), c = cfg.cols.find(x => x.k === k); if (!c) return '';
   const f = st.cf[k] || {}, tr = !!st.trava[k], dis = tr ? ' disabled' : '', o = st.ordem && st.ordem.k === k ? st.ordem.dir : '', id = esc(cfg.id);
   const nomes = c.tipo === 'num' ? ['Menor para o maior', 'Maior para o menor'] : c.tipo === 'data' ? ['Mais antiga primeiro', 'Mais recente primeiro'] : ['De A a Z', 'De Z a A'];
-  const vals = tbValores(cfg, c), bq = tbNorm(f.txt), vis = bq ? vals.filter(x => tbNorm(x.lab).indexOf(bq) >= 0) : vals, sel = f.sel;
+  const vals = tbValores(cfg, c), bq = tbNorm(f.txt).trim(), vis = bq ? vals.filter(x => tbAcha(x.lab, f.txt)) : vals, sel = f.sel;
   const pos = tbVisiveis(cfg).findIndex(x => x.k === k), nv = tbVisiveis(cfg).length;
   const lin = (act, ico, txt, on, extra) => '<button type="button" class="tb-mn-o' + (on ? ' on' : '') + '" data-act="' + act + '" data-tb="' + id + '" data-k="' + esc(k) + '"' + (extra || '') + dis + '>' + ic(ico) + '<span>' + txt + '</span>' + (on ? '<i>' + ic('ok') + '</i>' : '') + '</button>';
   let h = '<div class="tb-mn" data-tbmn="' + id + '" data-k="' + esc(k) + '" role="dialog" aria-label="Coluna ' + esc(c.rot) + '">' +
@@ -3913,9 +3948,11 @@ function tbMenuHTML(cfg, k) {
   if (pre.length) h += '<div class="tb-mn-g"><span class="tb-mn-h">Filtros prontos</span>' + pre.map(p => '<div class="tb-mn-pre' + (tr ? ' tb-mn-off' : '') + '">' + (pre.length > 1 || p.rot !== c.rot ? '<small>' + esc(p.rot) + '</small>' : '') + ddHTML('tbf:' + cfg.id + ':' + p.k, st.filtros[p.k] == null ? '' : st.filtros[p.k], [['', 'Todos']].concat(p.opcoes)) + '</div>').join('') + '</div>';
   h += '<div class="tb-mn-g tb-mn-fg"><span class="tb-mn-h">Filtrar</span><label class="tb-mn-bs">' + ic('lupa') + '<input type="search" data-tbmnbusca="' + id + '" data-k="' + esc(k) + '" value="' + esc(f.txt || '') + '" placeholder="Buscar em ' + esc(c.rot) + '" aria-label="Buscar em ' + esc(c.rot) + '"' + dis + '></label>';
   if (c.tipo === 'num') h += '<div class="tb-mn-nr"><label><small>De</small><input type="number" inputmode="decimal" data-tbmnmin="' + id + '" data-k="' + esc(k) + '" value="' + esc(f.min == null ? '' : f.min) + '" placeholder="mínimo"' + dis + '></label><label><small>Até</small><input type="number" inputmode="decimal" data-tbmnmax="' + id + '" data-k="' + esc(k) + '" value="' + esc(f.max == null ? '' : f.max) + '" placeholder="máximo"' + dis + '></label></div>';
-  const todosMarc = vis.length && vis.every(x => !sel || sel.indexOf(x.lab) >= 0), algum = vis.some(x => !sel || sel.indexOf(x.lab) >= 0);
+  /* buscando sem nada escolhido: a lista vem desmarcada para escolher (busca "isopor 5l", marca; busca "ph10", marca…) */
+  const chk = x => sel ? sel.indexOf(x.lab) >= 0 : !bq;
+  const todosMarc = vis.length && vis.every(chk), algum = vis.some(chk);
   h += '<div class="tb-mn-l">' + (vis.length ? '<label class="tb-mn-li tb-mn-all"><input type="checkbox" data-tbmnall="' + id + '" data-k="' + esc(k) + '"' + (todosMarc ? ' checked' : '') + (!todosMarc && algum ? ' data-meio="1"' : '') + dis + '><span>' + (bq ? 'Marcar os encontrados' : 'Marcar todos') + '</span><em>' + vis.reduce((s, x) => s + x.n, 0) + '</em></label>' : '') +
-    vis.slice(0, 400).map(x => '<label class="tb-mn-li"><input type="checkbox" data-tbmnv="' + id + '" data-k="' + esc(k) + '" value="' + esc(x.lab) + '"' + (!sel || sel.indexOf(x.lab) >= 0 ? ' checked' : '') + dis + '><span' + (x.lab === '' ? ' class="tb-mn-vz"' : '') + '>' + esc(x.lab === '' ? '(em branco)' : x.lab) + '</span><em>' + x.n + '</em></label>').join('') +
+    vis.slice(0, 400).map(x => '<label class="tb-mn-li"><input type="checkbox" data-tbmnv="' + id + '" data-k="' + esc(k) + '" value="' + esc(x.lab) + '"' + (chk(x) ? ' checked' : '') + dis + '><span' + (x.lab === '' ? ' class="tb-mn-vz"' : '') + '>' + esc(x.lab === '' ? '(em branco)' : x.lab) + '</span><em>' + x.n + '</em></label>').join('') +
     (!vis.length ? '<p class="tb-mn-nd">Nada com “' + esc(f.txt || '') + '”.</p>' : '') + '</div></div></div>';
   return h;
 }
@@ -3927,7 +3964,7 @@ function tbPosMenu() {
   const m = document.querySelector('.tb-mn'); if (!m) return;
   const meio = m.querySelector('[data-meio]'); if (meio) meio.indeterminate = true;
   const th = document.querySelector('.tb[data-tb="' + m.getAttribute('data-tbmn') + '"] th[data-tbk="' + m.getAttribute('data-k') + '"]');
-  if (!th || innerWidth < 600) { m.classList.add('tb-mn-folha'); return; }
+  if (!th || innerWidth < 600) { m.classList.add('tb-mn-folha'); tbMnGuarda(m); return; }
   m.classList.remove('tb-mn-folha'); m.style.maxHeight = '';
   let r = th.getBoundingClientRect(); const w = m.offsetWidth, hh = Math.min(m.scrollHeight, 640);
   const falta = r.bottom + 10 + hh - (innerHeight - 8);
@@ -3938,7 +3975,10 @@ function tbPosMenu() {
   const alt = Math.min(hh, sobe ? cima : baixo), y = sobe ? r.top - 8 - alt : r.bottom + 8;
   m.style.left = x + 'px'; m.style.top = y + 'px'; m.style.maxHeight = Math.max(200, alt) + 'px';
   m.style.setProperty('--tb-pt', Math.max(14, Math.min(w - 14, r.left + Math.min(r.width, 160) / 2 - x)) + 'px');
+  tbMnGuarda(m);
 }
+/* guarda onde o menu está, para o próximo desenho já nascer no mesmo lugar */
+function tbMnGuarda(m) { S._tbMnSt = m.getAttribute('style') || ''; S._tbMnFolha = m.classList.contains('tb-mn-folha'); S._tbMnCima = m.classList.contains('tb-mn-cima'); }
 addEventListener('resize', tbPosMenu); addEventListener('scroll', e => {
   if (!S.tbMenu) return; const t = e.target;
   if (t && t.classList && t.closest && t.closest('.tb-mn')) { if (t.classList.contains('tb-mn-l')) S._tbMnScroll = t.scrollTop; else if (t.classList.contains('tb-mn-corpo')) S._tbMnCorpo = t.scrollTop; return; }
@@ -3946,9 +3986,9 @@ addEventListener('resize', tbPosMenu); addEventListener('scroll', e => {
 }, true);
 function tbMenuAbre(id, k) {
   if (S.tbMenu && S.tbMenu.id === id && S.tbMenu.k === k) { tbMenuFecha(); return; }
-  const ja = !!S.tbMenu; S.tbMenu = { id: id, k: k, h: location.hash }; S._tbMnScroll = 0; S._tbMnCorpo = 0; S._tbMnRolou = false;
+  const ja = !!S.tbMenu; if (ja) tbMnAoFechar(); S.tbMenu = { id: id, k: k, h: location.hash }; S._tbMnVisto = ''; S._tbMnScroll = 0; S._tbMnCorpo = 0; S._tbMnRolou = false;
   /* no celular o menu é uma folha com camada do "voltar"; no computador não usa o histórico (era ele que engolia o 1º toque ao trocar de aba) */
-  if (!ja && innerWidth < 600) { S._tbMnCam = true; csCamadaAbre('tbmn', () => { S._tbMnCam = false; S.tbMenu = null; render(); tbMnRepassa(); }); }
+  if (!ja && innerWidth < 600) { S._tbMnCam = true; csCamadaAbre('tbmn', () => { S._tbMnCam = false; tbMnAoFechar(); S.tbMenu = null; render(); tbMnRepassa(); }); }
   render(); setTimeout(() => { const i = document.querySelector('.tb-mn [data-tbmnbusca]'); if (i && innerWidth >= 600 && !i.disabled) i.focus(); }, 30);
 }
 /* v0.5.1 (Grok v0.4.11 A2): no celular, tocar no fundo escuro fecha a folha e o mesmo toque segue para o botão ou a aba que estava embaixo
@@ -3957,10 +3997,14 @@ function tbMenuAbre(id, k) {
 const TB_REPASSA = 'button, a[href], [role="tab"], [data-act]';
 function tbMnAlvo(x, y) { const el = document.elementFromPoint(x, y), b = el && el.closest && el.closest(TB_REPASSA); if (!b || !b.closest('.cs-ct') || b.closest('tr[data-act="tb-lin"]') || b.closest('.tb-mn') || b.classList.contains('tb-mn-fundo') || b.disabled) return null; return b; }
 function tbMnRepassa() { const p = S._tbMnPt; S._tbMnPt = null; if (!p) return; requestAnimationFrame(() => { const b = tbMnAlvo(p.x, p.y); if (b) b.click(); }); }
-function tbMenuFecha() { if (!S.tbMenu) return; if (S._tbMnCam && S.camadas.length && S.camadas[S.camadas.length - 1].nome === 'tbmn') csVolta(); else { S.tbMenu = null; S._tbMnCam = false; render(); } }
+function tbMnAoFechar() {
+  const m = S.tbMenu; S._tbMnVisto = ''; if (!m) return; const st = tbEstado(m.id), f = st.cf[m.k];
+  if (f && f.txt && (f.sel || !f.txt.trim())) { f.txt = ''; tbSalvaTrava(m.id); }
+}
+function tbMenuFecha() { if (!S.tbMenu) return; if (S._tbMnCam && S.camadas.length && S.camadas[S.camadas.length - 1].nome === 'tbmn') csVolta(); else { tbMnAoFechar(); S.tbMenu = null; S._tbMnCam = false; render(); } }
 /* toque fora (computador): some com o menu sem redesenhar a tela nem mexer no histórico; o toque segue para o que foi tocado */
-function tbMenuFechaSolto() { const m = document.querySelector('.tb-mn'); if (m) m.remove(); $$('th.tb-ab').forEach(x => x.classList.remove('tb-ab')); $$('.tb-hm[aria-expanded="true"]').forEach(x => x.setAttribute('aria-expanded', 'false')); S.tbMenu = null; }
-window.addEventListener('hashchange', () => { if (S.tbMenu) { S.tbMenu = null; S._tbMnCam = false; S.camadas = S.camadas.filter(c => c.nome !== 'tbmn'); } });
+function tbMenuFechaSolto() { const m = document.querySelector('.tb-mn'); if (m) m.remove(); $$('th.tb-ab').forEach(x => x.classList.remove('tb-ab')); $$('.tb-hm[aria-expanded="true"]').forEach(x => x.setAttribute('aria-expanded', 'false')); tbMnAoFechar(); S.tbMenu = null; }
+window.addEventListener('hashchange', () => { if (S.tbMenu) { tbMnAoFechar(); S.tbMenu = null; S._tbMnCam = false; S.camadas = S.camadas.filter(c => c.nome !== 'tbmn'); } });
 function tbMuda(id, fn) { const st = tbEstado(id); fn(st); st.limite = 100; tbSalvaTrava(id); render(); }
 function tbMove(id, k, alvo, depois) {
   const cfg = TB[id], st = tbEstado(id); let o = tbOrdenadas(cfg).map(c => c.k).filter(x => x !== k);
@@ -4107,11 +4151,11 @@ document.addEventListener('change', e => {
   const mv = t.getAttribute('data-tbmnv') || t.getAttribute('data-tbmnall');
   if (mv) {
     const cfg = TB[mv], k = t.getAttribute('data-k'), c = cfg.cols.find(x => x.k === k), st = tbEstado(mv), f = st.cf[k] = st.cf[k] || {};
-    const vals = tbValores(cfg, c).map(x => x.lab), bq = tbNorm(f.txt), vis = bq ? vals.filter(x => tbNorm(x).indexOf(bq) >= 0) : vals;
-    let sel = f.sel ? f.sel.slice() : vals.slice();
+    const vals = tbValores(cfg, c).map(x => x.lab), bq = tbNorm(f.txt).trim(), vis = bq ? vals.filter(x => tbAcha(x, f.txt)) : vals;
+    let sel = f.sel ? f.sel.slice() : bq ? [] : vals.slice(); /* buscando sem nada escolhido: começa a escolher do zero */
     if (t.hasAttribute('data-tbmnall')) { if (t.checked) vis.forEach(x => { if (sel.indexOf(x) < 0) sel.push(x); }); else sel = sel.filter(x => vis.indexOf(x) < 0); }
     else { const v = t.value; if (t.checked) { if (sel.indexOf(v) < 0) sel.push(v); } else sel = sel.filter(x => x !== v); }
-    f.sel = vals.every(x => sel.indexOf(x) >= 0) ? null : sel;
+    f.sel = vals.every(x => sel.indexOf(x) >= 0) ? null : sel; /* revisor: desmarcar o último buscando deixa nada escolhido (não volta a filtrar pela busca) */
     const l = document.querySelector('.tb-mn-l'), cp = document.querySelector('.tb-mn-corpo'); S._tbMnScroll = l ? l.scrollTop : 0; S._tbMnCorpo = cp ? cp.scrollTop : 0;
     tbMuda(mv, () => {}); return;
   }
@@ -8841,136 +8885,148 @@ function ptResumoEnvio(k, dd, d) {
 }
 
 /* ===== janelas.js ===== */
-/* EFCwork · janelas.js — os apps da família abrem dentro do EFCwork, em janelas com abas no alto (v0.6.22). Prefixo: jn.
-   Escolha do Elias (20/11/2026): OPÇÃO 1 (linha fina sublinhada: só o nome do app e um traço de 2 px na cor da janela, faixa de 26 px)
-   com o recolher da OPÇÃO 3 (fica um fio de 6 px no alto; abre ao passar o mouse ou ao tocar).
-   - Mesmo endereço (eliasgrigori.github.io): o Vértice e o Sabiá abrem num quadro (iframe) por cima do EFCwork e continuam vivos
-     quando se volta para o EFCwork (nada se perde ao alternar). A caixa de troca (efd-ponte) funciona igual dentro do quadro.
-   - A faixa fica fora do #app (a tela redesenha e as janelas ficam). Só aparece depois que um app foi aberto.
-   - A cor da faixa é a da janela que está na frente (lida do próprio app); o traço da aba é a cor de destaque daquele app.
-   - Esc e o voltar do celular, com um app na frente, voltam para o EFCwork (uma camada por vez). Dentro do app, o Esc é dele. */
-Object.assign(S, { jnAbertas: [], jnAtiva: 'efcwork' });
+/* EFCwork · janelas.js — os apps da família abrem dentro do EFCwork, em tela inteira, com abas no alto. Prefixo: jn.
+   v0.6.22: janelas com abas (faixa recolhida em fio). v0.6.35 (ITEM 200 = OPÇÃO 2, ITEM 201, decisão de 26/11 13:18):
+   - Com um app na frente, a faixa fica sempre à vista: 32 px (40 no toque), só texto, letra menor, traço dourado de 2 px
+     embaixo da aba aberta, sem relevo nem degradê. O app ocupa o resto da tela, por cima também do menu do Cwork.
+   - Várias abas do Vértice ao mesmo tempo (sem teto de 3); com muitas, as abas encolhem e o nome termina em "…".
+     Cada aba do Vértice mostra o nome do arquivo aberto nela. O "+" abre uma aba nova do Vértice.
+   - A primeira aba (EFCwork) volta ao Cwork sem fechar nada; com o Cwork na frente, a faixa recolhe num fio de 6 px
+     (abre ao parar o mouse ou ao tocar), como antes.
+   - O X pergunta antes de fechar. Esc e o voltar do celular, com um app na frente, voltam para o EFCwork (uma camada por vez).
+   - Mesmo endereço (eliasgrigori.github.io): cada app roda num quadro (iframe) e continua vivo ao alternar; a caixa de troca
+     (efd-ponte) funciona igual dentro do quadro. A faixa e os quadros ficam fora do #app (a tela redesenha e as janelas ficam). */
+Object.assign(S, { jnAbertas: [], jnAtiva: 'efcwork', jnNome: {}, jnUlt: {}, jnSeq: 1, jnOcupada: {} }); /* jnOcupada: a aba recebeu um documento do Cwork (não recebe outro por cima) */
 /* a janela só funciona no mesmo endereço do EFCwork (é o que deixa a caixa de troca passar); fora dele (arquivo aberto do disco) usa o site */
 const JN_RAIZ = /^https?:$/.test(location.protocol) ? location.origin : 'https://eliasgrigori.github.io';
+/* multi: o app abre em várias abas; url pode virar um "get" (o vertice.js escolhe o endereço conforme quem entrou) */
 const JN_APPS = {
-  docs: { nome: 'Vértice Docs', url: JN_RAIZ + '/EFCdocs/', ac: '#22a896' },
-  sabia: { nome: 'Sabiá', url: JN_RAIZ + '/EFC-Sabi--Quiz/', ac: '#1f6f6a' }
+  docs: { nome: 'Vértice Docs', url: JN_RAIZ + '/EFCdocs/', multi: true, podeNova: () => true },
+  sabia: { nome: 'Sabiá', url: JN_RAIZ + '/EFC-Sabi--Quiz/' }
 };
-const JN_FIO = 6, JN_FAIXA = 26;
+const JN_MAX = 10; /* proteção de memória do aparelho: cada aba do Vértice é um app inteiro */
+const jnApp = id => JN_APPS[String(id).split('~')[0]];
+const jnBase = id => String(id).split('~')[0];
 const jnEhToque = () => { try { return matchMedia('(pointer: coarse)').matches; } catch { return false; } };
 const jnFr = id => document.querySelector('.jn-fr iframe[data-j="' + id + '"]');
-
-/* ---------- cores: a da janela que está na frente ---------- */
-function jnLum(c) {
-  const m = /rgba?\(\s*(\d+)[ ,]+(\d+)[ ,]+(\d+)(?:[ ,/]+([\d.]+))?/.exec(String(c || '')); if (!m) return null;
-  if (m[4] != null && Number(m[4]) < 0.5) return null; /* transparente: não serve */
-  const f = v => { v = Number(v) / 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
-  return 0.2126 * f(m[1]) + 0.7152 * f(m[2]) + 0.0722 * f(m[3]);
-}
-function jnCorDe(id) {
-  if (id === 'efcwork') { const r = getComputedStyle(document.documentElement); return { bg: getComputedStyle(document.body).backgroundColor, ac: (r.getPropertyValue('--a') || '').trim() || '#9a7128' }; }
-  const a = JN_APPS[id], fr = jnFr(id); let bg = '', ac = '';
-  try {
-    const d = fr && fr.contentDocument; if (d && d.body) {
-      bg = getComputedStyle(d.body).backgroundColor; if (jnLum(bg) == null) bg = getComputedStyle(d.documentElement).backgroundColor;
-      ac = (getComputedStyle(d.body).getPropertyValue('--primary') || getComputedStyle(d.documentElement).getPropertyValue('--primary') || '').trim(); /* o tema do Vértice mora no body */
-    }
-  } catch (e) { /* outro endereço: fica a cor padrão */ }
-  if (jnLum(bg) == null) bg = getComputedStyle(document.body).backgroundColor;
-  return { bg: bg, ac: ac || a.ac };
-}
-function jnPinta() {
-  const el = $('#jn'); if (!el) return;
-  const c = jnCorDe(S.jnAtiva), l = jnLum(c.bg), esc_ = l != null && l < 0.22;
-  el.style.setProperty('--jn-bg', c.bg); el.style.setProperty('--jn-tx', esc_ ? '#efeae0' : '#2a2519');
-  el.style.setProperty('--jn-bd', esc_ ? 'rgba(255,255,255,.10)' : 'rgba(40,30,10,.12)');
-  el.querySelectorAll('.jn-ab').forEach(b => { const j = b.getAttribute('data-j'); b.style.setProperty('--jn-ac', j === S.jnAtiva ? c.ac : (j === 'efcwork' ? jnCorDe('efcwork').ac : JN_APPS[j].ac)); });
-}
+const jnDoApp = app => S.jnAbertas.filter(x => jnBase(x) === app);
+function jnRotulo(id) { const a = jnApp(id); return id === 'efcwork' ? 'EFCwork' : (S.jnNome[id] || a.nome); }
 
 /* ---------- a faixa ---------- */
 function jnFaixaHTML() {
-  let k = 0; /* --k: a ordem em que as abas entram (40 ms uma da outra) */
-  const ab = (id, nome, x) => '<span class="jn-aw' + (id === S.jnAtiva ? ' on' : '') + '" style="--k:' + (k++) + '"' + '><button type="button" role="tab" class="jn-ab" data-act="jn-ir" data-j="' + esc(id) + '" aria-selected="' + (id === S.jnAtiva) + '">' + esc(nome) + '</button>' +
-    (x ? '<button type="button" class="jn-x" data-act="jn-fecha" data-j="' + esc(id) + '" title="Fechar o ' + esc(nome) + '" aria-label="Fechar o ' + esc(nome) + '">' + ic('x') + '</button>' : '') + '</span>';
-  return '<div class="jn-faixa" role="tablist" aria-label="Janelas abertas">' + ab('efcwork', 'EFCwork', false) + S.jnAbertas.map(id => ab(id, JN_APPS[id].nome, true)).join('') +
-    '</div>'; /* ITEM 114 (20/11): sem o ícone de abrir numa aba do navegador no topo; para isso, Ctrl + clique no menu */
+  let k = 0; /* --k: a ordem em que as abas entram (escala de movimento) */
+  const ab = id => {
+    const nome = jnRotulo(id), on = id === S.jnAtiva, x = id !== 'efcwork';
+    return '<span class="jn-aw' + (on ? ' on' : '') + (x ? '' : ' jn-cw') + '" style="--k:' + (k++) + '" data-j="' + esc(id) + '">' +
+      '<button type="button" role="tab" class="jn-ab" data-act="jn-ir" data-j="' + esc(id) + '" aria-selected="' + (on ? 'true' : 'false') + '"' + (x ? ' title="' + esc(nome) + '"' : '') + '>' + esc(nome) + '</button>' +
+      (x ? '<button type="button" class="jn-x" data-act="jn-fecha" data-j="' + esc(id) + '" aria-label="Fechar ' + esc(nome) + '">' + ic('x') + '</button>' : '') + '</span>';
+  };
+  return ab('efcwork') + S.jnAbertas.map(ab).join('');
 }
 function jnDesenha() {
   let el = $('#jn'), fr = $('.jn-fr');
-  if (!S.jnAbertas.length) { if (el) el.remove(); if (fr) fr.remove(); document.body.classList.remove('jn-tem', 'jn-fora-on'); return; }
+  if (!S.jnAbertas.length) { if (el) el.remove(); if (fr) fr.remove(); document.body.classList.remove('jn-tem', 'jn-fora-on'); jnDepois(); return; }
   if (!fr) { fr = document.createElement('div'); fr.className = 'jn-fr'; document.body.appendChild(fr); }
-  if (!el) { el = document.createElement('div'); el.id = 'jn'; el.className = 'jn'; el.innerHTML = '<div class="jn-faixa"></div><i class="jn-ind" aria-hidden="true"></i>'; document.body.appendChild(el); jnLiga(el); }
-  el.querySelector('.jn-faixa').outerHTML = jnFaixaHTML(); /* o traço (.jn-ind) fica: é ele que desliza de uma aba para a outra */
-  jnTraco();
-  document.body.classList.add('jn-tem'); document.body.classList.toggle('jn-fora-on', S.jnAtiva !== 'efcwork');
+  if (!el) {
+    el = document.createElement('div'); el.id = 'jn'; el.className = 'jn';
+    el.innerHTML = '<div class="jn-abas" role="tablist" aria-label="Janelas abertas"></div><button type="button" class="jn-mais" data-act="jn-mais" aria-label="Nova aba do Vértice" title="Nova aba do Vértice">' + ic('mais') + '</button><i class="jn-ind" aria-hidden="true"></i><i class="jn-zona" aria-hidden="true"></i>';
+    document.body.appendChild(el); jnLiga(el);
+  }
+  const abas = el.querySelector('.jn-abas'), sx = abas.scrollLeft;
+  abas.innerHTML = jnFaixaHTML(); jnAperta(abas); abas.scrollLeft = sx; /* o traço (.jn-ind) fica: é ele que desliza de uma aba para a outra */
+  el.querySelector('.jn-mais').hidden = !(JN_APPS.docs.podeNova() && S.jnAtiva !== 'efcwork' && jnBase(S.jnAtiva) === 'docs');
+  const fora = S.jnAtiva !== 'efcwork';
+  el.classList.toggle('fixa', fora); if (fora) el.classList.add('aberta'); else if (!el.matches(':hover') && !el.contains(document.activeElement)) el.classList.remove('aberta');
+  document.body.classList.add('jn-tem'); document.body.classList.toggle('jn-fora-on', fora);
   fr.querySelectorAll('iframe').forEach(f => { const on = f.getAttribute('data-j') === S.jnAtiva; f.classList.toggle('on', on); f.setAttribute('aria-hidden', on ? 'false' : 'true'); if (on) f.removeAttribute('tabindex'); else f.setAttribute('tabindex', '-1'); });
-  fr.classList.toggle('on', S.jnAtiva !== 'efcwork');
-  jnPinta();
+  fr.classList.toggle('on', fora);
+  const on = abas.querySelector('.jn-aw.on'); if (on && on.scrollIntoView) { try { on.scrollIntoView({ block: 'nearest', inline: 'nearest' }); } catch {} }
+  jnTraco(); requestAnimationFrame(jnTraco);
+  jnDepois();
 }
-/* põe o traço embaixo da aba da frente (o CSS faz ele deslizar) */
+/* com muitas abas, encolhem por igual; com poucas, cada uma tem o tamanho do nome (até 200 px) */
+function jnAperta(abas) { abas = abas || $('#jn .jn-abas'); if (!abas) return; abas.classList.remove('apertado'); abas.classList.add('medindo'); const cheio = abas.scrollWidth > abas.clientWidth + 1; abas.classList.remove('medindo'); abas.classList.toggle('apertado', cheio); }
+/* quem quiser saber que a faixa mudou (o vertice.js põe o nome do arquivo no título da janela) */
+const JN_DEPOIS = [];
+function jnDepois() { JN_DEPOIS.forEach(f => { try { f(); } catch (e) { console.error(e); } }); }
+/* põe o traço embaixo da aba da frente (o CSS faz ele deslizar); some se a aba está fora da vista */
 function jnTraco() {
-  const el = $('#jn'), b = el && el.querySelector('.jn-aw.on .jn-ab'); if (!b) return;
-  const r = b.getBoundingClientRect(), f = el.getBoundingClientRect(), m = 8;
-  el.style.setProperty('--ix', Math.round(r.left - f.left + m) + 'px'); el.style.setProperty('--iw', Math.max(12, Math.round(r.width - 2 * m)) + 'px');
+  const el = $('#jn'), b = el && el.querySelector('.jn-aw.on'); if (!b) return;
+  const r = b.getBoundingClientRect(), f = el.getBoundingClientRect(), v = el.querySelector('.jn-abas').getBoundingClientRect(), m = 8;
+  const l = Math.max(r.left, v.left), d = Math.min(r.right, v.right);
+  el.style.setProperty('--zw', Math.round(v.right - f.left) + 'px');
+  el.style.setProperty('--ix', Math.round(l - f.left + m) + 'px'); el.style.setProperty('--iw', Math.max(0, Math.round(d - l - 2 * m)) + 'px');
 }
-/* abre quando o mouse para um instante sobre as abas (passar de raspão não abre) e espera um pouco antes de fechar; no toque, abre ao tocar */
+/* com o Cwork na frente: abre quando o mouse para um instante sobre o fio (passar de raspão não abre) e espera um pouco antes de fechar */
 function jnQuer(sim) {
-  const el = $('#jn'); if (!el) return; clearTimeout(S._jnQ);
+  const el = $('#jn'); if (!el || el.classList.contains('fixa')) return; clearTimeout(S._jnQ);
   if (sim === el.classList.contains('aberta')) { clearTimeout(S._jnT); return; }
-  S._jnQ = setTimeout(() => jnMostra(sim), sim ? 120 : 450);
+  S._jnQ = setTimeout(() => jnMostra(sim), sim ? 120 : 400);
 }
 function jnMostra(sim) {
   const el = $('#jn'); if (!el) return; clearTimeout(S._jnT);
-  el.classList.toggle('aberta', !!sim);
-  if (sim) jnPinta(); /* o app pode ter trocado de tema */
+  if (el.classList.contains('fixa')) { el.classList.add('aberta'); return; } /* com um app na frente, a faixa não recolhe */
+  el.classList.toggle('aberta', !!sim); if (sim) jnTraco();
   if (sim && jnEhToque()) S._jnT = setTimeout(() => jnMostra(false), 4000);
 }
 function jnLiga(el) {
-  /* só a área das abas (.jn-faixa) recebe o mouse; o resto da faixa deixa passar (pointer-events no CSS) */
-  const naAba = x => !!(x && x.closest && x.closest('.jn-faixa'));
+  /* só as abas reagem; o resto do alto deixa o clique passar para o Cwork (pointer-events no CSS) */
+  const naAba = x => !!(x && x.closest && x.closest('.jn-abas, .jn-mais, .jn-zona'));
   el.addEventListener('pointerover', e => { if (e.pointerType === 'mouse' && naAba(e.target)) jnQuer(true); });
   el.addEventListener('pointerout', e => { if (e.pointerType === 'mouse' && !naAba(e.relatedTarget)) jnQuer(false); });
   el.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse' && !el.classList.contains('aberta')) { e.preventDefault(); jnMostra(true); } });
   el.addEventListener('focusin', () => jnMostra(true));
   el.addEventListener('focusout', () => { setTimeout(() => { if (!el.contains(document.activeElement)) jnMostra(false); }, 0); });
+  el.querySelector('.jn-abas').addEventListener('scroll', jnTraco, { passive: true });
+  /* roda do mouse sobre as abas: anda para o lado (muitas abas) */
+  el.querySelector('.jn-abas').addEventListener('wheel', e => { const a = e.currentTarget; if (a.scrollWidth > a.clientWidth && Math.abs(e.deltaY) > Math.abs(e.deltaX)) { a.scrollLeft += e.deltaY; e.preventDefault(); } }, { passive: false });
 }
-/* tocar dentro do app da frente (o quadro tira o foco do EFCwork) recolhe a faixa */
 window.addEventListener('blur', () => { if ($('#jn')) setTimeout(() => { clearTimeout(S._jnQ); jnMostra(false); }, 0); });
-window.addEventListener('resize', () => jnTraco());
+window.addEventListener('resize', () => { jnAperta(); jnTraco(); });
 document.addEventListener('pointerdown', e => { const el = $('#jn'); if (el && el.classList.contains('aberta') && !el.contains(e.target)) jnMostra(false); }, true);
 
 /* ---------- abrir, alternar, fechar ---------- */
-function jnAbrir(id, rota) {
-  const a = JN_APPS[id]; if (!a) return;
-  let fr = jnFr(id);
+/* jnAbrir('docs') traz a última aba do Vértice (ou abre uma); jnAbrir('docs', rota) abre o documento numa aba nova
+   (ou na última aba do Vértice usada, se ela ainda não tem arquivo); jnAbrir('docs', '', true) abre uma aba nova vazia */
+function jnAbrir(id, rota, nova, aba) { /* aba: uma aba certa (o mesmo documento pedido de novo) */
+  const a = JN_APPS[id] ? JN_APPS[id] : jnApp(id); if (!a) return;
+  let alvo = aba && jnFr(aba) ? aba : JN_APPS[id] ? '' : id; /* veio o id de uma aba (docs~2): é ela */
+  if (!alvo) {
+    const tem = jnDoApp(id);
+    if (!a.multi) alvo = tem[0] || '';
+    else if (nova) alvo = '';
+    else if (rota) { const u = jnBase(S.jnAtiva) === id ? S.jnAtiva : S.jnUlt[id]; alvo = u && tem.indexOf(u) >= 0 && !S.jnNome[u] && !S.jnOcupada[u] ? u : ''; } /* a aba do Vértice sem arquivo recebe o documento; com arquivo, abre outra */
+    else alvo = tem.indexOf(S.jnUlt[id]) >= 0 ? S.jnUlt[id] : (tem[tem.length - 1] || '');
+  }
+  let fr = alvo && jnFr(alvo);
   if (!fr) {
-    if (S.jnAbertas.indexOf(id) < 0) S.jnAbertas.push(id);
-    jnDesenha();
-    fr = document.createElement('iframe'); fr.setAttribute('data-j', id); fr.title = a.nome;
-    fr.setAttribute('allow', 'clipboard-read; clipboard-write; fullscreen'); fr.src = a.url + (rota || '');
-    fr.addEventListener('load', () => {
-      jnPinta(); [400, 1200, 3000].forEach(ms => setTimeout(jnPinta, ms)); /* o app de dentro põe o tema dele depois de carregar */
-      try {
-        fr.contentWindow.addEventListener('focus', () => jnMostra(false));
-        const d = fr.contentDocument, ob = new MutationObserver(() => jnPinta()); /* trocou o tema lá dentro: a faixa acompanha */
-        ob.observe(d.documentElement, { attributes: true }); if (d.body) ob.observe(d.body, { attributes: true, attributeFilter: ['class', 'data-theme', 'data-tema', 'style'] });
-      } catch (e) {}
-    });
+    if (a.multi && jnDoApp(id).length >= JN_MAX) { aviso('Já há ' + JN_MAX + ' abas do ' + a.nome + ' abertas. Feche uma para abrir outra.', 'erro'); return; }
+    if (!alvo) { const n = jnDoApp(id).length ? ++S.jnSeq : 1; alvo = a.multi && n > 1 ? id + '~' + n : id; while (jnFr(alvo) || S.jnAbertas.indexOf(alvo) >= 0) alvo = id + '~' + (++S.jnSeq); }
+    const i = S.jnAbertas.indexOf(S.jnAtiva); /* a aba nova entra logo depois da aba da frente (como no navegador) */
+    if (S.jnAbertas.indexOf(alvo) < 0) S.jnAbertas.splice(i >= 0 ? i + 1 : S.jnAbertas.length, 0, alvo);
+    delete S.jnNome[alvo]; delete S.jnOcupada[alvo];
+    if (!$('.jn-fr')) jnDesenha();
+    fr = document.createElement('iframe'); fr.setAttribute('data-j', alvo); fr.setAttribute('aria-label', a.nome); /* sem title: o navegador mostrava a dica por cima do app */
+    fr.setAttribute('allow', 'clipboard-read; clipboard-write; fullscreen'); fr.src = a.url + (rota || ''); fr.setAttribute('data-url', a.url);
+    fr.addEventListener('load', () => { fr._carregou = true; try { fr.contentWindow.addEventListener('focus', () => jnMostra(false)); } catch (e) {} });
     $('.jn-fr').appendChild(fr);
   } else if (rota) {
     /* troca só o endereço de dentro, sem recarregar o app e sem criar passo novo no voltar */
-    try { fr.contentWindow.location.replace(a.url + rota); } catch (e) { fr.src = a.url + rota; }
+    if (!fr._carregou) fr.src = a.url + rota; /* ainda carregando: troca o endereço que vai carregar */
+    else try { fr.contentWindow.location.replace(a.url + rota); } catch (e) { fr.src = a.url + rota; }
   }
-  jnIr(id);
+  if (rota && a.multi) S.jnOcupada[alvo] = rota;
+  jnIr(alvo);
 }
 function jnIr(id) {
   if (id !== 'efcwork' && !jnFr(id)) return jnAbrir(id);
-  const antes = S.jnAtiva; if (antes === id) { jnDesenha(); jnMostra(false); return; }
+  if (id !== 'efcwork') S.jnUlt[jnBase(id)] = id;
+  const antes = S.jnAtiva; if (antes === id) { jnDesenha(); return; }
   S.jnAtiva = id; jnDesenha();
   if (id !== 'efcwork' && antes === 'efcwork') { S._jnHist = history.length; csCamadaAbre('janela', () => { S.jnAtiva = 'efcwork'; jnDesenha(); }); }
   else if (id === 'efcwork') jnSaiCamada();
   if (id !== 'efcwork') { const f = jnFr(id); setTimeout(() => { try { f.focus(); } catch (e) {} }, 0); }
-  setTimeout(() => jnMostra(false), jnEhToque() ? 900 : 0);
+  else setTimeout(() => jnMostra(false), jnEhToque() ? 900 : 0);
 }
 /* voltou para o EFCwork pela aba: tira a camada. Se o app de dentro andou (criou passos no voltar), só tira da pilha */
 function jnSaiCamada() {
@@ -8978,50 +9034,68 @@ function jnSaiCamada() {
   if (S.camadas.length && S.camadas[S.camadas.length - 1].nome === 'janela' && history.length === S._jnHist + 1) csCamadaSaiu('janela');
   else { const k = S.camadas.map(c => c.nome).lastIndexOf('janela'); if (k >= 0) S.camadas.splice(k, 1); }
 }
+/* a aba que recebeu esta rota (por exemplo '#/pedido/<pid>'), para o mesmo documento voltar para ela */
+const jnAbaDaRota = r => S.jnAbertas.find(x => S.jnOcupada[x] === r) || '';
+/* o menu do celular (camada 'menu') fecha e sai da pilha do voltar; o app abre depois que o navegador terminar de voltar */
+function jnDepoisDoMenu(f) {
+  if (typeof csFechaMenu === 'function') csFechaMenu();
+  if (typeof csTemCamada === 'function' && csTemCamada('menu')) csCamadaSaiu('menu', f); else f();
+}
+/* tira uma aba sem perguntar (usado depois da confirmação e na troca de conta) */
+function jnTira(id) {
+  const f = jnFr(id); if (f) f.remove();
+  const i = S.jnAbertas.indexOf(id); S.jnAbertas = S.jnAbertas.filter(x => x !== id); delete S.jnNome[id]; delete S.jnOcupada[id];
+  if (S.jnAtiva === id) {
+    const viz = S.jnAbertas[Math.max(0, i - 1)]; /* vai para a aba ao lado, como no navegador */
+    S.jnAtiva = viz || 'efcwork'; if (viz) S.jnUlt[jnBase(viz)] = viz;
+    if (S.jnAtiva === 'efcwork') jnSaiCamada();
+  }
+  jnDesenha();
+}
 function jnFechar(id) {
-  const a = JN_APPS[id]; if (!a) return;
-  const tira = () => { const f = jnFr(id); if (f) f.remove(); S.jnAbertas = S.jnAbertas.filter(x => x !== id); if (S.jnAtiva === id) { S.jnAtiva = S.jnAbertas.length ? S.jnAbertas[S.jnAbertas.length - 1] : 'efcwork'; if (S.jnAtiva === 'efcwork') jnSaiCamada(); } jnDesenha(); };
-  csConfirma({ titulo: 'Fechar o ' + a.nome + '?', texto: 'O que já foi salvo no ' + a.nome + ' continua lá. O que estiver aberto sem salvar pode se perder.', sim: 'Fechar', nao: 'Deixar aberto' }, tira);
+  const a = jnApp(id); if (!a || !jnFr(id)) return;
+  const nome = jnRotulo(id);
+  csConfirma({ titulo: 'Fechar ' + (nome === a.nome ? 'o ' + a.nome : '"' + nome + '"') + '?', texto: 'O que já foi salvo continua no ' + a.nome + '. O que estiver aberto sem salvar nesta aba pode se perder.', sim: 'Fechar', nao: 'Deixar aberta' }, () => jnTira(id));
 }
 
 document.addEventListener('click', e => {
   /* os apps da família no menu abrem aqui dentro; Ctrl, Shift ou o botão do meio continuam abrindo numa aba do navegador */
   const lk = e.target.closest && e.target.closest('a[data-app]');
-  if (lk && JN_APPS[lk.getAttribute('data-app')] && !(e.ctrlKey || e.metaKey || e.shiftKey || e.button === 1)) { e.preventDefault(); if (typeof csFechaMenu === 'function') csFechaMenu(); jnAbrir(lk.getAttribute('data-app')); return; }
+  if (lk && JN_APPS[lk.getAttribute('data-app')] && !(e.ctrlKey || e.metaKey || e.shiftKey || e.button === 1)) { e.preventDefault(); const ap = lk.getAttribute('data-app'); jnDepoisDoMenu(() => jnAbrir(ap)); return; }
   const t = e.target.closest && e.target.closest('[data-act^="jn-"]'); if (!t) return;
   const a = t.getAttribute('data-act'), id = t.getAttribute('data-j');
   if (a === 'jn-ir') jnIr(id);
   else if (a === 'jn-fecha') jnFechar(id);
+  else if (a === 'jn-mais') jnAbrir('docs', '', true);
 });
-/* Esc com o foco no EFCwork e um app na frente: volta para o EFCwork */
-document.addEventListener('keydown', e => { if (e.key === 'Escape' && S.jnAtiva !== 'efcwork' && !csConfirmaAberto() && csTemCamada('janela')) { e.preventDefault(); csVolta(); } });
-/* trocar o tema do EFCwork muda a cor da faixa quando o EFCwork está na frente */
-new MutationObserver(() => { if ($('#jn')) jnPinta(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-tema'] });
+/* clique do meio numa aba: fecha (como no navegador), também perguntando antes */
+document.addEventListener('auxclick', e => { const t = e.button === 1 && e.target.closest && e.target.closest('#jn .jn-aw:not(.jn-cw)'); if (t) { e.preventDefault(); jnFechar(t.getAttribute('data-j')); } });
+/* o Cwork mudou de tela por baixo (um aviso tocado, um link): o Cwork vem para a frente; as abas continuam abertas */
+window.addEventListener('hashchange', e => { if (S.jnAtiva !== 'efcwork' && !/#\/vertice(\/|$)/.test(String(e.newURL || '')) && !/^#\/vertice(\/|$)/.test(location.hash)) jnIr('efcwork'); });
+/* Esc com o foco no EFCwork e um app na frente: quem volta é o Esc geral das camadas (tabela.js), uma camada por vez.
+   (revisor, v0.6.35: havia um segundo ouvinte aqui, e um Esc podia voltar duas camadas) */
 /* saiu da conta: as janelas fecham junto */
 const jnSairOrig = typeof csSair === 'function' ? csSair : null;
-if (jnSairOrig) csSair = async function () { S.jnAbertas.forEach(id => { const f = jnFr(id); if (f) f.remove(); }); S.jnAbertas = []; S.jnAtiva = 'efcwork'; jnDesenha(); return jnSairOrig.apply(this, arguments); };
+if (jnSairOrig) csSair = async function () { S.jnAbertas.forEach(id => { const f = jnFr(id); if (f) f.remove(); }); S.jnAbertas = []; S.jnNome = {}; S.jnOcupada = {}; S.jnAtiva = 'efcwork'; jnDesenha(); return jnSairOrig.apply(this, arguments); };
 
 /* ===== vertice.js ===== */
 /* EFCwork · vertice.js — v0.6.34 (P3a do plano "Vértice como aba do Cwork", aprovado pelo Elias em 26/11/2026). Prefixo: vt.
-   O Vértice Docs vira uma área do Cwork (menu lateral), no lugar da janela por cima. Continuam dois programas:
-   o Vértice (React) roda num quadro (iframe) do mesmo site e pergunta ao Cwork quem entrou pela porta combinada
+   O Vértice (React) roda num quadro (iframe) do mesmo site e pergunta ao Cwork quem entrou pela porta combinada
    no PEDIDO-P3 (seção 3):
-     window.CworkPonteVertice = { versao: 1, recursos: [...], usuario() → { uid, nome, perfil, estrela } | null, pastas() }
-     e o evento 'cwork:usuario' nesta janela quando entra, sai ou muda o cadastro.
+     window.CworkPonteVertice = { versao: 1, recursos: [...], usuario() → { uid, nome, perfil, estrela, acesso, salvar } | null, pastas() }
+     e o evento 'cwork:usuario' nesta janela quando entra, sai ou muda o cadastro (ou a pasta liberada).
    - A porta existe sempre (mesmo sem ninguém logado: usuario() devolve null), como o Vértice pediu.
    - Nome e dados pessoais vêm do cadastro do Cwork (decisão do Elias, 26/11 10:12). Sem campo de conta de teste:
      o modo de teste do Vértice (sem login, só no aparelho) fica com a conversa do Vértice.
-   - pastas() devolve [] até a P3b (Administração › Pastas do Vértice).
-   - O quadro mora fora do #app (a tela redesenha e o Vértice continua vivo) e fica por cima do lugar reservado na área.
-   - Mensagens do Vértice: só do mesmo site, só com de: 'vertice' e só do quadro do Vértice. 'arquivo' mostra o nome
-     do arquivo aberto no cabeçalho; 'pronto' guarda a versão.
-   - Quem vê a área: o mesmo de hoje para o botão do Vértice (Administrador e Líder ★). Tela sem permissão some.
-   - Volta: a janela por cima continua no botão do cabeçalho ("Abrir em janela"); nunca ficam as duas vivas juntas.
-   - Pedidos que já abriam o Vértice (Impressos, Ponte, Documentos da remessa) passam a abrir a aba. */
-Object.assign(S, { vtArq: '', vtTipo: '', vtVer: '' });
+   - v0.6.35 (decisão de 26/11 13:18, ITEM 200 = OPÇÃO 2): o menu "Vértice Docs" abre direto a tela inteira com abas no alto
+     (janelas.js); a área ao lado do menu saiu. Várias abas do Vértice; cada aba mostra o nome do arquivo aberto nela, e o
+     arquivo da aba da frente vai para o título da janela do navegador (ITEM 199).
+   - Mensagens do Vértice: só do mesmo site, só com de: 'vertice' e só de um quadro do Vértice.
+   - Quem vê o menu: Administrador e Líder ★ (tela sem permissão some). Os outros abrem o Vértice só pelo documento ligado
+     (ITEM 195; a parte do Vértice é feita na conversa dele). */
+Object.assign(S, { vtVer: '' });
 Object.assign(ICS, {
-  vertice: '<path d="M12 3 3 20h18L12 3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8.5 14h7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
-  janela: '<rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3 9h18" fill="none" stroke="currentColor" stroke-width="1.8"/>'
+  vertice: '<path d="M12 3 3 20h18L12 3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8.5 14h7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>'
 });
 const VT_URL = JN_RAIZ + '/EFCdocs/?em=cwork';
 const vtLiga = () => !!S.user && !S.user.precisaCompletar && isSup(S.user);
@@ -9030,118 +9104,82 @@ const vtLiga = () => !!S.user && !S.user.precisaCompletar && isSup(S.user);
 function vtUsuario() {
   const u = S.user;
   if (!u || !u.id || u.precisaCompletar || u.bloqueado) return null;
-  /* ITEM 195 (OPÇÃO 1, 26/11): quem não vê a área entra no Vértice só pelo documento ligado (acesso 'documento': edita e
+  /* ITEM 195 (OPÇÃO 1, 26/11): quem não vê o menu entra no Vértice só pelo documento ligado (acesso 'documento': edita e
      imprime, não salva); a parte do Vértice é feita na conversa dele. ITEM 196: só Principal e Líder ★ salvam. */
   return { uid: String(u.id), nome: String(u.nome || ''), perfil: String(u.perfil || ''), estrela: !!u.estrela, acesso: vtLiga() ? 'completo' : 'documento', salvar: vtLiga() };
 }
 try {
   Object.defineProperty(window, 'CworkPonteVertice', {
-    value: Object.freeze({ versao: 1, recursos: Object.freeze(['usuario', 'evento', 'acesso']), usuario: () => vtUsuario(), pastas: () => [] }),
+    value: Object.freeze({ versao: 1, recursos: Object.freeze(['usuario', 'evento', 'acesso', 'pastas']), usuario: () => vtUsuario(), pastas: () => vtPastasDe(S.user) }),
     writable: false, configurable: false, enumerable: false
   });
 } catch (e) { console.warn('porta do Vértice:', e); }
-/* avisa o Vértice quando quem entrou (ou o cadastro) muda */
+
+/* ---------- o endereço de cada aba ---------- */
+/* quem vê o menu abre o Vértice no modo do Cwork (?em=cwork: lê a porta); os outros, como antes (só pelo documento ligado) */
+Object.defineProperty(JN_APPS.docs, 'url', { get: () => vtLiga() ? VT_URL : JN_RAIZ + '/EFCdocs/', configurable: true });
+JN_APPS.docs.podeNova = () => vtLiga();
+const vtAbas = () => S.jnAbertas.filter(x => jnBase(x) === 'docs');
+/* tira as abas do Vértice sem perguntar (troca de conta; perdeu a permissão: só as abertas no modo do Cwork) */
+function vtFechaAbas(soCwork) { vtAbas().forEach(id => { const f = jnFr(id); if (!soCwork || (f && f.getAttribute('data-url') === VT_URL)) jnTira(id); }); }
+
+/* avisa o Vértice quando quem entrou (ou o cadastro, ou a pasta liberada) muda */
 let vtUlt = 'x', vtUid = '';
 function vtConfere() {
-  let k, u = null; try { u = vtUsuario(); k = JSON.stringify(u); } catch { k = 'null'; }
+  let k, u = null; try { u = vtUsuario(); k = JSON.stringify([u, typeof vtPastasDe === 'function' ? vtPastasDe(S.user) : []]); } catch { k = 'null'; }
   if (k === vtUlt) return; vtUlt = k;
-  const uid = u ? u.uid : ''; if (vtUid && uid !== vtUid) vtDesliga(); vtUid = uid; /* trocou de conta: o Vértice recomeça (nada do anterior fica aberto) */
+  const uid = u ? u.uid : ''; if (vtUid && uid !== vtUid) vtFechaAbas(false); vtUid = uid; /* trocou de conta: o Vértice recomeça (nada do anterior fica aberto) */
   try { window.dispatchEvent(new Event('cwork:usuario')); } catch (e) { console.warn(e); }
-  if (!vtLiga()) vtDesliga();
+  if (!vtLiga()) vtFechaAbas(true);
 }
 setInterval(vtConfere, 2000); /* garantia: o render também confere */
 
-/* ---------- a área ---------- */
+/* ---------- o menu ---------- */
 { const i = AREAS.findIndex(a => a.id === 'documentos');
   AREAS.splice(i >= 0 ? i + 1 : AREAS.length - 1, 0, { id: 'vertice', nome: 'Vértice Docs', ic: 'vertice', get negada() { return !!S.user && !vtLiga(); }, abas: [] }); }
-const vtArqPl = () => S.vtArq ? metaPl(S.vtArq, '', S.vtTipo === 'planilha' ? 'planilha' : 'doc') : metaPl('Nenhum arquivo aberto');
-TELAS.vertice = () => cabecalho({
-  titulo: 'Vértice Docs',
-  meta: ['<span id="vt-arq">' + vtArqPl() + '</span>'],
-  acoes: '<button type="button" class="bt ic-so" data-act="vt-janela" title="Abrir em janela por cima" aria-label="Abrir o Vértice em janela por cima">' + ic('janela') + '</button>'
-}) + (typeof jnFr === 'function' && jnFr('docs')
-  ? '<div class="vt-lugar vt-vz" id="vt-lugar"><div class="vazio"><b>O Vértice está aberto na janela por cima.</b><span>O que estiver aberto lá continua lá.</span><button type="button" class="bt" data-act="vt-trazer">Trazer para a aba</button></div></div>'
-  : '<div class="vt-lugar" id="vt-lugar"></div>');
-TELAS['vertice:depois'] = () => { if (!(typeof jnFr === 'function' && jnFr('docs'))) vtAbrir(); }; /* com a janela por cima aberta, não pergunta sozinho: espera o "Trazer para a aba" */
-
-/* ---------- o quadro ---------- */
-const vtFr = () => document.querySelector('#vt-fr iframe');
-function vtAbrir(rota) {
-  if (!vtLiga()) return;
-  if (S.rota.area !== 'vertice') { location.hash = '#/vertice'; }
-  if (typeof jnFr === 'function' && jnFr('docs')) return; /* nunca os dois vivos: a troca é só pelo "Trazer para a aba" */
-  let box = $('#vt-fr');
-  if (!box) { box = document.createElement('div'); box.id = 'vt-fr'; box.className = 'vt-fr'; document.body.appendChild(box); }
-  let fr = vtFr();
-  if (!fr) {
-    fr = document.createElement('iframe'); fr.title = 'Vértice Docs';
-    fr.setAttribute('allow', 'clipboard-read; clipboard-write; fullscreen');
-    fr.src = VT_URL + (rota || '');
-    box.appendChild(fr); S.vtArq = ''; S.vtTipo = '';
-  } else if (rota) {
-    try { fr.contentWindow.location.replace(VT_URL + rota); } catch (e) { fr.src = VT_URL + rota; }
-  }
-  vtPoe();
-}
-/* "Trazer para a aba": pergunta antes de fechar a janela por cima (o que estiver sem salvar lá pode se perder) */
-function vtTrocaJanela() {
-  csConfirma({ titulo: 'Trazer o Vértice para a aba?', texto: 'A janela por cima do Vértice vai fechar. O que já foi salvo continua lá; o que estiver aberto sem salvar pode se perder.', sim: 'Trazer para a aba', nao: 'Deixar a janela' }, () => {
-    const f = jnFr('docs'); if (f) f.remove(); S.jnAbertas = S.jnAbertas.filter(x => x !== 'docs');
-    if (S.jnAtiva === 'docs') { S.jnAtiva = S.jnAbertas.length ? S.jnAbertas[S.jnAbertas.length - 1] : 'efcwork'; if (S.jnAtiva === 'efcwork' && typeof jnSaiCamada === 'function') jnSaiCamada(); }
-    if (typeof jnDesenha === 'function') jnDesenha();
-    if (S.rota.area === 'vertice') render(); else location.hash = '#/vertice';
-  });
-}
-function vtDesliga() { const b = $('#vt-fr'); if (b) b.remove(); S.vtArq = ''; S.vtTipo = ''; const el = $('#vt-arq'); if (el) el.innerHTML = vtArqPl(); }
-/* põe o quadro por cima do lugar reservado (o lugar ocupa o resto da tela) */
-let vtPoeQ = 0;
-function vtPoeLogo() { if (vtPoeQ) return; vtPoeQ = requestAnimationFrame(() => { vtPoeQ = 0; vtPoe(); }); } /* no máximo uma vez por quadro */
-function vtPoe() {
-  document.documentElement.classList.toggle('vt-area', S.rota && S.rota.area === 'vertice' && !!S.user);
-  const box = $('#vt-fr'); if (!box) return;
-  const lg = S.rota.area === 'vertice' ? $('#vt-lugar') : null;
-  /* menu do celular, gaveta, busca ou confirmação por cima: o quadro sai da frente (o #app é uma camada só, abaixo dele) */
-  const cobre = (S.camadas && S.camadas.length) || $('.cs-app.menu-aberto') || $('#gv') || (typeof csConfirmaAberto === 'function' && csConfirmaAberto());
-  if (!lg || cobre) { box.hidden = true; return; }
-  const bx = $('.cs-baixo'), baixo = bx && getComputedStyle(bx).display !== 'none' ? bx.getBoundingClientRect().height : 0;
-  const r0 = lg.getBoundingClientRect(), h = Math.max(240, innerHeight - r0.top - baixo - 12);
-  lg.style.height = h + 'px';
-  const r = lg.getBoundingClientRect();
-  Object.assign(box.style, { left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px' });
-  box.hidden = false;
-}
+/* o item do menu abre a tela inteira (não é mais uma área ao lado do menu); Ctrl + clique segue para uma aba do navegador */
+document.addEventListener('click', e => {
+  const a = e.target.closest && e.target.closest('a[href="#/vertice"]'); if (!a || e.ctrlKey || e.metaKey || e.shiftKey || e.button === 1) return;
+  e.preventDefault(); e.stopPropagation(); if (!vtLiga()) return;
+  jnDepoisDoMenu(() => jnAbrir('docs')); /* revisor: o menu do celular sai da pilha do voltar antes (senão a camada 'menu' ficava presa) */
+}, true);
+/* chegou no endereço #/vertice (link, recarregar, Ctrl + clique): volta para onde estava e abre a tela inteira, sem passo no voltar */
+TELAS.vertice = () => '';
+let vtDe = '#/inicio';
 const vtRenderOrig = render;
 render = function () {
-  if (S.user && S.rota && S.rota.area === 'vertice' && !vtLiga()) { try { history.replaceState(history.state, '', '#/inicio'); } catch {} S.rota = csLeRota(); } /* perdeu a permissão com a aba aberta: a tela some (sem passo no voltar) */
-  vtRenderOrig.apply(this, arguments); try { vtConfere(); vtPoe(); requestAnimationFrame(() => vtPoe()); [150, 400].forEach(ms => setTimeout(vtPoe, ms)); } catch (e) { console.error(e); } /* o menu e o cabeçalho ainda se acomodam depois do desenho */
+  const r = S.rota;
+  if (r && r.area === 'vertice' && (!S.user || vtDe === '#/vertice')) vtDe = '#/inicio'; /* revisor: nunca voltar para o próprio #/vertice */
+  if (S.user && r && r.area === 'vertice') {
+    try { history.replaceState(history.state, '', vtDe); } catch {} S.rota = csLeRota();
+    if (vtLiga() && !S.user.precisaCompletar) setTimeout(() => jnAbrir('docs'), 0);
+  } else if (S.user && r && r.area && r.area !== 'vertice' && !/^#\/vertice(\/|$)/.test(location.hash)) vtDe = location.hash || '#/inicio';
+  vtRenderOrig.apply(this, arguments); try { vtConfere(); vtTitulo(); } catch (e) { console.error(e); }
 };
-['csCamadaAbre', 'csPop', 'csFechaMenu', 'gvDesenha'].forEach(n => { const o = window[n]; if (typeof o !== 'function') return;
-  window[n] = function () { const r = o.apply(this, arguments); try { vtPoe(); } catch {} return r; }; });
-try { new MutationObserver(vtPoeLogo).observe(document.body, { childList: true }); } catch {}
-addEventListener('resize', vtPoeLogo);
-addEventListener('scroll', vtPoeLogo, true);
-try { new ResizeObserver(vtPoeLogo).observe(document.body); } catch {}
-document.addEventListener('transitionend', e => { if (e.target && e.target.closest && e.target.closest('.cs-lado, .cs-app')) vtPoeLogo(); });
+
+/* ---------- título da janela do navegador: o arquivo da aba do Vértice que está na frente (ITEM 199) ---------- */
+let vtTitOrig = '';
+function vtTitulo() {
+  if (!vtTitOrig) vtTitOrig = document.title;
+  const id = S.jnAtiva, na = S.user && id && jnBase(id) === 'docs';
+  document.title = na ? (S.jnNome[id] ? S.jnNome[id] + ' · ' : '') + 'Vértice Docs · ' + APP_NOME : vtTitOrig;
+}
+JN_DEPOIS.push(vtTitulo);
 
 /* ---------- mensagens do Vértice ---------- */
 addEventListener('message', e => {
-  const d = e.data, fr = vtFr();
+  const d = e.data;
   if (e.origin !== location.origin || !d || d.de !== 'vertice') return;
-  if (!fr || e.source !== fr.contentWindow) return; /* só o quadro da aba (a janela por cima tem o dela) */
+  const id = vtAbas().find(x => { const f = jnFr(x); return f && e.source === f.contentWindow; }); if (!id) return; /* só de um quadro do Vértice */
   if (d.tipo === 'pronto') S.vtVer = String(d.versao || '').slice(0, 24);
   else if (d.tipo === 'arquivo') {
-    S.vtArq = d.nome ? String(d.nome).slice(0, 120) : '';
-    S.vtTipo = ['planilha', 'docx', 'postits'].indexOf(d.tipoArquivo) >= 0 ? d.tipoArquivo : '';
-    const el = $('#vt-arq'); if (el) el.innerHTML = vtArqPl();
+    const nome = d.nome ? String(d.nome).replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, 120) : '';
+    if ((S.jnNome[id] || '') === nome) return;
+    if (nome) S.jnNome[id] = nome; else delete S.jnNome[id];
+    jnDesenha();
   }
 });
 
-/* ---------- quem já abria o Vértice passa a abrir a aba ---------- */
-const vtJnAbrirOrig = jnAbrir;
-/* com a janela por cima aberta (a volta), ou com uma gaveta ou formulário aberto (por exemplo a fila "Abrir o próximo no Vértice"
-   dos Papéis deste envio), o pedido vai para a janela por cima: assim a gaveta não se perde e o Esc volta para ela */
-const vtTemCamada = () => !!(S.gv || S.fm || (S.camadas && S.camadas.length) || $('#gv'));
-jnAbrir = function (id, rota) { if (id === 'docs' && vtLiga() && !jnFr('docs') && !vtTemCamada()) return vtAbrir(rota); return vtJnAbrirOrig.apply(this, arguments); };
 /* no menu, o Vértice sai de "Apps da família" (já está nas áreas) */
 const vtAppsOrig = csAppsFamilia;
 csAppsFamilia = function (n) {
@@ -9149,12 +9187,6 @@ csAppsFamilia = function (n) {
   const tudo = CS_APPS.slice(); CS_APPS.splice(0, CS_APPS.length, ...tudo.filter(a => a.id !== 'docs'));
   try { return vtAppsOrig.apply(this, arguments); } finally { CS_APPS.splice(0, CS_APPS.length, ...tudo); }
 };
-/* volta: a janela por cima (modo de antes); a aba fecha o quadro dela */
-document.addEventListener('click', e => {
-  if (!e.target.closest) return;
-  if (e.target.closest('[data-act="vt-janela"]')) { vtDesliga(); vtJnAbrirOrig('docs'); render(); }
-  else if (e.target.closest('[data-act="vt-trazer"]')) vtTrocaJanela();
-});
 
 /* ===== kit.js ===== */
 /* EFCwork · kit.js — Kit do laboratório e papéis do envio (v0.6.10). Prefixo: kt.
@@ -9513,7 +9545,7 @@ const drPendLe = () => { try { return JSON.parse(localStorage.getItem(DR_PEND) |
 /* lê, muda e grava na hora (duas abas não apagam o pedido uma da outra); tira o que passou de 30 dias */
 function drPendMuda(fn) { const p = drPendLe(), r = fn(p); Object.keys(p).forEach(id => { if (Date.now() - Date.parse(p[id].em || 0) > DR_VALIDADE) delete p[id]; }); try { localStorage.setItem(DR_PEND, JSON.stringify(p)); } catch {} return r; }
 const drTrava = f => navigator.locks && navigator.locks.request ? navigator.locks.request('efcwork-dr', f) : f();
-async function drPedido(k, x, dd, tent) {
+async function drPedido(k, x, dd, tent, pidVelho) {
   if (!ptTem()) return aviso('Este navegador não tem a caixa de troca com o Vértice: use Abrir no Vértice e preencha lá.', 'erro');
   const d = x.d, dados = drSoCampos(ptResumoEnvio(k, dd, d), d.pub.campos);
   const copias = Math.max(1, Math.min(20, x.copias === 'porCaixa' ? Number(dd.caixas) || 1 : Number(x.copias) || 1));
@@ -9525,7 +9557,7 @@ async function drPedido(k, x, dd, tent) {
     /* rev: o Vértice confere com a versão compartilhada daqui e recusa outra (controle de documentos) */
     const pid = await EFDPonte.por({ de: PT_APP, para: 'docs', tipo: 'pedido', docId: d.id, copias: copias, dados: dados, rev: d.rev });
     drPendMuda(p => { p[pid] = { k: k, item: x.id, nome: x.nome, docId: d.id, rev: d.rev, copias: copias, dd: dd, dados: dados, tent: tent || 0, em: nowISO() }; });
-    jnAbrir('docs', pidA ? '#/abrir/' + pidA : '#/pedido/' + pid);
+    jnAbrir('docs', pidA ? '#/abrir/' + pidA : '#/pedido/' + pid, false, pidVelho && typeof jnAbaDaRota === 'function' ? jnAbaDaRota('#/pedido/' + pidVelho) : ''); /* v0.6.35: o mesmo documento pedido de novo volta para a aba dele */
     return pid;
   } catch (er) { console.error(er); aviso('Não deu para falar com o Vértice: ' + (er.message || er) + '.', 'erro'); }
 }
@@ -9545,7 +9577,7 @@ function drRespostas() {
         aviso('Preenchido no Vértice: ' + q.nome + '.');
       } else if (i.erro === 'sem-documento' && !q.tent) {
         const x = drItens(q.k).find(y => y.id === q.item);
-        if (x && x.d) { aviso('O Vértice deste aparelho ainda não tinha o modelo de ' + q.nome + ': levei o modelo. Toque em "Ver e imprimir" quando ele avisar.'); await drPedido(q.k, x, q.dd, 1); }
+        if (x && x.d) { aviso('O Vértice deste aparelho ainda não tinha o modelo de ' + q.nome + ': levei o modelo. Toque em "Ver e imprimir" quando ele avisar.'); await drPedido(q.k, x, q.dd, 1, i.pedido); }
       } else aviso('Não deu para preencher ' + q.nome + ': ' + (DR_ERRO[i.erro] || i.erro || 'o Vértice recusou') + '.', 'erro');
       await EFDPonte.apagar(i.pid); drPendMuda(p => { delete p[i.pedido]; });
     }
@@ -14833,27 +14865,36 @@ function tfPasso(iso, rep) {
   let d = addDias(iso, 1); while ([0, 6].indexOf(new Date(d + 'T12:00:00').getDay()) >= 0) d = addDias(d, 1); return d; /* util */
 }
 function tfProxima(t) { const h = hojeISO(); let d = tfPasso(t.prazo || h, t.repete), n = 0; while (d < h && n++ < 4000) d = tfPasso(d, t.repete); return d; }
-const TF_ST = { todo: ['A fazer', ''], doing: ['Em andamento', 'wa'], done: ['Concluída', 'ok'], cancelada: ['Cancelada', ''] };
+const TF_ST = { todo: ['A fazer', ''], doing: ['Em andamento', 'wa'], review: ['Para conferir', 'wa'], done: ['Concluída', 'ok'], cancelada: ['Cancelada', ''] };
+/* v0.6.35 (pedido do Elias 26/11 14:18, achado no EFClaudian v2.102.60): "Conferir quando terminar" (campo confere, status review, do EFClaudian).
+   Quem passou a tarefa = porId (o EFClaudian grava quem passou nele) ou criadoPor. Regra corrigida aqui no Cwork:
+   - responsável Principal conclui direto, mesmo com a conferência ligada, inclusive nas tarefas que já existem;
+   - parada em "Para conferir": quem passou (ou o Principal) toca em "Conferido"; o responsável Principal tem "Concluir";
+   - os outros responsáveis, com a conferência ligada por quem passou, terminam em "Para conferir" (como no EFClaudian). */
+const tfPassou = t => t.porId || t.criadoPor || '';
+const tfConfere = t => !!t.confere && tfPassou(t) && tfPassou(t) !== t.respId;
 Object.assign(S, { tfVer: 'minhas', tfTodas: false });
 const tfAberta = t => t.status !== 'done' && t.status !== 'cancelada' && !t.excluida;
 const tfDe = id => (S.tarefas || []).find(t => t.id === id) || null;
 const tfPodeDar = () => !!S.user && isSup(S.user);
-const tfPodeEditar = t => !!S.user && (t.criadoPor === S.user.id || isPrincipal(S.user));
+const tfPodeEditar = t => !!S.user && (t.criadoPor === S.user.id || tfPassou(t) === S.user.id || isPrincipal(S.user));
+/* fechar uma tarefa parada em "Para conferir": quem passou, o Principal, ou o próprio responsável se ele for o Principal */
+const tfPodeConferir = t => !!S.user && (tfPassou(t) === S.user.id || isPrincipal(S.user));
 const tfPodeAndar = t => !!S.user && (t.respId === S.user.id || tfPodeEditar(t)) && podeLancar(S.user);
 const tfOrd = (a, b) => String(a.prazo || '9999').localeCompare(String(b.prazo || '9999')) || String(a.hora || '').localeCompare(String(b.hora || '')) || String(a.criadoEm || '').localeCompare(String(b.criadoEm || ''));
 const tfHist = (t, txt) => (Array.isArray(t.hist) ? t.hist : []).concat([{ ts: nowISO(), porNome: S.user.nome, txt }]);
 const tfRepTxt = t => t.repete && TF_REP_CURTO[t.repete] ? 'repete ' + TF_REP_CURTO[t.repete] : '';
 function tfLista() {
   const me = S.user.id, l = (S.tarefas || []).filter(tfAberta);
-  return (S.tfVer === 'passei' ? l.filter(t => t.criadoPor === me && t.respId !== me) : l.filter(t => t.respId === me)).sort(tfOrd);
+  return (S.tfVer === 'passei' ? l.filter(t => tfPassou(t) === me && t.respId !== me) : l.filter(t => t.respId === me)).sort(tfOrd);
 }
 /* agenda: Atrasadas · Hoje · Próximos 7 dias · Mais adiante · Sem prazo */
 function tfGrupo(t) { const h = hojeISO(); if (!t.prazo) return 'sem'; if (t.prazo < h) return 'atr'; if (t.prazo === h) return 'hoje'; return t.prazo <= addDias(h, 7) ? 'sem7' : 'depois'; }
 const TF_GR = [['atr', 'Atrasadas'], ['hoje', 'Hoje'], ['sem7', 'Próximos 7 dias'], ['depois', 'Mais adiante'], ['sem', 'Sem prazo']];
 function tfLinha(t) {
-  const g = tfGrupo(t), quem = S.tfVer === 'passei' ? 'para ' + (t.respNome || nomeDe(t.respId)) : (t.criadoPor && t.criadoPor !== S.user.id ? 'de ' + (t.criadoPorNome || nomeDe(t.criadoPor)) : '');
+  const g = tfGrupo(t), quem = S.tfVer === 'passei' ? 'para ' + (t.respNome || nomeDe(t.respId)) : (tfPassou(t) && tfPassou(t) !== S.user.id ? 'de ' + (t.criadoPor === tfPassou(t) && t.criadoPorNome ? t.criadoPorNome : nomeDe(tfPassou(t))) : '');
   const quando = t.prazo ? (g === 'hoje' ? 'hoje' : fmtD(t.prazo)) + (t.hora ? ' às ' + t.hora : '') : 'sem prazo';
-  const pill = g === 'atr' ? ['vencida', 'cr'] : t.status === 'doing' ? ['em andamento', 'wa'] : g === 'hoje' ? ['hoje', 'wa'] : ['no prazo', 'ok'];
+  const pill = g === 'atr' ? ['vencida', 'cr'] : t.status === 'review' ? ['para conferir', 'wa'] : t.status === 'doing' ? ['em andamento', 'wa'] : g === 'hoje' ? ['hoje', 'wa'] : ['no prazo', 'ok'];
   return '<button type="button" class="li tf-li" data-act="tf-abre" data-id="' + esc(t.id) + '"><span class="ico' + (g === 'atr' ? ' ini-cr' : g === 'hoje' ? ' ini-wa' : '') + '">' + ic(t.repete ? 'recontar' : g === 'atr' ? 'alerta' : 'relogio') + '</span><span class="tx"><b>' + esc(t.titulo || '(sem título)') + '</b><small>' +
     esc([quem, quando, tfRepTxt(t)].filter(Boolean).join(' · ')) + '</small></span><span class="pill ' + esc(pill[1]) + '">' + esc(pill[0]) + '</span></button>';
 }
@@ -14873,11 +14914,14 @@ function tfAbre(id) { gvAbrir(() => tfGaveta(id)); }
 function tfGaveta(id) {
   const t = tfDe(id); if (!t) return null; const s = TF_ST[t.status] || TF_ST.todo, ab = tfAberta(t);
   let c = (t.descricao ? '<p class="tf-ds">' + esc(t.descricao) + '</p>' : '') + gvCampos([['Responsável', t.respNome || nomeDe(t.respId)], ['Prazo', t.prazo ? fmtD(t.prazo) + (t.hora ? ' às ' + t.hora : '') : 'sem prazo'],
-    ['Repete', t.repete ? (TF_REP.find(r => r[0] === t.repete) || ['', ''])[1] + (ab ? ' · a próxima será em ' + fmtD(tfProxima(t)) : '') : ''], ['Criada por', (t.criadoPorNome || nomeDe(t.criadoPor)) + (t.criadoEm ? ' · ' + fmtD(diaLocal(t.criadoEm)) : '')],
+    ['Repete', t.repete ? (TF_REP.find(r => r[0] === t.repete) || ['', ''])[1] + (ab ? ' · a próxima será em ' + fmtD(tfProxima(t)) : '') : ''], ['Criada por', (t.criadoPor && t.criadoPorNome ? t.criadoPorNome : nomeDe(tfPassou(t))) + (t.criadoEm ? ' · ' + fmtD(diaLocal(t.criadoEm)) : '')],
     ['Concluída', t.status === 'done' ? (t.concluidaPorNome || '') + (t.concluidaEm ? ' · ' + fmtD(diaLocal(t.concluidaEm)) : '') : ''], ['Cancelada', t.status === 'cancelada' ? (t.canceladaMotivo || '') : '']]);
   const hs = (Array.isArray(t.hist) ? t.hist : []).slice(-6);
   if (hs.length) c += '<p class="gv-h">Andamento</p>' + tlFluido('tf-' + t.id, hs.map(x => ({ nome: x.txt, feito: true, data: diaLocal(x.ts), quem: x.porNome })));
-  const pe = ab && tfPodeAndar(t) ? (t.status !== 'doing' ? '<button type="button" class="bt" data-act="tf-andar" data-id="' + esc(t.id) + '">' + ic('relogio') + 'Comecei</button>' : '') + '<span class="au-pesp"></span><button type="button" class="bt pr" data-act="tf-ok" data-id="' + esc(t.id) + '">' + ic('ok') + 'Concluir</button>' : '';
+  let pe = '';
+  if (ab && t.status === 'review') pe = tfPodeConferir(t) ? '<span class="au-pesp"></span><button type="button" class="bt pr" data-act="tf-ok" data-id="' + esc(t.id) + '">' + ic('ok') + (tfPassou(t) === S.user.id ? 'Conferido' : 'Concluir') + '</button>'
+    : '<small class="tf-esp">Esperando a conferência de ' + esc(nomeDe(tfPassou(t))) + '.</small>';
+  else if (ab && tfPodeAndar(t)) pe = (t.status !== 'doing' ? '<button type="button" class="bt" data-act="tf-andar" data-id="' + esc(t.id) + '">' + ic('relogio') + 'Comecei</button>' : '') + '<span class="au-pesp"></span><button type="button" class="bt pr" data-act="tf-ok" data-id="' + esc(t.id) + '">' + ic('ok') + (tfVaiConferir(t) ? 'Terminei, conferir' : 'Concluir') + '</button>';
   return { ico: t.repete ? 'recontar' : 'relogio', sub: 'Meu dia' + (t.repete ? ' · rotina' : ''), titulo: t.titulo || '(sem título)', pill: '<span class="pill ' + esc(s[1]) + '">' + esc(s[0]) + '</span>',
     cabAcoes: ab && tfPodeEditar(t) ? '<button type="button" class="bt ic-so" data-act="tf-editar" data-id="' + esc(t.id) + '" title="Editar" aria-label="Editar">' + ic('lapis') + '</button>' : '',
     lixeira: ab && tfPodeEditar(t) ? { act: 'tf-canc', id: t.id, titulo: 'Cancelar a tarefa' } : null, corpo: c, rodape: pe };
@@ -14921,18 +14965,29 @@ function tfEdOk() {
 function tfGrava(t, patch, msg, depois) { return Data.col('sv2_tarefas').update(t.id, patch).then(() => { Object.assign(t, patch); aviso(msg); if (depois) depois(); }).catch(e => aviso(svErro(e), 'erro')); }
 function tfSeguinte(t) {
   if (!t.repete) return null; const id = Data.novoId('sv2_tarefas'), pz = tfProxima(t);
-  const o = { titulo: t.titulo, descricao: t.descricao || '', respId: t.respId, respNome: t.respNome || nomeDe(t.respId), prazo: pz, hora: t.hora || '', repete: t.repete, serieId: t.serieId || t.id, status: 'todo', porId: S.user.id,
+  const o = { titulo: t.titulo, descricao: t.descricao || '', respId: t.respId, respNome: t.respNome || nomeDe(t.respId), prazo: pz, hora: t.hora || '', repete: t.repete, serieId: t.serieId || t.id, status: 'todo', porId: t.respId === S.user.id ? (tfPassou(t) || S.user.id) : S.user.id, confere: !!t.confere, /* revisor: a próxima vez mantém quem passou (a regra deixa: quem cria é o responsável) e a conferência */
     criadoPor: t.criadoPor || S.user.id, criadoPorNome: t.criadoPorNome || S.user.nome, criadoEm: nowISO(), hist: [{ ts: nowISO(), porNome: S.user.nome, txt: 'Rotina: próxima vez' }] };
   Data.col('sv2_tarefas').set(id, o).then(() => { if (!S.tarefas.some(x => x.id === id)) S.tarefas.push(Object.assign({ id }, o)); render(); }).catch(e => aviso(svErro(e), 'erro'));
   return pz;
 }
+/* o responsável termina e vai para quem passou conferir? (nunca quando ele é o Principal) */
+const tfVaiConferir = t => tfConfere(t) && t.respId === S.user.id && !isPrincipal(S.user);
 function tfAndar(id) { const t = tfDe(id); if (!t || !tfPodeAndar(t)) return; tfGrava(t, { status: 'doing', hist: tfHist(t, 'Começou') }, 'Marcada como em andamento.', () => { if (S.gv) gvDesenha(); render(); }); }
 function tfConcluir(id) {
   const t = tfDe(id); if (!t || !tfPodeAndar(t)) return;
-  tfGrava(t, { status: 'done', concluidaEm: nowISO(), concluidaPor: S.user.id, concluidaPorNome: S.user.nome, hist: tfHist(t, 'Concluiu') }, 'Tarefa concluída.', () => {
+  if (t.status === 'review' && !tfPodeConferir(t)) return;
+  if (t.status !== 'review' && tfVaiConferir(t)) {
+    tfGrava(t, { status: 'review', terminouEm: nowISO(), hist: tfHist(t, 'Terminou; foi para conferir') }, 'Foi para ' + nomeDe(tfPassou(t)) + ' conferir.', () => {
+      Audit.log({ acao: 'terminar_tarefa', entidade: 'tarefa', entidadeId: t.id, resumo: 'Terminou a tarefa ' + t.titulo + ' (para conferir)' });
+      Notif.send({ nivel: 'info', titulo: 'Para conferir: ' + t.titulo, texto: S.user.nome + ' terminou. Confira e toque em Conferido.', para: [tfPassou(t)], refTipo: 'tarefa', refId: t.id }).catch(() => {});
+      if (S.gv) gvDesenha(); render(); });
+    return;
+  }
+  const conferiu = t.status === 'review' && tfPassou(t) === S.user.id;
+  tfGrava(t, { status: 'done', concluidaEm: nowISO(), concluidaPor: S.user.id, concluidaPorNome: S.user.nome, hist: tfHist(t, conferiu ? 'Conferiu' : 'Concluiu') }, conferiu ? 'Conferida e concluída.' : 'Tarefa concluída.', () => {
     const pz = tfSeguinte(t); if (pz) aviso('Concluída. A próxima fica para ' + fmtD(pz) + '.');
     Audit.log({ acao: 'concluir_tarefa', entidade: 'tarefa', entidadeId: t.id, resumo: 'Concluiu a tarefa ' + t.titulo });
-    if (t.criadoPor && t.criadoPor !== S.user.id && !t.repete) Notif.send({ nivel: 'info', titulo: 'Tarefa concluída: ' + t.titulo, texto: 'Concluída por ' + S.user.nome + '.', para: [t.criadoPor], refTipo: 'tarefa', refId: t.id }).catch(() => {});
+    if (tfPassou(t) && tfPassou(t) !== S.user.id && !t.repete) Notif.send({ nivel: 'info', titulo: 'Tarefa concluída: ' + t.titulo, texto: 'Concluída por ' + S.user.nome + '.', para: [tfPassou(t)], refTipo: 'tarefa', refId: t.id }).catch(() => {});
     if (S.gv) gvFecharSo(); render(); });
 }
 function tfCanc(id) { const t = tfDe(id); if (!t || !tfPodeEditar(t)) return; lcAbrir({ k: 'tfCanc', id: t.id, motivo: '', alcance: t.repete ? 'esta' : '' }, () => tfAbre(t.id)); }
@@ -15617,6 +15672,61 @@ document.addEventListener('change', e => {
 });
 document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('[data-act="ft-tira"]'); if (t && S.user) ftGrava(''); });
 CS_CARGAS.push(() => { if (!S.user) return; const uid = S.user.id; Data.col('sv2_avatar').get(uid).then(d => { const img = (d && d.img) || ''; if (!S._ftFoto || S._ftFoto.uid !== uid || S._ftFoto.img !== img) { S._ftFoto = { uid: uid, img: img }; render(); } }).catch(() => {}); });
+
+/* ===== vertpastas.js ===== */
+/* EFCwork · vertpastas.js — v0.6.35 · P3b · Administração › Pastas do Vértice (aprovada no ITEM 196, 26/11 11:41).
+   As 5 pastas dos Impressos; para cada uma, quem lê: todos que entram no Cwork (padrão) ou só as pessoas marcadas.
+   Regras do Elias (ITEM 196): Principal e Líder ★ leem tudo e são os únicos que SALVAM; quem lê também edita, mas sem salvar
+   (Secundário e Visitante); planilha protegida e "Desproteger" ficam com o Vértice. Guardado em sv2_cfg/vertice_pastas;
+   só o Principal muda (a regra do Firestore entra na P3c). A porta passa a ter pastas(). */
+Object.assign(S, { vtPastas: null });
+CS_CARGAS.push(() => { csOuve('sv2_cfg', l => { const d = (l || []).find(x => x.id === 'vertice_pastas'); S.vtPastas = d && Array.isArray(d.pastas) ? d.pastas : []; vtUlt = 'x'; vtConfere(); if (S.rota.area === 'adm' && S.rota.aba === 'vertice') render(); }); });
+const vtCfgPasta = nome => (S.vtPastas || []).find(p => p && p.nome === nome) || null;
+const vtLeTodos = c => !c || c.todos !== false;
+function vtPastasDe(u) {
+  if (!u || !u.id || u.precisaCompletar || u.bloqueado) return [];
+  const sup = isSup(u);
+  return IP_PASTAS.map(nome => { const c = vtCfgPasta(nome), ler = sup || vtLeTodos(c) || ((c && c.leitores) || []).indexOf(u.id) >= 0; return { nome: nome, ler: ler, editar: ler, salvar: ler && sup }; });
+}
+/* aba na Administração: só o Principal */
+{ const adm = AREAS.find(a => a.id === 'adm'), i = adm.abas.findIndex(t => t.id === 'backup');
+  adm.abas.splice(i >= 0 ? i : adm.abas.length, 0, { id: 'vertice', nome: 'Pastas do Vértice', get negada() { return !isPrincipal(S.user); } }); }
+const vtPessoasLeem = () => (S.users || []).filter(u => !isSup(u) && !u.bloqueado).sort((a, b) => cmpTxt(a.nome, b.nome));
+const vtResumo = nome => { const c = vtCfgPasta(nome); if (vtLeTodos(c)) return 'Todos que entram no Cwork'; const n = ((c && c.leitores) || []).filter(id => (S.users || []).some(u => u.id === id)).length; return n ? n + (n === 1 ? ' pessoa marcada' : ' pessoas marcadas') : 'Só Principal e Líder ★'; };
+function vtPastasTela() {
+  if (!isPrincipal(S.user)) return '';
+  return '<section class="pn vt-pn"><div class="hd"><h3>Quem lê cada pasta</h3></div>' +
+    '<ul class="vt-ps">' + IP_PASTAS.map(nome => '<li><span class="vt-pn-n">' + ic('pasta') + '<b>' + esc(nome) + '</b></span><span class="vt-pn-q">' + esc(vtResumo(nome)) + '</span>' +
+      '<button type="button" class="bt ic-so" data-act="vt-pasta" data-p="' + esc(nome) + '" title="Mudar quem lê ' + esc(nome) + '" aria-label="Mudar quem lê ' + esc(nome) + '">' + ic('assina') + '</button></li>').join('') + '</ul>' +
+    '<p class="vt-reg">Principal e Líder ★ leem todas as pastas e são os únicos que salvam. Quem lê também pode editar e imprimir, sem salvar.</p></section>';
+}
+const vtAdmOrig = TELAS.adm;
+TELAS.adm = aba => aba === 'vertice' ? cabecalho({ titulo: 'Pastas do Vértice', abaNome: 'Pastas do Vértice', meta: [metaPl('só o Principal vê', '', 'cadeado')] }) + vtPastasTela() : vtAdmOrig(aba);
+const VT_QUEM = [['todos', 'Todos que entram no Cwork'], ['escolhidos', 'Só as pessoas marcadas']];
+LC_FORM.vtPasta = f => {
+  const ps = vtPessoasLeem();
+  let c = lcMsg() + lcBl('Quem lê', ddHTML('vt:quem', f.quem, VT_QUEM));
+  if (f.quem === 'escolhidos') c += lcBl('Pessoas', ps.length ? '<div class="vt-cks">' + ps.map(u => '<label class="vt-ck"><input type="checkbox" data-vtck="' + esc(u.id) + '"' + (f.leitores.indexOf(u.id) >= 0 ? ' checked' : '') + '><span>' + esc(u.nome) + '</span><small>' + esc(perfilLabel(u)) + '</small></label>').join('') + '</div>' : lcAv('Não há outras pessoas cadastradas.'), 'Principal e Líder ★ já leem');
+  return { ico: 'pasta', sub: 'Pastas do Vértice', titulo: f.pasta, corpo: c, rodape: lcPe('vt-pasta-ok', 'Salvar') };
+};
+DD_AO.vt = (k, v) => { const f = S.fm; if (!f || k !== 'quem') return; f.quem = v; f.sujo = true; f.msg = ''; gvDesenha(true); };
+async function vtPastaOk() {
+  const f = S.fm; if (!f || !isPrincipal(S.user)) return; if (!lcTravar()) return;
+  if (f.quem === 'escolhidos') f.leitores = $$('#gv [data-vtck]').filter(x => x.checked).map(x => x.getAttribute('data-vtck'));
+  const lista = IP_PASTAS.map(nome => { const velho = vtCfgPasta(nome) || { nome: nome, todos: true, leitores: [] }; return nome === f.pasta ? { nome: nome, todos: f.quem !== 'escolhidos', leitores: f.quem === 'escolhidos' ? f.leitores.slice(0, 300) : [] } : { nome: nome, todos: velho.todos !== false, leitores: (velho.leitores || []).slice(0, 300) }; });
+  try {
+    await Data.col('sv2_cfg').set('vertice_pastas', { pastas: lista, alteradoEm: nowISO(), alteradoPor: S.user.nome, alteradoPorId: S.user.id });
+    Audit.log({ acao: 'vertice_pastas', entidade: 'config', entidadeId: 'vertice_pastas', resumo: 'Pastas do Vértice · ' + f.pasta + ': ' + (f.quem === 'escolhidos' ? f.leitores.length + ' pessoa(s)' : 'todos') });
+    lcFim(); aviso('Pasta ' + f.pasta + ' atualizada.', 'ok');
+  } catch (e) { lcErro('Não foi possível salvar: ' + (e && e.message || e)); }
+}
+document.addEventListener('click', e => {
+  const t = e.target.closest && e.target.closest('[data-act="vt-pasta"], [data-act="vt-pasta-ok"]'); if (!t) return;
+  if (t.getAttribute('data-act') === 'vt-pasta-ok') return vtPastaOk();
+  const nome = t.getAttribute('data-p'), c = vtCfgPasta(nome);
+  lcAbrir({ k: 'vtPasta', pasta: nome, quem: vtLeTodos(c) ? 'todos' : 'escolhidos', leitores: ((c && c.leitores) || []).slice() });
+});
+document.addEventListener('change', e => { if (e.target.matches && e.target.matches('#gv [data-vtck]') && S.fm) S.fm.sujo = true; });
 
 /* ===== fluidez.js ===== */
 /* EFCwork · fluidez.js — v0.6.14 "Movimento" (aprovado em 13/11/2026). Prefixo: fz.
