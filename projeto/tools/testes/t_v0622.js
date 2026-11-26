@@ -29,7 +29,7 @@ const vertPronto = (p, ms) => p.waitForFunction(() => { const f = document.query
   console.log('— PC: abrir o Vértice pelo menu');
   conf(!(await est(p)).tem, 'antes de abrir um app, não existe faixa de abas');
   await ir(p, 'documentos/impressos', 900);
-  await p.click('a.cs-app-l[data-app="docs"]'); const pronto = await vertPronto(p); await p.waitForTimeout(500);
+  await p.evaluate(() => vtJnAbrirOrig('docs')); /* v0.6.34: o menu leva à aba; a janela por cima fica como volta */ const pronto = await vertPronto(p); await p.waitForTimeout(500);
   let e = await est(p);
   conf(pronto, 'o Vértice de verdade carregou dentro da janela');
   await p.waitForTimeout(1300);
@@ -135,14 +135,14 @@ const vertPronto = (p, ms) => p.waitForFunction(() => { const f = document.query
   conf(!!(await p.$('#cf')), 'o X pede confirmação antes de fechar');
   await p.click('#cf [data-act="cf-sim"]'); await p.waitForTimeout(400); e = await est(p);
   conf(!e.tem && e.ifr.length === 0 && e.ativa === 'efcwork', 'fechado: some a janela e a faixa');
-  await p.click('a.cs-app-l[data-app="docs"]', { modifiers: ['Control'] }).catch(() => {}); await p.waitForTimeout(500);
+  await p.click('a.cs-app-l[data-app="sabia"]', { modifiers: ['Control'] }).catch(() => {}); await p.waitForTimeout(500);
   conf(!(await est(p)).tem, 'Ctrl + clique no menu não abre a janela (vai para uma aba do navegador)');
   for (const pg of p.context().pages()) if (pg !== p) await pg.close();
   conf(p._er.length === 0, 'sem erro de JavaScript no EFCwork' + (p._er.length ? ': ' + p._er[0] : ''));
 
   console.log('— Celular (390 px)');
   let c = await abre(br, { raiz: RAIZ, url: base + '/efcwork/', w: 390, h: 820 });
-  await c.evaluate(() => jnAbrir('docs')); await vertPronto(c); await c.waitForTimeout(1500); e = await est(c);
+  await c.evaluate(() => vtJnAbrirOrig('docs')); await vertPronto(c); await c.waitForTimeout(1500); e = await est(c);
   conf(e.ativa === 'docs' && !e.aberta && e.vis === 6, 'no celular: o Vértice em tela cheia, faixa recolhida em 6 px');
   const zona = await c.evaluate(() => { const s = getComputedStyle(document.querySelector('#jn .jn-faixa'), '::after'); return s.height; });
   conf(zona === '12px', 'no toque, o fio tem 12 px a mais de área invisível para acertar o dedo');

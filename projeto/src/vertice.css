@@ -1,0 +1,11 @@
+/* EFCwork · vertice.css — v0.6.34 (P3a): a aba Vértice Docs. O quadro fica fora do #app, por cima do lugar reservado. */
+.vt-lugar{width:100%;min-height:240px;border:1px solid var(--bd);border-radius:8px;background:var(--bg1)}
+.vt-fr{position:fixed;z-index:10;border:1px solid var(--bd);border-radius:8px;overflow:hidden;background:var(--bg1)}
+.vt-fr[hidden]{display:none}
+.vt-fr iframe{display:block;width:100%;height:100%;border:0}
+.vt-vz{display:flex;align-items:center;justify-content:center}
+.vt-vz .bt{margin-top:10px}
+html.vt-area,html.vt-area body{overflow:hidden}
+html.vt-area .cs-rod{display:none}
+/* ITEM 190 (OPÇÃO 2): no celular, na área Vértice, só a barra de baixo do Vértice; o menu do Cwork fica no botão de cima */
+html.vt-area .cs-baixo{display:none}

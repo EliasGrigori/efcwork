@@ -62,8 +62,8 @@ const zipLista = f => execFileSync('python3', ['-c', 'import zipfile,sys,json;z=
   const p = await abre(b, 1280);
   console.log('Menu: Apps da família');
   const apps = await p.evaluate(() => [...document.querySelectorAll('.cs-app-l')].map(a => ({ n: a.textContent.trim(), h: a.getAttribute('href'), t: a.getAttribute('target'), r: a.getAttribute('rel'), img: a.querySelector('img').naturalWidth })));
-  conf(apps.length === 2 && apps[0].n === 'Vértice Docs' && apps[1].n === 'Sabiá', 'Administrador vê Vértice Docs e Sabiá no menu');
-  conf(apps.every(a => a.t === '_blank' && /noopener/.test(a.r)) && apps[0].h === 'https://eliasgrigori.github.io/EFCdocs/' && apps[1].h === 'https://eliasgrigori.github.io/EFC-Sabi--Quiz/', 'abrem numa aba nova, nos endereços certos');
+  conf(apps.length === 1 && apps[0].n === 'Sabiá' && !!(await p.$('.cs-nav a[href="#/vertice"]')), 'Administrador vê o Sabiá em Apps da família e o Vértice Docs como área (v0.6.34)');
+  conf(apps.every(a => a.t === '_blank' && /noopener/.test(a.r)) && apps[0].h === 'https://eliasgrigori.github.io/EFC-Sabi--Quiz/', 'abrem numa aba nova, nos endereços certos');
   conf(apps.every(a => a.img > 0), 'o ícone de cada app aparece sem internet (embutido)');
   console.log('Aba vazia:');
   await vai(p, '#/documentos/impressos');
@@ -211,7 +211,7 @@ const zipLista = f => execFileSync('python3', ['-c', 'import zipfile,sys,json;z=
   conf(mg.ver && !mg.prev, 'no celular: "Ver o PDF" no lugar da prévia');
   conf(new Set(mg.pe.map(x => x.split(':')[0])).size === 1 && mg.pe.every(x => Number(x.split(':')[1]) >= 44) && !mg.lado, 'rodapé da gaveta numa linha só, 44 px (' + mg.pe.join(', ') + ')');
   await fecha(m); await m.click('[data-act="cs-menu"]'); await esp(m, 400);
-  conf((await m.$$('.cs-app-l')).length === 2, 'no celular os apps ficam no mesmo menu');
+  conf((await m.$$('.cs-app-l')).length === 1 && !!(await m.$('.cs-nav a[href="#/vertice"]')), 'no celular os apps e a área Vértice ficam no mesmo menu');
   conf(m._er.length === 0, 'sem erros no console (celular)' + (m._er.length ? ': ' + m._er.slice(0, 2).join(' | ') : ''));
   await b.close();
   console.log('\n' + ok + ' ok, ' + falhas + ' falhas'); process.exit(falhas ? 1 : 0);

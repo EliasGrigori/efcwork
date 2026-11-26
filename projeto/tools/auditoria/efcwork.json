@@ -123,6 +123,14 @@
    ]
   },
   {
+   "nome": "Vértice Docs (aba)",
+   "passos": [
+    {
+     "eval": "location.hash='#/vertice'"
+    }
+   ]
+  },
+  {
    "nome": "Almoxarifado",
    "passos": [
     {
