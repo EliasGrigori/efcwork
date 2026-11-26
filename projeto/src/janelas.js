@@ -14,7 +14,7 @@ Object.assign(S, { jnAbertas: [], jnAtiva: 'efcwork', jnNome: {}, jnUlt: {}, jnS
 const JN_RAIZ = /^https?:$/.test(location.protocol) ? location.origin : 'https://eliasgrigori.github.io';
 /* multi: o app abre em várias abas; url pode virar um "get" (o vertice.js escolhe o endereço conforme quem entrou) */
 const JN_APPS = {
-  docs: { nome: 'Vértice Docs', url: JN_RAIZ + '/EFCdocs/', multi: true, podeNova: () => true },
+  docs: { nome: 'Vértice Docs', url: JN_RAIZ + '/efcwork/vertice/', multi: true, /* v0.6.36 (P5): era /EFCdocs/ */ podeNova: () => true },
   sabia: { nome: 'Sabiá', url: JN_RAIZ + '/EFC-Sabi--Quiz/' }
 };
 const JN_MAX = 10; /* proteção de memória do aparelho: cada aba do Vértice é um app inteiro */

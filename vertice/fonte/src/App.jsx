@@ -1,0 +1,791 @@
+/* EFCdocs — tela principal: menu, topo com faixa, área de trabalho, painel, rodapé e janelas.
+   Os comandos passam todos por executar(id): o catálogo diz se já chegou, o perfil diz se pode,
+   e o editor aberto (hoje, o quadro de post-its) trata os comandos dele. */
+import { guardarOriginal, apagarOriginal } from './nucleo/originais.js';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ehDemo, ler, gravar } from './nucleo/armazem.js';
+import { pwa, atualizarAgora, pedirInstalacao } from './nucleo/pwa.js';
+import { TIPOS, VERSAO, criarArquivo, validarNome, carimbar, ativos } from './nucleo/modelo.js';
+import { esperaDeGravar } from './nucleo/ritmo.js';
+import { novoDiarioSeguro, anotar as anotarPendencia, gravou as pendenciaGravada, lerPendencia, apagarPendencia, recuperar } from './nucleo/pendencias.js';
+import { criarDiff, novoHistorico, fazer, desfazer, refazer, podeDesfazer, podeRefazer, rotuloDesfazer, juntarUltimas } from './nucleo/diff.js';
+import { tamanhoLegivel } from './nucleo/compacta.js';
+import { criarBanco } from './nucleo/banco.js';
+import { PorId, chegaNa, textoChega } from './nucleo/comandos.js';
+import { pode, SEM_PERMISSAO, PERFIS } from './nucleo/perfis.js';
+import { quemSou, nomeGravado, ehDono, definirLogin } from './nucleo/quem.js'; /* v0.6.72 (P1): um lugar só para "quem sou" */
+import { lerLogin, ponteDoCwork, aoMudarLogin, situacaoDoAcesso } from './nucleo/loginCwork.js'; /* v0.6.73 (P2): login do Cwork */
+import { TelaAcesso } from './ui/acessoCwork.jsx';
+import { molduraDoCwork } from './nucleo/emCwork.js';
+import { avisarCwork } from './nucleo/emCwork.js'; /* v0.6.72 (P1): a aba do Cwork mostra o arquivo aberto */
+import { normalizarPrefs } from './nucleo/prefs.js';
+import { normalizarQuadro } from './quadro/modelo.js';
+import { Icone, Avisos, Pergunta, useMedia, useRota, irPara, dataHora, hora } from './ui/comum.jsx';
+import { Topo } from './ui/faixa.jsx';
+import { DicasComandos } from './ui/dica.jsx';
+import { Menu, BarraCelular } from './ui/menu.jsx';
+import { Paleta, Opcoes, Painel } from './ui/janelas.jsx';
+import { Inicio, ListaDoTipo, Lixeira, EmBreve, EditorEmBreve } from './ui/paginas.jsx';
+import { Quadro } from './quadro/Quadro.jsx';
+import { Planilha } from './planilha/Planilha.jsx';
+import { normalizarPlanilha } from './planilha/modelo.js';
+import { StatusPlanilha } from './planilha/partes.jsx';
+import { LinhaDoTempo } from './ui/historico.jsx';
+import { JanelaAbrirExcel } from './ui/excel.jsx';
+import { SoltarArquivo } from './ui/soltar.jsx';
+import { usarPonte } from './ponte/usarPonte.js';
+import { DocsInternos, JanelaInterno, ResumoEnvio } from './ui/internos.jsx';
+import { PainelCampos, TelaPedido } from './ponte/camposUi.jsx';
+
+/* v0.6.20 (R5): nas telas de lista o título grande fica na página; a barra de cima mostra o caminho */
+const TRILHA = { '': '', planilha: 'Meus arquivos', docx: 'Meus arquivos', postits: 'Meus arquivos', internos: 'Organizar', pastas: 'Organizar', externos: 'Organizar', lixeira: '' };
+const TITULOS = { '': 'Início', planilha: 'Planilhas', docx: 'Documentos', postits: 'Quadros', lixeira: 'Lixeira', pastas: 'Pastas', externos: 'Documentos externos', internos: 'Documentos internos' };
+const NOVO_POR_CMD = { 'arquivo.novaPlanilha': 'planilha', 'arquivo.novoDocumento': 'docx', 'arquivo.novoQuadro': 'postits' };
+const DO_MODULO = { planilha: 'da planilha', docx: 'do documento', postits: 'do quadro' };
+
+function usePwa() {
+  const [, tick] = useState(0);
+  useEffect(() => {
+    const f = () => tick((n) => n + 1);
+    pwa.ouvintes.add(f);
+    return () => pwa.ouvintes.delete(f);
+  }, []);
+  return pwa;
+}
+
+const abrirConteudo = (ficha, conteudo) => (ficha.tipo === 'postits' ? normalizarQuadro(conteudo) : ficha.tipo === 'planilha' ? normalizarPlanilha(conteudo) : conteudo);
+
+/* v0.4.9: alça do menu escondido. Fina por padrão; ao chegar o mouse (ou ao tocar) sai para fora e mostra a seta;
+   dá para puxar para a direita ou só tocar. */
+function AlcaMenu({ aoAbrir }) {
+  const [puxa, setPuxa] = useState(false);
+  const ini = useRef(null);
+  const solta = () => { ini.current = null; setPuxa(false); };
+  return (
+    <button type="button" className={'menu-alca' + (puxa ? ' puxa' : '')} data-menu-alca aria-label="Mostrar o menu lateral" title="Mostrar o menu lateral (toque ou puxe para a direita)"
+      onClick={aoAbrir}
+      onPointerDown={(ev) => { ini.current = ev.clientX; setPuxa(true); try { ev.currentTarget.setPointerCapture(ev.pointerId); } catch { /* sem captura */ } }}
+      onPointerMove={(ev) => { if (ini.current != null && ev.clientX - ini.current > 28) { solta(); aoAbrir(); } }}
+      onPointerUp={solta} onPointerCancel={solta}>
+      <Icone n="chevronDir" />
+    </button>
+  );
+}
+
+export function App() {
+  /* Teclado do celular: o app acompanha a parte da tela que sobra (visualViewport) e a página não sobe,
+     para a célula que está sendo digitada continuar à vista. */
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv) return undefined;
+    const ajustar = () => {
+      const r = document.documentElement;
+      const encolheu = vv.scale <= 1.01 && window.innerHeight - vv.height > 80;
+      if (encolheu) { r.style.setProperty('--vvh', Math.round(vv.height) + 'px'); if (window.scrollY || vv.offsetTop) window.scrollTo(0, 0); }
+      else r.style.removeProperty('--vvh');
+    };
+    vv.addEventListener('resize', ajustar);
+    vv.addEventListener('scroll', ajustar);
+    ajustar();
+    return () => { vv.removeEventListener('resize', ajustar); vv.removeEventListener('scroll', ajustar); document.documentElement.style.removeProperty('--vvh'); };
+  }, []);
+
+  const demo = ehDemo();
+  const estadoPwa = usePwa();
+  const escuro = typeof matchMedia !== 'undefined' && matchMedia('(prefers-color-scheme: dark)').matches;
+  const [prefs, setPrefs] = useState(() => normalizarPrefs(ler('prefs', null, { demo }), escuro));
+  const [login, setLogin] = useState(() => { const l = lerLogin(); definirLogin(l); return l; }); /* v0.6.73 (P2): quem entrou no Cwork */
+  const [, setAvisoLogin] = useState(0); /* redesenha mesmo quando o login continua null (a interface do Cwork pode ter chegado agora) */
+  useEffect(() => aoMudarLogin(() => { const l = lerLogin(); definirLogin(l); setLogin(l); setAvisoLogin((n) => n + 1); }), []);
+  const acesso = situacaoDoAcesso({ dentro: molduraDoCwork(), ponte: ponteDoCwork(), login }); /* a trava olha a moldura de verdade, não o ?em=cwork */
+  const perfilEf = login ? login.perfil : prefs.perfil; /* logado: o perfil vem do cadastro do Cwork */
+  const acessoRef = useRef(acesso); acessoRef.current = acesso;
+  const contaRef = useRef(login ? login.uid : null);
+  const perfilRef = useRef(perfilEf); perfilRef.current = perfilEf;
+  const eu = useCallback(() => quemSou({ perfil: perfilRef.current }), []); /* v0.6.72 (P1): na ficha, o nome digitado neste aparelho ou "neste aparelho" (o perfil de teste não vira nome de pessoa); na P2 entra o login do Cwork */
+  const setPref = useCallback((k, v) => setPrefs((p) => ({ ...p, [k]: v })), []);
+  const cel = useMedia('(max-width: 899px), (orientation: landscape) and (max-height: 500px) and (pointer: coarse)'); /* v0.6.35 (S1): celular grande deitado também é celular */
+  const media = useMedia('(min-width: 900px) and (max-width: 1499px)') && !cel; /* v0.6.22 (D3): tela média */
+  const [menuNaPlanilha, setMenuNaPlanilha] = useState(false); /* a pessoa abriu o menu com a planilha aberta */
+  const rota = useRota();
+  const banco = useMemo(() => criarBanco({ demo }), [demo]);
+  const [fichas, setFichas] = useState([]);
+  /* v0.6.20 (R10): enquanto a primeira leitura não chega, as listas mostram o esqueleto em vez de "nada ainda" */
+  const [lendo, setLendo] = useState(true);
+
+  /* arquivo aberto: { arquivo, h (histórico), tamanho, sujo, salvoEm } — também num ref para os atalhos */
+  const [aberto, setAbertoEstado] = useState(null);
+  useEffect(() => { avisarCwork({ tipo: 'pronto', versao: VERSAO }); }, []);
+  const nomeAberto = aberto ? aberto.arquivo.ficha.nome : null, tipoAberto = aberto ? aberto.arquivo.ficha.tipo : null;
+  useEffect(() => { avisarCwork({ tipo: 'arquivo', nome: nomeAberto, tipoArquivo: tipoAberto }); }, [nomeAberto, tipoAberto]);
+  const abertoRef = useRef(null);
+  const setAberto = useCallback((x) => {
+    const v = typeof x === 'function' ? x(abertoRef.current) : x;
+    abertoRef.current = v;
+    setAbertoEstado(v);
+  }, []);
+
+  const [aba, setAba] = useState('inicio');
+  const [faixaTemp, setFaixaTemp] = useState(false);
+  const [gaveta, setGaveta] = useState(false);
+  const [paleta, setPaleta] = useState(false);
+  const [opcoes, setOpcoes] = useState(false);
+  const [pergunta, setPergunta] = useState(null);
+  const [avisos, setAvisos] = useState([]);
+  /* a faixa "só para ver" pisca quando a pessoa tenta mexer (o aviso embaixo some em segundos) */
+  const [piscando, setPiscando] = useState(false);
+  const chamarFaixa = useCallback(() => { setPiscando(true); clearTimeout(chamarFaixa.t); chamarFaixa.t = setTimeout(() => setPiscando(false), 1400); }, []);
+  const [espaco, setEspaco] = useState('');
+  const [statusEd, setStatusEd] = useState(null);
+  const [contextoEd, setContextoEd] = useState({}); // v0.6.3: o que o editor tem selecionado (ex.: um gráfico) e muda a faixa
+  const setContexto = useCallback((c) => setContextoEd((a) => (JSON.stringify(a) === JSON.stringify(c) ? a : c)), []);
+  const [alvoPainel, setAlvoPainel] = useState(null);
+  const [alvoRodape, setAlvoRodape] = useState(null); /* v0.4.8 (L11): a Verificação mora no rodapé, igual em todos os arquivos */
+  const [linhaTempo, setLinhaTempo] = useState(false);
+  const [abrirExcel, setAbrirExcel] = useState(false);
+  const [arquivoSolto, setArquivoSolto] = useState(null); /* v0.6.22 (D-62): Excel solto em cima do app */
+  const [camposAbertos, setCamposAbertos] = useState(false); // v0.6.17 (Ponte 2): painel Campos do Cwork
+  const editorRef = useRef(null);
+
+  /* tema, relevo e cor da barra do celular */
+  useEffect(() => {
+    const b = document.body;
+    b.dataset.theme = prefs.tema;
+    b.classList.toggle('relevo', prefs.relevo);
+    b.classList.toggle('mesa', !!prefs.mesa);
+    const st = getComputedStyle(b);
+    const fundo = st.getPropertyValue('--bg').trim();
+    if (fundo) document.documentElement.style.background = fundo;
+    const meta = document.querySelector('meta[name="theme-color"]');
+    const sup = st.getPropertyValue('--surface').trim();
+    if (meta && sup) meta.setAttribute('content', sup);
+    gravar('prefs', prefs, { demo });
+  }, [prefs, demo]);
+
+  const avisar = useCallback((texto, extra = {}) => {
+    const id = Date.now() + Math.random();
+    setAvisos([{ id, texto, ...extra }]); /* v0.4.8: um aviso de cada vez; o novo toma o lugar do anterior */
+    setTimeout(() => setAvisos((l) => l.filter((a) => a.id !== id)), extra.acao ? 8000 : extra.longo ? 6000 : 3400);
+  }, []);
+  /* o aviso com Desfazer não acompanha a troca de página (só some o que já estava na tela há um tempo) */
+  useEffect(() => { setAvisos((l) => (l.some((a) => a.acao && Date.now() - a.id > 1500) ? l.filter((a) => !a.acao || Date.now() - a.id <= 1500) : l)); }, [rota]);
+  const tirarAviso = useCallback((id) => setAvisos((l) => l.filter((a) => a.id !== id)), []);
+  /* o aviso com Desfazer também sai quando a pessoa segue em frente (clica ou digita em outro lugar), sem depender só do temporizador */
+  useEffect(() => {
+    const seguir = (ev) => {
+      if (ev.target && ev.target.closest && ev.target.closest('.toasts')) return;
+      if (ev.type === 'keydown' && (ev.ctrlKey || ev.metaKey || ['Control', 'Shift', 'Alt', 'Meta'].includes(ev.key))) return;
+      setAvisos((l) => (l.some((a) => a.acao && Date.now() - a.id > 2500) ? l.filter((a) => !a.acao || Date.now() - a.id <= 2500) : l));
+    };
+    addEventListener('pointerdown', seguir, true);
+    addEventListener('keydown', seguir, true);
+    return () => { removeEventListener('pointerdown', seguir, true); removeEventListener('keydown', seguir, true); };
+  }, []);
+
+  const recarregar = useCallback(async () => {
+    try { setFichas(await banco.fichas()); } catch { avisar('Não foi possível ler os arquivos deste aparelho.', { ic: 'aviso' }); }
+    setLendo(false);
+  }, [banco, avisar]);
+  useEffect(() => { recarregar(); }, [recarregar]);
+
+  /* ---------- o mesmo arquivo em duas abas do navegador (nada pode se perder em silêncio) ----------
+     Cada gravação leva uma "marca"; a aba só grava se a marca guardada é a que ela conhece.
+     Além disso as abas conversam: a segunda que abre o arquivo fica só para ver, com "Editar aqui". */
+  const abaApp = useMemo(() => Date.now().toString(36) + Math.random().toString(36).slice(2, 7), []);
+  const canal = useMemo(() => (typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('efcdocs-abas' + (demo ? '-demo' : '')) : null), [demo]);
+  const marcas = useRef(new Map());
+  const fila = useRef({ pendente: null, rodando: false, custo: 0, custoDe: null, desde: 0, relogio: null, seq: 0, gravado: new Map(), seguro: novoDiarioSeguro() });
+  const [travado, setTravadoEstado] = useState(null);
+  const travadoRef = useRef(null);
+  const setTravado = useCallback((v) => { travadoRef.current = v; setTravadoEstado(v); }, []);
+  const avisarRef = useRef(avisar);
+  const vivoEm = useRef(0);
+
+  /** Lê de novo o arquivo aberto do aparelho (o que a outra aba gravou). */
+  const recarregarAberto = useCallback(async () => {
+    const atual = abertoRef.current;
+    if (!atual) return null;
+    const r = await banco.abrir(atual.arquivo.ficha.id);
+    if (!r) return null;
+    marcas.current.set(r.ficha.id, r.marca);
+    setAberto((a) => (a && a.arquivo.ficha.id === r.ficha.id
+      ? { arquivo: { ficha: r.ficha, conteudo: abrirConteudo(r.ficha, r.conteudo) }, h: novoHistorico(), tamanho: r.tamanho, sujo: false, salvoEm: r.ficha.alteradoEm }
+      : a));
+    return r;
+  }, [banco, setAberto]);
+
+  const postar = useCallback((m) => { try { if (canal) canal.postMessage({ ...m, de: abaApp }); } catch { /* sem canal */ } }, [canal, abaApp]);
+
+  useEffect(() => {
+    if (!canal) return undefined;
+    const tratar = (ev) => {
+      const m = ev.data || {};
+      const meu = abertoRef.current && abertoRef.current.arquivo.ficha.id;
+      if (!meu || m.arq !== meu || m.de === abaApp) return;
+      if (m.t === 'vivo') { if (travadoRef.current && travadoRef.current.motivo === 'outraAba') vivoEm.current = Date.now(); }
+      else if (m.t === 'abri' && !travadoRef.current) postar({ t: 'tenho', arq: meu, para: m.de });
+      else if (m.t === 'tenho' && m.para === abaApp && !travadoRef.current) {
+        vivoEm.current = Date.now();
+        setTravado({ motivo: 'outraAba' });
+      } else if (m.t === 'salvou' && travadoRef.current && travadoRef.current.motivo === 'outraAba') recarregarAberto();
+      else if (m.t === 'assumir' && !travadoRef.current) {
+        setTravado({ motivo: 'outraAba' });
+        setTimeout(recarregarAberto, 400);
+      } else if (m.t === 'fechei' && travadoRef.current && travadoRef.current.motivo === 'outraAba') {
+        recarregarAberto().then(() => { setTravado(null); avisarRef.current('A outra aba fechou este arquivo. Agora dá para editar aqui.', { ic: 'check' }); });
+      }
+    };
+    canal.addEventListener('message', tratar);
+    const sair = () => { const a = abertoRef.current; if (a && !travadoRef.current) postar({ t: 'fechei', arq: a.arquivo.ficha.id }); };
+    addEventListener('pagehide', sair);
+    return () => { canal.removeEventListener('message', tratar); removeEventListener('pagehide', sair); };
+  }, [canal, abaApp, postar, recarregarAberto, setTravado]);
+
+  /* Batida: quem edita o arquivo avisa a cada poucos segundos que continua aí. Se a aba que "segura" o arquivo
+     fechou à força (celular que mata o app, navegador que cai) e deixou de avisar, a marca velha é solta. */
+  useEffect(() => {
+    if (!canal) return undefined;
+    const bat = (typeof globalThis !== 'undefined' && globalThis.EFC_BATIDA) || { a: 15000, b: 90000 };
+    const id = setInterval(() => {
+      const a = abertoRef.current;
+      if (!a) return;
+      const t = travadoRef.current;
+      if (!t) postar({ t: 'vivo', arq: a.arquivo.ficha.id });
+      else if (t.motivo === 'outraAba' && Date.now() - vivoEm.current > bat.b) {
+        recarregarAberto().then(() => { setTravado(null); avisarRef.current('A outra aba não responde mais. Agora dá para editar aqui.', { ic: 'check' }); });
+      }
+    }, bat.a);
+    return () => clearInterval(id);
+  }, [canal, postar, recarregarAberto, setTravado]);
+
+  const editarAqui = useCallback(async () => {
+    const a = abertoRef.current;
+    if (!a) return;
+    postar({ t: 'assumir', arq: a.arquivo.ficha.id });
+    await new Promise((ok) => setTimeout(ok, 500));
+    await recarregarAberto();
+    setTravado(null);
+    avisar('Agora você edita nesta aba. A outra ficou só para ver.', { ic: 'check' });
+  }, [postar, recarregarAberto, setTravado, avisar]);
+
+  /* abrir arquivo pela rota #/arq/<id> */
+  const idRota = rota.startsWith('arq/') ? rota.slice(4) : null;
+  useEffect(() => {
+    let vivo = true;
+    setGaveta(false);
+    const anterior = abertoRef.current;
+    if (anterior && anterior.arquivo.ficha.id !== idRota && !travadoRef.current) postar({ t: 'fechei', arq: anterior.arquivo.ficha.id });
+    if (!idRota) { setAberto(null); setStatusEd(null); setContextoEd({}); setTravado(null); return undefined; }
+    if (abertoRef.current && abertoRef.current.arquivo.ficha.id === idRota) return undefined;
+    setTravado(null);
+    banco.abrir(idRota).then((r) => {
+      if (!vivo) return;
+      if (!r || r.ficha.status === 'lixeira') {
+        avisar('Esse arquivo não está mais neste aparelho.', { ic: 'aviso' });
+        irPara('');
+        return;
+      }
+      marcas.current.set(r.ficha.id, r.marca);
+      fila.current.gravado.set(r.ficha.id, r.ficha.alteradoEm);
+      const lido = { arquivo: { ficha: r.ficha, conteudo: abrirConteudo(r.ficha, r.conteudo) }, h: novoHistorico(), tamanho: r.tamanho, sujo: false, salvoEm: r.ficha.alteradoEm };
+      /* v0.6.12: mudanças que a página fechou sem gravar (arquivo grande grava com atraso) são refeitas a partir do diário de segurança */
+      const pend = lerPendencia(r.ficha.id);
+      const refeitas = pend ? recuperar(lido.arquivo, pend) : 0;
+      if (pend && !refeitas) apagarPendencia(r.ficha.id);
+      if (refeitas) recuperarRef.current({ ...lido, arquivo: carimbar(lido.arquivo, eu()) }, refeitas); else setAberto(lido);
+      setAba(r.ficha.tipo === 'postits' ? 'inserir' : 'inicio');
+      setFaixaTemp(false);
+      postar({ t: 'abri', arq: r.ficha.id });
+    });
+    return () => { vivo = false; };
+  }, [idRota, banco, avisar, setAberto, postar, setTravado]);
+
+  const recuperarRef = useRef(() => {});
+  /* gravação: só depois da tela já mostrar a mudança; uma de cada vez, sempre a mais nova */
+  const rodarFila = useCallback(async () => {
+    const f = fila.current;
+    if (f.rodando) return;
+    f.rodando = true;
+    /* v0.6.12: enquanto o relógio da espera está armado, a gravação seguinte fica para ele (senão gravaria no meio da digitação) */
+    while (f.pendente && !f.relogio) {
+      const { arquivo, acao, forcar, seq } = f.pendente;
+      f.pendente = null;
+      try {
+        const id = arquivo.ficha.id;
+        /* v0.6.12 (D-16): mede quanto a gravação prende a tela (montar o texto do arquivo inteiro), para saber se dá para gravar a cada tecla */
+        const t0 = performance.now();
+        const gravando = banco.salvar(arquivo, acao, forcar ? undefined : (marcas.current.has(id) ? marcas.current.get(id) : undefined));
+        f.custo = performance.now() - t0; f.custoDe = id; f.desde = 0;
+        const t = await gravando;
+        if (t.conflito) {
+          f.pendente = null;
+          setTravado({ motivo: 'conflito' });
+          setAberto((a) => (a && a.arquivo.ficha.id === id ? { ...a, sujo: true } : a));
+          break;
+        }
+        marcas.current.set(id, t.marca);
+        f.gravado.set(id, arquivo.ficha.alteradoEm); pendenciaGravada(f.seguro, id, seq, arquivo.ficha.alteradoEm);
+        setAberto((atual) => (atual && atual.arquivo === arquivo ? { ...atual, tamanho: t, sujo: false, salvoEm: new Date().toISOString() } : atual));
+        postar({ t: 'salvou', arq: id });
+        recarregar();
+      } catch {
+        avisar('Não foi possível salvar neste aparelho. Libere espaço e tente de novo.', { ic: 'aviso' });
+      }
+    }
+    f.rodando = false;
+  }, [banco, recarregar, avisar, setAberto, postar, setTravado]);
+
+  const salvar = useCallback((novo, acao, forcar = false, ops = null) => {
+    setAberto({ ...novo, sujo: true });
+    const f = fila.current;
+    f.pendente = { arquivo: novo.arquivo, acao, forcar, seq: ++f.seq };
+    /* v0.6.12 (D-16): arquivo pequeno grava na hora, como sempre. Arquivo grande (gravar prende a tela) espera a pessoa parar
+       de digitar; no máximo 20 s sem gravar. Sair da página, trocar de aba do navegador ou fechar o arquivo grava na hora. */
+    clearTimeout(f.relogio); f.relogio = null;
+    /* arquivo que ainda não foi gravado nesta sessão: o custo é estimado pelo tamanho dele (uns 40 MB de texto por segundo) */
+    const idArq = novo.arquivo.ficha.id;
+    if (f.custoDe !== idArq) { f.custoDe = idArq; f.custo = novo.tamanho && novo.tamanho.bytesOriginal ? novo.tamanho.bytesOriginal / 40000 : 0; }
+    if (!f.desde) f.desde = Date.now();
+    let espera = forcar || Date.now() - f.desde > 20000 ? 0 : esperaDeGravar(f.custo);
+    /* diário de segurança (nucleo/pendencias.js): a mudança que vai esperar fica anotada na hora; se não der para anotar, grava já */
+    /* v0.6.26 (PL03): mudança feita enquanto a página sai ou fica escondida também vai para o diário (a gravação no banco pode não terminar) */
+    if ((espera || f.seguro.lotes.length || f.seguro.furo || f.saindo) && !anotarPendencia(f.seguro, idArq, f.gravado.get(idArq) || null, f.seq, novo.arquivo.ficha.alteradoEm, ops)) espera = 0;
+    if (!espera) rodarFila(); else f.relogio = setTimeout(() => { f.relogio = null; rodarFila(); }, espera);
+  }, [setAberto, rodarFila]);
+
+  recuperarRef.current = (novo, n) => {
+    salvar(novo, 'alterou', false, null);
+    avisar(n === 1 ? 'Recuperei 1 mudança que ainda não tinha sido gravada neste aparelho.' : `Recuperei ${n} mudanças que ainda não tinham sido gravadas neste aparelho.`, { ic: 'check' });
+  };
+
+  /** Grava agora o que estiver esperando (sair da página, esconder a aba do navegador, fechar o arquivo). */
+  const gravarJa = useCallback(() => { const f = fila.current; if (f.relogio) { clearTimeout(f.relogio); f.relogio = null; } if (f.pendente) rodarFila(); }, [rodarFila]);
+  useEffect(() => {
+    const oculto = () => { fila.current.saindo = document.visibilityState === 'hidden'; if (fila.current.saindo) gravarJa(); };
+    const sai = () => { fila.current.saindo = true; gravarJa(); };
+    addEventListener('pagehide', sai); document.addEventListener('visibilitychange', oculto);
+    return () => { removeEventListener('pagehide', sai); document.removeEventListener('visibilitychange', oculto); };
+  }, [gravarJa]);
+  useEffect(() => gravarJa, [idRota, gravarJa]);
+
+  const MSG_TRAVADO = 'Este arquivo está aberto em outra aba. Toque em "Editar aqui" para editar nesta.';
+  const MSG_CONFLITO = 'Antes de continuar, escolha no aviso do topo: ver a versão gravada ou gravar a sua por cima.';
+  const msgTravado = () => (travadoRef.current && travadoRef.current.motivo === 'conflito' ? MSG_CONFLITO : MSG_TRAVADO);
+
+  /** Aplica um diff no arquivo aberto (entra no desfazer e grava). */
+  const aplicarDiff = useCallback((diff, acao = 'alterou') => {
+    const atual = abertoRef.current;
+    if (!atual) return false;
+    if (travadoRef.current) { avisar(msgTravado(), { ic: 'aviso' }); return false; }
+    const r = fazer(atual.h, atual.arquivo, diff);
+    if (r.estado === atual.arquivo) return false;
+    salvar({ ...atual, h: r.h, arquivo: carimbar(r.estado, eu()) }, acao, false, diff.ops);
+    return true;
+  }, [salvar]);
+
+  /** Atalho do editor: mudanças { caminho: valor } + rótulo do desfazer. */
+  const aplicar = useCallback((mudancas, rotulo, acao, opcoes = {}) => {
+    const atual = abertoRef.current;
+    if (!atual) return false;
+    /* opcoes.juntar: só junta se a ação anterior foi uma criação ("Novo ...") */
+    const anterior = atual.h.feitos[atual.h.feitos.length - 1];
+    const juntar = !!opcoes.juntar && !!anterior && /^Novo/.test(anterior.rotulo || '');
+    const r = criarDiff(atual.arquivo, mudancas, rotulo);
+    const ok = aplicarDiff(r, acao);
+    /* v0.6.4: travar e destravar a aba limpam o desfazer (como no Excel): o Ctrl+Z não pode soltar a trava nem desfazer o que ela protege */
+    if (ok && opcoes.limparHistorico) {
+      const depois = abertoRef.current;
+      if (depois) setAberto({ ...depois, h: novoHistorico() });
+    }
+    if (ok && juntar) {
+      const depois = abertoRef.current;
+      if (depois) setAberto({ ...depois, h: juntarUltimas(depois.h) });
+    }
+    return ok;
+  }, [aplicarDiff, setAberto]);
+
+  const desfazerOuRefazer = useCallback((re) => {
+    const atual = abertoRef.current;
+    if (!atual) return;
+    if (travadoRef.current) { avisar(msgTravado(), { ic: 'aviso' }); return; }
+    const r = re ? refazer(atual.h, atual.arquivo) : desfazer(atual.h, atual.arquivo);
+    if (!r.diff) return;
+    salvar({ ...atual, h: r.h, arquivo: carimbar(r.estado, eu()) }, re ? 'refez' : 'desfez', false, re ? r.diff.ops : [...r.diff.ops].reverse().map((o) => ({ c: o.c, d: o.a })));
+    avisar((re ? 'Refeito: ' : 'Desfeito: ') + (r.diff.rotulo || 'última ação'), { ic: re ? 'refazer' : 'desfazer' });
+  }, [salvar, avisar]);
+
+  /** Linha do tempo (PL17): volta ou avança até o passo escolhido, numa gravação só. */
+  const irParaPasso = useCallback((feitosAlvo) => {
+    const atual = abertoRef.current;
+    if (!atual) return;
+    if (travadoRef.current) { avisar(msgTravado(), { ic: 'aviso' }); return; }
+    let h = atual.h, estado = atual.arquivo, n = 0;
+    while (h.feitos.length > feitosAlvo && h.feitos.length) { const r = desfazer(h, estado); h = r.h; estado = r.estado; n++; }
+    while (h.feitos.length < feitosAlvo && h.desfeitos.length) { const r = refazer(h, estado); h = r.h; estado = r.estado; n--; }
+    if (!n) return;
+    salvar({ ...atual, h, arquivo: carimbar(estado, eu()) }, n > 0 ? 'desfez' : 'refez');
+    avisar(n > 0 ? `Voltou ${n} ${n === 1 ? 'passo' : 'passos'}.` : `Avançou ${-n} ${n === -1 ? 'passo' : 'passos'}.`, { ic: n > 0 ? 'desfazer' : 'refazer' });
+  }, [salvar, avisar]);
+
+  const criarNovo = useCallback(async (tipo) => {
+    try {
+      const a = criarArquivo({ tipo, autor: eu() });
+      await banco.criar(a);
+      await recarregar();
+      irPara('arq/' + a.ficha.id);
+    } catch (e) {
+      avisar(e.message, { ic: 'aviso' });
+    }
+  }, [banco, recarregar, avisar]);
+
+  /** Cria um arquivo já com conteúdo (ex.: a conta desenhada vira um quadro) e abre. */
+  const criarCom = useCallback(async (tipo, nome, conteudo, aviso, original) => {
+    if (semPermissaoRef.current && semPermissaoRef.current('arquivo.criar')) { avisar(SEM_PERMISSAO, { ic: 'cadeado' }); return null; } /* v0.6.73: o Visitante não cria nem importando */
+    try {
+      const a = criarArquivo({ tipo, nome, autor: eu() });
+      a.conteudo = conteudo;
+      await banco.criar(a);
+      /* v0.6.0: guarda o arquivo do Excel como veio, para "Baixar original" */
+      if (original) await guardarOriginal(a.ficha.id, { nome: original.name, tipo: original.type, blob: original });
+      await recarregar();
+      irPara('arq/' + a.ficha.id);
+      avisar(aviso ? aviso.replace('{nome}', a.ficha.nome) : `"${a.ficha.nome}" foi criado. A planilha continua igual.`, { ic: 'check', longo: !!aviso });
+      return true;
+    } catch (e) {
+      avisar(e.message, { ic: 'aviso' });
+      return false;
+    }
+  }, [banco, recarregar, avisar]);
+
+  const restaurar = useCallback(async (f) => {
+    await banco.restaurar(f.id);
+    await recarregar();
+    avisar(`"${f.nome}" voltou da lixeira.`, { ic: 'restaurar' });
+  }, [banco, recarregar, avisar]);
+
+  const mandarLixeira = useCallback(async (f) => {
+    await banco.mandarParaLixeira(f.id);
+    await recarregar();
+    if (abertoRef.current && abertoRef.current.arquivo.ficha.id === f.id) irPara('');
+    avisar(`"${f.nome}" foi para a lixeira.`, { ic: 'lixeira', acao: { rotulo: 'Desfazer', fazer: () => restaurar(f) } });
+  }, [banco, recarregar, avisar, restaurar]);
+
+  const renomearArquivo = useCallback(async (f, nome) => {
+    const atual = abertoRef.current;
+    if (atual && atual.arquivo.ficha.id === f.id) {
+      aplicarDiff(criarDiff(atual.arquivo, { 'ficha.nome': nome }, 'Renomear'), 'renomeou');
+      return;
+    }
+    await banco.mudarFicha(f.id, { nome, alteradoEm: new Date().toISOString(), alteradoPor: nomeGravado(eu()), alteradoPorId: eu().id }, 'renomeou');
+    recarregar();
+  }, [banco, aplicarDiff, recarregar]);
+
+  /* v0.6.16 (Ponte 1): sub-aba e código do documento interno (com o arquivo aberto, entra no desfazer como o Renomear) */
+  const mudarFichaArquivo = useCallback(async (f, mud) => {
+    const atual = abertoRef.current;
+    if (atual && atual.arquivo.ficha.id === f.id) { aplicarDiff(criarDiff(atual.arquivo, { 'ficha.pastaNome': mud.pastaNome || undefined, 'ficha.codigo': mud.codigo || undefined }, 'Documento interno'), 'documento interno'); return; }
+    await banco.mudarFicha(f.id, { pastaNome: mud.pastaNome || undefined, codigo: mud.codigo || undefined, alteradoEm: new Date().toISOString(), alteradoPor: nomeGravado(eu()), alteradoPorId: eu().id }, 'documento interno');
+    recarregar();
+  }, [banco, aplicarDiff, recarregar]);
+  const autorPonte = useMemo(() => quemSou({ perfil: perfilEf }), [login && login.uid, login && login.nome]); // eslint-disable-line react-hooks/exhaustive-deps
+  const ponte = usarPonte({ banco, fichas, recarregar, avisar, aberto, autor: autorPonte, mudarFichaArquivo }); /* v0.6.73: o arquivo que vem de um pedido do Cwork leva a conta */
+  const ponteRef = useRef(ponte); ponteRef.current = ponte;
+  const pidRota = rota.startsWith('abrir/') ? rota.slice(6) : null;
+  useEffect(() => { if (pidRota) ponteRef.current.abrirDaCaixa(pidRota); }, [pidRota]);
+  useEffect(() => { if (rota === 'internos') ponteRef.current.atualizarEstado(); }, [rota]);
+  const pidPedido = rota.startsWith('pedido/') ? rota.slice(7) : null; /* v0.6.17 (Ponte 2): pedido de impressão do Cwork (ou "local": do resumo do envio) */
+  useEffect(() => { if (pidPedido === 'local' && !ponteRef.current.pedidoLocal) irPara(''); }, [pidPedido]);
+
+  const perguntarNome = useCallback((f) => setPergunta({
+    titulo: 'Renomear', campo: 'Nome do arquivo', valor: f.nome, confirmar: 'Salvar nome', validar: validarNome,
+    /* v0.6.20 (fluidez, item e): confirma com um aviso de sucesso, que traz o visto que se desenha */
+    aoConfirmar: (nome) => { if (nome !== f.nome) Promise.resolve(renomearArquivo(f, nome)).then(() => avisar(`Nome salvo: "${nome}".`, { ic: 'check' })); },
+  }), [renomearArquivo, avisar]);
+
+  const excluirDeVez = useCallback((f) => setPergunta({
+    titulo: `Apagar ${f.nome} para sempre?`, texto: 'Não dá para desfazer. O arquivo some deste aparelho e fica só anotado no histórico.',
+    confirmar: 'Apagar para sempre', perigo: true,
+    aoConfirmar: async () => { await banco.excluirDeVez(f.id); apagarOriginal(f.id); await recarregar(); avisar(`"${f.nome}" foi apagado para sempre.`, { ic: 'x' }); },
+  }), [banco, recarregar, avisar]);
+
+  const mod = aberto ? aberto.arquivo.ficha.tipo : TIPOS[rota] ? rota : null;
+  /* v0.6.22 (D3): em tela média, com a planilha aberta, o menu lateral se esconde sozinho (a escolha guardada não muda) */
+  /* v0.6.63 (relatório de 25/11): vale para os três editores (o Documento em branco ficava com o menu aberto, diferente da Planilha e do Quadro) */
+  const planilhaAberta = !!aberto; /* só com o arquivo aberto (a lista de arquivos não conta) */
+  useEffect(() => { if (!planilhaAberta) setMenuNaPlanilha(false); }, [planilhaAberta]);
+  const menuAuto = !globalThis.EFC_MENU_FIXO && media && !cel && planilhaAberta && prefs.menu !== 'oculto' && !menuNaPlanilha;
+  const menuEf = menuAuto ? 'oculto' : prefs.menu;
+
+  const semPermissaoRef = useRef(null);
+  const semPermissao = useCallback((acao, ficha) => {
+    const f = ficha || (abertoRef.current && abertoRef.current.arquivo.ficha);
+    const doAberto = !ficha || (abertoRef.current && abertoRef.current.arquivo.ficha.id === ficha.id);
+    if (travado && doAberto && acao !== 'ver' && acao !== 'exportar') return travado.motivo === 'conflito' ? MSG_CONFLITO : MSG_TRAVADO;
+    const q = eu(); return pode(perfilEf, acao, { usuario: q.id, criadoPor: f && !ehDono(f, q) ? 'outra conta' : q.id }) ? '' : SEM_PERMISSAO; /* v0.6.73: dono pelo código; "neste aparelho" é de quem usa o aparelho */
+  }, [perfilEf, travado]);
+  semPermissaoRef.current = semPermissao;
+  /* v0.6.73 (P2): saiu da conta, a trava apareceu ou entrou outra conta: fecha o arquivo aberto (e o desfazer da conta anterior vai junto) */
+  useEffect(() => {
+    const uid = login ? login.uid : null, trocou = contaRef.current !== uid; contaRef.current = uid;
+    if ((acesso === 'sair' || acesso === 'trava' || trocou) && abertoRef.current) irPara('');
+  }, [acesso, login && login.uid]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const bloqueado = useCallback((id, ficha) => {
+    const cmd = PorId[id];
+    if (!cmd) return semPermissao(id, ficha);
+    if (id === 'editar.historico') return aberto && (podeDesfazer(aberto.h) || podeRefazer(aberto.h)) ? '' : 'Nada no histórico ainda';
+    if (mod === 'planilha' && cmd.acao === 'quadro.editar') return semPermissao('planilha.editar', ficha);
+    if (id === 'editar.desfazer') return aberto && podeDesfazer(aberto.h) ? '' : 'Nada para desfazer';
+    if (id === 'editar.refazer') return aberto && podeRefazer(aberto.h) ? '' : 'Nada para refazer';
+    if (id === 'arquivo.novo' && !mod) return '';
+    return cmd.acao && cmd.acao !== 'exportar' ? semPermissao(cmd.acao, ficha) : '';
+  }, [aberto, semPermissao, mod]);
+  /* v0.6.26: o "Desfazer" de um aviso guarda o executar daquela hora; ele pergunta ao bloqueado de agora (senão a 1ª exclusão dizia "Nada para desfazer") */
+  const bloqueadoRef = useRef(bloqueado); bloqueadoRef.current = bloqueado;
+
+  const ligado = useCallback((id) => {
+    const geral = {
+      'exibir.faixaTudo': prefs.faixa === 'tudo', 'exibir.faixaAbas': prefs.faixa === 'abas', 'exibir.faixaOculta': prefs.faixa === 'oculta',
+      'exibir.topoCompleto': prefs.topo !== 'compacto', 'exibir.topoCompacto': prefs.topo === 'compacto',
+      'exibir.menuCompleto': prefs.menu === 'completo', 'exibir.menuIcones': prefs.menu === 'icones', 'exibir.menuOculto': prefs.menu === 'oculto',
+      'exibir.layoutA': prefs.layout === 'A', 'exibir.layoutB': prefs.layout === 'B', 'exibir.painel': prefs.painel, 'exibir.relevo': prefs.relevo, 'exibir.mesa': !!prefs.mesa,
+    };
+    if (id in geral) return geral[id];
+    const ed = editorRef.current;
+    /* v0.6.6 (Grok): botão que liga/desliga diz true/false; o que não é de ligar devolve undefined (sem aria-pressed) */
+    const v = ed && ed.ligado ? ed.ligado(id) : undefined;
+    return v === undefined ? undefined : !!v;
+  }, [prefs, statusEd]); // statusEd: o editor muda o que está ligado
+
+  /* v0.6.21 (faixa igual ao Excel): o valor que uma caixa da faixa mostra (fonte, tamanho, formato da célula ativa) */
+  const valorDe = useCallback((id) => { const ed = editorRef.current; return ed && ed.ligado ? ed.ligado(id) : undefined; }, [statusEd]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const executar = useCallback((idCheio) => {
+    /* "comando|valor": a escolha feita numa caixa da faixa; as regras (permissão, versão) são as do comando */
+    const id = idCheio.includes('|') ? idCheio.slice(0, idCheio.indexOf('|')) : idCheio;
+    const cmd = PorId[id];
+    if (!cmd) return;
+    const chega = chegaNa(cmd, mod);
+    if (chega) {
+      avisar(`"${cmd.nome}"${mod && DO_MODULO[mod] ? ' ' + DO_MODULO[mod] : ''} ${textoChega(chega)}.`, { ic: 'info' });
+      return;
+    }
+    const bloq = bloqueadoRef.current(id);
+    if (bloq) { avisar(bloq, { ic: 'aviso' }); return; }
+    if (faixaTemp && !id.startsWith('exibir.faixa')) setFaixaTemp(false);
+    const atual = abertoRef.current;
+    switch (id) {
+      case 'app.inicio': irPara(''); return;
+      case 'app.buscar': setPaleta(true); return;
+      case 'app.opcoes': setOpcoes(true); return;
+      case 'exibir.tema': setOpcoes('tema'); return;
+      case 'arquivo.novo': criarNovo(mod || 'planilha'); return;
+      case 'arquivo.novaPlanilha': case 'arquivo.novoDocumento': case 'arquivo.novoQuadro': criarNovo(NOVO_POR_CMD[id]); return;
+      case 'arquivo.abrir': setAbrirExcel(true); return;
+      /* v0.6.23: Ctrl+B do Excel em português; o Vértice já salva sozinho, aqui grava na hora e confirma */
+      case 'arquivo.salvar': if (atual) { if (atual.sujo) salvar(atual, 'salvou', true); avisar(`Salvo: ${atual.arquivo.ficha.nome}. O Vértice também salva sozinho a cada mudança.`, { ic: 'check' }); } return;
+      case 'arquivo.renomear': if (atual) perguntarNome(atual.arquivo.ficha); return;
+      case 'arquivo.lixeira': if (atual) mandarLixeira(atual.arquivo.ficha); return;
+      case 'arquivo.interno': if (atual) ponteRef.current.setJanela({ ficha: atual.arquivo.ficha }); return;
+      case 'arquivo.camposCwork': if (atual && atual.arquivo.ficha.tipo === 'planilha') setCamposAbertos((v) => !v); return;
+      case 'editar.desfazer': desfazerOuRefazer(false); return;
+      case 'editar.refazer': desfazerOuRefazer(true); return;
+      case 'editar.historico': case 'arquivo.versoes': setLinhaTempo(true); return;
+      case 'exibir.faixaTudo': setPref('faixa', 'tudo'); setFaixaTemp(false); return;
+      case 'exibir.faixaAbas': setPref('faixa', 'abas'); setFaixaTemp(false); return;
+      case 'exibir.faixaOculta':
+        setPref('faixa', 'oculta'); setFaixaTemp(false);
+        avisar('Faixa escondida. Para trazer de volta: botão de faixa no topo, Opções ou Ctrl+F1.', { ic: 'info' });
+        return;
+      case 'exibir.topoCompleto': setPref('topo', 'completo'); return;
+      case 'exibir.topoCompacto': setPref('topo', 'compacto'); return;
+      case 'exibir.menuCompleto': setPref('menu', 'completo'); setMenuNaPlanilha(true); return;
+      case 'exibir.menuIcones': setPref('menu', 'icones'); setMenuNaPlanilha(true); return;
+      case 'exibir.menuOculto': setPref('menu', 'oculto'); return;
+      case 'exibir.painel': setPref('painel', !prefs.painel); return;
+      case 'exibir.layoutA': setPref('layout', 'A'); return;
+      case 'exibir.layoutB': setPref('layout', 'B'); return;
+      case 'exibir.mesa': setPref('mesa', !prefs.mesa); avisar(prefs.mesa ? 'Papel sobre a mesa desligado.' : 'Papel sobre a mesa ligado: sombra nas barras e contorno nas laterais.', { ic: 'relevo' }); return;
+      case 'exibir.relevo': setPref('relevo', !prefs.relevo); avisar(prefs.relevo ? 'Relevo desligado.' : 'Relevo ligado.', { ic: 'relevo' }); return;
+      case 'exibir.telaCheia': {
+        const el = document.documentElement;
+        if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+        else if (el.requestFullscreen) el.requestFullscreen().catch(() => setPref('faixa', 'oculta'));
+        else setPref('faixa', 'oculta');
+        return;
+      }
+      default: {
+        /* v0.6.16: imprimir com o resumo do envio na tela tira o resumo da caixa (o painel fica até fechar) */
+        if ((id === 'arquivo.imprimir' || id === 'arquivo.exportarPDF') && ponteRef.current.resumo) ponteRef.current.resumoUsado();
+        const ed = editorRef.current;
+        if (ed && ed.trata && ed.trata(idCheio)) return;
+        avisar(`"${cmd.nome}" ainda não faz nada aqui.`, { ic: 'info' });
+      }
+    }
+  }, [mod, bloqueado, avisar, faixaTemp, criarNovo, perguntarNome, mandarLixeira, desfazerOuRefazer, setPref, prefs]);
+
+  /* atalhos do teclado que valem em qualquer tela */
+  useEffect(() => {
+    const tecla = (ev) => {
+      if (paleta || opcoes || pergunta || linhaTempo || abrirExcel) return;
+      if (acessoRef.current === 'sair' || acessoRef.current === 'trava') return; /* v0.6.73: com a tela de acesso na frente, nenhum atalho mexe no arquivo */
+      const k = ev.key.toLowerCase();
+      const ctrl = ev.ctrlKey || ev.metaKey;
+      const digitando = /^(input|textarea|select)$/i.test(ev.target.tagName) || ev.target.isContentEditable;
+      /* v0.6.23: na planilha, Ctrl+K é Inserir link (como no Excel); a busca continua em Alt+Q */
+      if ((ctrl && k === 'k' && !(abertoRef.current && abertoRef.current.arquivo.ficha.tipo === 'planilha')) || (ev.altKey && k === 'q')) { ev.preventDefault(); setPaleta(true); return; }
+      if (ctrl && !ev.shiftKey && !ev.altKey && k === 'p' && abertoRef.current) { ev.preventDefault(); executar('arquivo.imprimir'); return; }
+      if (ctrl && ev.key === 'F1') { ev.preventDefault(); executar(prefs.faixa === 'tudo' ? 'exibir.faixaAbas' : 'exibir.faixaTudo'); return; }
+      if (ev.key === 'Escape') { setFaixaTemp(false); setGaveta(false); return; }
+      if (digitando || !abertoRef.current) return;
+      if (ev.defaultPrevented) return; // v0.6.8 (Grok): quem já tratou (o Painel) não desfaz de novo
+      if (ctrl && k === 'z' && !ev.shiftKey) { ev.preventDefault(); desfazerOuRefazer(false); }
+      if (ctrl && (k === 'y' || (k === 'z' && ev.shiftKey))) { ev.preventDefault(); desfazerOuRefazer(true); }
+    };
+    addEventListener('keydown', tecla);
+    return () => removeEventListener('keydown', tecla);
+  }, [paleta, opcoes, pergunta, linhaTempo, abrirExcel, executar, desfazerOuRefazer, prefs.faixa]);
+
+  /* faixa mostrada "por um momento": some ao tocar fora do topo */
+  useEffect(() => {
+    if (!faixaTemp) return undefined;
+    const fora = (ev) => { if (!ev.target.closest('.topbar')) setFaixaTemp(false); };
+    addEventListener('mousedown', fora);
+    return () => removeEventListener('mousedown', fora);
+  }, [faixaTemp]);
+
+  useEffect(() => {
+    if (!opcoes || !navigator.storage || !navigator.storage.estimate) return;
+    navigator.storage.estimate().then((e) => setEspaco(tamanhoLegivel(e.usage || 0))).catch(() => {});
+  }, [opcoes]);
+
+  const cx = {
+    mod, executar, bloqueado, ligado, valorDe, demo, setPref,
+    abrir: (id) => irPara('arq/' + id),
+    perguntarNome, lixeira: mandarLixeira, restaurar, excluirDeVez, criarCom,
+    renomear: (nome) => { const a = abertoRef.current; if (a && nome !== a.arquivo.ficha.nome) renomearArquivo(a.arquivo.ficha, nome); },
+    dataHora, tamanho: tamanhoLegivel,
+    instalar: estadoPwa.instalar ? pedirInstalacao : null,
+    /* para o editor */
+    aplicar, avisar, chamarFaixa, perguntar: setPergunta, temJanela: !!(paleta || opcoes || pergunta || gaveta || linhaTempo),
+    pode: (acao) => !semPermissao(acao), travado, buscarNoEditor: (q) => { const ed = editorRef.current; return ed && ed.buscar ? ed.buscar(q) : []; },
+    registrarEditor: (ed) => { editorRef.current = ed; }, setStatus: setStatusEd, setContexto, contexto: contextoEd,
+    alvoPainel, alvoRodape, abrirPainel: () => setPref('painel', true), painelAberto: prefs.painel, cel,
+    compartilharCwork: (gerar) => { const a = abertoRef.current; if (a) ponte.compartilhar(a.arquivo.ficha, gerar); },
+    /* v0.6.20 (R9): o envio ao Cwork guardado no aparelho, para o histórico da gaveta e do painel */
+    envioDe: (id) => (ponte.estado || {})[id] || null,
+    perfilNome: (PERFIS[perfilEf] || {}).nome || '', /* v0.6.68 (R44): o "quem" do Kanban antes do login */
+    login, /* v0.6.73 (P2): quem entrou no Cwork (ou null) */
+  };
+
+  const contagem = useMemo(() => {
+    const a = ativos(fichas);
+    const c = { lixeira: fichas.length - a.length };
+    for (const t of Object.keys(TIPOS)) c[t] = a.filter((f) => f.tipo === t).length;
+    c.internos = a.filter((f) => f.pastaNome).length;
+    return c;
+  }, [fichas]);
+
+  let conteudo;
+  if (aberto) {
+    const t = aberto.arquivo.ficha.tipo;
+    conteudo = t === 'postits'
+      ? <Quadro key={aberto.arquivo.ficha.id} arquivo={aberto.arquivo} cx={cx} />
+      : t === 'planilha'
+        ? <Planilha key={aberto.arquivo.ficha.id} arquivo={aberto.arquivo} cx={cx} />
+        : <EditorEmBreve tipo={t} />;
+  } else if (idRota || pidRota) conteudo = <div className="pagina" aria-busy="true" />;
+  else if (pidPedido) conteudo = pidPedido === 'local' && !ponte.pedidoLocal ? <div className="pagina" aria-busy="true" /> : <TelaPedido key={pidPedido} pid={pidPedido} local={pidPedido === 'local' ? ponte.pedidoLocal : null} banco={banco} avisar={avisar} aoSair={() => irPara(pidPedido === 'local' ? 'arq/' + ponte.pedidoLocal.docId : '')} />;
+  else if (rota === 'internos') conteudo = <DocsInternos fichas={fichas} lendo={lendo} estado={ponte.estado} cx={cx} acrescentar={() => ponte.setJanela({})} editar={(f) => ponte.setJanela({ ficha: f })} />;
+  else if (TIPOS[rota]) conteudo = <ListaDoTipo tipo={rota} fichas={fichas} lendo={lendo} cx={cx} demo={demo} />;
+  else if (rota === 'lixeira') conteudo = <Lixeira fichas={fichas} lendo={lendo} cx={cx} />;
+  else if (rota === 'pastas' || rota === 'externos') conteudo = <EmBreve qual={rota} />;
+  else conteudo = <Inicio fichas={fichas} lendo={lendo} cx={cx} demo={demo} />;
+
+  const salvo = aberto ? { sujo: aberto.sujo, texto: aberto.sujo ? 'Salvando…' : 'Salvo ' + hora(aberto.salvoEm) } : null;
+  const ultimo = aberto && podeDesfazer(aberto.h) ? rotuloDesfazer(aberto.h) : '';
+  const ficha = aberto ? aberto.arquivo.ficha : null;
+  const st = statusEd || {};
+
+  if (acesso === 'trava' || acesso === 'sair') return <TelaAcesso tipo={acesso} />; /* v0.6.73 (P2): só dentro do Cwork, e com alguém logado */
+  return (
+    <div className={'app' + (cel ? ' cel' : '')} data-menu={menuEf} data-menu-auto={menuAuto ? '' : undefined} data-layout={prefs.layout} data-faixa={prefs.faixa}>
+      {!cel && menuEf !== 'oculto' && <Menu rota={rota} modAtual={mod} cont={contagem} prefs={prefs} cx={cx} />}
+      {!cel && menuEf === 'oculto' && (
+        <AlcaMenu aoAbrir={() => (menuAuto ? setMenuNaPlanilha(true) : cx.executar('exibir.menuCompleto'))} />
+      )}
+      <div className="col">
+        {estadoPwa.aviso && (
+          <button type="button" className="faixa-aviso nova" onClick={atualizarAgora}><Icone n="atualizar" />Versão nova pronta. Toque para atualizar.</button>
+        )}
+        {aberto && travado && travado.motivo === 'outraAba' && (
+          <div className={'faixa-aviso trava' + (piscando ? ' piscar' : '')} role="alert">
+            <Icone n="aviso" /><span>Aberto em outra aba. Aqui fica só para ver.</span>
+            <button type="button" className="btn sm" onClick={editarAqui}>Editar aqui</button>
+          </div>
+        )}
+        {aberto && travado && travado.motivo === 'conflito' && (
+          <div className="faixa-aviso trava" role="alert">
+            <Icone n="aviso" /><span>Outra aba gravou este arquivo enquanto você editava aqui. Sua última mudança <b>ainda não foi gravada</b>. Escolha:</span>
+            <button type="button" className="btn sm" onClick={async () => { await recarregarAberto(); setTravado(null); avisar('Carregada a versão gravada pela outra aba.', { ic: 'check' }); }}>Ver a versão gravada</button>
+            <button type="button" className="btn sm" onClick={() => { const a = abertoRef.current; setTravado(null); if (a) salvar(a, 'gravou por cima', true); postar({ t: 'assumir', arq: a && a.arquivo.ficha.id }); avisar('Gravada a sua versão. A outra aba passou a só ver.', { ic: 'check' }); }}>Gravar a minha por cima</button>
+          </div>
+        )}
+        <DicasComandos mod={mod} />
+        <Topo titulo={TITULOS[rota] || 'Vértice Docs'} trilha={TRILHA[rota]} ficha={ficha} salvo={salvo} prefs={prefs} cx={cx} cel={cel}
+          aba={aba} setAba={setAba} faixaTemp={faixaTemp} setFaixaTemp={setFaixaTemp} abrirGaveta={() => (!cel && menuEf === 'oculto' ? (menuAuto ? setMenuNaPlanilha(true) : cx.executar('exibir.menuCompleto')) : setGaveta(true))} />
+        <div className="work">
+          <main className="wk-main" id="conteudo">{conteudo}</main>
+          {aberto && prefs.painel && (
+            <Painel aberto={aberto} cx={cx} fechar={() => setPref('painel', false)}
+              extra={ficha.tipo === 'postits' || ficha.tipo === 'planilha' ? <div className="painel-extra" ref={setAlvoPainel} /> : null} />
+          )}
+          {aberto && ponte.resumo && ponte.resumo.docId === ficha.id && <ResumoEnvio resumo={ponte.resumo} conteudo={aberto.arquivo.conteudo} avisar={avisar} aoFechar={ponte.fecharResumo} aoPreencher={() => ponte.preencherDoResumo(aberto.arquivo.conteudo)} />}
+          {aberto && camposAbertos && ficha.tipo === 'planilha' && <PainelCampos conteudo={aberto.arquivo.conteudo} sel={st.planilha ? { abaId: st.planilha.abaId, faixa: st.planilha.faixa } : null} travado={!!travado || !!(st.planilha && st.planilha.somenteLeitura)}
+            aoMudar={(mud, rotulo) => aplicarDiff(criarDiff(aberto.arquivo, mud, rotulo), 'campo do Cwork')} aoFechar={() => setCamposAbertos(false)} />}
+        </div>
+        {cel && !aberto ? (
+          <BarraCelular rota={rota} cont={contagem} abrirGaveta={() => setGaveta(true)} />
+        ) : !aberto ? null : (
+          <footer className={'foot' + (aberto && ficha.tipo === 'planilha' && !(st.planilha && st.planilha.calc) ? ' sem-conta' : '')} aria-label="Barra de status">
+            {aberto ? (
+              <>
+                <span className="some-cel"><b>{TIPOS[ficha.tipo].nome}</b></span>
+                <span className="some-cel foot-salvo">{aberto.sujo ? 'Salvando…' : <>{/* v0.6.15 (F05 aprovado): o certo se desenha a cada gravação */}<svg key={aberto.salvoEm || 0} className="foot-certo" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>{'Salvo neste aparelho às ' + hora(aberto.salvoEm)}</>}</span>
+                {ultimo && <button type="button" className="some-cel foot-desfazer" title="Ver a linha do tempo do desfazer" onClick={() => setLinhaTempo(true)}>Desfazer: {ultimo}</button>}
+                <span className="sts">
+                  {ficha.tipo === 'planilha' && <StatusPlanilha st={st.planilha} />}
+                  {ficha.tipo === 'planilha' && st.zoom && st.zoom !== 1 ? <span className="some-cel">Zoom <b>{Math.round(st.zoom * 100)}%</b></span> : null}
+                  {ficha.tipo === 'docx' && <span>Página <b>1</b> de <b>1</b> · <b>0</b> palavras</span>}
+                  {ficha.tipo === 'postits' && (
+                    <>
+                      {st.sel ? <span className="some-cel"><b>{st.sel}</b> {st.sel === 1 ? 'selecionado' : 'selecionados'}</span> : null}
+                      <span data-status="contagem"><b>{st.postits || 0}</b> {st.postits === 1 ? 'post-it' : 'post-its'} · <b>{st.formas || 0}</b> {st.formas === 1 ? 'forma' : 'formas'} · <b>{st.setas || 0}</b> {st.setas === 1 ? 'seta' : 'setas'}{st.paginas > 0 && <> · <b>{st.paginas}</b> {st.paginas === 1 ? 'página' : 'páginas'}</>}</span>
+                      {st.zoom ? <span className="some-cel">Zoom <b>{Math.round(st.zoom * 100)}%</b></span> : null}
+                    </>
+                  )}
+                  {aberto.tamanho && <span className="some-cel">Tamanho: <b>{tamanhoLegivel(aberto.tamanho.bytesFinal)}</b></span>}
+                  {!cel && (ficha.tipo === 'planilha' || ficha.tipo === 'postits') && <span className="foot-verif" ref={setAlvoRodape} />}
+                </span>
+              </>
+            ) : null}
+          </footer>
+        )}
+      </div>
+      {gaveta && (
+        <>
+          <div className="gav-fundo" onClick={() => setGaveta(false)} />
+          <Menu rota={rota} modAtual={mod} cont={contagem} prefs={prefs} cx={cx} gaveta fechar={() => setGaveta(false)} />
+        </>
+      )}
+      {paleta && <Paleta mod={mod} cx={cx} aoFechar={() => setPaleta(false)} />}
+      {opcoes && <Opcoes prefs={prefs} setPref={setPref} cx={cx} aoFechar={() => setOpcoes(false)} demo={demo} versao={VERSAO} espaco={espaco} abrir={opcoes} />}
+      {pergunta && <Pergunta p={pergunta} aoFechar={() => setPergunta(null)} />}
+      {ponte.janela && <JanelaInterno ficha={ponte.janela.ficha} fichas={fichas} depois={!!ponte.janela.depois} aoSalvar={ponte.salvarInterno} aoFechar={() => ponte.setJanela(null)} />}
+      <SoltarArquivo avisar={avisar} aoExcel={(f) => { const b = bloqueado('arquivo.abrir'); if (b) { avisar(b, { ic: 'aviso' }); return; } setArquivoSolto(f); setAbrirExcel(true); }} />
+      {abrirExcel && <JanelaAbrirExcel arquivoInicial={arquivoSolto} aoFechar={() => { setAbrirExcel(false); setArquivoSolto(null); }} aoAbrir={(conteudo, nome, original) => { setAbrirExcel(false); setArquivoSolto(null); criarCom('planilha', nome, conteudo, '"{nome}" veio do Excel. O que veio e o que ficou de fora: Arquivo › O que veio do Excel.', original); }} />}
+      {linhaTempo && aberto && <LinhaDoTempo h={aberto.h} aoIr={irParaPasso} aoFechar={() => setLinhaTempo(false)} />}
+      <Avisos lista={avisos} tirar={tirarAviso} menu={cel ? 'cel' : menuEf} />
+    </div>
+  );
+}

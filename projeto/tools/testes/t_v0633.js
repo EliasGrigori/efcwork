@@ -1,15 +1,15 @@
 /* EFCwork · v0.6.33 · Documentos da remessa (cadeia de custódia e ficha de envio preenchidas, via assinada na nuvem).
-   Sobe o EFCwork em /efcwork/ e o Vértice DE VERDADE em /EFCdocs/ (clone só de leitura em VERTICE_DIR), no mesmo endereço, como no
+   Sobe o EFCwork em /efcwork/ e o Vértice DE VERDADE em /efcwork/vertice/ (v0.6.36; a pasta vertice/ do próprio repositório; /EFCdocs/ só para a versão de antes), no mesmo endereço, como no
    GitHub Pages: o pedido e a resposta passam pela caixa de troca de verdade. ?demo=1, dados inventados (planilha de exemplo do Vértice).
    Uso: NODE_PATH=$(npm root -g) node tools/testes/t_v0633.js [--fotos] */
 const http = require('http'), fs = require('fs'), path = require('path');
 const { chromium } = require('playwright');
-const RAIZ = path.resolve(__dirname, '..', '..'), HOJE = process.argv.includes('--hoje') ? process.argv[process.argv.indexOf('--hoje') + 1] : '', VD = process.env.VERTICE_DIR || '/home/claude/eliasgrigori/efcdocs', FOTOS = process.argv.includes('--fotos');
+const RAIZ = path.resolve(__dirname, '..', '..'), HOJE = process.argv.includes('--hoje') ? process.argv[process.argv.indexOf('--hoje') + 1] : '', VD = process.env.VERTICE_DIR || path.resolve(__dirname, '..', '..', '..', 'vertice') /* v0.6.36 (P5): o Vértice mora em efcwork/vertice/ */, FOTOS = process.argv.includes('--fotos');
 const XLSX = path.join(VD, 'fonte/testes/amostras/amostra-v0617.xlsx'), OUT = path.join(RAIZ, 'tools/testes/telas');
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css', '.json': 'application/json', '.png': 'image/png', '.webmanifest': 'application/manifest+json', '.woff2': 'font/woff2', '.svg': 'image/svg+xml' };
 const srv = http.createServer((q, r) => {
   const u = decodeURIComponent(q.url.split('?')[0].split('#')[0]);
-  let f = u.startsWith('/efcwork/') ? path.join(HOJE || path.join(RAIZ, 'dist'), u.slice(9)) : u.startsWith('/EFCdocs/') ? path.join(VD, u.slice(9)) : '';
+  let f = u.startsWith('/efcwork/vertice/') ? path.join(VD, u.slice(17)) : u.startsWith('/efcwork/') ? path.join(HOJE || path.join(RAIZ, 'dist'), u.slice(9)) : u.startsWith('/EFCdocs/') ? path.join(VD, u.slice(9)) : '';
   if (f && (f.endsWith(path.sep) || (fs.existsSync(f) && fs.statSync(f).isDirectory()))) f = path.join(f, 'index.html');
   if (!f || !fs.existsSync(f)) { r.writeHead(404); return r.end('nada'); }
   r.writeHead(200, { 'content-type': MIME[path.extname(f)] || 'application/octet-stream' }); fs.createReadStream(f).pipe(r);
@@ -65,7 +65,7 @@ async function semente(p) {
 }
 const kA = p => p.evaluate(() => S.coletas.find(c => c.id === 'a1').envio + '|Laboratório A');
 const secao = p => p.evaluate(() => { const r = document.querySelector('#gv .dr'); return r ? { t: r.innerText + ' ' + [...r.querySelectorAll('[data-sit]')].map(x => x.getAttribute('title')).join(' | '), itens: [...r.querySelectorAll('.dr-i, tr, .dr-c')].length } : null; });
-const vertFr = p => p.frames().find(f => /\/EFCdocs\//.test(f.url()));
+const vertFr = p => p.frames().find(f => /\/(EFCdocs|efcwork\/vertice)\//.test(f.url()));
 
 (async () => {
   if (!fs.existsSync(path.join(VD, 'index.html')) || !fs.existsSync(XLSX)) { console.log('Falta o Vértice em ' + VD + ' (git clone https://github.com/EliasGrigori/efcdocs)'); process.exit(1); }

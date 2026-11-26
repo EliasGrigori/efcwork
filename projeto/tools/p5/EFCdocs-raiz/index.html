@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vértice Docs mudou de endereço</title>
+<meta name="robots" content="noindex">
+<style>
+  body{margin:0;min-height:100vh;display:grid;place-items:center;background:#f7f5ef;color:#1e1b14;font:16px/1.5 'Source Sans 3',system-ui,sans-serif}
+  main{max-width:420px;padding:24px}
+  h1{font:600 24px/1.2 Georgia,serif;margin:0 0 8px}
+  p{margin:0 0 16px;color:#5b5443}
+  a{display:inline-block;padding:10px 16px;border-radius:8px;background:#9a7128;color:#fff;text-decoration:none;font-weight:600}
+  @media (prefers-color-scheme:dark){body{background:#0b0d16;color:#f3eee3}p{color:#bcb3a1}a{background:#d9b46a;color:#1c1406}}
+</style>
+</head>
+<body>
+<main>
+  <h1>O Vértice Docs mudou de endereço</h1>
+  <p>Agora ele abre dentro do EFCwork. Os arquivos deste aparelho continuam lá.</p>
+  <a id="ir" href="/efcwork/#/vertice">Abrir o Vértice Docs</a>
+</main>
+<script>
+/* EFCdocs · endereço antigo (P5, 26/11/2026). Leva ao endereço novo com o mesmo pedido (?em=cwork, #/abrir/...) e desliga
+   o sw.js antigo deste endereço. Não apaga nenhum cache nem os arquivos do aparelho (eles são do site, não da pasta). */
+(function () {
+  /* dentro do Cwork (moldura ou ?em=cwork): o Vértice no endereço novo, com o mesmo pedido. Fora dele (ícone ou favorito antigo):
+     o Cwork, que abre o Vértice em tela inteira (fora do Cwork o Vértice só mostraria "Abra pelo Cwork"). */
+  var moldura = false; try { moldura = window.parent !== window; } catch (e) { moldura = true; }
+  var dentro = moldura || /(^|[?&])em=cwork(&|$)/.test(location.search.slice(1));
+  var novo = dentro ? '/efcwork/vertice/' + location.search + location.hash : '/efcwork/#/vertice';
+  document.getElementById('ir').href = novo;
+  var foi = false, vai = function () { if (foi) return; foi = true; location.replace(novo); };
+  try {
+    if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
+      navigator.serviceWorker.getRegistrations().then(function (rs) {
+        return Promise.all(rs.filter(function (r) { return /\/EFCdocs\/$/i.test(new URL(r.scope).pathname); }).map(function (r) { return r.unregister(); }));
+      }).then(vai, vai);
+      setTimeout(vai, 1500);
+      return;
+    }
+  } catch (e) {}
+  vai();
+})();
+</script>
+</body>
+</html>

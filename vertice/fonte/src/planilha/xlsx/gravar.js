@@ -1,0 +1,547 @@
+/* EFCdocs — salvar a planilha como arquivo do Excel (.xlsx).
+   Vai: valores, fórmulas (com o valor já calculado), estilos, larguras, alturas, ocultas, mescladas, congelar painéis,
+   cor e abas ocultas, nomes definidos e matrizes que derramam (matriz dinâmica do Excel 365).
+   O Excel recalcula tudo ao abrir (fullCalcOnLoad). */
+import { virarAbasDeGrafico } from './abaGraficoXlsx.js';
+import { CT_CX, CT_ESTILO, CT_CORES, REL_ESTILO, REL_CORES } from './cxXlsx.js';
+import { gravarDesenhoAba } from './desenhoXlsx.js';
+import { comPaineisParaExcel, extDoPainel } from './painelXlsx.js';
+import { TEMA_XML } from './temaPadrao.js';
+import { gravarImpressaoAba } from './impressaoXlsx.js';
+import { criarZip } from './zip.js';
+import { devolver } from './devolver.js';
+import { gravarSegsNovas } from './segNovasXlsx.js'; /* v0.6.44 (S3) */
+import { escapar, XML_CAB } from './xml.js';
+import { gravarEstilos } from './estilos.js';
+import { colunasXml } from './colunasXlsx.js';
+import { nivelMax } from '../contorno.js';
+import { extrasDaColuna, comOrdenacao } from './tabelasXlsx.js';
+import { porPrefixos } from './formulas.js';
+import { lerGuardada } from '../formula.js';
+import { chave, letraCol, lerChave, MAX_COL, MAX_LIN } from '../ref.js';
+import { valorGuardado, LARG_PADRAO, largPadrao, ALT_PADRAO, altPadrao } from '../modelo.js';
+import { ehErro } from '../valores.js';
+import { criterioParaXlsx } from '../filtroCriterios.js';
+import { Motor } from '../motor.js';
+import { POR_EN } from '../nomesFuncoes.js';
+import { gravarValidacoes, gravarCondicionais, gravarComentarios } from './extras.js';
+
+const NS = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main';
+const NS_R = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+const REL = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/';
+const CT = 'application/vnd.openxmlformats-officedocument.spreadsheetml.';
+
+/** v0.6.11 (D-24): <filterColumn> guardado como veio do Excel, com o número da coluna da faixa. */
+const colunaCrua = (bruto, colId) => String(bruto).replace(/^<((?:\w+:)?filterColumn)\b/, `<$1 colId="${colId}"`);
+/** v0.6.3: <autoFilter> com os critérios de lista (textos que ficam; '' = células vazias). */
+function gravarFiltro(fil) {
+  if (!fil || !/^[A-Z]+\d+:[A-Z]+\d+$/.test(fil.fx || '')) return '';
+  const [a1, a2] = fil.fx.split(':').map(lerChave), dentroDa = (c) => a1 && a2 && c >= a1.c && c <= a2.c; /* v0.6.40: coluna fora da faixa o Excel "repara" */
+  const cols = Object.keys(fil.cr || {}).map(Number).filter(dentroDa).sort((x, y) => x - y);
+  /* v0.6.11 (D-24): critérios guardados como vieram (data, cor...) nas colunas sem critério do app */
+  const crus = Object.keys(fil.cx || {}).map(Number).filter((c) => dentroDa(c) && !cols.includes(c));
+  if (!cols.length && !crus.length) return `<autoFilter ref="${fil.fx}"/>`;
+  const dentro = [...cols, ...crus].sort((x, y) => x - y).map((col) => {
+    if (!fil.cr || !fil.cr[col]) return colunaCrua(fil.cx[col], col - a1.c);
+    /* v0.6.24 parte 2: texto, número, data, 10 primeiros e média como o Excel grava; a cor fica só no app (as linhas continuam escondidas) */
+    if (!Array.isArray(fil.cr[col].v)) { const x = criterioParaXlsx(fil.cr[col]); return x ? colunaCrua(x, col - a1.c) : ''; }
+    const v = fil.cr[col].v || [];
+    const vazio = v.includes('');
+    const itens = v.filter((t) => t !== '').map((t) => `<filter val="${escapar(t, true)}"/>`).join('');
+    return `<filterColumn colId="${col - a1.c}"><filters${vazio ? ' blank="1"' : ''}>${itens}</filters></filterColumn>`;
+  }).join('');
+  return `<autoFilter ref="${fil.fx}">${dentro}</autoFilter>`;
+}
+
+/**
+ * v0.6.6 (Grok): as tabelas do Excel voltam ao salvar. Só grava a tabela que o Excel aceita sem "reparar":
+ * nome válido e único, área dentro da aba, títulos (quando tem) em texto fixo, sem repetir e sem célula vazia.
+ * Devolve [{ t, ref, cols, xmlAuto }] da aba, ou o motivo de ter ficado de fora (em fora).
+ */
+const NOME_TAB_OK = /^[A-Za-z_\u00C0-\u024F][A-Za-z0-9_.\u00C0-\u024F]{0,250}$/;
+/** v0.6.11 (D-20): texto do título numérico de tabela (o mesmo na célula e no nome da coluna). */
+const textoDeTitulo = (v) => (typeof v === 'boolean' ? (v ? 'VERDADEIRO' : 'FALSO') : String(v));
+function tabelasDaAba(c, abaId, aba, fora) {
+  const out = [];
+  for (const t of Object.values(c.tabelas || {})) {
+    if (!t || t.aba !== abaId) continue;
+    const ok = [t.l1, t.c1, t.l2, t.c2].every((v) => Number.isInteger(v) && v >= 0) && t.l2 >= t.l1 && t.c2 >= t.c1 && NOME_TAB_OK.test(String(t.nome || '')) && !/^[A-Za-z]{1,3}\d+$/.test(t.nome);
+    if (!ok) { fora.push(t.nome || 'sem nome'); continue; }
+    const n = t.c2 - t.c1 + 1;
+    let cols;
+    if (t.cab) {
+      cols = [];
+      for (let cc = t.c1; cc <= t.c2; cc++) {
+        const x = aba.cel && aba.cel[letraCol(cc) + (t.l1 + 1)];
+        const v = x && x.f == null ? valorGuardado(x) : null;
+        /* v0.6.9.1: o nome da coluna da tabela tem de ser IGUAL ao texto da célula do título (espaço no fim e quebra de linha
+           contam). Antes o texto era aparado e o Excel, ao ver nomes diferentes, "reparava" o arquivo e apagava a tabela. */
+        cols.push(typeof v === 'string' ? v : (typeof v === 'number' || typeof v === 'boolean') ? textoDeTitulo(v) : '');
+      }
+      const vistos = new Set();
+      /* v0.6.11.1 (D-28): título só com espaço (" ") vale no Excel; só o título vazio de verdade impede a tabela */
+      if (cols.some((x) => { const k = x.toLowerCase(); if (x === '' || vistos.has(k) || x.length > 255) return true; vistos.add(k); return false; })) { fora.push(t.nome); continue; }
+    } else {
+      cols = Array.from({ length: n }, (_, i) => (Array.isArray(t.cols) && typeof t.cols[i] === 'string' && t.cols[i] ? t.cols[i] : 'Coluna' + (i + 1)));
+    }
+    const ref = `${letraCol(t.c1)}${t.l1 + 1}:${letraCol(t.c2)}${t.l2 + 1}`;
+    out.push({ t, ref, cols, refAuto: `${letraCol(t.c1)}${t.l1 + 1}:${letraCol(t.c2)}${t.l2 + 1 - (t.tot ? 1 : 0)}` });
+  }
+  return out;
+}
+/** Nome de coluna como o Excel grava na tabela, já pronto para o atributo do XML: quebra de linha vira _x000a_ (e o resto, como em escapar). */
+export function nomeDeColunaXlsx(nm) {
+  /* o Excel lê a quebra de linha do texto como \n (o XML junta \r\n em \n), e é assim que o nome da coluna tem de ficar */
+  return escapar(String(nm).replace(/\r\n?/g, '\n'), true).replace(/&#13;/g, '_x000d_').replace(/&#10;/g, '_x000a_').replace(/&#9;/g, '_x0009_');
+}
+function xmlDaTabela(tb, id, autoXml, aba) {
+  const { t, ref, cols } = tb;
+  const est = t.est || { nome: 'TableStyleLight1', pc: 0, uc: 0, ll: 0, lc: 0 };
+  const nome = escapar(t.nome, true);
+  return `${XML_CAB}<table xmlns="${NS}" id="${id}" name="${nome}" displayName="${nome}" ref="${ref}"${t.cab ? '' : ' headerRowCount="0"'}${t.tot ? ' totalsRowCount="1"' : ' totalsRowShown="0"'}>` +
+    (t.cab ? autoXml : '') +
+    `<tableColumns count="${cols.length}">${cols.map((nm, i) => { const x = extrasDaColuna(t, aba, i, nm); return `<tableColumn id="${i + 1}" name="${nomeDeColunaXlsx(nm)}"${x.atr}${x.filhos ? `>${x.filhos}</tableColumn>` : '/>'}`; }).join('')}</tableColumns>` /* v0.6.39 (T0): totais e coluna calculada */ +
+    (est.sem ? '' : `<tableStyleInfo${est.nome ? ` name="${escapar(est.nome, true)}"` : ''} showFirstColumn="${est.pc ? 1 : 0}" showLastColumn="${est.uc ? 1 : 0}" showRowStripes="${est.ll ? 1 : 0}" showColumnStripes="${est.lc ? 1 : 0}"/>`) + '</table>';
+}
+
+/* fórmulas que o Excel antigo não entende sem matriz dinâmica */
+/** v0.6.8: o Excel recusa (e apaga ao "reparar") fórmula que não dá para ler, com mais de 8.192 letras ou mais de 64 parênteses um dentro do outro. */
+function formulaRuimParaExcel(f) {
+  if (f.length > 8192) return true;
+  let prof = 0, max = 0, q = null;
+  for (let i = 0; i < f.length; i++) {
+    const ch = f[i];
+    if (q) { if (ch === q) { if (f[i + 1] === q) i++; else q = null; } continue; }
+    if (ch === '"' || ch === "'") { q = ch; continue; }
+    if (ch === '(') { prof++; if (prof > max) max = prof; } else if (ch === ')') { prof--; if (prof < 0) return true; }
+  }
+  if (q || prof !== 0 || max > 64) return true;
+  try { lerGuardada(f); } catch { return true; }
+  return false;
+}
+const RX_MATRIZ = /(^|[^\w.])(FILTER|UNIQUE|SORT|SORTBY|SEQUENCE|TRANSPOSE|RANDARRAY|XLOOKUP|XMATCH|TEXTSPLIT|VSTACK|HSTACK|TOCOL|TOROW|CHOOSECOLS|CHOOSEROWS|TAKE|DROP|EXPAND|WRAPCOLS|WRAPROWS|FREQUENCY|MMULT|LET|LAMBDA|MAP|REDUCE|SCAN|BYROW|BYCOL|MAKEARRAY|TRIMRANGE|SINGLE)\(/i;
+
+const larguraExcel = (px) => Math.max(0, Math.trunc((px / 7) * 256) / 256);
+const ptDe = (px) => Math.round(px * 0.75 * 100) / 100;
+const numTx = (n) => (Number.isFinite(n) ? String(n) : '0');
+const hexArgb = (h) => 'FF' + String(h).replace('#', '').toUpperCase().padStart(6, '0').slice(-6);
+
+/**
+ * conteudo da planilha → { bytes: Uint8Array, avisos: [] }.
+ * motor: o motor de cálculo já carregado (para os valores das fórmulas); se faltar, calcula aqui.
+ */
+
+export async function gravarXlsx(conteudo, motor, { agora = new Date(), titulo = '', original = null } = {}) {
+  const m = motor || new Motor(conteudo);
+  /* v0.6.7: abas Painel viram abas comuns com gráficos, formas e células (e o painel vai junto no extLst) */
+  const c = comPaineisParaExcel(conteudo, m);
+  const avisos = [];
+  const textos = [], idxTexto = new Map();
+  const ss = (t) => { let i = idxTexto.get(t); if (i == null) { i = textos.length; textos.push(t); idxTexto.set(t, i); } return i; };
+  let usaMatriz = false;
+  const formulasFora = []; // v0.6.8: fórmulas que o Excel não aceitaria (vão só com o valor)
+  let assinaturas = 0;
+  const novas = new Set(); // funções do Excel 2019/2021/365 (PL21: avisar quem vai abrir num Excel antigo)
+  const partes = [];
+  const dxfs = []; // estilos das regras de formatação condicional (v0.5.1)
+  const notas = []; // comentários por aba: { ia, comments, vml }
+  const desenhos = []; // v0.6.0: gráficos por aba: { ia, drawing, rels, charts }
+  let nChart = 1;
+  let nImg = 0; // v0.6.3: imagens gravadas até agora (image1, image2...)
+  const cacheImg = { mapa: new Map(), n: 0 }; // v0.6.8: a mesma imagem vai uma vez só
+  let botoes = 0;
+  let formasGravadas = 0, botoesGravados = 0; // v0.6.5
+  let linksFora = 0;
+  const linksExt = new Map(); // ia → [{ id, url }] relações externas da aba
+  let imagensFora = 0;
+  const nomesImp = []; // v0.6.0: área e títulos de impressão (nomes definidos _xlnm)
+  let conversas = 0;
+  const tabelasG = []; // v0.6.6: { ia, n, xml }
+  const tabelasFora = [];
+  const abas = c.ordem.map((id) => c.abas[id]);
+  const primeiraVisivel = Math.max(0, abas.findIndex((a) => !a.oculta));
+
+  abas.forEach((aba, ia) => {
+    const id = aba.id || c.ordem[ia];
+    if (aba.objs && aba.objs.length) { assinaturas += aba.objs.filter((o) => o.tipo === 'assinatura').length; botoes += aba.objs.filter((o) => o.tipo === 'botao').length; }
+    /* junta as células por linha */
+    const linhas = new Map();
+    const por = (l, cc, x) => { let L = linhas.get(l); if (!L) { L = new Map(); linhas.set(l, L); } L.set(cc, x); };
+    /* v0.6.11 (D-20): título de tabela com número (2024) vai como TEXTO, como o Excel grava; o nome da coluna é o mesmo texto */
+    const titulosTexto = new Set();
+    for (const t of Object.values(c.tabelas || {})) if (t && t.aba === id && t.cab && Number.isInteger(t.l1)) for (let cc = t.c1; cc <= t.c2; cc++) titulosTexto.add(letraCol(cc) + (t.l1 + 1));
+    for (const [k, cel] of Object.entries(aba.cel || {})) {
+      const p = lerChave(k);
+      if (!p || !cel) continue;
+      if (cel.v === undefined && cel.f == null && !cel.s) continue;
+      por(p.l, p.c, { cel });
+    }
+    /* valores das áreas derramadas (o Excel guarda o valor em cada célula da área) */
+    const spills0 = (m.spillDe && m.spillDe[id]) || new Map();
+    /* v0.6.8: área derramada que cobre uma célula com fórmula ou valor próprio não vai (o Excel apagaria a fórmula ao reparar) */
+    const spills = new Map();
+    for (const [k, s] of spills0) {
+      let livre = true;
+      for (let i = s.l1; i <= s.l2 && livre; i++) for (let j = s.c1; j <= s.c2; j++) {
+        if (i === s.l1 && j === s.c1) continue;
+        const L = linhas.get(i), atual = L && L.get(j);
+        if (atual && atual.derramado === undefined && (atual.cel.f != null || (atual.cel.v !== undefined && atual.cel.v !== ''))) { livre = false; break; }
+      }
+      if (livre) spills.set(k, s);
+    }
+    for (const s of spills.values()) {
+      for (let i = s.l1; i <= s.l2; i++) for (let j = s.c1; j <= s.c2; j++) {
+        if (i === s.l1 && j === s.c1) continue;
+        const L = linhas.get(i);
+        const atual = L && L.get(j);
+        const v = s.m.d[i - s.l1][j - s.c1];
+        por(i, j, { cel: atual ? atual.cel : {}, derramado: v == null ? 0 : v });
+      }
+    }
+    for (const k of Object.keys(aba.alt || {})) if (!linhas.has(+k)) linhas.set(+k, new Map());
+    /* v0.6.37: linhas de grupo e a do botão fechado vão listadas, mesmo vazias */
+    for (const k of [...Object.keys(aba.grpL || {}), ...Object.keys(aba.grpFL || {})]) if (!linhas.has(+k)) linhas.set(+k, new Map());
+    /* v0.6.14 (D-47): linha com estilo da linha inteira vai listada, mesmo vazia */
+    for (const k of Object.keys(aba.estL || {})) if (aba.estL[k] && !linhas.has(+k)) linhas.set(+k, new Map());
+    /* v0.6.45 (D-70): linhas escondidas até a última do livro (1.000 ou mais) vão como o Excel grava: zeroHeight, e só as que
+       aparecem listadas. Antes iam um milhão de <row hidden> (35 MB dentro do arquivo, 2,6 s para salvar). */
+    const iniFimL = fimOcultoL(aba.ocL, MAX_LIN), zeroH = iniFimL != null && iniFimL < MAX_LIN - iniFimL; /* bloco grande e não muito embaixo; aba.zeroH do Excel não vale mais sozinho (a leitura marca até o fim; reexibido, sai) */
+    /* v0.6.8 (Grok): com zeroHeight, linha oculta e vazia não precisa ir listada (o Excel já esconde quem não está na lista) */
+    if (!zeroH) for (const k of Object.keys(aba.ocL || {})) if (aba.ocL[k] && !linhas.has(+k)) linhas.set(+k, new Map());
+    /* v0.6.6 (Grok): aba com zeroHeight (o Excel esconde toda linha que o arquivo não lista): cada linha que aparece vai listada */
+    if (zeroH) {
+      let lim = -1;
+      for (const k of linhas.keys()) if (k > lim) lim = k;
+      /* v0.6.15 (D-58): as linhas vazias e visíveis entre o último dado e o bloco oculto do fim também vão listadas; sem isso,
+         salvando duas vezes, elas sumiam (o Excel esconde quem não está na lista) */
+      if (aba.ocL) { let fim = aba.ocL[MAX_LIN - 1] ? MAX_LIN - 1 : -1; if (fim < 0) for (const k of Object.keys(aba.ocL)) if (aba.ocL[k] && +k > fim) fim = +k; let ini = fim; while (ini > 0 && aba.ocL[ini - 1]) ini--; if (ini - 1 > lim) lim = ini - 1; }
+      for (let r = 0; r <= Math.min(lim, 1048575); r++) if (!(aba.ocL && aba.ocL[r]) && !linhas.has(r)) linhas.set(r, new Map());
+    }
+
+    let lMax = 0, cMax = 0;
+    const corpo = [];
+    for (const l of [...linhas.keys()].sort((a, b) => a - b)) {
+      const L = linhas.get(l);
+      let atr = ` r="${l + 1}"`;
+      const alt = aba.alt && aba.alt[l];
+      if (aba.ocL && aba.ocL[l]) atr += ' hidden="1"';
+      if (aba.grpL && aba.grpL[l]) atr += ` outlineLevel="${aba.grpL[l]}"`; /* v0.6.37 */
+      if (aba.grpFL && aba.grpFL[l]) atr += ' collapsed="1"';
+      if (alt != null && alt !== altPadrao(aba)) atr += ` ht="${ptDe(alt)}" customHeight="1"`;
+      if (aba.estL && aba.estL[l] && c.estilos && c.estilos[aba.estL[l]]) atr += ` s="${aba.estL[l]}" customFormat="1"`;
+      const cels = [];
+      for (const cc of [...L.keys()].sort((a, b) => a - b)) {
+        const { cel, derramado } = L.get(cc);
+        const r = letraCol(cc) + (l + 1);
+        const s = cel.s ? ` s="${cel.s}"` : '';
+        if (l > lMax) lMax = l;
+        if (cc > cMax) cMax = cc;
+        const valorXml = (v) => {
+          if (v == null) return { t: '', v: '' };
+          if (ehErro(v)) return { t: ' t="e"', v: `<v>${escapar(v.cod)}</v>` };
+          if (typeof v === 'number') return { t: '', v: `<v>${numTx(v)}</v>` };
+          if (typeof v === 'boolean') return { t: ' t="b"', v: `<v>${v ? 1 : 0}</v>` };
+          return null;
+        };
+        if (derramado !== undefined) {
+          const x = valorXml(derramado);
+          if (x) cels.push(`<c r="${r}"${s}${x.t}>${x.v}</c>`);
+          else cels.push(`<c r="${r}"${s} t="s"><v>${ss(String(derramado))}</v></c>`);
+          continue;
+        }
+        /* v0.6.8: antes de gravar, confere se o Excel aceitaria a fórmula; se não, vai só o valor (sem o "reparo" do Excel) */
+        if (cel.f != null && !(Array.isArray(cel.fo) && cel.fo[1] === cel.f) && formulaRuimParaExcel(cel.f)) {
+          formulasFora.push(`${aba.nome}!${r}`);
+          let v; try { v = m.valor(id, l, cc); } catch { v = null; }
+          const x = valorXml(v);
+          if (x) { if (x.v) cels.push(`<c r="${r}"${s}${x.t}>${x.v}</c>`); else if (cel.s) cels.push(`<c r="${r}"${s}/>`); }
+          else cels.push(`<c r="${r}"${s} t="s"><v>${ss(String(v))}</v></c>`);
+          continue;
+        }
+        if (cel.f != null) {
+          for (const mm of cel.f.matchAll(/([A-Z][A-Z0-9.]*)\(/g)) { const meta = POR_EN[mm[1]]; if (meta && (meta.v === '21' || meta.v === '19') && !meta.oculta) novas.add(meta.pt); }
+          let v;
+          if (cel.vc !== undefined) v = cel.vc; // v0.6.7: célula feita para o painel (o valor de agora)
+          else { try { v = m.valor(id, l, cc); } catch { v = null; } }
+          if (v == null) v = 0;
+          const area = spills.get(l * 16384 + cc);
+          const ehMatriz = !!area || !!cel.da || (!cel.lg && RX_MATRIZ.test(cel.f)) || (!cel.lg && /[A-Z]\$?\d+#/.test(cel.f));
+          /* v0.6.8: fórmula que ninguém mexeu volta como veio do arquivo */
+          const f = escapar(Array.isArray(cel.fo) && cel.fo[1] === cel.f && typeof cel.fo[0] === 'string' ? cel.fo[0] : porPrefixos(cel.f));
+          let fx;
+          if (ehMatriz) {
+            usaMatriz = true;
+            const ref = area ? `${r}:${letraCol(area.c2)}${area.l2 + 1}` : r;
+            fx = `<f t="array" ref="${ref}">${f}</f>`;
+          } else fx = `<f>${f}</f>`;
+          const x = valorXml(v);
+          const cm = ehMatriz ? ' cm="1"' : '';
+          if (x) cels.push(`<c r="${r}"${s}${x.t}${cm}>${fx}${x.v}</c>`);
+          else cels.push(`<c r="${r}"${s} t="str"${cm}>${fx}<v>${escapar(String(v))}</v></c>`);
+          continue;
+        }
+        const v = valorGuardado(cel);
+        if (v == null) { if (cel.s) cels.push(`<c r="${r}"${s}/>`); continue; }
+        if (cel.f == null && (typeof v === 'number' || typeof v === 'boolean') && titulosTexto.has(r)) { cels.push(`<c r="${r}"${s} t="s"><v>${ss(textoDeTitulo(v))}</v></c>`); continue; }
+        const x = valorXml(v);
+        if (x) cels.push(`<c r="${r}"${s}${x.t}>${x.v}</c>`);
+        else cels.push(`<c r="${r}"${s} t="s"><v>${ss(String(v))}</v></c>`);
+      }
+      corpo.push(`<row${atr}>${cels.join('')}</row>`);
+    }
+
+    /* colunas */
+    const colunas = new Map();
+    for (const [k, w] of Object.entries(aba.larg || {})) colunas.set(+k, { w });
+    for (const [k, o] of Object.entries(aba.ocC || {})) if (o) colunas.set(+k, { ...(colunas.get(+k) || {}), oculta: true });
+    for (const [k, n] of Object.entries(aba.grpC || {})) if (n) colunas.set(+k, { ...(colunas.get(+k) || {}), niv: n }); /* v0.6.37 */
+    for (const [k, o] of Object.entries(aba.grpFC || {})) if (o) colunas.set(+k, { ...(colunas.get(+k) || {}), fech: true });
+    /* v0.6.11 (D-23): colunas ocultas até o fim da aba voltam como uma faixa só até XFD. Se a pessoa reexibiu alguma no meio,
+       a faixa começa depois da última reexibida. */
+    let fimOculto = null;
+    if (Number.isInteger(aba.ocCFim) && aba.ocCFim >= 0) {
+      let ini = aba.ocCFim, maior = -1; /* v0.6.14 (D-39): com maior = ini, a marca depois da última coluna lida (sem ocC) era empurrada para fora e sumia */
+      for (const k of Object.keys(aba.ocC || {})) if (+k > maior) maior = +k;
+      for (let cc = aba.ocCFim; cc <= maior; cc++) if (!(aba.ocC && aba.ocC[cc])) ini = cc + 1;
+      if (ini < MAX_COL) fimOculto = ini;
+    }
+    /* v0.6.45 (D-70): colunas escondidas no app até a XFD também vão numa faixa só (antes, uma <col> por coluna: 16 mil) */
+    { let s = fimOcultoL(aba.ocC, MAX_COL, 2); if (s != null) { for (const cc of colunas.keys()) { const x = colunas.get(cc); if (cc >= s && (x.w != null || x.niv || x.fech)) s = cc + 1; } for (const k of Object.keys(aba.estC || {})) if (+k >= s) s = +k + 1; if (aba.estCFim && aba.estCFim.c > s) s = aba.estCFim.c; } if (s != null && s < MAX_COL && fimOculto == null && !Number.isInteger(aba.ocCFim)) fimOculto = s; } /* começa depois da última com largura, estilo ou grupo próprios */ /* só as escondidas no app: a marca do Excel (ocCFim) já tem a regra dela */
+    const cols = colunasXml(aba, colunas, fimOculto, c.estilos || []);
+
+    let cab = '';
+    const ip = gravarImpressaoAba(aba.imp, aba.nome);
+    for (const nm of ip.nomes) nomesImp.push({ ...nm, ia });
+    const outlinePr = aba.grpAcima || aba.grpEsq ? `<outlinePr${aba.grpAcima ? ' summaryBelow="0"' : ''}${aba.grpEsq ? ' summaryRight="0"' : ''}/>` : ''; /* v0.6.37 */
+    if (aba.cor || ip.sheetPr || outlinePr) cab += `<sheetPr>${aba.cor ? `<tabColor rgb="${hexArgb(aba.cor)}"/>` : ''}${outlinePr}${ip.sheetPr}</sheetPr>`;
+    cab += `<dimension ref="A1${lMax || cMax ? ':' + letraCol(cMax) + (lMax + 1) : ''}"/>`;
+    let vista = `<sheetView workbookViewId="0"${ia === primeiraVisivel ? ' tabSelected="1"' : ''}>`;
+    const cg = aba.cong;
+    if (cg && (cg.l > 0 || cg.c > 0)) {
+      const painel = cg.l > 0 && cg.c > 0 ? 'bottomRight' : cg.l > 0 ? 'bottomLeft' : 'topRight';
+      vista += `<pane${cg.c > 0 ? ` xSplit="${cg.c}"` : ''}${cg.l > 0 ? ` ySplit="${cg.l}"` : ''} topLeftCell="${letraCol(cg.c || 0)}${(cg.l || 0) + 1}" activePane="${painel}" state="frozen"/>`;
+      vista += `<selection pane="${painel}" activeCell="${letraCol(cg.c || 0)}${(cg.l || 0) + 1}" sqref="${letraCol(cg.c || 0)}${(cg.l || 0) + 1}"/>`;
+    }
+    vista += '</sheetView>';
+    cab += `<sheetViews>${vista}</sheetViews>`;
+    cab += `<sheetFormatPr defaultColWidth="${larguraExcel(largPadrao(aba))}" defaultRowHeight="${ptDe(altPadrao(aba))}" customHeight="1"${zeroH ? ' zeroHeight="1"' : ''}${nivelMax(aba, 'l') ? ` outlineLevelRow="${nivelMax(aba, 'l')}"` : ''}${nivelMax(aba, 'c') ? ` outlineLevelCol="${nivelMax(aba, 'c')}"` : ''}/>`;
+    if (cols.length) cab += `<cols>${cols.join('')}</cols>`;
+    let fim = '';
+    /* v0.6.3: aba protegida e filtro automático (antes das mescladas, como o Excel exige) */
+    if (aba.prot) {
+      const pa = (aba.prot && aba.prot.a) || {};
+      /* v0.6.14 (D-37): proteção que veio do Excel volta com os atributos que tinha, nem mais nem menos; só a feita no app leva o padrão do Excel (objetos e cenários protegidos) */
+      const veio = aba.prot && typeof aba.prot === 'object' && aba.prot.a;
+      const extra = Object.entries(veio ? pa : { objects: '1', scenarios: '1', ...pa }).filter(([k]) => /^[A-Za-z]+$/.test(k) && k !== 'sheet').map(([k, v]) => ` ${k}="${escapar(String(v), true)}"`).join('');
+      fim += `<sheetProtection sheet="1"${extra}/>`;
+    }
+    /* v0.6.6: tabela do Excel: o filtro que coincide com ela vai dentro da tabela; um filtro da aba que cruza a tabela não pode existir junto */
+    const tabsAba = tabelasDaAba(c, id, aba, tabelasFora);
+    const filFx = aba.fil && aba.fil.fx;
+    const cruza = (tb) => { if (!filFx) return false; const [a, b] = filFx.split(':').map(lerChave); return a && b && !(b.l < tb.t.l1 || a.l > tb.t.l2 || b.c < tb.t.c1 || a.c > tb.t.c2); };
+    const filNaTabela = tabsAba.find((tb) => tb.t.cab && filFx === tb.refAuto);
+    if (!filNaTabela && !tabsAba.some(cruza) && aba.fil) {
+      fim += gravarFiltro(aba.fil);
+      /* v0.6.8 (Grok): o Excel guarda a faixa do filtro também no nome escondido _FilterDatabase */
+      const [fa, fb] = aba.fil.fx.split(':');
+      const dol = (r) => r.replace(/^([A-Z]+)(\d+)$/, '$$$1$$$2');
+      nomesImp.push({ nome: '_xlnm._FilterDatabase', ref: `'${String(aba.nome).replace(/'/g, "''")}'!${dol(fa)}:${dol(fb || fa)}`, ia, oculto: true });
+    }
+    const mesc = (aba.mesc || []).filter((t) => /^[A-Z]+\d+:[A-Z]+\d+$/.test(t));
+    if (mesc.length) fim += `<mergeCells count="${mesc.length}">${mesc.map((t) => `<mergeCell ref="${t}"/>`).join('')}</mergeCells>`;
+    const extsAba = []; // v0.6.18: blocos do extLst da aba (barras de dados do Excel 2010)
+    fim += gravarCondicionais(aba.cf, dxfs, extsAba);
+    fim += gravarValidacoes(aba.val);
+    /* v0.6.3: links das células (internet e e-mail vão como relação externa; os de dentro da planilha, como local) */
+    { const hl = [], ext = [];
+      for (const [k, x] of Object.entries(aba.cel || {})) {
+        const lk = x && x.lk; if (!lk || typeof lk !== 'object') continue;
+        const tip = lk.d ? ` tooltip="${escapar(String(lk.d), true)}"` : '';
+        if (lk.t === 'a') {
+          const alvo = c.abas[lk.a]; if (!alvo) { linksFora++; continue; }
+          hl.push(`<hyperlink ref="${k}" location="${escapar("'" + alvo.nome.replace(/'/g, "''") + "'!" + lk.r, true)}"${tip}/>`);
+        } else if (lk.u) {
+          const id = `rIdH${ext.length + 1}`; ext.push({ id, url: lk.u });
+          hl.push(`<hyperlink ref="${k}" r:id="${id}"${tip}/>`);
+        }
+      }
+      if (hl.length) { fim += `<hyperlinks>${hl.join('')}</hyperlinks>`; if (ext.length) linksExt.set(ia, ext); } }
+    fim += ip.printOptions + ip.margens + ip.pageSetup + ip.headerFooter + ip.quebras;
+    /* v0.6.5: gráficos, imagens, formas e botões no mesmo desenho, na ordem da aba */
+    const gr = gravarDesenhoAba(c, m, aba, id, nChart, nImg, cacheImg);
+    if (gr) { fim += '<drawing r:id="rId3"/>'; desenhos.push({ ia, ...gr }); nChart += gr.charts.length; nImg = cacheImg.n; formasGravadas += gr.formas; botoesGravados += gr.botoes; }
+    const co = gravarComentarios(aba.com, ia);
+    if (co) { fim += '<legacyDrawing r:id="rId1"/>'; notas.push({ ia, ...co }); conversas += co.conversas; }
+    if (tabsAba.length) {
+      const ids = tabsAba.map((tb) => {
+        const n = tabelasG.length + 1;
+        /* v0.6.11 (D-24): o filtro da própria tabela volta com os critérios que vieram do Excel */
+        const fcx = Object.entries(tb.t.fcx || {}).filter(([k]) => +k >= 0 && +k < tb.cols.length).sort((x, y) => x[0] - y[0]);
+        /* v0.6.40 (T2): o filtro da própria tabela (mexido no app; sem mexer, o fcx volta como veio); sf = tabela sem setas */
+        const auto = tb === filNaTabela ? gravarFiltro(aba.fil).replace(/ref="[^"]+"/, `ref="${tb.refAuto}"`) : tb.t.sf ? ''
+          : tb.t.fil && !tb.t.fcx ? gravarFiltro({ ...tb.t.fil, fx: tb.refAuto })
+          : fcx.length ? `<autoFilter ref="${tb.refAuto}">${fcx.map(([k, b]) => colunaCrua(b, +k)).join('')}</autoFilter>` : `<autoFilter ref="${tb.refAuto}"/>`;
+        const ordemDoApp = tb === filNaTabela ? aba.fil && aba.fil.ord : tb.t.fil && tb.t.fil.ord;
+        tabelasG.push({ ia, n, xml: xmlDaTabela(tb, n, ordemDoApp ? auto : comOrdenacao(auto, tb.t, tb.ref), aba) }); /* v0.6.39 (T0): ordenação guardada (não volta se a ordem foi refeita no app) */
+        return n;
+      });
+      fim += `<tableParts count="${ids.length}">${ids.map((n) => `<tablePart r:id="rIdT${n}"/>`).join('')}</tableParts>`;
+    }
+    if (aba.painelJson) extsAba.push(extDoPainel(aba.painelJson).replace(/^<extLst>|<\/extLst>$/g, ''));
+    if (extsAba.length) fim += `<extLst>${extsAba.join('')}</extLst>`;
+    partes.push({
+      nome: `xl/worksheets/sheet${ia + 1}.xml`,
+      dados: `${XML_CAB}<worksheet xmlns="${NS}" xmlns:r="${NS_R}">${cab}<sheetData>${corpo.join('')}</sheetData>${fim}</worksheet>`,
+    });
+  });
+
+  /* livro */
+  const nomes = Object.values(c.nomes || {}).filter((n) => n && n.n && n.ref);
+  const wb = `${XML_CAB}<workbook xmlns="${NS}" xmlns:r="${NS_R}"><workbookPr/>` +
+    `<bookViews><workbookView activeTab="${primeiraVisivel}"/></bookViews><sheets>` +
+    abas.map((a, i) => `<sheet name="${escapar(a.nome, true)}" sheetId="${i + 1}"${a.oculta === 'muito' ? ' state="veryHidden"' : a.oculta ? ' state="hidden"' : ''} r:id="rId${i + 1}"/>`).join('') +
+    '</sheets>' +
+    (nomes.length || nomesImp.length ? `<definedNames>${nomesImp.map((n) => `<definedName name="${n.nome}" localSheetId="${n.ia}"${n.oculto ? ' hidden="1"' : ''}>${escapar(n.ref)}</definedName>`).join('')}${nomes.map((n) => { const li = n.loc ? c.ordem.indexOf(n.loc) : -1; return `<definedName name="${escapar(n.n, true)}"${li >= 0 ? ` localSheetId="${li}"` : ''}>${escapar(porPrefixos(n.ref))}</definedName>`; }).join('')}</definedNames>` : '') +
+    '<calcPr calcId="191029" fullCalcOnLoad="1"/></workbook>';
+  const nA = abas.length;
+  const relsWb = `${XML_CAB}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">` +
+    abas.map((_, i) => `<Relationship Id="rId${i + 1}" Type="${REL}worksheet" Target="worksheets/sheet${i + 1}.xml"/>`).join('') +
+    `<Relationship Id="rId${nA + 1}" Type="${REL}styles" Target="styles.xml"/>` +
+    `<Relationship Id="rId${nA + 2}" Type="${REL}sharedStrings" Target="sharedStrings.xml"/>` +
+    (usaMatriz ? `<Relationship Id="rId${nA + 3}" Type="${REL}sheetMetadata" Target="metadata.xml"/>` : '') +
+    `<Relationship Id="rId${nA + 4}" Type="${REL}theme" Target="theme/theme1.xml"/>` +
+    '</Relationships>';
+  const sst = `${XML_CAB}<sst xmlns="${NS}" count="${textos.length}" uniqueCount="${textos.length}">` +
+    textos.map((t) => `<si><t${/^\s|\s$|\n/.test(t) ? ' xml:space="preserve"' : ''}>${escapar(t)}</t></si>`).join('') + '</sst>';
+  const metadata = `${XML_CAB}<metadata xmlns="${NS}" xmlns:xda="http://schemas.microsoft.com/office/spreadsheetml/2017/dynamicarray">` +
+    '<metadataTypes count="1"><metadataType name="XLDAPR" minSupportedVersion="120000" copy="1" pasteAll="1" pasteValues="1" merge="1" splitFirst="1" rowColShift="1" clearFormats="1" clearComments="1" assign="1" coerce="1" cellMeta="1"/></metadataTypes>' +
+    '<futureMetadata name="XLDAPR" count="1"><bk><extLst><ext uri="{bdbb8cdc-fa1e-496e-a857-3c3f30c029c3}"><xda:dynamicArrayProperties fDynamic="1" fCollapsed="0"/></ext></extLst></bk></futureMetadata>' +
+    '<cellMetadata count="1"><bk><rc t="1" v="0"/></bk></cellMetadata></metadata>';
+  const quando = agora.toISOString().replace(/\.\d+Z$/, 'Z');
+  const core = `${XML_CAB}<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">` +
+    (titulo ? `<dc:title>${escapar(titulo)}</dc:title>` : '') +
+    `<dc:creator>Vértice Docs</dc:creator><cp:lastModifiedBy>Vértice Docs</cp:lastModifiedBy><dcterms:created xsi:type="dcterms:W3CDTF">${quando}</dcterms:created><dcterms:modified xsi:type="dcterms:W3CDTF">${quando}</dcterms:modified></cp:coreProperties>`;
+  const app = `${XML_CAB}<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes"><Application>Vértice Docs</Application></Properties>`;
+  const tipos = `${XML_CAB}<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">` +
+    '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/>' +
+    (notas.length ? '<Default Extension="vml" ContentType="application/vnd.openxmlformats-officedocument.vmlDrawing"/>' : '') +
+    [...new Set(desenhos.flatMap((d) => (d.midias || []).map((m) => m.ext)))].map((e) => `<Default Extension="${e}" ContentType="image/${e}"/>`).join('') +
+    `<Override PartName="/xl/workbook.xml" ContentType="${CT}sheet.main+xml"/>` +
+    abas.map((_, i) => `<Override PartName="/xl/worksheets/sheet${i + 1}.xml" ContentType="${CT}worksheet+xml"/>`).join('') +
+    `<Override PartName="/xl/styles.xml" ContentType="${CT}styles+xml"/><Override PartName="/xl/sharedStrings.xml" ContentType="${CT}sharedStrings+xml"/>` +
+    '<Override PartName="/xl/theme/theme1.xml" ContentType="application/vnd.openxmlformats-officedocument.theme+xml"/>' +
+    (usaMatriz ? `<Override PartName="/xl/metadata.xml" ContentType="${CT}sheetMetadata+xml"/>` : '') +
+    notas.map((n) => `<Override PartName="/xl/comments${n.ia + 1}.xml" ContentType="${CT}comments+xml"/>`).join('') +
+    desenhos.map((d) => `<Override PartName="/xl/drawings/drawing${d.ia + 1}.xml" ContentType="application/vnd.openxmlformats-officedocument.drawing+xml"/>` + d.charts.map((ch) => (ch.cx ? `<Override PartName="/xl/charts/chartEx${ch.n}.xml" ContentType="${CT_CX}"/>` + (ch.estilo ? `<Override PartName="/xl/charts/styleEx${ch.n}.xml" ContentType="${CT_ESTILO}"/>` : '') + (ch.cores ? `<Override PartName="/xl/charts/colorsEx${ch.n}.xml" ContentType="${CT_CORES}"/>` : '') : `<Override PartName="/xl/charts/chart${ch.n}.xml" ContentType="application/vnd.openxmlformats-officedocument.drawingml.chart+xml"/>`) + (ch.us ? `<Override PartName="/xl/drawings/drawingGr${ch.n}.xml" ContentType="application/vnd.openxmlformats-officedocument.drawingml.chartshapes+xml"/>` : '')).join('')).join('') +
+    tabelasG.map((t) => `<Override PartName="/xl/tables/table${t.n}.xml" ContentType="${CT}table+xml"/>`).join('') +
+    '<Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/>' +
+    '<Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/></Types>';
+  const relsRaiz = `${XML_CAB}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">` +
+    `<Relationship Id="rId1" Type="${REL}officeDocument" Target="xl/workbook.xml"/>` +
+    '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/>' +
+    `<Relationship Id="rId3" Type="${REL}extended-properties" Target="docProps/app.xml"/></Relationships>`;
+
+  const arquivos = [
+    { nome: '[Content_Types].xml', dados: tipos },
+    { nome: '_rels/.rels', dados: relsRaiz },
+    { nome: 'docProps/core.xml', dados: core },
+    { nome: 'docProps/app.xml', dados: app },
+    { nome: 'xl/workbook.xml', dados: wb },
+    { nome: 'xl/_rels/workbook.xml.rels', dados: relsWb },
+    { nome: 'xl/styles.xml', dados: gravarEstilos(c.estilos || [{}], c.fonteBase || 'Calibri', dxfs, c.tamBase || 11, Object.fromEntries(Object.values(c.tabelas || {}).filter((t) => t.est && t.est.proprio && !t.est.sem).map((t) => [t.est.nome, t.est.proprio]))) }, // v0.6.58 (D-17)
+    { nome: 'xl/theme/theme1.xml', dados: XML_CAB + temaSemFigura(typeof c.temaXml === 'string' && c.temaXml ? c.temaXml : TEMA_XML) }, // v0.6.5
+    { nome: 'xl/sharedStrings.xml', dados: sst },
+    ...(usaMatriz ? [{ nome: 'xl/metadata.xml', dados: metadata }] : []),
+    ...partes,
+    ...notas.flatMap((n) => [
+      { nome: `xl/comments${n.ia + 1}.xml`, dados: n.comments },
+      { nome: `xl/drawings/vmlDrawing${n.ia + 1}.vml`, dados: n.vml },
+    ]),
+    ...desenhos.flatMap((d) => [
+      { nome: `xl/drawings/drawing${d.ia + 1}.xml`, dados: d.drawing },
+      { nome: `xl/drawings/_rels/drawing${d.ia + 1}.xml.rels`, dados: d.rels },
+      ...d.charts.map((ch) => ({ nome: ch.cx ? `xl/charts/chartEx${ch.n}.xml` : `xl/charts/chart${ch.n}.xml`, dados: ch.xml })),
+      /* v0.6.18 (D-44): o estilo e as cores do gráfico novo (cx) */
+      ...d.charts.filter((ch) => ch.cx && (ch.estilo || ch.cores)).flatMap((ch) => [
+        { nome: `xl/charts/_rels/chartEx${ch.n}.xml.rels`, dados: `${XML_CAB}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${ch.estilo ? `<Relationship Id="rId1" Type="${REL_ESTILO}" Target="styleEx${ch.n}.xml"/>` : ''}${ch.cores ? `<Relationship Id="rId2" Type="${REL_CORES}" Target="colorsEx${ch.n}.xml"/>` : ''}</Relationships>` },
+        ...(ch.estilo ? [{ nome: `xl/charts/styleEx${ch.n}.xml`, dados: ch.estilo }] : []),
+        ...(ch.cores ? [{ nome: `xl/charts/colorsEx${ch.n}.xml`, dados: ch.cores }] : []),
+      ]),
+      /* v0.6.6: caixas de texto por cima dos gráficos */
+      ...d.charts.filter((ch) => ch.us).flatMap((ch) => [
+        { nome: `xl/charts/_rels/chart${ch.n}.xml.rels`, dados: `${XML_CAB}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rIdUS1" Type="${REL}chartUserShapes" Target="../drawings/drawingGr${ch.n}.xml"/></Relationships>` },
+        { nome: `xl/drawings/drawingGr${ch.n}.xml`, dados: ch.us },
+      ]),
+      ...(d.midias || []).map((m) => ({ nome: m.nome, dados: m.bytes })),
+    ]),
+    ...tabelasG.map((t) => ({ nome: `xl/tables/table${t.n}.xml`, dados: t.xml })),
+    /* rels das abas: comentários (rId1, rId2), gráficos (rId3) e tabelas (rIdT) */
+    ...abas.map((_, ia) => {
+      const n = notas.find((x) => x.ia === ia), d = desenhos.find((x) => x.ia === ia);
+      const le = linksExt.get(ia);
+      const tb = tabelasG.filter((x) => x.ia === ia);
+      if (!n && !d && !le && !tb.length) return null;
+      return { nome: `xl/worksheets/_rels/sheet${ia + 1}.xml.rels`, dados: `${XML_CAB}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">` +
+        (n ? `<Relationship Id="rId1" Type="${REL}vmlDrawing" Target="../drawings/vmlDrawing${ia + 1}.vml"/><Relationship Id="rId2" Type="${REL}comments" Target="../comments${ia + 1}.xml"/>` : '') +
+        (d ? `<Relationship Id="rId3" Type="${REL}drawing" Target="../drawings/drawing${ia + 1}.xml"/>` : '') +
+        (le ? le.map((x) => `<Relationship Id="${x.id}" Type="${REL}hyperlink" Target="${escapar(x.url, true)}" TargetMode="External"/>`).join('') : '') +
+        tb.map((x) => `<Relationship Id="rIdT${x.n}" Type="${REL}table" Target="../tables/table${x.n}.xml"/>`).join('') + '</Relationships>' };
+    }).filter(Boolean),
+  ];
+  /* v0.6.18 (D-43): abas de gráfico voltam como aba de gráfico (ou como aba comum, se ganharam células) */
+  { const ag = virarAbasDeGrafico(arquivos, abas, primeiraVisivel); if (ag.viraramComuns.length) avisos.push(`${ag.viraramComuns.length === 1 ? `A aba de gráfico "${ag.viraramComuns[0]}" ganhou células ou outros objetos aqui e vai` : `As abas de gráfico ${ag.viraramComuns.map((x) => `"${x}"`).join(', ')} ganharam células ou outros objetos aqui e vão`} como aba comum, com o gráfico.`); }
+  /* v0.6.13 (D-29): o que o app não edita volta do arquivo original guardado no aparelho */
+  const imp = c.importado || {};
+  let dv = null;
+  if (original && abas.some((a) => a.org)) {
+    try { dv = await devolver(arquivos, abas.map((aba, ia) => ({ id: c.ordem[ia], aba })), original); } catch (e) { dv = null; avisos.push('Não deu para devolver as partes do Excel original (' + (e.message || e) + '): o arquivo sai sem elas.'); }
+  }
+  if (dv) {
+    const l = [];
+    if (dv.macros) l.push('as macros');
+    if (dv.dinamicas) l.push(dv.dinamicas === 1 ? '1 tabela dinâmica' : `${dv.dinamicas} tabelas dinâmicas`);
+    if (dv.segmentacoes) l.push(dv.segmentacoes === 1 ? '1 segmentação de dados' : `${dv.segmentacoes} segmentações de dados`);
+    if (dv.linhasTempo) l.push(dv.linhasTempo === 1 ? '1 linha do tempo' : `${dv.linhasTempo} linhas do tempo`);
+    if (dv.controles) l.push(dv.controles === 1 ? '1 botão ou caixa de controle' : `${dv.controles} botões e caixas de controle`);
+    if (dv.suplementos) l.push(dv.suplementos === 1 ? '1 suplemento' : `${dv.suplementos} suplementos`);
+    if (l.length) avisos.push(`Voltaram do arquivo original, como vieram: ${l.length > 1 ? l.slice(0, -1).join(', ') + ' e ' + l[l.length - 1] : l[0]}.${dv.dinamicas > (dv.semFonte || 0) ? (dv.dinamicas === 1 ? ' A tabela dinâmica se atualiza ao abrir no Excel.' : ' As tabelas dinâmicas se atualizam ao abrir no Excel.') : ''}${dv.soltas ? ` ${dv.soltas === 1 ? 'Uma segmentação que estava agrupada com formas volta solta' : `${dv.soltas} segmentações que estavam agrupadas com formas voltam soltas`}, no mesmo lugar.` : ''}`);
+    if (dv.perdidos.length) { const n = dv.perdidos.length, tempo = dv.perdidos.every((x) => x.tipo === 'linha do tempo'), seg = dv.perdidos.every((x) => x.tipo === 'segmentação'); avisos.push(`${n === 1 ? (tempo ? 'Uma linha do tempo ficou' : 'Uma segmentação ficou') : `${n} ${tempo ? 'linhas do tempo' : seg ? 'segmentações' : 'segmentações e linhas do tempo'} ficaram`} de fora porque a aba, a tabela ou a tabela dinâmica de que ${n === 1 ? 'dependia' : 'dependiam'} foi apagada aqui.`); }
+    if (dv.semFonte) avisos.push(`${dv.semFonte === 1 ? 'Uma tabela dinâmica perdeu' : `${dv.semFonte} tabelas dinâmicas perderam`} a aba de onde vinham os dados: no Excel ${dv.semFonte === 1 ? 'ela mostra os dados guardados e não se atualiza' : 'elas mostram os dados guardados e não se atualizam'}.`);
+  }
+  /* botão de formulário que voltou com os controles não é aviso; macro que não voltou, é */
+  if (imp.temMacros ? !(dv && dv.macros) : (imp.botoesMacro && imp.botoesMacro.length && !(dv && dv.controles))) {
+    const bs = imp.botoesMacro || [];
+    avisos.push(`As macros (VBA)${bs.length ? ` e ${bs.length === 1 ? `o botão ${'"' + bs[0] + '"'}` : `os botões ${bs.map((b) => '"' + b + '"').join(', ')}`}` : ''} do arquivo original não vão no Excel salvo (ele sai como .xlsx, sem macro).`);
+  }
+  if (formulasFora.length) avisos.push(`${formulasFora.length === 1 ? 'Uma fórmula que o Excel não aceitaria foi' : `${formulasFora.length} fórmulas que o Excel não aceitaria foram`} salva${formulasFora.length === 1 ? '' : 's'} só com o valor (para o Excel não pedir para reparar): ${formulasFora.slice(0, 4).join(', ')}${formulasFora.length > 4 ? ` e mais ${formulasFora.length - 4}` : ''}.`);
+  if (tabelasFora.length) avisos.push(`${tabelasFora.length === 1 ? `A tabela "${tabelasFora[0]}" vai` : `${tabelasFora.length} tabelas vão`} como faixa normal (com as cores): os títulos precisam ser textos, sem repetir e sem célula vazia.`);
+  { let sn = { gravadas: 0, fora: [], semSetas: [], repetidas: [] }; const foto = arquivos.map((x) => [x, x.dados]), n0 = arquivos.length; /* v0.6.44 (S3): a feita no app vai para o arquivo; se der errado no meio, as partes voltam como estavam */
+    try { sn = gravarSegsNovas(arquivos, abas, c.tabelas, { vivas: (dv && dv.abasVivas) || null }); } catch (e) { arquivos.length = n0; for (const [x, d] of foto) x.dados = d; avisos.push(`As segmentações feitas no app não foram para o arquivo do Excel (${e.message || e}); o filtro na tabela vai.`); }
+    if (sn.fora.length) avisos.push(`${sn.fora.length === 1 ? `A segmentação "${sn.fora[0]}" não foi` : `${sn.fora.length} segmentações não foram`} para o arquivo do Excel porque a tabela ${sn.fora.length === 1 ? 'dela' : 'delas'} vai como faixa normal ou a coluna mudou de nome; o filtro na tabela vai.`);
+    if (sn.repetidas.length) avisos.push(`${sn.repetidas.length === 1 ? `A segmentação "${sn.repetidas[0]}" não foi` : `${sn.repetidas.length} segmentações não foram`} para o arquivo do Excel porque já existe outra com o mesmo nome: apague uma delas e crie de novo pela Inserir › Segmentação de dados.`);
+    if (sn.semSetas.length) avisos.push(`${sn.semSetas.length === 1 ? `A segmentação "${sn.semSetas[0]}" não foi` : `${sn.semSetas.length} segmentações não foram`} para o arquivo do Excel porque a tabela está sem os botões de filtro: ligue Dados › Filtro na tabela e salve de novo.`); }
+  if (conversas) avisos.push(`${conversas === 1 ? 'A conversa de comentários vai' : `As ${conversas} conversas de comentários vão`} como anotação comum no Excel (o texto e as respostas ficam juntos na mesma anotação).`);
+  if (linksFora) avisos.push(`${linksFora === 1 ? 'Um link' : `${linksFora} links`} que levava a uma aba apagada não ${linksFora === 1 ? 'foi' : 'foram'} gravado${linksFora === 1 ? '' : 's'}.`);
+  /* v0.6.5: o botão vai como forma com link (no Excel, um clique leva à aba, sem macro) */
+  if (botoesGravados) avisos.push(`${botoesGravados === 1 ? 'O botão que leva a outra aba vai' : `Os ${botoesGravados} botões que levam a outras abas vão`} como forma com link: no Excel, um clique leva à aba.`);
+  void botoes; void formasGravadas;
+  if (assinaturas) avisos.push(`${assinaturas === 1 ? 'A assinatura' : `As ${assinaturas} assinaturas`} sobre a planilha não ${assinaturas === 1 ? 'vai' : 'vão'} no Excel (chega com o Documento, na v0.7.0).`);
+  if (novas.size) {
+    const l = [...novas].sort();
+    avisos.push(`Usa ${l.slice(0, 4).join(', ')}${l.length > 4 ? ` e mais ${l.length - 4}` : ''}: ${l.length === 1 ? 'só funciona' : 'só funcionam'} no Excel 2021 ou no Microsoft 365.`);
+  }
+  const bytes = await criarZip(arquivos, agora);
+  void chave;
+  return { bytes, avisos, macros: !!(dv && dv.macros) };
+}
+
+/* v0.6.13 (D-33): tema com figura de fundo (preenchimento com imagem, r:embed) ia sem a relação da imagem: parte com r:id
+   sem relação é motivo de reparo no Excel. Sem o original, a figura vira cor lisa do tema; com o original, devolver.js põe
+   o tema e a figura de volta como vieram. */
+export const temaSemFigura = (x) => (/\br:(?:embed|id|link)="/.test(x) ? x.replace(/<a:blipFill\b[\s\S]*?<\/a:blipFill>/g, '<a:solidFill><a:schemeClr val="phClr"/></a:solidFill>').replace(/\sr:(?:embed|id|link)="[^"]*"/g, '') : x);
+/** v0.6.45 (D-70): primeira linha (ou coluna) do bloco escondido que vai até a última do livro, se ele tem pelo menos `min`. */
+export function fimOcultoL(mapa, max, min = 1000) {
+  if (!mapa || !mapa[max - 1]) return null;
+  let i = max - 1; while (i > 0 && mapa[i - 1]) i--;
+  return max - i >= min ? i : null;
+}

@@ -15,7 +15,7 @@ const IP_PARTE = 900000, IP_COPIA_PARTES = 5, IP_ORIG_PARTES = 2;
 const IP_COPIA_MAX = Math.floor(IP_COPIA_PARTES * IP_PARTE * 3 / 4), IP_ORIG_MAX = Math.floor(IP_ORIG_PARTES * IP_PARTE * 3 / 4);
 const IP_TETO = 150 * 1024 * 1024; /* caracteres guardados na nuvem (o banco grátis tem 1 GB para tudo) */
 const IP_FMT = { pdf: 'PDF', imagem: 'Foto', xlsx: 'Excel', docx: 'Word', link: 'Link' };
-const IP_VERTICE = 'https://eliasgrigori.github.io/EFCdocs/';
+const IP_VERTICE = 'https://eliasgrigori.github.io/efcwork/vertice/'; /* v0.6.36 (P5) */
 
 CS_CARGAS.push(() => {
   csOuve('efd_docs', l => { S.ipDocs = (l || []).filter(d => d && d.v === 1); if (S.rota.area === 'documentos' && S.rota.aba === 'impressos') render(); else if (S.gv && S._ipGv) gvDesenha(); }, { order: 'alteradoEm', limit: 600 });

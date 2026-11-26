@@ -1,0 +1,328 @@
+/* EFCdocs — catálogo único de comandos.
+   A faixa, a barra curta, o painel e a busca "O que você quer fazer?" usam este mesmo catálogo.
+   chega: em que versão o comando passa a funcionar (texto, ou por módulo { planilha, docx, postits }).
+   Quando a versão do app alcança a do "chega", o comando liga sozinho. */
+
+import { VERSAO } from './modelo.js';
+
+const V4 = 'v0.4.0', V5 = 'v0.5.0', V51 = 'v0.5.1', V6 = 'v0.6.0', V61 = 'v0.6.3', V625 = 'v0.6.25', V7 = 'v0.7.0', V8 = 'v0.8.0';
+const DEPOIS = 'depois da v1.0.0';
+const porModulo = (planilha, docx, postits) => ({ planilha, docx, postits });
+const C = (id, nome, ic, extra = {}) => ({ id, nome, ic, sin: [], mods: ['*'], ...extra });
+
+export const COMANDOS = [
+  C('app.inicio', 'Ir para o início', 'casa', { sin: ['home', 'tela inicial', 'voltar'] }),
+  C('app.buscar', 'O que você quer fazer?', 'busca', { sin: ['procurar comando', 'ajuda', 'pesquisar'], atalho: 'Ctrl+K' }),
+  C('app.opcoes', 'Opções', 'gear', { sin: ['configurações', 'preferências', 'ajustes'] }),
+
+  C('arquivo.novo', 'Novo', 'novo', { sin: ['criar', 'novo arquivo', 'em branco'], acao: 'arquivo.criar' }),
+  C('arquivo.novaPlanilha', 'Nova planilha', 'planilha', { sin: ['criar planilha', 'excel'], acao: 'arquivo.criar' }),
+  C('arquivo.novoDocumento', 'Novo documento', 'docx', { sin: ['criar documento', 'word', 'pop', 'formulário'], acao: 'arquivo.criar' }),
+  C('arquivo.novoQuadro', 'Novo quadro de post-its', 'postits', { sin: ['criar quadro', 'kanban', 'fluxograma', 'post-it'], acao: 'arquivo.criar' }),
+  C('arquivo.renomear', 'Renomear', 'renomear', { sin: ['mudar nome', 'trocar nome', 'título'], acao: 'arquivo.renomear', ed: true }),
+  C('arquivo.lixeira', 'Mandar para a lixeira', 'lixeira', { sin: ['apagar arquivo', 'excluir arquivo', 'deletar', 'remover rascunho'], acao: 'arquivo.lixeira', ed: true }),
+  C('arquivo.abrir', 'Abrir arquivo do Excel', 'abrir', { sin: ['importar', 'abrir arquivo', 'xlsx', 'xlsm', 'excel', 'carregar planilha'], chega: porModulo(null, V7, null), mods: ['*'], acao: 'arquivo.criar' }), /* v0.6.73: abrir do Excel cria arquivo */
+  C('arquivo.exportarExcel', 'Salvar como Excel', 'excel', { sin: ['exportar excel', 'xlsx', 'baixar planilha', 'baixar excel'], chega: V5, mods: ['planilha'], acao: 'exportar' }),
+  C('arquivo.baixarOriginal', 'Baixar o original', 'baixar', { sin: ['arquivo original', 'excel original', 'como veio', 'devolver original'], mods: ['planilha'], acao: 'exportar' }),
+  C('arquivo.relatorioExcel', 'O que veio do Excel', 'info', { sin: ['relatório da importação', 'compatibilidade', 'o que ficou de fora'], mods: ['planilha'] }),
+  C('arquivo.salvar', 'Salvar agora', 'check', { sin: ['gravar', 'salvar'], mods: ['planilha', 'docx', 'postits'] }), /* v0.6.23: Ctrl+B do Excel em português */
+  C('arquivo.exportarWord', 'Exportar Word', 'docx', { sin: ['salvar como word', 'docx'], chega: V7, mods: ['docx'] }),
+  C('arquivo.exportarPDF', 'Exportar PDF', 'pdf', { sin: ['pdf', 'baixar pdf', 'gerar pdf', 'paisagem'], chega: porModulo(V6, V7, null), acao: 'exportar' }),
+  C('arquivo.exportarImagem', 'Exportar imagem (PNG)', 'imagem', { sin: ['png', 'jpg', 'foto do quadro', 'print'], mods: ['postits'], acao: 'exportar' }),
+  C('arquivo.imprimir', 'Imprimir', 'imprimir', { sin: ['impressora'], chega: porModulo(V6, V7, null), acao: 'exportar' }),
+  /* v0.6.8 (Grok): na planilha já abre a linha do tempo (o que foi feito, para voltar a um passo); versões salvas chegam na v0.7.0 */
+  C('arquivo.versoes', 'Versões e revisões', 'historico', { sin: ['histórico', 'revisão antiga', 'versão anterior', 'linha do tempo'], chega: porModulo(null, V7, null), mods: ['docx', 'planilha'] }),
+  /* v0.6.16 (Ponte 1): documentos internos e compartilhar com o EFCwork pela caixa de troca do aparelho */
+  C('arquivo.interno', 'Documento interno', 'pasta', { sin: ['sub-aba', 'código do documento', 'etiqueta', 'ficha', 'formulário', 'fluxograma', 'pop'], mods: ['planilha', 'postits', 'docx'], acao: 'arquivo.renomear', ed: true }),
+  C('arquivo.camposCwork', 'Campos do Cwork', 'tabela', { sin: ['preencher sozinho', 'campos', 'nome de célula', 'efc_', 'marcar campo', 'cwork'], mods: ['planilha'], acao: 'planilha.editar', ed: true }),
+  C('arquivo.compartilharCwork', 'Compartilhar com o Cwork', 'externo', { sin: ['cwork', 'efcwork', 'mandar para o cwork', 'impressos', 'enviar'], mods: ['planilha', 'postits', 'docx'], chega: porModulo(null, V7, null), acao: 'exportar', ed: true }),
+  C('arquivo.lancar', 'Lançar na pasta', 'pasta', { sin: ['lançamento', 'registrar', 'enviar para pasta'], chega: V8, acao: 'lancar' }),
+  C('arquivo.cancelar', 'Cancelar com motivo', 'arquivar', { sin: ['cancelar lançamento', 'anular'], chega: V8, acao: 'lancamento.cancelar' }),
+
+  C('editar.desfazer', 'Desfazer', 'desfazer', { sin: ['voltar', 'ctrl z'], atalho: 'Ctrl+Z', ed: true }),
+  C('editar.refazer', 'Refazer', 'refazer', { sin: ['ctrl y'], atalho: 'Ctrl+Y', ed: true }),
+  C('editar.colar', 'Colar', 'colar', { sin: ['ctrl v'], atalho: 'Ctrl+V', chega: porModulo(V4, V7, null), acao: 'quadro.editar' }),
+  C('editar.recortar', 'Recortar', 'recortar', { sin: ['ctrl x'], atalho: 'Ctrl+X', chega: porModulo(V4, V7, null), acao: 'quadro.editar' }),
+  C('editar.copiar', 'Copiar', 'copiar', { sin: ['ctrl c'], atalho: 'Ctrl+C', chega: porModulo(V4, V7, null) }),
+  C('editar.pincel', 'Pincel de formatação', 'pincel', { sin: ['copiar formato', 'copiar cor'], chega: porModulo(V4, V7, null), acao: 'quadro.editar' }),
+  C('editar.localizar', 'Localizar e substituir', 'busca', { sin: ['procurar', 'achar', 'substituir'], chega: porModulo(V4, V7, null) }),
+  C('editar.comentar', 'Comentário', 'comentario', { sin: ['comentar', 'nota', 'observação'], chega: porModulo(V51, V7, null), acao: 'quadro.editar' }),
+  C('revisao.comentarios', 'Comentários da aba', 'comentario', { sin: ['ver comentários', 'lista de notas', 'anotações'], chega: V51, mods: ['planilha'] }),
+  C('editar.duplicar', 'Duplicar', 'dupl', { sin: ['cópia', 'ctrl d'], atalho: 'Ctrl+D', mods: ['postits'], acao: 'quadro.editar' }),
+  C('editar.excluir', 'Excluir a seleção', 'lixeira', { sin: ['apagar post-it', 'apagar seta', 'delete', 'remover'], atalho: 'Delete', mods: ['postits'], acao: 'quadro.editar' }),
+  C('editar.selecionarTudo', 'Selecionar tudo', 'selecao', { sin: ['ctrl a', 'marcar tudo'], atalho: 'Ctrl+A', mods: ['postits', 'planilha'] }),
+  C('editar.historico', 'Linha do tempo do desfazer', 'historico', { sin: ['voltar vários passos', 'histórico de ações', 'desfazer até'], ed: true }),
+  C('editar.colarValores', 'Colar só os valores', 'colar', { sin: ['colar especial', 'colar valor', 'sem fórmula'], mods: ['planilha'], acao: 'planilha.editar' }),
+  C('editar.preencherBaixo', 'Preencher para baixo', 'setaBaixo', { sin: ['ctrl d', 'copiar para baixo'], atalho: 'Ctrl+D', mods: ['planilha'], acao: 'planilha.editar' }),
+  C('editar.preencherDireita', 'Preencher para a direita', 'setaDir', { sin: ['ctrl r', 'copiar para o lado'], atalho: 'Ctrl+R', mods: ['planilha'], acao: 'planilha.editar' }),
+  C('planilha.limparConteudo', 'Limpar conteúdo', 'x', { sin: ['apagar células', 'delete', 'limpar'], atalho: 'Delete', mods: ['planilha'], acao: 'planilha.editar' }),
+  C('planilha.inserirLinha', 'Inserir linha acima', 'inserir', { sin: ['nova linha', 'adicionar linha'], mods: ['planilha'], acao: 'planilha.editar' }),
+  C('planilha.inserirColuna', 'Inserir coluna à esquerda', 'inserir', { sin: ['nova coluna', 'adicionar coluna'], mods: ['planilha'], acao: 'planilha.editar' }),
+  C('planilha.excluirLinha', 'Excluir linha', 'lixeira', { sin: ['apagar linha', 'remover linha'], mods: ['planilha'], acao: 'planilha.editar' }),
+  C('planilha.excluirColuna', 'Excluir coluna', 'lixeira', { sin: ['apagar coluna', 'remover coluna'], mods: ['planilha'], acao: 'planilha.editar' }),
+  /* v0.6.21 parte 2 (D2 da faixa): os comandos do botão Formatar do Excel */
+  C('planilha.alturaLinha', 'Altura da linha', 'setaBaixo', { sin: ['altura', 'tamanho da linha', 'linha mais alta'], mods: ['planilha'], acao: 'planilha.editar' }),
+  C('planilha.ajustarLinha', 'Ajustar a altura da linha', 'setaBaixo', { sin: ['autoajuste da altura', 'altura automática', 'altura padrão'], mods: ['planilha'], acao: 'planilha.editar' }),
+  C('planilha.larguraColuna', 'Largura da coluna', 'setaDir', { sin: ['largura', 'tamanho da coluna', 'coluna mais larga'], mods: ['planilha'], acao: 'planilha.editar' }),
+  C('planilha.ajustarColuna', 'Ajustar a largura da coluna', 'setaDir', { sin: ['autoajuste da largura', 'largura automática', 'caber o texto'], mods: ['planilha'], acao: 'planilha.editar' }),
+  C('planilha.ocultarLinha', 'Ocultar linhas', 'ver', { sin: ['esconder linha'], mods: ['planilha'], acao: 'planilha.editar' }),
+  C('planilha.ocultarColuna', 'Ocultar colunas', 'ver', { sin: ['esconder coluna'], mods: ['planilha'], acao: 'planilha.editar' }),
+  C('planilha.reexibir', 'Reexibir linhas', 'ver', { sin: ['mostrar linhas ocultas'], mods: ['planilha'], acao: 'planilha.editar' }),
+  C('planilha.reexibirColuna', 'Reexibir colunas', 'ver', { sin: ['mostrar colunas ocultas', 'desocultar coluna'], mods: ['planilha'], acao: 'planilha.editar' }),
+  C('planilha.novaAba', 'Nova aba', 'plus', { sin: ['nova folha', 'adicionar aba', 'nova planilha dentro'], mods: ['planilha'], acao: 'planilha.editar' }),
+  C('planilha.cabecalho', 'Esta linha é o cabeçalho', 'titulo', { sin: ['títulos das colunas', 'linha de títulos'], mods: ['planilha'], acao: 'planilha.editar' }),
+
+  C('formatar.negrito', 'Negrito', 'negrito', { sin: ['ctrl n', 'grosso'], chega: porModulo(V4, V7, null), acao: 'quadro.editar' }),
+  C('formatar.italico', 'Itálico', 'italico', { sin: ['ctrl i', 'inclinado'], chega: porModulo(V4, V7, null), acao: 'quadro.editar' }),
+  C('formatar.sublinhado', 'Sublinhado', 'sublinhado', { sin: ['ctrl s', 'grifar'], chega: porModulo(V4, V7, null), acao: 'quadro.editar' }),
+  C('formatar.tachado', 'Tachado', 'sublinhado', { sin: ['riscado', 'risco no meio', 'strike'], mods: ['planilha'] }), /* v0.6.23: Ctrl+5 */
+  C('formatar.corFonte', 'Cor da fonte', 'corfonte', { sin: ['cor do texto', 'letra colorida'], chega: porModulo(V4, V7, null), acao: 'quadro.editar' }),
+  C('formatar.preenchimento', 'Cor de preenchimento', 'balde', { sin: ['fundo', 'pintar célula', 'cor do post-it'], chega: porModulo(V4, null, null), mods: ['planilha', 'postits'], acao: 'quadro.editar' }),
+  C('formatar.bordas', 'Bordas', 'borda', { sin: ['linha da célula', 'contorno'], chega: V4, mods: ['planilha'] }),
+  C('formatar.esquerda', 'Alinhar à esquerda', 'aesq', { chega: porModulo(V4, V7, null), acao: 'quadro.editar' }),
+  C('formatar.centro', 'Centralizar', 'acen', { sin: ['meio'], chega: porModulo(V4, V7, null), acao: 'quadro.editar' }),
+  C('formatar.direita', 'Alinhar à direita', 'adir', { chega: porModulo(V4, V7, null), acao: 'quadro.editar' }),
+  /* v0.6.21 (faixa igual ao Excel): alinhamento na vertical e o tamanho da letra direto na faixa */
+  C('formatar.cima', 'Alinhar em cima', 'acima', { sin: ['alinhar no topo', 'vertical'], mods: ['planilha'], acao: 'planilha.editar' }),
+  C('formatar.meio', 'Alinhar no meio', 'ameio', { sin: ['centralizar na vertical', 'vertical'], mods: ['planilha'], acao: 'planilha.editar' }),
+  C('formatar.baixo', 'Alinhar embaixo', 'abaixo', { sin: ['alinhar na base', 'vertical'], mods: ['planilha'], acao: 'planilha.editar' }),
+  C('formatar.aumentarFonte', 'Aumentar o tamanho da letra', 'letraMais', { sin: ['fonte maior', 'letra maior'], mods: ['planilha'], acao: 'planilha.editar' }),
+  C('formatar.diminuirFonte', 'Diminuir o tamanho da letra', 'letraMenos', { sin: ['fonte menor', 'letra menor'], mods: ['planilha'], acao: 'planilha.editar' }),
+  C('formatar.quebrar', 'Quebrar texto', 'quebra', { sin: ['várias linhas na célula'], chega: V4, mods: ['planilha'] }),
+  C('formatar.mesclar', 'Mesclar células', 'mesclar', { sin: ['juntar células', 'unir'], chega: V4, mods: ['planilha'] }),
+  C('formatar.moeda', 'Formato moeda (R$)', 'moeda', { sin: ['dinheiro', 'reais', 'contábil'], chega: V4, mods: ['planilha'] }),
+  C('formatar.porcentagem', 'Formato porcentagem (%)', 'pct', { sin: ['percentual', 'por cento'], chega: V4, mods: ['planilha'] }),
+  C('formatar.milhar', 'Separador de milhares', 'milhar', { sin: ['número com ponto', '1.000,00'], mods: ['planilha'], acao: 'planilha.editar' }),
+  C('formatar.maisCasas', 'Mais casas decimais', 'maisdec', { sin: ['aumentar casas', 'mais decimais'], mods: ['planilha'], acao: 'planilha.editar' }),
+  C('formatar.menosCasas', 'Menos casas decimais', 'menosdec', { sin: ['diminuir casas', 'menos decimais', 'arredondar visual'], mods: ['planilha'], acao: 'planilha.editar' }),
+  C('formatar.formatoNumero', 'Formato de número', 'formatar', { sin: ['formatar células', 'ctrl 1', 'data', 'hora', 'código de formato'], atalho: 'Ctrl+1', mods: ['planilha'], acao: 'planilha.editar' }),
+  C('formatar.fonte', 'Fonte e tamanho', 'titulo', { sin: ['tamanho da letra', 'tipo de letra', 'arial', 'calibri'], mods: ['planilha'], acao: 'planilha.editar' }),
+  C('formatar.limpar', 'Limpar formatos', 'x', { sin: ['tirar formatação', 'apagar formato'], mods: ['planilha'], acao: 'planilha.editar' }),
+  C('formatar.condicional', 'Formatação condicional', 'condicional', { sin: ['formatação condicional', 'destacar regra', 'pintar se', 'cor automática'], chega: V51, mods: ['planilha'], acao: 'planilha.editar' }),
+  C('formatar.lista', 'Lista com marcadores', 'lista', { sin: ['tópicos', 'bolinhas'], chega: V7, mods: ['docx'] }),
+  C('formatar.numerada', 'Lista numerada', 'numerada', { sin: ['numeração'], chega: V7, mods: ['docx'] }),
+  C('formatar.titulo', 'Estilo título', 'titulo', { sin: ['cabeçalho', 'título 1', 'heading'], chega: V7, mods: ['docx'] }),
+
+  C('inserir.tabela', 'Tabela', 'tabela', { sin: ['formatar como tabela', 'grade'], chega: porModulo(V61, V7, null), mods: ['planilha', 'docx'] }),
+  C('inserir.imagem', 'Imagem', 'imagem', { sin: ['foto', 'figura'], chega: porModulo(V61, V7, null), acao: 'quadro.editar' }),
+  /* v0.6.19 (Tabelas vivas): aba contextual "Design da Tabela" (aparece com a célula dentro de uma tabela) */
+  C('tabela.nome', 'Nome da tabela', 'renomear', { sin: ['renomear tabela', 'mudar nome da tabela'], mods: ['planilha'], ed: true }),
+  C('tabela.redimensionar', 'Redimensionar tabela', 'tabela', { sin: ['aumentar tabela', 'mudar tamanho da tabela', 'esticar tabela'], mods: ['planilha'], ed: true }),
+  C('tabela.converter', 'Converter em intervalo', 'tabela', { sin: ['desfazer tabela', 'tirar tabela', 'virar células comuns'], mods: ['planilha'], ed: true }),
+  C('tabela.totais', 'Linha de totais', 'soma', { sin: ['total da tabela', 'somar tabela', 'subtotal'], mods: ['planilha'], ed: true }),
+  C('tabela.totalColuna', 'Total da coluna', 'soma', { sin: ['média da coluna', 'contagem da coluna', 'função do total'], mods: ['planilha'], ed: true }),
+  C('tabela.listras', 'Linhas em tiras', 'tabela', { sin: ['linhas alternadas', 'zebrado', 'listras'], mods: ['planilha'], ed: true }),
+  C('tabela.listrasCol', 'Colunas em tiras', 'tabela', { sin: ['colunas alternadas'], mods: ['planilha'], ed: true }),
+  C('tabela.primeira', 'Primeira coluna', 'tabela', { sin: ['destacar primeira coluna'], mods: ['planilha'], ed: true }),
+  C('tabela.ultima', 'Última coluna', 'tabela', { sin: ['destacar última coluna'], mods: ['planilha'], ed: true }),
+  C('tabela.filtro', 'Botão de filtro', 'filtro', { sin: ['setas da tabela', 'filtro da tabela'], mods: ['planilha'], ed: true }),
+  C('tabela.estilos', 'Estilos de tabela', 'tabela', { sin: ['cor da tabela', 'mudar estilo da tabela', 'galeria de tabela'], mods: ['planilha'], ed: true }),
+  /* v0.6.3: aba contextual "Gráfico" (aparece quando um gráfico está selecionado) */
+  C('grafico.editar', 'Editar gráfico', 'grafico', { sin: ['mudar gráfico', 'dados do gráfico', 'tipo de gráfico'], mods: ['planilha'], ed: true }),
+  C('grafico.estilo', 'Estilo rápido', 'grafico', { sin: ['estilo do gráfico', 'layout do gráfico', 'visual do gráfico'], mods: ['planilha'], ed: true }),
+  C('grafico.cores', 'Cores do gráfico', 'grafico', { sin: ['paleta do gráfico', 'cores das barras'], mods: ['planilha'], ed: true }),
+  C('grafico.semaforo', 'Semáforo', 'grafico', { sin: ['verde amarelo vermelho', 'meta do gráfico', 'qualidade'], mods: ['planilha'], ed: true }),
+  C('grafico.excluir', 'Excluir gráfico', 'lixeira', { sin: ['apagar gráfico', 'remover gráfico'], mods: ['planilha'], ed: true }),
+  /* v0.6.7: aba Gráfico */
+  C('grafico.imagem', 'Baixar imagem do gráfico', 'baixar', { sin: ['exportar gráfico', 'png do gráfico', 'salvar gráfico como imagem', 'figura do gráfico'], mods: ['planilha'] }),
+  C('grafico.duplicar', 'Duplicar gráfico', 'copiar', { sin: ['copiar gráfico', 'clonar gráfico', 'gráfico igual'], mods: ['planilha'], ed: true }),
+  C('grafico.modelo', 'Guardar estilo como modelo', 'grafico', { sin: ['modelo de gráfico', 'meu estilo', 'salvar estilo do gráfico', 'reaproveitar formatação'], mods: ['planilha'], ed: true }),
+  C('grafico.erro', 'Barras de erro', 'grafico', { sin: ['margem de erro', 'desvio padrão no gráfico', 'incerteza', 'barras de erro'], mods: ['planilha'], ed: true }),
+  /* v0.6.7: Painel */
+  C('inserir.painel', 'Painel', 'painel', { sin: ['dashboard', 'novo painel', 'painel de indicadores', 'quadro de gráficos', 'indicadores', 'kpi'], mods: ['planilha'], ed: true }),
+  C('painel.grafico', 'Gráfico no painel', 'grafico', { sin: ['pôr gráfico no painel', 'adicionar gráfico ao painel'], mods: ['planilha'], ed: true }),
+  C('painel.numero', 'Número grande', 'grafico', { sin: ['cartão', 'indicador', 'kpi', 'número do painel', 'total grande'], mods: ['planilha'], ed: true }),
+  C('painel.texto', 'Texto no painel', 'texto', { sin: ['título do painel', 'observação no painel'], mods: ['planilha'], ed: true }),
+  C('painel.tabela', 'Tabela no painel', 'tabela', { sin: ['pedaço da planilha no painel', 'células no painel'], mods: ['planilha'], ed: true }),
+  C('painel.arrumar', 'Arrumar o painel', 'grade', { sin: ['alinhar peças', 'organizar painel', 'tirar buracos'], mods: ['planilha'], ed: true }),
+  C('painel.mudar', 'Mudar a peça', 'renomear', { sin: ['editar peça', 'mudar número', 'mudar texto'], mods: ['planilha'], ed: true }),
+  C('painel.excluir', 'Excluir a peça', 'lixeira', { sin: ['apagar peça', 'tirar do painel'], mods: ['planilha'], ed: true }),
+  C('painel.pdf', 'PDF do painel', 'pdf', { sin: ['imprimir painel', 'baixar painel', 'pdf de uma página'], mods: ['planilha'] }),
+  C('inserir.grafico', 'Gráfico', 'grafico', { sin: ['inserir gráfico', 'novo gráfico', 'velocímetro', 'chart', 'colunas', 'pizza', 'barras', 'linhas', 'dashboard'], chega: porModulo(V6, V7, V7) }),
+  C('inserir.link', 'Link', 'link', { sin: ['hiperlink', 'endereço', 'ir para aba'], chega: porModulo(V61, V7, null), acao: 'quadro.editar' }),
+  C('inserir.tirarLink', 'Tirar o link', 'lixeira', { sin: ['remover link', 'remover hiperlink', 'apagar link', 'desfazer link'], mods: ['planilha'], ed: true }),
+  C('inserir.formas', 'Forma', 'forma', { sin: ['formas', 'seta', 'retângulo', 'caixa de texto', 'painel', 'desenho', 'shape', 'círculo', 'balão'], chega: V61, mods: ['planilha'] }),
+  C('inserir.botao', 'Botão que leva a outra aba', 'botao', { sin: ['botão', 'navegação', 'macro', 'atalho de aba'], chega: V61, mods: ['planilha'] }),
+  C('inserir.foto', 'Foto na célula', 'foto', { sin: ['evidência', 'câmera'], chega: V8, mods: ['planilha'] }),
+  C('inserir.status', 'Coluna de status', 'status', { sin: ['ok não ok', 'situação'], chega: V61, mods: ['planilha'] }),
+  C('inserir.campo', 'Campo do formulário', 'campo', { sin: ['campo travado', 'preencher'], chega: V7, mods: ['docx'] }),
+  C('inserir.checklist', 'Checklist', 'validacao', { sin: ['lista de verificação', 'caixa de marcar'], chega: V7, mods: ['docx'] }),
+  C('inserir.assinatura', 'Assinatura', 'assinatura', { sin: ['assinar', 'aprovar', 'rubrica', 'linha de assinatura', 'visto'], chega: porModulo(null, V7, null), mods: ['planilha', 'docx', 'postits'], acao: 'quadro.editar' }),
+  C('inserir.postit', 'Post-it', 'postit', { sin: ['nota adesiva', 'cartão', 'adicionar post-it'], mods: ['postits'], acao: 'quadro.editar' }),
+  C('inserir.forma', 'Formas', 'forma', { sin: ['retângulo', 'losango', 'decisão', 'fluxograma', 'círculo'], mods: ['postits'], acao: 'quadro.editar' }),
+  C('inserir.processo', 'Forma: atividade (etapa)', 'processo', { sin: ['retângulo', 'etapa', 'processo', 'atividade', 'fluxograma'], mods: ['postits'], acao: 'quadro.editar' }),
+  C('inserir.decisao', 'Forma: decisão (sim/não)', 'decisao', { sin: ['losango', 'pergunta', 'condição', 'fluxograma'], mods: ['postits'], acao: 'quadro.editar' }),
+  C('inserir.inicio', 'Forma: início ou fim', 'inicio', { sin: ['oval', 'terminal', 'começo', 'fluxograma'], mods: ['postits'], acao: 'quadro.editar' }),
+  C('inserir.dados', 'Forma: entrada/saída', 'dados', { sin: ['paralelogramo', 'registro', 'dados', 'documento', 'fluxograma'], mods: ['postits'], acao: 'quadro.editar' }),
+  C('inserir.seta', 'Seta', 'seta', { sin: ['conector', 'ligação', 'linha', 'ligar'], mods: ['postits'], acao: 'quadro.editar' }),
+  C('inserir.proximo', 'Próximo passo (já ligado)', 'conector', { sin: ['adicionar etapa', 'mais', 'continuar fluxo'], mods: ['postits'], acao: 'quadro.editar' }),
+  C('inserir.irmao', 'Cartão irmão (mesmo cartão de cima)', 'irmao', { sin: ['irmão', 'mapa mental', 'mesmo nível', 'ramo ao lado'], mods: ['postits'], acao: 'quadro.editar' }), /* v0.6.71 (Q1, F516) */
+  C('inserir.pagina', 'Página do quadro', 'pagina', { sin: ['folha', 'dividir o quadro', 'página do pdf', 'moldura'], mods: ['postits'], acao: 'quadro.editar' }),
+  C('inserir.legenda', 'Legenda do fluxograma', 'legenda', { sin: ['significado das formas', 'chave', 'símbolos'], mods: ['postits'], acao: 'quadro.editar' }),
+  C('inserir.modelo', 'Modelo de quadro da qualidade', 'modelo', { sin: ['rnc', 'ishikawa', '5w2h', 'gut', 'pdca', 'modelo pronto', 'mapa mental', 'linha do tempo'], mods: ['postits'], acao: 'quadro.editar' }),
+  C('inserir.texto', 'Texto solto', 'texto', { sin: ['caixa de texto', 'título do quadro'], mods: ['postits'], acao: 'quadro.editar' }),
+
+  C('formula.inserir', 'Inserir função', 'funcao', { sin: ['fórmula', 'função', 'calcular', 'fx'], chega: V4, mods: ['planilha'] }),
+  C('formula.autosoma', 'AutoSoma', 'soma', { sin: ['somar', 'total', 'soma'], chega: V4, mods: ['planilha'] }),
+  C('formula.explicar', 'Explicar esta conta', 'explicar', { sin: ['entender fórmula', 'por que deu erro', 'erro na fórmula', 'avaliar fórmula'], chega: 'v0.4.3', mods: ['planilha'] }),
+  C('formula.fluxo', 'Desenhar a conta (fluxograma)', 'fluxoConta', { sin: ['fluxograma da conta', 'de onde vem', 'mapa da fórmula', 'diagrama'], chega: 'v0.4.3', mods: ['planilha'] }),
+  C('formula.problemas', 'Verificação da planilha', 'lampada', { sin: ['verificação de erros', 'erros', 'pendências', 'verificar planilha', 'revisar', 'assistente'], chega: 'v0.4.3', mods: ['planilha'] }),
+  C('formula.montar', 'Montar a conta por pergunta', 'pergunta', { sin: ['receita', 'como faço', 'contar quantos', 'somar quando', 'quero calcular', 'assistente de fórmula'], chega: 'v0.4.3', mods: ['planilha'], acao: 'planilha.editar' }),
+  C('formula.origem', 'De onde vem / quem usa esta célula', 'origem', { sin: ['rastrear precedentes', 'dependentes', 'referências', 'quem usa', 'para onde vai'], chega: V4, mods: ['planilha'] }),
+  C('formula.nome', 'Dar nome à seleção', 'renomear', { sin: ['definir nome', 'nome definido', 'meta', 'gerenciador de nomes', 'apelido da célula'], chega: V4, mods: ['planilha'], acao: 'planilha.editar' }),
+  C('formula.nomes', 'Nomes da planilha', 'lista', { sin: ['gerenciador de nomes', 'renomear nome', 'nomes definidos'], chega: V4, mods: ['planilha'] }),
+
+  C('dados.classificar', 'Classificar', 'classificar', { sin: ['ordenar', 'a-z', 'organizar'], chega: V61, mods: ['planilha'] }),
+  C('dados.filtrar', 'Filtrar', 'filtro', { sin: ['filtro', 'mostrar só'], chega: V61, mods: ['planilha'] }),
+  C('dados.reaplicar', 'Reaplicar filtro', 'filtro', { sin: ['atualizar filtro', 'refazer filtro'], chega: V61, mods: ['planilha'] }),
+  C('dados.validacao', 'Validação de dados', 'validacao', { sin: ['lista suspensa', 'limite de valor', 'regra de entrada'], chega: V51, mods: ['planilha'], acao: 'planilha.editar' }),
+  C('dados.duplicados', 'Remover duplicados', 'dupl', { sin: ['repetidos'], chega: V61, mods: ['planilha'] }),
+  /* v0.6.21 parte 3 (R25): Classificar de A a Z e de Z a A, e Limpar (tira os critérios e deixa o filtro), como no Excel */
+  C('dados.az', 'Classificar de A a Z', 'classificar', { sin: ['ordem crescente', 'menor para o maior', 'alfabética'], chega: V61, mods: ['planilha'] }),
+  C('dados.za', 'Classificar de Z a A', 'classificar', { sin: ['ordem decrescente', 'maior para o menor'], chega: V61, mods: ['planilha'] }),
+  C('dados.limparFiltro', 'Limpar filtro', 'filtro', { sin: ['tirar critério', 'mostrar todas as linhas', 'limpar'], chega: V61, mods: ['planilha'] }),
+  /* v0.6.25 (ideias do Grok aprovadas em 18/11): circular dados inválidos, estatística descritiva e amostragem */
+  C('dados.textoColunas', 'Texto para colunas', 'n:textoColunas', { sin: ['separar colunas', 'dividir texto', 'quebrar coluna', 'separador', 'ponto e vírgula', 'largura fixa', 'split'], chega: V625, mods: ['planilha'], acao: 'planilha.editar' }),
+  C('dados.agrupar', 'Agrupar', 'n:agrupar', { sin: ['agrupar linhas', 'agrupar colunas', 'estrutura de tópicos', 'tópicos', 'recolher', 'outline'], atalho: 'Shift+Alt+→', chega: V625, mods: ['planilha'], acao: 'planilha.editar' }),
+  C('dados.desagrupar', 'Desagrupar', 'n:desagrupar', { sin: ['desagrupar linhas', 'tirar grupo'], atalho: 'Shift+Alt+←', chega: V625, mods: ['planilha'], acao: 'planilha.editar' }),
+  C('dados.subtotal', 'Subtotal', 'n:subtotal', { sin: ['subtotais', 'total por grupo', 'somar por categoria', 'total geral', 'soma por fruta'], chega: V625, mods: ['planilha'], acao: 'planilha.editar' }),
+  C('inserir.segmentacao', 'Segmentação de dados', 'n:segmentacao', { sin: ['segmentação', 'slicer', 'botões de filtro', 'filtro com botões', 'painel de filtro'], chega: V625, mods: ['planilha'], acao: 'planilha.editar' }),
+  C('dados.mostrarDetalhe', 'Mostrar detalhe', 'n:mostrarDetalhe', { sin: ['expandir grupo', 'abrir grupo'], chega: V625, mods: ['planilha'], acao: 'planilha.editar' }),
+  C('dados.ocultarDetalhe', 'Ocultar detalhe', 'n:ocultarDetalhe', { sin: ['recolher grupo', 'fechar grupo'], chega: V625, mods: ['planilha'], acao: 'planilha.editar' }),
+  C('dados.limparEstrutura', 'Limpar estrutura de tópicos', 'n:limparEstrutura', { sin: ['tirar todos os grupos', 'remover agrupamento'], chega: V625, mods: ['planilha'], acao: 'planilha.editar' }),
+  C('dados.circular', 'Circular dados inválidos', 'validacao', { sin: ['marcar inválidos', 'fora da validação', 'valores errados', 'círculo vermelho'], chega: V625, mods: ['planilha'] }),
+  C('dados.limparCirculos', 'Limpar círculos de validação', 'validacao', { sin: ['tirar círculos', 'apagar círculos'], chega: V625, mods: ['planilha'] }),
+  C('dados.estatistica', 'Estatística descritiva', 'grafico', { sin: ['média', 'desvio padrão', 'resumo estatístico', 'análise de dados', 'coeficiente de variação'], chega: V625, mods: ['planilha'], acao: 'planilha.editar' }),
+  C('dados.amostra', 'Amostragem', 'lista', { sin: ['sortear linhas', 'amostra aleatória', 'sorteio', 'inspeção por amostra'], chega: V625, mods: ['planilha'], acao: 'planilha.editar' }),
+  C('dados.dinamica', 'Tabela dinâmica', 'tabela', { sin: ['pivot', 'resumo', 'agrupar'], chega: DEPOIS, mods: ['planilha'] }),
+
+  C('revisao.ortografia', 'Ortografia', 'ortografia', { sin: ['corretor', 'erros de escrita'], chega: porModulo(V61, V7, null) }),
+  C('revisao.controlar', 'Controlar alterações', 'revisao', { sin: ['marcas de revisão'], chega: V7, mods: ['docx'] }),
+  C('revisao.concluir', 'Concluir revisão', 'assinatura', { sin: ['nova revisão', 'mandar para aprovação'], chega: V7, mods: ['docx'], acao: 'revisao.concluir' }),
+  C('revisao.comparar', 'Comparar revisões', 'comparar', { sin: ['diferença entre versões', 'o que mudou'], chega: V7, mods: ['docx'] }),
+  C('revisao.travar', 'Proteger planilha', 'cadeado', { sin: ['travar modelo', 'travar', 'bloquear', 'senha', 'desproteger'], /* v0.6.30 (D8): nome do Excel */ chega: V61, mods: ['planilha'] }),
+
+  C('organizar.kanban', 'Kanban', 'kanban', { sin: ['colunas de status', 'a fazer', 'fazendo', 'feito'], mods: ['postits'] }),
+  C('organizar.quadro', 'Quadro livre', 'quadro', { sin: ['voltar ao quadro', 'tela livre', 'fluxograma'], mods: ['postits'] }),
+  C('organizar.raias', 'Raias por setor', 'raias', { sin: ['swimlane', 'fluxograma por setor', 'faixas'], mods: ['postits'], acao: 'quadro.editar' }),
+  C('organizar.alinhar', 'Alinhar itens', 'alinharQ', { sin: ['alinhar', 'alinhar à esquerda', 'centralizar itens', 'alinhar em cima', 'pôr em linha'], mods: ['postits'], acao: 'quadro.editar' }), /* v0.6.59 */
+  C('organizar.distribuir', 'Distribuir itens', 'distribuirQ', { sin: ['distribuir', 'espaço igual', 'espaçar igualmente'], mods: ['postits'], acao: 'quadro.editar' }),
+  C('organizar.igualar', 'Igualar tamanho', 'igualarQ', { sin: ['igualar', 'mesmo tamanho', 'mesma largura', 'mesma altura', 'padronizar tamanho'], mods: ['postits'], acao: 'quadro.editar' }), /* v0.6.71 (Q1, F513) */
+  C('organizar.travar', 'Travar item', 'cadeado', { sin: ['travar', 'trancar', 'bloquear item', 'fixar no lugar', 'destravar'], mods: ['postits'], acao: 'quadro.editar' }),
+  C('organizar.frente', 'Trazer para a frente', 'frente', { sin: ['por cima', 'ordem'], mods: ['postits'], acao: 'quadro.editar' }),
+  C('organizar.tras', 'Mandar para trás', 'tras', { sin: ['por baixo', 'ordem', 'fundo'], mods: ['postits'], acao: 'quadro.editar' }),
+  C('organizar.ordenarGut', 'Ordenar pelo GUT', 'classificar', { sin: ['prioridade', 'gravidade urgência tendência', 'priorizar'], mods: ['postits'], acao: 'quadro.editar' }),
+  C('organizar.temporizador', 'Temporizador de reunião', 'temporizador', { sin: ['cronômetro', 'tempo', 'relógio'], mods: ['postits'] }),
+
+  /* v0.6.0: Layout da Página da planilha (como no Excel) */
+  C('impressao.configurar', 'Configurar página', 'imprimir', { sin: ['visualizar impressão', 'prévia', 'página'], mods: ['planilha', 'postits'], acao: 'exportar' }),
+  C('impressao.margens', 'Margens', 'margens', { sin: ['margem'], mods: ['planilha', 'postits'], acao: 'exportar' }),
+  C('impressao.orientacao', 'Orientação', 'orientacao', { sin: ['retrato', 'paisagem', 'deitada', 'em pé'], mods: ['planilha', 'postits'] }),
+  C('impressao.area', 'Definir área de impressão', 'selecao', { sin: ['área de impressão', 'imprimir só'], mods: ['planilha', 'postits'] }),
+  C('impressao.limparArea', 'Limpar área de impressão', 'x', { sin: ['área de impressão'], mods: ['planilha', 'postits'] }),
+  C('impressao.quebra', 'Inserir quebra de página', 'quebrapag', { sin: ['quebra', 'página nova'], mods: ['planilha'] }),
+  C('impressao.semQuebras', 'Remover quebras de página', 'quebrapag', { sin: ['quebra'], mods: ['planilha'] }),
+  C('impressao.titulos', 'Imprimir títulos', 'titulo', { sin: ['repetir linhas', 'cabeçalho em toda página', 'títulos de impressão'], mods: ['planilha'], acao: 'exportar' }),
+  C('impressao.ajustar', 'Ajustar à página', 'ajustar', { sin: ['escala', 'caber numa página', 'reduzir'], mods: ['planilha', 'postits'], acao: 'exportar' }),
+  /* v0.6.21 parte 3 (R25): Tamanho do papel e as Opções de planilha (imprimir a grade e as letras e números) */
+  C('impressao.papel', 'Tamanho do papel', 'imprimir', { sin: ['papel', 'a4', 'carta', 'ofício', 'tamanho da folha'], mods: ['planilha', 'postits'], acao: 'exportar' }),
+  C('impressao.grade', 'Imprimir linhas de grade', 'grade', { sin: ['grade no papel', 'imprimir grade'], mods: ['planilha'] }),
+  C('impressao.titulosLC', 'Imprimir letras e números', 'titulo', { sin: ['imprimir títulos', 'a b c no papel', 'cabeçalhos de linha e coluna'], mods: ['planilha'] }),
+  C('impressao.cabecalho', 'Cabeçalho e rodapé', 'cabecalho', { sin: ['rodapé', 'número da página'], mods: ['planilha', 'postits'], acao: 'exportar' }),
+  C('pagina.orientacao', 'Orientação da página', 'orientacao', { sin: ['retrato', 'paisagem'], chega: V7, mods: ['docx'] }),
+  C('pagina.margens', 'Margens', 'margens', { chega: V7, mods: ['docx'] }),
+  C('pagina.quebra', 'Quebra de página', 'quebrapag', { chega: V7, mods: ['docx'] }),
+  C('pagina.cabecalho', 'Cabeçalho do POP', 'cabecalho', { sin: ['código', 'revisão', 'elaborado por'], chega: V7, mods: ['docx'] }),
+  C('pagina.sumario', 'Sumário', 'sumario', { sin: ['índice'], chega: V7, mods: ['docx'] }),
+
+  C('exibir.faixaTudo', 'Faixa: mostrar tudo', 'faixaTudo', { sin: ['mostrar faixa', 'mostrar ferramentas', 'ribbon'] }),
+  C('exibir.faixaAbas', 'Faixa: só as abas', 'faixaAbas', { sin: ['recolher faixa', 'esconder botões', 'compacta'], atalho: 'Ctrl+F1' }),
+  C('exibir.faixaOculta', 'Faixa: esconder (tela cheia)', 'faixaOculta', { sin: ['esconder faixa', 'mais espaço', 'ocultar barra'] }),
+  C('exibir.menuCompleto', 'Menu lateral: completo', 'menuCompleto', { sin: ['mostrar menu'] }),
+  C('exibir.menuIcones', 'Menu lateral: só ícones', 'menuIcones', { sin: ['recolher menu', 'menu pequeno'] }),
+  C('exibir.menuOculto', 'Menu lateral: esconder', 'menuOculto', { sin: ['esconder menu', 'ocultar menu'] }),
+  C('exibir.topoCompleto', 'Barra de cima: completa (título e busca)', 'topoCompleto', { sin: ['mostrar título', 'mostrar busca'] }),
+  C('exibir.topoCompacto', 'Barra de cima: compacta (só as abas)', 'topoCompacto', { sin: ['esconder título', 'mais espaço', 'recolher barra de cima'] }),
+  C('exibir.barraFormula', 'Barra de fórmula: expandir ou recolher', 'barraFormula', { sin: ['fx', 'aumentar barra de fórmula', 'barra de fórmulas', 'expandir fx'], mods: ['planilha'] }),
+  C('exibir.painel', 'Mostrar ou fechar o painel lateral', 'painel', { sin: ['propriedades', 'painel', 'detalhes'] }),
+  C('exibir.layoutA', 'Layout: faixa tipo Excel', 'layoutA', { sin: ['ribbon', 'faixa completa', 'opção a'] }),
+  C('exibir.layoutB', 'Layout: barra curta e painel', 'layoutB', { sin: ['barra simples', 'opção b'] }),
+  C('exibir.tema', 'Tema', 'tema', { sin: ['cor', 'escuro', 'claro', 'aparência', 'dourado', 'marfim'] }),
+  C('exibir.mesa', 'Papel sobre a mesa (sombras e contorno)', 'relevo', { sin: ['sombra', 'contorno', 'moldura', 'borda', 'sombreamento', 'acabamento'] }),
+  C('exibir.relevo', 'Relevo nas barras', 'relevo', { sin: ['sombra', 'efeito 3d', 'destaque'] }),
+  C('exibir.telaCheia', 'Tela cheia', 'tela', { sin: ['maximizar', 'esconder tudo'] }),
+  C('exibir.zoom', 'Zoom', 'zoommais', { sin: ['aumentar', 'diminuir', 'ampliar', '100%'], chega: porModulo(V4, V7, null) }),
+  C('exibir.ajustar', 'Ajustar à tela', 'ajustar', { sin: ['ver tudo', 'caber na tela', 'enquadrar'], mods: ['postits'] }),
+  C('exibir.codigos', 'Mostrar códigos (Q-001)', 'codigo', { sin: ['número do post-it', 'q-001', 'código'], mods: ['postits'] }),
+  C('formatar.fonteQ', 'Letra do item (quadro)', 'fonte', { sin: ['fonte', 'letra', 'tipo de letra', 'caveat', 'manuscrita', 'letra à mão', 'serifa', 'máquina de escrever'], mods: ['postits'] }), /* v0.6.57 */
+  C('formatar.textura', 'Textura do post-it', 'texturaQ', { sin: ['papel', 'ponta dobrada', 'canto dobrado', 'amassado', 'mancha de café', 'café'], mods: ['postits'] }),
+  C('formatar.etiqueta', 'Etiqueta do post-it', 'etiquetaQ', { sin: ['frente', 'setor', 'categoria', 'marcador', 'tag'], mods: ['postits'] }), /* v0.6.66 (N1) */
+  C('formatar.etiquetaNova', 'Nova etiqueta', 'etiquetaQ', { sin: ['criar etiqueta', 'nova frente', 'novo setor'], mods: ['postits'] }),
+  C('formatar.tituloPostit', 'Título do post-it', 'titulo', { sin: ['cabeçalho do post-it', 'nome do post-it', 'título'], mods: ['postits'] }),
+  C('exibir.caixas', 'Caixinhas de feito', 'check', { sin: ['feito', 'concluído', 'checklist', 'marcar tarefa'], mods: ['postits'] }),
+  C('exibir.quebras', 'Quebras de página', 'quebrapag', { sin: ['quebra', 'folha', 'tracejado da impressão', 'área de impressão'], mods: ['postits'] }),
+  C('exibir.fundo', 'Fundo do quadro', 'grade', { sin: ['bolinhas', 'quadriculado', 'linhas', 'cor do fundo', 'papel de fundo'], mods: ['postits'] }),
+  C('exibir.zoom100', 'Zoom 100%', 'zoommais', { sin: ['tamanho real', 'voltar o zoom', '100%'], mods: ['planilha'] }),
+  C('exibir.congelar', 'Congelar painéis', 'congelar', { sin: ['fixar linha', 'travar cabeçalho', 'congelar cabeçalho'], chega: V4, mods: ['planilha'] }),
+  C('exibir.abaGrafico', 'Aba Gráfico', 'grafico', { sin: ['aba do gráfico', 'faixa do gráfico', 'aba automática', 'esconder aba gráfico'], mods: ['planilha'], chega: V4 }),
+  C('exibir.folhaClara', 'Folha clara', 'tema', { sin: ['grade branca', 'fundo branco', 'planilha clara'], chega: V4, mods: ['planilha'] }),
+  C('exibir.grade', 'Linhas de grade', 'grade', { chega: V4, mods: ['planilha'] }),
+  C('exibir.ferramentas', 'Barra de ferramentas do quadro', 'barraLat', { sin: ['ferramentas', 'barra lateral', 'formas à mão'], mods: ['postits'] }),
+  C('exibir.assistente', 'Assistente do quadro', 'lampada', { sin: ['revisar fluxograma', 'pendências', 'erros do fluxo', 'verificar'], mods: ['postits'] }),
+  C('exibir.minimapa', 'Minimapa', 'mapa', { sin: ['mapa do quadro', 'visão geral'], mods: ['postits'] }),
+  C('exibir.leitura', 'Modo leitura', 'ver', { chega: V7, mods: ['docx'] }),
+];
+
+export const PorId = Object.fromEntries(COMANDOS.map((c) => [c.id, c]));
+
+/** Compara versões "v0.3.0". Texto que não é versão (ex.: "depois da v1.0.0") conta como futuro. */
+export function versaoMaior(a, b) {
+  const p = (v) => { const m = /^v(\d+)\.(\d+)\.(\d+)(?:\.(\d+))?$/.exec(v); return m ? [m[1], m[2], m[3], m[4] || 0].map(Number) : []; };
+  const x = p(a), y = p(b);
+  if (x.length !== 4) return true;
+  for (let i = 0; i < 4; i++) if (x[i] !== y[i]) return x[i] > y[i];
+  return false;
+}
+
+/** "chega na v0.5.0" ou "chega depois da v1.0.0" (para as frases de aviso). */
+export const textoChega = (v) => (/^v/.test(v) ? 'chega na ' + v : 'chega ' + v);
+
+/** Em que versão o comando chega neste módulo; null = já funciona. */
+export function chegaNa(cmd, mod, versao = VERSAO) {
+  if (!cmd || !cmd.chega) return null;
+  const v = typeof cmd.chega === 'string' ? cmd.chega : (cmd.chega[mod] || null);
+  if (!v) return null;
+  return versaoMaior(v, versao) ? v : null;
+}
+
+/** O comando aparece neste módulo? (mod null = fora de um arquivo) */
+export function valeNoModulo(cmd, mod) {
+  return mod ? cmd.mods.includes('*') || cmd.mods.includes(mod) : cmd.mods.includes('*') && !cmd.ed;
+}
+
+const normal = (t) => String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, ' ').trim();
+/* v0.6.63: plural e singular contam igual na busca ("Excluir linhas" acha "Excluir linha"): cada palavra perde o plural
+   (ões → ão, ais → al, eis → el, s no fim), dos dois lados, então "células", "colunas" e "ações" também casam */
+const singular = (t) => t.split(' ').map((w) => (w.length < 4 ? w : w.replace(/oes$/, 'ao').replace(/aes$/, 'ao').replace(/ais$/, 'al').replace(/eis$/, 'el').replace(/([^s])s$/, '$1'))).join(' ');
+const buscavel = (t) => singular(normal(t));
+
+export function buscarComandos(texto, mod, max = 8) {
+  const q = buscavel(texto);
+  const validos = COMANDOS.filter((c) => valeNoModulo(c, mod));
+  if (!q) return validos.filter((c) => !chegaNa(c, mod)).slice(0, max);
+  const palavras = q.split(' ');
+  const nota = (c) => {
+    const nome = buscavel(c.nome);
+    const sin = c.sin.map(buscavel);
+    let s = 0;
+    if (nome === q) s += 100;
+    if (nome.startsWith(q)) s += 50;
+    if (nome.includes(q)) s += 30;
+    if (sin.some((x) => x === q)) s += 40;
+    if (sin.some((x) => x.includes(q))) s += 20;
+    if (palavras.length > 1 && palavras.every((p) => nome.includes(p) || sin.some((x) => x.includes(p)))) s += 15;
+    if (s && !chegaNa(c, mod)) s += 5;
+    return s;
+  };
+  return validos.map((c) => [nota(c), c]).filter(([s]) => s > 0).sort((a, b) => b[0] - a[0]).slice(0, max).map(([, c]) => c);
+}

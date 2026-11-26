@@ -1,0 +1,76 @@
+/* Vértice Docs v0.6.20 · fluidez (regra fixa da família). Só tokens da escala comum (src/layout/efc-movimento.css).
+   Só transform, opacity e filter. Nada infinito. Tudo para com "movimento reduzido" (bloco no fim). */
+
+/* a) marcador da aba que desliza (o lugar e o tamanho são postos pelo fluidez.js; o deslize é dele também) */
+.fz-abas { position: relative; }
+.fz-ind { position: absolute; pointer-events: none; z-index: 0; transform-origin: 0 0; will-change: transform; }
+.fz-ind[data-modo="baixo"] { background: linear-gradient(var(--a), var(--a)) left bottom / 100% 2px no-repeat; }
+.fz-ind[data-modo="cima"] { background: linear-gradient(var(--primary), var(--primary)) left top / 100% 2px no-repeat; }
+.fz-ind[data-modo="lado"] { background: linear-gradient(var(--a), var(--a)) left center / 3px 60% no-repeat; }
+.fz-ind[data-modo="pilula"] { background: var(--surface); border-radius: var(--r-miudo, 4px); box-shadow: var(--sh-1); }
+.fz-abas[data-fz-modo="pilula"] > :not(.fz-ind) { position: relative; z-index: 1; }
+/* com o marcador no lugar, o sublinhado e o fundo próprios da aba escolhida saem (senão apareceriam dois) */
+body[data-theme] .tabs.fz-abas .tab.active { border-bottom-color: transparent; box-shadow: none; }
+.int-abas.fz-abas .int-aba.on, .rg-abas.fz-abas .rg-aba.on { border-bottom-color: transparent; }
+.pl-abas-l.fz-abas .pl-aba.on:after { display: none; }
+.rail.fz-abas .rn.active::before { opacity: 0; }
+.qd-vistas.fz-abas button.on, .cr-abas.fz-abas button.on, .ge-abas.fz-abas button[aria-selected=true], .seg.fz-abas .chipb.on { background: transparent; box-shadow: none; }
+
+/* a) conteúdo que entra: corta o lado só enquanto desliza */
+.fz-entra { will-change: transform, opacity; }
+.wk-main:has(> .fz-entra) { overflow-x: clip; }
+
+/* a) título que entra letra por letra saindo do desfoque */
+.fz-tt > span { display: inline-block; opacity: 0; filter: blur(var(--blur-large)); transform: translateY(-.2em); white-space: pre;
+  animation: fzTt var(--duration-very-slow) var(--ease-smooth-out) forwards; animation-delay: calc(min(var(--i), 30) * var(--duration-stagger) / 2); }
+@keyframes fzTt { to { opacity: 1; filter: none; transform: none; } }
+
+/* b) gaveta: abre em 400 ms com desfoque leve; no celular a folha sobe */
+.side { animation: fzGaveta var(--panel-open-dur) var(--panel-ease); }
+@keyframes fzGaveta { from { opacity: .6; transform: translateX(100%); filter: blur(var(--panel-blur)); } }
+.app.cel .side { animation-name: fzFolha; }
+@keyframes fzFolha { from { opacity: .6; transform: translateY(100%); } }
+.work { overflow-x: clip; }
+
+/* c) painel do filtro: cresce do botão */
+.filtro-p { animation: t-dropdown-in var(--dropdown-open-dur) var(--dropdown-ease); transform-origin: top right; }
+
+/* d) confirmação: o fundo escurece */
+/* v0.6.63 (J1, D-86): quem aparece aos poucos é só o escurecido (camada de trás, ::before); o fundo em si não fica transparente,
+   senão a janela de dentro nascia transparente junto com ele (0 × 0,85) e via-se a faixa e a grade através dela */
+.fundo { background-color: transparent !important; }
+.fundo::before { content: ''; position: absolute; inset: 0; z-index: -1; background: rgba(12, 26, 36, .30); pointer-events: none; animation: fzFundo var(--modal-open-dur) var(--ease-out); }
+@keyframes fzFundo { from { opacity: 0; } }
+
+/* e) aviso: o que sai fica por baixo do novo enquanto some; visto de sucesso */
+.toasts { position: fixed; }
+.toast[data-fz-fant] { position: absolute; left: 0; right: 0; bottom: 0; z-index: -1; }
+.toast .t-success-check { flex: none; color: color-mix(in srgb, var(--ok) 45%, currentColor); }
+.toast .t-success-check svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+
+/* g) lista que entra em sequência: 40 ms entre os itens, até o 6º */
+.fz-li { animation: fzLi var(--duration-fast) var(--ease-smooth-out) backwards; animation-delay: calc(min(var(--i), 5) * var(--duration-stagger)); }
+@keyframes fzLi { from { opacity: 0; transform: translateY(10px) scale(.98); } }
+
+/* i) desfoque suave no fim quando tem mais conteúdo embaixo (gaveta e menu do celular) */
+.gv-corpo::after, .app.cel .rail::after { content: ""; position: sticky; bottom: 0; display: block; flex: none; height: 44px; margin-top: -44px; pointer-events: none; opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-out); -webkit-mask: linear-gradient(transparent, #000); mask: linear-gradient(transparent, #000);
+  -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px); background: linear-gradient(transparent, var(--surface)); }
+.gv-corpo.fz-mais::after, .app.cel .rail.fz-mais::after { opacity: 1; }
+
+/* j) tema: o ícone novo entra encolhido e desfocado, no lugar do antigo */
+.fz-tema svg { animation: fzTema var(--icon-swap-dur) var(--icon-swap-ease); }
+@keyframes fzTema { from { opacity: 0; filter: blur(var(--icon-swap-blur)); transform: scale(var(--icon-swap-start-scale)); } }
+
+/* k) faíscas: só no botão dourado, só quando a ação deu certo */
+.fz-spk { position: fixed; z-index: 120; width: 0; height: 0; pointer-events: none; }
+.fz-spk i { position: absolute; left: -1px; top: 0; width: 2px; height: 9px; border-radius: 2px; background: var(--a); transform-origin: 50% 0; animation: fzSpk var(--duration-very-slow) var(--ease-smooth-out) forwards; }
+@keyframes fzSpk { from { transform: rotate(var(--r)) translateY(6px) scaleY(1); opacity: 1; } to { transform: rotate(var(--r)) translateY(26px) scaleY(.2); opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .fz-tt > span { animation: none; opacity: 1; filter: none; transform: none; }
+  .side, .app.cel .side, .filtro-p, .fundo, .fundo::before, .fz-li, .fz-tema svg, .fz-spk i { animation: none !important; }
+  .gv-corpo::after, .app.cel .rail::after { transition: none !important; }
+}
+
+/* R13 · menu da coluna: v0.6.24 foi para src/ui/tabelaColunas.css (padrão do EFCwork) */

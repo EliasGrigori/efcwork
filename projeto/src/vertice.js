@@ -16,7 +16,7 @@ Object.assign(S, { vtVer: '' });
 Object.assign(ICS, {
   vertice: '<path d="M12 3 3 20h18L12 3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8.5 14h7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>'
 });
-const VT_URL = JN_RAIZ + '/EFCdocs/?em=cwork';
+const VT_URL = JN_RAIZ + '/efcwork/vertice/?em=cwork'; /* v0.6.36 (P5): o Vértice mora dentro do efcwork (era /EFCdocs/) */
 const vtLiga = () => !!S.user && !S.user.precisaCompletar && isSup(S.user);
 
 /* ---------- a porta ---------- */
@@ -36,7 +36,7 @@ try {
 
 /* ---------- o endereço de cada aba ---------- */
 /* quem vê o menu abre o Vértice no modo do Cwork (?em=cwork: lê a porta); os outros, como antes (só pelo documento ligado) */
-Object.defineProperty(JN_APPS.docs, 'url', { get: () => vtLiga() ? VT_URL : JN_RAIZ + '/EFCdocs/', configurable: true });
+Object.defineProperty(JN_APPS.docs, 'url', { get: () => vtLiga() ? VT_URL : JN_RAIZ + '/efcwork/vertice/', configurable: true });
 JN_APPS.docs.podeNova = () => vtLiga();
 const vtAbas = () => S.jnAbertas.filter(x => jnBase(x) === 'docs');
 /* tira as abas do Vértice sem perguntar (troca de conta; perdeu a permissão: só as abertas no modo do Cwork) */
@@ -52,6 +52,14 @@ function vtConfere() {
   if (!vtLiga()) vtFechaAbas(true);
 }
 setInterval(vtConfere, 2000); /* garantia: o render também confere */
+/* v0.6.36 (P5, revisor): o Vértice mora em /efcwork/vertice/ com o sw.js dele. Quem vê o menu já deixa a tela do Vértice guardada
+   no aparelho ao entrar, para a aba abrir sem internet mesmo antes da primeira vez (antes, ela ficava guardada em /EFCdocs/). */
+let vtSwFeito = false;
+function vtGuardaVertice() {
+  if (vtSwFeito || !vtLiga() || !('serviceWorker' in navigator) || location.protocol !== 'https:' || !/^\/efcwork\//.test(location.pathname)) return;
+  vtSwFeito = true; navigator.serviceWorker.register('/efcwork/vertice/sw.js', { scope: '/efcwork/vertice/' }).catch(() => { vtSwFeito = false; });
+}
+setInterval(vtGuardaVertice, 5000);
 
 /* ---------- o menu ---------- */
 { const i = AREAS.findIndex(a => a.id === 'documentos');

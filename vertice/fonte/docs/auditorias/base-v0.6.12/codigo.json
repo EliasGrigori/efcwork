@@ -1,0 +1,19 @@
+{
+ "limite": 800,
+ "total": 35106,
+ "grandes": {
+  "estilo-base.css": 3111,
+  "planilha/desenhoGrafico.js": 848,
+  "planilha/funcoes.js": 1058,
+  "planilha/explicar.js": 812,
+  "planilha/Planilha.jsx": 3707,
+  "planilha/xlsx/graficosXlsx.js": 1116,
+  "quadro/Quadro.jsx": 1126
+ },
+ "avisosMontar": 4,
+ "tamanhoApp": {
+  "bytes": 1928796,
+  "compactado": 623574,
+  "conta": "js, css e html da v0.6.20 com o layout da família, a fluidez e o visual novo (partes 1 a 4). O Elias disse em 15/11/2026 para não se preocupar com o peso nesta versão; a referência passa a ser este número. Antes: parte 1 (609662)"
+ }
+}

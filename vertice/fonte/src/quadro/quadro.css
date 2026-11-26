@@ -1,0 +1,535 @@
+/* EFCdocs v0.3.0 — quadro de post-its, Kanban e ajustes do layout (achados do Grok).
+   Mesmos cantos do EFClaudian: 6 px (chip), 8 px (botão), 12 px (cartão). Post-it é papel: canto reto. */
+
+/* ---------- tema Petróleo (proposta G2: cores do ícone e da abertura) ---------- */
+
+/* ---------- menu: etiqueta "em breve" e aviso nas páginas que chegam depois ---------- */
+.rn .em { text-transform: lowercase; letter-spacing: .01em; white-space: nowrap; flex: none; }
+.aviso-breve {
+  display: flex; gap: 8px; align-items: flex-start; padding: 9px 12px; margin: 2px 0 10px;
+  border: 1px solid var(--border-light); border-left: 3px solid var(--warn); border-radius: var(--r-ctl);
+  background: var(--warn-soft); font-size: 14px; color: var(--text);
+}
+.aviso-breve svg { width: 18px; height: 18px; flex: none; color: var(--warn); margin-top: 1px; }
+
+/* ---------- celular: barra de baixo com os módulos ---------- */
+.navcel {
+  display: grid; grid-template-columns: repeat(5, 1fr); flex: none;
+  background: var(--surface); border-top: 1px solid var(--border);
+  padding: 2px 4px env(safe-area-inset-bottom, 0px);
+}
+.navcel a, .navcel button {
+  display: grid; justify-items: center; gap: 1px; padding: 6px 2px 5px; min-height: 52px; position: relative;
+  color: var(--text-muted); font-size: 11px; font-weight: 600; text-decoration: none; border-radius: var(--r-ctl);
+}
+.navcel svg { width: 22px; height: 22px; }
+.navcel .on { color: var(--primary); }
+.navcel .on:before { content: ""; position: absolute; top: 0; left: 28%; right: 28%; height: 3px; border-radius: 0 0 4px 4px; background: var(--primary); }
+.navcel .qt { position: absolute; top: 4px; left: calc(50% + 8px); font-style: normal; font-size: 11px; font-weight: 700; min-width: 16px; padding: 0 4px; border-radius: var(--r-pill); background: var(--surface-3); color: var(--text); }
+body.relevo .navcel { box-shadow: inset 0 1px #ffffff0f, 0 -3px 10px -6px #0000004d; }
+.app.cel .toasts { bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
+
+/* campos de várias linhas nas janelas */
+.campo-t textarea, .campo-t select {
+  border: 1px solid var(--border-light); border-radius: var(--r-ctl); background: var(--surface-2);
+  padding: 8px 10px; font: inherit; font-size: 14px; font-weight: 500; color: var(--text); resize: vertical;
+}
+.campo-t select { height: 38px; padding: 0 8px; }
+.campo-t textarea:focus, .campo-t select:focus { border-color: var(--primary); outline: none; }
+
+/* ---------- quadro ---------- */
+.qd { display: flex; flex-direction: column; overflow: hidden; }
+.qd-area {
+  flex: 1; position: relative; overflow: hidden; touch-action: none; user-select: none; -webkit-user-select: none;
+  background-image: radial-gradient(var(--border-light) 1px, transparent 1.3px); cursor: default; outline: none;
+}
+.qd-area.modo-seta, .qd-area.modo-pincel { cursor: crosshair; }
+/* v0.6.48 (D-76): no Quadro, as bolinhas são só as da área (andam com o arrasto e o zoom); as da superfície por baixo ficavam paradas e apareciam como uma segunda camada desalinhada */
+.sup-postits[data-vista=quadro] { background-image: none; }
+/* v0.6.50: fundo do quadro (desenho e cor em fundo.jsx; o traço segue o tema). No tema escuro, a cor escolhida é só um toque */
+.qd-area, .qd-fundo-am { --qd-traco: var(--border-light); }
+.qd-area[data-fundo=quadriculado], .qd-area[data-fundo=linhas] { --qd-traco: color-mix(in srgb, var(--border-light) 50%, transparent); }
+.qd-area.com-cor { background-color: var(--qd-cor); }
+body[data-theme=dark] .qd-area.com-cor, body[data-theme=dark] .qd-fundo-am.com-cor { background-color: color-mix(in srgb, var(--qd-cor) 10%, var(--surface-2)); }
+.qd-jfundo { width: min(460px, 94vw); }
+.qd-fundos { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.qd-fundo-op { display: flex; flex-direction: column; align-items: stretch; gap: 6px; min-height: 34px; padding: 6px; border: 1px solid var(--border-light); border-radius: var(--r-ctl, 8px); background: var(--surface); color: var(--text); font: inherit; font-size: 12px; cursor: pointer; }
+.qd-fundo-op:hover { border-color: var(--primary); }
+.qd-fundo-op.on { border-color: var(--primary); box-shadow: var(--anel, 0 0 0 3px var(--primary-soft)); }
+.qd-fundo-am { display: block; height: 40px; border-radius: 6px; border: 1px solid var(--border-light); background-color: var(--surface-2); }
+.qd-fundo-am.com-cor { background-color: var(--qd-cor); }
+.qd-mundo { position: absolute; left: 0; top: 0; width: 1px; height: 1px; transform-origin: 0 0; }
+
+.qi { position: absolute; box-sizing: border-box; color: #1f2328; font-size: 14px; line-height: 1.3; }
+.qi-t {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; overflow: hidden;
+  white-space: pre-wrap; overflow-wrap: anywhere; padding: 8px 12px; pointer-events: none;
+}
+.qi-t:empty { display: none; }
+.qi-postit { box-shadow: 0 3px 8px rgba(16,24,40,.18); border: 1px solid rgba(0,0,0,.10); border-radius: 4px; }
+.qi-postit .qi-t { padding: 18px 12px 10px; align-items: safe center; } /* v0.6.63 (PL06): no tamanho mínimo, a linha que não cabe no meio começa em cima, abaixo do código (antes subia 2 px por cima dele) */
+.qi-processo .qi-t, .qi-inicio .qi-t { padding: 6px 14px; }
+.qi-decisao .qi-t { padding: 22% 20%; }
+.qi-dados .qi-t { padding: 6px 22px; }
+.qi-texto .qi-t { justify-content: flex-start; padding: 2px 4px; font-size: 16px; font-weight: 700; color: var(--text); }
+.qi-texto { color: var(--text); }
+.qi-forma { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.qi-forma rect, .qi-forma polygon { stroke: #3b4552; stroke-width: 1.6; vector-effect: non-scaling-stroke; }
+.qi-imagem { background: #eef0f3; border: 1px solid #d0d5dd; }
+.qi-imagem img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+.qi-semimg { position: absolute; inset: 0; display: grid; place-items: center; color: #98a2b3; }
+.qi-raia { background: rgba(127,138,153,.08); border: 1px solid var(--border-light); }
+.qi-raia-h {
+  position: absolute; left: 0; top: 0; bottom: 0; width: 46px; background: rgba(127,138,153,.16);
+  border-right: 1px solid var(--border-light); display: grid; place-items: center; overflow: hidden;
+}
+.qi-raia-h span {
+  writing-mode: vertical-rl; transform: rotate(180deg); font-weight: 700; font-size: 14px; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-height: 100%; padding: 8px 0;
+}
+.qi-cod {
+  position: absolute; left: 6px; top: 3px; font-size: 11px; font-weight: 700; letter-spacing: .02em;
+  color: rgba(31,35,40,.72); pointer-events: none; font-variant-numeric: tabular-nums; /* v0.6.32 (PL08): contraste de 5,2 a 6,2 em todas as cores */
+}
+.qi-decisao .qi-cod { left: 50%; transform: translateX(-50%); top: 12%; }
+.qi-inicio .qi-cod { top: 5px; }
+.qi-inicio.qi-com-cod .qi-t { padding-top: 20px; } /* v0.6.53 (D-82): o texto começa abaixo do código */ /* v0.6.48 (D-77): a distância da esquerda vem do raio da curva (partes.jsx), como no PDF */
+.qi-dados .qi-cod { left: 20px; }
+/* v0.6.56 (D-83): na Atividade e na Entrada/Saída o código fica mais junto do canto e o texto desce um pouco; continuam cabendo 3 linhas */
+.qi-processo .qi-cod, .qi-dados .qi-cod { top: 2px; line-height: 1; }
+.qi-processo.qi-com-cod .qi-t, .qi-dados.qi-com-cod .qi-t { padding-top: 14px; padding-bottom: 3px; }
+.qi-marcas { position: absolute; right: 4px; top: 3px; display: flex; gap: 2px; color: rgba(31,35,40,.6); }
+.qi-marcas svg { width: 13px; height: 13px; }
+.qi-marcas a { color: inherit; pointer-events: auto; }
+.qi.sel { outline: 2px solid var(--primary); outline-offset: 0; } /* v0.6.48 (D-78): moldura colada no item (a 3 px parecia uma segunda caixa deslocada e a alça ficava fora do canto), como no PowerPoint */
+.qi-raia.sel { outline-offset: -2px; }
+
+.qd-setas { position: absolute; left: 0; top: 0; width: 1px; height: 1px; overflow: visible; z-index: 5000; pointer-events: none; }
+.qd-seta-linha { fill: none; stroke: #475467; stroke-width: 1.8; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.qd-ponta-cor { fill: #475467; }
+.qd-seta-toque { fill: none; stroke: transparent; stroke-width: 16; pointer-events: stroke; cursor: pointer; }
+.qd-seta.sel .qd-seta-linha { stroke: var(--primary); stroke-width: 2.6; }
+.qd-rotulo rect { fill: #fff; stroke: #d0d5dd; }
+.qd-rotulo text { font-size: 12px; font-weight: 600; fill: #1f2328; font-family: inherit; }
+.qd-rotulo { pointer-events: all; cursor: pointer; }
+.qd-rotulo-linha text { paint-order: stroke; stroke: var(--qd-cor, var(--surface-2)); stroke-width: 4px; stroke-linejoin: round; } /* v0.6.52: contorno da cor do fundo, para ler por cima das bolinhas */
+.qd-ligando { fill: none; stroke: var(--primary); stroke-width: 2; stroke-dasharray: 6 5; vector-effect: non-scaling-stroke; }
+/* temas escuros: linha das setas mais clara para aparecer no fundo */
+body[data-theme=dark] .qd-seta-linha{ stroke: #b8c2cf; }
+body[data-theme=dark] .qd-ponta-cor{ fill: #b8c2cf; }
+
+.qd-ponto {
+  position: absolute; width: 26px; height: 26px; margin: -13px 0 0 -13px; z-index: 6000; display: grid; place-items: center;
+  border-radius: 50%; background: var(--surface); color: var(--primary); border: 1.5px solid var(--primary);
+  box-shadow: 0 2px 6px rgba(0,0,0,.2); cursor: crosshair; touch-action: none;
+}
+.qd-ponto svg { width: 15px; height: 15px; }
+.qd-ponto:hover { background: var(--primary); color: var(--on-primary); }
+.qd-alca {
+  position: absolute; width: 14px; height: 14px; margin: -7px 0 0 -7px; z-index: 6000; background: var(--surface);
+  border: 2px solid var(--primary); border-radius: 4px; cursor: nwse-resize; touch-action: none;
+}
+.qd-ret { position: absolute; z-index: 6500; border: 1.5px dashed var(--primary); background: var(--primary-soft); pointer-events: none; }
+
+.qd-edita {
+  position: absolute; z-index: 7000; box-sizing: border-box; border: 2px solid var(--primary); outline: none; resize: none;
+  font: inherit; font-size: 14px; line-height: 1.3; padding: 18px 12px 10px; color: #1f2328; background: #fff;
+  border-radius: 4px; box-shadow: 0 6px 20px rgba(0,0,0,.25); user-select: text; -webkit-user-select: text;
+}
+.qd-edita-processo, .qd-edita-inicio, .qd-edita-dados, .qd-edita-decisao { padding: 8px 12px; }
+.qd-edita-inicio { border-radius: 999px; padding: 8px 18px; text-align: center; }
+.qd-ok-cel {
+  position: absolute; left: 8px; right: 8px; bottom: 8px; z-index: 47; display: flex; justify-content: flex-end; gap: 8px; padding: 6px;
+  border-radius: var(--r-ctl); box-shadow: 0 -2px 18px rgba(0,0,0,.22); background: var(--surface);
+}
+.qd-ok-cel .btn { min-width: 84px; }
+.qd-edita-texto { font-size: 16px; font-weight: 700; padding: 2px 4px; }
+.qd-edita-raia { font-weight: 700; padding: 8px 10px; }
+.qd-edita-seta {
+  position: absolute; z-index: 7000; width: 160px; height: 32px; border: 2px solid var(--primary); border-radius: var(--r-ctl);
+  padding: 0 8px; font: inherit; font-size: 13px; background: #fff; color: #1f2328; text-align: center; outline: none;
+}
+
+.qd-barra {
+  position: absolute; z-index: 40; display: flex; align-items: center; gap: 2px; padding: 4px;
+  box-shadow: 0 10px 26px rgba(0,0,0,.28); border-radius: var(--r-ctl);
+}
+.qd-barra .sep { width: 1px; align-self: stretch; margin: 2px 3px; background: var(--border-light); }
+.app .qd-barra .rbi { width: 34px; height: 34px; }
+.app .qd-barra .rbi svg { width: 19px; height: 19px; }
+.qd-barra .rbi.perigo { color: var(--crit); }
+.qd-amostra { width: 18px; height: 18px; border-radius: 4px; border: 1px solid rgba(0,0,0,.25); display: block; }
+
+.qd-vistas {
+  position: absolute; left: 10px; top: 10px; z-index: 45; display: flex; padding: 3px; gap: 2px;
+  background: var(--surface); border: 1px solid var(--border-light); border-radius: var(--r-ctl); box-shadow: 0 4px 12px rgba(0,0,0,.12);
+}
+.qd-vistas button {
+  display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 10px; border-radius: var(--r-chip);
+  font-size: 13px; font-weight: 700; color: var(--text-muted);
+}
+.qd-vistas svg { width: 17px; height: 17px; }
+.qd-vistas .on { background: var(--primary-soft); color: var(--primary); }
+body.relevo .qd-vistas .on { box-shadow: inset 0 1px #ffffff1a, 0 1px 2px #00000024; }
+
+.qd-zoom {
+  position: absolute; left: 10px; bottom: 10px; z-index: 45; display: flex; align-items: center; gap: 1px; padding: 3px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.12); border-radius: var(--r-ctl);
+}
+.qd-pct { min-width: 50px; height: 28px; font-size: 13px; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; border-radius: var(--r-chip); }
+.qd-mini { position: absolute; right: 10px; bottom: 10px; z-index: 45; box-shadow: 0 4px 12px rgba(0,0,0,.15); border-radius: var(--r-ctl); cursor: pointer; touch-action: none; }
+.qd-mini rect { fill: var(--surface-3); }
+.qd-mini .mm-raia { fill: var(--surface-2); stroke: var(--border-light); stroke-width: .5; }
+.qd-mini .mm-vista { fill: var(--primary-soft); stroke: var(--primary); stroke-width: 1.5; }
+
+.qd-modo {
+  position: absolute; left: 50%; top: 10px; transform: translateX(-50%); z-index: 46; display: flex; align-items: center; gap: 8px;
+  padding: 6px 6px 6px 12px; max-width: calc(100% - 24px); background: var(--text); color: var(--bg);
+  border-radius: var(--r-ctl); font-size: 14px; font-weight: 600; box-shadow: 0 8px 22px rgba(0,0,0,.3);
+}
+.qd-modo svg { width: 18px; height: 18px; flex: none; }
+.qd-modo .btn { background: var(--bg); color: var(--text); border-color: transparent; }
+.qd-modo.leitura { position: relative; left: auto; top: auto; transform: none; margin: 8px auto 0; padding: 6px 12px; z-index: 1; }
+.qd > .qd-modo.leitura { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); }
+
+.qd-vazio {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 44; width: min(400px, calc(100% - 32px));
+  display: grid; gap: 8px; padding: 16px 18px; text-align: center; justify-items: center; box-shadow: var(--shadow);
+}
+.qd-vazio b { font-size: 16px; }
+.qd-vazio span { font-size: 14px; color: var(--text-muted); }
+.qd-vazio { width: min(480px, calc(100% - 32px)); }
+.qd-vazio .chips { flex-wrap: nowrap; gap: 6px; }
+.qd-vazio .chipb { white-space: nowrap; }
+.app.cel .qd-vazio .chips { flex-wrap: wrap; justify-content: center; }
+
+.qd-timer {
+  position: absolute; right: 10px; top: 10px; z-index: 47; display: grid; gap: 6px; padding: 10px 12px; justify-items: center;
+  box-shadow: 0 8px 22px rgba(0,0,0,.25); min-width: 210px;
+}
+.qd-timer b { font-size: 26px; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: .02em; }
+.qd-timer.quase b { color: var(--warn); }
+.qd-timer.fim b { color: var(--crit); }
+.qd-timer-b { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; }
+.qd-timer .chipb { min-height: 28px; padding: 0 8px; }
+
+.qd-paleta { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 6px; }
+.qd-cor {
+  display: flex; align-items: center; gap: 8px; min-height: 42px; padding: 6px 10px; border: 1px solid var(--border-light);
+  border-radius: var(--r-ctl); background: var(--surface-2); font-size: 14px; font-weight: 600; text-align: left;
+}
+.qd-cor:hover { border-color: var(--primary); }
+.qd-cor i { width: 22px; height: 22px; border-radius: 4px; border: 1px solid rgba(0,0,0,.2); flex: none; }
+.qd-cor svg { width: 22px; height: 22px; flex: none; color: var(--primary); }
+.qd-cor span { display: grid; }
+.qd-cor small { font-weight: 500; color: var(--text-muted); font-size: 12px; }
+.qd-formas .qd-paleta { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+.qd-dica { margin: 0; font-size: 13px; color: var(--text-muted); }
+
+.qd-cores-mini { display: flex; flex-wrap: wrap; gap: 6px; }
+.qd-cores-mini button { width: 26px; height: 26px; border-radius: 4px; border: 1px solid rgba(0,0,0,.25); }
+.qd-cores-mini button.on { outline: 2px solid var(--primary); outline-offset: 2px; }
+.qd-nota { margin: 0; font-size: 13px; white-space: pre-wrap; background: var(--surface-2); border-radius: var(--r-ctl); padding: 8px 10px; }
+.painel-extra { display: contents; }
+
+/* ---------- Kanban ---------- */
+.kb { flex: 1; display: flex; gap: 12px; align-items: flex-start; overflow: auto; padding: 56px 14px 14px; }
+.kb-col {
+  flex: 0 0 272px; max-height: 100%; display: flex; flex-direction: column; background: var(--surface);
+  border: 1px solid var(--border); border-radius: var(--r-card); min-height: 120px;
+}
+.kb-col.alvo { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-soft); }
+.kb-h { display: flex; align-items: center; gap: 4px; padding: 8px 6px 6px 12px; border-bottom: 1px solid var(--border); }
+.kb-nome { font-weight: 800; font-size: 14px; text-align: left; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.kb-qt { font-size: 12px; font-weight: 700; color: var(--text-muted); background: var(--surface-3); border-radius: var(--r-pill); padding: 0 7px; }
+.kb-acoes { display: flex; }
+.kb-acoes .rbi { width: 26px; height: 26px; color: var(--text-muted); }
+.kb-acoes .rbi svg { width: 16px; height: 16px; }
+.kb-lista { padding: 8px; display: grid; gap: 8px; overflow: auto; }
+.kb-card {
+  position: relative; background: #fff; color: #1f2328; border: 1px solid #d0d5dd; border-left: 5px solid var(--kb-cor);
+  border-radius: 4px; padding: 18px 12px 10px 12px; box-shadow: 0 1px 2px rgba(16,24,40,.08); cursor: grab; touch-action: pan-y;
+}
+.kb-card.sel { outline: 2px solid var(--primary); outline-offset: 1px; }
+.kb-card.saindo { opacity: .35; }
+.kb-card p { margin: 0; font-size: 14px; line-height: 1.35; white-space: pre-wrap; overflow-wrap: anywhere; }
+.kb-vazio { color: #98a2b3; font-style: italic; font-size: 13px; }
+.kb-cod { position: absolute; left: 12px; top: 3px; font-size: 11px; font-weight: 700; color: rgba(31,35,40,.55); }
+.kb-alca { position: absolute; right: 4px; top: 2px; width: 24px; height: 24px; display: grid; place-items: center; color: #98a2b3; touch-action: none; cursor: grab; }
+.kb-alca svg { width: 15px; height: 15px; }
+.kb-nota { position: absolute; right: 30px; top: 4px; color: rgba(31,35,40,.55); }
+.kb-nota svg { width: 13px; height: 13px; }
+.kb-edita { width: 100%; min-height: 80px; border: 2px solid var(--primary); border-radius: 4px; font: inherit; font-size: 14px; padding: 6px; resize: vertical; color: #1f2328; background: #fff; }
+.kb-vaga { height: 6px; border-radius: 4px; background: var(--primary); margin: 2px 0; }
+.kb-novo, .kb-coluna-nova {
+  display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 36px; margin: 0 8px 8px;
+  border: 1px dashed var(--border-light); border-radius: var(--r-ctl); color: var(--text-muted); font-size: 13px; font-weight: 700;
+}
+.kb-novo:hover, .kb-coluna-nova:hover { color: var(--primary); border-color: var(--primary); }
+.kb-novo svg, .kb-coluna-nova svg { width: 16px; height: 16px; }
+.kb-coluna-nova { flex: 0 0 150px; margin: 0; min-height: 44px; }
+.kb-fantasma { position: fixed; z-index: 95; pointer-events: none; transform: rotate(2deg); box-shadow: 0 14px 30px rgba(0,0,0,.3); opacity: .95; }
+
+.qd.leitura .qd-area { cursor: grab; }
+
+/* celular */
+.app.cel .qd-vistas button { padding: 0 8px; }
+.app.cel .qd-zoom .qd-pct { min-width: 44px; }
+.app.cel .kb { padding-top: 52px; scroll-snap-type: x mandatory; }
+.app.cel .kb-col { flex-basis: min(86vw, 300px); scroll-snap-align: start; }
+.app.cel .qd-timer { top: 52px; }
+
+@media print { .qd-vistas, .qd-zoom, .qd-mini, .qd-barra, .qd-ponto, .qd-alca { display: none !important; } }
+
+/* celular: barra da seleção presa embaixo, acima do zoom */
+.qd-barra.fixa { box-shadow: 0 -2px 18px rgba(0,0,0,.22); }
+
+/* linha guia do alinhamento automático */
+.qd-guia { position: absolute; z-index: 6400; pointer-events: none; background: var(--primary); opacity: .9; }
+.qd-guia.v { width: 1px; margin-left: -.5px; }
+.qd-guia.h { height: 1px; margin-top: -.5px; }
+
+/* ---------- v0.3.1: páginas, legenda, tarefa, ferramentas, assistente ---------- */
+.qi-pagina { background: rgba(127,138,153,.04); border: 2px dashed var(--border); border-radius: 7px; }
+.qi-pg-h {
+  position: absolute; left: 0; right: 0; top: 0; height: 34px; padding: 0 12px; display: flex; align-items: center;
+  background: rgba(127,138,153,.14); border-bottom: 1px dashed var(--border); border-radius: 4px 4px 0 0; overflow: hidden;
+}
+.qi-pg-h span { font-weight: 700; font-size: 14px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.qi-pagina.sel { outline-offset: -2px; }
+
+.qi-legenda { background: #fff; border: 1px solid #98a2b3; border-radius: 7px; padding: 8px 12px; overflow: hidden; }
+.qi-leg > b { display: block; font-size: 13px; margin-bottom: 4px; color: #1f2328; }
+.qi-leg-l { display: flex; align-items: center; gap: 10px; height: 38px; }
+.qi-leg-l > span { display: flex; flex-direction: column; min-width: 0; line-height: 1.15; }
+.qi-leg-l b { font-size: 13px; color: #1f2328; }
+.qi-leg-l small { font-size: 11px; color: #475467; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.qi-leg-vazia { font-size: 12px; color: #667085; }
+
+.qi-borda { border: 1px solid #667085; background: #fff; }
+.qi-borda .qi-t { font-size: 14px; font-weight: 400; }
+
+.qi-tarefa {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 34px; padding: 3px 8px; box-sizing: border-box;
+  display: flex; flex-direction: column; justify-content: center; gap: 1px;
+  background: rgba(255,255,255,.55); border-top: 1px solid rgba(0,0,0,.10); font-size: 11px; color: #344054; pointer-events: none;
+}
+.qi-tar-l1 { display: flex; justify-content: space-between; align-items: center; gap: 6px; font-weight: 700; }
+.qi-tar-l1 > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.qi-tar-l2 { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.qi-tar-l2.venc { color: #b42318; font-weight: 700; }
+.qi-com-tarefa .qi-t { padding-bottom: 38px; }
+em.gut { font-style: normal; font-size: 11px; font-weight: 800; padding: 1px 6px; border-radius: 10px; white-space: nowrap; }
+em.gut-alta { background: #fee4e2; color: #b42318; }
+em.gut-media { background: #fef0c7; color: #b54708; }
+em.gut-baixa { background: #d1fadf; color: #067647; }
+
+.kb-card .qi-tarefa { position: static; height: auto; margin: 8px -2px -2px; padding: 5px 4px 0; background: none; font-size: 12px; }
+
+.qd-tarefa-p, .qd-leg-p { display: flex; flex-direction: column; gap: 8px; }
+.qd-tarefa-p input[type=date] { height: 38px; padding: 0 8px; }
+.qd-gut-sel { display: grid; grid-template-columns: auto 1fr 1fr 1fr; gap: 6px; align-items: end; }
+.qd-gut-sel > b { font-size: 12px; padding-bottom: 10px; color: var(--text-muted); }
+.qd-gut-res { margin: 0; padding: 6px 8px; border-radius: var(--r-ctl); font-size: 13px; background: var(--surface-2); color: var(--text-muted); }
+.qd-gut-res.gut-alta { background: #fee4e2; color: #b42318; }
+.qd-gut-res.gut-media { background: #fef0c7; color: #b54708; }
+.qd-gut-res.gut-baixa { background: #d1fadf; color: #067647; }
+.qd-aviso.venc { margin: 0; font-size: 13px; font-weight: 700; color: var(--crit); }
+.qd-leg-lin { display: flex; flex-direction: column; gap: 4px; padding-bottom: 8px; border-bottom: 1px solid var(--border-light); }
+
+.qd-gut { margin-left: 4px; border-left: 1px solid var(--border-light); border-radius: 0 !important; padding-left: 10px !important; }
+
+/* barra de ferramentas vertical (computador) */
+.qd-ferr {
+  position: absolute; left: 10px; top: 56px; bottom: 56px; z-index: 44; width: 78px; padding: 2px 4px 4px; display: flex; flex-direction: column; gap: 1px; overflow-y: auto; scrollbar-width: thin; align-content: flex-start; height: fit-content; max-height: calc(100% - 112px);
+  background: var(--surface); border: 1px solid var(--border-light); border-radius: var(--r-ctl); box-shadow: 0 4px 12px rgba(0,0,0,.12);
+}
+.qd-ferr-b { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; gap: 1px; padding: 4px 2px; border-radius: var(--r-chip); color: var(--text-muted); font-size: 11px; font-weight: 700; line-height: 1.1; text-align: center; max-width: 100%; white-space: nowrap; }
+.qd-ferr-b svg { width: 20px; height: 20px; }
+.qd-ferr-b:hover { background: var(--surface-2); color: var(--text); }
+.qd-ferr-b.on { background: var(--primary-soft); color: var(--primary); }
+.qd-ferr-x { flex: 0 0 auto; align-self: flex-end; width: 20px; height: 20px; display: grid; place-items: center; color: var(--text-muted); border-radius: 50%; }
+.qd-ferr-x svg { width: 13px; height: 13px; }
+.qd-ferr-x:hover { background: var(--surface-2); }
+
+/* celular: faixa de cores */
+.qd-cores-cel {
+  position: absolute; left: 8px; right: 8px; bottom: 8px; z-index: 46; display: flex; align-items: center; gap: 8px; padding: 6px;
+  border-radius: var(--r-ctl); box-shadow: 0 -2px 18px rgba(0,0,0,.22); background: var(--surface);
+}
+.qd-cc-editar { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 12px; border-radius: var(--r-chip); font-size: 13px; font-weight: 700; color: var(--primary); background: var(--primary-soft); }
+.qd-cc-editar svg { width: 18px; height: 18px; }
+.qd-cc-lista { flex: 1; display: flex; gap: 8px; overflow-x: auto; padding: 2px; scrollbar-width: none; }
+.qd-cc-lista::-webkit-scrollbar { display: none; }
+.qd-cc { flex: 0 0 36px; width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgba(0,0,0,.25); }
+.qd-cc.on { outline: 3px solid var(--primary); outline-offset: 2px; }
+
+/* assistente */
+.qd-lamp {
+  position: absolute; right: 10px; bottom: 10px; z-index: 47; display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px;
+  border-radius: 17px; font-size: 13px; font-weight: 700; color: var(--text-muted); background: var(--surface); box-shadow: 0 4px 12px rgba(0,0,0,.15);
+}
+.qd-lamp svg { width: 18px; height: 18px; }
+.qd-lamp.tem { color: var(--primary); }
+.qd-lamp em { font-style: normal; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px; display: grid; place-items: center; background: var(--crit); color: #fff; font-size: 12px; }
+.qd-assist {
+  position: absolute; right: 10px; bottom: 10px; z-index: 48; width: min(360px, calc(100% - 20px)); max-height: min(60%, 420px); overflow: auto;
+  padding: 10px; border-radius: var(--r-ctl); background: var(--surface); box-shadow: 0 10px 28px rgba(0,0,0,.28);
+}
+.qd-assist header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.qd-assist ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.qd-assist li { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; padding: 6px; border-radius: var(--r-chip); background: var(--surface-2); }
+.qd-assist li i { flex: 0 0 8px; height: 8px; margin-top: 5px; border-radius: 50%; background: #f79009; }
+.qd-assist li.erro i { background: var(--crit); }
+.qd-assist li span { flex: 1; }
+.qd-assist-ok { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 13px; color: var(--text-muted); }
+.qd-assist-ok svg { width: 18px; height: 18px; color: #067647; }
+
+/* celular: a lâmpada fica no alto, longe da barra da seleção e das cores */
+.app.cel .qd-lamp { top: 12px; bottom: auto; right: 10px; }
+.app.cel .qd-assist { top: 58px; bottom: auto; }
+.app.cel .qd-lamp span { display: none; }
+.app.cel .qd-lamp { width: 44px; height: 44px; padding: 0; justify-content: center; border-radius: 50%; }
+.app.cel .qd-lamp em { position: absolute; top: -4px; right: -4px; }
+.app.cel .qd-assist { right: 8px; width: calc(100% - 16px); }
+@media print { .qd-ferr, .qd-lamp, .qd-assist, .qd-cores-cel { display: none !important; } }
+
+/* texto do item: o que não cabe termina em reticências */
+.qi-clamp { display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; max-width: 100%; text-overflow: ellipsis; }
+
+.qi-tar-l1 .sem-resp { font-weight: 400; font-style: italic; color: #667085; }
+
+/* v0.6.32 · celular e tela de toque (relatório do Grok de 18/11) */
+/* PL07: alvos de toque de 44 px (abas, barra do item, cores, zoom, pegadores de ligar, "Comece por") */
+.app.cel .qd-vistas button, .app.cel .app .qd-barra .rbi, .app.cel .qd-zoom .rbi, .app.cel .qd-pct, .app.cel .qd-vazio .chipb { min-height: 44px; }
+.app.cel .qd-vistas button { height: 44px; }
+.app.cel .qd-barra .rbi, .app.cel .qd-zoom .rbi { flex: 0 0 44px; width: 44px; height: 44px; }
+.app.cel .qd-pct { height: 44px; }
+.app.cel .qd-cc { flex-basis: 44px; width: 44px; height: 44px; }
+.app.cel .qd-cc-editar { height: 44px; }
+.app.cel .qd-barra { max-width: calc(100% - 16px); overflow-x: auto; scrollbar-width: none; }
+.app.cel .qd-ponto::after { content: ""; position: absolute; inset: -9px; border-radius: 50%; }
+@media (pointer: coarse) {
+  .qd-vistas button, .qd-pct, .qd-vazio .chipb { min-height: 44px; }
+  .app .qd-barra .rbi, .qd-zoom .rbi { width: 44px; height: 44px; }
+  .qd-cc { flex-basis: 44px; width: 44px; height: 44px; }
+  .qd-ponto::after { content: ""; position: absolute; inset: -9px; border-radius: 50%; }
+}
+/* PL09: a barra Quadro/Kanban termina antes da lâmpada */
+.app.cel .qd-vistas { right: 66px; max-width: calc(100% - 76px); }
+/* PL10: no celular o zoom fica no alto, embaixo das abas, e as barras do item escolhido ficam sozinhas embaixo */
+.app.cel .qd-zoom { top: 18px; bottom: auto; }
+
+/* v0.6.33 · Quadro com o celular deitado */
+/* A barra Quadro/Kanban volta a flutuar sobre o quadro, como foi desenhada: a regra da fluidez (.fz-abas { position: relative })
+   a punha no meio do caminho e o quadro perdia a altura dela (52 px no celular, 38 px no computador). */
+.qd-vistas.fz-abas { position: absolute; }
+.app.cel .qd-zoom { top: 70px; }
+.app.cel .qd-timer { top: 70px; }
+.app.cel .qd .kb { padding-top: 124px; } /* o andamento e as colunas começam abaixo das abas */
+/* Celular deitado (pouca altura): abas e zoom lado a lado no alto do quadro (a linha única de cima está em ui/deitado.css, v0.6.34) */
+@media (orientation: landscape) and (max-height: 500px) {
+  .app.cel:has(.sup-postits) .qd-vistas { right: auto; }
+  .app.cel:has(.sup-postits) .qd-zoom { top: 10px; left: auto; right: 66px; }
+  .app.cel:has(.sup-postits) .qd-timer { top: 70px; }
+  /* com pouca altura fica só a barra do item (ela já tem Cor e Editar); a faixa grande de cores some */
+  .app.cel:has(.sup-postits) .qd-cores-cel { display: none; }
+}
+/* v0.6.51: título do post-it (negrito com fio, uma linha) e caixinha de feito (canto de baixo; marcada = texto riscado) */
+.qi-tit { position: absolute; left: 12px; right: 12px; top: 18px; padding-bottom: 5px; border-bottom: 1px solid rgba(31,35,40,.16); font-weight: 700; font-size: 14px; line-height: 1.3; color: #1f2328; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none; }
+.qi-titulado .qi-t { padding-top: 48px; align-items: flex-start; }
+.qi-com-caixa:not(.qi-com-tarefa) .qi-t { padding-bottom: 28px; }
+.qi-caixa { position: absolute; left: 4px; bottom: 4px; width: 25px; height: 25px; padding: 0; border: 0; background: none; cursor: pointer; display: grid; place-items: center; z-index: 2; }
+.qi-com-tarefa .qi-caixa { bottom: 5px; }
+.qi-com-tarefa.qi-com-caixa .qi-tarefa { padding-left: 31px; }
+.qi-caixa i { position: relative; width: 15px; height: 15px; box-sizing: border-box; border-radius: 4px; border: 1.5px solid rgba(31,35,40,.45); background: rgba(255,255,255,.6); }
+.qi-caixa:hover i { border-color: #2e7d4f; }
+.qi-caixa:focus-visible { outline: none; }
+.qi-caixa:focus-visible i { box-shadow: 0 0 0 3px rgba(46,125,79,.28); }
+.qi-caixa[disabled] { cursor: default; }
+.qi-feito .qi-caixa i { background: #2e7d4f; border-color: #2e7d4f; }
+.qi-feito .qi-caixa i::after { content: ''; position: absolute; left: 3.6px; top: .6px; width: 4px; height: 8px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+.qi-feito .qi-clamp { text-decoration: line-through; color: rgba(31,35,40,.55); }
+.qi-feito .qi-tit { color: rgba(31,35,40,.55); }
+/* v0.6.63 (V56-04): no toque a caixinha de feito tem 44 px para o dedo; o quadradinho fica no mesmo lugar (centro a 16,5 px do canto) */
+@media (pointer: coarse) {
+  .qi-caixa { left: 0; bottom: 0; width: 44px; height: 44px; box-sizing: border-box; place-items: end start; padding: 0 0 9px 9px; }
+  .qi-com-tarefa .qi-caixa { bottom: 1px; }
+}
+.qd-jtitulo { width: min(420px, 94vw); }
+.qd-jtitulo-campo { width: 100%; box-sizing: border-box; min-height: 34px; padding: 6px 10px; border: 1px solid var(--border-light); border-radius: var(--r-ctl, 8px); background: var(--surface); color: var(--text); font: inherit; }
+.qd-jtitulo-campo:focus { outline: none; border-color: var(--primary); box-shadow: var(--anel, 0 0 0 3px var(--primary-soft)); }
+/* v0.6.54: prévia da janela Imprimir e PDF do Quadro (folha branca, área útil tracejada, cabeçalho e rodapé) */
+.qd-imp-pagina { background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.15), 0 8px 24px rgba(0,0,0,.18); overflow: hidden; container-type: inline-size; }
+.qd-imp-area { position: absolute; border: 1px dashed rgba(71,84,103,.45); pointer-events: none; box-sizing: border-box; }
+.qd-imp-cab { position: absolute; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; color: #1f2328; font-size: max(7px, 1.6cqw); border-bottom: 1px solid #d0d5dd; padding-bottom: .3em; white-space: nowrap; overflow: hidden; }
+.qd-imp-cab span { font-size: .72em; color: #475467; }
+.qd-imp-rod { position: absolute; color: #737a85; font-size: max(6px, 1.1cqw); white-space: nowrap; }
+/* v0.6.55: comentário no estilo do Word — marcador no canto de cima por fora e cartão com as respostas */
+.qi-com { position: absolute; right: -11px; top: -11px; z-index: 3; width: 24px; height: 24px; padding: 0; border: 1px solid rgba(0,0,0,.12); border-radius: 8px 8px 8px 2px; background: #ffe58f; color: #5c4400; display: grid; place-items: center; cursor: pointer; box-shadow: 0 1px 2px rgba(16,24,40,.12), 0 3px 8px rgba(16,24,40,.12); transition: transform var(--duration-quick); }
+.qi-com svg { width: 14px; height: 14px; }
+.qi-com:hover, .qi-com:focus-visible { transform: scale(1.1); outline: none; }
+.qi-com:focus-visible { box-shadow: 0 0 0 3px var(--primary-soft); }
+.qi-com-n { position: absolute; right: -6px; bottom: -6px; min-width: 15px; height: 15px; padding: 0 3px; border-radius: 8px; background: var(--primary); color: var(--on-primary, #fff); font-size: 10px; font-weight: 700; line-height: 15px; text-align: center; box-sizing: border-box; }
+.qd-com-cartao { position: fixed; z-index: 60; width: min(310px, calc(100vw - 16px)); max-height: min(420px, calc(100vh - 16px)); overflow: auto; padding: 10px 12px 12px; border-radius: var(--r-card, 10px); border: 1px solid var(--border-light); background: var(--surface); color: var(--text); box-shadow: var(--sh-2, 0 2px 6px rgba(0,0,0,.08), 0 12px 32px rgba(0,0,0,.14)); font-size: 13px; animation: t-lista-in var(--duration-quick) var(--ease-sai, ease-out); }
+.qd-com-cartao.fixo { border-color: color-mix(in srgb, var(--primary) 45%, var(--border-light)); }
+.qd-com-cab { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+.qd-com-cab b { font-size: 13px; }
+.qd-com-cab small { color: var(--text-muted); font-size: 11px; }
+.qd-com-cab .iconbtn { width: 28px; height: 28px; }
+.qd-com-ic { width: 22px; height: 22px; border-radius: 7px 7px 7px 2px; background: #ffe58f; color: #5c4400; display: grid; place-items: center; }
+.qd-com-ic svg { width: 13px; height: 13px; }
+.qd-com-texto { margin: 0 0 8px; white-space: pre-wrap; line-height: 1.4; }
+.qd-com-resps { list-style: none; margin: 0 0 8px; padding: 0; display: grid; gap: 6px; }
+.qd-com-resps li { display: grid; gap: 2px; padding: 6px 0 0 10px; border-top: 1px solid var(--border-light); border-left: 2px solid color-mix(in srgb, var(--primary) 35%, transparent); white-space: pre-wrap; line-height: 1.35; }
+.qd-com-quem { display: flex; gap: 6px; align-items: baseline; }
+.qd-com-quem b { font-size: 12px; }
+.qd-com-quem small { color: var(--text-muted); font-size: 11px; }
+.qd-com-resp { display: grid; gap: 6px; }
+.qd-com-linha { display: flex; gap: 6px; }
+.qd-com-campo { flex: 1; min-width: 0; min-height: 32px; padding: 4px 9px; border: 1px solid var(--border-light); border-radius: var(--r-ctl, 8px); background: var(--surface); color: var(--text); font: inherit; font-size: 13px; }
+.qd-com-campo:focus { outline: none; border-color: var(--primary); box-shadow: var(--anel, 0 0 0 3px var(--primary-soft)); }
+@media (prefers-reduced-motion: reduce) { .qd-com-cartao { animation: none; } .qi-com { transition: none; } }
+/* v0.6.55: tracejado da impressão no quadro (área de impressão em cinza, folhas em azul), como a quebra de página do Excel */
+.qd-quebras { position: absolute; left: 0; top: 0; pointer-events: none; z-index: 99990; } /* por cima dos itens, como a quebra do Excel por cima das células */
+.qd-quebra-folha, .qd-quebra-area { position: absolute; box-sizing: border-box; pointer-events: none; }
+.qd-quebra-folha { border: 1.5px dashed rgba(37,99,235,.7); }
+.qd-quebra-area { border: 2px dashed rgba(71,84,103,.75); }
+.qd-quebra-folha span, .qd-quebra-area span { position: absolute; left: 6px; top: 4px; padding: 1px 6px; border-radius: 4px; background: rgba(255,255,255,.85); color: #2563eb; font: 600 12px var(--f, system-ui); white-space: nowrap; }
+.qd-quebra-area span { left: auto; top: auto; right: 6px; bottom: 4px; color: #475467; }
+body[data-theme=dark] .qd-quebra-folha span, body[data-theme=dark] .qd-quebra-area span { background: rgba(20,24,40,.85); }
+/* v0.6.57: texturas de papel do post-it (texturas.js). Ponta dobrada: o canto sai pelo degradê do fundo, a sombra acompanha o recorte e a aba vem por cima */
+/* v0.6.62: as 12 texturas aprovadas em 25/11 (texturas.js). O papel do liso tem sombra macia; a dobra, o amassado e o rasgado
+   recortam o papel e a sombra acompanha o recorte (filter); fita, alfinete e clipe saem um pouco por cima da borda */
+.qi-postit.qi-tex-liso { box-shadow: 0 1px 2px rgba(40,30,10,.08), 0 6px 12px -4px rgba(40,30,10,.18); }
+.qi-postit.qi-tex-dobrado { box-shadow: none; border: 0; border-radius: 4px 4px 0 4px; filter: drop-shadow(0 4px 6px rgba(40,30,10,.16)); }
+.qi-aba { position: absolute; right: 0; bottom: 0; pointer-events: none; z-index: 3; border-top-left-radius: 4px; clip-path: polygon(0 0, 100% 0, 0 100%); filter: drop-shadow(-2px -2px 3px rgba(40,30,10,.18));
+  background: linear-gradient(135deg, rgba(255,255,255,.92) 0%, color-mix(in srgb, var(--c) 76%, #8f8058) 48%, rgba(0,0,0,.16) 50%, transparent 51%); }
+.qi-postit.qi-tex-amassado, .qi-postit.qi-tex-rasgado { box-shadow: none; border: 0; filter: drop-shadow(0 1px 2px rgba(16,24,40,.12)) drop-shadow(0 4px 8px rgba(16,24,40,.14)); }
+.qi-tex-papel { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.qi-postit.qi-tex-rasgado .qi-tex-papel { border-radius: 4px 4px 0 0; }
+.qi-postit.qi-tex-pautado .qi-t { align-items: flex-start; }
+.qi-postit.qi-tex-destaque .qi-clamp { background: linear-gradient(104deg, rgba(253,224,71,0) .9%, rgba(250,204,21,.55) 2.4%, rgba(250,204,21,.45) 95%, rgba(253,224,71,0) 99%); padding: 1px 6px; border-radius: 4px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.qi-fita { position: absolute; top: -9px; left: 50%; width: 70px; height: 20px; z-index: 6; pointer-events: none; transform: translateX(-50%) rotate(-2.5deg);
+  background: rgba(255,255,255,.58); border-left: 1px dashed rgba(120,110,90,.28); border-right: 1px dashed rgba(120,110,90,.28); box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+.qi-alfinete { position: absolute; top: -7px; left: 50%; width: 16px; height: 16px; z-index: 6; pointer-events: none; transform: translateX(-50%); border-radius: 50%;
+  background: radial-gradient(circle at 32% 30%, #ff8b8b 0%, #dc2626 52%, #7f1d1d 100%); box-shadow: 0 3px 5px rgba(0,0,0,.32), inset 0 1px 2px rgba(255,255,255,.6); }
+.qi-alfinete-sombra { position: absolute; top: 7px; left: calc(50% + 3px); width: 11px; height: 5px; z-index: 2; pointer-events: none; background: rgba(30,20,10,.2); border-radius: 50%; filter: blur(2px); transform: rotate(24deg); }
+.qi-clipe { position: absolute; top: -11px; right: 20px; width: 12px; height: 32px; box-sizing: border-box; z-index: 6; pointer-events: none; border: 2.4px solid #64748b; border-radius: 9px; box-shadow: 1px 2px 3px rgba(0,0,0,.16); }
+.qi-clipe-dentro { position: absolute; top: -4px; right: 23px; width: 6px; height: 18px; box-sizing: border-box; z-index: 6; pointer-events: none; border: 2px solid #94a3b8; border-top: none; border-radius: 0 0 5px 5px; }
+.qi-tex-clipe .qi-com { right: auto; left: -11px; } /* o balãozinho do comentário vai para o outro lado do clipe */
+/* v0.6.59: item travado (arrumar.js): um cadeado pequeno no canto de baixo, por fora, e o cursor de "não pode mover" */
+.qi-trava { position: absolute; right: -8px; bottom: -8px; width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; pointer-events: none;
+  background: var(--surface, #fff); color: #475467; box-shadow: 0 1px 3px rgba(16,24,40,.25); z-index: 3; }
+.qi-trava svg { width: 12px; height: 12px; }
+/* v0.6.66 (N1): etiqueta de frente no post-it, no canto de cima à direita (ponto de cor e nome) */
+.qi-eti { position: absolute; right: 8px; top: 3px; z-index: 2; display: inline-flex; align-items: center; gap: 4px; max-width: 60%; font-size: 11px; line-height: 14px; font-weight: 600; color: rgba(31,35,40,.72); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none; }
+.qi-eti i { flex: none; width: 7px; height: 7px; border-radius: 50%; }
+.qi-tex-clipe .qi-eti { right: 40px; }
+.rb-cor-ponto { flex: none; width: 9px; height: 9px; border-radius: 50%; margin: 0 2px 0 -2px; }
+/* v0.6.68 (R44): selo da atividade ligada ao Kanban, na borda de cima, à direita (as setas chegam no meio) */
+.qi-fase { position: absolute; right: 8px; top: -10px; z-index: 3; display: inline-flex; align-items: center; gap: 3px; max-width: calc(100% - 16px); height: 19px; padding: 0 7px; border-radius: 10px; font-size: 11px; line-height: 17px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none; background: #f1f3f5; color: #3d434a; border: 1px solid rgba(31, 35, 40, .18); }
+.qi-fase.andamento { background: #e8f0fe; color: #1d4ed8; border-color: rgba(29, 78, 216, .30); }
+.qi-fase.feito { background: #e6f4ea; color: #14653a; border-color: rgba(20, 101, 58, .30); }
+.qi-fase svg { width: 11px; height: 11px; flex: none; }
+.qi-fase.com-nota { right: 22px; }

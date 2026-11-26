@@ -1,14 +1,14 @@
 /* EFCwork · v0.6.22 · janela do Vértice com abas (refeita na v0.6.35: tela inteira, OPÇÃO 2, faixa sempre à vista com um app na frente) e Ponte 1 (receber do Vértice, Abrir no Vértice com resumo).
-   Sobe um servidor com o EFCwork em /efcwork/ e o Vértice DE VERDADE em /EFCdocs/ (clone só de leitura em VERTICE_DIR), no mesmo endereço,
+   Sobe um servidor com o EFCwork em /efcwork/ e o Vértice DE VERDADE em /efcwork/vertice/ (v0.6.36; a pasta vertice/ do próprio repositório; /EFCdocs/ só para a versão de antes), no mesmo endereço,
    como no GitHub Pages. Uso: NODE_PATH=$(npm root -g) node tools/testes/t_v0622.js */
 const http = require('http'), fs = require('fs'), path = require('path');
 const { chromium, abre, ir } = require('../visual/moderno-v0615/pagina/lib');
-const RAIZ = path.resolve(__dirname, '..', '..'), VD = process.env.VERTICE_DIR || '/home/claude/eliasgrigori/efcdocs';
+const RAIZ = path.resolve(__dirname, '..', '..'), VD = process.env.VERTICE_DIR || path.resolve(__dirname, '..', '..', '..', 'vertice') /* v0.6.36 (P5): o Vértice mora em efcwork/vertice/ */;
 const ex = require('../contrato/exemplos-efd-v1.json'), EFD = require('../contrato/efd-v1.js');
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css', '.json': 'application/json', '.png': 'image/png', '.webmanifest': 'application/manifest+json', '.woff2': 'font/woff2', '.svg': 'image/svg+xml' };
 const srv = http.createServer((q, r) => {
   const u = decodeURIComponent(q.url.split('?')[0].split('#')[0]);
-  let f = u.startsWith('/efcwork/') ? path.join(RAIZ, 'dist', u.slice(9)) : u.startsWith('/EFCdocs/') ? path.join(VD, u.slice(9)) : u.startsWith('/contrato/') ? path.join(RAIZ, 'tools/contrato', u.slice(10)) : '';
+  let f = u.startsWith('/efcwork/vertice/') ? path.join(VD, u.slice(17)) : u.startsWith('/efcwork/') ? path.join(RAIZ, 'dist', u.slice(9)) : u.startsWith('/EFCdocs/') ? path.join(VD, u.slice(9)) : u.startsWith('/contrato/') ? path.join(RAIZ, 'tools/contrato', u.slice(10)) : '';
   if (f && (f.endsWith(path.sep) || (fs.existsSync(f) && fs.statSync(f).isDirectory()))) f = path.join(f, 'index.html');
   if (!f || !fs.existsSync(f)) { r.writeHead(404); return r.end('nada'); }
   r.writeHead(200, { 'content-type': MIME[path.extname(f)] || 'application/octet-stream' }); fs.createReadStream(f).pipe(r);
@@ -67,7 +67,7 @@ const vertPronto = (p, ms) => p.waitForFunction(() => { const f = document.query
 
   console.log('— Ponte 1: Vértice → EFCwork (Compartilhar com o Cwork)');
   await p.evaluate(() => jnIr('docs')); await p.waitForTimeout(300);
-  const fr = p.frames().find(f => /\/EFCdocs\//.test(f.url()));
+  const fr = p.frames().find(f => /\/(EFCdocs|efcwork\/vertice)\//.test(f.url()));
   await fr.addScriptTag({ url: base + '/contrato/efd-v1.js' }); await fr.addScriptTag({ url: base + '/contrato/efd-ponte.js' });
   const f1 = ex.validos.fichas[1], partes = ex.validos.copias[f1.id];
   const xlsx = fs.readFileSync(path.join(__dirname, 'vertice', 'ficha-teste.xlsx')).toString('base64');

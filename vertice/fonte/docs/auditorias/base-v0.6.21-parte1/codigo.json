@@ -1,0 +1,19 @@
+{
+ "limite": 800,
+ "total": 39546,
+ "grandes": {
+  "estilo-base.css": 2074,
+  "planilha/desenhoGrafico.js": 848,
+  "planilha/funcoes.js": 1058,
+  "planilha/explicar.js": 812,
+  "planilha/Planilha.jsx": 3621,
+  "planilha/xlsx/graficosXlsx.js": 1099,
+  "quadro/Quadro.jsx": 1126
+ },
+ "avisosMontar": 0,
+ "tamanhoApp": {
+  "bytes": 1992704,
+  "compactado": 643072,
+  "conta": "Referência aprovada pelo Elias em 18/11/2026 (v0.6.24 parte 1, item 8): 628 KB compactado. Antes: 627413 bytes (613 KB) da v0.6.21 parte 1. As outras medidas desta pasta não mudaram."
+ }
+}

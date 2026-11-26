@@ -1,0 +1,539 @@
+﻿id;modulo;grupo;funcao;situacao;defeito_ou_falta;acao_no_plano;origem
+F001;Planilha;app;Ir para o início;funciona;;manter;catálogo de comandos
+F002;Documento;app;Ir para o início;funciona;;manter;catálogo de comandos
+F003;Quadro;app;Ir para o início;funciona;;manter;catálogo de comandos
+F004;Planilha;app;O que você quer fazer? (Ctrl+K);funciona;;manter;catálogo de comandos
+F005;Documento;app;O que você quer fazer? (Ctrl+K);funciona;;manter;catálogo de comandos
+F006;Quadro;app;O que você quer fazer? (Ctrl+K);funciona;;manter;catálogo de comandos
+F007;Planilha;app;Opções;funciona;;manter;catálogo de comandos
+F008;Documento;app;Opções;funciona;;manter;catálogo de comandos
+F009;Quadro;app;Opções;funciona;;manter;catálogo de comandos
+F010;Planilha;arquivo;Novo;funciona;;manter;catálogo de comandos
+F011;Documento;arquivo;Novo;funciona;;manter;catálogo de comandos
+F012;Quadro;arquivo;Novo;funciona;;manter;catálogo de comandos
+F013;Planilha;arquivo;Nova planilha;funciona;;manter;catálogo de comandos
+F014;Documento;arquivo;Nova planilha;funciona;;manter;catálogo de comandos
+F015;Quadro;arquivo;Nova planilha;funciona;;manter;catálogo de comandos
+F016;Planilha;arquivo;Novo documento;funciona;;manter;catálogo de comandos
+F017;Documento;arquivo;Novo documento;funciona;;manter;catálogo de comandos
+F018;Quadro;arquivo;Novo documento;funciona;;manter;catálogo de comandos
+F019;Planilha;arquivo;Novo quadro de post-its;funciona;;manter;catálogo de comandos
+F020;Documento;arquivo;Novo quadro de post-its;funciona;;manter;catálogo de comandos
+F021;Quadro;arquivo;Novo quadro de post-its;funciona;;manter;catálogo de comandos
+F022;Planilha;arquivo;Renomear;funciona;;manter;catálogo de comandos
+F023;Documento;arquivo;Renomear;funciona;;manter;catálogo de comandos
+F024;Quadro;arquivo;Renomear;funciona;;manter;catálogo de comandos
+F025;Planilha;arquivo;Mandar para a lixeira;funciona;;manter;catálogo de comandos
+F026;Documento;arquivo;Mandar para a lixeira;funciona;;manter;catálogo de comandos
+F027;Quadro;arquivo;Mandar para a lixeira;funciona;;manter;catálogo de comandos
+F028;Planilha;arquivo;Abrir arquivo do Excel;funciona;;manter;catálogo de comandos
+F029;Documento;arquivo;Abrir arquivo do Excel;ainda não feito;previsto: v0.7.0;;catálogo de comandos
+F030;Quadro;arquivo;Abrir arquivo do Excel;funciona;;manter;catálogo de comandos
+F031;Planilha;arquivo;Salvar como Excel;funciona;;manter;catálogo de comandos
+F032;Planilha;arquivo;Baixar o original;funciona;;manter;catálogo de comandos
+F033;Planilha;arquivo;O que veio do Excel;funciona;;manter;catálogo de comandos
+F034;Documento;arquivo;Exportar Word;ainda não feito;previsto: v0.7.0;;catálogo de comandos
+F035;Planilha;arquivo;Exportar PDF;funciona;;manter;catálogo de comandos
+F036;Documento;arquivo;Exportar PDF;ainda não feito;previsto: v0.7.0;;catálogo de comandos
+F037;Quadro;arquivo;Exportar PDF;funciona;;manter;catálogo de comandos
+F038;Quadro;arquivo;Exportar imagem (PNG);funciona;;manter;catálogo de comandos
+F039;Planilha;arquivo;Imprimir;funciona;;manter;catálogo de comandos
+F040;Documento;arquivo;Imprimir;ainda não feito;previsto: v0.7.0;;catálogo de comandos
+F041;Quadro;arquivo;Imprimir;funciona;;manter;catálogo de comandos
+F042;Planilha;arquivo;Versões e revisões;funciona;;manter;catálogo de comandos
+F043;Documento;arquivo;Versões e revisões;ainda não feito;previsto: v0.7.0;;catálogo de comandos
+F044;Planilha;arquivo;Lançar na pasta;ainda não feito;previsto: v0.8.0;;catálogo de comandos
+F045;Documento;arquivo;Lançar na pasta;ainda não feito;previsto: v0.8.0;;catálogo de comandos
+F046;Quadro;arquivo;Lançar na pasta;ainda não feito;previsto: v0.8.0;;catálogo de comandos
+F047;Planilha;arquivo;Cancelar com motivo;ainda não feito;previsto: v0.8.0;;catálogo de comandos
+F048;Documento;arquivo;Cancelar com motivo;ainda não feito;previsto: v0.8.0;;catálogo de comandos
+F049;Quadro;arquivo;Cancelar com motivo;ainda não feito;previsto: v0.8.0;;catálogo de comandos
+F050;Planilha;editar;Desfazer (Ctrl+Z);funciona;;manter;catálogo de comandos
+F051;Documento;editar;Desfazer (Ctrl+Z);funciona;;manter;catálogo de comandos
+F052;Quadro;editar;Desfazer (Ctrl+Z);funciona;;manter;catálogo de comandos
+F053;Planilha;editar;Refazer (Ctrl+Y);funciona;;manter;catálogo de comandos
+F054;Documento;editar;Refazer (Ctrl+Y);funciona;;manter;catálogo de comandos
+F055;Quadro;editar;Refazer (Ctrl+Y);funciona;;manter;catálogo de comandos
+F056;Planilha;editar;Colar (Ctrl+V);funciona;;manter;catálogo de comandos
+F057;Documento;editar;Colar (Ctrl+V);ainda não feito;previsto: v0.7.0;;catálogo de comandos
+F058;Quadro;editar;Colar (Ctrl+V);funciona;;manter;catálogo de comandos
+F059;Planilha;editar;Recortar (Ctrl+X);funciona;;manter;catálogo de comandos
+F060;Documento;editar;Recortar (Ctrl+X);ainda não feito;previsto: v0.7.0;;catálogo de comandos
+F061;Quadro;editar;Recortar (Ctrl+X);funciona;;manter;catálogo de comandos
+F062;Planilha;editar;Copiar (Ctrl+C);funciona;;manter;catálogo de comandos
+F063;Documento;editar;Copiar (Ctrl+C);ainda não feito;previsto: v0.7.0;;catálogo de comandos
+F064;Quadro;editar;Copiar (Ctrl+C);funciona;;manter;catálogo de comandos
+F065;Planilha;editar;Pincel de formatação;funciona;;manter;catálogo de comandos
+F066;Documento;editar;Pincel de formatação;ainda não feito;previsto: v0.7.0;;catálogo de comandos
+F067;Quadro;editar;Pincel de formatação;funciona;;manter;catálogo de comandos
+F068;Planilha;editar;Localizar e substituir;funciona;;manter;catálogo de comandos
+F069;Documento;editar;Localizar e substituir;ainda não feito;previsto: v0.7.0;;catálogo de comandos
+F070;Quadro;editar;Localizar e substituir;funciona;;manter;catálogo de comandos
+F071;Planilha;editar;Comentário;funciona;;manter;catálogo de comandos
+F072;Documento;editar;Comentário;ainda não feito;previsto: v0.7.0;;catálogo de comandos
+F073;Quadro;editar;Comentário;funciona;;manter;catálogo de comandos
+F074;Planilha;revisao;Comentários da aba;funciona;;manter;catálogo de comandos
+F075;Quadro;editar;Duplicar (Ctrl+D);funciona;;manter;catálogo de comandos
+F076;Quadro;editar;Excluir a seleção (Delete);funciona;;manter;catálogo de comandos
+F077;Planilha;editar;Selecionar tudo (Ctrl+A);funciona;;manter;catálogo de comandos
+F078;Quadro;editar;"Selecionar tudo (Ctrl+A) em dois passos: com item escolhido, primeiro os ligados a ele por setas; de novo, tudo";funciona;"v0.6.56";manter;catálogo de comandos; pedido do Elias 24/11
+F079;Planilha;editar;Linha do tempo do desfazer;funciona;;manter;catálogo de comandos
+F080;Documento;editar;Linha do tempo do desfazer;funciona;;manter;catálogo de comandos
+F081;Quadro;editar;Linha do tempo do desfazer;funciona;;manter;catálogo de comandos
+F082;Planilha;editar;Colar só os valores;funciona;;manter;catálogo de comandos
+F083;Planilha;editar;Preencher para baixo (Ctrl+D);funciona;;manter;catálogo de comandos
+F084;Planilha;editar;Preencher para a direita (Ctrl+R);funciona;;manter;catálogo de comandos
+F085;Planilha;planilha;Limpar conteúdo (Delete);funciona;;manter;catálogo de comandos
+F086;Planilha;planilha;Inserir linha acima;funciona;;manter;catálogo de comandos
+F087;Planilha;planilha;Inserir coluna à esquerda;funciona;;manter;catálogo de comandos
+F088;Planilha;planilha;Excluir linha;funciona;;manter;catálogo de comandos
+F089;Planilha;planilha;Excluir coluna;funciona;;manter;catálogo de comandos
+F090;Planilha;planilha;Ocultar linhas;funciona;;manter;catálogo de comandos
+F091;Planilha;planilha;Ocultar colunas;funciona;;manter;catálogo de comandos
+F092;Planilha;planilha;Reexibir linhas;funciona;;manter;catálogo de comandos
+F093;Planilha;planilha;Reexibir colunas;funciona;;manter;catálogo de comandos
+F094;Planilha;planilha;Nova aba;funciona;;manter;catálogo de comandos
+F095;Planilha;planilha;Esta linha é o cabeçalho;funciona;;manter;catálogo de comandos
+F096;Planilha;formatar;Negrito;funciona;;manter;catálogo de comandos
+F097;Documento;formatar;Negrito;ainda não feito;previsto: v0.7.0;;catálogo de comandos
+F098;Quadro;formatar;Negrito;funciona;;manter;catálogo de comandos
+F099;Planilha;formatar;Itálico;funciona;;manter;catálogo de comandos
+F100;Documento;formatar;Itálico;ainda não feito;previsto: v0.7.0;;catálogo de comandos
+F101;Quadro;formatar;Itálico;funciona;;manter;catálogo de comandos
+F102;Planilha;formatar;Sublinhado;funciona;;manter;catálogo de comandos
+F103;Documento;formatar;Sublinhado;ainda não feito;previsto: v0.7.0;;catálogo de comandos
+F104;Quadro;formatar;Sublinhado;funciona;;manter;catálogo de comandos
+F105;Planilha;formatar;Cor da fonte;funciona;;manter;catálogo de comandos
+F106;Documento;formatar;Cor da fonte;ainda não feito;previsto: v0.7.0;;catálogo de comandos
+F107;Quadro;formatar;Cor da fonte;funciona;;manter;catálogo de comandos
+F108;Planilha;formatar;Cor de preenchimento;funciona;;manter;catálogo de comandos
+F109;Quadro;formatar;Cor de preenchimento;funciona;;manter;catálogo de comandos
+F110;Planilha;formatar;Bordas;funciona;;manter;catálogo de comandos
+F111;Planilha;formatar;Alinhar à esquerda;funciona;;manter;catálogo de comandos
+F112;Documento;formatar;Alinhar à esquerda;ainda não feito;previsto: v0.7.0;;catálogo de comandos
+F113;Quadro;formatar;Alinhar à esquerda;funciona;;manter;catálogo de comandos
+F114;Planilha;formatar;Centralizar;funciona;;manter;catálogo de comandos
+F115;Documento;formatar;Centralizar;ainda não feito;previsto: v0.7.0;;catálogo de comandos
+F116;Quadro;formatar;Centralizar;funciona;;manter;catálogo de comandos
+F117;Planilha;formatar;Alinhar à direita;funciona;;manter;catálogo de comandos
+F118;Documento;formatar;Alinhar à direita;ainda não feito;previsto: v0.7.0;;catálogo de comandos
+F119;Quadro;formatar;Alinhar à direita;funciona;;manter;catálogo de comandos
+F120;Planilha;formatar;Quebrar texto;funciona;;manter;catálogo de comandos
+F121;Planilha;formatar;Mesclar células;com defeito;"D-11: borda no meio da mesclada e caixinha no canto; falta Mesclar através e aviso de perda de valores";B1;catálogo de comandos
+F122;Planilha;formatar;Formato moeda (R$);funciona;;manter;catálogo de comandos
+F123;Planilha;formatar;Formato porcentagem (%);funciona;;manter;catálogo de comandos
+F124;Planilha;formatar;Separador de milhares;funciona;;manter;catálogo de comandos
+F125;Planilha;formatar;Mais casas decimais;funciona;;manter;catálogo de comandos
+F126;Planilha;formatar;Menos casas decimais;funciona;;manter;catálogo de comandos
+F127;Planilha;formatar;Formato de número (Ctrl+1);funciona;;manter;catálogo de comandos
+F128;Planilha;formatar;Fonte e tamanho;funciona;;manter;catálogo de comandos
+F129;Planilha;formatar;Limpar formatos;funciona;;manter;catálogo de comandos
+F130;Planilha;formatar;Formatação condicional;funciona;;manter;catálogo de comandos
+F131;Documento;formatar;Lista com marcadores;ainda não feito;previsto: v0.7.0;;catálogo de comandos
+F132;Documento;formatar;Lista numerada;ainda não feito;previsto: v0.7.0;;catálogo de comandos
+F133;Documento;formatar;Estilo título;ainda não feito;previsto: v0.7.0;;catálogo de comandos
+F134;Planilha;inserir;Tabela;funciona;"v0.6.19: tabela viva (cresce ao digitar, Tab abre linha, alça, Design da Tabela); D-12, D-13, D-14 corrigidos";manter;catálogo de comandos
+F135;Documento;inserir;Tabela;ainda não feito;previsto: v0.7.0;;catálogo de comandos
+F136;Planilha;inserir;Imagem;parcial;"P-01: janela só com largura e texto alternativo; sem cortar, girar, moldura";B4;catálogo de comandos
+F137;Documento;inserir;Imagem;ainda não feito;previsto: v0.7.0;;catálogo de comandos
+F138;Quadro;inserir;Imagem;funciona;;manter;catálogo de comandos
+F139;Planilha;grafico;Editar gráfico;funciona;;manter;catálogo de comandos
+F140;Planilha;grafico;Estilo rápido;funciona;;manter;catálogo de comandos
+F141;Planilha;grafico;Cores do gráfico;funciona;;manter;catálogo de comandos
+F142;Planilha;grafico;Semáforo;funciona;;manter;catálogo de comandos
+F143;Planilha;grafico;Excluir gráfico;funciona;;manter;catálogo de comandos
+F144;Planilha;grafico;Baixar imagem do gráfico;funciona;;manter;catálogo de comandos
+F145;Planilha;grafico;Duplicar gráfico;funciona;;manter;catálogo de comandos
+F146;Planilha;grafico;Guardar estilo como modelo;funciona;;manter;catálogo de comandos
+F147;Planilha;grafico;Barras de erro;funciona;;manter;catálogo de comandos
+F148;Planilha;inserir;Painel;funciona;;manter;catálogo de comandos
+F149;Planilha;painel;Gráfico no painel;funciona;;manter;catálogo de comandos
+F150;Planilha;painel;Número grande;funciona;;manter;catálogo de comandos
+F151;Planilha;painel;Texto no painel;funciona;;manter;catálogo de comandos
+F152;Planilha;painel;Tabela no painel;funciona;;manter;catálogo de comandos
+F153;Planilha;painel;Arrumar o painel;funciona;;manter;catálogo de comandos
+F154;Planilha;painel;Mudar a peça;funciona;;manter;catálogo de comandos
+F155;Planilha;painel;Excluir a peça;funciona;;manter;catálogo de comandos
+F156;Planilha;painel;PDF do painel;funciona;;manter;catálogo de comandos
+F157;Planilha;inserir;Gráfico;funciona;;manter;catálogo de comandos
+F158;Documento;inserir;Gráfico;ainda não feito;previsto: v0.7.0;;catálogo de comandos
+F159;Quadro;inserir;Gráfico;ainda não feito;previsto: v0.7.0;;catálogo de comandos
+F160;Planilha;inserir;Link;funciona;;manter;catálogo de comandos
+F161;Documento;inserir;Link;ainda não feito;previsto: v0.7.0;;catálogo de comandos
+F162;Quadro;inserir;Link;funciona;;manter;catálogo de comandos
+F163;Planilha;inserir;Tirar o link;funciona;;manter;catálogo de comandos
+F164;Planilha;inserir;Forma;funciona;;manter;catálogo de comandos
+F165;Planilha;inserir;Botão que leva a outra aba;funciona;;manter;catálogo de comandos
+F166;Planilha;inserir;Foto na célula;ainda não feito;previsto: v0.8.0;;catálogo de comandos
+F167;Planilha;inserir;Coluna de status;funciona;;manter;catálogo de comandos
+F168;Documento;inserir;Campo do formulário;ainda não feito;previsto: v0.7.0;;catálogo de comandos
+F169;Documento;inserir;Checklist;ainda não feito;previsto: v0.7.0;;catálogo de comandos
+F170;Planilha;inserir;Assinatura;funciona;;manter;catálogo de comandos
+F171;Documento;inserir;Assinatura;ainda não feito;previsto: v0.7.0;;catálogo de comandos
+F172;Quadro;inserir;Assinatura;funciona;;manter;catálogo de comandos
+F173;Quadro;inserir;Post-it;funciona;;manter;catálogo de comandos
+F174;Quadro;inserir;Formas;funciona;;manter;catálogo de comandos
+F175;Quadro;inserir;Forma: atividade (etapa);funciona;;manter;catálogo de comandos
+F176;Quadro;inserir;Forma: decisão (sim/não);funciona;;manter;catálogo de comandos
+F177;Quadro;inserir;Forma: início ou fim;funciona;;manter;catálogo de comandos
+F178;Quadro;inserir;Forma: entrada/saída;funciona;;manter;catálogo de comandos
+F179;Quadro;inserir;Seta;funciona;;manter;catálogo de comandos
+F180;Quadro;inserir;Próximo passo (já ligado);funciona;;manter;catálogo de comandos
+F181;Quadro;inserir;Página do quadro;funciona;;manter;catálogo de comandos
+F182;Quadro;inserir;Legenda do fluxograma;funciona;;manter;catálogo de comandos
+F183;Quadro;inserir;Modelo de quadro da qualidade;funciona;;manter;catálogo de comandos
+F184;Quadro;inserir;Texto solto;funciona;;manter;catálogo de comandos
+F185;Planilha;formula;Inserir função;funciona;;manter;catálogo de comandos
+F186;Planilha;formula;AutoSoma;funciona;;manter;catálogo de comandos
+F187;Planilha;formula;Explicar esta conta;funciona;;manter;catálogo de comandos
+F188;Planilha;formula;Desenhar a conta (fluxograma);funciona;;manter;catálogo de comandos
+F189;Planilha;formula;Verificação da planilha;funciona;;manter;catálogo de comandos
+F190;Planilha;formula;Montar a conta por pergunta;funciona;;manter;catálogo de comandos
+F191;Planilha;formula;De onde vem / quem usa esta célula;funciona;;manter;catálogo de comandos
+F192;Planilha;formula;Dar nome à seleção;funciona;;manter;catálogo de comandos
+F193;Planilha;formula;Nomes da planilha;funciona;;manter;catálogo de comandos
+F194;Planilha;dados;Classificar;funciona;;manter;catálogo de comandos
+F195;Planilha;dados;Filtrar;funciona;;manter;catálogo de comandos
+F196;Planilha;dados;Reaplicar filtro;funciona;;manter;catálogo de comandos
+F197;Planilha;dados;Validação de dados;parcial;"P-01: sem prévia em frase, sem marcar inválidos, caixa nativa do navegador";B5;catálogo de comandos
+F198;Planilha;dados;Remover duplicados;funciona;;manter;catálogo de comandos
+F199;Planilha;dados;Tabela dinâmica;ainda não feito;previsto: depois da v1.0.0;;catálogo de comandos
+F200;Planilha;revisao;Ortografia;funciona;;manter;catálogo de comandos
+F201;Documento;revisao;Ortografia;ainda não feito;previsto: v0.7.0;;catálogo de comandos
+F202;Quadro;revisao;Ortografia;funciona;;manter;catálogo de comandos
+F203;Documento;revisao;Controlar alterações;ainda não feito;previsto: v0.7.0;;catálogo de comandos
+F204;Documento;revisao;Concluir revisão;ainda não feito;previsto: v0.7.0;;catálogo de comandos
+F205;Documento;revisao;Comparar revisões;ainda não feito;previsto: v0.7.0;;catálogo de comandos
+F206;Planilha;revisao;Travar modelo;funciona;;manter;catálogo de comandos
+F207;Quadro;organizar;Kanban;funciona;;manter;catálogo de comandos
+F208;Quadro;organizar;Quadro livre;funciona;;manter;catálogo de comandos
+F209;Quadro;organizar;Raias por setor;funciona;;manter;catálogo de comandos
+F210;Quadro;organizar;Trazer para a frente;funciona;;manter;catálogo de comandos
+F211;Quadro;organizar;Mandar para trás;funciona;;manter;catálogo de comandos
+F212;Quadro;organizar;Ordenar pelo GUT;funciona;;manter;catálogo de comandos
+F213;Quadro;organizar;Temporizador de reunião;funciona;;manter;catálogo de comandos
+F214;Planilha;impressao;Configurar página;funciona;;manter;catálogo de comandos
+F215;Planilha;impressao;Margens;funciona;;manter;catálogo de comandos
+F216;Planilha;impressao;Orientação;funciona;;manter;catálogo de comandos
+F217;Planilha;impressao;Definir área de impressão;funciona;;manter;catálogo de comandos
+F218;Planilha;impressao;Limpar área de impressão;funciona;;manter;catálogo de comandos
+F219;Planilha;impressao;Inserir quebra de página;funciona;;manter;catálogo de comandos
+F220;Planilha;impressao;Remover quebras de página;funciona;;manter;catálogo de comandos
+F221;Planilha;impressao;Imprimir títulos;funciona;;manter;catálogo de comandos
+F222;Planilha;impressao;Ajustar à página;funciona;;manter;catálogo de comandos
+F223;Planilha;impressao;Cabeçalho e rodapé;funciona;;manter;catálogo de comandos
+F224;Documento;pagina;Orientação da página;ainda não feito;previsto: v0.7.0;;catálogo de comandos
+F225;Documento;pagina;Margens;ainda não feito;previsto: v0.7.0;;catálogo de comandos
+F226;Documento;pagina;Quebra de página;ainda não feito;previsto: v0.7.0;;catálogo de comandos
+F227;Documento;pagina;Cabeçalho do POP;ainda não feito;previsto: v0.7.0;;catálogo de comandos
+F228;Documento;pagina;Sumário;ainda não feito;previsto: v0.7.0;;catálogo de comandos
+F229;Planilha;exibir;Faixa: mostrar tudo;funciona;;manter;catálogo de comandos
+F230;Documento;exibir;Faixa: mostrar tudo;funciona;;manter;catálogo de comandos
+F231;Quadro;exibir;Faixa: mostrar tudo;funciona;;manter;catálogo de comandos
+F232;Planilha;exibir;Faixa: só as abas (Ctrl+F1);funciona;;manter;catálogo de comandos
+F233;Documento;exibir;Faixa: só as abas (Ctrl+F1);funciona;;manter;catálogo de comandos
+F234;Quadro;exibir;Faixa: só as abas (Ctrl+F1);funciona;;manter;catálogo de comandos
+F235;Planilha;exibir;Faixa: esconder (tela cheia);funciona;;manter;catálogo de comandos
+F236;Documento;exibir;Faixa: esconder (tela cheia);funciona;;manter;catálogo de comandos
+F237;Quadro;exibir;Faixa: esconder (tela cheia);funciona;;manter;catálogo de comandos
+F238;Planilha;exibir;Menu lateral: completo;funciona;;manter;catálogo de comandos
+F239;Documento;exibir;Menu lateral: completo;funciona;;manter;catálogo de comandos
+F240;Quadro;exibir;Menu lateral: completo;funciona;;manter;catálogo de comandos
+F241;Planilha;exibir;Menu lateral: só ícones;funciona;;manter;catálogo de comandos
+F242;Documento;exibir;Menu lateral: só ícones;funciona;;manter;catálogo de comandos
+F243;Quadro;exibir;Menu lateral: só ícones;funciona;;manter;catálogo de comandos
+F244;Planilha;exibir;Menu lateral: esconder;funciona;;manter;catálogo de comandos
+F245;Documento;exibir;Menu lateral: esconder;funciona;;manter;catálogo de comandos
+F246;Quadro;exibir;Menu lateral: esconder;funciona;;manter;catálogo de comandos
+F247;Planilha;exibir;Barra de cima: completa (título e busca);funciona;;manter;catálogo de comandos
+F248;Documento;exibir;Barra de cima: completa (título e busca);funciona;;manter;catálogo de comandos
+F249;Quadro;exibir;Barra de cima: completa (título e busca);funciona;;manter;catálogo de comandos
+F250;Planilha;exibir;Barra de cima: compacta (só as abas);funciona;;manter;catálogo de comandos
+F251;Documento;exibir;Barra de cima: compacta (só as abas);funciona;;manter;catálogo de comandos
+F252;Quadro;exibir;Barra de cima: compacta (só as abas);funciona;;manter;catálogo de comandos
+F253;Planilha;exibir;Barra de fórmula: expandir ou recolher;funciona;;manter;catálogo de comandos
+F254;Planilha;exibir;Mostrar ou fechar o painel lateral;funciona;;manter;catálogo de comandos
+F255;Documento;exibir;Mostrar ou fechar o painel lateral;funciona;;manter;catálogo de comandos
+F256;Quadro;exibir;Mostrar ou fechar o painel lateral;funciona;;manter;catálogo de comandos
+F257;Planilha;exibir;Layout: faixa tipo Excel;funciona;;manter;catálogo de comandos
+F258;Documento;exibir;Layout: faixa tipo Excel;funciona;;manter;catálogo de comandos
+F259;Quadro;exibir;Layout: faixa tipo Excel;funciona;;manter;catálogo de comandos
+F260;Planilha;exibir;Layout: barra curta e painel;funciona;;manter;catálogo de comandos
+F261;Documento;exibir;Layout: barra curta e painel;funciona;;manter;catálogo de comandos
+F262;Quadro;exibir;Layout: barra curta e painel;funciona;;manter;catálogo de comandos
+F263;Planilha;exibir;Tema;funciona;;manter;catálogo de comandos
+F264;Documento;exibir;Tema;funciona;;manter;catálogo de comandos
+F265;Quadro;exibir;Tema;funciona;;manter;catálogo de comandos
+F266;Planilha;exibir;Papel sobre a mesa (sombras e contorno);funciona;;manter;catálogo de comandos
+F267;Documento;exibir;Papel sobre a mesa (sombras e contorno);funciona;;manter;catálogo de comandos
+F268;Quadro;exibir;Papel sobre a mesa (sombras e contorno);funciona;;manter;catálogo de comandos
+F269;Planilha;exibir;Relevo nas barras;funciona;;manter;catálogo de comandos
+F270;Documento;exibir;Relevo nas barras;funciona;;manter;catálogo de comandos
+F271;Quadro;exibir;Relevo nas barras;funciona;;manter;catálogo de comandos
+F272;Planilha;exibir;Tela cheia;funciona;;manter;catálogo de comandos
+F273;Documento;exibir;Tela cheia;funciona;;manter;catálogo de comandos
+F274;Quadro;exibir;Tela cheia;funciona;;manter;catálogo de comandos
+F275;Planilha;exibir;Zoom;funciona;;manter;catálogo de comandos
+F276;Documento;exibir;Zoom;ainda não feito;previsto: v0.7.0;;catálogo de comandos
+F277;Quadro;exibir;Zoom;funciona;;manter;catálogo de comandos
+F278;Quadro;exibir;Ajustar à tela;funciona;;manter;catálogo de comandos
+F279;Quadro;exibir;Mostrar códigos (Q-001);funciona;;manter;catálogo de comandos
+F280;Planilha;exibir;Congelar painéis;funciona;"D-15 corrigido na v0.6.11.1 (as setas do filtro das colunas roladas para trás das congeladas apareciam por cima dos títulos); D-06: a linha do congelamento fica mais fina na v0.6.13, se o dono aprovar";manter;catálogo de comandos
+F281;Planilha;exibir;Aba Gráfico;funciona;;manter;catálogo de comandos
+F282;Planilha;exibir;Folha clara;funciona;;manter;catálogo de comandos
+F283;Planilha;exibir;Linhas de grade;funciona;;manter;catálogo de comandos
+F284;Quadro;exibir;Barra de ferramentas do quadro;funciona;;manter;catálogo de comandos
+F285;Quadro;exibir;Assistente do quadro;funciona;;manter;catálogo de comandos
+F286;Quadro;exibir;Minimapa;funciona;;manter;catálogo de comandos
+F287;Documento;exibir;Modo leitura;ainda não feito;previsto: v0.7.0;;catálogo de comandos
+F288;Planilha;motor;"136 funções de cálculo (nomes em inglês no motor, português na tela)";funciona;;manter;varredura da Fase 0
+F289;Planilha;motor;Recalcular só o que depende da célula mudada;com defeito;"a cada digitação a planilha inteira é varrida (1,2 s em 360 mil células)";B2;varredura da Fase 0
+F290;Planilha;motor;Fórmulas com tabela estruturada (Tabela1[Coluna]);parcial;"L-02: viram endereços; a conta é a mesma";depois;varredura da Fase 0
+F291;Planilha;motor;Funções que o motor ainda não calcula mostram o último valor do Excel;funciona;;manter;varredura da Fase 0
+F292;Planilha;grade;Rolar com painel congelado (mouse e toque);funciona;fluido: 60 quadros por segundo em 360 mil células;manter;varredura da Fase 0
+F293;Planilha;grade;Bordas de células mescladas;com defeito;D-11 (reproduzido com amostra inventada);B1;varredura da Fase 0
+F294;Planilha;grade;Rolagem que encaixa em linha inteira no toque;funciona;"a hipótese do D-15 não se confirmou: a causa eram as setas do filtro (F325)";manter;varredura da Fase 0
+F295;Planilha;grade;Texto que invade a célula vizinha vazia;funciona;D-05 em aberto (não reproduzido);B1;varredura da Fase 0
+F296;Planilha;grade;"Estilo de tabela do Excel (listras, cabeçalho)";funciona;"v0.6.19: os 60 estilos de fábrica desenhados (parecidos, L-19); estilo próprio do arquivo não é desenhado, volta igual";manter;varredura da Fase 0
+F297;Planilha;grade;"Seleção, cópia, preenchimento, alças no toque";funciona;;manter;varredura da Fase 0
+F298;Planilha;excel;Abrir .xlsx/.xlsm com relatório de compatibilidade;funciona;;manter;varredura da Fase 0
+F299;Planilha;excel;"Salvar como Excel (tabelas, gráficos nativos, formas, imagens, validação, condicional, comentários)";funciona;"rede de fidelidade v0.6.10: 15 amostras e a planilha anonimizada sem diferença nova; achou D-20, D-22, D-23, D-24 (linhas F312 a F315); falta confirmar no Excel de verdade (pendência do Elias)";manter;varredura da Fase 0
+F300;Planilha;excel;"Macros, tabela dinâmica, segmentação, linha do tempo, botões e caixas de controle e suplementos guardados e devolvidos ao salvar";funciona;"D-29 corrigido na v0.6.13: voltam do original guardado no aparelho (arquivo aberto na v0.6.13 ou depois); com macro sai .xlsm; tabela dinâmica se atualiza ao abrir; sem edição no app. D-50 corrigido na v0.6.14: com botão de formulário, o Excel pedia reparo e apagava a aba";manter;varredura da Fase 0
+F301;Planilha;excel;Conferência automática do arquivo salvo por leitor independente;falta;hoje só o próprio leitor do EFCdocs confere;B0;varredura da Fase 0
+F302;Planilha;excel;"Abrir .xls, .ods e .csv";falta;pedido de 05/11 (EFCdocs reduzido): planilhas comuns com máxima compatibilidade;B6;varredura da Fase 0
+F303;Planilha;desempenho;Digitar numa planilha grande;funciona;"D-16 corrigido na v0.6.12: digitar um número e Enter de 1,1 s para menos de 0,1 s com 360 mil células (docs/RAPIDEZ.md)";manter;varredura da Fase 0
+F304;Planilha;desempenho;Inserir linha e formatar muitas células;com defeito;"1,8 s e 1,2 s (8,9 s e 9,4 s em PC fraco)";B2;varredura da Fase 0
+F305;Planilha;desempenho;Tamanho do app;parcial;"1,49 MB de código (512 KB compactado) num arquivo só; Planilha.jsx com 3.707 linhas";B2;varredura da Fase 0
+F306;App;visual;"Visual do Cwork (Claro e Escuro dourado, Fraunces e Source Sans 3)";funciona;"feito na v0.6.15 (ver F340): 5 a 6 tamanhos de letra por tela";manter;varredura da Fase 0
+F307;App;visual;Botões de 34 px no PC e 44 px no celular;com defeito;"34 alvos abaixo de 28 px na Página Inicial; no celular 39 de 40 abaixo de 44 px";B7;varredura da Fase 0
+F308;App;visual;Sem maiúsculas espaçadas;com defeito;"2 por tela no PC (títulos do menu), 8 no relatório de abertura";B7;varredura da Fase 0
+F309;App;visual;"Sem emoji, sem rolagem de lado, console sem erros";funciona;;manter;varredura da Fase 0
+F310;App;visual;Nada da empresa fixo no código;funciona;conferido: nenhum nome da empresa no código-fonte;manter;varredura da Fase 0
+F311;Documento;editor;"Editor de documento, POP, formulários, Word e PDF";ainda não feito;só o modelo e as medidas existem (11 testes);depois da Planilha;varredura da Fase 0
+F312;Planilha;excel;Tabela do Excel com título numérico (ex.: 2024);funciona;D-20 corrigido na v0.6.11: o título vai como texto, como o Excel grava;manter;rede de fidelidade v0.6.10
+F313;Planilha;excel;Nome de aba com espaço no começo ou no fim;funciona;D-22 corrigido na v0.6.11;manter;rede de fidelidade v0.6.10 (planilha anonimizada)
+F314;Planilha;excel;Colunas ocultas até o fim da aba;funciona;D-23 corrigido na v0.6.11 (no app, as colunas além de 50 da última com dado ainda aparecem: L-10);manter;rede de fidelidade v0.6.10 (planilha anonimizada)
+F315;Planilha;excel;Filtro com critério de data (mês);funciona;D-24 corrigido na v0.6.11: o critério volta ao salvar;manter;rede de fidelidade v0.6.10 (planilha anonimizada)
+F316;Planilha;excel;Fórmulas copiadas muito além do último dado;parcial;"L-04: ficam 1.000 linhas de folga depois do último dado; as outras não voltam ao salvar";decisão do Elias;rede de fidelidade v0.6.10
+F317;App;ferramentas;Anonimizador de planilha (anonimizar-planilha.html);funciona;"D-21 corrigido na v0.6.10; D-25 (botão de tema no celular e título) na v0.6.11; D-27 (valores dos filtros, segmentações, tinta, suplementos; conferência de todos os textos) na v0.6.11.1; D-31 (aviso falso com nome de aba, filtro da tabela dinâmica, linha do tempo, abas de vínculo externo) na v0.6.12; D-32 (aviso de validação, conversas de comentário, gráfico novo cx) na v0.6.13; D-35 (aba citada em link com %20; o aviso diz onde está cada texto) na v0.6.14";manter;v0.6.10
+F318;App;ferramentas;"Rede de fidelidade: ida e volta, openpyxl e LibreOffice (npm run test:fidelidade)";funciona;;manter;v0.6.10
+F319;App;ferramentas;"Cinco auditorias contra a linha de base (npm run auditoria)";funciona;;manter;v0.6.10
+F320;App;montar;Montar sem avisos;funciona;D-18 corrigido na v0.6.11: 0 avisos;manter;auditoria de código v0.6.10
+F321;App;marca;"Nome e capa: Vértice Docs (nome, abertura, ícones)";funciona;v0.6.10.1;manter;v0.6.10.1
+F322;Planilha;filtro;Título da coluna com filtro não fica por baixo da seta;funciona;D-15 (parte dos títulos) corrigido na v0.6.11;manter;v0.6.11
+F323;Planilha;grade;Bordas de células mescladas (só o contorno de fora);funciona;D-11 e D-17 (caixinha) corrigidos na v0.6.11;manter;v0.6.11
+F324;Planilha;filtro;Aviso quando o filtro de data ou cor que veio do Excel sai;funciona;D-26 (Grok) na v0.6.11;manter;v0.6.11
+F325;Planilha;filtro;Setas do filtro não aparecem por cima dos títulos congelados ao rolar;funciona;D-15 corrigido na v0.6.11.1;manter;v0.6.11.1 (print do dono de 04/11)
+F326;Planilha;excel;"Tabela do Excel com título que é só espaço";funciona;D-28 corrigido na v0.6.11.1;manter;v0.6.11.1 (planilha atual anonimizada)
+F327;Planilha;excel;"Formas: tipo e cor do texto iguais na ida e volta";com defeito;"D-30: 1 forma vira imagem, 2 perdem a cor do texto, segunda volta diferente numa aba";v0.6.14;v0.6.11.1 (planilha atual anonimizada)
+F328;Planilha;desempenho;"Desfazer, apagar e formatar numa planilha grande";funciona;"v0.6.12: desfazer de 0,9 s para menos de 0,1 s com 360 mil células";manter;v0.6.12
+F329;App;gravar;"Gravação que espera a pessoa parar de digitar (arquivo grande) e diário de segurança que recupera o que não foi gravado";funciona;"v0.6.12; arquivo pequeno continua gravando na hora";manter;v0.6.12
+F330;Planilha;excel;"Tema com figura de fundo volta ao salvar (sem reparo no Excel)";funciona;"D-33 corrigido na v0.6.13: com o original, volta com a figura; sem ele, a figura vira cor lisa";manter;v0.6.13
+F331;Planilha;excel;"Conferência estrutural do Excel salvo (relações, tipos, XML, ordem) na rede de fidelidade";funciona;"v0.6.13: scripts/fidelidade/conferir-estrutura.py";manter;v0.6.13
+F332;Planilha;excel;"Coluna e linha formatadas inteiras (estilo da coluna/linha): mostra, herda ao digitar e volta ao salvar";funciona;"D-47 corrigido na v0.6.14";manter;v0.6.14
+F333;Planilha;excel;"Estilo Normal do arquivo (letra 10, centralizado no meio) e alinhamentos justificado, distribuído, girado, recuo, reduzir para caber";funciona;"D-46 e D-48 corrigidos na v0.6.14 (a grade mostra o mais perto)";manter;v0.6.14
+F334;Planilha;excel;"Bordas pontilhada, tracejada, dupla e preenchimento em degradê voltam iguais";funciona;"D-53 e D-54 corrigidos na v0.6.14 (a grade desenha lisa e com a primeira cor)";manter;v0.6.14
+F335;Planilha;excel;"Nome definido que vale numa aba só";funciona;"D-49 corrigido na v0.6.14";manter;v0.6.14
+F336;Planilha;excel;"Abas que são só um gráfico, gráficos novos (cascata, funil, mapa) e barras de dados";falta;"D-43, D-44, D-45 abertos: aparecem em Ficou de fora";Guardar e devolver 2 (a decidir);v0.6.14
+F337;App;ferramentas;"Conferente das regras do Excel (scripts/fidelidade/conferir-regras.py) e do esquema oficial (conferir-xsd.py)";funciona;"v0.6.14: o de regras roda na rede, nos testes e no navegador";manter;v0.6.14
+F338;Planilha;excel;"Borda com cor diferente em cada lado";funciona;"D-57 corrigido na v0.6.15 (a grade e o arquivo salvo)";manter;v0.6.15
+F339;Planilha;excel;"Aba com linhas escondidas por padrão (zeroHeight) e linhas ocultas no fim";funciona;"D-58 corrigido na v0.6.15";manter;v0.6.15
+F340;App;visual;"Visual do Cwork: temas Claro e Escuro, letras Fraunces e Source Sans 3 embutidas, ícones novos, faixa redesenhada";funciona;"v0.6.15 (R17, R21, R22); os 16 temas antigos migram para o Claro ou o Escuro";manter;v0.6.15
+F341;Planilha;visual;"Linha do congelamento com 1 pixel e seta do filtro no desenho do Cwork";funciona;"v0.6.15 (C02, R22)";manter;v0.6.15
+F342;App;visual;"Movimento das telas (janela, menu, aviso, seções das Opções, chave) com os tokens do Transitions.dev e reduzir movimento";funciona;"v0.6.15 (R24)";manter;v0.6.15
+F343;App;visual;"Efeitos aprovados: contagem no relatório, brilho no botão de ouro, luz nos cartões do Início, listas em cascata, certo ao salvar";funciona;"v0.6.15 (F01 a F05 aprovados em 13/11)";manter;v0.6.15
+F344;App;visual;"Faixa lisa como a do Excel (sem caixa nos grupos)";funciona;"v0.6.15 (R25)";manter;v0.6.15
+F345;App;visual;"Faixa igual ao Excel: cada botão no mesmo lugar do Excel e ícones no estilo do Excel";falta;"R25: pedido de 13/11";Faixa igual ao Excel (depois das Pontes);v0.6.15
+F346;App;ponte;"Documentos internos com sub-abas (Etiquetas, Fichas e custódias, Formulários, Fluxogramas, POPs e procedimentos) e código";funciona;"v0.6.16 (Ponte 1)";manter;v0.6.16
+F347;App;ponte;"Compartilhar com o Cwork (PDF e planilha original pela caixa de troca do aparelho; mesma ficha, versão sobe)";funciona;"v0.6.16 (Ponte 1); Documento chega na v0.7.0";manter;v0.6.16
+F348;App;ponte;"Abrir no Vértice o que o Cwork mandou, com aviso de chegada";funciona;"v0.6.16 (Ponte 1); só .xlsx/.xlsm por enquanto";manter;v0.6.16
+F349;App;ponte;"Resumo do envio ao lado da ficha (copiar, na ficha, faltam N de M, Copiar tudo)";funciona;"v0.6.16 (Ponte 1)";manter;v0.6.16
+F350;App;ponte;"Preencher sozinho por nome de célula (1 a 32 campos, mescladas e listas) e imprimir com os dados do Cwork";funciona;"v0.6.17 (Ponte 2): pedido, cópia em memória, resposta";manter;v0.6.17
+F351;Planilha;validacao;"Seta da lista suspensa respeita o painel congelado ao rolar";funciona;"D-59 corrigido na v0.6.16";manter;v0.6.16
+F352;App;menu;"Alça do menu escondido não cobre os números das linhas";funciona;"D-60 corrigido na v0.6.16";manter;v0.6.16
+F353;App;ponte;"Painel Campos do Cwork: marcar e tirar campos (nomes efc_), com capacidade das listas";funciona;"v0.6.17 (Ponte 2)";manter;v0.6.17
+F354;App;ponte;"Compartilhar leva preenche e campos na ficha; avisa nome efc_ desconhecido e excesso de 32";funciona;"v0.6.17 (Ponte 2)";manter;v0.6.17
+F355;App;ponte;"Resumo do envio: número da ficha diferente do envio e Preencher e imprimir";funciona;"v0.6.17 (D03 aprovado em 13/11)";manter;v0.6.17
+F356;Planilha;impressao;"Imprimir e PDF fora da tela (planilha/imprimirLivro.js), mesmo resultado";funciona;"v0.6.17: Planilha.jsx de 3.699 para 3.600 linhas";manter;v0.6.17
+F357;Planilha;regras;"Barras de dados (formatação condicional): ler, desenhar na grade, imprimir e regravar (antiga e Excel 2010: lisa, degradê, borda, negativos com eixo, só a barra)";funciona;"v0.6.18 (D-45)";manter;v0.6.18
+F358;Planilha;regras;"Nova regra Barras de dados na janela de formatação condicional (cor, lisa, só a barra)";funciona;"v0.6.18";manter;v0.6.18
+F359;Planilha;abas;"Aba de gráfico (chartsheet): vem como aba com o gráfico e sem grade; volta como aba de gráfico (ou comum, se ganhou células)";funciona;"v0.6.18 (D-43)";manter;v0.6.18
+F360;Planilha;graficos;"Gráficos do Excel 2016 (cascata e funil desenhados; os outros tipos como quadro): acompanham as células e voltam iguais ao salvar";parcial;"v0.6.18 (D-44): não se editam aqui; mapa de árvore, explosão solar, caixa, histograma, Pareto e mapa ainda sem desenho";manter;v0.6.18
+F361;Planilha;graficos;"Grupo do Excel com gráfico do Excel 2016 dentro continua grupo (sem a caixa de aviso do Excel antigo)";funciona;"v0.6.18 (D-44)";manter;v0.6.18
+F362;Planilha;tabela;"Tabela cresce ao digitar logo abaixo ou à direita (formato, coluna calculada, filtro e regras acompanham)";funciona;"v0.6.19 (D-12)";manter;v0.6.19
+F363;Planilha;tabela;"Tab na tabela: no fim da linha vai para a próxima; na última célula abre linha nova (antes dos totais)";funciona;"v0.6.19 (D-13)";manter;v0.6.19
+F364;Planilha;tabela;"Alça no canto da tabela para esticar ou encolher, com prévia";funciona;"v0.6.19 (D-14): com totais, só as colunas";manter;v0.6.19
+F365;Planilha;tabela;"Aba Design da Tabela: nome, redimensionar, converter em intervalo, opções de estilo, botão de filtro, estilos";funciona;"v0.6.19";manter;v0.6.19
+F366;Planilha;tabela;"Linha de totais com conta por coluna (soma, média, contagem, máximo, mínimo, desvio padrão, variância)";funciona;"v0.6.19";manter;v0.6.19
+F367;Planilha;tabela;"Coluna calculada: fórmula numa coluna vazia da tabela preenche a coluna";funciona;"v0.6.19";manter;v0.6.19
+F368;Planilha;tabela;"Galeria com os 60 estilos de tabela do Excel (Formatar como tabela e Design)";funciona;"v0.6.19";manter;v0.6.19
+F369;Arquivos;listas;"Listas em tabela com a tela parada: só a tabela rola, cabeçalho das colunas fixo, mais 100 linhas sozinhas no fim";funciona;"v0.6.20";manter;v0.6.20 (layout da família R1 e R2)
+F370;Arquivos;listas;"Selo do total no cabeçalho da lista; com filtro, total filtrado";funciona;"v0.6.20";manter;v0.6.20 (layout da família R3)
+F371;Arquivos;documentos internos;"Filtro único (nome e ordem) nos Documentos internos, na linha das sub-abas";funciona;"v0.6.20";manter;v0.6.20 (layout da família R4)
+F372;Arquivos;listas;"Esqueleto (linhas cinzas) enquanto os arquivos do aparelho não chegam";funciona;"v0.6.20";manter;v0.6.20 (layout da família R10)
+F373;Arquivos;listas;"Situação com ponto colorido e texto (caixa só no vermelho) nos Documentos internos e no painel";funciona;"v0.6.20";manter;v0.6.20 (layout da família R6)
+F374;Arquivos;listas;"Botão Detalhes na linha: gaveta ao lado sem abrir o arquivo, com anterior e próximo (setas e Alt + seta) e Esc";funciona;"v0.6.20";manter;v0.6.20 (layout da família R8)
+F375;Arquivos;painel;"Painel do arquivo aberto com o cabeçalho da gaveta (texto pequeno, X em cima, nome grande)";funciona;"v0.6.20";manter;v0.6.20 (layout da família R8)
+F376;Arquivos;histórico;"Histórico do arquivo em linha do tempo com a gota (criado, alterado, envio ao Cwork, lixeira), na gaveta e no painel";funciona;"v0.6.20";manter;v0.6.20 (layout da família R9)
+F377;Aparência;movimento;"Regra fixa de fluidez: trocar de área e de aba com o conteúdo deslizando, traço que desliza e título letra por letra";funciona;"v0.6.20";manter;v0.6.20 (regra de fluidez 1a)
+F378;Aparência;movimento;"Gaveta, menus, janelas e avisos entram e saem com movimento (nada some de uma vez); visto no sucesso; faíscas no botão dourado";funciona;"v0.6.20";manter;v0.6.20 (regra de fluidez 1b a 1k)
+F379;Arquivos;listas;"Menu da coluna: filtro e ordem no título de cada coluna das listas; filtro também na Lixeira";funciona;"v0.6.20";manter;v0.6.20 (layout da família R13)
+F380;Aparência;tema;"Botão de tema (Claro/Escuro) na barra de cima";funciona;"v0.6.20";manter;v0.6.20 (regra de fluidez 1j)
+F381;Quadro;kanban;"Kanban com desenho novo: cartão em papel da cor do post-it, andamento do quadro, parte de cada coluna, tarefa com iniciais, prazo e prioridade em barrinhas; cartões deslizam ao mover";funciona;"v0.6.20";manter;v0.6.20 (parte 4)
+F382;Aparência;telas;"Visual novo das páginas que vão chegar, do relatório do Excel, do balão da célula e do Explicar esta conta";funciona;"v0.6.20";manter;v0.6.20 (parte 4)
+F383;Planilha;faixa;"Página Inicial nos lugares do Excel: sete grupos na ordem do Excel, duas linhas por grupo; caixas da letra, do tamanho e do formato do número; Inserir, Excluir, Formatar, Preencher e Limpar com lista";funciona;"v0.6.21";manter;v0.6.21 (R25, faixa parte 1, aprovada 15/11)
+F384;Planilha;formatar;"Alinhar em cima, no meio e embaixo; aumentar e diminuir a letra um degrau";funciona;"v0.6.21";manter;v0.6.21 (R25, faixa parte 1, aprovada 15/11)
+F385;Planilha;faixa;"Aba Inserir nos lugares do Excel (Tabelas, Ilustrações, Gráficos, Links, Comentários, Texto, Do Vértice)";funciona;"v0.6.21";manter;v0.6.21 (R25, faixa parte 2, aprovada 17/11)
+F386;Planilha;grafico;"Ícone por tipo de gráfico na faixa e lista Outros gráficos; a janela abre já no tipo clicado";funciona;"v0.6.21";manter;v0.6.21 (R25, faixa parte 2, aprovada 17/11)
+F387;Planilha;faixa;"Aba Fórmulas nos lugares do Excel: Biblioteca de funções com sete gavetas, Nomes definidos, Auditoria de fórmulas";funciona;"v0.6.21";manter;v0.6.21 (R25, faixa parte 2, aprovada 17/11)
+F388;Planilha;formula;"AutoSoma com seta: Soma, Média, Contar números, Máximo, Mínimo";funciona;"v0.6.21";manter;v0.6.21 (R25, faixa parte 2, aprovada 17/11)
+F389;Planilha;formatar;"Formatar: Altura da linha, Ajustar a altura, Largura da coluna, Ajustar a largura (várias de uma vez, um passo de desfazer)";funciona;"v0.6.21";manter;v0.6.21 (D2, faixa parte 2, aprovada 17/11)
+F390;Base;testes;"Programa de ida e volta (planilha, documento, quadro; PDF e Word) com conferente de fora";funciona;"v0.6.21";manter;v0.6.21 (Sabiá 2.1)
+F391;Planilha;faixa;"Aba Layout da Página nos lugares do Excel (Configurar página, Dimensionar para ajustar, Opções de planilha, Do Vértice); Margens, Orientação, Tamanho, Área de impressão, Quebras e Ajustar com lista que marca a escolha";funciona;"v0.6.21";manter;v0.6.21 (R25, faixa parte 3, publicada 17/11)
+F392;Planilha;impressao;"Imprimir a grade e Imprimir letras e números direto na faixa (Opções de planilha)";funciona;"v0.6.21";manter;v0.6.21 (R25, faixa parte 3, publicada 17/11)
+F393;Planilha;dados;"Classificar de A a Z e de Z a A pela coluna da célula; Limpar filtro (tira os critérios e deixa o filtro)";funciona;"v0.6.21";manter;v0.6.21 (R25, faixa parte 3, publicada 17/11)
+F394;Planilha;faixa;"Abas Dados, Revisão e Exibir nos lugares do Excel, com os nomes do Excel";funciona;"v0.6.21";manter;v0.6.21 (R25, faixa parte 3, publicada 17/11)
+F395;Planilha;exibir;"Congelar painéis com a lista do Excel (até a célula, linha superior, primeira coluna, descongelar) e Zoom 100%";funciona;"v0.6.21";manter;v0.6.21 (R25, faixa parte 3, publicada 17/11)
+F396;Planilha;toque;"Pinça de dois dedos aproxima e afasta a planilha (50% a 200%) sem abrir o menu da célula";funciona;"v0.6.22";manter;v0.6.22 (D-61, aprovada 18/11)
+F397;Núcleo;arquivos;"Soltar um arquivo do Excel em qualquer tela abre a janela do Excel já lendo; Word, PDF, .xls e CSV com aviso";funciona;"v0.6.22";manter;v0.6.22 (D-62, aprovada 18/11)
+F398;Núcleo;menu;"Em tela média, o menu lateral se esconde sozinho com uma planilha aberta (a alça mostra de novo)";funciona;"v0.6.22";manter;v0.6.22 (D3, aprovada 18/11)
+F399;Planilha;tabela;"Desfazer igual ao Excel quando a tabela cresce ou a fórmula vai para a coluna inteira (1º Ctrl+Z só a expansão)";funciona;"v0.6.22";manter;v0.6.22 (D01 da v0.6.19, aprovada 18/11)
+F400;Planilha;teclado;"Atalhos do Excel em português (negrito Ctrl+N/2/Alt+N, Ctrl+B salvar, Ctrl+K link, Ctrl+U substituir, formatos e bordas com Ctrl+Shift, Ctrl+9/0, Ctrl+-/+, Ctrl+', Ctrl+Shift+*, Ctrl+Alt+T/V, Shift+F3, F7, Shift+F11)";funciona;"v0.6.23";manter;v0.6.23 (aprovada 18/11)
+F401;Planilha;formatar;"Tachado (Ctrl+5)";funciona;"v0.6.23";manter;v0.6.23 (aprovada 18/11)
+F402;Planilha;preencher;"Alça reconhece letras, texto terminado em letra, romanos, multiplicação e dias úteis";funciona;"v0.6.23";manter;v0.6.23 (aprovada 18/11)
+F403;Planilha;toque;"Pinça aproxima no ponto entre os dedos";funciona;"v0.6.23";manter;v0.6.23 (D10) (aprovada 18/11)
+F404;Planilha;grafico;"Arrastar a linha da meta na prévia do editor (segue a prévia redesenhada)";funciona;"D-63 em observação: falha rara da suíte não reproduzida";manter;v0.6.23.1 (aprovada 18/11)
+F405;Listas;listas;"Menu da coluna no padrão do EFCwork (ordem em ciclo, busca, valores com contagem e caixas)";funciona;"v0.6.24 parte 1";manter;v0.6.24 parte 1 (aprovada 18/11)
+F406;Listas;listas;"Mover e arrastar colunas, ordem lembrada no aparelho";funciona;"v0.6.24 parte 1";manter;v0.6.24 parte 1 (aprovada 18/11)
+F407;Listas;listas;"Travar coluna (ordem e filtro guardados até destravar)";funciona;"v0.6.24 parte 1";manter;v0.6.24 parte 1 (aprovada 18/11)
+F408;Listas;listas;"Celular: barra com as colunas e menu de baixo";funciona;"v0.6.24 parte 1";manter;v0.6.24 parte 1 (aprovada 18/11)
+F409;Listas;listas;"Menu em Código, Situação e Na lixeira desde";funciona;"v0.6.24 parte 1";manter;v0.6.24 parte 1 (aprovada 18/11)
+F410;Planilha;estabilizacao;"Caixa de nome durante a edição não trava (DL01)";funciona;"v0.6.24.1";manter;v0.6.24.1 (aguarda aprovação)
+F411;Planilha;estabilizacao;"Classificar uma coluna pergunta Expandir a seleção (DL02)";funciona;"v0.6.24.1";manter;v0.6.24.1 (aguarda aprovação)
+F412;Planilha;estabilizacao;"Classificar deixa a linha de total embaixo (DL03)";funciona;"v0.6.24.1";manter;v0.6.24.1 (aguarda aprovação)
+F413;Planilha;estabilizacao;"Remover duplicados ajusta a SOMA como exclusão de linhas (DL04)";funciona;"v0.6.24.1";manter;v0.6.24.1 (aguarda aprovação)
+F414;Planilha;estabilizacao;"Meta do gráfico: prévia presa no topo e arrasto com o dedo (V01, V02, D-63)";funciona;"v0.6.24.1";manter;v0.6.24.1 (aguarda aprovação)
+F415;Planilha;estabilizacao;"Atalhos do Quadro iguais aos da planilha (V05)";funciona;"v0.6.24.1";manter;v0.6.24.1 (aguarda aprovação)
+F416;Listas;listas;"Ajustes das colunas: escuro, janela média, celular, contraste, leitor e teclado (V24-01 a V24-07)";funciona;"v0.6.24.2";manter;v0.6.24.2 (aguarda aprovação)
+F417;Planilha;filtro;"Seta do filtro num quadrado pequeno e bem transparente no título, que cresce e fica opaco no mouse; filtrada, funil sem quadrado (tabela e Dados › Filtro)";funciona;"v0.6.24.3";manter;v0.6.24.3 (aprovada 18/11)
+F418;Planilha;filtro;"Menu do filtro da planilha no padrão do EFCwork";funciona;"v0.6.24.3";manter;v0.6.24.3 (aprovada 18/11)
+F419;Planilha;filtro;"Filtros de número, data e texto do Excel";funciona;"v0.6.24.3";manter;v0.6.24.3 (aprovada 18/11)
+F420;Planilha;filtro;"10 maiores/menores e acima/abaixo da média (opções da lista de Filtros de número)";funciona;"v0.6.24.4";manter;v0.6.24.3 aprovada; na lista desde a v0.6.24.4
+F421;Planilha;filtro;"Filtrar por cor (só no app)";funciona;"v0.6.24.3";manter;v0.6.24.3 (aprovada 18/11)
+F422;Planilha;filtro;"Filtros de condição vão e voltam no .xlsx";funciona;"v0.6.24.3";manter;v0.6.24.3 (aprovada 18/11)
+F423;Planilha;filtro;"Ordenar do filtro num botão só, em ciclo (ordem padrão, crescente, decrescente, volta à ordem de antes)";funciona;"v0.6.24.3";manter;v0.6.24.3 (pedido de 18/11 15:46, aprovada)
+F424;Planilha;dados;"Circular dados inválidos e Limpar círculos (Dados › Ferramentas de dados; até 255, como o Excel; corrigiu, o círculo some)";funciona;"v0.6.25";manter;v0.6.25 (ideia I02 do Grok, aprovada 18/11)
+F425;Planilha;analise;"Estatística descritiva numa aba nova, com fórmulas ligadas aos dados (média, erro padrão, mediana, moda, desvio, variância, CV, mín., máx., amplitude, soma, contagem)";funciona;"v0.6.25";manter;v0.6.25 (ideia I01 do Grok, aprovada 18/11)
+F426;Planilha;analise;"Amostragem: sorteio aleatório sem repetir ou uma a cada k, numa aba nova com a linha de origem e a data do sorteio";funciona;"v0.6.25";manter;v0.6.25 (ideia I04 do Grok, aprovada 18/11)
+F427;Quadro;postits;"Post-it novo pelo botão procura vaga em volta do centro, na parte da tela que aparece (sem empilhar; a tela vai até ele se não houver vaga)";funciona;"v0.6.26";manter;v0.6.26 (PL01 e PL04 do Grok)
+F428;Quadro;postits;"Esc guarda o texto do post-it, do cartão do Kanban e da seta; Ctrl+Z desfaz";funciona;"v0.6.26";manter;v0.6.26 (D15 do Elias, PL02)
+F429;Quadro;postits;"Texto em edição não se perde ao recarregar, fechar ou esconder o app (vai para o diário de segurança e volta ao abrir)";funciona;"v0.6.26";manter;v0.6.26 (PL03 do Grok)
+F430;Quadro;kanban;"Lixeira no canto de cima do cartão escolhido do Kanban (44 px no celular), com Desfazer no aviso";funciona;"v0.6.26";manter;v0.6.26 (pedido do Elias, 18/11 18:22)
+F431;Planilha;rolagem;"Rolagem pixel a pixel também com linhas e colunas congeladas; ao parar, desliza até a linha e a coluna inteiras";funciona;"v0.6.27";manter;v0.6.27 (pedido do Elias, 18/11 19:13)
+F432;Geral;rolagem;"Roda do mouse suave na planilha e no Quadro (clique da roda em quadros; touchpad direto; reduzir movimento respeitado)";funciona;"v0.6.27";manter;v0.6.27 (pedido do Elias, 18/11 19:13)
+F433;Planilha;objetos;"Trava de toque em imagens, gráficos, formas, assinaturas e botões: toque rápido escolhe (ou vai, no botão), arrastar o dedo rola a planilha com embalo, mover pede segurar meio segundo; o mouse continua igual";funciona;"v0.6.28";manter;v0.6.28 (pedido do Elias, 18/11 20:59)
+F434;Planilha;funcoes;"CURT (KURT), DISTORÇÃO (SKEW) e DISTORÇÃO.P (SKEW.P), também na Estatística descritiva";funciona;"v0.6.29";manter;v0.6.29 (D17, aprovada 18/11)
+F435;Planilha;navegacao;"Ctrl+seta (e Ctrl+Shift+seta) dentro de uma tabela para na borda dela; da borda, segue para fora";funciona;"v0.6.29";manter;v0.6.29 (defeito do Elias, 18/11 21:44)
+F436;Geral;faixa;"Exibir › Do Vértice: barra de cima, menu lateral, layout e aparência em listas que marcam o que está ligado (Planilha, Documento e Quadro)";funciona;"v0.6.30";manter;v0.6.30 (D7)
+F437;Planilha;faixa;"Página Inicial › Edição › Classificar e filtrar (lista do Excel)";funciona;"v0.6.30";manter;v0.6.30 (D4)
+F438;Planilha;protecao;"Proteger planilha (antes Travar modelo) em botão, janela e avisos";funciona;"v0.6.30";manter;v0.6.30 (D8)
+F439;Geral;icones;"Ícones da faixa no estilo E: traço 1,3 px, destaque sem fundo na cor da família do botão (claro e escuro); listas e itens com família";funciona;"v0.6.31";manter;v0.6.31 (estilo E)
+F440;Geral;icones;"Outros ícones do app (menu lateral, barra, janelas) com traço 1,5 px";funciona;"v0.6.31";manter;v0.6.31
+F441;Quadro;kanban;"Coluna nova entra antes do Feito (a última coluna é a do andamento)";funciona;"v0.6.32 (PL05)";manter;v0.6.32
+F442;Quadro;celular;"Celular e toque: alvos de 44 px, zoom no alto, item escolhido aparece acima das barras, girar mantém o centro";funciona;"v0.6.32 (PL07, PL09, PL10, PL12)";manter;v0.6.32
+F443;Quadro;edicao;"Arrastar item até a borda rola a tela; tamanho mínimo com código; código Q-001 com contraste 4,5";funciona;"v0.6.32 (PL06, PL08, PL11)";manter;v0.6.32
+F444;Quadro;celular;"Celular deitado: título e ferramentas numa linha só, abas e zoom lado a lado, só a barra do item com um item escolhido (quadro com 76% da altura)";funciona;"v0.6.33";manter;v0.6.33
+F445;Quadro;edicao;"Item novo nasce na parte da tela que aparece, fora das abas e das barras";funciona;"v0.6.33";manter;v0.6.33
+F446;Quadro;app;"Abas Quadro/Kanban flutuam no canto do quadro (computador e celular), sem ocupar uma faixa";funciona;"v0.6.33 (D-64)";manter;v0.6.33
+F447;Geral;celular;"Celular deitado: título e ferramentas numa linha só em todo arquivo aberto (Planilha, Documento e Quadro); Abas abre embaixo em linhas inteiras";funciona;"v0.6.34 (S1 e D-65)";manter;v0.6.34
+F448;Geral;celular;"Celular deitado pequeno: Tema e Painel saem do título (Tema em Opções, Painel em Exibir)";funciona;"v0.6.34 (D1)";manter;v0.6.34
+F449;Geral;celular;"Celular deitado pequeno: só o Salvo no título (sem o nome do arquivo), Painel de volta, Tema em Opções";funciona;"v0.6.35";manter;v0.6.35
+F450;Geral;celular;"Celular grande deitado (acima de 899 px, até 500 px de altura, com toque) entra no modo celular";funciona;"v0.6.35 (S1 da v0.6.34)";manter;v0.6.35
+F451;Planilha;dados;"Dados › Texto para colunas: separado por (tab, ponto e vírgula, vírgula, espaço, outro, seguidos como um, aspas) ou largura fixa; prévia com formato por coluna (Geral, Texto, Pular); destino; aviso de substituição; desfazer num passo";funciona;"v0.6.36 (D9 parte 1)";manter;v0.6.36
+F452;Geral;celular;"Celular deitado pequeno: bolinha verde em cima do Salvo, centralizada";funciona;"v0.6.36";manter;v0.6.36
+F453;Planilha;dados;"Dados › Estrutura de tópicos: Agrupar e Desagrupar linhas e colunas (Shift+Alt+→/←, até 7 níveis, pergunta Linhas/Colunas), Mostrar e Ocultar detalhe, Limpar estrutura";funciona;"v0.6.37 (D9 parte 2)";manter;v0.6.37
+F454;Planilha;grade;"Margem dos grupos: botões de nível e de mais/menos à esquerda das linhas e em cima das colunas (maior na tela de toque)";funciona;"v0.6.37";manter;v0.6.37
+F455;Planilha;excel;"Grupos do Excel (outlineLevel, collapsed, outlinePr) vêm e voltam; inserir e excluir levam os grupos";parcial;"v0.6.37; L-20: faixa de mais de 64 colunas fica sem grupo";manter;v0.6.37
+F456;Planilha;dados;"Dados › Subtotal: a cada mudança em, função (Soma, Contagem, Média, Máx, Mín, Produto, Contar núm, DesvPad, DesvPadP, Var, VarP), colunas, substituir, quebra de página, resumo embaixo; rótulo em negrito, Total Geral, grupos prontos; Remover todos; aviso de coluna fora de ordem";funciona;"v0.6.38 (D9 parte 2b)";manter;v0.6.38
+F457;Planilha;excel;"Tabela do Excel: função e rótulo da linha de totais por coluna, coluna calculada e ordenação guardada voltam ao salvar (T0)";parcial;"v0.6.39; D-66 (salvar como Excel depois de inserir coluna numa tabela dava erro) corrigido na v0.6.40; ficam para depois: formatos próprios (dxf) e cores de estilo de tabela criado no Excel";manter;v0.6.39
+F458;Planilha;filtro;"Um filtro por tabela: cada tabela tem as setas dela e a aba pode ter um filtro comum fora das tabelas; filtrar uma não mexe nas outras; Filtrar, Limpar e Reaplicar valem para o filtro da célula (T2)";funciona;"v0.6.40";manter;v0.6.40
+F459;Planilha;excel;"Filtro de cada tabela do Excel vem e volta (com as setas e os critérios); tabela sem setas no Excel volta sem setas";funciona;"v0.6.40";manter;v0.6.40
+F460;Planilha;tabela;"Tirar o filtro da tabela (Design › Botão de filtro, Ctrl+Shift+L, Converter em intervalo) mostra as linhas que ele escondia";funciona;"D-67 corrigido na v0.6.40";manter;v0.6.40
+F461;Planilha;excel;"Segmentação de dados de tabela vinda do Excel aparece no lugar dela e filtra a tabela: toque, Ctrl+toque, seleção múltipla, limpar, valores sem linha apagados no fim, também de outra aba; volta igual ao salvar (S1)";parcial;"v0.6.41; L-21: não muda de lugar nem de tamanho no app; segmentação de tabela dinâmica e linha do tempo não aparecem";manter;v0.6.41
+F462;Planilha;excel;"Segmentação de dados: Inserir › Segmentação de dados (uma por coluna marcada), escolher, arrastar pelo título, mudar o tamanho pela alça, Configurações (título, mostrar título, colunas de botões), excluir (lixeira ou Delete, leva o filtro dela); anda com linhas e colunas inseridas; segue o nome novo da tabela; ao salvar como Excel a que veio do arquivo leva o que mudou e a apagada sai (S2)";parcial;"v0.6.42; a feita no app ainda não vai para o arquivo do Excel (S3; o app avisa ao salvar)";manter;v0.6.42
+F463;Planilha;excel;"Segmentação de dados com o desenho do Excel 365 (estilo claro padrão): caixa reta sem sombra, título normal, ícones cinza com o X vermelho, botões retos, marcado em azul, sem tracejado; tema escuro acompanha a grade";funciona;"v0.6.43; o estilo que vem no arquivo (Claro 2 a 6, Escuro etc.) ainda não é lido (S3)";manter;v0.6.43
+F464;Planilha;excel;"Segmentação feita no app vai para o arquivo do Excel e volta ao abrir de novo (lugar, título, colunas, valores marcados); sem o original, as do Excel também";funciona;"v0.6.44; não provado no Excel de verdade; sem estilo/ordem dos itens (L-22); tabela sem autoFilter não leva";manter;v0.6.44
+F465;Planilha;grade;"Linhas e colunas escondidas até o fim (Ctrl+9/Ctrl+0, menu do cabeçalho, ou vindas do Excel com zeroHeight/faixa até a XFD): a grade não pesa, salva como o Excel e volta igual";funciona;"v0.6.45; esconder/reexibir/filtrar com 1 milhão de linhas escondidas: 0,3 a 0,8 s (L-23)";manter;v0.6.45
+F466;Planilha;objetos;"Objeto preso na parte congelada (imagem, gráfico, forma, botão, assinatura) aparece inteiro; ao rolar, a parte de cima fica e a de baixo rola, como no Excel";funciona;"v0.6.46; segmentação de dados não mexida";manter;v0.6.46
+F467;Planilha;validação;"Lista suspensa fecha quando a planilha rola, como no Excel";funciona;v0.6.46;manter;v0.6.46
+F468;Planilha;seleção;"Coluna ou linha inteira + Ctrl+Shift+seta continua inteira e só cresce para o lado, sem descer a tela (também com parte congelada)";funciona;"v0.6.47 (D-80)";manter;v0.6.47
+F469;Planilha;seleção;"Célula mesclada escolhida sozinha mostra só a moldura (sem traço no meio e sem fundo)";funciona;"v0.6.47 (D-73)";manter;v0.6.47
+F470;Planilha;grade;"Cursor do cabeçalho como o do Excel: seta para baixo na letra, para a direita no número, seta dupla só na divisa";funciona;"v0.6.47 (D-69)";manter;v0.6.47
+F471;Quadro;fundo;"Fundo de bolinhas numa camada só, que anda com o arrasto e o zoom";funciona;"v0.6.48 (D-76)";manter;v0.6.48
+F472;Quadro;formas;"Código e ícones da forma Início/Fim ficam fora da curva, na tela, no PDF e na imagem";funciona;"v0.6.48 (D-77)";manter;v0.6.48
+F473;Quadro;seleção;"Moldura de seleção colada no item, com a alça no canto (como no PowerPoint)";funciona;"v0.6.48 (D-78)";manter;v0.6.48
+F474;Planilha;abas;"Aba muito oculta (veryHidden) do Excel fica fora do menu Reexibir e volta muito oculta ao salvar";funciona;"v0.6.49 (D-79)";manter;v0.6.49
+F475;Quadro;visual;"Cores dos post-its mais claras e limpas (mesmos nomes; quadros antigos também mudam)";funciona;"v0.6.50 (proposta 1A)";manter;v0.6.50
+F476;Quadro;fundo;"Exibir › Fundo: desenho (bolinhas, quadriculado, linhas, liso) e cor (padrão e 6 suaves), guardado no arquivo, com Ctrl+Z";funciona;"v0.6.50 (proposta 2)";manter;v0.6.50
+F477;Quadro;post-it;"Título no post-it (negrito com fio, até 80 letras), na tela, no Kanban, no PDF e na imagem";funciona;"v0.6.51 (proposta 3A)";manter;v0.6.51
+F478;Quadro;post-it;"Caixinha de feito: marcar risca o texto e leva para a coluna Feito; desmarcar volta; Exibir › Caixinhas esconde no quadro todo";funciona;"v0.6.51 (proposta 4A)";manter;v0.6.51
+F479;Quadro;exportar;"PDF e imagem com a mesma letra, folgas, linhas e corte da tela; rodapé de tarefa com os pesos da tela";funciona;"v0.6.52 (D-81)";manter;v0.6.52
+F480;Quadro;setas;"Seta curva suave; texto da seta na etiqueta ou acompanhando a linha (tela, PDF e imagem)";funciona;"v0.6.52 (proposta 6)";manter;v0.6.52
+F481;Quadro;formas;"Início/Fim com código: o texto começa abaixo do código (tela e PDF)";funciona;"v0.6.53 (D-82)";manter;v0.6.53
+F482;Quadro;impressão;"Janela Imprimir e PDF com prévia: o que imprimir, orientação, papel, margens, ajustar ao papel, cabeçalho e rodapé; guardada no quadro";funciona;"v0.6.54 (propostas 3, 5 e 6)";manter;pedido do Elias 25/11
+F483;Quadro;impressão;"Aba Layout da Página, área de impressão e quebras tracejadas no quadro";funciona;"v0.6.55 (propostas 2 e 4)";manter;pedido do Elias 25/11
+F484;Quadro;comentário;"Comentário estilo Word: balãozinho no canto do item, cartão ao passar o mouse com respostas de terceiros (nome e hora), editar e excluir";funciona;"v0.6.55";manter;pedido do Elias 25/11
+F485;Quadro;edicao;"Códigos Q-001 sem buracos: ao excluir, os que ficam são numerados de novo na mesma ordem (Ctrl+Z volta)";funciona;"v0.6.56 (D-84)";manter;pedido do Elias 25/11
+F486;Quadro;formas;"Atividade e Entrada/Saída com código: o código não encosta no texto de 3 linhas (tela e PDF)";funciona;"v0.6.56 (D-83)";manter;v0.6.56
+F487;Quadro;formatar;"Caixa Letra no Quadro: 5 letras de licença livre (à mão, bilhete, arredondada, com serifa, máquina), baixadas só quando usadas; tela e PDF iguais";funciona;"v0.6.57 (proposta 7)";manter;pedido do Elias 24/11
+F488;Quadro;formatar;"Textura do post-it: 12 opções (liso, ponta dobrada, amassado, café, fita, pautado, quadriculado, alfinete, rasgado, kraft, clipe, marca-texto); tela e PDF";funciona;"v0.6.57 (proposta 5); v0.6.62 (catálogo do Elias)";manter;pedido do Elias 24/11
+F489;Planilha;excel;"Forma com foto de fundo (blipFill): aparece com a foto e volta igual ao salvar";funciona;"v0.6.58 (D-30)";manter;D-30
+F490;Planilha;tabelas;"Estilo de tabela próprio do arquivo (tableStyles + dxf): desenhado e gravado de volta";funciona;"v0.6.58 (D-17)";manter;D-17
+F491;Quadro;organizar;"Alinhar itens escolhidos (esquerda, centro, direita, em cima, ao meio, embaixo)";funciona;"v0.6.59";manter;ideia de 24/11 (Doory)
+F492;Quadro;organizar;"Distribuir com espaço igual (horizontal e vertical)";funciona;"v0.6.59";manter;ideia de 24/11 (Doory)
+F493;Quadro;organizar;"Travar item: não move, não muda de tamanho, não é excluído; cadeado no canto";funciona;"v0.6.59";manter;ideia de 24/11 (Doory)
+F494;Quadro;formatar;"Trocar a cor do post-it mantém a textura";funciona;"v0.6.60 (D-85)";manter;D-85
+F495;Quadro;organizar;"Kanban respeita o post-it travado (cadeado, sem arrastar entre colunas, sem lixeira)";funciona;"v0.6.61";manter;relatório de 25/11
+F496;Quadro;kanban;"Soltar sem salto: o post-it pousa a partir da mão, tempo pela distância (0,18 a 0,34 s)";funciona;"";"feito na v0.6.64 (F1)";estudo do Kanban 25/11
+F497;Quadro;kanban;"Vizinhos abrem espaço deslizando durante o arrasto";funciona;"";"feito na v0.6.64 (F2)";estudo do Kanban 25/11
+F498;Quadro;kanban;"Vaga do tamanho do post-it, sem buraco no lugar antigo";funciona;"";"feito na v0.6.64 (F3)";estudo do Kanban 25/11
+F499;Quadro;kanban;"Sem piscar entre colunas e sem ida e volta da vaga (posição final, folga de 8 px)";funciona;"";"feito na v0.6.64 (F4)";estudo do Kanban 25/11
+F500;Quadro;kanban;"Rolar sozinho na beira durante o arrasto";funciona;"";"feito na v0.6.64 (F5)";estudo do Kanban 25/11
+F501;Quadro;kanban;"Pegar e carregar com calma (fantasma igual ao cartão, inclinação pela velocidade, sem pulo no hover)";funciona;"";"feito na v0.6.64 (F6)";estudo do Kanban 25/11
+F502;Quadro;kanban;"Esc no meio do arrasto devolve o post-it";funciona;"";"feito na v0.6.64 (F7)";estudo do Kanban 25/11
+F503;Quadro;kanban;"Colunas em raia suave e nome do quadro acima das colunas";funciona;"";"feito na v0.6.65 (V1)";estudo do Kanban 25/11
+F504;Quadro;kanban;"Cartão limpo: etiqueta, código, título, texto, rodapé só com o que existe; sem bolinha de iniciais";funciona;"";"feito na v0.6.65 (V2)";estudo do Kanban 25/11
+F505;Quadro;kanban;"Kanban usa a textura e a letra escolhidas no Quadro";funciona;"";"feito na v0.6.65 (V3)";estudo do Kanban 25/11
+F506;Quadro;kanban;"Fechar o painel de detalhes não deixa faixa vazia";funciona;"";"feito na v0.6.65 (V4)";estudo do Kanban 25/11
+F507;Quadro;organizar;"Etiqueta de frente no post-it (cor e nome) e filtro único recolhível com contagem";funciona;"";"feito na v0.6.66 (N1)";estudo do Kanban 25/11
+F508;Quadro;kanban;"Comentários pelo número no cartão, numa gaveta ao lado (usa nota/notaR da v0.6.55)";funciona;"";"feito na v0.6.67 (N2)";estudo do Kanban 25/11
+F509;Geral;janelas;"Janelas e menus nascem 85% visíveis (print logo após o clique não pega a janela vazada)";funciona;"";"feito na v0.6.63 (J1)";estudo do Kanban 25/11
+F510;Quadro;modelos;"Modelo de quadro com Kanban ligado (mesmo arquivo; atividades nascem das etapas do fluxo): botão Ligar o fluxo no Kanban";funciona;"";"feito na v0.6.68";estudo do Kanban 25/11
+F511;Quadro;modelos;"Quem iniciou, quem concluiu e histórico de atualizações, só nos Documentos internos; acesso por login na fase do Firebase";parcial;"falta o acesso por login (fase do Firebase)";"quem iniciou e quem concluiu na v0.6.68; histórico na v0.6.69";estudo do Kanban 25/11
+F512;Quadro;arquivo;"Exportar e importar o quadro editável (arquivo próprio, ida e volta sem perda)";falta;"só PDF, PNG, imprimir e Cwork";"a propor (relatório do Quadro 25/11)";relatório do Quadro 25/11
+F513;Quadro;organizar;"Igualar tamanho (largura, altura ou os dois) no Arrumar";funciona;"";"feito na v0.6.71";relatório do Quadro 25/11
+F514;Quadro;organizar;"Agrupar (Ctrl+G) e mover em bloco";falta;"só a Página leva junto o que está dentro";"a propor (relatório do Quadro 25/11)";relatório do Quadro 25/11
+F515;Quadro;organizar;"Organizar em árvore ou grade com um clique";falta;"";"a propor (relatório do Quadro 25/11)";relatório do Quadro 25/11
+F516;Quadro;editar;"Mapa mental: Shift+Enter cria o irmão ligado ao mesmo pai (Tab cria o próximo ligado; atalhos nas dicas)";funciona;"";"feito na v0.6.71 (Enter continua editando, decisão do Elias 26/11)";relatório do Quadro 25/11
+F517;Quadro;organizar;"Recolher e abrir ramos do mapa";falta;"";"a propor (relatório do Quadro 25/11)";relatório do Quadro 25/11
+F518;Quadro;editar;"Caixinha de feito com 44 px no toque (o quadradinho continua no mesmo lugar)";funciona;"";"feito na v0.6.63 (V56-04)";relatório do Grok 25/11
+F519;Quadro;editar;"Post-it no tamanho mínimo: o texto começa abaixo do código (tela e PDF)";funciona;"";"feito na v0.6.63 (PL06)";relatório do Grok 25/11
+F520;Geral;busca;"Busca acha o comando no plural (Excluir linhas)";funciona;"";"feito na v0.6.63";relatório do Grok 25/11
+F521;Planilha;faixa;"Inserir: grupo Filtros depois de Gráficos, como no Excel";funciona;"";"feito na v0.6.63";relatório do Grok 25/11
+F522;Geral;fluidez;"Animações só da escala e só transform, opacity e filter (camadas.css, quadro.css, movimento.css)";funciona;"";"feito na v0.6.63";relatório do Grok 25/11
+F523;Geral;listas;"Documentos internos: a coluna Tipo sai só abaixo de 1040 px";funciona;"";"feito na v0.6.63";relatório do Grok 25/11
+F524;Planilha;segmentacao;"Segmentação no celular: a escolhida vem para dentro da tela, com a barra e a alça";funciona;"";"feito na v0.6.63 (42·H13)";relatório do Grok 25/11
+F525;Geral;acessibilidade;"Nome lido igual ao texto visível em Esconder menu e nos cartões de criar (V42-02)";funciona;"";"feito na v0.6.63";relatório do Grok 25/11
+F526;Geral;inicio;"Frase do cartão do Documento inteira (até duas linhas)";funciona;"";"feito na v0.6.63";relatório 25/11 13:08
+F527;Geral;busca;"Atalho da busca igual em todas as telas (Alt Q)";funciona;"";"feito na v0.6.63";relatório 25/11 13:08
+F528;Documento;tela;"Documento em tela média esconde o menu lateral, como Planilha e Quadro";funciona;"";"feito na v0.6.63";relatório 25/11 13:08
+F529;Geral;faixa;"Ponto dourado do chega depois dentro do botão, sem encostar no rótulo";funciona;"";"feito na v0.6.63";relatório 25/11 13:08
+F530;Quadro;texturas;"Mancha de café por baixo das letras (resposta do Elias 25/11 16:05; já era assim desde a v0.6.62)";funciona;"";"feito na v0.6.63 (teste)";pergunta ao Elias 25/11
+F531;Quadro;texturas;"Clipe no cartão do Kanban no meio do topo: a lixeira não cobre a alça (D-87)";funciona;"";"feito na v0.6.66";relato do Elias 25/11 17:55
+F532;Quadro;fluxo;"Selo com a coluna do Kanban na atividade do fluxo (A fazer, Fazendo, Feito) (R44)";funciona;"";"feito na v0.6.68";pedido do Elias 25/11 14:36
+F533;Quadro;kanban;"Histórico de quem fez cada atualização do cartão (aba Histórico na gaveta), só nos Documentos internos (R44 parte 2)";funciona;"";"feito na v0.6.69";aprovado pelo Elias 26/11 03:19
+F534;Quadro;exportar;"Selo da coluna na atividade e linhas de quem iniciou/concluiu também no PNG, no PDF e na impressão (S2)";funciona;"";"feito na v0.6.70";aprovado pelo Elias 26/11 03:19
+F535;Núcleo;cwork;"Modo aba: dentro do Cwork o menu esconde a marca e o cartão do perfil, e o Vértice avisa o Cwork do arquivo aberto (P1)";funciona;"";"feito na v0.6.72";plano Vértice como aba do Cwork 26/11
+F536;Núcleo;cwork;"Quem sou num lugar só; ficha com nome e código de quem criou e alterou; número de gravação (P1)";funciona;"";"feito na v0.6.72";plano Vértice como aba do Cwork 26/11
+F537;Núcleo;cwork;"Banco pronto para a nuvem: fila de envio, versão da nuvem e cópia em conflito (ligar na P4)";parcial;"só com banco falso";"feito na v0.6.72; liga na P4";plano Vértice como aba do Cwork 26/11
+F538;Núcleo;cwork;"Login do Cwork pela interface combinada (sem Firebase no Vértice): perfil do cadastro, nome sem digitar, Entre no Cwork e Abra pelo Cwork (P2)";funciona;"depende da P3 do Cwork para valer de verdade";"feito na v0.6.73";plano Vértice como aba do Cwork 26/11

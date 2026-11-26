@@ -1,7 +1,7 @@
 /* EFCwork — sw.js (veio do EFClaudian v2.84.0+): guarda a TELA do app no aparelho para abrir sem internet.
    Os DADOS não passam por aqui: o Firestore guarda o cache dele e sincroniza quando a conexão volta.
-   O nome do cache sobe a cada versão (tools/montar.py troca efcwork-0.6.35). */
-const VERSAO = 'efcwork-0.6.35';
+   O nome do cache sobe a cada versão (tools/montar.py troca efcwork-0.6.36). */
+const VERSAO = 'efcwork-0.6.36';
 const ESSENCIAIS = ['./index.html'];
 const TELA = ['./', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 const FORA = [
@@ -45,7 +45,7 @@ self.addEventListener('fetch', ev => {
   /* endereço antigo do EFCquiz: vai direto à rede, para não trocar a tela guardada do EFClaudian pela dele */
   if (u.origin === self.location.origin && u.pathname.indexOf('/efcquiz/') >= 0) return;
   /* v0.6.34 (P5 item 1): o Vértice vai morar em /efcwork/vertice/ e tem o sw.js dele; este não guarda nada de lá (senão, sem internet, o Cwork abriria a tela do Vértice) */
-  if (u.origin === self.location.origin && u.pathname.indexOf('/efcwork/vertice/') === 0) return;
+  if (u.origin === self.location.origin && (u.pathname.indexOf('/efcwork/vertice/') === 0 || u.pathname === '/efcwork/vertice')) return; /* v0.6.36: também sem a barra final */
   const fonte = /(^|\.)fonts\.(googleapis|gstatic)\.com$/.test(u.hostname);
   /* Firestore / login: sempre direto (nunca guardar) */
   if (!fonte && (/googleapis\.com$|firebaseio\.com$|identitytoolkit|securetoken/.test(u.hostname) || u.pathname.indexOf('/google.firestore') >= 0)) return;

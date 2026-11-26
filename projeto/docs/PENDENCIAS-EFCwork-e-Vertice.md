@@ -2,9 +2,11 @@
 
 Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conversa ou para o fim, para nada ficar para trás. Atualizado a cada mudança e enviado junto. Marque [x] quando estiver feito.
 
-Última atualização: 26/11/2026 16h · v0.6.35 publicada (ITENS 207 a 214 aprovados): tela inteira com abas, conferência das tarefas, filtro da coluna, Pastas do Vértice.
+Última atualização: 26/11/2026 17h40 · v0.6.36: P3c aprovada (ITENS 215 a 220) e P5 em aprovação (ITENS 221 a 225); nada publicado · v0.6.35 publicada (ITENS 207 a 214 aprovados): tela inteira com abas, conferência das tarefas, filtro da coluna, Pastas do Vértice.
 
 ## A. Para a conversa do Vértice (o Elias leva)
+- [ ] **O código do Vértice mora agora em `efcwork/vertice/fonte/`** (depois de publicada a P5): a conversa do Vértice clona o efcwork e publica na pasta `vertice/`. Está na memória do Vértice (registro de 26/11, 16:57).
+- [ ] **Nota `NOTA-DO-CWORK-para-o-Vertice-P3c-regras.md`** (P3c): o formato que as regras aceitam na P4 (ficha, `versaoPartes`, pedaços um por gravação, ler por id para conta comum, testar consulta em lista).
 - [ ] **Nota `NOTA-DO-CWORK-para-o-Vertice-P3-respostas.md`**: porta sem `contaTeste`; `recursos` novo; 3 perguntas (limpa o estado na troca de conta? a navegação cria passos no voltar do celular? nomes dos caches do sw).
 - [ ] **Modo de teste sem login** (decisão de 26/11 10:12): nada vai para o Firebase, tudo fica só no aparelho.
 - [ ] **ITEM 195 · acesso "documento"** (26/11 11:41): a porta agora manda `acesso` ('completo' ou 'documento') e `salvar` (true só para Principal e Líder ★). Com `acesso: 'documento'`, a pessoa só entra pelo documento ligado (o que o Cwork abriu), edita e imprime, mas **não salva** e não navega pelo resto do Vértice.
@@ -24,8 +26,8 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 - [x] **Tarefas · "Conferir quando terminar" (pedido 26/11 14:18):** corrigido no Cwork (Principal conclui direto; parada ganha Concluir/Conferido); aprovado (ITEM 212) e publicado. A correção no EFClaudian é da outra conversa.
 - [x] **Filtro da coluna (pedido 26/11 14:24):** janela parada ao marcar e escolha em várias buscas; aprovado (ITENS 213 e 214) e publicado.
 - [x] **"Não vejo ícone" (ITENS 198, 202, 203):** eram as imagens da página de aprovação que não carregavam (defeito do montador, corrigido); o app estava certo.
-- [ ] **P3c · regras do Firestore** para `vtd_arquivos` e `vtd_partes`, em blocos novos no mesmo arquivo da v0.6.33 (colar uma vez só).
-- [ ] **P5 · Vértice dentro do repositório efcwork** (`efcwork/vertice/`): o Elias autorizou fazer aqui (ITEM 193). Antes, pedir o **PEDIDO-P3 refeito às 07:30** (o anexado é o das 07:10). Inclui a página que leva do endereço antigo `/EFCdocs/` ao novo e desliga o sw antigo, e a aba apontando para `/efcwork/vertice/?em=cwork`.
+- [x] **P3c · regras do Firestore** (v0.6.36): feitas, em aprovação (ITENS 215 a 220). Falta: suas respostas, publicar o app, Simulador (17 testes) e publicar as regras.
+- [x] **P5 · Vértice dentro do efcwork** (v0.6.36 + Vértice v0.6.74): feita, em aprovação (ITENS 221 a 225). Falta: suas respostas, "pode publicar" (efcwork e depois EFCdocs, com acesso de envio ao EFCdocs).
 - [ ] **ITEM 185 · ícone do Vértice no menu:** o Elias vai mandar o print do ícone que quer.
 - [ ] Aviso de versão nova · CSP e SDK · limpeza visual · `features.csv` · Cadastros de Coletas (por último).
 - [ ] Estudo de rapidez (`ESTUDO-rapidez-EFCwork-v0.6.33.md`): só depois da integração.
@@ -40,6 +42,8 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 - [ ] Senha mínima: 8 (hoje) ou 15?
 
 ## D. O Elias confere (Firebase e uso real)
+- [ ] **Depois da P5 no ar:** o menu Vértice Docs abre o endereço novo; um arquivo antigo do Vértice continua lá; no celular, desinstalar o ícone antigo do Vértice (o novo abre pelo Cwork).
+- [ ] **Regras v0.6.36:** depois de publicar o app v0.6.36, abrir como Administrador, rodar os 17 testes do GUIA-SIMULADOR-v0.6.36.md e só então publicar as regras.
 - [ ] Almoxarifado › Entrada com um Colaborador no EFClaudian (regras da v0.6.33 coladas em 26/11).
 - [ ] Via assinada (foto) numa remessa e abrir a mesma remessa em outro aparelho.
 - [ ] Site publicado mostra v0.6.35; o menu Vértice Docs abre em tela inteira com a conta, sem pedir senha; dois arquivos em duas abas; no celular, o voltar sai do Vértice.

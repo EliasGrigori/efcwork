@@ -1,0 +1,22 @@
+const http = require('http'), fs = require('fs'), path = require('path');
+const { chromium } = require('playwright');
+const RAIZ = '/home/claude/efcwork/projeto', NOVO = '/home/claude/efcwork/vertice', P5 = RAIZ + '/tools/p5/EFCdocs-raiz', OUT = process.argv[2];
+const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.woff2': 'font/woff2', '.webmanifest': 'application/manifest+json', '.json': 'application/json' };
+const srv = http.createServer((q, r) => { const u = decodeURIComponent(q.url.split('?')[0]);
+  let f = u.startsWith('/efcwork/vertice/') ? path.join(NOVO, u.slice(17)) : u.startsWith('/efcwork/') ? path.join(RAIZ, 'dist', u.slice(9)) : u.startsWith('/EFCdocs/') ? path.join(P5, 'index.html') : '';
+  if (f && (f.endsWith('/') || (fs.existsSync(f) && fs.statSync(f).isDirectory()))) f = path.join(f, 'index.html');
+  if (!f || !fs.existsSync(f)) { r.writeHead(404); return r.end(); } r.writeHead(200, { 'content-type': MIME[path.extname(f)] || 'application/octet-stream' }); fs.createReadStream(f).pipe(r); });
+(async () => { await new Promise(r => srv.listen(0, r)); const base = 'http://localhost:' + srv.address().port, b = await chromium.launch();
+  let ctx = await b.newContext({ viewport: { width: 1280, height: 760 }, deviceScaleFactor: 2, serviceWorkers: 'block' }), p = await ctx.newPage();
+  await p.route(/gstatic|fonts\.g/, r => r.abort()); await p.goto(base + '/efcwork/?demo=1'); await p.waitForTimeout(500);
+  await p.fill('#en-nome', 'Joana Silva'); await p.fill('#en-login', 'joana.silva'); await p.fill('#en-senha', 'senha1234'); await p.fill('#en-senha2', 'senha1234');
+  await p.click('[data-form="en-primeiro"] button[type=submit]'); await p.waitForTimeout(800);
+  await p.click('.cs-nav a[href="#/vertice"]'); await p.waitForTimeout(5000);
+  const fr = p.frames().find(f => /efcwork\/vertice/.test(f.url())); console.log('frame', fr && fr.url());
+  if (fr) { await fr.evaluate(() => { const b = document.querySelector('[aria-label*="menu" i], .menu-alca'); }); }
+  await p.screenshot({ path: OUT + '/p5-cwork.png' });
+  const txt = fr ? await fr.evaluate(() => document.body.innerText.match(/v0\.6\.\d+/g)) : null; console.log('versoes', txt);
+  await ctx.close(); ctx = await b.newContext({ viewport: { width: 390, height: 760 }, deviceScaleFactor: 2, serviceWorkers: 'block', isMobile: true });
+  p = await ctx.newPage(); await p.route(/\/efcwork\/vertice\//, r => r.abort()); await p.goto(base + '/EFCdocs/'); await p.waitForTimeout(300);
+  await p.screenshot({ path: OUT + '/p5-antigo.png' });
+  await b.close(); srv.close(); })().catch(e => { console.error(e); process.exit(1); });

@@ -1,0 +1,482 @@
+/* EFCdocs — desenha o quadro num canvas (para PNG, PDF e impressão).
+   Usa a mesma geometria da tela, então setas e formas saem no mesmo lugar. */
+
+import { COR, TIPOS_ITEM, porZ, listaSetas } from './modelo.js';
+import { medidas, encaixarRubrica } from '../nucleo/assinatura.js';
+import { pontosSeta, contornoForma, limites, meioDoCaminho, sentidoDeLeitura, pontoNaLinha, comprimento } from './geometria.js';
+import { resumoTarefa, hojeISO } from './tarefa.js';
+import { derivar, MEDIDAS } from './legenda.js';
+import { desenharTitulo, desenharCaixa, mostraCaixas, estaFeito, tituloDe, linhasQueCabem } from './postit.js';
+import { familiaCss, escalaDo, garantirFontesDo, familiasUsadas } from './fontesQ.js'; /* v0.6.57 */
+import { urlTextura, imagensDoPostit, desenharPostitTextura, desenharPecasTextura, marcaDaLinha, texturaDo } from './texturas.js';
+import { etiquetaDo } from './etiquetas.js'; /* v0.6.66 (N1) */
+import { situacaoNoFluxo } from './fluxoKanban.js'; /* v0.6.70 (S2): o selo da coluna também no PNG e no PDF */
+
+/* cores do nível GUT: [fundo, texto] */
+export const COR_GUT = { alta: ['#fee4e2', '#b42318'], media: ['#fef0c7', '#b54708'], baixa: ['#d1fadf', '#067647'] };
+
+/* v0.6.52 (D-81): a mesma letra da tela (Source Sans 3, que vem com o app). Antes era DejaVu Sans/Verdana, bem mais
+   larga: o texto quebrava mais linhas e saía cortado com "…". fontesProntas() espera a letra carregar antes de desenhar. */
+export const FONTE = '"Source Sans 3", "Segoe UI", system-ui, sans-serif';
+export async function fontesProntas(c) {
+  if (typeof document === 'undefined' || !document.fonts || !document.fonts.load) return;
+  try { await Promise.all(['400', '600', '700'].map((p) => document.fonts.load(`${p} 14px "Source Sans 3"`))); } catch { /* sem a letra, o navegador usa a seguinte da lista */ }
+  if (!c) return;
+  /* v0.6.57: as letras escolhidas nos itens (fontesQ.js) precisam ter chegado antes de desenhar */
+  await garantirFontesDo(c);
+  try { await Promise.all(familiasUsadas(c).flatMap((f) => ['400', '700'].map((p) => document.fonts.load(`${p} 14px "${f}"`)))); } catch { /* fica a padrão */ }
+}
+export const COR_TEXTO = '#1f2328';
+export const COR_LINHA = '#3b4552';
+export const COR_SETA = '#475467';
+
+/** Limites do quadro inteiro, incluindo setas. */
+export function limitesDoQuadro(c) {
+  c = derivar(c);
+  const itens = porZ(c);
+  const pts = listaSetas(c).map((s) => {
+    const a = c.itens[s.de.id], b = c.itens[s.para.id];
+    return a && b ? pontosSeta(a, b, s).pontos : [];
+  });
+  return limites(itens, pts);
+}
+
+/** Quebra o texto em linhas que cabem na largura. */
+export function quebrarTexto(ctx, texto, largura) {
+  const linhas = [];
+  for (const par of String(texto || '').split('\n')) {
+    const palavras = par.split(/\s+/).filter(Boolean);
+    if (!palavras.length) { linhas.push(''); continue; }
+    let atual = '';
+    /* palavra maior que a caixa: corta em pedaços; o último pedaço segue como linha atual */
+    const partir = (p) => {
+      let pedaco = '';
+      for (const ch of p) {
+        if (ctx.measureText(pedaco + ch).width > largura && pedaco) { linhas.push(pedaco); pedaco = ''; }
+        pedaco += ch;
+      }
+      return pedaco;
+    };
+    for (const p of palavras) {
+      const teste = atual ? atual + ' ' + p : p;
+      if (ctx.measureText(teste).width <= largura) { atual = teste; continue; }
+      if (atual) linhas.push(atual);
+      atual = ctx.measureText(p).width > largura ? partir(p) : p;
+    }
+    linhas.push(atual);
+  }
+  return linhas;
+}
+
+function fonteDo(it, tamanho) {
+  const f = it.fonte || {};
+  return `${f.i ? 'italic ' : ''}${f.n || (it.tipo === 'texto' && !it.borda) ? '700 ' : ''}${tamanho}px ${familiaCss(it, FONTE)}`;
+}
+
+export const tamanhoFonte = (it) => (it.tipo === 'texto' ? (it.borda ? 14 : 16) : it.tipo === 'raia' || it.tipo === 'pagina' ? 15 : 14);
+
+function escreverTexto(ctx, it, caixa) {
+  const tam = tamanhoFonte(it) * escalaDo(it); /* v0.6.57: letra escolhida, no tamanho da tela */
+  ctx.font = fonteDo(it, tam);
+  ctx.fillStyle = (it.fonte && it.fonte.cor) || COR_TEXTO;
+  const alinh = it.alinh || (it.tipo === 'texto' || (it.tipo === 'postit' && tituloDe(it)) ? 'e' : 'c');
+  if (it.feito) ctx.fillStyle = 'rgba(31,35,40,.55)'; /* v0.6.51: post-it feito, texto riscado e mais claro */
+  const linhas = quebrarTexto(ctx, it.texto, caixa.w);
+  const alt = tam * 1.3;
+  const cabem = caixa.max || Math.max(1, Math.floor(caixa.h / alt)); /* v0.6.52: com max, o mesmo número de linhas da tela */
+  const mostrar = linhas.slice(0, cabem);
+  if (linhas.length > cabem && mostrar.length) {
+    /* v0.6.52 (D-81): como o corte da tela (line-clamp): a última linha mostrada fica inteira e ganha " …";
+       só perde letras do fim se o "…" não couber */
+    let ult = mostrar[mostrar.length - 1], fim = ult + ' …';
+    while (ult.length > 1 && ctx.measureText(fim).width > caixa.w) { ult = ult.slice(0, -1); fim = ult.replace(/\s+$/, '') + '…'; }
+    mostrar[mostrar.length - 1] = fim;
+  }
+  let y = caixa.topo ? caixa.y + tam * 0.98 : caixa.y + Math.max(0, (caixa.h - mostrar.length * alt) / 2) + tam * 0.98; /* v0.6.63: sem espaço para a linha, ela começa em cima (como o "safe center" da tela), sem subir até o código */ /* topo: post-it com título (como .qi-titulado) */
+  ctx.textAlign = alinh === 'e' ? 'left' : alinh === 'd' ? 'right' : 'center';
+  const x = alinh === 'e' ? caixa.x : alinh === 'd' ? caixa.x + caixa.w : caixa.x + caixa.w / 2;
+  for (const l of mostrar) {
+    if (caixa.marca && l.trim()) { const w = ctx.measureText(l).width; marcaDaLinha(ctx, alinh === 'e' ? x : alinh === 'd' ? x - w : x - w / 2, y, w, tam); } /* v0.6.62: marca-texto */
+    ctx.fillText(l, x, y);
+    if (it.fonte && it.fonte.s) {
+      const w = ctx.measureText(l).width;
+      const x0 = alinh === 'e' ? x : alinh === 'd' ? x - w : x - w / 2;
+      ctx.fillRect(x0, y + 2, w, 1.2);
+    }
+    if (it.feito) {
+      const w = ctx.measureText(l).width;
+      const x0 = alinh === 'e' ? x : alinh === 'd' ? x - w : x - w / 2;
+      ctx.fillRect(x0, y - tam * 0.32, w, 1.2);
+    }
+    y += alt;
+  }
+}
+
+function caminhoForma(ctx, it) {
+  const pts = contornoForma(it);
+  ctx.beginPath();
+  if (pts) {
+    pts.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
+    ctx.closePath();
+  } else if (it.tipo === 'inicio') {
+    const r = Math.min(it.h / 2, it.w / 2);
+    ctx.moveTo(it.x + r, it.y);
+    ctx.lineTo(it.x + it.w - r, it.y);
+    ctx.arc(it.x + it.w - r, it.y + it.h / 2, r, -Math.PI / 2, Math.PI / 2);
+    ctx.lineTo(it.x + r, it.y + it.h);
+    ctx.arc(it.x + r, it.y + it.h / 2, r, Math.PI / 2, Math.PI * 1.5);
+    ctx.closePath();
+  } else {
+    ctx.rect(it.x, it.y, it.w, it.h);
+  }
+}
+
+/** Corta o texto com "…" para caber na largura. */
+function cortar(ctx, texto, largura) {
+  let t = String(texto);
+  if (ctx.measureText(t).width <= largura) return t;
+  while (t.length > 1 && ctx.measureText(t + '…').width > largura) t = t.slice(0, -1);
+  return t + '…';
+}
+
+/** Formas pequenas da legenda (mesmo desenho da tela). */
+function miniForma(ctx, tipo, x, y) {
+  const w = 34, h = 20;
+  ctx.save();
+  ctx.lineWidth = 1.4;
+  ctx.strokeStyle = COR_LINHA;
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath();
+  if (tipo === 'inicio') {
+    const r = h / 2;
+    ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y); ctx.arc(x + w - r, y + r, r, -Math.PI / 2, Math.PI / 2);
+    ctx.lineTo(x + r, y + h); ctx.arc(x + r, y + r, r, Math.PI / 2, Math.PI * 1.5); ctx.closePath();
+  } else if (tipo === 'decisao') {
+    ctx.moveTo(x + w / 2, y); ctx.lineTo(x + w, y + h / 2); ctx.lineTo(x + w / 2, y + h); ctx.lineTo(x, y + h / 2); ctx.closePath();
+  } else if (tipo === 'dados') {
+    ctx.moveTo(x + 7, y); ctx.lineTo(x + w, y); ctx.lineTo(x + w - 7, y + h); ctx.lineTo(x, y + h); ctx.closePath();
+  } else if (tipo === 'postit') {
+    ctx.rect(x + 7, y, 20, h); ctx.fillStyle = COR.amarelo;
+  } else if (tipo === 'seta') {
+    ctx.moveTo(x, y + h / 2); ctx.lineTo(x + w - 2, y + h / 2);
+  } else ctx.rect(x, y + 1, w, h - 2);
+  if (tipo === 'seta') {
+    ctx.stroke();
+    ctx.fillStyle = COR_SETA;
+    ctx.beginPath(); ctx.moveTo(x + w, y + h / 2); ctx.lineTo(x + w - 8, y + h / 2 - 4); ctx.lineTo(x + w - 8, y + h / 2 + 4); ctx.closePath(); ctx.fill();
+  } else { ctx.fill(); ctx.stroke(); }
+  ctx.restore();
+}
+
+function desenharLegenda(ctx, it) {
+  ctx.save();
+  ctx.shadowColor = 'rgba(16,24,40,.14)'; ctx.shadowBlur = 8; ctx.shadowOffsetY = 2;
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(it.x, it.y, it.w, it.h);
+  ctx.shadowColor = 'transparent';
+  ctx.strokeStyle = '#d0d5dd'; ctx.lineWidth = 1;
+  ctx.strokeRect(it.x + 0.5, it.y + 0.5, it.w - 1, it.h - 1);
+  ctx.fillStyle = COR_TEXTO; ctx.textAlign = 'left'; ctx.font = `700 13px ${FONTE}`;
+  ctx.fillText('Legenda', it.x + 12, it.y + 24);
+  const linhas = it.linhas || [];
+  if (!linhas.length) { ctx.font = `12px ${FONTE}`; ctx.fillStyle = '#667085'; ctx.fillText('Nada para explicar ainda.', it.x + 12, it.y + MEDIDAS.topo + 22); }
+  linhas.forEach((l, i) => {
+    const y = it.y + MEDIDAS.topo + i * MEDIDAS.linha;
+    miniForma(ctx, l.tipo, it.x + 12, y + 6);
+    ctx.fillStyle = COR_TEXTO; ctx.font = `700 12px ${FONTE}`;
+    ctx.fillText(cortar(ctx, l.nome, it.w - 66), it.x + 56, y + 16);
+    ctx.fillStyle = '#667085'; ctx.font = `10.5px ${FONTE}`;
+    ctx.fillText(cortar(ctx, l.descr, it.w - 66), it.x + 56, y + 31);
+  });
+  ctx.restore();
+}
+
+function desenharPagina(ctx, it) {
+  ctx.save();
+  ctx.shadowColor = 'rgba(16,24,40,.18)'; ctx.shadowBlur = 12; ctx.shadowOffsetY = 3;
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(it.x, it.y, it.w, it.h);
+  ctx.shadowColor = 'transparent';
+  ctx.fillStyle = '#e9edf1';
+  ctx.fillRect(it.x, it.y, it.w, 34);
+  ctx.strokeStyle = '#cfd4dc'; ctx.lineWidth = 1;
+  ctx.strokeRect(it.x + 0.5, it.y + 0.5, it.w - 1, it.h - 1);
+  ctx.beginPath(); ctx.moveTo(it.x, it.y + 34.5); ctx.lineTo(it.x + it.w, it.y + 34.5); ctx.stroke();
+  escreverTexto(ctx, { ...it, alinh: 'c', fonte: { ...(it.fonte || {}), n: true } }, { x: it.x + 12, y: it.y + 2, w: it.w - 24, h: 30 });
+  ctx.restore();
+}
+
+/** Rodapé do post-it de tarefa: responsável, prazo, situação e nota GUT. */
+function desenharTarefa(ctx, it, r, faixa = it) {
+  const x = it.x + 8, base = it.y + it.h;
+  ctx.save();
+  /* v0.6.52 (D-81): a faixa clara do rodapé, como na tela */
+  ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.fillRect(faixa.x, base - 34, faixa.w, 34);
+  ctx.fillStyle = 'rgba(0,0,0,.10)'; ctx.fillRect(faixa.x, base - 34, faixa.w, 1);
+  ctx.textAlign = 'left';
+  ctx.font = `600 11px ${FONTE}`;
+  ctx.fillStyle = 'rgba(31,35,40,.80)';
+  const gut = r.gut ? `GUT ${r.gut}` : '';
+  ctx.font = `700 10px ${FONTE}`;
+  const wg = gut ? ctx.measureText(gut).width + 12 : 0;
+  /* v0.6.52 (D-81): os mesmos pesos e cores da tela (quadro.css .qi-tarefa): linha 1 em negrito; linha 2 normal, em vermelho e negrito se vencida */
+  ctx.fillStyle = '#344054';
+  ctx.font = `${r.resp ? 700 : 'italic 400'} 11px ${FONTE}`;
+  ctx.fillText(cortar(ctx, (r.resp ? 'Resp.: ' + r.resp : 'Sem responsável'), it.w - 16 - wg - 4), x, base - 20);
+  ctx.fillStyle = r.vencida ? '#b42318' : '#344054';
+  ctx.font = `${r.vencida ? 700 : 400} 11px ${FONTE}`;
+  ctx.fillText(cortar(ctx, (r.prazo ? (r.vencida ? 'Vencido: ' + r.prazo : 'Prazo: ' + r.prazo + ' · ' + r.status) : 'Sem prazo · ' + r.status), it.w - 16), x, base - 8);
+  if (gut) {
+    const [fundo, texto] = COR_GUT[r.nivel];
+    ctx.fillStyle = fundo;
+    ctx.fillRect(it.x + it.w - 8 - wg, base - 34, wg, 16);
+    ctx.fillStyle = texto; ctx.font = `700 10px ${FONTE}`; ctx.textAlign = 'center';
+    ctx.fillText(gut, it.x + it.w - 8 - wg / 2, base - 22);
+  }
+  ctx.restore();
+}
+
+/** Assinatura: linha, nome completo embaixo e a rubrica apoiada na linha (as medidas vêm do núcleo, iguais às da tela). */
+function desenharAssinatura(ctx, it, opcoes) {
+  const m = medidas(it.w, it.h, it.texto);
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(it.x, it.y, it.w, it.h);
+  ctx.strokeStyle = '#d0d5dd';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(it.x + 0.5, it.y + 0.5, it.w - 1, it.h - 1);
+  const rub = opcoes.imagens && opcoes.imagens.get('rub:' + it.id);
+  if (rub) {
+    const e = encaixarRubrica(rub.naturalWidth || rub.width, rub.naturalHeight || rub.height, m.caixaRub);
+    if (e) ctx.drawImage(rub, it.x + e.x, it.y + e.y, e.w, e.h);
+  }
+  ctx.strokeStyle = '#1f2328';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(it.x + 6, it.y + m.linhaY + 0.75);
+  ctx.lineTo(it.x + it.w - 6, it.y + m.linhaY + 0.75);
+  ctx.stroke();
+  let t = it.texto || '';
+  ctx.font = `600 ${m.fonte}px ${FONTE}`;
+  ctx.fillStyle = '#1f2328';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  while (t.length > 1 && ctx.measureText(t).width > it.w - 12) t = t.slice(0, -2).trimEnd() + '…';
+  ctx.fillText(t, it.x + it.w / 2, it.y + m.nomeY);
+}
+
+function desenharItem(ctx, it, opcoes) {
+  const cor = COR[it.cor] || '#ffffff';
+  ctx.save();
+  if (it.tipo === 'pagina') { desenharPagina(ctx, it); ctx.restore(); return; }
+  if (it.tipo === 'legenda') { desenharLegenda(ctx, it); ctx.restore(); return; }
+  if (it.tipo === 'raia') {
+    ctx.fillStyle = it.cor === 'branco' ? '#fbfbfc' : '#f1f3f6';
+    ctx.strokeStyle = '#cfd4dc';
+    ctx.lineWidth = 1;
+    ctx.fillRect(it.x, it.y, it.w, it.h);
+    ctx.strokeRect(it.x + 0.5, it.y + 0.5, it.w - 1, it.h - 1);
+    ctx.fillStyle = '#e4e7ec';
+    ctx.fillRect(it.x, it.y, 46, it.h);
+    ctx.translate(it.x + 23, it.y + it.h / 2);
+    ctx.rotate(-Math.PI / 2);
+    escreverTexto(ctx, { ...it, alinh: 'c', fonte: { ...(it.fonte || {}), n: true } }, { x: -it.h / 2 + 8, y: -18, w: it.h - 16, h: 36 });
+    ctx.restore();
+    return;
+  }
+  if (it.tipo === 'assinatura') { desenharAssinatura(ctx, it, opcoes); ctx.restore(); return; }
+  if (it.tipo === 'imagem') {
+    const img = opcoes.imagens && opcoes.imagens.get(it.id);
+    if (img) ctx.drawImage(img, it.x, it.y, it.w, it.h);
+    else { ctx.fillStyle = '#eef0f3'; ctx.fillRect(it.x, it.y, it.w, it.h); }
+    ctx.strokeStyle = '#d0d5dd';
+    ctx.strokeRect(it.x + 0.5, it.y + 0.5, it.w - 1, it.h - 1);
+    ctx.restore();
+    return;
+  }
+  let papel = null;
+  if (it.tipo === 'postit') {
+    papel = desenharPostitTextura(ctx, it, cor, opcoes.imagens, escalaDo(it)); /* v0.6.62: papel e textura (texturas.js), como na tela */
+  } else if (it.tipo !== 'texto') {
+    caminhoForma(ctx, it);
+    ctx.fillStyle = cor;
+    ctx.fill();
+    ctx.strokeStyle = COR_LINHA;
+    ctx.lineWidth = 1.6;
+    ctx.stroke();
+  }
+  if (it.tipo === 'texto' && it.borda) {
+    ctx.strokeStyle = COR_LINHA; ctx.lineWidth = 1.2;
+    ctx.strokeRect(it.x + 0.5, it.y + 0.5, it.w - 1, it.h - 1);
+  }
+  const tarefa = it.tipo === 'postit' && opcoes.c ? resumoTarefa(opcoes.c, it, opcoes.hoje || hojeISO()) : null;
+  /* v0.6.52 (D-81): as mesmas folgas do CSS da tela (quadro.css: .qi-postit 18/12/10, processo e início 6/14, dados 6/22) */
+  const folga = it.tipo === 'decisao' ? { x: it.w * 0.2, y: it.h * 0.22 } : it.tipo === 'dados' ? { x: 22, y: 6 } : it.tipo === 'texto' ? { x: 4, y: 2 } : it.tipo === 'postit' ? { x: 12, y: 18, b: 10 } : { x: 14, y: 6 };
+  /* v0.6.51: título com fio e caixinha de feito (postit.js) */
+  const desce = it.tipo === 'postit' ? desenharTitulo(ctx, it, FONTE) : 0;
+  const caixa = it.tipo === 'postit' && opcoes.c && mostraCaixas(opcoes.c), feito = caixa && estaFeito(opcoes.c, it);
+  const baixo = it.tipo === 'postit' ? (tarefa ? 38 : caixa ? 28 : 10) : opcoes.codigos && it.cod && ['processo', 'dados'].includes(it.tipo) ? 3 : folga.y;
+  const comCod = !!(opcoes.codigos && it.cod), topoCod = !comCod ? 0 : it.tipo === 'inicio' ? 14 : ['processo', 'dados'].includes(it.tipo) ? 8 : 0; /* v0.6.53 (D-82) e v0.6.56 (D-83): abaixo do código, como .qi-com-cod */
+  escreverTexto(ctx, feito ? { ...it, feito: true } : it, { x: it.x + folga.x, y: it.y + folga.y + desce + topoCod, w: it.w - folga.x * 2, h: it.h - folga.y - baixo - desce - topoCod, max: linhasQueCabem(it, !!tarefa, !!caixa, comCod), topo: desce > 0 || !!(papel && papel.topo), marca: !!(papel && papel.marca) });
+  if (papel) desenharPecasTextura(ctx, it, cor); /* v0.6.62: aba, fita, alfinete e clipe por cima */
+  if (tarefa) desenharTarefa(ctx, caixa ? { ...it, x: it.x + 23, w: it.w - 23 } : it, tarefa, it);
+  if (caixa) desenharCaixa(ctx, it, feito, !!tarefa);
+  if (opcoes.codigos && it.cod) {
+    ctx.font = `600 10px ${FONTE}`;
+    ctx.fillStyle = 'rgba(31,35,40,.55)';
+    ctx.textAlign = 'left';
+    const cx = it.tipo === 'decisao' ? it.x + it.w / 2 - 16 : it.tipo === 'inicio' ? it.x + Math.min(it.h, it.w) / 2 : it.x + 6;
+    ctx.fillText(it.cod, cx, it.y + (it.tipo === 'decisao' ? 22 : ['processo', 'dados'].includes(it.tipo) ? 11 : 13));
+  }
+  const eti = it.tipo === 'postit' && opcoes.c ? etiquetaDo(opcoes.c, it) : null;
+  if (eti) { /* v0.6.66 (N1): etiqueta no canto de cima à direita, como na tela (.qi-eti) */
+    ctx.font = `600 10px ${FONTE}`; ctx.textAlign = 'right';
+    let nome = eti.nome; const max = it.w * 0.6 - 12; while (nome.length > 1 && ctx.measureText(nome).width > max) nome = nome.slice(0, -2) + '…';
+    const dir = it.x + it.w - (texturaDo(it) === 'clipe' ? 40 : 8), larg = ctx.measureText(nome).width;
+    ctx.fillStyle = 'rgba(31,35,40,.72)'; ctx.fillText(nome, dir, it.y + 13);
+    ctx.fillStyle = eti.cor; ctx.beginPath(); ctx.arc(dir - larg - 7, it.y + 9.5, 3.5, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.restore();
+}
+
+/* v0.6.70 (S2): o selo da coluna na atividade ligada ao Kanban, igual à tela (.qi-fase): na borda de cima, à direita,
+   desenhado depois das setas para ficar por cima delas. */
+const CORES_FASE = { afazer: ['#f1f3f5', '#3d434a', 'rgba(31,35,40,.18)'], andamento: ['#e8f0fe', '#1d4ed8', 'rgba(29,78,216,.30)'], feito: ['#e6f4ea', '#14653a', 'rgba(20,101,58,.30)'] };
+function desenharSelo(ctx, c, it) {
+  const s = situacaoNoFluxo(c, it);
+  if (!s) return;
+  const [fundo, cor, borda] = CORES_FASE[s.fase];
+  ctx.save();
+  ctx.font = `600 11px ${FONTE}`; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+  let nome = s.nome; const max = it.w - 16 - 30; while (nome.length > 1 && ctx.measureText(nome).width > max) nome = nome.slice(0, -2) + '…';
+  const marca = s.fase === 'feito' ? 14 : 0, w = ctx.measureText(nome).width + 14 + marca, h = 19;
+  const x = it.x + it.w - (it.nota ? 22 : 8) - w, y = it.y - 10;
+  ctx.beginPath(); ctx.moveTo(x + 9.5, y); ctx.arcTo(x + w, y, x + w, y + h, 9.5); ctx.arcTo(x + w, y + h, x, y + h, 9.5); ctx.arcTo(x, y + h, x, y, 9.5); ctx.arcTo(x, y, x + w, y, 9.5); ctx.closePath();
+  ctx.fillStyle = fundo; ctx.fill(); ctx.strokeStyle = borda; ctx.lineWidth = 1; ctx.stroke();
+  if (marca) { ctx.strokeStyle = cor; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(x + 7, y + 9.5); ctx.lineTo(x + 9.5, y + 12); ctx.lineTo(x + 14, y + 7); ctx.stroke(); }
+  ctx.fillStyle = cor; ctx.fillText(nome, x + 7 + marca, y + 13.5);
+  ctx.restore();
+}
+
+function desenharSeta(ctx, s, c) {
+  const a = c.itens[s.de.id], b = c.itens[s.para.id];
+  if (!a || !b) return;
+  const { pontos } = pontosSeta(a, b, s);
+  ctx.save();
+  ctx.strokeStyle = COR_SETA;
+  ctx.fillStyle = COR_SETA;
+  ctx.lineWidth = 1.8;
+  ctx.lineJoin = 'round';
+  ctx.beginPath();
+  pontos.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
+  ctx.stroke();
+  const ponta = (de, para) => {
+    const ang = Math.atan2(para.y - de.y, para.x - de.x);
+    ctx.beginPath();
+    ctx.moveTo(para.x, para.y);
+    ctx.lineTo(para.x - 10 * Math.cos(ang - 0.42), para.y - 10 * Math.sin(ang - 0.42));
+    ctx.lineTo(para.x - 10 * Math.cos(ang + 0.42), para.y - 10 * Math.sin(ang + 0.42));
+    ctx.closePath();
+    ctx.fill();
+  };
+  const n = pontos.length;
+  if (s.pontas !== 'nenhuma') ponta(pontos[n - 2], pontos[n - 1]);
+  if (s.pontas === 'ambas') ponta(pontos[1], pontos[0]);
+  if (s.rotulo && s.rotuloModo === 'linha') {
+    /* v0.6.52: texto acompanhando a linha, letra por letra, 7 px acima dela (fundo branco do papel por trás) */
+    const pts = sentidoDeLeitura(pontos);
+    ctx.font = `600 12px ${FONTE}`; ctx.textAlign = 'center';
+    const letras = [...s.rotulo], larg = letras.map((l) => ctx.measureText(l).width), total = larg.reduce((a, b) => a + b, 0);
+    let d = comprimento(pts) / 2 - total / 2;
+    letras.forEach((l, i) => {
+      const p = pontoNaLinha(pts, d + larg[i] / 2);
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.ang); ctx.translate(0, -7);
+      ctx.lineWidth = 4; ctx.strokeStyle = '#ffffff'; ctx.lineJoin = 'round'; ctx.strokeText(l, 0, 0);
+      ctx.fillStyle = COR_TEXTO; ctx.fillText(l, 0, 0); ctx.restore();
+      d += larg[i];
+    });
+  } else if (s.rotulo) {
+    const m = meioDoCaminho(pontos);
+    ctx.font = `600 12px ${FONTE}`;
+    const w = ctx.measureText(s.rotulo).width + 10;
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(m.x - w / 2, m.y - 9, w, 18);
+    ctx.strokeStyle = '#d0d5dd';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(m.x - w / 2 + 0.5, m.y - 8.5, w - 1, 17);
+    ctx.fillStyle = COR_TEXTO;
+    ctx.textAlign = 'center';
+    ctx.fillText(s.rotulo, m.x, m.y + 4);
+  }
+  ctx.restore();
+}
+
+/** Desenha tudo. opcoes: { escala, origem: {x,y}, fundo, codigos, imagens: Map, demo } */
+export function desenharQuadro(ctx, c, opcoes = {}) {
+  c = derivar(c);
+  opcoes = { ...opcoes, c };
+  const escala = opcoes.escala || 1;
+  const origem = opcoes.origem || { x: 0, y: 0 };
+  const W = ctx.canvas.width, H = ctx.canvas.height;
+  ctx.save();
+  ctx.fillStyle = opcoes.fundo || '#ffffff';
+  ctx.fillRect(0, 0, W, H);
+  ctx.scale(escala, escala);
+  ctx.translate(-origem.x, -origem.y);
+  ctx.textBaseline = 'alphabetic';
+  const itens = porZ(c);
+  for (const it of itens.filter((i) => i.tipo === 'raia')) desenharItem(ctx, it, opcoes);
+  for (const it of itens.filter((i) => i.tipo === 'pagina')) desenharItem(ctx, it, opcoes);
+  for (const it of itens.filter((i) => i.tipo !== 'raia' && i.tipo !== 'pagina')) desenharItem(ctx, it, opcoes);
+  for (const s of listaSetas(c)) desenharSeta(ctx, s, c);
+  for (const it of itens) if (it.tipo === 'processo') desenharSelo(ctx, c, it); /* v0.6.70 (S2) */
+  ctx.restore();
+  if (opcoes.demo) marcaDemo(ctx);
+}
+
+export function marcaDemo(ctx) {
+  const W = ctx.canvas.width, H = ctx.canvas.height;
+  ctx.save();
+  ctx.translate(W / 2, H / 2);
+  ctx.rotate(-Math.PI / 9);
+  ctx.font = `800 ${Math.round(Math.min(W, H) / 7)}px ${FONTE}`;
+  ctx.fillStyle = 'rgba(180,35,24,.13)';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('DEMO · EFC', 0, 0);
+  ctx.restore();
+}
+
+/** Carrega as imagens do quadro (para o canvas). */
+export async function carregarImagens(c) {
+  const mapa = new Map();
+  const lista = Object.values(c.itens).filter((it) => (it.tipo === 'imagem' && it.src) || (it.tipo === 'assinatura' && it.rub));
+  /* v0.6.57: texturas de papel (texturas.js), uma imagem de cada, guardada como 'tex:cafe' */
+  const texs = [...new Set(Object.values(c.itens).filter((it) => it.tipo === 'postit').flatMap(imagensDoPostit))]; /* v0.6.62: o liso usa o grão */
+  await Promise.all(texs.map((t) => new Promise((ok) => { const img = new Image(); img.onload = () => { mapa.set('tex:' + t, img); ok(); }; img.onerror = () => ok(); img.src = urlTextura(t); })));
+  await Promise.all(lista.map((it) => new Promise((ok) => {
+    const img = new Image();
+    const chave = it.tipo === 'assinatura' ? 'rub:' + it.id : it.id;
+    img.onload = () => { mapa.set(chave, img); ok(); };
+    img.onerror = () => ok();
+    img.src = it.tipo === 'assinatura' ? it.rub : it.src;
+  })));
+  return mapa;
+}
+
+/** Monta o canvas do quadro inteiro (margem em volta). Limite de 24 milhões de pixels. */
+export async function canvasDoQuadro(c, { escala = 2, margem = 40, codigos = true, demo = false } = {}) {
+  await fontesProntas(c);
+  c = derivar(c);
+  const lim = limitesDoQuadro(c) || { x: 0, y: 0, w: 400, h: 240 };
+  let e = escala;
+  const largura = lim.w + margem * 2, altura = lim.h + margem * 2;
+  while (largura * altura * e * e > 24e6 && e > 0.5) e -= 0.25;
+  const cv = document.createElement('canvas');
+  cv.width = Math.ceil(largura * e);
+  cv.height = Math.ceil(altura * e);
+  const ctx = cv.getContext('2d');
+  desenharQuadro(ctx, c, { escala: e, origem: { x: lim.x - margem, y: lim.y - margem }, codigos, imagens: await carregarImagens(c), demo });
+  return cv;
+}
+
+export { TIPOS_ITEM };

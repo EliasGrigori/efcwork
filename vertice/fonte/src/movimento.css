@@ -1,0 +1,72 @@
+/* Vértice Docs — movimento das telas (v0.6.15), pela skill Transitions.dev (licença: uso livre em produto, sem
+   redistribuir a biblioteca; docs/CREDITOS.md). Tokens da escala do Transitions.dev e as receitas de janela (06 modal),
+   menu (05 dropdown), aviso (22 toast), seções das Opções (21 acordeão), chave liga-desliga (27 toggle) e mudança de
+   largura (01 card resize). No React os menus e avisos somem da página ao fechar, então aqui só a entrada é animada.
+   Quem pediu menos movimento no aparelho (prefers-reduced-motion) não vê nada disso. Carregado depois de cwork.css. */
+:root {
+  /* v0.6.20 (fluidez): a escala e as receitas comuns vêm de src/layout/efc-movimento.css (o arquivo da família).
+     Aqui ficam só as receitas que são do Vértice, sempre com durações da escala. */
+  --acc-chevron: var(--duration-fast);
+  --toggle-dur: var(--duration-medium); --toggle-ease: cubic-bezier(0.34, 1.35, 0.64, 1);
+  --resize-dur: var(--duration-fast); --resize-ease: var(--ease-smooth-out);
+}
+
+/* janela (06 modal): cresce do centro, de 0,96 a 1 (era jan-entra de 140 ms) */
+.janela { animation: t-modal-in var(--modal-open-dur) var(--modal-ease); will-change: transform, opacity; }
+/* v0.6.63 (J1, D-86): janelas, menus e listas nascem quase opacos (0,85) e só crescem: um print ou um olhar logo depois do
+   clique não vê mais a faixa e a grade através da janela (de 0 a 0,28 nos primeiros 40 ms, era o "transparente" dos relatórios) */
+@keyframes t-modal-in { from { opacity: .85; transform: scale(var(--modal-scale)); } to { opacity: 1; transform: scale(1); } }
+
+/* menus (05 dropdown): crescem do ponto de onde saíram */
+.novo-drive-m, .pl-menu, .pl-fmenu, .ge-pop, .faixa-menu { animation: t-dropdown-in var(--dropdown-open-dur) var(--dropdown-ease); transform-origin: top left; }
+.faixa-menu { transform-origin: top right; }
+@keyframes t-dropdown-in { from { opacity: .85; transform: scale(var(--dropdown-pre-scale)); } to { opacity: 1; transform: scale(1); } }
+/* v0.6.46 (Elias): a lista suspensa da célula desce e aparece de leve (fluida), a partir da célula */
+.pl-lista { animation: t-lista-in var(--dropdown-open-dur) var(--ease-out); transform-origin: top center; }
+@keyframes t-lista-in { from { opacity: .85; transform: translateY(-6px) scaleY(0.94); } to { opacity: 1; transform: none; } }
+/* v0.6.63 (R32): o item da lista troca de cor na hora, como os itens dos outros menus (a transição era da cor de fundo) */
+
+/* aviso (22 toast): sobe de baixo, um pouco desfocado */
+.toast { animation: t-toast-in var(--toast-open) var(--toast-ease); }
+@keyframes t-toast-in {
+  from { opacity: 0; transform: translateY(var(--toast-distance)) scale(var(--toast-scale)); filter: blur(var(--toast-blur)); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+
+/* seções das Opções (21 acordeão): o corpo aparece sem pulo e a setinha vira */
+.op-corpo { animation: t-acc-in var(--acc-expand) var(--acc-ease); }
+@keyframes t-acc-in { from { opacity: 0; filter: blur(2px); transform: translateY(calc(-1 * var(--distance-micro))); } to { opacity: 1; filter: none; transform: none; } }
+.op-cab > svg { transition: transform var(--acc-chevron) var(--acc-ease); }
+
+/* chave liga-desliga (27 toggle): a bolinha passa um tiquinho e volta (era 150 ms reto) */
+.chave input:after { transition: transform var(--toggle-dur) var(--toggle-ease); }
+
+/* mudança de largura (01 card resize): alça do menu escondido e barra de progresso de abrir o Excel */
+.menu-alca { transition: filter var(--duration-fast) var(--ease-out); }
+.menu-alca svg { transition: opacity var(--duration-fast) var(--ease-out), transform var(--resize-dur) var(--resize-ease); }
+.barra-prog i { transition: transform var(--resize-dur) var(--resize-ease); transform-origin: left center; }
+
+@media (prefers-reduced-motion: reduce) {
+  .janela, .novo-drive-m, .pl-menu, .pl-fmenu, .ge-pop, .faixa-menu, .toast, .op-corpo, .pl-lista { animation: none !important; }
+  .pl-seta-lista::before, .pl-seta-lista .tri { transition: none !important; }
+  .op-cab > svg, .chave input:after, .menu-alca, .menu-alca svg, .barra-prog i { transition: none !important; }
+}
+
+/* ---------- efeitos aprovados pelo Elias em 13/11 (F01 a F05), código próprio inspirado no React Bits ----------
+   F01 contagem nos números do relatório: componente Contagem em src/ui/excel.jsx */
+/* F02: um brilho atravessa o botão de ouro ao passar o mouse (uma vez) */
+.btn.primary { position: relative; overflow: hidden; }
+.btn.primary::after { content: ''; position: absolute; top: 0; bottom: 0; left: -60%; width: 40%; background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .55), transparent); transform: skewX(-18deg); pointer-events: none; }
+.btn.primary:hover:not(:disabled)::after { animation: ef-brilho var(--duration-very-slow) var(--ease-smooth-out) 1; /* mov:ok — o reflexo do botão dourado */ }
+@keyframes ef-brilho { from { transform: translateX(0) skewX(-18deg); } to { transform: translateX(480%) skewX(-18deg); } }
+/* F03 (luz que segue o mouse nos cartões) saiu na v0.6.20: a regra de fluidez da família não quer esse efeito */
+/* F04 (lista em cascata) saiu na v0.6.20: item 11 aprovado em 14/11, as linhas da tabela aparecem de uma vez (com 100 linhas a cascata atrasava a leitura) */
+/* F05: o certo do "Salvo" se desenha a cada gravação */
+.foot-salvo { display: inline-flex; align-items: center; gap: 5px; }
+.foot-certo { width: 15px; height: 15px; flex: none; fill: none; stroke: var(--ok); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.foot-certo path { stroke-dasharray: 22; stroke-dashoffset: 0; animation: ef-certo var(--duration-very-slow) var(--ease-smooth-out); }
+@keyframes ef-certo { from { stroke-dashoffset: 22; } to { stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .btn.primary::after { display: none; }
+  .foot-certo path { animation: none !important; }
+}

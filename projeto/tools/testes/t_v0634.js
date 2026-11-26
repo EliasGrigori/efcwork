@@ -1,16 +1,16 @@
 /* EFCwork · v0.6.34 · P3a, refeito na v0.6.35: o Vértice Docs em tela inteira com abas no alto (ITEM 200 = OPÇÃO 2, ITEM 201,
    decisão de 26/11 13:18: o menu abre direto a tela inteira) + a porta CworkPonteVertice, mensagens e sw.js.
-   Sobe o EFCwork em /efcwork/ e o Vértice DE VERDADE em /EFCdocs/ (clone só de leitura em VERTICE_DIR), no mesmo endereço, como no
+   Sobe o EFCwork em /efcwork/ e o Vértice DE VERDADE em /efcwork/vertice/ (v0.6.36; a pasta vertice/ do próprio repositório; /EFCdocs/ só para a versão de antes), no mesmo endereço, como no
    GitHub Pages: o pedido e a resposta passam pela caixa de troca de verdade. ?demo=1, dados inventados (planilha de exemplo do Vértice).
    Uso: NODE_PATH=$(npm root -g) node tools/testes/t_v0634.js [--fotos] */
 const http = require('http'), fs = require('fs'), path = require('path');
 const { chromium } = require('playwright');
-const RAIZ = path.resolve(__dirname, '..', '..'), HOJE = process.argv.includes('--hoje') ? process.argv[process.argv.indexOf('--hoje') + 1] : '', VD = process.env.VERTICE_DIR || '/home/claude/eliasgrigori/efcdocs', FOTOS = process.argv.includes('--fotos');
+const RAIZ = path.resolve(__dirname, '..', '..'), HOJE = process.argv.includes('--hoje') ? process.argv[process.argv.indexOf('--hoje') + 1] : '', VD = process.env.VERTICE_DIR || path.resolve(__dirname, '..', '..', '..', 'vertice') /* v0.6.36 (P5): o Vértice mora em efcwork/vertice/ */, FOTOS = process.argv.includes('--fotos');
 const XLSX = path.join(VD, 'fonte/testes/amostras/amostra-v0617.xlsx'), OUT = path.join(RAIZ, 'tools/testes/telas');
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css', '.json': 'application/json', '.png': 'image/png', '.webmanifest': 'application/manifest+json', '.woff2': 'font/woff2', '.svg': 'image/svg+xml' };
 const srv = http.createServer((q, r) => {
   const u = decodeURIComponent(q.url.split('?')[0].split('#')[0]);
-  let f = u.startsWith('/efcwork/') ? path.join(HOJE || path.join(RAIZ, 'dist'), u.slice(9)) : u.startsWith('/EFCdocs/') ? path.join(VD, u.slice(9)) : '';
+  let f = u.startsWith('/efcwork/vertice/') ? path.join(VD, u.slice(17)) : u.startsWith('/efcwork/') ? path.join(HOJE || path.join(RAIZ, 'dist'), u.slice(9)) : u.startsWith('/EFCdocs/') ? path.join(VD, u.slice(9)) : '';
   if (f && (f.endsWith(path.sep) || (fs.existsSync(f) && fs.statSync(f).isDirectory()))) f = path.join(f, 'index.html');
   if (!f || !fs.existsSync(f)) { r.writeHead(404); return r.end('nada'); }
   r.writeHead(200, { 'content-type': MIME[path.extname(f)] || 'application/octet-stream' }); fs.createReadStream(f).pipe(r);
@@ -32,7 +32,7 @@ async function abre(b, base, w, h) {
   return p;
 }
 
-const vertFr = (p, id) => p.frames().find(f => /\/EFCdocs\//.test(f.url()) && f.parentFrame() === p.mainFrame() && (!id || f.name() === id || true) && f !== p.mainFrame());
+const vertFr = (p, id) => p.frames().find(f => /\/(EFCdocs|efcwork\/vertice)\//.test(f.url()) && f.parentFrame() === p.mainFrame() && (!id || f.name() === id || true) && f !== p.mainFrame());
 const frDe = async (p, id) => { const h = await p.$('.jn-fr iframe[data-j="' + id + '"]'); return h ? h.contentFrame() : null; };
 const est = p => p.evaluate(() => { const j = document.querySelector('#jn'), fr = document.querySelector('.jn-fr');
   const r = j ? j.getBoundingClientRect() : null, ifr = [...document.querySelectorAll('.jn-fr iframe')];
@@ -63,7 +63,7 @@ const est = p => p.evaluate(() => { const j = document.querySelector('#jn'), fr 
   conf(e.abas.join('|') === 'EFCwork|Vértice Docs' && e.on === 'Vértice Docs', 'abas: EFCwork e Vértice Docs, com o Vértice marcado (' + e.abas.join('|') + ')');
   conf(e.cam.indexOf('janela') >= 0, 'abrir o Vértice conta como uma camada (Esc e voltar)');
   let fr = await frDe(p, 'docs');
-  conf(!!fr && /\/EFCdocs\/\?em=cwork/.test(fr.url()), 'o Vértice de verdade abre com ?em=cwork (' + (fr && fr.url()) + ')');
+  conf(!!fr && /\/efcwork\/vertice\/\?em=cwork/.test(fr.url()), 'o Vértice de verdade abre com ?em=cwork (' + (fr && fr.url()) + ')');
   const vis2 = await p.evaluate(() => { const j = document.querySelector('#jn'), cs = getComputedStyle(j), ab = getComputedStyle(j.querySelector('.jn-aw.on .jn-ab')), ind = getComputedStyle(j.querySelector('.jn-ind'));
     return { bg: cs.backgroundImage, sh: cs.boxShadow, bgc: cs.backgroundColor, bg1: getComputedStyle(document.body).getPropertyValue('--bg1'), fs: ab.fontSize, fw: ab.fontWeight, ih: ind.height, ic: ind.backgroundColor, a: getComputedStyle(document.documentElement).getPropertyValue('--a').trim() }; });
   conf(vis2.bg === 'none' && /^rgb\([^)]*\) 0px -1px 0px 0px inset$/.test(vis2.sh), 'sem degradê e sem relevo: só a linha fina de 1 px embaixo (OPÇÃO 2) (' + vis2.sh + ')');
@@ -198,7 +198,7 @@ const est = p => p.evaluate(() => { const j = document.querySelector('#jn'), fr 
   conf(p._er.length === 0, 'sem erros no console (celular)');
   await p.context().close();
   const sw = fs.readFileSync(path.join(RAIZ, 'dist/sw.js'), 'utf8');
-  conf(/indexOf\('\/efcwork\/vertice\/'\) === 0\) return/.test(sw), 'sw.js do Cwork não guarda nada de /efcwork/vertice/ (P5 item 1)');
+  conf(/indexOf\('\/efcwork\/vertice\/'\) === 0 \|\| u\.pathname === '\/efcwork\/vertice'\)\) return/.test(sw), 'sw.js do Cwork não guarda nada de /efcwork/vertice/, com ou sem a barra final (P5)');
   await b.close(); srv.close();
   console.log('\n' + ok + ' ok · ' + falhas + ' falha(s)'); process.exit(falhas ? 1 : 0);
 })().catch(e => { console.error(e); process.exit(1); });

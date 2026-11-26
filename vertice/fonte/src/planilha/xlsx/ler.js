@@ -1,0 +1,799 @@
+/* EFCdocs — abrir um arquivo do Excel (.xlsx / .xlsm) como planilha do EFCdocs.
+   - Lê as abas aos pedaços (uma aba de 200 MB não precisa caber inteira na memória).
+   - Valores, fórmulas (com o último valor que o Excel calculou), estilos, larguras, alturas, ocultas,
+     mescladas, congelar painéis, cor e abas ocultas, nomes definidos, tabelas (as fórmulas viram endereços).
+   - Não vêm (e o relatório diz): macros, gráficos, tabelas dinâmicas (vêm os valores), imagens, controles,
+     filtros, proteção. (v0.5.1: validação de dados, formatação condicional e comentários passam a vir.)
+   - Linhas no fim que não mostram nada (fórmula copiada até a linha 1.048.576, só formatação ou ocultas com sobra)
+     são cortadas, e o relatório diz onde. */
+import { lerZip } from './zip.js';
+import { atributos, tags, tag, desescapar, textoRico } from './xml.js';
+import { lerTema, lerEstilos, corDe, comEstiloProprio } from './estilos.js';
+import { tirarPrefixos, trocarTabelas, porPrefixos } from './formulas.js';
+import { chave, letraCol, lerChave, numCol, MAX_LIN, MAX_COL } from '../ref.js';
+import { lerColunas, lerGrupoDaLinha, lerResumoDosGrupos } from './colunasXlsx.js';
+import { lerGuardada, deslocar, escrever, dependencias } from '../formula.js';
+import { IMPL } from '../funcoes.js';
+import { lerValidacoes, lerCondicionais, lerComentarios, lerPessoas } from './extras.js';
+import { lerGraficosAba, ligarRefsAoLivro } from './graficosXlsx.js'; import { criterioDoXlsx } from '../filtroCriterios.js'; import { extrasDaTabela } from './tabelasXlsx.js'; /* v0.6.39 (T0) */ import { lerSegmentacoes } from './segmentacaoXlsx.js'; /* v0.6.41 (S1) */
+import { ligarCx } from './cxXlsx.js';
+import { noCantoDaAbaDeGrafico } from './abaGraficoXlsx.js';
+import { ligarFormaAoLivro } from './formasXlsx.js';
+import { lerImpressaoAba, lerNomesImpressao } from './impressaoXlsx.js';
+import { idObjeto } from '../objetos.js';
+import { urlSegura } from '../inserir.js';
+import { indiceEstilo, LARG_PADRAO, ALT_PADRAO, NOME_ABA_PADRAO } from '../modelo.js';
+import { painelDoXml } from './painelXlsx.js';
+const MOTIVO_NAO_LE = 'o Vértice Docs ainda não entende esta fórmula';
+const RX_SEMPRE_MATRIZ = /(^|[^\w])(FILTER|UNIQUE|SORT|SORTBY|SEQUENCE|RANDARRAY|TEXTSPLIT|VSTACK|HSTACK|TOCOL|TOROW|CHOOSECOLS|CHOOSEROWS|TAKE|DROP|EXPAND|WRAPCOLS|WRAPROWS)\(/i;
+const RX_SO_DINAMICA = /(^|[^\w.])(FILTER|UNIQUE|SORT|SORTBY|SEQUENCE|RANDARRAY|XLOOKUP|XMATCH|TEXTSPLIT|VSTACK|HSTACK|TOCOL|TOROW|CHOOSECOLS|CHOOSEROWS|TAKE|DROP|EXPAND|WRAPCOLS|WRAPROWS|LET|LAMBDA)\(/i;
+
+export const LIMITES = {
+  tetoFormatadas: 20000, // v0.6.9.2: células vazias só com borda/cor de fundo, longe do último dado, que ainda ficam por aba
+  folga: 1000, // linhas vazias (ou de fórmula que dá vazio) que ficam depois do último dado
+  ocultas: 20000, // linhas ocultas com valores no fim: acima disso, cortadas
+  guardaPendentes: 30000, // linhas "sem nada à vista" guardadas esperando para ver se vem dado depois
+  celulasAba: 300000,
+  celulasTotal: 800000,
+};
+
+const NS_REL = /^https?:\/\/[^ ]*\/relationships\//;
+
+function caminho(base, alvo) {
+  if (!alvo) return null;
+  if (/^[a-z]+:\/\//i.test(alvo)) return null;
+  if (alvo.startsWith('/')) return alvo.slice(1);
+  const partes = base.split('/'); partes.pop();
+  for (const p of alvo.split('/')) { if (p === '..') partes.pop(); else if (p !== '.') partes.push(p); }
+  return partes.join('/');
+}
+const relsDe = (parte) => { const p = parte.split('/'); const n = p.pop(); return [...p, '_rels', n + '.rels'].join('/'); };
+function lerRels(xml, parte) {
+  const out = new Map();
+  for (const r of tags(xml || '', 'Relationship')) out.set(r.a.Id, { tipo: (r.a.Type || '').replace(NS_REL, ''), alvo: r.a.TargetMode === 'External' ? null : caminho(parte, r.a.Target), externo: r.a.TargetMode === 'External', url: r.a.Target || '' });
+  return out;
+}
+
+/** Formato de número é de data/hora? (para o sistema de datas 1904) */
+const ehFormatoData = (nf) => !!nf && /[dmyhs]/i.test(nf.replace(/"[^"]*"|\[[^\]]*\]|\\./g, '')) && !/^[#0.,%E+\-\s]*$/.test(nf);
+
+const fmtN = (n) => n.toLocaleString('pt-BR');
+
+/**
+ * bytes do .xlsx → { conteudo, relatorio }.
+ * aoProgresso({ fase, aba, i, n, linha }) é chamado de vez em quando.
+ */
+/** v0.6.6: o estilo da tabela do Excel (nome e listras), para voltar igual ao salvar. */
+function estiloDaTabela(ts) {
+  if (!ts || !ts.a) return null;
+  const nome = String(ts.a.name || '');
+  if (nome && !/^[\p{L}\p{N} _.-]{1,60}$/u.test(nome)) return null; /* v0.6.58: nome com acento (estilo próprio) também vale */
+  const b = (k) => (ts.a[k] === '1' || ts.a[k] === 'true' ? 1 : 0);
+  return { nome, pc: b('showFirstColumn'), uc: b('showLastColumn'), ll: b('showRowStripes'), lc: b('showColumnStripes') };
+}
+/** v0.6.6: <sheetFormatPr> → largura padrão das colunas em px (como o Excel: defaultColWidth em caracteres,
+    ou baseColWidth + 5 px de margem, arredondado para múltiplo de 8; sem nada = 8 caracteres = 64 px). */
+export function larguraPadraoDoExcel(a) {
+  const dw = a && a.defaultColWidth != null ? parseFloat(a.defaultColWidth) : NaN;
+  if (Number.isFinite(dw) && dw > 0) return Math.max(8, Math.min(600, Math.trunc(((256 * dw + Math.trunc(128 / 7)) / 256) * 7)));
+  const bw = a && a.baseColWidth != null ? parseFloat(a.baseColWidth) : 8;
+  const b = Number.isFinite(bw) && bw >= 0 ? bw : 8;
+  return Math.max(8, Math.min(600, Math.ceil((b * 7 + 5) / 8) * 8));
+}
+export async function lerXlsx(bytes, { nomeArquivo = 'planilha.xlsx', aoProgresso = () => {}, limites = LIMITES, agora = new Date() } = {}) {
+  const zip = lerZip(bytes);
+  const rel = {
+    arquivo: nomeArquivo, em: agora.toISOString(), bytes: bytes.length || bytes.byteLength || 0,
+    abas: [], fora: [], avisos: [], semCalculo: 0, exemplosSemCalculo: [], comRef: 0, exemploRef: '', celulas: 0, formulas: 0,
+    /* v0.5.1: o que veio de validação de dados, formatação condicional e comentários */
+    extras: { validacoes: 0, listas: 0, condicionais: 0, notas: 0, conversas: 0, respostas: 0, abasComRegras: [], graficos: 0 },
+  };
+  const fora = new Map();
+  const juntarFora = (item, qtd = 1, detalhe = '', volta = false) => { const x = fora.get(item) || { item, qtd: 0, detalhe }; x.qtd += qtd; if (detalhe && !x.detalhe) x.detalhe = detalhe; if (volta) x.volta = true; fora.set(item, x); };
+
+  /* ---------- livro ---------- */
+  const relsRaiz = lerRels(await zip.texto('_rels/.rels'), '');
+  let pWb = 'xl/workbook.xml';
+  for (const r of relsRaiz.values()) if (/officeDocument$/.test(r.tipo) && r.alvo) pWb = r.alvo;
+  const wb = await zip.texto(pWb);
+  if (!wb) throw new Error('Este arquivo não parece ser do Excel (falta o workbook.xml).');
+  const relsWb = lerRels(await zip.texto(relsDe(pWb)), pWb);
+  let pSst = null, pEst = null, pTema = null;
+  for (const r of relsWb.values()) {
+    if (/sharedStrings$/.test(r.tipo)) pSst = r.alvo;
+    else if (/styles$/.test(r.tipo)) pEst = r.alvo;
+    else if (/theme$/.test(r.tipo)) pTema = r.alvo;
+  }
+  const date1904 = /<workbookPr\b[^>]*date1904="(1|true)"/.test(wb);
+  if (date1904) rel.avisos.push('O arquivo usa o sistema de datas de 1904 (Mac antigo): as datas foram convertidas para o sistema de 1900.');
+
+  aoProgresso({ fase: 'textos' });
+  const textos = [];
+  if (pSst) {
+    const sx = await zip.texto(pSst);
+    const rx = /<si>([\s\S]*?)<\/si>|<si\/>/g;
+    let m;
+    while ((m = rx.exec(sx))) textos.push(m[1] ? textoRico(m[1]) : '');
+  }
+  const xmlTema = pTema ? await zip.texto(pTema) : null;
+  const tema = lerTema(xmlTema);
+  /* v0.6.5: fontes do tema (o texto das formas usa "+mn-lt" = a fonte do corpo) */
+  const fontesTema = { menor: ((/<a:minorFont>\s*<a:latin typeface="([^"]*)"/.exec(xmlTema || '') || [])[1]) || 'Calibri', maior: ((/<a:majorFont>\s*<a:latin typeface="([^"]*)"/.exec(xmlTema || '') || [])[1]) || 'Calibri Light' };
+  const est = lerEstilos(pEst ? await zip.texto(pEst) : null, tema);
+  const pessoas = await lerPessoas(zip, relsWb);
+
+  /* estilos do EFCdocs (sem repetição) e a ponte xf do Excel → índice do EFCdocs */
+  let estilos = [{}];
+  const ponte = est.xfs.map((e) => { const r = indiceEstilo(estilos, e); estilos = r.estilos; return r.s; });
+  /* v0.6.14 (D-46): célula sem s="" usa o estilo 0 do arquivo (o "Normal"), que pode ter letra 10 ou "centralizado no meio" */
+  const sDe = (xf) => (xf == null ? ponte[0] || 0 : ponte[+xf] || 0);
+  const nfDe = (s) => (s ? estilos[s].nf : null);
+
+  /* ---------- abas ---------- */
+  const folhas = [];
+  let idxFolha = -1;
+  for (const s of tags(tag(wb, 'sheets')?.dentro || '', 'sheet')) {
+    idxFolha++;
+    const r = relsWb.get(s.a['r:id'] || s.a.id);
+    if (!r || !r.alvo) continue;
+    /* v0.6.18 (D-43): aba de gráfico (chartsheet) vem como aba com o gráfico e sem linhas de grade; volta como aba de gráfico */
+    if (/chartsheet$/.test(r.tipo)) { folhas.push({ nome: s.a.name, parte: r.alvo, oculta: s.a.state === 'veryHidden' ? 'muito' : s.a.state === 'hidden', idx: idxFolha, grafico: true }); continue; }
+    if (!/worksheet$/.test(r.tipo)) { juntarFora('Abas de outro tipo (macro antiga ou diálogo)', 1, s.a.name); continue; }
+    folhas.push({ nome: s.a.name, parte: r.alvo, oculta: s.a.state === 'veryHidden' ? 'muito' : s.a.state === 'hidden', idx: idxFolha });
+  }
+  if (!folhas.length) throw new Error('O arquivo não tem nenhuma aba de planilha.');
+
+  /* tabelas de todas as abas (as fórmulas de uma aba podem usar a tabela de outra) */
+  const tabelas = new Map();
+  for (const f of folhas) {
+    f.rels = lerRels(await zip.texto(relsDe(f.parte)), f.parte);
+    for (const r of f.rels.values()) {
+      if (!/table$/.test(r.tipo) || !r.alvo) continue;
+      const tx = await zip.texto(r.alvo);
+      const t = tag(tx || '', 'table');
+      if (!t || !t.a.ref) continue;
+      const [a, b] = t.a.ref.split(':');
+      const p1 = lerChave(a), p2 = lerChave(b || a);
+      if (!p1 || !p2) continue;
+      const cols = tags(t.dentro, 'tableColumn').map((c) => desescapar(c.a.name || ''));
+      const nome = t.a.displayName || t.a.name;
+      if (/<filterColumn\b/.test(t.dentro)) (f.filtros || (f.filtros = [])).push({ l1: p1.l + 1, l2: p2.l });
+      /* v0.6.11 (D-24): critérios do filtro da tabela (data, cor, lista...) ficam guardados como vieram e voltam ao salvar */
+      const fcx = {};
+      for (const fc of tags((tag(t.dentro, 'autoFilter') || {}).dentro || '', 'filterColumn')) fcx[+fc.a.colId || 0] = fc.bruto.replace(/\scolId="[^"]*"/, '');
+      tabelas.set(nome.toLowerCase(), {
+        nome, aba: f.nome, l1: p1.l, c1: p1.c, l2: p2.l, c2: p2.c, cols, ...extrasDaTabela(t),
+        ...(Object.keys(fcx).length ? { fcx } : {}),
+        cab: t.a.headerRowCount === '0' ? 0 : 1, tot: +(t.a.totalsRowCount || 0) > 0 || t.a.totalsRowShown === '1' && +(t.a.totalsRowCount || 0) > 0 ? 1 : 0,
+        est: comEstiloProprio(estiloDaTabela(tag(t.dentro, 'tableStyleInfo')), est.tabProprias) || { sem: 1 }, // v0.6.8 (Grok): sem estilo no arquivo, volta sem estilo; v0.6.58 (D-17): estilo próprio leva as peças
+      });
+    }
+  }
+  let exemploTabela = null;
+  const conv = (txt, aba, l) => {
+    const sem = tirarPrefixos(txt);
+    if (!tabelas.size || sem.indexOf('[') < 0 && !exemploTabela) return trocarTabelas(sem, tabelas, { aba, l });
+    const r = trocarTabelas(sem, tabelas, { aba, l });
+    if (!exemploTabela && r !== sem) {
+      /* exemplo para o relatório: o primeiro Tabela[...] (com os colchetes de dentro) */
+      for (const m of sem.matchAll(/[A-Za-z_\\À-ÿ][\wÀ-ÿ.]*\[/g)) {
+        let prof = 0, k = m.index + m[0].length - 1;
+        for (; k < sem.length; k++) { if (sem[k] === "'") { k++; continue; } if (sem[k] === '[') prof++; else if (sem[k] === ']' && --prof === 0) break; }
+        const pedaco = sem.slice(m.index, k + 1);
+        if (prof !== 0 || pedaco.length > 60 || /[\r\n]/.test(pedaco)) continue;
+        const d = trocarTabelas(pedaco, tabelas, { aba, l });
+        if (d !== pedaco && !/#REF!/.test(d)) { exemploTabela = `${pedaco} virou ${d}`; break; }
+      }
+    }
+    return r;
+  };
+
+  /* partes que o EFCdocs não traz */
+  const nomes = zip.nomes;
+  const conta = (rx) => nomes.filter((n) => rx.test(n)).length;
+  if (conta(/vbaProject\.bin$/i)) juntarFora('Macros (VBA)', 1, 'não rodam aqui; voltam iguais ao salvar como Excel (o arquivo sai como .xlsm)', true);
+  const graficosLidos = []; // v0.6.0: { aba, o } para ligar os dados à aba certa no fim
+  const paineisLidos = []; // v0.6.7: { aba, resto } das abas que eram Painel
+  const formasLidas = []; // v0.6.5: formas (links e textos ligados apontam para o nome da aba até o fim)
+  let grFora = 0;
+  const nPartesGrafico = conta(/^xl\/charts\/chart\d+\.xml$/i);
+  if (conta(/^xl\/pivotTables\//i)) juntarFora('Tabelas dinâmicas', conta(/^xl\/pivotTables\/pivotTable\d+\.xml$/i), 'aqui vêm só os valores; ao salvar como Excel elas voltam e se atualizam ao abrir', true);
+  const nMidias = conta(/^xl\/media\//i);
+  let imgLidas = 0;
+  const linksLocais = []; // links de uma aba para outra, ligados no fim
+  if (conta(/^xl\/(slicers|slicerCaches|timelines|timelineCaches)\//i)) {
+    /* v0.6.13: conta cada segmentação e linha do tempo (uma parte pode ter várias) */
+    let nSeg = 0; for (const n of nomes.filter((x) => /^xl\/(slicers|timelines)\/[^/]+\.xml$/i.test(x))) nSeg += (((await zip.texto(n)) || '').match(/<(?:\w+:)?(?:slicer|timeline)\s/g) || []).length;
+    juntarFora('Segmentações de dados e linhas do tempo', nSeg || 1, 'não aparecem aqui; voltam iguais ao salvar como Excel', true);
+  }
+  /* v0.6.8: o nome dos botões de macro (para avisar também ao salvar) */
+  const botoesMacro = [];
+  for (const nv of nomes.filter((n) => /^xl\/drawings\/vmlDrawing\d*\.vml$/i.test(n))) {
+    const x = (await zip.texto(nv)) || '';
+    for (const m of x.matchAll(/<v:shape\b[\s\S]*?<\/v:shape>/g)) {
+      if (!/ObjectType="Button"/i.test(m[0])) continue;
+      const t = desescapar(((/<v:textbox[^>]*>([\s\S]*?)<\/v:textbox>/.exec(m[0]) || [])[1] || '').replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim();
+      if (t && botoesMacro.length < 20 && !botoesMacro.includes(t)) botoesMacro.push(t.slice(0, 60));
+    }
+  }
+  if (conta(/^xl\/ctrlProps\//i)) juntarFora('Botões e caixas de controle', conta(/^xl\/ctrlProps\//i), `${botoesMacro.length ? `(${botoesMacro.map((b) => '"' + b + '"').join(', ')}) ` : ''}não aparecem aqui; voltam iguais ao salvar como Excel`, true);
+  if (botoesMacro.length) rel.botoesMacro = botoesMacro;
+  if (conta(/vbaProject\.bin$/i)) rel.temMacros = true;
+  if (conta(/^xl\/webextensions\//i)) juntarFora('Suplementos do Office', conta(/^xl\/webextensions\/webextension\d*\.xml$/i) || 1, 'voltam iguais ao salvar como Excel', true);
+  if (conta(/^xl\/externalLinks\//i)) juntarFora('Vínculos com outros arquivos', conta(/^xl\/externalLinks\/externalLink\d*\.xml$/i), 'as fórmulas que usam outro arquivo mostram o último valor');
+  if (conta(/^xl\/(connections\.xml|queryTables\/)/i)) juntarFora('Consultas e conexões de dados (Power Query)', 1);
+
+  /* nomes definidos */
+  const nomesDef = {};
+  let areasImpressao = 0;
+  const defsImp = {}; // v0.6.0: área e títulos de impressão por aba (índice da aba no livro)
+  const defs = tags(tag(wb, 'definedNames')?.dentro || '', 'definedName');
+  /* v0.6.14 (D-49): quantas vezes cada nome aparece (o mesmo nome em várias abas e no livro todo) */
+  const vezes = new Map();
+  for (const d of defs) { const k = (d.a.name || '').toLowerCase(); vezes.set(k, (vezes.get(k) || 0) + 1); }
+  for (const d of defs) {
+    const n = d.a.name || '';
+    if (/^_xlnm\./i.test(n)) {
+      if (/Print_(Area|Titles)/i.test(n) && d.a.localSheetId != null) {
+        const x = lerNomesImpressao(n, d.dentro);
+        const k = +d.a.localSheetId;
+        defsImp[k] = { ...(defsImp[k] || {}), ...x };
+        if (x.varias) areasImpressao++;
+      }
+      continue;
+    }
+    if (/^_xl/i.test(n)) continue;
+    let ref = desescapar(d.dentro).trim();
+    if (/\[\d+\]/.test(ref)) { juntarFora('Nomes que apontam para outro arquivo', 1); continue; }
+    ref = conv(ref, null, 0);
+    const k = n.toLowerCase();
+    /* repetido: fica o do livro todo (sem localSheetId), que as outras abas usam; os de uma aba só vão para "Ficou de fora" */
+    if (nomesDef[k]) {
+      if (d.a.localSheetId == null && nomesDef[k].local) { nomesDef[k] = { n, ref }; juntarFora('Nomes que só valem numa aba (repetidos)', 1, n); }
+      else juntarFora('Nomes que só valem numa aba (repetidos)', 1, n);
+      continue;
+    }
+    nomesDef[k] = { n, ref };
+    if (d.a.localSheetId != null) nomesDef[k].local = true;
+    /* v0.6.14 (D-49): nome que só vale numa aba (e só aparece uma vez) continua só daquela aba ao salvar
+       (a conta não muda: o EFCdocs procura em todas) */
+    if (d.a.localSheetId != null && Number.isInteger(+d.a.localSheetId) && vezes.get(k) === 1) nomesDef[k].locIdx = +d.a.localSheetId;
+  }
+  if (areasImpressao) juntarFora('Áreas de impressão com várias partes', areasImpressao, 'veio só a primeira parte');
+
+  /* ---------- cada aba ---------- */
+  const conteudo = { v: 1, ordem: [], abas: {}, estilos: null, nomes: nomesDef, seq: folhas.length + 1 };
+  let totalCel = 0;
+  const abasZero = [];
+  const avisoFormula = (f, motivo) => { rel.semCalculo++; if (rel.exemplosSemCalculo.length < 5) rel.exemplosSemCalculo.push({ f: f.slice(0, 120), motivo }); };
+  const funcaoOk = new Map();
+  const checarFormula = (f) => {
+    if (funcaoOk.has(f)) return funcaoOk.get(f);
+    let r = '';
+    try {
+      const arv = lerGuardada(f);
+      const d = dependencias(arv);
+      const desc = d.desconhecidas.filter((n) => !IMPL[n]);
+      if (desc.length) r = 'função ' + [...new Set(desc)].join(', ');
+    } catch { r = MOTIVO_NAO_LE; }
+    funcaoOk.set(f, r);
+    if (funcaoOk.size > 50000) funcaoOk.clear();
+    return r;
+  };
+
+  for (let fi = 0; fi < folhas.length; fi++) {
+    const F = folhas[fi];
+    const id = 'a' + (fi + 1);
+    aoProgresso({ fase: 'aba', aba: F.nome, i: fi + 1, n: folhas.length, linha: 0 });
+    const aba = { id, nome: F.nome, cel: {} };
+    aba.org = F.parte; /* v0.6.13 (D-29): de que parte do original veio (para devolver ao salvar o que o app não edita) */
+    if (F.oculta) aba.oculta = F.oculta; /* v0.6.49 (D-79): 'muito' = veryHidden do Excel (não aparece em Reexibir) */ if (F.grafico) { aba.grafico = 1; aba.semGrade = 1; rel.extras.abasGrafico = (rel.extras.abasGrafico || 0) + 1; }
+    const ra = { nome: F.nome, celulas: 0, formulas: 0, linhas: 0, cortes: [] };
+    let cab = '', resto = '', estado = 0, buf = '';
+    let ultimaReal = -1;
+    const pendentes = []; // linhas sem nada à vista (ou ocultas) esperando
+    let contando = null; // { de, ate, comValor } linhas puladas por serem muitas
+    let pararEm = null; // passou do limite de células
+    const linhasDef = new Set(); // v0.6.4: linhas que o arquivo lista e não esconde (para zeroHeight)
+    const masters = new Map(); // fórmula compartilhada: si → { f, l, c }
+    const cobertos = new Map(); // linha → [[c1, c2]] área de matriz (os valores vêm da fórmula)
+    let nCel = 0, nForm = 0, lMax = -1, cMax = -1;
+    let zeroAltura = false;
+    let ultimoAviso = 0;
+
+    const gravarLinha = (L) => {
+      if (pararEm != null) return;
+      if (nCel + L.cells.length > limites.celulasAba || totalCel + L.cells.length > limites.celulasTotal) { pararEm = L.r; return; }
+      for (const x of L.cells) {
+        const k = chave(L.r, x.c);
+        const cel = {};
+        if (x.v !== undefined) cel.v = x.v;
+        if (x.f != null) {
+          cel.f = x.f; if (x.fo && porPrefixos(x.f) !== x.fo) cel.fo = [x.fo, x.f]; if (x.da || (RX_SO_DINAMICA.test(x.f) && !x.excelNovo)) cel.da = 1; else cel.lg = 1; nForm++; // FILTRO, ÚNICO, CLASSIFICAR... só existem no Excel novo: sempre matriz dinâmica, mesmo se o arquivo (LibreOffice, etc.) não marcou
+          const motivo = checarFormula(x.f);
+          /* v0.6.9.1 (Elias): fórmula que já veio quebrada do Excel (#REF!: a referência foi apagada lá) não é "falta de cálculo" nossa */
+          /* v0.6.9.2 (Grok, L-03): conta toda fórmula com #REF!, também as que o EFCdocs consegue ler (=SOMA(#REF!), =#REF!+1) */
+          if (x.f.includes('#REF!')) { rel.comRef++; if (!rel.exemploRef) rel.exemploRef = x.f.slice(0, 120); }
+          else if (motivo) avisoFormula(x.f, motivo);
+          if (motivo === MOTIVO_NAO_LE && !cel.fo) cel.fo = [x.fo || x.f, x.f]; // v0.6.8: o EFCdocs não lê, mas veio do Excel: volta igual
+        }
+        if (x.s) cel.s = x.s;
+        if (cel.v === undefined && cel.f == null && !cel.s) continue;
+        aba.cel[k] = cel;
+        nCel++; totalCel++;
+        if (cel.v !== undefined || cel.f != null) { if (L.r > lMax) lMax = L.r; if (x.c > cMax) cMax = x.c; }
+      }
+      /* v0.6.8 (Grok): altura escolhida à mão no Excel fica guardada mesmo igual à padrão (o Alt+Enter não pode mudar) */
+      if (L.ht != null && (L.ht !== altDaAba() || L.mao)) { (aba.alt || (aba.alt = {}))[L.r] = L.ht; }
+      if (L.oculta) { (aba.ocL || (aba.ocL = {}))[L.r] = 1; } lerGrupoDaLinha(aba, L); /* v0.6.37: grupo de linhas (Agrupar) */
+      /* v0.6.14 (D-47): estilo da linha inteira (customFormat) */
+      if (L.s) (aba.estL || (aba.estL = {}))[L.r] = L.s;
+    };
+    const soltarPendentes = () => {
+      for (const L of pendentes) gravarLinha(L);
+      pendentes.length = 0;
+      if (contando) {
+        ra.cortes.push(`linhas ${fmtN(contando.de + 1)} a ${fmtN(contando.ate + 1)}: eram ${fmtN(contando.ate - contando.de + 1)} linhas sem nada à vista (ocultas, vazias ou com fórmula que dá vazio) e não vieram`);
+        contando = null;
+      }
+    };
+
+    /* v0.6.6: altura padrão das linhas do arquivo (defaultRowHeight em pontos; sem ela, 15 pt = 20 px) */
+    let altP = null;
+    const altDaAba = () => {
+      if (altP == null) {
+        const sf = tag(cab, 'sheetFormatPr');
+        const dh = sf && sf.a.defaultRowHeight != null ? parseFloat(sf.a.defaultRowHeight) : 15;
+        altP = Math.max(4, Math.min(545, Math.round((Number.isFinite(dh) && dh > 0 ? dh : 15) * 4 / 3)));
+        aba.altP = altP;
+      }
+      return altP;
+    };
+    const linha = (atr, corpo) => {
+      const a = atributos(atr);
+      const r = (a.r ? +a.r : (linha.ult ?? -1) + 2) - 1;
+      linha.ult = r;
+      if (r >= MAX_LIN) return;
+      const L = { r, cells: [], oculta: a.hidden === '1' || a.hidden === 'true', ht: null, s: a.customFormat === '1' ? sDe(a.s) : 0, niv: Math.min(7, +(a.outlineLevel || 0) || 0), fech: a.collapsed === '1' || a.collapsed === 'true' };
+      if (!L.oculta) linhasDef.add(r);
+      /* v0.6.6: a linha guarda a altura dela quando é diferente da padrão do arquivo (aba.altP), como o Excel mostra */
+      if (a.ht && (a.customHeight === '1' || a.customHeight === 'true')) { L.ht = Math.max(0, Math.round(parseFloat(a.ht) * 4 / 3)); L.mao = true; }
+      else if (a.ht && Number.isFinite(parseFloat(a.ht)) && Math.abs(Math.round(parseFloat(a.ht) * 4 / 3) - altDaAba()) >= 1) L.ht = Math.round(parseFloat(a.ht) * 4 / 3);
+      let temValor = false, temVisivel = false;
+      if (corpo) {
+        const rx = /<c\b([^>]*?)(?:\/>|>([\s\S]*?)<\/c>)/g;
+        let m, cAuto = -1;
+        while ((m = rx.exec(corpo))) {
+          const ca = atributos(m[1]);
+          let c;
+          if (ca.r) { const p = /^([A-Z]+)/.exec(ca.r); c = p ? numCol(p[1]) : cAuto + 1; } else c = cAuto + 1;
+          cAuto = c;
+          if (c < 0) continue;
+          const dentro = m[2] || '';
+          const x = { c, s: sDe(ca.s) };
+          /* valor */
+          const vm = dentro.indexOf('<v') >= 0 ? /<v(?:\s[^>]*)?>([\s\S]*?)<\/v>/.exec(dentro) : null;
+          const tv = ca.t || 'n';
+          let v;
+          if (tv === 'inlineStr') { const is = /<is>([\s\S]*?)<\/is>/.exec(dentro); v = is ? textoRico(is[1]) : ''; } else if (vm) {
+            const t = vm[1];
+            if (tv === 's') v = textos[+t] ?? '';
+            else if (tv === 'str') v = desescapar(t);
+            else if (tv === 'b') v = t === '1' || t === 'true';
+            else if (tv === 'e') v = { e: desescapar(t).trim() };
+            else if (tv === 'd') { const d = Date.parse(t); v = Number.isFinite(d) ? d / 86400000 + 25569 : desescapar(t); } else if (t !== '') { const n = Number(t); v = Number.isFinite(n) ? n : desescapar(t); }
+          }
+          if (typeof v === 'number' && date1904 && ehFormatoData(nfDe(x.s))) v += 1462;
+          /* fórmula */
+          const fm = dentro.indexOf('<f') >= 0 ? /<f\b([^>]*?)(?:\/>|>([\s\S]*?)<\/f>)/.exec(dentro) : null;
+          let f = null;
+          if (fm) {
+            const fa = atributos(fm[1]);
+            const txt = fm[2] != null ? desescapar(fm[2]) : '';
+            /* v0.6.8: a fórmula como veio (se o EFCdocs a escreveria diferente): volta igual ao salvar enquanto ninguém mexer nela */
+            /* XLOOKUP, XMATCH, LET e LAMBDA podem dar um valor só: sem a marca de matriz no arquivo, ficam como fórmula comum */
+            if (fa.t !== 'array' && !RX_SEMPRE_MATRIZ.test(txt)) x.excelNovo = 1;
+            const guardaOriginal = (fc) => { if (fc !== txt && txt.indexOf('[') < 0) x.fo = txt; };
+            if (fa.t === 'shared') {
+              if (txt) {
+                f = conv(txt, F.nome, r);
+                guardaOriginal(f);
+                if (fa.si != null) masters.set(fa.si, { f, l: r, c });
+              } else {
+                const ms = masters.get(fa.si);
+                if (ms) {
+                  try { f = escrever(deslocar(lerGuardada(ms.f), r - ms.l, c - ms.c), 'en'); } catch { f = ms.f; }
+                }
+              }
+            } else if (fa.t === 'dataTable') {
+              juntarFora('Tabelas de dados (teste de hipóteses)', 1, 'vêm só os valores');
+            } else if (txt) {
+              f = conv(txt, F.nome, r);
+              guardaOriginal(f);
+              if (fa.t === 'array') {
+                x.da = 1;
+                const [a1, b1] = (fa.ref || '').split(':');
+                const p1 = lerChave(a1 || ''), p2 = lerChave(b1 || a1 || '');
+                if (p1 && p2 && (p2.l > p1.l || p2.c > p1.c)) {
+                  for (let ll = p1.l; ll <= Math.min(p2.l, p1.l + 100000); ll++) {
+                    const lst = cobertos.get(ll) || [];
+                    lst.push([p1.c, p2.c, ll === p1.l ? p1.c : -1]);
+                    cobertos.set(ll, lst);
+                  }
+                }
+              }
+            }
+          }
+          /* célula dentro da área de uma matriz: o valor vem da fórmula */
+          if (f == null) {
+            const cob = cobertos.get(r);
+            if (cob && cob.some(([c1, c2, ancora]) => c >= c1 && c <= c2 && c !== ancora)) {
+              if (v !== undefined && v !== '') { temValor = true; temVisivel = temVisivel || !L.oculta; }
+              v = undefined;
+            }
+          }
+          if (f != null) x.f = f;
+          if (v !== undefined) x.v = v;
+          const mostra = v !== undefined && v !== '' && !(typeof v === 'string' && !v.trim() && f != null);
+          if (mostra) { temValor = true; if (!L.oculta) temVisivel = true; }
+          if (x.v !== undefined || x.f != null || x.s) L.cells.push(x);
+        }
+      }
+      ra.linhas = r + 1;
+      if (r - ultimoAviso > 20000) { ultimoAviso = r; aoProgresso({ fase: 'aba', aba: F.nome, i: fi + 1, n: folhas.length, linha: r + 1 }); }
+      /* linha "de verdade": mostra algo */
+      if (temVisivel) {
+        soltarPendentes();
+        gravarLinha(L);
+        ultimaReal = r;
+        return;
+      }
+      /* sem nada à vista: espera para ver se vem dado depois */
+      L.temValor = temValor;
+      if (!L.cells.length && L.ht == null && !L.oculta) return;
+      if (contando) { contando.ate = r; if (temValor) contando.comValor++; return; }
+      if (pendentes.length >= limites.guardaPendentes) { contando = { de: r, ate: r, comValor: temValor ? 1 : 0 }; return; }
+      pendentes.push(L);
+    };
+
+    /* lê a aba aos pedaços */
+    const processar = (fimArquivo) => {
+      let p = 0;
+      if (estado === 0) {
+        const i = buf.indexOf('<sheetData');
+        if (i < 0) { if (fimArquivo) { cab = buf; buf = ''; } return; }
+        const j = buf.indexOf('>', i);
+        if (j < 0) return;
+        cab = buf.slice(0, i);
+        if (buf[j - 1] === '/') { estado = 2; buf = buf.slice(j + 1); resto += buf; buf = ''; return; }
+        estado = 1; p = j + 1;
+      }
+      if (estado === 1) {
+        for (;;) {
+          const i = buf.indexOf('<', p);
+          if (i < 0) { p = buf.length; break; }
+          if (buf.startsWith('<row', i)) {
+            const j = buf.indexOf('>', i);
+            if (j < 0) { p = i; break; }
+            if (buf[j - 1] === '/') { linha(buf.slice(i + 4, j - 1), ''); p = j + 1; continue; }
+            const k = buf.indexOf('</row>', j);
+            if (k < 0) { p = i; break; }
+            linha(buf.slice(i + 4, j), buf.slice(j + 1, k));
+            p = k + 6;
+            continue;
+          }
+          if (buf.startsWith('</sheetData', i)) { estado = 2; const j = buf.indexOf('>', i); p = j < 0 ? buf.length : j + 1; break; }
+          const j = buf.indexOf('>', i);
+          if (j < 0) { p = i; break; }
+          p = j + 1;
+        }
+        buf = buf.slice(p);
+        if (estado === 2) { resto += buf; buf = ''; }
+        return;
+      }
+      resto += buf; buf = '';
+    };
+    const ok = await zip.pedacos(F.parte, (pedaco) => { buf += pedaco; processar(false); });
+    if (!ok) { rel.avisos.push(`A aba "${F.nome}" está faltando dentro do arquivo.`); continue; }
+    processar(true);
+    altDaAba();
+
+    /* ---------- cabeçalho: congelar, cor, colunas ---------- */
+    const sp = tag(cab, 'sheetPr');
+    if (sp) { const tc = tag(sp.dentro, 'tabColor'); if (tc) { const cor = corDe(tc.a, tema); if (cor) aba.cor = cor; } lerResumoDosGrupos(aba, tag(sp.dentro, 'outlinePr')); } /* v0.6.37 */
+    const pane = tag(cab, 'pane');
+    if (pane && /frozen/i.test(pane.a.state || '')) {
+      const l = Math.round(+(pane.a.ySplit || 0)), c = Math.round(+(pane.a.xSplit || 0));
+      if (l > 0 || c > 0) aba.cong = { l, c };
+    }
+    const sfp = tag(cab, 'sheetFormatPr');
+    if (sfp && (sfp.a.zeroHeight === '1' || sfp.a.zeroHeight === 'true')) { zeroAltura = true; aba.zeroH = 1; }
+    /* v0.6.6: largura padrão das colunas do arquivo (as colunas sem largura própria ficam como no Excel, ex.: 64 px) */
+    aba.largP = larguraPadraoDoExcel(sfp && sfp.a);
+    const colsDef = tags(tag(cab, 'cols')?.dentro || '', 'col');
+
+    /* ---------- fim da aba: o que fica das linhas pendentes ---------- */
+    if (pendentes.length || contando) {
+      const ocultasComValor = pendentes.filter((L) => L.temValor).length + (contando ? contando.comValor : 0);
+      let ateLinha = ultimaReal + limites.folga;
+      const ultPend = pendentes.length ? pendentes[pendentes.length - 1].r : ultimaReal;
+      const ultOcultaValor = [...pendentes].reverse().find((L) => L.temValor);
+      if (ocultasComValor && ocultasComValor <= limites.ocultas && !contando && ultOcultaValor) ateLinha = Math.max(ateLinha, ultOcultaValor.r);
+      const ficam = pendentes.filter((L) => L.r <= ateLinha);
+      for (const L of ficam) gravarLinha(L);
+      const ultima = contando ? contando.ate : ultPend;
+      if (ultima > ateLinha) {
+        const ini = Math.max(ateLinha + 1, ficam.length ? ficam[ficam.length - 1].r + 1 : ateLinha + 1);
+        ra.cortes.push(ocultasComValor > limites.ocultas
+          ? `linhas ${fmtN(ini + 1)} a ${fmtN(ultima + 1)}: eram ${fmtN(ocultasComValor)} linhas ocultas com valores no fim da aba (sobra de cópia); não vieram`
+          : `linhas ${fmtN(ini + 1)} a ${fmtN(ultima + 1)}: não mostravam nada (vazias, só com formatação ou com fórmula que dá vazio). Ficaram ${fmtN(limites.folga)} linhas de folga depois do último dado; se precisar de mais, copie a fórmula para baixo`);
+      }
+      pendentes.length = 0; contando = null;
+    }
+    if (pararEm != null) ra.cortes.push(`a aba passou de ${fmtN(limites.celulasAba)} células: parou na linha ${fmtN(pararEm + 1)}`);
+    if (zeroAltura) {
+      /* v0.6.4: com zeroHeight o Excel esconde toda linha que o arquivo não lista; todas as de baixo ficam escondidas */
+      abasZero.push(F.nome);
+      const fim = MAX_LIN - 1; /* v0.6.45 (D-70): até o fim, como o Excel (era até 1.000 depois da última; a grade agora não pesa) */
+      let n = 0;
+      for (let r = 0; r <= fim; r++) if (!linhasDef.has(r)) { (aba.ocL || (aba.ocL = {}))[r] = 1; n++; }
+      void n;
+    }
+
+    /* células só com formatação muito à direita do último dado saem.
+       v0.6.9.2 (Grok, D-08): a que tem borda ou cor de fundo VISÍVEL fica (até um teto por aba), senão a linha/cor some ao salvar. */
+    { let vis = 0;
+      for (const k of Object.keys(aba.cel)) {
+        const x = aba.cel[k];
+        if (x.v !== undefined || x.f != null) continue;
+        const p = lerChave(k);
+        if (!p || !(p.c > cMax + 2 || p.l > lMax + limites.folga)) continue;
+        const e = x.s ? estilos[x.s] : null;
+        const visivel = e && (e.fundo || (e.bd && Object.keys(e.bd).length));
+        if (visivel && p.l <= lMax + limites.folga && vis < limites.tetoFormatadas) { vis++; continue; }
+        delete aba.cel[k]; nCel--; totalCel--;
+      }
+    }
+
+    /* colunas: largura, ocultas */
+    const ultCol = Math.max(cMax + 50, 25);
+    lerColunas(aba, colsDef, ultCol, sDe);
+    /* v0.6.0: configurar página (margens, papel, escala, títulos e área de impressão, cabeçalho e rodapé, quebras) */
+    { const imp = lerImpressaoAba(cab, resto, defsImp[F.idx] || {}); if (imp) aba.imp = imp; }
+    /* v0.6.7: aba que era um Painel do EFCdocs (o JSON vai no extLst): volta como Painel depois de ler todas as abas */
+    if (resto.indexOf('urn:efcdocs:painel') >= 0) paineisLidos.push({ aba, resto: resto.slice(resto.indexOf('<efc:painel>')) });
+    /* v0.6.0: gráficos da aba */
+    if (F.rels && [...F.rels.values()].some((r) => /drawing$/.test(r.tipo))) {
+      const gr = await lerGraficosAba(zip, F.rels, aba, async (parte) => lerRels(await zip.texto(relsDe(parte)), parte), tema, fontesTema);
+      if (F.grafico) gr.objs.forEach(noCantoDaAbaDeGrafico);
+      for (const o of gr.objs) {
+        if (o.tipo === 'imagem') { (aba.objs || (aba.objs = [])).push({ id: idObjeto(), ...o }); imgLidas++; continue; }
+        /* v0.6.5: formas e grupos (painéis, setas, botões com link, caixas de texto) */
+        if (o.tipo === 'forma') {
+          const f = { ...o, id: idObjeto() };
+          (aba.objs || (aba.objs = [])).push(f); formasLidas.push(f);
+          rel.extras.formas = (rel.extras.formas || 0) + 1;
+          imgLidas += f.partes.filter((p) => p.g === 'img').length;
+          continue;
+        }
+        graficosLidos.push({ aba, o }); rel.extras.graficos++;
+      }
+      for (const x of gr.fora) {
+        if (x.gif) juntarFora('Imagens GIF animadas', 1, x.motivo);
+        else if (x.imagem) juntarFora('Imagens', 1, x.motivo);
+        else if (x.item) juntarFora(x.item, x.qtd || 1, x.motivo);
+        else { juntarFora('Gráficos', 1, x.motivo); grFora += 1; }
+      }
+    }
+
+    /* mescladas, e o que a aba tem que não vem */
+    const mesc = [];
+    for (const m of resto.matchAll(/<mergeCell ref="([^"]+)"/g)) {
+      const [a1, b1] = m[1].split(':');
+      const p1 = lerChave(a1), p2 = lerChave(b1 || a1);
+      if (!p1 || !p2 || (p1.l === p2.l && p1.c === p2.c)) continue;
+      if (p1.l > lMax + limites.folga) continue;
+      mesc.push(m[1].toUpperCase());
+    }
+    if (mesc.length) aba.mesc = mesc;
+    /* v0.5.1: validação de dados (listas suspensas), formatação condicional e comentários */
+    if (resto.indexOf('dataValidation') >= 0) {
+      const v = lerValidacoes(resto, conv, F.nome);
+      if (v.val.length) { aba.val = v.val; rel.extras.validacoes += v.val.length; rel.extras.listas += v.val.filter((x) => x.t === 'list').length; }
+      if (v.ignoradas) juntarFora('Validação de dados de tipo desconhecido', v.ignoradas);
+    }
+    if (resto.indexOf('onditionalFormatting') >= 0) {
+      const cf = lerCondicionais(resto, est.dxfs || [], conv, F.nome, est.corFn);
+      if (cf.regras.length) { aba.cf = cf.regras; const nb = cf.regras.filter((r) => r.t === 'dataBar').length; rel.extras.condicionais += cf.regras.length - nb; if (nb) rel.extras.barras = (rel.extras.barras || 0) + nb; }
+      if (cf.fora.escalas) juntarFora('Escalas de cor (formatação condicional)', cf.fora.escalas, 'chegam numa versão próxima; as outras regras da aba vieram');
+      if (cf.fora.barras) juntarFora('Barras de dados (formatação condicional)', cf.fora.barras, 'chegam numa versão próxima');
+      if (cf.fora.icones) juntarFora('Conjuntos de ícones (formatação condicional)', cf.fora.icones, 'chegam numa versão próxima');
+      if (cf.fora.periodo) juntarFora('Regras de datas (hoje, ontem, esta semana...)', cf.fora.periodo);
+      if (cf.fora.outras) juntarFora('Regras de formatação condicional que o Vértice Docs não entende', cf.fora.outras);
+    }
+    if (aba.val || aba.cf) rel.extras.abasComRegras.push(F.nome);
+    if (F.rels) {
+      const co = await lerComentarios(zip, F.rels, pessoas);
+      if (Object.keys(co.com).length) { aba.com = co.com; rel.extras.notas += co.notas; rel.extras.conversas += co.conversas; rel.extras.respostas += co.respostas; }
+    }
+    /* v0.6.3: links das células (internet e e-mail já; os de dentro da planilha são ligados no fim, quando todas as abas existem) */
+    { let perdidos = 0;
+      for (const h of tags(resto, 'hyperlink')) {
+        const ref = String(h.a.ref || '').toUpperCase().split(':');
+        const p1 = lerChave(ref[0]), p2 = lerChave(ref[1] || ref[0]);
+        if (!p1 || !p2) { perdidos++; continue; }
+        const dica = h.a.tooltip ? String(h.a.tooltip).slice(0, 255) : undefined;
+        let lk = null;
+        if (h.a['r:id']) {
+          const rr = F.rels && F.rels.get(h.a['r:id']);
+          const u = rr && rr.externo ? urlSegura(rr.url) : '';
+          if (u) lk = { t: 'u', u, ...(dica ? { d: dica } : {}) };
+        } else if (h.a.location) {
+          const m = /^(?:'((?:[^']|'')+)'|([^'!]+))!\$?([A-Za-z]+)\$?(\d+)(?::.*)?$/.exec(String(h.a.location).trim());
+          if (m) linksLocais.push({ aba, p1, p2, nomeAba: (m[1] ? m[1].replace(/''/g, "'") : m[2]).toLowerCase(), r: `${m[3].toUpperCase()}${m[4]}`, d: dica });
+          else perdidos++;
+          continue;
+        }
+        if (!lk) { perdidos++; continue; }
+        for (let l = p1.l; l <= Math.min(p2.l, p1.l + 200); l++) for (let cc = p1.c; cc <= Math.min(p2.c, p1.c + 50); cc++) {
+          const x = aba.cel[chave(l, cc)]; if (x) x.lk = { ...lk };
+        }
+        rel.extras.links = (rel.extras.links || 0) + 1;
+      }
+      if (perdidos) juntarFora('Links nas células', perdidos, 'link para arquivo, nome definido ou endereço que o Vértice Docs não abre; o texto vem');
+    }
+    /* v0.6.3: filtro automático (setas + critérios de lista) e aba protegida */
+    const filtros = [...(F.filtros || [])];
+    const af = /<autoFilter\b([^>]*?)(?:\/>|>([\s\S]*?)<\/autoFilter>)/.exec(resto);
+    if (af) {
+      const at = atributos(af[1]);
+      const [a1, b1] = String(at.ref || '').split(':');
+      const p1 = lerChave(a1), p2 = lerChave(b1 || a1);
+      const colunas = tags(af[2] || '', 'filterColumn');
+      if (p1 && p2 && p2.l > p1.l) {
+        const cr = {}, cx = {};
+        let naoEntram = 0;
+        for (const fc of colunas) {
+          const lista = tag(fc.dentro, 'filters');
+          const col = p1.c + (+fc.a.colId || 0);
+          if (lista && !/<dateGroupItem\b/.test(lista.dentro) && col >= p1.c && col <= p2.c) {
+            const v = tags(lista.dentro, 'filter').map((x) => x.a.val ?? '');
+            if (lista.a.blank === '1' || lista.a.blank === 'true') v.push('');
+            cr[col] = { v };
+          } else if (col >= p1.c && col <= p2.c) { const k = criterioDoXlsx(fc.dentro); /* v0.6.24.3: texto, número, data, 10 primeiros e média valem no app; o resto fica como veio */ if (k) cr[col] = k; else { naoEntram++; cx[col] = fc.bruto.replace(/\scolId="[^"]*"/, ''); } }
+        }
+        /* v0.6.11 (D-24): critério que o app não entende (data, cor, "maiores que") fica guardado em cx e volta ao salvar */
+        aba.fil = { fx: `${chave(p1.l, p1.c)}:${chave(p2.l, p2.c)}`, cr, ...(Object.keys(cx).length ? { cx } : {}) };
+        if (naoEntram) juntarFora('Filtros', naoEntram, 'critérios de data, cor ou "maiores que" ficam como vieram (as linhas continuam escondidas e o critério volta ao salvar); para mudar, use o filtro aqui');
+      } else if (colunas.length) juntarFora('Filtros', 1, 'as linhas escondidas pelo filtro continuam escondidas; os botões de filtro não vêm');
+      if (colunas.length && p1 && p2) filtros.push({ l1: p1.l + 1, l2: p2.l });
+    }
+    if (filtros.length && aba.ocL) {
+      for (const k of Object.keys(aba.ocL)) { const l = +k; if (filtros.some((x) => l >= x.l1 && l <= x.l2)) (aba.ocF || (aba.ocF = {}))[l] = 1; }
+    }
+    const protTag = /<sheetProtection\b([^>]*?)\/?>/.exec(resto);
+    if (protTag) {
+      const at = atributos(protTag[1]);
+      if (at.sheet === '1' || at.sheet === 'true') {
+        /* v0.6.4: guarda a senha e também as permissões finas (formatar células, inserir linhas...) para voltarem iguais */
+        const guardados = {};
+        for (const [k, v] of Object.entries(at)) if (k !== 'sheet' && /^[A-Za-z]+$/.test(k) && v !== '') guardados[k] = String(v);
+        aba.prot = { a: guardados }; /* v0.6.14 (D-37): mesmo sem atributos, guarda que veio do Excel (assim não ganha objects/scenarios ao salvar) */
+        rel.extras.protegidas = (rel.extras.protegidas || 0) + 1;
+        (rel.extras.nomesProtegidas || (rel.extras.nomesProtegidas = [])).push(F.nome);
+      }
+    }
+
+    if (nCel < 0) nCel = 0;
+    ra.celulas = nCel; ra.formulas = nForm;
+    rel.celulas += nCel; rel.formulas += nForm;
+    rel.abas.push(ra);
+    conteudo.ordem.push(id);
+    conteudo.abas[id] = aba;
+    for (const nm of Object.values(nomesDef)) if (nm.locIdx === F.idx) { nm.loc = id; delete nm.locIdx; }
+  }
+  for (const nm of Object.values(nomesDef)) { delete nm.locIdx; delete nm.local; }
+
+  if (abasZero.length) rel.avisos.push(`${abasZero.length === 1 ? `Na aba "${abasZero[0]}"` : `Nas abas ${abasZero.map((n) => `"${n}"`).join(', ')}`}, as linhas que o arquivo não lista ficavam escondidas no Excel; aqui continuam escondidas (Layout › Reexibir mostra de novo).`);
+  if (tabelas.size) rel.avisos.push(`${tabelas.size === 1 ? 'A tabela' : `As ${tabelas.size} tabelas`} do Excel ${tabelas.size === 1 ? 'vem e volta' : 'vêm e voltam'} ao salvar como Excel; aqui, nas fórmulas, o nome da coluna virou o endereço${exemploTabela ? ` (por exemplo, ${exemploTabela})` : ''}. A conta é a mesma.`);
+
+  /* tabelas: guarda onde ficavam (para INDIRECT("Tabela[Coluna]") nas listas suspensas) */
+  if (tabelas.size) {
+    const porNome = new Map(conteudo.ordem.map((id) => [conteudo.abas[id].nome.toLowerCase(), id]));
+    const tb = {};
+    for (const [k, t] of tabelas) { const id = porNome.get(String(t.aba).toLowerCase()); if (id) tb[k] = { nome: t.nome, aba: id, l1: t.l1, c1: t.c1, l2: t.l2, c2: t.c2, cols: t.cols, cab: t.cab, tot: t.tot, ...(t.est ? { est: t.est } : {}), ...(t.fcx ? { fcx: t.fcx } : {}), ...(t.fxc ? { fxc: t.fxc } : {}), ...(t.ord ? { ord: t.ord, ordRef: t.ordRef } : {}), ...(t.fil ? { fil: t.fil } : {}), ...(t.sf ? { sf: 1 } : {}) }; } /* v0.6.39 (T0); v0.6.40 (T2): fil e sf */
+    if (Object.keys(tb).length) { conteudo.tabelas = tb; await lerSegmentacoes(zip, folhas, relsWb, conteudo, lerRels, relsDe, fora); } /* v0.6.41 (S1): segmentações de tabela */
+  }
+
+  /* abas com nome repetido ou vazio (não deveria acontecer) */
+  const vistos = new Set();
+  conteudo.ordem.forEach((id, i) => {
+    const a = conteudo.abas[id];
+    /* v0.6.11 (D-22): o nome da aba fica EXATO como veio (o Excel aceita espaço no começo e no fim, e as fórmulas usam o nome exato) */
+    let n = String(a.nome || ''); n = (n.trim() ? n : NOME_ABA_PADRAO(i + 1)).slice(0, 31);
+    while (vistos.has(n.toLowerCase())) n = n.slice(0, 28) + ' ' + (i + 1);
+    vistos.add(n.toLowerCase());
+    a.nome = n;
+  });
+  if (conteudo.ordem.every((id) => conteudo.abas[id].oculta)) delete conteudo.abas[conteudo.ordem[0]].oculta;
+  if (nMidias > imgLidas && !fora.has('Imagens')) juntarFora('Imagens', nMidias - imgLidas, 'figuras dentro de formas, de células ou de fundo não vêm');
+  if (nPartesGrafico > graficosLidos.length + grFora) juntarFora('Gráficos', nPartesGrafico - graficosLidos.length - grFora, 'não estão presos a nenhuma aba');
+  /* links de dentro da planilha: o nome da aba vira o id */
+  {
+    const porNomeL = new Map(conteudo.ordem.map((id) => [conteudo.abas[id].nome.toLowerCase(), id]));
+    let sem = 0;
+    for (const L of linksLocais) {
+      const alvo = porNomeL.get(L.nomeAba);
+      if (!alvo) { sem++; continue; }
+      for (let l = L.p1.l; l <= Math.min(L.p2.l, L.p1.l + 200); l++) for (let cc = L.p1.c; cc <= Math.min(L.p2.c, L.p1.c + 50); cc++) {
+        const x = L.aba.cel[chave(l, cc)]; if (x) x.lk = { t: 'a', a: alvo, r: L.r, ...(L.d ? { d: L.d } : {}) };
+      }
+      rel.extras.links = (rel.extras.links || 0) + 1;
+    }
+    if (sem) juntarFora('Links nas células', sem, 'levam a uma aba que não veio; o texto vem');
+  }
+  /* gráficos: o nome da aba dos dados vira o id da aba */
+  {
+    const porNome = new Map(conteudo.ordem.map((id) => [conteudo.abas[id].nome.toLowerCase(), id]));
+    const avisosG = new Set();
+    let soGuardado = 0;
+    for (const { aba, o } of graficosLidos) {
+      const { nomeAbaDados, avisos, ...resto } = o; void nomeAbaDados;
+      for (const a of avisos || []) avisosG.add(a);
+      if (o.g.t === 'cx') {
+        /* v0.6.18 (D-44): gráfico novo do Excel: as fórmulas passam a apontar para o id da aba */
+        const g = { ...o.g, cx: { ...o.g.cx } };
+        soGuardado += ligarCx(g, (nome) => porNome.get(String(nome).toLowerCase()) || null, aba.id);
+        (aba.objs || (aba.objs = [])).push({ id: idObjeto(), ...resto, g }); rel.extras.graficosCx = (rel.extras.graficosCx || 0) + 1;
+        continue;
+      }
+      if (o.g.t === 'excel') {
+        /* v0.6.1: gráfico do Excel com a formatação toda; as referências passam a apontar para o id da aba */
+        const g = { ...o.g };
+        soGuardado += ligarRefsAoLivro(g, (nome) => porNome.get(String(nome).toLowerCase()) || null, aba.id);
+        (aba.objs || (aba.objs = [])).push({ id: idObjeto(), ...resto, g });
+        continue;
+      }
+      const idAba = o.g.dados.aba ? (conteudo.abas[o.g.dados.aba] ? o.g.dados.aba : porNome.get(String(o.g.dados.aba).toLowerCase())) : null;
+      if (o.g.dados.aba && !idAba) { juntarFora('Gráficos', 1, 'os dados estão numa aba que não veio'); rel.extras.graficos--; continue; }
+      const obj = { id: idObjeto(), ...resto, g: { ...o.g, dados: { ...o.g.dados, aba: idAba && idAba !== aba.id ? idAba : '' } } };
+      (aba.objs || (aba.objs = [])).push(obj);
+    }
+    if (soGuardado) rel.avisos.push(`Em ${soGuardado === 1 ? 'uma série de gráfico' : `${soGuardado} séries de gráfico`}, os dados vêm de outro arquivo, de várias áreas ou de uma aba que não veio: o gráfico mostra os números que o Excel guardou e não acompanha mais as células.`);
+    for (const a of avisosG) rel.avisos.push(`Gráficos: ${a}.`);
+    /* v0.6.5: formas: o nome da aba dos links vira o id; e tudo do desenho na ordem do Excel (o de cima por último) */
+    let linksSemAba = 0;
+    for (const f of formasLidas) {
+      ligarFormaAoLivro(f, (nome) => porNome.get(String(nome).toLowerCase()) || null);
+      linksSemAba += f.partes.filter((p) => p.link && p.link.abaNome).length;
+    }
+    if (linksSemAba) juntarFora('Links de formas', linksSemAba, 'levam a uma aba que não veio');
+    for (const id of conteudo.ordem) {
+      const A = conteudo.abas[id];
+      if (!A.objs || !A.objs.some((o) => o.ordem != null)) continue;
+      A.objs = A.objs.map((o, i) => ({ o, i })).sort((a, b) => (a.o.ordem ?? 1e9) - (b.o.ordem ?? 1e9) || a.i - b.i).map(({ o }) => { const { ordem, ...resto } = o; void ordem; return resto; });
+    }
+  }
+  conteudo.estilos = estilos;
+  if (est.fonteBase && est.fonteBase.nome) conteudo.fonteBase = est.fonteBase.nome;
+  if (est.fonteBase && est.fonteBase.tam && est.fonteBase.tam !== 11) conteudo.tamBase = est.fonteBase.tam; /* v0.6.14 (D-48) */
+  /* v0.6.5: o tema do arquivo volta igual ao salvar (cores e estilos das formas e dos gráficos do Excel dependem dele) */
+  if (xmlTema && xmlTema.length < 120000 && /<(\w+:)?theme\b/.test(xmlTema)) conteudo.temaXml = xmlTema.replace(/^\s*<\?xml[^>]*\?>\s*/, '');
+  conteudo.calcExcel = true; // até a primeira mudança, as fórmulas começam com o último valor do Excel (abre rápido)
+  /* v0.6.7: abas que eram Painel do EFCdocs voltam como Painel (as formas, gráficos e células feitos para o Excel saem) */
+  if (paineisLidos.length) {
+    const porNomeP = new Map(conteudo.ordem.map((id) => [conteudo.abas[id].nome.toLowerCase(), id]));
+    let n = 0;
+    for (const { aba, resto } of paineisLidos) {
+      const pn = painelDoXml(resto, (nome) => porNomeP.get(String(nome).toLowerCase()) || null);
+      if (!pn) continue;
+      aba.painel = pn; aba.cel = {}; delete aba.objs; n++;
+    }
+    if (n) rel.avisos.push(n === 1 ? 'A aba de Painel feita no Vértice Docs voltou como Painel.' : `${n} abas de Painel feitas no Vértice Docs voltaram como Painel.`);
+  }
+  rel.fora = [...fora.values()];
+  conteudo.importado = rel;
+  aoProgresso({ fase: 'pronto' });
+  void letraCol;
+  return { conteudo, relatorio: rel };
+}

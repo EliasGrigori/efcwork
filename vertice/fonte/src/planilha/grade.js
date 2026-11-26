@@ -1,0 +1,774 @@
+/* EFCdocs — Planilha: desenho da grade num canvas (só o que aparece na tela, por isso rola leve
+   mesmo com muitas linhas) e "onde caiu o toque". */
+import { letraCol, MAX_LIN, MAX_COL, chave, lerChave } from './ref.js';
+import { formatar } from './formato.js';
+import { estiloDe, mescladas, mesclaEm, celOuHerdada } from './modelo.js';
+import { faixasDosFiltros } from './filtrosTabela.js'; /* v0.6.40 (T2): o da aba e os das tabelas */
+import { ehErro } from './valores.js';
+import { estiloCondicional, estiloComRegras, barraDeDados, temBarras, corClaraDaBarra } from './regras.js';
+import { estiloDeTabelaEm, juntarComTabela, tabelasVivasDaAba } from './tabelaEstilo.js';
+import { margemDe, contornoEm, desenharContorno, passoDoAparelho } from './contorno.js'; /* v0.6.37 */
+
+/** Estilo da célula com as regras de cor (formatação condicional) por cima. */
+export function estiloVisto(c, cel, motor, abaId, l, col) {
+  const aba = c.abas[abaId];
+  let base = estiloDe(c, cel || (aba && (aba.estL || aba.estC || aba.estCFim) ? celOuHerdada(aba, l, col) : cel));
+  /* v0.6.19 (F296): o estilo da tabela do Excel fica por baixo da formatação da célula */
+  const tb = c.tabelas ? estiloDeTabelaEm(c, abaId, l, col) : null;
+  if (tb) base = juntarComTabela(tb, base);
+  if (!aba || !aba.cf || !aba.cf.length) return base;
+  return estiloComRegras(base, estiloCondicional(motor, c, abaId, l, col));
+}
+
+export const CAB_W = 30, CAB_H = 24; // cabeçalhos (a 100%); v0.6.9.1: a coluna dos números era de 46 px e roubava espaço
+const PAD = 4;
+
+/** Geometria da tela: posições das linhas/colunas considerando zoom, rolagem e painéis congelados. */
+/** v0.6.27: rolagem (px na tela) que deixa a linha ou coluna inteira logo depois da parte congelada n0 (a mais perto). */
+export function divisaMaisPerto(eixo, n0, rolado, z) { const v = rolado / z, base = eixo.pos(n0), k = eixo.em(base + v + 0.5), ini = eixo.pos(k) - base, fim = eixo.pos(k + 1) - base; return (v - ini < fim - v ? ini : fim) * z; }
+
+export function geometria({ linhas, colunas, z, sx, sy, cong, W, H, contorno = null }) {
+  const cl = cong ? cong.l : 0, cc = cong ? cong.c : 0;
+  /* a coluna dos números das linhas alarga quando a linha passa de 9999 */
+  const ultimaVisivel = Math.min(MAX_LIN, linhas.em(linhas.pos(cl) + sy + H / z) + 2);
+  /* v0.6.37: com grupos (Agrupar), a margem da barra fica à esquerda dos números e em cima das letras */
+  const zz = Math.max(0.8, z), { mL, mC, passo } = margemDe(contorno, zz, passoDoAparelho());
+  const hw = mL + Math.round(Math.max(CAB_W, 10 + 7 * String(ultimaVisivel).length) * zz), hh = mC + Math.round(CAB_H * zz);
+  const fy = linhas.pos(cl) * z, fx = colunas.pos(cc) * z;
+  /* v0.6.27 (Elias, 18/11: "parece que pula de fileira em fileira e coluna em coluna"): a rolagem anda pixel a pixel também com
+     linhas e colunas congeladas. Desde a v0.6.8 ela andava de linha em linha para a linha não aparecer cortada por cima das
+     congeladas; desde a v0.6.9 a parte congelada tem desenho próprio por cima (e cada parte é recortada), então a linha que
+     rola passa por baixo dela. Quando a rolagem para, Planilha.jsx desliza até a linha inteira (v0.6.4). */
+  const baseY = linhas.pos(cl) + sy, baseX = colunas.pos(cc) + sx;
+  const yDe = (l) => (l < cl ? hh + linhas.pos(l) * z : hh + fy + (linhas.pos(l) - baseY) * z);
+  const xDe = (c) => (c < cc ? hw + colunas.pos(c) * z : hw + fx + (colunas.pos(c) - baseX) * z);
+  /* v0.6.8: a borda de baixo (ou da direita) de uma linha/coluna. yDe(l + 1) não serve na última linha congelada:
+     a linha seguinte já é da parte que rola e, com a planilha rolada, ficava lá em cima (a seleção do cabeçalho
+     congelado aparecia na célula de cima) */
+  const yFim = (l) => yDe(l) + linhas.tam(l) * z;
+  const xFim = (c) => xDe(c) + colunas.tam(c) * z;
+  const linEm = (y) => {
+    if (y < hh) return -1;
+    if (y < hh + fy) return linhas.em((y - hh) / z);
+    return Math.min(MAX_LIN - 1, linhas.em(baseY + (y - hh - fy) / z));
+  };
+  const colEm = (x) => {
+    if (x < hw) return -1;
+    if (x < hw + fx) return colunas.em((x - hw) / z);
+    return Math.min(MAX_COL - 1, colunas.em(baseX + (x - hw - fx) / z));
+  };
+  const l0 = linhas.em(baseY), c0 = colunas.em(baseX);
+  let l1 = linEm(H - 1); if (l1 < 0) l1 = l0;
+  let c1 = colEm(W - 1); if (c1 < 0) c1 = c0;
+  return { hw, hh, fy, fx, cl, cc, yDe, xDe, yFim, xFim, linEm, colEm, l0, l1: Math.min(MAX_LIN - 1, l1 + 1), c0, c1: Math.min(MAX_COL - 1, c1 + 1), z, W, H, linhas, colunas, mL, mC, zz, contorno, passo };
+}
+
+/* ---------- cores ---------- */
+function rgb(cor) {
+  const c = String(cor).trim();
+  const m = /^rgba?\(\s*(\d+)[\s,]+(\d+)[\s,]+(\d+)/i.exec(c);
+  if (m) return [+m[1], +m[2], +m[3]];
+  const h = c.replace('#', '');
+  const n = h.length === 3 ? h.split('').map((x) => x + x).join('') : h.slice(0, 6);
+  const r = [parseInt(n.slice(0, 2), 16), parseInt(n.slice(2, 4), 16), parseInt(n.slice(4, 6), 16)];
+  if (r.some((x) => Number.isNaN(x))) throw new Error('cor');
+  return r;
+}
+const hex = (a) => '#' + a.map((x) => Math.max(0, Math.min(255, Math.round(x))).toString(16).padStart(2, '0')).join('');
+const luz = ([r, g, b]) => {
+  const f = (x) => { x /= 255; return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4; };
+  return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+};
+const contraste = (a, b) => { const x = luz(a), y = luz(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
+function paraHsl([r, g, b]) {
+  r /= 255; g /= 255; b /= 255;
+  const mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2;
+  if (mx === mn) return [0, 0, l];
+  const d = mx - mn, s = l > 0.5 ? d / (2 - mx - mn) : d / (mx + mn);
+  const h = mx === r ? (g - b) / d + (g < b ? 6 : 0) : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
+  return [h / 6, s, l];
+}
+function deHsl([h, s, l]) {
+  if (!s) return [l * 255, l * 255, l * 255];
+  const q = l < 0.5 ? l * (1 + s) : l + s - l * s, p = 2 * l - q;
+  const k = (t) => { if (t < 0) t += 1; if (t > 1) t -= 1; return t < 1 / 6 ? p + (q - p) * 6 * t : t < 1 / 2 ? q : t < 2 / 3 ? p + (q - p) * (2 / 3 - t) * 6 : p; };
+  return [k(h + 1 / 3) * 255, k(h) * 255, k(h - 1 / 3) * 255];
+}
+/** Preto, cinza ou branco (sem matiz). */
+const neutra = (a) => Math.max(...a) - Math.min(...a) < 28;
+
+/**
+ * Cor de letra posta de propósito que ficou ilegível no fundo (só na tela: o arquivo não muda).
+ * - preto/cinza/branco sem fundo pintado: vira a cor de texto do tema (preto no tema escuro some, vira o texto claro);
+ * - cor com matiz (amarelo, vermelho...): mantém o matiz e só escurece ou clareia até ler bem (amarelo no claro vira ocre).
+ * fundo: cor do fundo da célula. textoTema: a cor normal do texto (quando o fundo é o do tema).
+ */
+/**
+ * v0.6.9 (Elias): a grade do app vinha da borda do tema e ficava mais fraca que a do Excel, ainda mais na
+ * tela em 125%: as divisas das células quase sumiam nas áreas sem conteúdo. Aqui a cor é empurrada para
+ * longe do fundo até dar o contraste alvo — discreta, mas sempre visível, em qualquer tema.
+ */
+export function corDaGrade(cor, fundo, alvo = 1.6) {
+  try {
+    const a = rgb(cor), b = rgb(fundo);
+    if (contraste(a, b) >= alvo) return cor;
+    const escuro = luz(b) < 0.4;
+    const [h, s, l0] = paraHsl(a);
+    for (let i = 1; i <= 24; i++) {
+      const l = escuro ? Math.min(1, l0 + (1 - l0) * (i / 24)) : Math.max(0, l0 * (1 - i / 24));
+      const m = deHsl([h, s, l]);
+      if (contraste(m, b) >= alvo) return hex(m);
+    }
+    return escuro ? '#c8d0d8' : '#9aa3ad';
+  } catch { return cor; }
+}
+
+export function corLegivel(cor, fundo, textoTema) {
+  try {
+    const a = rgb(cor), b = rgb(fundo);
+    /* já se lê (contraste 3, como o Excel aceita cinza no branco): fica como está; se precisar ajustar, vai até 4,5 */
+    if (contraste(a, b) >= 3) return cor;
+    if (neutra(a)) {
+      if (textoTema) { try { if (contraste(rgb(textoTema), b) >= 4.5) return textoTema; } catch { /* segue */ } }
+      return luz(b) < 0.4 ? '#f2f2f2' : '#1f1f1f';
+    }
+    const escuro = luz(b) < 0.4;
+    let [h, s0, l0] = paraHsl(a);
+    /* amarelo no fundo claro: escurecer puro dá verde-oliva; puxa um pouco para o ocre (dourado) */
+    if (!escuro && h > 45 / 360 && h < 70 / 360) h = 45 / 360;
+    for (let i = 1; i <= 20; i++) {
+      const l = escuro ? l0 + (1 - l0) * (i / 20) : l0 * (1 - i / 20);
+      const m = deHsl([h, Math.min(1, s0 + (escuro ? 0 : 0.1)), l]);
+      if (contraste(m, b) >= 4.5) return hex(m);
+    }
+    return escuro ? '#ffffff' : '#000000';
+  } catch { return cor; }
+}
+
+/* fonte padrão (Excel: Calibri 11; aqui a fonte do app, do mesmo tamanho visual) */
+export const FONTE_PADRAO = 11;
+const pxDaFonte = (pt) => pt * (4 / 3) * 0.9;
+export function fonteCanvas(e, z, familia) {
+  const tam = pxDaFonte(e.tam || FONTE_PADRAO) * z;
+  return `${e.i ? 'italic ' : ''}${e.b ? '700 ' : '400 '}${tam.toFixed(1)}px ${e.fonte ? `"${e.fonte}", ` : ''}${familia}`;
+}
+
+/** Texto e alinhamento que a célula mostra. */
+export function textoCelula(motor, c, abaId, l, col) {
+  const cel = c.abas[abaId].cel[chave(l, col)];
+  const v = motor.valor(abaId, l, col);
+  const e = estiloVisto(c, cel, motor, abaId, l, col);
+  const r = formatar(v, e.nf);
+  let al = e.al;
+  if (!al) al = typeof v === 'number' ? 'd' : typeof v === 'boolean' || ehErro(v) ? 'c' : 'e';
+  return { ...r, v, e, al, cel };
+}
+
+/**
+ * Desenha tudo. p = { cv, ctx, c, motor, abaId, G, cores, sel, refsFormula, copia, spill, familia, grade, celular, mesclas }
+ */
+export function desenhar(p) {
+  const { ctx, c, motor, abaId, G, cores, sel, familia } = p;
+  const aba = c.abas[abaId];
+  const { W, H, hw, hh, z } = G;
+  /* v0.6.9 (Elias, tela de toque): parte 'congelado' desenha só o que fica parado — cabeçalhos e painéis
+     congelados — num canvas por cima e fora da área que rola. Com o dedo, o navegador rola por conta própria
+     e o canvas de baixo chega a deslizar um quadro: sem isto, as linhas de dentro apareciam por cima do
+     cabeçalho congelado e a emenda ficava com meia linha cortada. */
+  const soParado = p.parte === 'congelado';
+  ctx.save();
+  if (soParado) ctx.clearRect(0, 0, W, H);
+  else { ctx.fillStyle = cores.fundo; ctx.fillRect(0, 0, W, H); }
+
+  const mesc = p.mesclas || mescladas(aba);
+
+  /* quatro quadrantes (painéis congelados): [linhas, colunas, recorte] */
+  const quad = [];
+  const fimY = H, fimX = W;
+  const colsLivres = [Math.max(G.cc, G.c0), G.c1], linsLivres = [Math.max(G.cl, G.l0), G.l1];
+  const colsCong = G.cc ? [0, G.cc - 1] : null, linsCong = G.cl ? [0, G.cl - 1] : null;
+  /* reg: as linhas/colunas que cada quadrante mostra (para a mesclada que atravessa a linha do congelamento) */
+  const rLiv = [G.cl, Infinity], rCong = [0, G.cl - 1], cLiv = [G.cc, Infinity], cCong = [0, G.cc - 1];
+  quad.push({ L: linsLivres, C: colsLivres, x: hw + G.fx, y: hh + G.fy, w: fimX - hw - G.fx, h: fimY - hh - G.fy, reg: { L: rLiv, C: cLiv }, livre: true });
+  if (linsCong) quad.push({ L: linsCong, C: colsLivres, x: hw + G.fx, y: hh, w: fimX - hw - G.fx, h: G.fy, reg: { L: rCong, C: cLiv } });
+  if (colsCong) quad.push({ L: linsLivres, C: colsCong, x: hw, y: hh + G.fy, w: G.fx, h: fimY - hh - G.fy, reg: { L: rLiv, C: cCong } });
+  if (linsCong && colsCong) quad.push({ L: linsCong, C: colsCong, x: hw, y: hh, w: G.fx, h: G.fy, reg: { L: rCong, C: cCong } });
+
+  for (const q of quad) {
+    if (q.w <= 0 || q.h <= 0) continue;
+    if (soParado && q.livre) continue;
+    ctx.save();
+    ctx.beginPath(); ctx.rect(q.x, q.y, q.w, q.h); ctx.clip();
+    if (soParado) { ctx.fillStyle = cores.fundo; ctx.fillRect(q.x, q.y, q.w, q.h); }
+    desenharCelulas(p, q.L, q.C, mesc, q.reg);
+    if (p.circulos && p.circulos.length) desenharCirculos(p, q);
+    desenharSelecao(p, q);
+    ctx.restore();
+  }
+
+  /* linhas dos painéis congelados */
+  /* v0.6.15 (C02): 1 pixel da tela, como no Excel (era 2) */
+  const um = 1 / (p.dpr || 1);
+  if (G.cl) { ctx.fillStyle = cores.congelado; ctx.fillRect(0, Math.round((hh + G.fy - um) / um) * um, W, um); }
+  if (G.cc) { ctx.fillStyle = cores.congelado; ctx.fillRect(Math.round((hw + G.fx - um) / um) * um, 0, um, H); }
+
+  desenharCabecalhos(p, mesc);
+  ctx.restore();
+}
+
+/* v0.6.25 (I02): círculo vermelho em volta da célula com valor fora da validação, como o "Circular dados inválidos" do Excel */
+function desenharCirculos(p, q) {
+  const { ctx, G } = p;
+  const [la, lb] = q.L, [ca, cb] = q.C;
+  ctx.save(); ctx.strokeStyle = '#d9262b'; ctx.lineWidth = Math.max(1.5, 1.6 * G.z);
+  for (const { l, c } of p.circulos) {
+    if (l < la || l > lb || c < ca || c > cb) continue;
+    const x = G.xDe(c), y = G.yDe(l), w = G.xFim(c) - x, h = G.yFim(l) - y;
+    if (w <= 0 || h <= 0) continue;
+    ctx.beginPath(); ctx.ellipse(x + w / 2, y + h / 2, w / 2 + 3, h / 2 + 2, 0, 0, Math.PI * 2); ctx.stroke();
+  }
+  ctx.restore();
+}
+
+/** Retângulo da mesclada só com a parte que fica neste quadrante (v0.6.1: antes a mesclada que atravessava
+    a linha do congelamento era desenhada com altura negativa ao rolar e pintava por cima das linhas de cima). */
+function retMescla(G, m, reg) {
+  const l1 = reg ? Math.max(m.l1, reg.L[0]) : m.l1, l2 = reg ? Math.min(m.l2, reg.L[1]) : m.l2;
+  const c1 = reg ? Math.max(m.c1, reg.C[0]) : m.c1, c2 = reg ? Math.min(m.c2, reg.C[1]) : m.c2;
+  if (l2 < l1 || c2 < c1) return null;
+  const x = G.xDe(c1), y = G.yDe(l1);
+  return { x, y, w: G.xDe(c2) + G.colunas.tam(c2) * G.z - x, h: G.yDe(l2) + G.linhas.tam(l2) * G.z - y };
+}
+
+function desenharCelulas(p, [la, lb], [ca, cb], mesc, reg = null) {
+  const ffil = p.c.abas[p.abaId] && !p.editando ? faixasDosFiltros(p.c, p.abaId) : [];
+  const pxFiltro = p.celular ? 28 : 18, reservaFiltro = ffil.length ? ffil : null;
+  const { ctx, c, motor, abaId, G, cores, familia } = p;
+  const aba = c.abas[abaId];
+  const { z } = G;
+  const vistas = new Set();
+  /* v0.6.8 (Elias): tudo no pixel da tela. Com a tela em 125% ou 150% (comum no Windows), a linha de 1 px caía entre
+     dois pixels e saía borrada e cinza (o preto da borda virava cinza, a grade e as cores ficavam sem força) */
+  const dpr = p.dpr || 1;
+  const px = (v) => Math.round(v * dpr) / dpr; // borda de um retângulo
+  const meio = (v, n) => (Math.round(v * dpr) + (n % 2 ? 0.5 : 0)) / dpr; // linha de n pixels da tela
+  const preencher = (x, y, w, h) => { const x0 = px(x), y0 = px(y); ctx.fillRect(x0, y0, px(x + w) - x0, px(y + h) - y0); };
+  /* fundos */
+  for (let l = la; l <= lb; l++) {
+    const h = G.linhas.tam(l) * z;
+    if (!h) continue;
+    const y = G.yDe(l);
+    for (let col = ca; col <= cb; col++) {
+      const w = G.colunas.tam(col) * z;
+      if (!w) continue;
+      const cel = aba.cel[chave(l, col)];
+      const e = estiloVisto(c, cel, motor, abaId, l, col);
+      if (e.fundo) { ctx.fillStyle = e.fundo; preencher(G.xDe(col), y, w, h); }
+    }
+  }
+  /* mescladas: fundo e área */
+  for (const m of mesc) {
+    if (m.l2 < la || m.l1 > lb || m.c2 < ca || m.c1 > cb) continue;
+    const cel = aba.cel[chave(m.l1, m.c1)];
+    const e = estiloVisto(c, cel, motor, abaId, m.l1, m.c1);
+    const R = retMescla(G, m, reg);
+    if (!R) continue;
+    ctx.fillStyle = e.fundo || cores.fundo;
+    preencher(R.x, R.y, R.w, R.h);
+  }
+  /* linhas de grade */
+  if (p.grade) {
+    ctx.strokeStyle = cores.grade;
+    ctx.lineWidth = 1 / dpr;
+    ctx.beginPath();
+    /* v0.6.9.1 (Elias): a linha da ponta (depois da última linha/coluna do quadrante) sai da borda da última célula.
+       Antes usava a posição da próxima, que, no painel congelado, está rolada e deixava uma linha solta por cima. */
+    for (let l = la; l <= lb + 1; l++) {
+      if (!G.linhas.tam(l - 1) && l > 0) continue;
+      const y = meio((l <= lb ? G.yDe(l) : G.yFim(lb)) - 1 / dpr, 1);
+      ctx.moveTo(G.xDe(ca), y); ctx.lineTo(G.xFim(cb), y);
+    }
+    for (let col = ca; col <= cb + 1; col++) {
+      if (!G.colunas.tam(col - 1) && col > 0) continue;
+      const x = meio((col <= cb ? G.xDe(col) : G.xFim(cb)) - 1 / dpr, 1);
+      ctx.moveTo(x, G.yDe(la)); ctx.lineTo(x, G.yFim(lb));
+    }
+    ctx.stroke();
+    /* apaga a grade dentro das mescladas e das células pintadas (como o Excel) */
+    for (const m of mesc) {
+      if (m.l2 < la || m.l1 > lb || m.c2 < ca || m.c1 > cb) continue;
+      const cel = aba.cel[chave(m.l1, m.c1)];
+      const e = estiloVisto(c, cel, motor, abaId, m.l1, m.c1);
+      const R = retMescla(G, m, reg);
+      if (!R) continue;
+      ctx.fillStyle = e.fundo || cores.fundo;
+      { const x0 = px(R.x), y0 = px(R.y); ctx.fillRect(x0, y0, px(R.x + R.w) - x0 - 1 / dpr, px(R.y + R.h) - y0 - 1 / dpr); }
+    }
+  }
+  /* v0.6.18 (D-45): barras de dados (por cima da grade, por baixo do texto) */
+  const comBarras = temBarras(aba);
+  if (comBarras) {
+    for (let l = la; l <= lb; l++) {
+      const h = G.linhas.tam(l) * z;
+      if (!h) continue;
+      for (let col = ca; col <= cb; col++) {
+        const w = G.colunas.tam(col) * z;
+        if (!w) continue;
+        const m = mesc.length ? mesclaEm(mesc, l, col) : null;
+        if (m && (m.l1 !== l || m.c1 !== col)) continue;
+        const bar = barraDeDados(motor, c, abaId, l, col);
+        if (!bar) continue;
+        let x = G.xDe(col), y = G.yDe(l), ww = w, hh2 = h;
+        if (m) { const R = retMescla(G, m, reg); if (!R) continue; x = R.x; y = R.y; ww = R.w; hh2 = R.h; }
+        desenharBarra(ctx, bar, x, y, ww, hh2, z, dpr);
+      }
+    }
+  }
+  /* textos */
+  ctx.textBaseline = 'alphabetic';
+  for (let l = la; l <= lb; l++) {
+    const h = G.linhas.tam(l) * z;
+    if (!h) continue;
+    const y = G.yDe(l);
+    for (let col = ca; col <= cb; col++) {
+      const w0 = G.colunas.tam(col) * z;
+      if (!w0) continue;
+      const m = mesc.length ? mesclaEm(mesc, l, col) : null;
+      if (m && (m.l1 !== l || m.c1 !== col)) {
+        /* parte de mesclada: desenha a partir da primeira célula visível uma vez só */
+        if (vistas.has(m.t) || !(l === Math.max(m.l1, la) && col === Math.max(m.c1, ca))) continue;
+      }
+      if (m) vistas.add(m.t);
+      const cl = m ? m.l1 : l, cc = m ? m.c1 : col;
+      const cel = aba.cel[chave(cl, cc)];
+      let tx;
+      if (!cel && !motor.areaDerramada(abaId, cl, cc)) continue;
+      tx = textoCelula(motor, c, abaId, cl, cc);
+      if (tx.t === '') continue;
+      if (comBarras && typeof tx.v === 'number') { const bar = barraDeDados(motor, c, abaId, cl, cc); if (bar && bar.semValor) continue; }
+      let x = G.xDe(cc), yy = G.yDe(cl), w = w0, hh = h;
+      if (m) { const R = retMescla(G, m, reg); if (!R) continue; x = R.x; yy = R.y; w = R.w; hh = R.h; }
+      /* v0.6.11 (D-15): na linha dos títulos do filtro, o texto não entra no lugar da seta (18 px; 24 no toque) */
+      const rf = reservaFiltro && reservaFiltro.find((f) => cl === f.l1 && cc >= f.c1 && cc <= f.c2);
+      /* v0.6.24.3: e não vaza para a vizinha (vazando, o fundo era apagado a partir da seta e ficava um retângulo branco no título da tabela) */
+      if (rf && !m && w > pxFiltro + 12) { w -= pxFiltro; desenharTexto(p, { ...tx, semVazar: true }, x, yy, w, hh, l, col, aba, mesc); continue; }
+      desenharTexto(p, tx, x, yy, w, hh, l, col, aba, mesc);
+    }
+  }
+  /* bordas */
+  const herda = !!(aba.estL || aba.estC || aba.estCFim);
+  const vivas = tabelasVivasDaAba(c, abaId); // v0.6.19: as linhas do estilo da tabela também são bordas
+  const naTabela = (l, col) => vivas && vivas.some((t) => l >= t.l1 && l <= t.l2 && col >= t.c1 && col <= t.c2);
+  for (let l = la; l <= lb; l++) {
+    if (!G.linhas.tam(l)) continue;
+    for (let col = ca; col <= cb; col++) {
+      const cel = herda ? celOuHerdada(aba, l, col, aba.cel[chave(l, col)]) : aba.cel[chave(l, col)];
+      const tab = naTabela(l, col);
+      if (!tab && (!cel || !cel.s)) continue;
+      const e = tab ? juntarComTabela(estiloDeTabelaEm(c, abaId, l, col), estiloDe(c, cel)) : estiloDe(c, cel);
+      if (!e.bd) continue;
+      const x = G.xDe(col), y = G.yDe(l), w = G.colunas.tam(col) * z, h = G.linhas.tam(l) * z;
+      ctx.strokeStyle = e.bdc || cores.borda;
+      /* largura em pixels da tela: fina = 1 (2 na tela de 200%), média = 2, grossa = 3, como o Excel */
+      const nPx = (k) => Math.max(1, Math.round((e.bd[k] === 3 ? 3 : e.bd[k] === 2 ? 2 : 1) * Math.max(1, Math.floor(dpr))));
+      const lado = (k, horiz, v, a1, a2) => {
+        if (!e.bd[k]) return;
+        const n = nPx(k);
+        ctx.lineWidth = n / dpr;
+        if (e.bdcs) ctx.strokeStyle = e.bdcs[k] || e.bdc || cores.borda; /* v0.6.15 (D-57): cor de cada lado */
+        const q = meio(v - 1 / dpr, n);
+        ctx.beginPath();
+        if (horiz) { ctx.moveTo(px(a1) - (n - 1) / dpr / 2, q); ctx.lineTo(px(a2), q); } else { ctx.moveTo(q, px(a1) - (n - 1) / dpr / 2); ctx.lineTo(q, px(a2)); }
+        ctx.stroke();
+      };
+      /* v0.6.11 (D-11, D-17): dentro da mesclada não há borda. Só vale o lado que fica no contorno de fora
+         (como o Excel: o lado de cima vem das células da primeira linha, o da direita das da última coluna...). */
+      const m = mesc.length ? mesclaEm(mesc, l, col) : null;
+      if (!m || l === m.l1) lado('t', true, y, x, x + w);
+      if (!m || l === m.l2) lado('b', true, y + h, x, x + w);
+      if (!m || col === m.c1) lado('l', false, x, y, y + h);
+      if (!m || col === m.c2) lado('r', false, x + w, y, y + h);
+    }
+  }
+  /* comentários: triângulo vermelho no canto de cima, à direita (como o Excel) */
+  if (aba.com) {
+    for (const k of Object.keys(aba.com)) {
+      const q = lerChave(k);
+      if (!q || q.l < la || q.l > lb || q.c < ca || q.c > cb) continue;
+      if (!G.linhas.tam(q.l) || !G.colunas.tam(q.c)) continue;
+      const m = mesc.length ? mesclaEm(mesc, q.l, q.c) : null;
+      const xd = m ? G.xFim(m.c2) : G.xFim(q.c), yt = G.yDe(q.l);
+      const t = Math.max(5, 6 * z);
+      ctx.fillStyle = '#c00000';
+      ctx.beginPath(); ctx.moveTo(xd, yt); ctx.lineTo(xd - t, yt); ctx.lineTo(xd, yt + t); ctx.closePath(); ctx.fill();
+    }
+  }
+}
+
+/** Uma barra de dados dentro da célula (x, y, w, h em px da tela). */
+function desenharBarra(ctx, bar, x, y, w, h, z, dpr) {
+  const padX = Math.max(1, Math.round(2 * z)), padY = Math.max(1, Math.round(2 * z));
+  const ux = x + padX, uw = Math.max(0, w - 2 * padX - 1 / dpr), uy = y + padY, uh = Math.max(1, h - 2 * padY - 1 / dpr);
+  const sx = (f) => (bar.rtl ? ux + uw * (1 - f) : ux + uw * f);
+  const x1 = Math.min(sx(bar.a), sx(bar.b)), x2 = Math.max(sx(bar.a), sx(bar.b));
+  if (x2 - x1 >= 0.5) {
+    if (bar.lisa) ctx.fillStyle = bar.cor;
+    else {
+      /* o degradê sai do começo da barra (do eixo, quando tem) e clareia na ponta */
+      const deEixo = bar.eixo != null && bar.a < bar.eixo - 1e-9;
+      const g = ctx.createLinearGradient(deEixo !== bar.rtl ? x2 : x1, 0, deEixo !== bar.rtl ? x1 : x2, 0);
+      g.addColorStop(0, bar.cor); g.addColorStop(1, corClaraDaBarra(bar.cor));
+      ctx.fillStyle = g;
+    }
+    ctx.fillRect(x1, uy, x2 - x1, uh);
+    if (bar.borda) { ctx.strokeStyle = bar.borda; ctx.lineWidth = 1 / dpr; ctx.strokeRect(x1 + 0.5 / dpr, uy + 0.5 / dpr, x2 - x1 - 1 / dpr, uh - 1 / dpr); }
+  }
+  if (bar.eixo != null && bar.eixo > 0 && bar.eixo < 1) {
+    const ex = Math.round(sx(bar.eixo) * dpr) / dpr + 0.5 / dpr;
+    ctx.save(); ctx.strokeStyle = bar.corEixo; ctx.lineWidth = 1 / dpr; ctx.setLineDash([2 / dpr, 2 / dpr]);
+    ctx.beginPath(); ctx.moveTo(ex, y); ctx.lineTo(ex, y + h); ctx.stroke(); ctx.restore();
+  }
+}
+
+function desenharTexto(p, tx, x, y, w, h, l, col, aba, mesc) {
+  const { ctx, G, cores, familia, c, motor, abaId } = p;
+  const { z } = G;
+  const dpr = p.dpr || 1;
+  const snap = (v) => Math.round(v * dpr) / dpr; // v0.6.4: letra no pixel da tela, sem borrar no zoom
+  const e = tx.e;
+  ctx.font = fonteCanvas(e, z, familia);
+  const fundo = e.fundo || cores.fundo;
+  let cor = tx.cor || e.cor || cores.texto;
+  if (e.cor || tx.cor) cor = corLegivel(cor, fundo.startsWith('#') ? fundo : cores.fundoHex, e.fundo ? null : cores.texto);
+  /* fundo pintado de propósito e letra automática: a letra fica escura ou clara conforme o fundo (PL23) */
+  else if (e.fundo && e.fundo.startsWith('#')) { try { cor = luz(rgb(e.fundo)) > 0.35 ? '#1f1f1f' : '#ffffff'; } catch { /* cor inválida */ } }
+  ctx.fillStyle = cor;
+  const tam = pxDaFonte(e.tam || FONTE_PADRAO) * z;
+  const pad = PAD * z;
+  let texto = tx.t;
+  /* v0.6.4: Alt+Enter (quebra de linha no texto) se desenha igual à quebra de texto, sem o espaço no lugar da quebra */
+  if (e.qb || (typeof texto === 'string' && texto.includes('\n'))) {
+    /* quebra de texto dentro da célula */
+    const linhas = quebrar(ctx, texto, w - 2 * pad);
+    const alt = tam * 1.25;
+    const total = linhas.length * alt;
+    let y0 = e.av === 't' ? y + pad + tam : e.av === 'm' || e.av === 'c' ? y + (h - total) / 2 + tam : y + h - total - pad + tam;
+    ctx.save(); ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip();
+    for (const ln of linhas) {
+      const lw = ctx.measureText(ln).width;
+      const xx = tx.al === 'd' ? x + w - pad - lw : tx.al === 'c' ? x + (w - lw) / 2 : x + pad;
+      ctx.fillText(ln, snap(xx), snap(y0));
+      if (e.u) ctx.fillRect(xx, y0 + 2 * z, lw, Math.max(1, z));
+      y0 += alt;
+    }
+    ctx.restore();
+    return;
+  }
+  let largura = ctx.measureText(texto).width;
+  /* número que não cabe: #### (como o Excel) */
+  /* número em "Geral" que não cabe: vira notação científica antes de virar #### (como o Excel) */
+  if (tx.num && largura > w - 2 * pad && (!e.nf || /^general$/i.test(e.nf)) && typeof tx.v === 'number') {
+    /* primeiro tira casas depois da vírgula (0,947368 e não 9,4737E-01), como o Excel; só números muito pequenos ou grandes vão para a científica */
+    if (Number.isFinite(tx.v) && Math.abs(tx.v) >= 1e-3 && Math.abs(tx.v) < 1e15) {
+      for (let casas = 9; casas >= 0; casas--) {
+        let t = tx.v.toFixed(casas);
+        if (t.includes('.')) t = t.replace(/0+$/, '').replace(/\.$/, '');
+        t = t.replace('.', ',');
+        const lt = ctx.measureText(t).width;
+        if (lt <= w - 2 * pad && Number(t.replace(',', '.')) !== 0) { texto = t; largura = lt; break; }
+      }
+    }
+  }
+  if (tx.num && largura > w - 2 * pad && (!e.nf || /^general$/i.test(e.nf)) && typeof tx.v === 'number') {
+    for (let casas = 5; casas >= 0 && largura > w - 2 * pad; casas--) {
+      const [m, ex] = tx.v.toExponential(casas).split('e');
+      texto = m.replace('.', ',') + 'E' + (+ex < 0 ? '-' : '+') + String(Math.abs(+ex)).padStart(2, '0');
+      largura = ctx.measureText(texto).width;
+    }
+  }
+  if (tx.num && largura > w - 2 * pad && !mesclaEm(mesc, l, col)) {
+    const um = ctx.measureText('#').width || 6;
+    texto = '#'.repeat(Math.max(1, Math.floor((w - 2 * pad) / um)));
+    largura = ctx.measureText(texto).width;
+  }
+  const yb = e.av === 't' ? y + pad + tam * 0.85 : e.av === 'm' || e.av === 'c' ? y + h / 2 + tam * 0.35 : y + h - pad - Math.max(0, (h - tam * 1.3) * 0.08) - 1 * z;
+  let xx = tx.al === 'd' ? x + w - pad - largura : tx.al === 'c' ? x + (w - largura) / 2 : x + pad;
+  /* texto que passa da célula: avança sobre as vizinhas vazias (só texto à esquerda/direita) */
+  let x1 = x, x2 = x + w;
+  if (largura > w - 2 * pad && !tx.num && !tx.semVazar) {
+    if (tx.al === 'e' || tx.al === 'c') {
+      let cc = col + 1;
+      while (x2 < xx + largura + pad && cc < G.colunas.max && cc < col + 40) {
+        if (aba.cel[chave(l, cc)] && aba.cel[chave(l, cc)].v !== undefined) break;
+        if (aba.cel[chave(l, cc)] && aba.cel[chave(l, cc)].f != null) break;
+        if (motor.areaDerramada(abaId, l, cc)) break;
+        /* v0.6.1: não passa por cima de mesclada nem apaga o fundo pintado da vizinha */
+        if (mesc.length && mesclaEm(mesc, l, cc)) break;
+        if (aba.cel[chave(l, cc)] && estiloVisto(c, aba.cel[chave(l, cc)], motor, abaId, l, cc).fundo) break;
+        x2 += G.colunas.tam(cc) * z;
+        cc++;
+      }
+    }
+    if (tx.al === 'd' || tx.al === 'c') {
+      let cc = col - 1;
+      while (x1 > xx - pad && cc >= 0 && cc > col - 40) {
+        if (aba.cel[chave(l, cc)] && (aba.cel[chave(l, cc)].v !== undefined || aba.cel[chave(l, cc)].f != null)) break;
+        if (mesc.length && mesclaEm(mesc, l, cc)) break;
+        if (aba.cel[chave(l, cc)] && estiloVisto(c, aba.cel[chave(l, cc)], motor, abaId, l, cc).fundo) break;
+        x1 -= G.colunas.tam(cc) * z;
+        cc--;
+      }
+    }
+  }
+  const escreve = (a, b, c2) => {
+    ctx.save();
+    ctx.beginPath(); ctx.rect(a, y, b - a, h); ctx.clip();
+    ctx.fillStyle = c2;
+    ctx.fillText(texto, snap(xx), snap(yb));
+    if (e.u) ctx.fillRect(xx, yb + 2 * z, largura, Math.max(1, z));
+    if (e.st) ctx.fillRect(xx, yb - tam * 0.3, largura, Math.max(1, z));
+    ctx.restore();
+  };
+  /* apaga a grade sob o texto que avança para as vizinhas */
+  ctx.fillStyle = cores.fundo;
+  if (x2 > x + w) ctx.fillRect(x + w - (e.fundo ? 0 : w) + 1, y + 1, x2 - (x + w - (e.fundo ? 0 : w)) - 2, h - 2);
+  if (x1 < x) ctx.fillRect(x1 + 1, y + 1, x - x1 + (e.fundo ? 0 : w) - 2, h - 2);
+  if (e.fundo && (x2 > x + w || x1 < x)) {
+    /* dentro da célula pintada usa a cor do fundo dela; fora, a do tema */
+    escreve(x, x + w, cor);
+    const fora = e.cor || tx.cor ? corLegivel(tx.cor || e.cor, cores.fundoHex, cores.texto) : cores.texto;
+    if (x2 > x + w) escreve(x + w, x2, fora);
+    if (x1 < x) escreve(x1, x, fora);
+  } else escreve(x1, x2, cor);
+}
+
+export function quebrar(ctx, texto, larg) {
+  const out = [];
+  for (const par of String(texto).split('\n')) {
+    let linha = '';
+    for (const p of par.split(/(\s+)/)) {
+      const t = linha + p;
+      if (ctx.measureText(t).width <= larg || !linha) linha = t;
+      else { out.push(linha.trimEnd()); linha = p.trimStart(); }
+    }
+    out.push(linha);
+  }
+  return out;
+}
+
+function desenharSelecao(p, q) {
+  const { ctx, G, cores, sel } = p;
+  const z = G.z;
+  /* v0.6.9.1 (Elias): cada quadrante desenha só a parte da seleção que é dele. Antes a caixa de uma célula rolada para
+     baixo do painel congelado era desenhada na posição rolada e aparecia por cima das colunas/linhas congeladas. */
+  const R = q && q.reg ? q.reg : null;
+  const ret = (f) => {
+    const c1 = R ? Math.max(f.c1, R.C[0]) : f.c1, c2 = R ? Math.min(f.c2, R.C[1]) : f.c2;
+    const l1 = R ? Math.max(f.l1, R.L[0]) : f.l1, l2 = R ? Math.min(f.l2, R.L[1]) : f.l2;
+    if (c2 < c1 || l2 < l1) return null;
+    let x = G.xDe(c1), y = G.yDe(l1), x2 = G.xFim(c2), y2 = G.yFim(l2);
+    const cort = { e: f.c1 < c1, d: f.c2 > c2, c: f.l1 < l1, b: f.l2 > l2 };
+    /* o lado que continua no outro quadrante vai até além da emenda, para a borda ficar fora do recorte (a emenda não vira moldura) */
+    if (q && R) {
+      if (cort.e) x = q.x - 4; if (cort.d) x2 = q.x + q.w + 4; if (cort.c) y = q.y - 4; if (cort.b) y2 = q.y + q.h + 4;
+    }
+    return { x, y, w: x2 - x, h: y2 - y, cort: cort.d || cort.b };
+  };
+  /* referências da fórmula sendo digitada (cores iguais às da fórmula) */
+  for (const r of p.refsFormula || []) {
+    const a = ret(r);
+    if (!a) continue;
+    ctx.fillStyle = r.cor + '22';
+    ctx.fillRect(a.x, a.y, a.w, a.h);
+    ctx.strokeStyle = r.cor;
+    ctx.lineWidth = 2;
+    ctx.strokeRect(a.x + 1, a.y + 1, a.w - 2, a.h - 2);
+  }
+  /* área derramada da célula ativa */
+  if (p.spill) {
+    const a = ret(p.spill);
+    if (a) {
+    ctx.setLineDash([4, 3]); ctx.strokeStyle = cores.spill; ctx.lineWidth = 1;
+    ctx.strokeRect(a.x + 0.5, a.y + 0.5, a.w - 1, a.h - 1);
+    ctx.setLineDash([]);
+    }
+  }
+  if (sel && !p.escondeSel) {
+    /* v0.6.47 (D-73): a área da ativa é a mesclada inteira; selecionada sozinha, fica só a moldura (como no Excel) */
+    const at = sel.ativaArea || (p.mesclas && mesclaEm(p.mesclas, sel.ativa.l, sel.ativa.c)) || { l1: sel.ativa.l, c1: sel.ativa.c, l2: sel.ativa.l, c2: sel.ativa.c };
+    const u = sel.faixas[sel.faixas.length - 1];
+    const soAtiva = sel.faixas.length === 1 && u.l1 === at.l1 && u.l2 === at.l2 && u.c1 === at.c1 && u.c2 === at.c2;
+    for (const f of sel.faixas) {
+      if (soAtiva) continue;
+      const a = ret(f);
+      if (!a) continue;
+      ctx.fillStyle = cores.selFundo;
+      ctx.fillRect(a.x, a.y, a.w, a.h);
+    }
+    /* a célula ativa fica sem a cor de fundo */
+    const aa = ret(at);
+    const ua = ret(u);
+    ctx.strokeStyle = cores.sel;
+    ctx.lineWidth = 2;
+    if (ua) ctx.strokeRect(ua.x + 0.5, ua.y + 0.5, ua.w - 1, ua.h - 1);
+    if (ua && aa && !soAtiva) {
+      ctx.lineWidth = 1;
+      ctx.strokeRect(aa.x + 1.5, aa.y + 1.5, aa.w - 3, aa.h - 3);
+    }
+    /* alça de preenchimento (só no quadrante onde o canto da seleção está) */
+    if (ua && !ua.cort && !p.celular && !p.somenteLeitura) {
+      ctx.fillStyle = cores.sel;
+      const s = 7;
+      ctx.fillRect(ua.x + ua.w - s / 2 - 1, ua.y + ua.h - s / 2 - 1, s, s);
+      ctx.fillStyle = cores.fundo;
+      ctx.fillRect(ua.x + ua.w - s / 2 - 1, ua.y + ua.h - s / 2 - 1, 1, s);
+      ctx.fillRect(ua.x + ua.w - s / 2 - 1, ua.y + ua.h - s / 2 - 1, s, 1);
+    }
+    /* alças do celular (para aumentar a seleção sem mouse) */
+    if (ua && p.celular && !p.editando) {
+      ctx.fillStyle = cores.fundo; ctx.strokeStyle = cores.sel; ctx.lineWidth = 2;
+      for (const [cx, cy] of [[ua.x, ua.y], [ua.x + ua.w, ua.y + ua.h]]) {
+        ctx.beginPath(); ctx.arc(cx, cy, 7, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      }
+    }
+  }
+  /* marca do copiar (tracejado) */
+  if (p.copia) {
+    const a = ret(p.copia);
+    if (a) {
+    ctx.setLineDash([5, 4]); ctx.strokeStyle = cores.sel; ctx.lineWidth = 2;
+    ctx.strokeRect(a.x + 1, a.y + 1, a.w - 2, a.h - 2);
+    ctx.setLineDash([]);
+    }
+  }
+  /* arrastando a alça: contorno do destino */
+  if (p.destino) {
+    const a = ret(p.destino);
+    if (a) {
+    ctx.setLineDash([3, 3]); ctx.strokeStyle = cores.textoFraco; ctx.lineWidth = 1;
+    ctx.strokeRect(a.x + 0.5, a.y + 0.5, a.w - 1, a.h - 1);
+    ctx.setLineDash([]);
+    }
+  }
+}
+
+function desenharCabecalhos(p, mesc) {
+  const { ctx, G, cores, sel, familia } = p;
+  const { W, H, hw, hh, z } = G;
+  const mL = G.mL || 0, mC = G.mC || 0; /* v0.6.37: margem da barra dos grupos */
+  ctx.fillStyle = cores.cab;
+  ctx.fillRect(0, 0, W, hh);
+  ctx.fillRect(0, 0, hw, H);
+  const selL = new Set(), selC = new Set();
+  let linhaToda = false, colunaToda = false;
+  if (sel) {
+    for (const f of sel.faixas) {
+      if (f.c1 === 0 && f.c2 === MAX_COL - 1) linhaToda = true;
+      if (f.l1 === 0 && f.l2 === MAX_LIN - 1) colunaToda = true;
+    }
+  }
+  const destaqueL = (l) => sel && sel.faixas.some((f) => l >= f.l1 && l <= f.l2);
+  const destaqueC = (c) => sel && sel.faixas.some((f) => c >= f.c1 && c <= f.c2);
+  ctx.font = `500 ${(11.5 * Math.max(0.8, z)).toFixed(1)}px ${familia}`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  /* colunas: as congeladas e as que rolam em recortes separados (uma não passa por cima da outra) */
+  const umaCol = (c) => {
+    const w = G.colunas.tam(c) * z;
+    if (!w) return;
+    const x = G.xDe(c);
+    if (x > W || x + w < hw) return;
+    ctx.fillStyle = cores.cab; ctx.fillRect(x, mC, w, hh - mC);
+    if (destaqueC(c)) { ctx.fillStyle = cores.cabSel; ctx.fillRect(x, mC, w, hh - mC); ctx.fillStyle = cores.sel; ctx.fillRect(x, hh - 2, w, 2); }
+    ctx.fillStyle = destaqueC(c) ? cores.cabSelTexto : cores.cabTexto;
+    ctx.fillText(letraCol(c), x + w / 2, mC + (hh - mC) / 2 + 1);
+    ctx.fillStyle = cores.cabLinha;
+    ctx.fillRect(Math.round(x + w) - 1, mC, 1, hh - mC);
+  };
+  ctx.save(); ctx.beginPath(); ctx.rect(hw + G.fx, 0, Math.max(0, W - hw - G.fx), hh); ctx.clip();
+  for (let c = Math.max(G.cc, G.c0); c <= G.c1; c++) umaCol(c);
+  ctx.restore();
+  if (G.cc) {
+    ctx.save(); ctx.beginPath(); ctx.rect(hw, 0, G.fx, hh); ctx.clip();
+    for (let c = 0; c < G.cc; c++) umaCol(c);
+    ctx.restore();
+  }
+  /* linhas: idem */
+  const umaLin = (l) => {
+    const h = G.linhas.tam(l) * z;
+    if (!h) return;
+    const y = G.yDe(l);
+    if (y > H || y + h < hh) return;
+    ctx.fillStyle = cores.cab; ctx.fillRect(mL, y, hw - mL, h);
+    if (destaqueL(l)) { ctx.fillStyle = cores.cabSel; ctx.fillRect(mL, y, hw - mL, h); ctx.fillStyle = cores.sel; ctx.fillRect(hw - 2, y, 2, h); }
+    ctx.fillStyle = destaqueL(l) ? cores.cabSelTexto : cores.cabTexto;
+    ctx.fillText(String(l + 1), mL + (hw - mL) / 2, y + h / 2 + 1);
+    ctx.fillStyle = cores.cabLinha;
+    ctx.fillRect(mL, Math.round(y + h) - 1, hw - mL, 1);
+  };
+  ctx.save(); ctx.beginPath(); ctx.rect(0, hh + G.fy, hw, Math.max(0, H - hh - G.fy)); ctx.clip();
+  for (let l = Math.max(G.cl, G.l0); l <= G.l1; l++) umaLin(l);
+  ctx.restore();
+  if (G.cl) {
+    ctx.save(); ctx.beginPath(); ctx.rect(0, hh, hw, G.fy); ctx.clip();
+    for (let l = 0; l < G.cl; l++) umaLin(l);
+    ctx.restore();
+  }
+  /* canto */
+  ctx.fillStyle = cores.cab;
+  ctx.fillRect(0, 0, hw, hh);
+  ctx.fillStyle = cores.cabLinha;
+  ctx.beginPath(); ctx.moveTo(hw - 4, hh - 12); ctx.lineTo(hw - 4, hh - 4); ctx.lineTo(hw - 12, hh - 4); ctx.closePath(); ctx.fill();
+  ctx.fillRect(0, hh - 1, W, 1);
+  ctx.fillRect(hw - 1, 0, 1, H);
+  ctx.textAlign = 'left';
+  if (G.contorno) { desenharContorno(ctx, G, cores, familia); ctx.textAlign = 'left'; }
+}
+
+/** O que está sob o ponto (x, y) da tela. */
+/* v0.6.47 (D-69): cursor do Excel no cabeçalho: seta preta para baixo em cima da letra (escolher a coluna) e para a direita no número (escolher a linha); a seta dupla fica só na divisa */
+const setaCursor = (d, x, y) => `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16'><path d='${d}' fill='#000' stroke='#fff' stroke-width='1' stroke-linejoin='round'/></svg>`)}") ${x} ${y}, default`;
+export const CURSOR_COL = setaCursor('M5.5 1.5h5v6.5h3.5L8 14.5 2 8h3.5z', 8, 14), CURSOR_LIN = setaCursor('M1.5 5.5v5h6.5v3.5L14.5 8 8 2v3.5z', 14, 8);
+export function ondeCaiu(G, x, y) {
+  const { hw, hh } = G;
+  if (G.contorno && (x < G.mL || y < G.mC)) { const r = contornoEm(G, x, y); if (r) return r; } /* v0.6.37: margem dos grupos */
+  if (x < hw && y < hh) return { tipo: 'canto' };
+  if (y < hh) {
+    const c = G.colEm(x);
+    const xd = G.xFim(c);
+    const xe = G.xDe(c);
+    if (Math.abs(x - xd) <= 4) return { tipo: 'bordaCol', c };
+    if (Math.abs(x - xe) <= 4 && c > 0) return { tipo: 'bordaCol', c: c - 1 };
+    return { tipo: 'col', c };
+  }
+  if (x < hw) {
+    const l = G.linEm(y);
+    const yd = G.yFim(l);
+    const ye = G.yDe(l);
+    if (Math.abs(y - yd) <= 3) return { tipo: 'bordaLin', l };
+    if (Math.abs(y - ye) <= 3 && l > 0) return { tipo: 'bordaLin', l: l - 1 };
+    return { tipo: 'lin', l };
+  }
+  return { tipo: 'cel', l: G.linEm(y), c: G.colEm(x) };
+}
+
+/* v0.6.12 (D-16): desenha a grade e, por cima, a parte congelada.
+   v0.6.9 (Elias): o mesmo desenho, só a parte parada, num canvas por cima e fora do rolador. Com o dedo o navegador rola
+   sozinho e o canvas de baixo desliza um quadro antes do redesenho: assim o cabeçalho congelado nunca é coberto nem aparece cortado no meio. */
+export function pintarGrade(cv, cg, comum, tam) {
+  const dpr = comum.dpr || 1;
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  desenhar({ ...comum, ctx });
+  if (!cg) return;
+  if (cg.width !== cv.width || cg.height !== cv.height) {
+    cg.width = cv.width; cg.height = cv.height;
+    cg.style.width = tam.W + 'px'; cg.style.height = tam.H + 'px';
+  }
+  const ctxC = cg.getContext('2d');
+  ctxC.setTransform(dpr, 0, 0, dpr, 0, 0);
+  desenhar({ ...comum, ctx: ctxC, parte: 'congelado' });
+}
+
+/** Cores iguais devolvem o objeto antigo (para a grade não ser redesenhada sem motivo). */
+export const mesmasCores = (a, n) => (a && Object.keys(n).length === Object.keys(a).length && Object.keys(n).every((k) => n[k] === a[k]) ? a : n);

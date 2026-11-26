@@ -4,7 +4,11 @@
    (Secundário e Visitante); planilha protegida e "Desproteger" ficam com o Vértice. Guardado em sv2_cfg/vertice_pastas;
    só o Principal muda (a regra do Firestore entra na P3c). A porta passa a ter pastas(). */
 Object.assign(S, { vtPastas: null });
-CS_CARGAS.push(() => { csOuve('sv2_cfg', l => { const d = (l || []).find(x => x.id === 'vertice_pastas'); S.vtPastas = d && Array.isArray(d.pastas) ? d.pastas : []; vtUlt = 'x'; vtConfere(); if (S.rota.area === 'adm' && S.rota.aba === 'vertice') render(); }); });
+/* v0.6.36 (P3c): a regra do Firestore não procura numa lista; por isso a gravação leva também o mapa "acesso" (pasta → { todos, leitores }).
+   Gravação antiga sem o mapa: o Principal regrava uma vez, sozinho, ao abrir o app. */
+const vtAcesso = lista => { const o = {}; (lista || []).forEach(p => { if (p && IP_PASTAS.indexOf(p.nome) >= 0) o[p.nome] = { todos: p.todos !== false, leitores: (p.leitores || []).slice(0, 300) }; }); return o; };
+CS_CARGAS.push(() => { csOuve('sv2_cfg', l => { const d = (l || []).find(x => x.id === 'vertice_pastas'); S.vtPastas = d && Array.isArray(d.pastas) ? d.pastas : []; vtUlt = 'x'; vtConfere(); if (S.rota.area === 'adm' && S.rota.aba === 'vertice') render();
+  if (d && Array.isArray(d.pastas) && !d.acesso && isPrincipal(S.user) && !S._vtMigrou) { S._vtMigrou = true; Data.col('sv2_cfg').update('vertice_pastas', { acesso: vtAcesso(d.pastas) }).catch(e => console.warn('pastas do Vértice:', e)); } }); });
 const vtCfgPasta = nome => (S.vtPastas || []).find(p => p && p.nome === nome) || null;
 const vtLeTodos = c => !c || c.todos !== false;
 function vtPastasDe(u) {
@@ -39,7 +43,7 @@ async function vtPastaOk() {
   if (f.quem === 'escolhidos') f.leitores = $$('#gv [data-vtck]').filter(x => x.checked).map(x => x.getAttribute('data-vtck'));
   const lista = IP_PASTAS.map(nome => { const velho = vtCfgPasta(nome) || { nome: nome, todos: true, leitores: [] }; return nome === f.pasta ? { nome: nome, todos: f.quem !== 'escolhidos', leitores: f.quem === 'escolhidos' ? f.leitores.slice(0, 300) : [] } : { nome: nome, todos: velho.todos !== false, leitores: (velho.leitores || []).slice(0, 300) }; });
   try {
-    await Data.col('sv2_cfg').set('vertice_pastas', { pastas: lista, alteradoEm: nowISO(), alteradoPor: S.user.nome, alteradoPorId: S.user.id });
+    await Data.col('sv2_cfg').set('vertice_pastas', { pastas: lista, acesso: vtAcesso(lista), alteradoEm: nowISO(), alteradoPor: S.user.nome, alteradoPorId: S.user.id });
     Audit.log({ acao: 'vertice_pastas', entidade: 'config', entidadeId: 'vertice_pastas', resumo: 'Pastas do Vértice · ' + f.pasta + ': ' + (f.quem === 'escolhidos' ? f.leitores.length + ' pessoa(s)' : 'todos') });
     lcFim(); aviso('Pasta ' + f.pasta + ' atualizada.', 'ok');
   } catch (e) { lcErro('Não foi possível salvar: ' + (e && e.message || e)); }

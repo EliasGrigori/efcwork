@@ -1,4 +1,4 @@
-# EFCwork · CONTINUAR (26/11/2026, 16h) · estado: v0.6.35 NO AR
+# EFCwork · CONTINUAR (26/11/2026, 16h20) · estado: v0.6.36 NO AR (P3c no app + P5, Vértice v0.6.74 em efcwork/vertice/); falta o EFCdocs (endereço antigo) e as regras no Firebase
 
 Este arquivo substitui o CONTINUAR-EFCwork-v0.6.34.md. Ele é autossuficiente: quem ler só ele já sabe o que fazer.
 
@@ -6,7 +6,9 @@ Este arquivo substitui o CONTINUAR-EFCwork-v0.6.34.md. Ele é autossuficiente: q
 - **No ar: v0.6.35** (publicada em 26/11 16h, com os ITENS 197 a 214 aprovados). Antes: v0.6.34 (commit 52ba9d8).
 - **O que a v0.6.35 tem:** P3b Pastas do Vértice (aprovada às 12:57); o Vértice em tela inteira com abas (OPÇÃO 2, ITENS 207 a 211; a área ao lado do menu saiu); conferência das tarefas corrigida no Cwork (pedido 14:18, ITEM 212); filtro da coluna parado ao marcar e com escolha em várias buscas (pedido 14:24, ITENS 213 e 214). Detalhes no fim do dossiê ("v0.6.35 (continuação, conversa nova)").
 - **Testes:** bateria de 73 arquivos, 72 sem falha (t_v067 das datas do mês falha também na v0.6.33: defeito anterior, ABERTO). Medidor --estrito 0 defeitos. Revisor novo leu o código: 9 achados corrigidos, 1 aberto (voltar do celular com várias abas; ver dossiê e pendências).
-- **Próxima tarefa:** P3c (regras do Firestore de `vtd_arquivos` e `vtd_partes`) **precisa do PEDIDO-P3 refeito às 07:30** (seção 5, regras; o anexado é o das 07:10 e o repositório EFCdocs não tem o arquivo). Depois P5. Sequência e pendências em `docs/PENDENCIAS-EFCwork-e-Vertice.md` (lista viva: atualizar e mandar a cada mudança).
+- **v0.6.36 (P3c) pronta, em aprovação (ITENS 215 a 220, `docs/aprovacao-efcwork-v0.6.36-regras-vertice.html`):** regras `docs/REGRAS-FIRESTORE-EFCwork-v0.6.36-PROPOSTA.txt`, roteiro `docs/GUIA-SIMULADOR-v0.6.36.md`, nota `docs/NOTA-DO-CWORK-para-o-Vertice-P3c-regras.md`; Cwork grava o mapa `acesso` das pastas. Feita sem o PEDIDO-P3 das 07:30 (ver dossiê). Depois de aprovar: publicar o app, o Elias roda o Simulador e publica as regras; então P5.
+- **P5 (na mesma v0.6.36) em aprovação, ITENS 221 a 225:** Vértice v0.6.74 em `efcwork/vertice/` (código em `vertice/fonte/`), endereço antigo em `projeto/tools/p5/EFCdocs-raiz/` (vai para a raiz do EFCdocs, com acesso de envio pedido na hora). Publicar: rodar a bateria inteira, copiar `projeto/dist/` para a raiz, `git add` também `vertice/` (sem `fonte/node_modules` e `fonte/dist`), um commit no efcwork; depois o EFCdocs.
+- **(antigo) Próxima tarefa:** P3c (regras do Firestore de `vtd_arquivos` e `vtd_partes`) **precisa do PEDIDO-P3 refeito às 07:30** (seção 5, regras; o anexado é o das 07:10 e o repositório EFCdocs não tem o arquivo). Depois P5. Sequência e pendências em `docs/PENDENCIAS-EFCwork-e-Vertice.md` (lista viva: atualizar e mandar a cada mudança).
 - **Combinado 14:26:** quando a próxima tarefa não depende da que está sendo feita, seguir direto e juntar tudo numa página para ele aprovar na volta.
 - **Código nesta sessão:** add_repo foi negado; clonado com `git clone` (publicar exige o push funcionar; se negar, dizer ao Elias).
 
