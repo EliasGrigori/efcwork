@@ -8,7 +8,7 @@ Aba Coletas › Composto,Coletas,must,sim,sim,Coletas › Amostras (filtro Tipo)
 Aba Coletas › Água,Coletas,must,sim,sim,Coletas › Água,v0.6.5 (ação corretiva e relatório v0.6.6; projetos v0.6.7)
 Aba Coletas › Lotes de envio,Coletas,must,sim,sim,Coletas › Envio,conferido 15/11: a aba existe e funciona
 Aba Coletas › Etiquetas,Coletas,must,sim,parcial,Coletas › Etiquetas,conferido no código 27/11: só o rótulo da remessa (kit.js); etiquetas de campo e revisão seguem no EFClaudian
-Aba Coletas › Cadastros,Coletas,must,sim,sim,Coletas › Cadastros,conferido 15/11: a aba existe e funciona
+Aba Coletas › Cadastros,Coletas,must,sim,sim,Coletas › Cadastros,v0.6.40 cadcol.js (ITENS 239 a 254)
 Aba Rateios › Campo,Rateios,must,sim,sim,Rateios › Rateio (filtro Tipo),"v0.6.17 (15/11, publicada; ITENS 61 a 69 aprovados) rateio.js"
 Aba Rateios › Água,Rateios,must,sim,sim,Rateios › Rateio (filtro Tipo),"v0.6.17 (15/11, publicada; ITENS 61 a 69 aprovados) rateio.js"
 Aba Rateios › Calibração,Rateios,must,sim,sim,Rateios › Rateio (filtro Tipo),"v0.6.17 (15/11, publicada; ITENS 61 a 69 aprovados) rateio.js"
@@ -64,11 +64,11 @@ Janela Beb Detail (openBebDetail),Inspeções,should,sim,nao,,rascunho automáti
 Janela Beb Edit (openBebEdit),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
 Janela Locais nos velocímetros (openGaugesPick),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
 Janela Relatório do cloro (openCloroRel),Inspeções,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Cadastros (openCadastros),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Cadastros (openCadastros),Coletas,should,sim,sim,Coletas › Cadastros,v0.6.40 cadcol.js (ITENS 239 a 254)
 Janela Cadastros das coletas (openCadastrosAntigo),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Tal Edit (openTalEdit),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Ana Edit (openAnaEdit),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Tip Edit (openTipEdit),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Tal Edit (openTalEdit),Coletas,should,sim,sim,Coletas › Cadastros,v0.6.40 cadcol.js (ITENS 239 a 254)
+Janela Ana Edit (openAnaEdit),Coletas,should,sim,sim,Coletas › Cadastros,v0.6.40 cadcol.js (ITENS 239 a 254)
+Janela Tip Edit (openTipEdit),Coletas,should,sim,sim,Coletas › Cadastros,v0.6.40 cadcol.js (ITENS 239 a 254)
 Janela Novo tipo de coleta (openTipNovo),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
 Janela Rz (openRz),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
 Janela Planos de coleta (openRzLista),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
@@ -108,10 +108,10 @@ Janela Ação corretiva (openAcaoNova),Geral,should,sim,sim,Coletas › Água ·
 Janela Ação corretiva · (openAcao),Geral,should,sim,sim,Coletas › Água · ação corretiva,v0.6.6 aguaac.js; rascunho automático; prioridade a revisar
 Janela Relatório de água por local (openAgRel),Geral,should,sim,sim,Coletas › Água · impressora,v0.6.6 aguaac.js; rascunho automático; prioridade a revisar
 Janela Prazo Lote (openPrazoLote),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Lab Edit (openLabEdit),Coletas,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Faz Edit (openFazEdit),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Reajustar preços (openReajuste),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
-Janela Desativar Cad (openDesativarCad),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
+Janela Lab Edit (openLabEdit),Coletas,should,sim,sim,Coletas › Cadastros,v0.6.40 cadcol.js (ITENS 239 a 254)
+Janela Faz Edit (openFazEdit),Geral,should,sim,sim,Coletas › Cadastros,v0.6.40 cadcol.js (ITENS 239 a 254)
+Janela Reajustar preços (openReajuste),Geral,should,sim,sim,Coletas › Cadastros,v0.6.40 cadcol.js (ITENS 239 a 254)
+Janela Desativar Cad (openDesativarCad),Geral,should,sim,sim,Coletas › Cadastros,v0.6.40 cadcol.js (ITENS 239 a 254)
 Janela Dar baixa no laudo? (openLaudoBaixa),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
 Janela Laudo Corr (openLaudoCorr),Geral,should,sim,nao,,rascunho automático; prioridade a revisar
 Janela O.S da remessa (openOSRem),Geral,should,sim,nao,,rascunho automático; prioridade a revisar

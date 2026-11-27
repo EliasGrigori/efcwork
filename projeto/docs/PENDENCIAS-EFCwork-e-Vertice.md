@@ -2,7 +2,7 @@
 
 Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conversa ou para o fim, para nada ficar para trás. Atualizado a cada mudança e enviado junto. Marque [x] quando estiver feito.
 
-Última atualização: 27/11/2026 · v0.6.39 no ar; v0.6.40 (Cadastros) 2ª rodada em aprovação, ITENS 249 a 254.
+Última atualização: 27/11/2026 · v0.6.40 (Cadastros de Coletas) no ar.
 
 ## A. Para a conversa do Vértice (o Elias leva)
 - [ ] **O código do Vértice mora agora em `efcwork/vertice/fonte/`** (depois de publicada a P5): a conversa do Vértice clona o efcwork e publica na pasta `vertice/`. Está na memória do Vértice (registro de 26/11, 16:57).
@@ -33,8 +33,9 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 - [x] **CSP e SDK (v0.6.38):** regra de segurança ligada e SDK 13.4.0.
 - [x] **Limpeza visual (v0.6.39):** publicada em 27/11 (efcwork 756527b).
 - [x] `features.csv` atualizado (27/11).
-- [ ] **Cadastros de Coletas (v0.6.40):** 2ª rodada pronta e testada; responder a página (ITENS 249 a 254): https://claude.ai/artifact/Pp7q5Mg6UxJhVzndDt5n2K
+- [x] **Cadastros de Coletas (v0.6.40):** publicada em 27/11 (efcwork fc4afcc).
 - [ ] Da matriz, funções "must" que faltam: Conversas; Etiquetas de campo e revisão; Relatórios › Coletas em aberto; Só ver por área.
+- [ ] **Ideia (não pedida):** pôr a conferência de rótulos lado a lado no `medir.js` da família, para valer em todos os apps.
 - [ ] Matriz: conferir as 169 linhas "Janela …" e 4 outras "should" marcadas como não.
 - [ ] Estudo de rapidez (`ESTUDO-rapidez-EFCwork-v0.6.33.md`): só depois da integração.
 - [x] Janela por cima: virou a tela inteira com abas (v0.6.35); a área ao lado do menu saiu.
@@ -63,6 +64,8 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 - [ ] **v0.6.39 no ar:** a janela "Versão nova do app" aparece; o botão dourado fica parado e o brilho passa uma vez quando o mouse chega (PC); letras um pouco maiores sem texto cortado no seu celular; no Escuro, título e linha da aba lisos e fundo sem roxo.
 
 - [ ] **EFClaudian (decisão de 27/11: descontinuar ou adaptar ao Cwork):** dizer se alguém ainda usa no dia a dia; isso define o cuidado ao mudar o formato dos dados e as regras.
+
+- [ ] **v0.6.40 no ar:** Coletas › Cadastros abre as 6 listas; cadastrar um laboratório com endereço e ver o rótulo em Envio › Laboratórios; editar uma fazenda; desativar e reativar um talhão de teste. Dizer se alguém ainda cadastra pelo EFClaudian.
 
 ## E. Defeitos abertos
 - [x] **Teste do calendário (`t_v050`):** corrigido em 27/11 (só o teste).
