@@ -3,7 +3,7 @@
 Substitui o CONTINUAR-EFCwork-v0.6.37.md. Quem ler só este arquivo sabe o que fazer.
 
 ## 0. Estado
-- **v0.6.38 (CSP e SDK):** regra de segurança (CSP) com hash do script calculada no `montar.py` e SDK do Firebase 13.4.0 (compat). Situação da publicação: ver o fim do dossiê ("v0.6.38").
+- **v0.6.38 (CSP e SDK):** regra de segurança (CSP) com hash do script calculada no `montar.py` e SDK do Firebase 13.4.0 (compat). Publicada em 26/11 (efcwork commit 9c683f4).
 - Antes: v0.6.37 (aviso de versão nova) publicada em 26/11 (commit 6bdb386). Vértice v0.6.74 em `efcwork/vertice/`.
 - Último ITEM usado: 232.
 - **Conferir no site de verdade (só dá lá):** entrar com a conta; abrir uma tela com dados; Administração › Sobre deve mostrar "Firebase (SDK) 13.4.0" e "Regra de segurança: ligada · nada barrado". Se disser "barrou", o que foi barrado fica em `cw-csp` (localStorage) e no console.
