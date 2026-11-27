@@ -1,9 +1,9 @@
-# EFCwork · CONTINUAR (27/11/2026 20:3x) · NO AR: Cwork v0.6.46 + Vértice v0.6.81 (efcwork, commit em 0.) · NADA EM APROVAÇÃO
+# EFCwork · CONTINUAR (27/11/2026 20:3x) · NO AR: Cwork v0.6.46 + Vértice v0.6.81 (efcwork b921957) · NADA EM APROVAÇÃO
 
 Substitui o CONTINUAR-EFCwork-v0.6.46.md de 19:0x (mesmo nome: o Cwork não mudou de versão). Quem ler só este arquivo sabe o que fazer.
 
 ## 0. Estado
-- **PUBLICADA em 27/11 20:3x: Vértice v0.6.81 (o Cwork não mudou; segue v0.6.46). ITENS 294 a 299 todos Aprovados** (299: "não entendi nada mas tá aprovado, não precisa mais explicar, confio em você"). Commit: COMMIT_AQUI. Último ITEM usado: **299**.
+- **PUBLICADA em 27/11 20:3x: Vértice v0.6.81 (o Cwork não mudou; segue v0.6.46). ITENS 294 a 299 todos Aprovados** (299: "não entendi nada mas tá aprovado, não precisa mais explicar, confio em você"). Commit: b921957. Último ITEM usado: **299**.
 - **O que a v0.6.81 faz:** pedido do Cwork imprime só a aba com campos; Recebidos do Cwork com aviso e Mover (e Nuvem "Só neste aparelho"); o Vértice segue o tema do Cwork; no Escuro, planilha e quadro brancos como no Excel, com a chave "Área de trabalho escura no tema escuro" em Opções; imprimir pela folha aberta registra "Preenchido no Vértice" no Cwork.
 - **PUBLICADA em 27/11 19:0x: Cwork v0.6.46** (efcwork accc354; ITENS 287 a 293, kit nas coletas de água; página `docs/aprovacao-efcwork-v0.6.46-agua-kit.html`).
 - **O que a v0.6.46 faz:** remessa de água = coletas de água (sv2_aguacol) do mesmo envio e laboratório (chave `agua:<envio>|<lab>`, nada novo gravado). "Ver a remessa (N coletas)" no detalhe; gaveta com o ícone dos papéis (o MESMO kit do laboratório), Documentos da remessa e as coletas; "Papéis" no aviso depois de informar o envio (decisão minha, ITEM 292); dados de cada coleta para o Vértice (data, hora, ponto, análise, coletor, O.S, observação, material Água, X em grupo.xagua), uma folha por análise; o resto à mão. Correção junto: a situação não é cortada na lista da remessa (ITEM 293). Pergunta sem código no fim da página: remessas de água também em Envio › Remessas?
