@@ -74,3 +74,13 @@ test('a imagem do Excel sai como imagem na impressão (antes: linha de assinatur
   assert.doesNotMatch(f.objetos[0].svg, /Picture|<line/);
   assert.doesNotMatch(f.objetos[1].svg, /javascript|<image/, 'só imagem em texto data: entra');
 });
+
+test('v0.6.79 · pedido de um papel do Vértice (soMarcados): o que o documento não marcou sai, sem recusar', async () => {
+  const { conferirPedido } = await import('../../src/ponte/campos.js');
+  const c = planilhaVazia(); c.abas.a1.nome = 'Ficha';
+  c.nomes = { efc_lab_nome: { n: 'efc_lab_nome', ref: "'Ficha'!$B$2" } };
+  const n = normalizarPlanilha(c), base = { v: 1, pid: 'p0000000001', docId: 'dabc12345', de: 'efcwork', copias: 1, criadoEm: '2026-11-27T10:00:00.000Z', dados: { 'lab.nome': 'LAB', 'envio.caixas': 2 } };
+  assert.equal(conferirPedido(base, { c: n }).erro, 'campo-desconhecido', 'sem a marca continua recusando (papel antigo dos Impressos)');
+  const r = conferirPedido({ ...base, soMarcados: true }, { c: n });
+  assert.ok(!r.erro, r.detalhe); assert.deepEqual(r.folhas, [{ 'lab.nome': 'LAB' }]);
+});

@@ -2,7 +2,7 @@
 
 Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conversa ou para o fim, para nada ficar para trás. Atualizado a cada mudança e enviado junto. Marque [x] quando estiver feito.
 
-Última atualização: 27/11/2026 14:4x · no ar: Cwork v0.6.43 + Vértice v0.6.78 (etapa 3, etiquetas das amostras, ITENS 272 a 279). Próxima: kit e Impressos apontando para o Vértice.
+Última atualização: 27/11/2026 16:3x · no ar: Cwork v0.6.44 + Vértice v0.6.79 (etapa 4, kit do laboratório, ITENS 280 a 283). Próxima: a escolher.
 
 ## A. Para a conversa do Vértice (o Elias leva)
 - [ ] **NOVO (27/11 06:59) · Todos os documentos só no Vértice:** nota `NOTA-DO-CWORK-para-o-Vertice-documentos-so-no-Vertice.md`. Hospedar tudo lá (internos e externos); o Cwork guarda só a ligação; versão nova vale sozinha; PDF baixa e imprime direto; planilha e Word abrem em modo documento, só aquela aba ou folha, só os campos desbloqueados. Junta a P4 com os ITENS 195 e 196.
@@ -26,7 +26,7 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 - [x] **Etapa 2 · modo documento:** aprovada (ITENS 259 a 269) e publicada em 27/11 (Vértice v0.6.76).
 - [ ] **Etapa 3 · observações da etapa 2:** o pedido do Cwork imprime todas as abas do modelo (deveria ser só a do documento?); o que chega do Cwork fica em "Recebidos do Cwork", fora das 5 pastas, e não sobe para a nuvem até a migração.
 - [x] **Etapa 3 · etiquetas automáticas:** aprovada (ITENS 272 a 279) e publicada em 27/11 (Cwork v0.6.43 + Vértice v0.6.78). Cabeçalho escrito no modelo; nada a preencher na impressão.
-- [ ] **Próxima etapa · documentos do kit por laboratório (ITEM 277, 27/11 14:29):** cada laboratório escolhe o que leva: ficha de envio, cadeia de custódia, as duas ou nenhuma; os documentos são do Vértice.
+- [x] **Etapa 4 · kit do laboratório com papéis do Vértice:** aprovada (ITENS 280 a 283) e publicada em 27/11 (Cwork v0.6.44 + Vértice v0.6.79); até 2 papéis de custódia ou ficha por laboratório.
 - [ ] **Etapa 3 · Cwork apontando para o Vértice:** Impressos, kit e etiquetas; o que já está guardado no Cwork (`efd_docs`) muda de lugar uma vez.
 - [ ] Backup do Cwork: incluir `vtd_arquivos` e `vtd_partes`? (hoje não entram; perguntar ao Elias)
 - [x] **P3b · Administração › Pastas do Vértice**: feita e publicada na v0.6.35.
@@ -43,7 +43,7 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 - [x] `features.csv` atualizado (27/11).
 - [x] **Cadastros de Coletas (v0.6.40):** publicada em 27/11 (efcwork fc4afcc).
 - [x] **Etiquetas das amostras:** feitas na v0.6.43 (Amostras, remessa, depois de Coletado). Antes: viram documentos do Vértice (decisão de 27/11 06:59). No Cwork, depois da P4: escolher onde abrir a etiqueta (aba, remessa, depois de "Coletado", amostras filtradas; o protótipo está em `fonte/rascunhos/`). Folha de campo das avulsas: perguntar se também vira documento do Vértice.
-- [ ] **Impressos e kit apontando para o Vértice** (depois da P4): e o que já está guardado no Cwork (`efd_docs`) muda de lugar uma vez.
+- [x] **Kit apontando para o Vértice:** feito na v0.6.44. O que já está guardado no Cwork (`efd_docs`) NÃO muda sozinho: o Elias troca no kit (resposta de 27/11 15:24); PDF continua em Impressos (o Vértice ainda não guarda PDF).
 - [ ] Da matriz, funções "must" que faltam: Conversas; Relatórios › Coletas em aberto; Só ver por área.
 - [ ] **Ideia (não pedida):** pôr a conferência de rótulos lado a lado no `medir.js` da família, para valer em todos os apps.
 - [ ] Matriz: conferir as 169 linhas "Janela …" e 4 outras "should" marcadas como não.
@@ -80,6 +80,8 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 - [ ] **v0.6.40 no ar:** Coletas › Cadastros abre as 6 listas; cadastrar um laboratório com endereço e ver o rótulo em Envio › Laboratórios; editar uma fazenda; desativar e reativar um talhão de teste. Dizer se alguém ainda cadastra pelo EFClaudian.
 
 - [ ] **Etiquetas de verdade (v0.6.43):** no Vértice, criar a sua planilha da etiqueta (igual à do EFClaudian, com o cabeçalho escrito, uma por laboratório se quiser) na pasta Etiquetas; marcar os campos em Arquivo › Campos do Cwork; ligar em Coletas › Cadastros › Modelos de etiqueta; imprimir pelo ícone em Amostras. Dizer se a letra (Helvetica no Vértice, Cambria no EFClaudian) incomoda.
+
+- [ ] **Kit (v0.6.44):** em Coletas › Envio › Laboratórios, trocar cada papel antigo pelo do Vértice (lixeira e Anexar papel); imprimir os papéis de uma remessa e conferir que a ficha sai preenchida.
 
 ## E. Defeitos abertos
 - [x] **Imagem do Excel saía como linha de assinatura com "Picture" na impressão do Vértice:** corrigido na v0.6.78 (ITEM 278).

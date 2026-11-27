@@ -67,9 +67,9 @@ async function semente(p) {
   await anexa('CUS-01'); await anexa('FIC-01');
   const kit = await p.evaluate(() => Data.col('sv2_impressos').all());
   conf(kit.length === 2 && kit.every(x => EFD.impresso(x).length === 0), 'os papéis do kit seguem o Contrato EFD (ponto coletas.envio)');
-  conf(kit.filter(x => x.ativo).length === 1 && kit.find(x => x.ativo).nome === 'Ficha de cotação · Laboratório A', 'custódia OU ficha: a ficha anexada depois substitui a custódia');
+  conf(kit.filter(x => x.ativo).length === 2 && kit.some(x => x.ativo && x.nome === 'Ficha de cotação · Laboratório A'), 'v0.6.44 (decisão de 27/11 15:24): custódia E ficha ficam juntas, até 2 por laboratório');
   t = await p.textContent('#gv');
-  conf(/Ficha de cotação/.test(t) && !/Cadeia de custódia/.test(t) && /Custódia ou ficha/.test(t) && /Rótulo destinatário e remetente/.test(t), 'a gaveta mostra o rótulo do sistema e a ficha');
+  conf(/Ficha de cotação/.test(t) && /Cadeia de custódia/.test(t) && /Custódia ou ficha/.test(t) && /Rótulo destinatário e remetente/.test(t), 'a gaveta mostra o rótulo do sistema, a custódia e a ficha');
   conf(/Kit pronto/.test(await p.textContent('#gv .gv-cab')), 'situação: Kit pronto');
   console.log('Enviar amostras abre os Papéis deste envio:');
   await fecha(p); await dd(p, 'kt:vista', 'rem');
@@ -78,7 +78,7 @@ async function semente(p) {
   await p.click('[data-act="co-env-ok"]'); await esp(p, 1200);
   conf(await p.evaluate(() => S.fm && S.fm.k === 'ktPap'), 'depois de enviar, abre "Papéis deste envio" (como a etiqueta no EFClaudian)');
   const sel = await p.evaluate(() => [...document.querySelectorAll('#gv [data-act="kt-ck"]')].map(x => x.querySelector('b').textContent + ':' + x.getAttribute('aria-pressed')).join(' | '));
-  conf(/Rótulo destinatário e remetente:true/.test(sel) && /Ficha de cotação · Laboratório A:true/.test(sel) && !/Cadeia/.test(sel), 'o rótulo e a ficha vêm marcados (' + sel + ')');
+  conf(/Rótulo destinatário e remetente:true/.test(sel) && /Ficha de cotação · Laboratório A:true/.test(sel) && /Cadeia de custódia · Laboratório A:true/.test(sel), 'o rótulo, a custódia e a ficha vêm marcados (' + sel + ')');
   const v = await p.evaluate(() => ['amostras', 'caixas', 'analise', 'pontos'].map(k => document.querySelector('[data-fm="' + k + '"]').value));
   conf(v[0] === '3' && v[1] === '1' && v[2] === 'Solo completo' && /T01A/.test(v[3]) && /T05A/.test(v[3]), 'os dados que vão para o papel já vêm com 3 amostras, a análise e os pontos (' + v.join(' · ') + ')');
   await p.fill('[data-fm="caixas"]', '2');
@@ -88,16 +88,17 @@ async function semente(p) {
   conf(/REMETENTE/.test(pr.html) && /Fazenda Norte Agrícola Ltda/.test(pr.html) && /Rodovia Exemplo/.test(pr.html) && /DESTINATÁRIO/.test(pr.html) && /Laboratório A Análises Ltda/.test(pr.html) && /Rua das Acácias, 100/.test(pr.html), 'remetente (cadastro da empresa) e destinatário (cadastro do laboratório) no rótulo');
   conf(pr.ab + (pr.ifr ? 1 : 0) >= 1, 'a ficha (PDF) foi para a impressão');
   const reg = await p.evaluate(() => Data.col('sv2_envio_imp').all());
-  conf(reg.length === 1 && reg[0].itens.length === 2 && reg[0].dados.caixas === '2' && reg[0].dados.amostras === '3' && reg[0].porNome === 'Joana Silva' && reg[0].itens.find(x => /Ficha/.test(x.nome)).rev === 1, 'fica registrado o que saiu, de que versão, quem e os dados');
+  conf(reg.length === 1 && reg[0].itens.length === 3 && reg[0].dados.caixas === '2' && reg[0].dados.amostras === '3' && reg[0].porNome === 'Joana Silva' && reg[0].itens.find(x => /Ficha/.test(x.nome)).rev === 1, 'fica registrado o que saiu, de que versão, quem e os dados');
   conf(await p.evaluate(() => Data.col('sv2_audit').all().then(l => l.some(x => x.acao === 'imprimir_envio'))), 'e vai para o histórico');
   console.log('Remessa: o que saiu e reimprimir:');
   await fecha(p);
   const k = reg[0].k; await p.evaluate(x => coAbreLote(x), k); await esp(p, 500);
   t = await p.textContent('#gv');
-  conf(/Documentos da remessa/.test(t) && /2 de 2 prontos/.test(t) && await p.evaluate(() => [...document.querySelectorAll('#gv .dr-i')].every(x => x.dataset.sit === 'Impresso')), 'a gaveta da remessa mostra os papéis e em que pé estão (v0.6.33: Documentos da remessa, Opção 2)');
+  conf(/Documentos da remessa/.test(t) && /3 de 3 prontos/.test(t) && await p.evaluate(() => [...document.querySelectorAll('#gv .dr-i')].every(x => x.dataset.sit === 'Impresso')), 'a gaveta da remessa mostra os papéis e em que pé estão (v0.6.33: Documentos da remessa, Opção 2)');
+  await p.evaluate(() => { if (typeof jnIr === 'function') jnIr('efcwork'); }); await esp(p, 300); /* v0.6.44: a custódia (planilha) agora fica no kit e abre o Vértice */
   await p.click('#gv [data-act="kt-pap"]'); await esp(p, 500);
   const re = await p.evaluate(() => ({ cx: document.querySelector('[data-fm="caixas"]').value, n: Object.values(S.fm.sel).filter(Boolean).length }));
-  conf(re.cx === '2' && re.n === 2, 'Reimprimir traz os mesmos papéis e os dados do último envio (' + JSON.stringify(re) + ')');
+  conf(re.cx === '2' && re.n === 3, 'Reimprimir traz os mesmos papéis e os dados do último envio (' + JSON.stringify(re) + ')');
   await p.evaluate(() => { S.fm.sujo = false; }); await fecha(p);
   console.log('Laboratório sem endereço e sem papel:');
   await p.click('[data-act="co-env"]'); await esp(p, 400); await p.click('[data-act="co-ck"][data-id="b1"]'); await p.click('[data-act="co-env-ok"]'); await esp(p, 1200);

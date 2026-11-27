@@ -128,7 +128,9 @@ export function conferirPedido(item, { c, revAtual } = {}) {
   if (forma.length) return { erro: 'campo-desconhecido', detalhe: 'O pedido não segue o combinado: ' + forma.join('; ') };
   if (typeof item.rev === 'number' && revAtual != null && item.rev !== revAtual) return { erro: 'revisao-mudou', detalhe: `O Cwork pediu a versão ${item.rev}, mas a versão compartilhada daqui é a ${revAtual}. Compartilhe de novo.` };
   const { campos } = camposDoLivro(c), marcados = new Set(campos.map((x) => x.lista || x.chave));
-  const bases = item.folhas && item.folhas.length ? item.folhas.map((f) => ({ ...item.dados, ...f })) : [item.dados];
+  let bases = item.folhas && item.folhas.length ? item.folhas.map((f) => ({ ...item.dados, ...f })) : [item.dados];
+  /* v0.6.79 (etapa 4): papel do kit ligado direto a um documento do Vértice: o Cwork manda tudo e vale só o que o documento tem marcado */
+  if (item.soMarcados) bases = bases.map((d) => Object.fromEntries(Object.entries(d).filter(([k]) => marcados.has(k))));
   const faltam = [...new Set(bases.flatMap((d) => Object.keys(d)))].filter((k) => !marcados.has(k));
   if (faltam.length) return { erro: 'campo-desconhecido', detalhe: 'O documento não tem campo marcado para: ' + faltam.map((k) => ROTULOS[k] || k).join(', ') + '.' };
   const cap = capacidades(c, campos), folhas = [];
