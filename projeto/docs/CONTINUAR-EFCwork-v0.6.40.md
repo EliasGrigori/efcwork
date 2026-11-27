@@ -1,21 +1,23 @@
-# EFCwork · CONTINUAR (27/11/2026) · NO AR: v0.6.40 (Coletas › Cadastros)
+# EFCwork · CONTINUAR (27/11/2026) · NO AR: v0.6.41 + Vértice v0.6.75 (o Vértice na nuvem)
 
 Substitui o CONTINUAR-EFCwork-v0.6.39.md. Quem ler só este arquivo sabe o que fazer.
 
 ## 0. Estado
+- **v0.6.41 (Cwork) + Vértice v0.6.75 · etapa 1, o Vértice na nuvem: APROVADA (ITENS 255 a 258, todos Aprovados, 27/11 11:15) e PUBLICADA** (efcwork commit 1e6a059, 27/11 09:07, feita por outra conversa com o mesmo código; esta conversa conferiu: `vertice/sw.js` no site com `vertice-v0.6.75`, `assets/app-HJC44Z2S.js` com a fila da nuvem, assets antigos apagados). Último ITEM usado: 258. **Falta o Elias fazer o roteiro curto das regras no site** (está na página dos ITENS 255 a 258).
+- **Só uma conversa por vez:** em 27/11 duas conversas tinham o mesmo trabalho; o Elias escolheu que esta segue com a etapa 2. Antes de publicar, `git fetch` e conferir se o GitHub andou.
 - **v0.6.40 (Coletas › Cadastros) PUBLICADA em 27/11** (efcwork commit fc4afcc; `sw.js` no site com `efcwork-0.6.40`). ITENS 239 a 254 aprovados (1ª rodada: 239, 243, 244, 246, 247, 248; 2ª rodada: 249 a 254). Último ITEM usado: 254.
 - O que tem: `src/cadcol.js` (prefixo cc): lista retrátil no alto (Talhões · Análises · Laboratórios · Tipos de coleta · Fazendas · Pontos de água), tabelas sem faixa de grupo, gaveta com lápis e lixeira (desativar com motivo, Reativar), Reajustar preços nas Análises, laboratório e fazenda com cadastro completo (endereço em `labInfo` e em `fazendas[]`), chaves travadas depois de criadas, prefixo da fazenda só ao criar. O lápis de Envio › Laboratórios abre o cadastro do laboratório.
 - **Decisão de 27/11 04:54:** o EFCwork é o foco; o EFClaudian vai ser descontinuado ou adaptado. Não prender telas a ele; não mexer no código dele; dados e regras do Firebase continuam os mesmos.
 - **Regra nova (27/11):** antes de toda página de aprovação, rodar a skill auditoria-visual-efc e a conferência `alinha` (ver `t_v0640.js`) em todo formulário, PC e celular. Não acrescentar função não pedida sem marcar como sugestão separada.
 - **Toda entrega leva o pacote de conversa nova** (pedido de 27/11).
-- Vértice v0.6.74 em `efcwork/vertice/` (não tocado).
+- Vértice v0.6.75 em `efcwork/vertice/` (código em `vertice/fonte/`; esta conversa está autorizada a mexer nele nas 3 etapas).
 
 ## 1. TEXTO PARA COLAR NA CONVERSA NOVA
 
 > EFCwork, continuando. Anexei o pacote único (EFCwork-PACOTE-NOVA-CONVERSA-v0.6.40.zip): CONTINUAR, dossiê, pendências, o app no ar e o fonte. Leia o CONTINUAR inteiro. Responda em 3 linhas: onde parou e qual é a próxima tarefa. Depois sugira o modelo e o esforço em **negrito** e espere meu "pode iniciar". Siga o "Padrão de trabalho" sem eu repetir. Repositório: EliasGrigori/efcwork (add_repo com envio; se negar, me diga e use o fonte do pacote). O Vértice está na pasta vertice/ do efcwork (o código é da conversa do Vértice; aqui só leitura). Não abra o OneDrive. Nada no EFClaudian. GitHub só com "pode publicar". Fique em primeiro plano. Toda entrega: o pacote único atualizado.
 
 ## 2. Próxima tarefa
-**Etapa 1 (Vértice na nuvem) pronta, esperando as respostas** dos ITENS 255 a 258 (artefato https://claude.ai/artifact/5oERb6u9qFKDBUNxh74ChC). Cwork v0.6.41 + Vértice v0.6.75, NÃO publicados e NÃO no GitHub: o fonte do Cwork está no pacote (`fonte/`) e as mudanças do Vértice em `vertice-fonte-v0.6.75.patch` + arquivos novos (`vertice-fonte-novos/`). Esta conversa está AUTORIZADA a mexer no Vértice (27/11 07:22) para as 3 etapas. Ao publicar: Cwork como sempre; Vértice: `npm run build` em `vertice/fonte`, copiar `dist/` para `vertice/` (index.html, sw.js, manifest, ícones, `assets/` trocado, apagar os assets antigos), registrar na `MEMORIA-DO-PROJETO.md` do Vértice. Testes do Cwork que sobem o Vértice usam `VERTICE_DIR=<pasta montada>`. Depois: etapa 2 (modo documento, decisões no dossiê de 27/11 07:3x) e etapa 3 (Cwork apontando para o Vértice).
+**Etapa 1 publicada (1e6a059). Próxima: etapa 2, modo documento** (decisões no dossiê de 27/11 07:3x): primeiro a página de aprovação com 5 ou mais modelos animados e fracionados. Ao publicar o Vértice: Cwork como sempre; Vértice: `npm run build` em `vertice/fonte`, copiar `dist/` para `vertice/` (index.html, sw.js, manifest, ícones, `assets/` trocado, apagar os assets antigos), registrar na `MEMORIA-DO-PROJETO.md` do Vértice. Testes do Cwork que sobem o Vértice usam `VERTICE_DIR=<pasta montada>`. Depois: etapa 2 (modo documento, decisões no dossiê de 27/11 07:3x) e etapa 3 (Cwork apontando para o Vértice).
 
 ## 2b. O que a v0.6.38 faz (CSP e SDK)
 - `tools/montar.py`: `SDK = '13.4.0'` (um lugar só: index.html, sw.js e regra) e a regra CSP no alto do index.html, com o sha256 do único `<script>` inline. **Qualquer mudança no index.html depois da montagem quebra o app** (o script fica barrado): teste que cria versão de mentira tem de recalcular o hash (ver `rehash` em `t_v0637.js`).

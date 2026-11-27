@@ -2,7 +2,7 @@
 
 Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conversa ou para o fim, para nada ficar para trás. Atualizado a cada mudança e enviado junto. Marque [x] quando estiver feito.
 
-Última atualização: 27/11/2026 · v0.6.40 no ar; etapa 1 (Vértice na nuvem: Cwork v0.6.41 + Vértice v0.6.75) em aprovação, ITENS 255 a 258.
+Última atualização: 27/11/2026 11:2x · Cwork v0.6.41 + Vértice v0.6.75 no ar (etapa 1 aprovada e publicada, commit 1e6a059); etapa 2 (modo documento) começando.
 
 ## A. Para a conversa do Vértice (o Elias leva)
 - [ ] **NOVO (27/11 06:59) · Todos os documentos só no Vértice:** nota `NOTA-DO-CWORK-para-o-Vertice-documentos-so-no-Vertice.md`. Hospedar tudo lá (internos e externos); o Cwork guarda só a ligação; versão nova vale sozinha; PDF baixa e imprime direto; planilha e Word abrem em modo documento, só aquela aba ou folha, só os campos desbloqueados. Junta a P4 com os ITENS 195 e 196.
@@ -18,11 +18,12 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 - [ ] **Vários Vértices abertos ao mesmo tempo (feito no Cwork na v0.6.35, até 10 abas):** o Vértice deve mandar a mensagem 'arquivo' também quando abre um documento pelo Cwork (#/abrir), para o Cwork saber que a aba já tem arquivo. dois Vértices no mesmo aparelho não podem gravar o mesmo arquivo ao mesmo tempo (aviso "aberto em outra aba" ou só leitura na segunda), e cada um avisa o nome do arquivo dele.
 - [ ] **pastas() (P3b, v0.6.35):** a porta devolve, por pasta, { nome, ler, editar, salvar }; o Vértice mostra só as pastas com ler, e só salva onde salvar = true; avisa quando recebe `cwork:usuario`.
 - [ ] **ITEM 184 (v0.6.33) · PDF preenchido de volta:** `NOTA-DO-EFCWORK-para-o-Vertice-pdf-preenchido.md`. Precisa do contrato EFD v2 nos dois repositórios no mesmo dia, junto com a P4, com ordem do Elias.
-- [ ] **P4 · documentos na nuvem:** gravar e abrir arquivos (`vtd_arquivos`, `vtd_partes`); tudo o que for arquivado no Cwork aparece no Vértice (PDF; Word e planilha abrem no Vértice para editar e imprimir); o que o Elias edita, posta ou remove no Vértice atualiza sozinho no Cwork.
+- [x] **P4 · documentos na nuvem (feito pela conversa do Cwork, v0.6.75):** gravar e abrir arquivos (`vtd_arquivos`, `vtd_partes`); tudo o que for arquivado no Cwork aparece no Vértice (PDF; Word e planilha abrem no Vértice para editar e imprimir); o que o Elias edita, posta ou remove no Vértice atualiza sozinho no Cwork.
 - [ ] **Ligações futuras (item 1.8 do pedido):** preencher formulário, abrir procedimento, programações no Kanban do Vértice com relatórios no fichário do Cwork.
 
 ## B. Para esta conversa (Cwork), na ordem aprovada
-- [ ] **Etapa 1 · Vértice na nuvem (P4):** pronta; responder a página (ITENS 255 a 258). Depois de publicar: o roteiro curto no site (está na página).
+- [x] **Etapa 1 · Vértice na nuvem (P4):** aprovada (ITENS 255 a 258) e publicada em 27/11 (1e6a059).
+- [ ] **Elias: roteiro curto das regras no site** (4 passos, na página dos ITENS 255 a 258).
 - [ ] **Etapa 2 · modo documento:** aberto pelo Cwork, ninguém salva; só escrever; sem menus; orientação do modelo; três pontinhos com "Atualizar documento" (abre o Vértice inteiro).
 - [ ] **Etapa 3 · Cwork apontando para o Vértice:** Impressos, kit e etiquetas; o que já está guardado no Cwork (`efd_docs`) muda de lugar uma vez.
 - [ ] Backup do Cwork: incluir `vtd_arquivos` e `vtd_partes`? (hoje não entram; perguntar ao Elias)
