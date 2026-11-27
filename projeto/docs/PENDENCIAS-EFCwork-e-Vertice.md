@@ -2,7 +2,7 @@
 
 Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conversa ou para o fim, para nada ficar para trás. Atualizado a cada mudança e enviado junto. Marque [x] quando estiver feito.
 
-Última atualização: 27/11/2026 · v0.6.38 no ar; v0.6.39 (limpeza visual) pronta, esperando "pode publicar".
+Última atualização: 27/11/2026 · v0.6.39 (limpeza visual) no ar. Próxima: corrigir o teste `t_v050`.
 
 ## A. Para a conversa do Vértice (o Elias leva)
 - [ ] **O código do Vértice mora agora em `efcwork/vertice/fonte/`** (depois de publicada a P5): a conversa do Vértice clona o efcwork e publica na pasta `vertice/`. Está na memória do Vértice (registro de 26/11, 16:57).
@@ -31,7 +31,7 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 - [ ] **ITEM 185 · ícone do Vértice no menu:** o Elias vai mandar o print do ícone que quer.
 - [x] **Aviso de versão nova (v0.6.37):** aprovado (226 = janela no meio; "Depois" leva ao pé do menu) e publicado em 26/11.
 - [x] **CSP e SDK (v0.6.38):** regra de segurança ligada e SDK 13.4.0.
-- [ ] **Limpeza visual (v0.6.39):** respondida e aplicada; falta o seu "pode publicar". Depois, no site: o botão dourado parado e o brilho só ao passar o mouse; letras um pouco maiores.
+- [x] **Limpeza visual (v0.6.39):** publicada em 27/11 (efcwork 756527b).
 - [ ] `features.csv` · Cadastros de Coletas (por último).
 - [ ] Estudo de rapidez (`ESTUDO-rapidez-EFCwork-v0.6.33.md`): só depois da integração.
 - [x] Janela por cima: virou a tela inteira com abas (v0.6.35); a área ao lado do menu saiu.
@@ -56,6 +56,8 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 - [ ] Numa tabela (Almoxarifado), buscar e marcar itens de três buscas; a janela do filtro não treme.
 - [ ] Uma tarefa passada para você (Principal) conclui direto; uma parada em "Para conferir" tem Concluir.
 - [ ] "Esqueci a senha" e primeiro acesso no Firebase real.
+
+- [ ] **v0.6.39 no ar:** a janela "Versão nova do app" aparece; o botão dourado fica parado e o brilho passa uma vez quando o mouse chega (PC); letras um pouco maiores sem texto cortado no seu celular; no Escuro, título e linha da aba lisos e fundo sem roxo.
 
 ## E. Defeitos abertos
 - [ ] **Teste do calendário (`t_v050`) falha perto do fim do mês:** o teste toca num dia do mês seguinte; corrigir o teste (achado em 27/11; a tela está certa).

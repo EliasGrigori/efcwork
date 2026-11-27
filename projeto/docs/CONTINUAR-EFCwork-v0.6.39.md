@@ -1,21 +1,19 @@
-# EFCwork · CONTINUAR (27/11/2026) · NO AR: v0.6.38 · PRONTA, ESPERANDO "pode publicar": v0.6.39 (limpeza visual)
+# EFCwork · CONTINUAR (27/11/2026) · NO AR: v0.6.39 (limpeza visual)
 
 Substitui o CONTINUAR-EFCwork-v0.6.38.md. Quem ler só este arquivo sabe o que fazer.
 
 ## 0. Estado
-- **v0.6.39 (limpeza visual) pronta e testada, NÃO publicada:** respostas de 27/11 03:25 aplicadas (233 OPÇÃO 5 "Original": botão como hoje, brilho só quando o mouse chega; 234, 235 e 237 aprovados; 236 reprovado; 238 OPÇÃO 5: letras 12 · 14 · 16 · 18 · 22 · 28). Falta só o "pode publicar" do Elias: publicar como na seção 4 e entregar o pacote único. Último ITEM usado: 238.
+- **v0.6.39 (limpeza visual) PUBLICADA em 27/11** (efcwork commit 756527b). Respostas aplicadas: 233 OPÇÃO 5 "Original" (botão como antes, brilho só quando o mouse chega); 234, 235 e 237 aprovados; 236 reprovado; 238 OPÇÃO 5 (letras 12 · 14 · 16 · 18 · 22 · 28). Último ITEM usado: 238.
 - **Toda entrega leva o pacote de conversa nova** (pedido de 27/11): ZIP do app no ar, fonte, CONTINUAR, dossiê e pendências.
-- **v0.6.38 (CSP e SDK):** regra de segurança (CSP) com hash do script calculada no `montar.py` e SDK do Firebase 13.4.0 (compat). Publicada em 26/11 (efcwork commit 9c683f4).
-- Antes: v0.6.37 (aviso de versão nova) publicada em 26/11 (commit 6bdb386). Vértice v0.6.74 em `efcwork/vertice/`.
-- **Conferir no site de verdade (só dá lá):** entrar com a conta; abrir uma tela com dados; Administração › Sobre deve mostrar "Firebase (SDK) 13.4.0" e "Regra de segurança: ligada · nada barrado". Se disser "barrou", o que foi barrado fica em `cw-csp` (localStorage) e no console.
-- **Primeira publicação com aviso de versão:** esta (v0.6.38). Quem está na v0.6.37 vê a janela "Versão nova do app".
+- Vértice v0.6.74 em `efcwork/vertice/` (não tocado).
+- **Conferir no site de verdade:** entrar com a conta; abrir uma tela com dados; Administração › Sobre: "Firebase (SDK) 13.4.0" e "Regra de segurança: ligada · nada barrado". Se disser "barrou", ver `cw-csp` (localStorage) e o console. Quem estava na v0.6.38 vê a janela "Versão nova do app".
 
 ## 1. TEXTO PARA COLAR NA CONVERSA NOVA
 
-> EFCwork, continuando. Anexei o pacote único (EFCwork-PACOTE-NOVA-CONVERSA-v0.6.39.zip): CONTINUAR, dossiê, pendências, o app no ar, o app pronto e o fonte. Leia o CONTINUAR inteiro. Responda em 3 linhas: onde parou e qual é a próxima tarefa. Depois sugira o modelo e o esforço em **negrito** e espere meu "pode iniciar". Siga o "Padrão de trabalho" sem eu repetir. Repositório: EliasGrigori/efcwork (add_repo com envio; se negar, me diga e use o fonte do pacote). O Vértice está na pasta vertice/ do efcwork (o código é da conversa do Vértice; aqui só leitura). Não abra o OneDrive. Nada no EFClaudian. GitHub só com "pode publicar". Fique em primeiro plano. Toda entrega: o pacote único atualizado.
+> EFCwork, continuando. Anexei o pacote único (EFCwork-PACOTE-NOVA-CONVERSA-v0.6.39.zip): CONTINUAR, dossiê, pendências, o app no ar e o fonte. Leia o CONTINUAR inteiro. Responda em 3 linhas: onde parou e qual é a próxima tarefa. Depois sugira o modelo e o esforço em **negrito** e espere meu "pode iniciar". Siga o "Padrão de trabalho" sem eu repetir. Repositório: EliasGrigori/efcwork (add_repo com envio; se negar, me diga e use o fonte do pacote). O Vértice está na pasta vertice/ do efcwork (o código é da conversa do Vértice; aqui só leitura). Não abra o OneDrive. Nada no EFClaudian. GitHub só com "pode publicar". Fique em primeiro plano. Toda entrega: o pacote único atualizado.
 
 ## 2. Próxima tarefa
-Publicar a v0.6.39 com o "pode publicar". Depois: corrigir o teste `t_v050` (data); `features.csv`; Cadastros de Coletas por último.
+Corrigir o teste `t_v050` (toca num dia do mês seguinte e falha perto do fim do mês; a tela está certa). Depois: `features.csv`; Cadastros de Coletas por último.
 
 ## 2b. O que a v0.6.38 faz (CSP e SDK)
 - `tools/montar.py`: `SDK = '13.4.0'` (um lugar só: index.html, sw.js e regra) e a regra CSP no alto do index.html, com o sha256 do único `<script>` inline. **Qualquer mudança no index.html depois da montagem quebra o app** (o script fica barrado): teste que cria versão de mentira tem de recalcular o hash (ver `rehash` em `t_v0637.js`).
@@ -35,7 +33,7 @@ Publicar a v0.6.39 com o "pode publicar". Depois: corrigir o teste `t_v050` (dat
 - Montar: `cd projeto && python3 tools/montar.py` (gera `dist/`). A versão fica em `VERSAO` (`src/base.js`); o cache do sw é `efcwork-<versão>`.
 - Testes: `NODE_PATH=$(npm root -g) node tools/testes/t_*.js` (um por vez ou `xargs -P 3`, em dois lotes de comando, cada comando até 600 s). Depois: desfazer os prints regravados (`git checkout -- projeto/tools/testes/telas`).
 - Medidor: `NODE_PATH=$(npm root -g) node tools/auditoria/medir.js tools/auditoria/efcwork.json --estrito` (0 defeitos).
-- Publicar: copiar de `dist/` para a raiz do repositório index.html, sw.js, manifest.webmanifest, icon-192.png, icon-512.png, icon-maskable-512.png, apple-touch-icon.png; `git add` esses, `projeto/src`, docs e testes (nunca `dist/`); commit com os trailers da sessão; `git push origin HEAD:main`. Não mexer em `vertice/`.
+- Publicar: copiar de `dist/` para a raiz do repositório index.html, sw.js, manifest.webmanifest, icon-192.png, icon-512.png, icon-maskable-512.png, apple-touch-icon.png; `git add` esses, `projeto/src`, docs e testes (nunca `dist/`; `projeto/dist` está rastreado no git, então desfazer com `git checkout -- projeto/dist` depois de copiar para a raiz); commit com os trailers da sessão; `git push origin HEAD:main`. Não mexer em `vertice/`.
 - Página de aprovação desta versão: `tools/visual/v0637/cap.js` e `monta.py` (as 5 formas foram filmadas com o protótipo; o código atual tem só a escolhida).
 
 ## 5. Padrão de trabalho (o que ele amou; não perder)
@@ -54,8 +52,8 @@ Publicar a v0.6.39 com o "pode publicar". Depois: corrigir o teste `t_v050` (dat
 **Proibições:** não abrir nem tentar o OneDrive sem ele pedir pelo nome; nada no EFClaudian; não falar dos prints antigos do repositório público; dado real, senha e chave nunca entram no projeto; regras do Firestore são compartilhadas com o EFClaudian (alto risco).
 
 ## 6. Depois (cada uma só com "pode iniciar")
-1. CSP e SDK do Firebase.
-2. Limpeza visual; `features.csv`; Cadastros de Coletas (por último).
+1. Teste `t_v050`.
+2. `features.csv`; Cadastros de Coletas (por último).
 3. Ligação com o Vértice (P4, documentos na nuvem): depende da conversa do Vértice. Lista em PENDENCIAS.
 
 ## 7. Decisões em aberto (perguntar uma por vez, na hora certa)
@@ -68,7 +66,7 @@ Publicar a v0.6.39 com o "pode publicar". Depois: corrigir o teste `t_v050` (dat
 - Todo dado em HTML passa por `esc()` (`t_html_seg`).
 
 ## 9. Firebase
-Nada a configurar na v0.6.37.
+Nada a configurar na v0.6.39.
 
 ## 10. Armadilhas
 - `t_v067` falha por datas (antigo, ABERTO). `t_v0636v` precisa do clone antigo do EFCdocs (variável do teste). `t_v034` e `t_v0635f` podem falhar em paralelo e passam sozinhos.
