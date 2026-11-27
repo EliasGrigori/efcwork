@@ -116,7 +116,7 @@ async function login(p) {
     const td = document.querySelector('.tb-t tbody td'); const fam = document.querySelector('.cs-app-l'); const it = document.querySelector('.cs-lado .cs-it:not(.on):not(.cs-app-l):not(.cs-adm)');
     return { icb: g('.tb-bar .bt.ic-so', 'borderTopColor'), icbg: g('.tb-bar .bt.ic-so', 'backgroundColor'), h1: g('.cs-ph h1', 'fontSize'), row: td ? Math.round(td.getBoundingClientRect().height) : 0, linha: td ? getComputedStyle(td).borderRightWidth : '', famOp: fam ? getComputedStyle(fam).opacity : '1', famBd: fam ? getComputedStyle(fam).borderTopWidth : '1px', itOp: it ? getComputedStyle(it).opacity : '' }; });
   conf(/rgba\(0, 0, 0, 0\)|transparent/.test(ap.icb) && /rgba\(0, 0, 0, 0\)|transparent/.test(ap.icbg), 'ITEM 2: botão só de ícone sem contorno parado');
-  conf(ap.h1 === '26px', 'ITEM 6: título da página com 26 px');
+  conf(ap.h1 === '28px', 'ITEM 6: título da página com 28 px (era 26; escala da v0.6.39, ITEM 238)');
   conf(ap.row === 36, 'ITEM 8: linha da tabela com 36 px no PC (' + ap.row + ')');
   conf(ap.linha === '1px', 'pedido do ITEM 8: linha fina entre as colunas');
   conf(ap.itOp === '0.74' && ap.famOp === '1' && ap.famBd === '1px', 'ITEM 9: menu mais calmo, mas Vértice e Sabiá com contraste cheio e destaque');

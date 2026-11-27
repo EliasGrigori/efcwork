@@ -9,9 +9,9 @@
 @media(hover:hover){.rp-ap:hover{background:var(--aS)}}
 .rp-c{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;min-width:0}
 .rp-c b{font:700 14px var(--f);color:var(--tx)}
-.rp-d{font-size:13px;color:var(--tx3);font-variant-numeric:tabular-nums}
+.rp-d{font-size:14px;color:var(--tx3);font-variant-numeric:tabular-nums}
 .rp-o{margin:6px 0 0;font-size:14px;color:var(--tx);overflow-wrap:anywhere}
-.rp-l{margin:4px 0 0;font-size:13px;color:var(--tx2);overflow-wrap:anywhere}
+.rp-l{margin:4px 0 0;font-size:14px;color:var(--tx2);overflow-wrap:anywhere}
 .rp-l b{font-weight:600;color:var(--tx);margin-right:4px}
 .rp-q{margin:4px 0 0;font-size:12px;color:var(--tx3)}
 .rp-fx{margin:6px 0 0;font-size:12px;color:var(--tx3)}

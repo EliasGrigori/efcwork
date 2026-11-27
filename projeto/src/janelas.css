@@ -60,7 +60,7 @@ body.jn-fora-on{overflow:hidden}
 /* no toque: faixa de 40 px (dedo), letra de 13 px; fio de 6 px com 12 px a mais para acertar */
 @media(pointer:coarse){
   .jn{height:40px;transform:translateY(-34px)}.jn.aberta{transform:none}.jn-fr{top:40px}
-  .jn-ab{font-size:13px;padding:0 12px}.jn-aw{min-width:88px}
+  .jn-ab{font-size:14px;padding:0 12px}.jn-aw{min-width:88px}
   .jn-x{width:36px;margin:0 2px 0 -4px}.jn-mais{width:44px}
   .jn-x::before,.jn-mais::before{width:30px;height:30px;margin:-15px 0 0 -15px}
   .jn-zona{height:12px}

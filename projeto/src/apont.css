@@ -13,7 +13,7 @@
 .ap-cf.vz .ic{width:20px;height:20px;color:var(--tx3)}
 .ap-ct{flex:1;min-width:0}
 .ap-ct>b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ap-cd{display:block;font-size:13px;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ap-cd{display:block;font-size:14px;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ap-ct>small{display:block;font-size:12px;color:var(--tx3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ap-cp{display:flex;gap:5px;flex-wrap:wrap;margin:4px 0 0}
 .pill.ap-risc{text-decoration:line-through;opacity:.75}
@@ -35,7 +35,7 @@
 .ap-fi img{width:100%;height:100%;object-fit:cover;display:block}
 .ap-fi.vz{cursor:default}
 .ap-hist{display:flex;flex-direction:column}
-.ap-hist>div{padding:7px 0;border-bottom:1px solid var(--bd);font-size:13px;color:var(--tx3)}
+.ap-hist>div{padding:7px 0;border-bottom:1px solid var(--bd);font-size:14px;color:var(--tx3)}
 .ap-hist>div:last-child{border-bottom:0}
 .ap-hist b{color:var(--tx2);font-weight:600}
 .ap-hist span{display:block;color:var(--tx)}
@@ -44,7 +44,7 @@
 .ap-pe .bt{width:100%;min-width:0;justify-content:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:8px;padding-right:8px}
 .ap-pe:has(.bt:nth-child(4)){grid-template-columns:repeat(2,minmax(0,1fr))} /* opção A (14/11): com 4 botões, 2 por linha, texto inteiro */
 .ap-par{display:flex;flex-direction:column;gap:6px;margin:4px 0 10px}
-.ap-pl{display:grid;grid-template-columns:minmax(90px,1fr) minmax(0,2fr) auto auto;gap:8px;align-items:center;font-size:13px}
+.ap-pl{display:grid;grid-template-columns:minmax(90px,1fr) minmax(0,2fr) auto auto;gap:8px;align-items:center;font-size:14px}
 .ap-pn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--tx2)}
 .ap-pb{display:block;height:14px;background:var(--bg2);border-radius:4px;overflow:hidden}
 .ap-pb i{display:block;height:100%;background:var(--bd2);border-radius:4px}

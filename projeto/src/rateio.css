@@ -1,10 +1,10 @@
 /* EFCwork · rateio.css — Rateios (v0.6.17). Prefixo: rt. */
 .rt-canc{color:var(--tx3);font-size:12px}
 .rt-em-v{display:flex;flex-direction:column;align-items:flex-start;gap:2px;margin:0 0 10px}
-.rt-em-v b{font-size:24px;font-weight:600;color:var(--tx);line-height:1.15}
-.rt-em-v small{font-size:13px;color:var(--tx3)}
+.rt-em-v b{font-size:22px;font-weight:600;color:var(--tx);line-height:1.15}
+.rt-em-v small{font-size:14px;color:var(--tx3)}
 .rt-pkl{max-height:min(38vh,320px);overflow:auto}
-.rt-pkl .cb-ck em{font-style:normal;font-size:13px;color:var(--tx2);white-space:nowrap;margin-left:auto}
+.rt-pkl .cb-ck em{font-style:normal;font-size:14px;color:var(--tx2);white-space:nowrap;margin-left:auto}
 .rt-pkl .cb-ck small{display:block;font-size:12px;color:var(--tx3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tb-t td.rt-c{max-width:168px}
 @media(max-width:899px){.tb-t td.rt-c{max-width:170px}}

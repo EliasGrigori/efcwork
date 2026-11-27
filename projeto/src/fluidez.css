@@ -17,7 +17,6 @@
 .cs-abas.fz-abas{position:relative}
 .cs-abas.fz-abas a.on{border-bottom-color:transparent;border-image:none}
 .fz-linha{background:var(--a);border-radius:0}
-:root[data-tema="escuro"] .fz-linha{background:linear-gradient(90deg,#f7df9e,#b4862f)}
 /* conteúdo que entra na troca de tela */
 .cs-ct.fz-entra{animation:fzEntra var(--duration-fast) var(--ease-smooth-out)}
 @keyframes fzEntra{from{opacity:0;transform:translateX(calc(var(--fz-dir,1) * 12px))}}

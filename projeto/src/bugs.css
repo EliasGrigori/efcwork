@@ -30,7 +30,7 @@
 .bs-com-vz{margin:6px 0 14px}
 .bs-com{list-style:none;margin:8px 0 16px;padding:0;display:flex;flex-direction:column;gap:8px}
 .bs-com li{border:1px solid var(--bd);border-radius:8px;padding:8px 10px;background:var(--bg1)}
-.bs-com-q{display:flex;align-items:baseline;justify-content:space-between;gap:8px;font-size:13px}
+.bs-com-q{display:flex;align-items:baseline;justify-content:space-between;gap:8px;font-size:14px}
 .bs-com-q span{color:var(--tx3);font-size:12px}
 .bs-com p{margin:4px 0 0;font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere}
 .bs-com-f{margin-top:6px;display:block;width:96px;height:72px;padding:0;border:1px solid var(--bd);border-radius:6px;overflow:hidden;background:none;cursor:zoom-in}

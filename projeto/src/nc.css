@@ -1,5 +1,5 @@
 /* EFCwork · nc.css — Qualidade › Não conformidades (v0.6.16) */
-.nq-n{color:var(--tx3);font-size:12.5px;white-space:nowrap}
+.nq-n{color:var(--tx3);font-size:14px;white-space:nowrap}
 @media(max-width:899px){.cs-acts:has([data-act="nq-folha"]){flex:1 1 100%;width:100%}.cs-acts [data-act="nq-folha"]{width:100%;justify-content:center}}
 @media print{
   body.au-imprimindo #au-imp[data-modo="qualidade"]{font-size:10pt}

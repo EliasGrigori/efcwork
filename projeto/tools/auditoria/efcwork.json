@@ -110,6 +110,55 @@
    ]
   },
   {
+   "nome": "Coletas › Programação",
+   "passos": [
+    {
+     "eval": "location.hash='#/coletas/programacao'"
+    }
+   ]
+  },
+  {
+   "nome": "Coletas › Plano de coleta",
+   "passos": [
+    {
+     "eval": "location.hash='#/coletas/plano'"
+    }
+   ]
+  },
+  {
+   "nome": "Sino aberto",
+   "passos": [
+    {
+     "eval": "location.hash='#/inicio'"
+    },
+    {
+     "eval": "snAbrir()"
+    }
+   ]
+  },
+  {
+   "nome": "Busca aberta",
+   "passos": [
+    {
+     "eval": "if(typeof snFechar==='function')snFechar();location.hash='#/inicio'"
+    },
+    {
+     "eval": "bgAbrir()"
+    }
+   ]
+  },
+  {
+   "nome": "Depois da busca (fecha)",
+   "passos": [
+    {
+     "eval": "bgFechar()"
+    },
+    {
+     "eval": "location.hash='#/inicio'"
+    }
+   ]
+  },
+  {
    "nome": "Coletas › Envio",
    "passos": [
     {
@@ -523,9 +572,8 @@
  ],
  "ignorar": [
   ".tb-hm",
-  "#au-imp"
+  "#au-imp",
+  ".pg-i"
  ],
- "infinitasAprovadas": [
-  "ouroBrilho"
- ]
+ "infinitasAprovadas": []
 }

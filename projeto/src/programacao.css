@@ -2,21 +2,21 @@
 .pill.info{background:var(--aS);color:var(--aTx)}
 .pg-aviso{padding:10px 12px;margin-bottom:12px}
 .pg-res{display:flex;flex-direction:column;gap:2px;padding:9px 12px;border:1px solid var(--bd);border-radius:var(--rs);background:var(--bg0);font-size:14px;margin-top:8px}
-.pg-res small{color:var(--tx3);font-size:13px}
+.pg-res small{color:var(--tx3);font-size:14px}
 .pg-ans{margin-bottom:4px}
 /* tabela (modelo 5) */
-.pg-sub{display:block;color:var(--tx3);font-size:13px;font-weight:400;margin-top:1px}
+.pg-sub{display:block;color:var(--tx3);font-size:14px;font-weight:400;margin-top:1px}
 /* cartões dos planos: uma faixa que rola de lado; tamanho fixo, não muda quando a gaveta abre */
 .pg-planos{display:flex;gap:12px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px;align-items:stretch}
 .pg-pl{flex:0 0 380px;background:var(--bg1);border:1px solid var(--bd);border-radius:var(--r);padding:12px 14px;display:flex;flex-direction:column;gap:8px}
 .pg-pl header{display:flex;align-items:baseline;gap:8px}
-.pg-pl h3{margin:0;flex:1;min-width:0;font-family:var(--fh);font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pg-dt{font-size:13px;color:var(--tx3);white-space:nowrap}
-.pg-pl small{color:var(--tx3);font-size:13px}
+.pg-pl h3{margin:0;flex:1;min-width:0;font-family:var(--fh);font-weight:600;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pg-dt{font-size:14px;color:var(--tx3);white-space:nowrap}
+.pg-pl small{color:var(--tx3);font-size:14px}
 .pg-plb{height:6px;border-radius:var(--rs);background:var(--bg2,var(--bd));overflow:hidden}.pg-plb i{display:block;height:100%;background:var(--ok)}
 .pg-pln{margin:0;font-size:14px;color:var(--tx2)}.pg-pln b{color:var(--tx)}
 .pg-ars{display:flex;flex-wrap:wrap;gap:5px}
-.pg-ar{display:inline-grid;place-items:center;min-width:44px;height:26px;padding:0 6px;border-radius:var(--rs);font-size:13px;font-weight:600;border:1px solid var(--bd);color:var(--tx3);background:var(--bg1);font-variant-numeric:tabular-nums}
+.pg-ar{display:inline-grid;place-items:center;min-width:44px;height:26px;padding:0 6px;border-radius:var(--rs);font-size:14px;font-weight:600;border:1px solid var(--bd);color:var(--tx3);background:var(--bg1);font-variant-numeric:tabular-nums}
 .pg-ar{border-color:var(--arFB);color:var(--tx2)}
 .pg-ar.c{background:var(--arC);border-color:var(--arC);color:#fff}
 .pg-ar.p{border-color:var(--arPB);background:var(--arPF)}
@@ -25,7 +25,7 @@
 .pg-lg{position:relative;display:inline-flex}
 .pg-i{position:relative;width:22px;height:22px;padding:0;border:1px solid var(--bd2);border-radius:50%;background:var(--bg1);color:var(--tx2);display:inline-grid;place-items:center;cursor:help}
 .pg-i .ic{width:14px;height:14px}
-.pg-leg{position:absolute;left:auto;right:0;top:calc(100% + 6px);z-index:30;display:none;flex-direction:column;gap:6px;padding:10px 12px;margin:0;background:var(--bg1);border:1px solid var(--bd2);border-radius:var(--rs);box-shadow:0 10px 30px rgba(0,0,0,.18);font-size:13px;color:var(--tx2);white-space:nowrap}
+.pg-leg{position:absolute;left:auto;right:0;top:calc(100% + 6px);z-index:30;display:none;flex-direction:column;gap:6px;padding:10px 12px;margin:0;background:var(--bg1);border:1px solid var(--bd2);border-radius:var(--rs);box-shadow:0 10px 30px rgba(0,0,0,.18);font-size:14px;color:var(--tx2);white-space:nowrap}
 .pg-lg:hover .pg-leg,.pg-lg:focus-within .pg-leg{display:flex}
 .pg-leg span{display:inline-flex;align-items:center;gap:8px}.pg-leg .pg-ar{min-width:22px;height:14px;padding:0}
 .pg-cdi{flex:1;min-width:0}

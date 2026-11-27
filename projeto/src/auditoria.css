@@ -8,8 +8,8 @@
 .au-bk .hd+.au-cl{border-top:0}
 .au-clh{display:flex;align-items:center;gap:10px;padding:8px 16px 4px;min-height:40px}
 .au-clh b{font-weight:600;font-size:14px}
-.au-clh>span{color:var(--tx3);font-size:13px}
-.au-add{display:inline-flex;align-items:center;gap:5px;margin-left:auto;height:var(--btn);font:inherit;font-size:13px;font-weight:600;color:var(--tx2);border:1px dashed var(--bd2);border-radius:var(--rs);padding:0 10px;background:none;cursor:pointer;flex:none}
+.au-clh>span{color:var(--tx3);font-size:14px}
+.au-add{display:inline-flex;align-items:center;gap:5px;margin-left:auto;height:var(--btn);font:inherit;font-size:14px;font-weight:600;color:var(--tx2);border:1px dashed var(--bd2);border-radius:var(--rs);padding:0 10px;background:none;cursor:pointer;flex:none}
 .au-add:hover{background:var(--row);color:var(--tx)}
 .au-add .ic{width:13px;height:13px}
 .au-bk .hd .au-add{margin-left:0;height:var(--btn)}
@@ -19,10 +19,10 @@
 .au-th{width:36px;height:36px;border-radius:6px;overflow:hidden;flex:none;background:var(--bg2);display:grid;place-items:center;color:var(--tx3)}
 .au-th img{width:100%;height:100%;object-fit:cover;display:block}
 .au-th .ic{width:16px;height:16px}
-.au-nn{font-size:13px;font-weight:600;color:var(--tx3);flex:none;width:46px}
+.au-nn{font-size:14px;font-weight:600;color:var(--tx3);flex:none;width:46px}
 .au-nc .tx{flex:1;min-width:0;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .au-nc .tx b{font-weight:600}
-.au-nc .tx small{color:var(--tx3);font-size:13px}
+.au-nc .tx small{color:var(--tx3);font-size:14px}
 .au-pl{display:flex;gap:6px;flex:0 1 auto;flex-wrap:wrap;justify-content:flex-end;max-width:52%}
 .au-nc .tx{min-width:160px}
 /* gaveta: gravidade, GUT, listas */
@@ -32,16 +32,16 @@
 .ap-gbt.r-resolvida.on{border-color:var(--ok);color:var(--ok)}
 .au-gut{border:1px solid var(--bd);border-radius:var(--rs);padding:10px 12px;margin-top:10px;background:var(--bg0)}
 .au-gl{margin:0 0 10px}
-.au-gk{display:block;font-size:13px;font-weight:600;color:var(--tx2);margin:0 0 5px}
+.au-gk{display:block;font-size:14px;font-weight:600;color:var(--tx2);margin:0 0 5px}
 .au-gbs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
-.au-gtx{display:block;font-size:13px;color:var(--tx3);margin-top:4px;min-height:18px}
+.au-gtx{display:block;font-size:14px;color:var(--tx3);margin-top:4px;min-height:18px}
 .au-gtx b{color:var(--tx);font-weight:600}
 .au-gres{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-top:8px;border-top:1px solid var(--bd);font-size:14px;min-height:var(--btn)}
-.au-gres small{color:var(--tx3);font-size:13px}
+.au-gres small{color:var(--tx3);font-size:14px}
 .au-gres .bt{margin-left:auto}
 .au-gv{color:var(--tx3)}
 .au-chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 6px}
-.au-chip{display:inline-flex;align-items:center;gap:4px;font-size:13px;padding:2px 4px 2px 9px;border-radius:var(--rs);background:var(--bg2);color:var(--tx);max-width:100%}
+.au-chip{display:inline-flex;align-items:center;gap:4px;font-size:14px;padding:2px 4px 2px 9px;border-radius:var(--rs);background:var(--bg2);color:var(--tx);max-width:100%}
 .au-chip button{display:grid;place-items:center;width:28px;height:28px;border:0;background:none;color:var(--tx3);cursor:pointer;border-radius:5px}
 .au-chip button:hover{background:var(--bd)}
 .au-chip .ic{width:13px;height:13px}
@@ -57,7 +57,7 @@
 .au-cfn .au-th{width:56px;height:56px}
 .au-cfn b{display:block;font-weight:600}
 .au-cfn span{display:block;font-size:14px}
-.au-cfn small{display:block;color:var(--tx3);font-size:13px;margin-top:2px}
+.au-cfn small{display:block;color:var(--tx3);font-size:14px;margin-top:2px}
 /* apresentação (tela cheia, uma NC por tela) */
 .au-apr{position:fixed;inset:0;z-index:60;background:var(--bg0);display:flex;flex-direction:column}
 body.au-apr-on{overflow:hidden}
@@ -72,8 +72,8 @@ body.au-apr-on{overflow:hidden}
 .au-apfi{padding:0;border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;background:var(--bg2);cursor:zoom-in;max-width:100%;display:block}
 .au-apfi{width:100%}
 .au-apfi img{display:block;width:100%;height:auto;max-height:62vh;object-fit:contain}
-.au-apfn{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--tx3)}
-.au-apn0{font-size:13px;font-weight:600;color:var(--tx3);margin:0 0 6px}
+.au-apfn{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--tx3)}
+.au-apn0{font-size:14px;font-weight:600;color:var(--tx3);margin:0 0 6px}
 .au-api h2{font-family:var(--fh);font-size:28px;line-height:1.2;margin:0 0 8px}
 .au-apt{font-size:16px;margin:0 0 10px}
 .au-apm{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}
@@ -81,7 +81,7 @@ body.au-apr-on{overflow:hidden}
 .au-ac{display:flex;flex-direction:column;gap:4px;min-width:0}
 .au-aed .ap-pe{margin-top:12px}
 .au-apnv{display:flex;align-items:center;justify-content:center;gap:16px;padding:10px 16px max(10px,env(safe-area-inset-bottom,0px));border-top:1px solid var(--bd);background:var(--bg1)}
-.au-apnv>span{color:var(--tx3);font-size:13px;min-width:60px;text-align:center}
+.au-apnv>span{color:var(--tx3);font-size:14px;min-width:60px;text-align:center}
 .au-apnv .bt[disabled],.au-apfn .bt[disabled]{opacity:.45;cursor:default}
 /* relatório (só na impressão) */
 #au-imp{display:none}
@@ -110,11 +110,11 @@ body.au-apr-on{overflow:hidden}
   .au-ros{width:150pt;height:150pt}
   .au-ros circle{fill:none;stroke-width:22}
   .au-ros .au-ros0{stroke:#eee}
-  .au-ros-n{font-size:26px;font-weight:700;text-anchor:middle;fill:#000}
-  .au-ros-t{font-size:11px;text-anchor:middle;fill:#555}
+  .au-ros-n{font-size:28px;font-weight:700;text-anchor:middle;fill:#000}
+  .au-ros-t{font-size:12px;text-anchor:middle;fill:#555}
   .au-col{width:100%;height:auto;max-height:200pt}
   .au-col-n{font-size:12px;text-anchor:middle;fill:#000;font-weight:700}
-  .au-col-t{font-size:11px;text-anchor:middle;fill:#444}
+  .au-col-t{font-size:12px;text-anchor:middle;fill:#444}
   .au-ifs{display:grid;gap:6pt;margin:0 0 10pt}
   .au-ifs.n1{grid-template-columns:1fr}.au-ifs.n2{grid-template-columns:1fr 1fr}.au-ifs.n3,.au-ifs.n4{grid-template-columns:1fr 1fr}
   .au-ifs img{width:100%;max-height:105mm;object-fit:contain;border:.5pt solid #bbb;border-radius:3pt}

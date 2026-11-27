@@ -4,7 +4,7 @@
 .cb-card:hover{border-color:var(--a)}
 .cb-ch{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .cb-ch b{font-family:var(--fh);font-size:18px;font-weight:600;white-space:nowrap}
-.cb-card>small{color:var(--tx2);font-size:13px}
+.cb-card>small{color:var(--tx2);font-size:14px}
 /* etapas pequenas (cartão e histórico) */
 .cb-mini{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
 .cb-mini li{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--tx3);min-width:0}
@@ -22,7 +22,7 @@
 @keyframes cbBrilho{to{top:100%}}
 .cb-tl li{display:flex;gap:12px;position:relative;padding-bottom:14px}
 .cb-tl li:last-child{padding-bottom:0}
-.cb-n{width:28px;height:28px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:13px;font-weight:700;background:var(--bg1);color:var(--tx3);border:1px solid var(--bd2);position:relative;z-index:1;transition:background var(--duration-fast) var(--ease-out),border-color var(--duration-fast) var(--ease-out),color .3s}
+.cb-n{width:28px;height:28px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:14px;font-weight:700;background:var(--bg1);color:var(--tx3);border:1px solid var(--bd2);position:relative;z-index:1;transition:background var(--duration-fast) var(--ease-out),border-color var(--duration-fast) var(--ease-out),color .3s}
 .cb-n .ic{width:15px;height:15px;display:none}
 .cb-ib{position:absolute;inset:0;border-radius:50%;overflow:hidden;z-index:0}
 .cb-in{position:absolute;left:0;right:0;bottom:0;height:0;background:var(--ouro);transition:height var(--duration-very-slow) var(--ease-smooth-out)}
@@ -39,8 +39,8 @@
 .cb-tl li.at .cb-n{background:var(--waS);color:var(--wa);border-color:var(--wa)}
 .cb-tl li>div{display:flex;flex-direction:column;gap:1px;min-width:0;padding-top:3px;transition:opacity var(--duration-fast) var(--ease-out)}
 .cb-tl li.esp>div{opacity:.55}
-.cb-tl b{font-weight:600;font-size:15px}
-.cb-tl b em{font-style:normal;font-weight:500;color:var(--tx2);font-size:13px;margin-left:4px}
+.cb-tl b{font-weight:600;font-size:16px}
+.cb-tl b em{font-style:normal;font-weight:500;color:var(--tx2);font-size:14px;margin-left:4px}
 .cb-tl span{font-size:14px;color:var(--tx2)}
 .cb-tl small{font-size:12px;color:var(--tx3)}
 .cb-tl li:not(.ok):not(.at) b{color:var(--tx3);font-weight:500}
@@ -76,5 +76,5 @@ div.cb-hc{cursor:default}
 .cb-hc.at{border-color:var(--wa)}
 .cb-hh{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .cb-hh b{font-weight:600}
-.cb-hc .gv-fl{font-size:13px;grid-template-columns:130px minmax(0,1fr)}
+.cb-hc .gv-fl{font-size:14px;grid-template-columns:130px minmax(0,1fr)}
 .cb-hc .cb-mini{margin:0}

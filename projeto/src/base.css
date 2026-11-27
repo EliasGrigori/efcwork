@@ -29,8 +29,8 @@
 html,body{height:100%}
 /* v0.6.3: enquanto a gaveta desliza, ela não estica a página (no celular o aparelho afastava a tela) */
 html.gv-anim,html.gv-anim body{overflow-x:clip}
-body{margin:0;background:var(--bg0);color:var(--tx);font-family:var(--f);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased;padding-top:env(safe-area-inset-top,0px)}
-:root[data-tema="escuro"] body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(48% 38% at 92% -4%,rgba(232,196,119,.20),transparent 70%),radial-gradient(42% 36% at -6% 104%,rgba(120,96,200,.16),transparent 72%),repeating-linear-gradient(45deg,rgba(217,180,106,.028) 0 1px,transparent 1px 22px),repeating-linear-gradient(-45deg,rgba(217,180,106,.028) 0 1px,transparent 1px 22px)}
+body{margin:0;background:var(--bg0);color:var(--tx);font-family:var(--f);font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased;padding-top:env(safe-area-inset-top,0px)}
+:root[data-tema="escuro"] body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(48% 38% at 92% -4%,rgba(232,196,119,.20),transparent 70%),repeating-linear-gradient(45deg,rgba(217,180,106,.028) 0 1px,transparent 1px 22px),repeating-linear-gradient(-45deg,rgba(217,180,106,.028) 0 1px,transparent 1px 22px)}
 #app{position:relative;z-index:1;min-height:100%}
 button,input,select,textarea{font:inherit;color:inherit}
 a{color:var(--aTx)}
@@ -45,7 +45,9 @@ h1,h2,h3{font-family:var(--fh);font-weight:600;letter-spacing:-.01em;margin:0}
 .bt .ic{width:16px;height:16px}
 .bt.pr{background:var(--ouro);border-color:#c99d48;color:#1c1406;position:relative;overflow:hidden;box-shadow:0 4px 14px rgba(217,180,106,.25),inset 0 1px 0 rgba(255,255,255,.35)}
 .bt.pr::after{content:"";position:absolute;top:0;bottom:0;left:-60%;width:40%;background:linear-gradient(105deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-18deg);pointer-events:none}
-@media (prefers-reduced-motion:no-preference){.bt.pr::after{animation:ouroBrilho 6s ease-in-out infinite}} /* mov:ok — reflexo do botão dourado, exceção aprovada */
+/* v0.6.39 (ITEM 233, OPÇÃO 5 com o visual original): o brilho passa uma vez quando o mouse chega no botão; parado, não se mexe */
+@media (prefers-reduced-motion:no-preference) and (hover:hover){.bt.pr:hover:not([disabled])::after{animation:ouroPassa var(--duration-very-slow) var(--ease-smooth-out) 1}}
+@keyframes ouroPassa{from{left:-60%}to{left:130%}}
 @keyframes ouroBrilho{0%,70%{left:-60%}100%{left:130%}}
 .bt.pr:hover{filter:brightness(1.04)}
 .bt.ic-so{width:var(--btn);padding:0;color:var(--tx2)}
@@ -56,20 +58,20 @@ h1,h2,h3{font-family:var(--fh);font-weight:600;letter-spacing:-.01em;margin:0}
 
 /* campos */
 .cp{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600;color:var(--tx2)}
-.cp input,.cp select,.cp textarea{height:var(--campo);border:1px solid var(--bd2);border-radius:var(--rs);background:var(--bg0);padding:0 12px;font-weight:500;color:var(--tx);font-size:15px;width:100%}
+.cp input,.cp select,.cp textarea{height:var(--campo);border:1px solid var(--bd2);border-radius:var(--rs);background:var(--bg0);padding:0 12px;font-weight:500;color:var(--tx);font-size:16px;width:100%}
 .cp textarea{height:auto;min-height:80px;padding:10px 12px}
 .cp small{font-weight:400;color:var(--tx3)}
 .cp input:focus,.cp select:focus,.cp textarea:focus{outline:none;border-color:var(--a);box-shadow:0 0 0 3px var(--aS)}
 
 /* pílulas de situação */
-.pill{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:600;padding:1px 8px;border-radius:5px;white-space:nowrap;background:var(--bg2);color:var(--tx2)}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:14px;font-weight:600;padding:1px 8px;border-radius:5px;white-space:nowrap;background:var(--bg2);color:var(--tx2)}
 .pill.ok{background:var(--okS);color:var(--ok)}.pill.wa{background:var(--waS);color:var(--wa)}.pill.cr{background:var(--crS);color:var(--cr)}
 
 /* cartão de número (um só estilo no app inteiro) */
 .kps{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
 .kp{background:var(--bg1);border:1px solid var(--bd);border-radius:var(--r);padding:12px 14px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;box-shadow:var(--sh);text-decoration:none;color:inherit}
 .kp b{font-family:var(--fh);font-size:28px;font-weight:600;line-height:1.1}
-.kp span{font-size:13px;color:var(--tx2)}
+.kp span{font-size:14px;color:var(--tx2)}
 .kp.cr b{color:var(--cr)}.kp.wa b{color:var(--wa)}
 
 /* painel */
@@ -83,7 +85,7 @@ h1,h2,h3{font-family:var(--fh);font-weight:600;letter-spacing:-.01em;margin:0}
 .pn .li:last-child{border-bottom:0}
 .pn .li .tx{min-width:0;flex:1}
 .pn .li .tx b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pn .li .tx small{color:var(--tx3);font-size:13px}
+.pn .li .tx small{color:var(--tx3);font-size:14px}
 .pn .cpo{padding:14px 16px;display:flex;flex-direction:column;gap:12px}
 .ico{width:32px;height:32px;border-radius:var(--rs);display:grid;place-items:center;background:var(--bg2);color:var(--tx2);flex:none}
 .vazio{padding:22px 16px;text-align:center;color:var(--tx3);display:flex;flex-direction:column;align-items:center;gap:8px}

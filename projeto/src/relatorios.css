@@ -7,39 +7,39 @@
 .rl-res{list-style:none;margin:0 0 14px;padding:0;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px 16px}
 .rl-res li{display:flex;flex-direction:column;gap:2px;min-width:0;padding-left:10px;border-left:2px solid var(--bd2)}
 .rl-res b{font:700 16px var(--f);color:var(--tx);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.rl-res span{font:600 13px var(--f);color:var(--tx)}
-.rl-res small{font-size:13px;color:var(--tx3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rl-res span{font:600 14px var(--f);color:var(--tx)}
+.rl-res small{font-size:14px;color:var(--tx3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .rl-grade{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .rl-card{border:1px solid var(--bd);border-radius:var(--r);background:var(--bg1);padding:12px 14px;min-width:0}
 .rl-card.rl-larga{grid-column:1/-1}
 .rl-card header{display:flex;flex-direction:column;gap:2px;margin:0 0 10px}
 .rl-card h3{margin:0;font:700 14px var(--f);color:var(--tx)}
-.rl-card header small{font-size:13px;color:var(--tx3)}
+.rl-card header small{font-size:14px;color:var(--tx3)}
 .rl-vz,.rl-ok{margin:0;color:var(--tx3);font-size:14px}
 .rl-ok{color:var(--ok)}
 /* colunas por mês */
 /* colunas por mês: do eixo à borda direita, cada mês ocupa a sua parte igual */
 .rl-g{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px;height:200px;padding:6px 0 0}
 .rl-gy{position:relative;margin-bottom:22px;min-width:34px}
-.rl-gy span{position:absolute;right:0;transform:translateY(50%);font:500 11px var(--f);color:var(--tx3);white-space:nowrap}
+.rl-gy span{position:absolute;right:0;transform:translateY(50%);font:500 12px var(--f);color:var(--tx3);white-space:nowrap}
 .rl-gp{position:relative;min-width:0}
 .rl-gl{position:absolute;inset:0 0 22px 0}
 .rl-gl i{position:absolute;left:0;right:0;height:0;border-top:1px solid var(--bd)}
 .rl-gc{position:absolute;inset:0;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr)}
 .rl-col{display:flex;flex-direction:column;min-width:0}
 .rl-cb{flex:1;display:flex;align-items:flex-end;justify-content:center;padding:0 3px}
-.rl-col span{height:22px;line-height:22px;text-align:center;font:500 11px var(--f);color:var(--tx2)}
+.rl-col span{height:22px;line-height:22px;text-align:center;font:500 12px var(--f);color:var(--tx2)}
 .rl-b{display:block;width:100%;background:var(--a);border-radius:3px 3px 0 0;transform-origin:bottom}
 /* barras horizontais */
 .rl-bh{display:flex;flex-direction:column;gap:7px}
-.rl-bl{display:grid;grid-template-columns:minmax(90px,38%) minmax(0,1fr) 88px;gap:8px;align-items:center;font-size:13px}
+.rl-bl{display:grid;grid-template-columns:minmax(90px,38%) minmax(0,1fr) 88px;gap:8px;align-items:center;font-size:14px}
 .rl-bn{color:var(--tx);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.rl-bn small{color:var(--tx3);font-size:13px}
+.rl-bn small{color:var(--tx3);font-size:14px}
 .rl-bt{height:10px;border-radius:5px;background:var(--bg2);overflow:hidden}
 .rl-bt i{display:block;height:100%;border-radius:5px;background:var(--a)}
 .rl-bt i.wa{background:var(--wa)}.rl-bt i.cr{background:var(--cr)}.rl-bt i.le{background:color-mix(in srgb,var(--cr) 45%,var(--bg1))}
 .rl-bl b{font-weight:700;color:var(--tx);white-space:nowrap;text-align:right}
-.rl-mais{margin-top:8px;color:var(--tx3);font-size:13px}
+.rl-mais{margin-top:8px;color:var(--tx3);font-size:14px}
 /* rosca */
 .rl-rw{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
 .rl-ros{width:132px;height:132px;flex:none}
@@ -48,21 +48,21 @@
 .rl-c.ok{stroke:var(--ok);background:var(--ok)}.rl-c.le{stroke:color-mix(in srgb,var(--cr) 45%,var(--bg1));background:color-mix(in srgb,var(--cr) 45%,var(--bg1))}
 .rl-c.gr{stroke:var(--cr);background:var(--cr)}.rl-c.pe{stroke:var(--tx3);background:var(--tx3)}
 .rl-rn{font:700 22px var(--f);fill:var(--tx);text-anchor:middle}
-.rl-rt{font:500 13px var(--f);fill:var(--tx3);text-anchor:middle}
-.rl-leg{display:flex;flex-direction:column;gap:6px;font-size:13px;min-width:0}
+.rl-rt{font:500 14px var(--f);fill:var(--tx3);text-anchor:middle}
+.rl-leg{display:flex;flex-direction:column;gap:6px;font-size:14px;min-width:0}
 .rl-leg div{display:flex;align-items:center;gap:8px}
 .rl-leg i{width:10px;height:10px;border-radius:50%;flex:none}
 .rl-leg b{margin-left:auto;padding-left:10px}
 /* quadro ponto × mês */
 .rl-qw{overflow-x:auto}
-.rl-quadro{border-collapse:collapse;width:100%;font-size:13px}
+.rl-quadro{border-collapse:collapse;width:100%;font-size:14px}
 .rl-quadro th,.rl-quadro td{padding:4px 6px;border-bottom:1px solid var(--bd);text-align:center;white-space:nowrap}
 .rl-quadro thead th{color:var(--tx3);font-weight:600}
 .rl-quadro tbody th{text-align:left;font-weight:600;color:var(--tx);max-width:220px;overflow:hidden;text-overflow:ellipsis}
-.rl-q{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:22px;padding:0 5px;border-radius:6px;font-weight:700;font-size:13px}
-.rl-q sup{font-size:11px;margin-left:1px}
+.rl-q{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:22px;padding:0 5px;border-radius:6px;font-weight:700;font-size:14px}
+.rl-q sup{font-size:12px;margin-left:1px}
 .rl-q.c{background:var(--okS);color:var(--ok)}.rl-q.n{background:var(--crS);color:var(--cr)}.rl-q.p{background:var(--bg2);color:var(--tx2)}
-.rl-qleg{margin-top:8px;color:var(--tx3);font-size:13px;display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
+.rl-qleg{margin-top:8px;color:var(--tx3);font-size:14px;display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
 @media(max-width:899px){.rl-res{grid-template-columns:repeat(3,minmax(0,1fr))}.rl-fp{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:599px){.rl-grade{grid-template-columns:minmax(0,1fr)}.rl-res{grid-template-columns:repeat(2,minmax(0,1fr))}.rl-bl{grid-template-columns:minmax(80px,34%) minmax(0,1fr) 84px}.rl-quadro tbody th{max-width:130px}.rl-fp{grid-template-columns:minmax(0,1fr)}}
 @media print{.rl-imp .rl-grade{grid-template-columns:repeat(2,minmax(0,1fr))}.rl-imp .rl-card{break-inside:avoid;border-color:#bbb}.rl-imp .rl-res{grid-template-columns:repeat(6,minmax(0,1fr))}}

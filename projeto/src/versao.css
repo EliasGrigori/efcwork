@@ -1,7 +1,7 @@
 /* EFCwork · versao.css — aviso de versão nova (prefixo vn). v0.6.37. Movimento só pela escala. */
 .vn-t{display:flex;align-items:baseline;gap:8px;min-width:0;flex:1;flex-wrap:wrap;row-gap:0}
 .vn-t b{font-weight:600;font-size:14px}
-.vn-t small{font-size:13px;color:var(--tx3)}
+.vn-t small{font-size:14px;color:var(--tx3)}
 .vn .bt{flex:none}
 
 /* depois de "Depois": no pé do menu, com bolinha no botão do menu do celular */

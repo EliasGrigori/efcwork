@@ -190,7 +190,7 @@ const est = p => p.evaluate(() => { const j = document.querySelector('#jn'), fr 
   conf(e.ativa === 'docs' && e.h === 40 && e.fq && e.fq[1] === 40 && e.fq[3] === 800 - 40 && e.fq[2] === 390 && !e.rol, 'no celular: o Vértice em tela inteira abaixo da faixa de 40 px, sem rolagem lateral (' + JSON.stringify(e.fq) + ')');
   conf(await p.evaluate(() => !document.querySelector('.cs-app.menu-aberto') && S.camadas.map(c => c.nome).join() === 'janela'), 'o menu do celular fecha ao abrir o Vértice e sai da pilha do voltar (revisor) (' + await p.evaluate(() => S.camadas.map(c => c.nome).join()) + ')');
   const toq = await p.evaluate(() => { const j = document.querySelector('#jn'), r = s => [...j.querySelectorAll(s)].map(x => Math.round(x.getBoundingClientRect().height)).filter(h => h > 0); return { ab: r('.jn-ab'), x: r('.jn-x'), mais: r('.jn-mais:not([hidden])'), fs: getComputedStyle(j.querySelector('.jn-ab')).fontSize }; });
-  conf(toq.ab.every(h => h >= 40) && toq.x.every(h => h >= 36) && toq.mais.every(h => h >= 36) && toq.fs === '13px', 'no toque: abas de 40 px, X e "+" com 36 px, letra de 13 px (' + JSON.stringify(toq) + ')');
+  conf(toq.ab.every(h => h >= 40) && toq.x.every(h => h >= 36) && toq.mais.every(h => h >= 36) && toq.fs === '14px', 'no toque: abas de 40 px, X e "+" com 36 px, letra de 14 px (era 13; escala da v0.6.39) (' + JSON.stringify(toq) + ')');
   if (FOTOS) { await esp(p, 1200); await p.screenshot({ path: path.join(OUT, 'v0635-tela-cel.png') }); }
   await p.goBack(); await esp(p, 500);
   e = await est(p);
