@@ -40,11 +40,11 @@ test('Ponte 2: nomes efc_ viram campos na ordem do dicionário; os de fora do di
   assert.equal(faixaDoNome(livro(), '$B$7'), null); assert.equal(faixaDoNome(livro(), "'Ficha 1'!$A$1,'Ficha 1'!$B$1"), null);
 });
 
-test('Ponte 2: de 1 a 32 campos: o que passa do limite fica de fora e é contado', () => {
-  const dic = dicionario(); assert.equal(dic.length, 43, '31 simples e 12 colunas de lista');
+test('Ponte 2 (dicionário 2, 27/11): até 60 campos; o dicionário inteiro cabe', () => {
+  const dic = dicionario(); assert.equal(dic.length, 58, '40 simples e 18 colunas de lista (dicionário 2: + grupo e 6 colunas)');
   const todos = Object.fromEntries(dic.map((d, i) => nome(EFD.nomeExcel(d.chave.replace('[].', '[]_').replace('[]', '')), `'Outra'!$A$${i + 1}`)));
   const r = camposDoLivro(livro(todos));
-  assert.equal(r.campos.length, 32); assert.equal(r.excesso, 11);
+  assert.equal(r.campos.length, 58); assert.equal(r.excesso, 0);
   assert.equal(EFD.nomeExcel('amostras[].data'.replace('[].', '.')), 'efc_amostras_data');
 });
 

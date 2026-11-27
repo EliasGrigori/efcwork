@@ -11,6 +11,8 @@ import { EFD } from './ponte.js';
 import { camposDoLivro, dicionario, capacidades } from './campos.js';
 import { paginasDoPedido } from './pedido.js';
 import { lerEstado, pegar, apagar, responder } from './caixa.js';
+import { guardarFolha } from './rascunhoPedido.js';
+import { irPara } from '../ui/comum.jsx';
 import { CAMPOS_ETIQUETA, camposDaEtiqueta, nomeEtiqueta } from './etiquetas.js';
 import { avisarCwork } from '../nucleo/emCwork.js';
 
@@ -133,6 +135,7 @@ export function TelaPedido({ pid, local, banco, avisar, aoSair }) {
           <p className="pd-sub">{fase === 'lendo' ? 'Montando a cópia preenchida…' : t.nome || 'Documento'}{fase === 'pronto' || fase === 'feito' ? ` · ${n(t.folhas, 'folha', 'folhas')} · ${n(t.paginas.length, 'página', 'páginas')}` : ''}</p>
         </div>
         <div className="pd-acoes">
+          {fase === 'pronto' && (t.conteudos || []).length === 1 && <button type="button" className="btn sm" data-pedido-escrever="0" onClick={() => { guardarFolha(t.item.docId, t.conteudos[0]); irPara('documento/' + t.item.docId); }}><Icone n="renomear" />Escrever</button>}
           {fase === 'pronto' && <button type="button" className="btn sm" data-pedido-pdf onClick={() => concluir('pdf')}><Icone n="pdf" />Baixar PDF</button>}
           {fase === 'pronto' && <button type="button" className="btn sm primary" data-pedido-imprimir onClick={() => concluir('imprimir')}><Icone n="imprimir" />Imprimir</button>}
           <button type="button" className="btn sm" data-pedido-sair onClick={() => aoSair(t.item && t.item.docId)}>{fase === 'pronto' ? 'Agora não' : 'Voltar'}</button>
@@ -141,7 +144,19 @@ export function TelaPedido({ pid, local, banco, avisar, aoSair }) {
       {fase === 'erro' && <div className="pd-aviso crit" data-pedido-erro><b>Não deu para imprimir.</b> {t.detalhe}{t.erro && !local ? ' O Cwork foi avisado.' : ''}</div>}
       {fase === 'feito' && <div className="pd-aviso ok"><b>Pronto.</b> {local ? 'A cópia preenchida saiu; o documento guardado continua como modelo.' : 'O Cwork foi avisado; o documento guardado continua como modelo.'}</div>}
       {fase === 'pronto' && <p className="pd-dica">É uma cópia preenchida só para imprimir: nada disto fica gravado no documento.{local ? '' : ' "Agora não" deixa o pedido esperando na caixa.'}</p>}
-      {(fase === 'pronto' || fase === 'feito') && (
+      {(fase === 'pronto' || fase === 'feito') && (t.conteudos || []).length > 1 && (
+        <div className="pd-folhas" data-pedido-folhas>
+          {/* v0.6.80: uma folha por análise; cada uma pode ser aberta para escrever à mão nas células liberadas */}
+          {t.conteudos.map((f, k) => (
+            <section key={k} className="pd-folha">
+              <div className="pd-fcab"><b>Folha {k + 1}</b><span>{f.titulo || ''}</span>
+                <button type="button" className="btn sm" data-pedido-escrever={k} onClick={() => { guardarFolha(t.item.docId, f); irPara('documento/' + t.item.docId); }}><Icone n="renomear" />Escrever nesta folha</button></div>
+              <div className="pd-paginas">{t.paginas.slice(f.de, Math.min(f.ate, f.de + 4)).map((p, i) => <div key={i} className="pd-pg" style={{ aspectRatio: `${p.W} / ${p.H}` }} dangerouslySetInnerHTML={{ __html: svgDaPagina(p, { id: 'pd' + k + '_' + i + '_' }) }} />)}</div>
+            </section>
+          ))}
+        </div>
+      )}
+      {(fase === 'pronto' || fase === 'feito') && (t.conteudos || []).length <= 1 && (
         <div className="pd-paginas">
           {t.paginas.slice(0, 12).map((p, i) => <div key={i} className="pd-pg" style={{ aspectRatio: `${p.W} / ${p.H}` }} dangerouslySetInnerHTML={{ __html: svgDaPagina(p, { id: 'pd' + i + '_' }) }} />)}
           {t.paginas.length > 12 && <div className="pd-mais">e mais {n(t.paginas.length - 12, 'página', 'páginas')}</div>}

@@ -80,6 +80,23 @@ async function ptAbrirNoVertice(d, dados) {
 }
 
 /* os dados de um envio no dicionário do contrato (o Vértice mostra na janela de resumo, ao lado da ficha) */
+/* v0.6.45 (decisões do Elias de 27/11 17:22): as amostras da remessa em grupos de mesmo material e mesma análise; uma folha por grupo */
+const PT_X = { SOLO: 'grupo.xsolo', NEMATOIDE: 'grupo.xnematoide', FOLHA: 'grupo.xfolha', FRUTA: 'grupo.xfruta', COMPOSTO: 'grupo.xcomposto', AGUA: 'grupo.xagua' };
+const ptMaterial = t => (typeof CO_TXT !== 'undefined' && CO_TXT[t]) || (t === 'AGUA' ? 'Água' : String(t || ''));
+function ptGrupos(l) {
+  const g = new Map();
+  (l || []).forEach(c => { const an = c.analiseNome || c.sigla || '', k = (c.tipo || '') + '|' + an; if (!g.has(k)) g.set(k, { tipo: c.tipo, analise: an, l: [] }); g.get(k).l.push(c); });
+  return Array.from(g.values());
+}
+/* os dados que mudam de uma folha para outra: o grupo e só as amostras dele (numeradas de novo) */
+function ptFolhaDoGrupo(gr, todas) {
+  const o = { 'grupo.material': ptMaterial(gr.tipo).slice(0, 300), 'grupo.quantidade': gr.l.length };
+  if (gr.analise) o['grupo.analise'] = String(gr.analise).slice(0, 300);
+  Object.keys(PT_X).forEach(t => { o[PT_X[t]] = t === gr.tipo ? 'X' : ''; });
+  const ids = new Set(gr.l.map(c => c.id)), rs = (todas || []).filter(r => ids.has(r._id)).map((r, n) => { const x = Object.assign({}, r, { n: n + 1 }); delete x._id; return x; });
+  o['amostras[]'] = rs;
+  return o;
+}
 function ptResumoEnvio(k, dd, d) {
   const l = typeof coLote === 'function' ? coLote(k) : [], lab = k.split('|').slice(1).join('|'), i = (typeof ktInfo === 'function' && ktInfo(lab)) || {}, rem = typeof ktRemetente === 'function' ? ktRemetente(dd.unid) : {}, o = {};
   const tx = (c, v) => { v = String(v == null ? '' : v).trim(); if (v) o[c] = v.slice(0, 300); };
@@ -93,7 +110,16 @@ function ptResumoEnvio(k, dd, d) {
   tx('usuario.nome', S.user && S.user.nome); o['hoje.data'] = hojeISO(); o['hoje.hora'] = new Date().toTimeString().slice(0, 5);
   if (d) { tx('doc.codigo', d.codigo); if (d.rev) o['doc.rev'] = d.rev; }
   if (l.length) o['amostras[]'] = l.slice(0, 200).map((c, n) => { const r = { n: n + 1 }, p = (k2, v) => { v = String(v == null ? '' : v).trim(); if (v) r[k2] = v.slice(0, 120); };
-    p('identificacao', c.identificacao || c.identif || coNome(c)); if (/^\d{4}-\d{2}-\d{2}/.test(c.data || '')) r.data = String(c.data).slice(0, 10); p('analise', c.analiseNome || c.sigla); p('ponto', coNome(c)); p('talhao', c.talhao); p('produto', c.cultura); return r; });
+    r._id = c.id; p('identificacao', c.identificacao || c.identif || coNome(c)); if (/^\d{4}-\d{2}-\d{2}/.test(c.data || '')) r.data = String(c.data).slice(0, 10); p('analise', c.analiseNome || c.sigla); p('ponto', coNome(c)); p('talhao', c.talhao); p('produto', c.cultura);
+    /* v0.6.45 (dicionário 2): mais dados de cada amostra, para ele escolher a coluna no Vértice */
+    if (/^\d{2}:\d{2}$/.test(c.hora || '')) r.hora = c.hora; p('material', ptMaterial(c.tipo)); if (c.prof && c.prof !== 'N/A') p('profundidade', c.prof); p('estadio', c.estadio); p('coletor', c.coletor); p('os', c.os); p('obs', c.obs); return r; });
+  /* v0.6.45: com grupos, guarda as folhas (uma por material + análise) para o pedido; o _id só serve para separar as amostras */
+  if (o['amostras[]']) { const todas = o['amostras[]'], gs = ptGrupos(l.slice(0, 200)); Object.defineProperty(o, '_folhas', { value: gs.map(gr => ptFolhaDoGrupo(gr, todas)), enumerable: false });
+    o['amostras[]'] = todas.map(r => { const x = Object.assign({}, r); delete x._id; return x; }); if (gs.length === 1) Object.assign(o, (({ 'amostras[]': _a, ...resto }) => resto)(o._folhas[0]));
+    else { /* ficha unificada (ITEM 285): os materiais e as análises juntos, a quantidade total e o X em cada material da remessa */
+      const ms = Array.from(new Set(gs.map(g => ptMaterial(g.tipo)))), as = Array.from(new Set(gs.map(g => g.analise).filter(Boolean)));
+      o['grupo.material'] = ms.join(' + ').slice(0, 300); if (as.length) o['grupo.analise'] = as.join(' + ').slice(0, 300); o['grupo.quantidade'] = gs.reduce((s2, g) => s2 + g.l.length, 0);
+      Object.keys(PT_X).forEach(t => { o[PT_X[t]] = gs.some(g => g.tipo === t) ? 'X' : ''; }); } }
   /* o mesmo conferente do Vértice: o que não passa sai (o resto do resumo continua) */
   const prova = x => EFD.pedido({ v: 1, pid: 'p00000001', docId: (d && d.id) || 'd0000000', de: 'efcwork', copias: 1, criadoEm: '2026-01-01T00:00:00.000Z', dados: x });
   if (prova(o).length) Object.keys(o).forEach(c => { const um = {}; um[c] = o[c]; if (prova(um).length) delete o[c]; });

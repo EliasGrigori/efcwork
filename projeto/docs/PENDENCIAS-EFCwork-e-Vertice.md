@@ -2,7 +2,7 @@
 
 Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conversa ou para o fim, para nada ficar para trás. Atualizado a cada mudança e enviado junto. Marque [x] quando estiver feito.
 
-Última atualização: 27/11/2026 16:3x · no ar: Cwork v0.6.44 + Vértice v0.6.79 (etapa 4, kit do laboratório, ITENS 280 a 283). Próxima: a escolher.
+Última atualização: 27/11/2026 18:3x · no ar: Cwork v0.6.44 + Vértice v0.6.79. Pronta e aprovada, NÃO publicada: v0.6.45 + Vértice v0.6.80 (fichas com todos os dados, ITENS 284 a 286; patch no pacote).
 
 ## A. Para a conversa do Vértice (o Elias leva)
 - [ ] **NOVO (27/11 06:59) · Todos os documentos só no Vértice:** nota `NOTA-DO-CWORK-para-o-Vertice-documentos-so-no-Vertice.md`. Hospedar tudo lá (internos e externos); o Cwork guarda só a ligação; versão nova vale sozinha; PDF baixa e imprime direto; planilha e Word abrem em modo documento, só aquela aba ou folha, só os campos desbloqueados. Junta a P4 com os ITENS 195 e 196.
@@ -50,7 +50,9 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 - [ ] Estudo de rapidez (`ESTUDO-rapidez-EFCwork-v0.6.33.md`): só depois da integração.
 - [x] Janela por cima: virou a tela inteira com abas (v0.6.35); a área ao lado do menu saiu.
 
-- [ ] **PRÓXIMA · fichas e cadeias com todos os dados das amostras** (decisões de 27/11 17:22, CONTINUAR seção 2): contrato EFD v2 autorizado; uma folha por análise; kit também na água.
+- [x] **Fichas e cadeias com todos os dados (parte 1):** aprovada (ITENS 284 a 286) e pronta; falta o "pode publicar".
+- [ ] **PRÓXIMA · parte 2: kit e papéis do envio nas coletas de água** (CONTINUAR seção 2).
+- [ ] **Imprimir pela folha aberta ("Escrever nesta folha") não avisa o Cwork de "preenchido"** (observação do ITEM 286).
 - [ ] **Cadeias em Word (BIOAGRI, H2O):** em espera; o Elias vai refazer em planilha no Vértice.
 
 ## C. Pedidos pequenos e perguntas ao Elias

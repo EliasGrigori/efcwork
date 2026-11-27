@@ -3,7 +3,7 @@
    registro segue o contrato. As duas pontas rodam o MESMO arquivo contra os MESMOS exemplos (exemplos-efd-v1.json).
    Mudou o contrato? Sobe o número (v2) nos dois repositórios no mesmo dia, com a ordem do Elias. */
 (function (raiz) {
-  const V = 1, PARTE_MAX = 900000, PARTES_MAX = 5, CAMPOS_MAX = 32, ORIG_PARTES_MAX = 2; /* 12/11: só o essencial na nuvem grátis (cópia até ~3,3 MB; original até ~1,3 MB); de 1 a 32 campos por documento */
+  const V = 1, PARTE_MAX = 900000, PARTES_MAX = 5, CAMPOS_MAX = 60, ORIG_PARTES_MAX = 2; /* 12/11: só o essencial na nuvem grátis (cópia até ~3,3 MB; original até ~1,3 MB); de 1 a 32 campos por documento */
   const TIPOS = ['planilha', 'docx', 'postits', 'externo', 'link'] /* link (12/11, sugestão 8): só o endereço, sem arquivo */, STATUS = ['rascunho', 'vigente', 'obsoleto', 'lixeira'], ORIGENS = ['docs', 'efcwork', 'sabia'];
   const PAPEIS = ['A4', 'A5', 'etiqueta'], ORIENT = ['retrato', 'paisagem'], T_CAMPO = ['texto', 'data', 'hora', 'numero', 'lista'];
   const PONTOS = ['coletas.envio', 'coletas.amostra', 'agua.coleta', 'agua.acao', 'documentos.doc', 'qualidade.treino', 'livre'];
@@ -15,9 +15,13 @@
     'coleta.data': 'data', 'coleta.hora': 'hora', 'coleta.os': 'texto', 'coleta.solicitacao': 'texto', 'coleta.coletor': 'texto', 'coleta.analise': 'texto',
     'coleta.ponto': 'texto', 'coleta.talhao': 'texto', 'coleta.produto': 'texto', 'coleta.qtd': 'numero', 'coleta.identificacao': 'texto',
     'usuario.nome': 'texto', 'hoje.data': 'data', 'hoje.hora': 'hora', 'doc.codigo': 'texto', 'doc.rev': 'numero',
-    'amostras[]': 'lista', 'participantes[]': 'lista'
+    'amostras[]': 'lista', 'participantes[]': 'lista',
+    /* dicionário 2 (27/11/2026, autorizado pelo Elias às 17:22): só acrescenta; o que existia continua igual.
+       grupo = as amostras da remessa com o mesmo material e a mesma análise (uma folha por grupo); x<material> recebe "X" no material do grupo */
+    'grupo.material': 'texto', 'grupo.analise': 'texto', 'grupo.quantidade': 'numero',
+    'grupo.xsolo': 'texto', 'grupo.xnematoide': 'texto', 'grupo.xfolha': 'texto', 'grupo.xfruta': 'texto', 'grupo.xcomposto': 'texto', 'grupo.xagua': 'texto'
   };
-  const COLUNAS = { 'amostras[]': ['n', 'identificacao', 'data', 'hora', 'analise', 'ponto', 'talhao', 'produto', 'qtd'], 'participantes[]': ['n', 'nome', 'setor'] };
+  const COLUNAS = { 'amostras[]': ['n', 'identificacao', 'data', 'hora', 'analise', 'ponto', 'talhao', 'produto', 'qtd', 'material', 'profundidade', 'estadio', 'coletor', 'os', 'obs'], 'participantes[]': ['n', 'nome', 'setor'] };
   const str = (x, min, max) => typeof x === 'string' && x.length >= (min || 0) && x.length <= (max == null ? 1e9 : max);
   const int = (x, min, max) => Number.isInteger(x) && x >= (min == null ? -1e15 : min) && x <= (max == null ? 1e15 : max);
   const iso = x => typeof x === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/.test(x);

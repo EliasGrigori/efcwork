@@ -77,3 +77,9 @@
 .int-tentar:hover { text-decoration: underline; }
 .int-tentar:focus-visible { box-shadow: var(--anel); border-radius: var(--r-chip); }
 .app.cel .int-tentar { min-height: 44px; display: inline-flex; align-items: center; }
+/* v0.6.80: uma folha por análise no pedido do Cwork */
+.pd-folhas { display: grid; gap: 20px; }
+.pd-folha { display: grid; gap: 8px; }
+.pd-fcab { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.pd-fcab b { font-weight: 600; font-size: 15px; }
+.pd-fcab span { flex: 1; min-width: 0; font-size: 13px; color: var(--text-muted); }

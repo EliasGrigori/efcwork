@@ -19,8 +19,11 @@ export const ROTULOS = {
   'coleta.analise': 'Análise', 'coleta.ponto': 'Ponto', 'coleta.talhao': 'Talhão', 'coleta.produto': 'Produto', 'coleta.qtd': 'Quantidade',
   'coleta.identificacao': 'Identificação', 'usuario.nome': 'Quem preencheu', 'hoje.data': 'Data de hoje', 'hoje.hora': 'Hora de agora',
   'doc.codigo': 'Código do documento', 'doc.rev': 'Revisão do documento', 'amostras[]': 'Lista de amostras', 'participantes[]': 'Participantes',
+  /* v0.6.80 (dicionário 2): o grupo = mesmo material e mesma análise (uma folha por grupo) */
+  'grupo.material': 'Material', 'grupo.analise': 'Tipo de análise', 'grupo.quantidade': 'Quantidade de amostras',
+  'grupo.xsolo': 'X se for Solo', 'grupo.xnematoide': 'X se for Nematoide', 'grupo.xfolha': 'X se for Folha', 'grupo.xfruta': 'X se for Fruta', 'grupo.xcomposto': 'X se for Composto', 'grupo.xagua': 'X se for Água',
 };
-export const ROTULOS_COLUNA = { n: 'Nº', identificacao: 'Identificação', data: 'Data', hora: 'Hora', analise: 'Análise', ponto: 'Ponto', talhao: 'Talhão', produto: 'Produto', qtd: 'Qtd', nome: 'Nome', setor: 'Setor' };
+export const ROTULOS_COLUNA = { n: 'Nº', identificacao: 'Identificação', data: 'Data', hora: 'Hora', analise: 'Análise', ponto: 'Ponto', talhao: 'Talhão', produto: 'Produto', qtd: 'Qtd', nome: 'Nome', setor: 'Setor', material: 'Material', profundidade: 'Profundidade', estadio: 'Estádio', coletor: 'Coletor', os: 'O.S', obs: 'Observação' };
 
 const dataBr = (v) => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(v || '')); return m ? `${m[3]}/${m[2]}/${m[1]}` : String(v ?? ''); };
 const numBr = (v) => (typeof v === 'number' ? v.toLocaleString('pt-BR') : String(v ?? ''));

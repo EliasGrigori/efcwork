@@ -1026,7 +1026,7 @@
     }
    ],
    [
-    "33 campos",
+    "61 campos",
     {
      "v": 1,
      "id": "dmhx3k2a01zz9q",
@@ -1056,6 +1056,146 @@
       "orient": "retrato",
       "preenche": "docs",
       "campos": [
+       {
+        "chave": "lab.nome",
+        "rotulo": "Lab",
+        "tipo": "texto"
+       },
+       {
+        "chave": "lab.nome",
+        "rotulo": "Lab",
+        "tipo": "texto"
+       },
+       {
+        "chave": "lab.nome",
+        "rotulo": "Lab",
+        "tipo": "texto"
+       },
+       {
+        "chave": "lab.nome",
+        "rotulo": "Lab",
+        "tipo": "texto"
+       },
+       {
+        "chave": "lab.nome",
+        "rotulo": "Lab",
+        "tipo": "texto"
+       },
+       {
+        "chave": "lab.nome",
+        "rotulo": "Lab",
+        "tipo": "texto"
+       },
+       {
+        "chave": "lab.nome",
+        "rotulo": "Lab",
+        "tipo": "texto"
+       },
+       {
+        "chave": "lab.nome",
+        "rotulo": "Lab",
+        "tipo": "texto"
+       },
+       {
+        "chave": "lab.nome",
+        "rotulo": "Lab",
+        "tipo": "texto"
+       },
+       {
+        "chave": "lab.nome",
+        "rotulo": "Lab",
+        "tipo": "texto"
+       },
+       {
+        "chave": "lab.nome",
+        "rotulo": "Lab",
+        "tipo": "texto"
+       },
+       {
+        "chave": "lab.nome",
+        "rotulo": "Lab",
+        "tipo": "texto"
+       },
+       {
+        "chave": "lab.nome",
+        "rotulo": "Lab",
+        "tipo": "texto"
+       },
+       {
+        "chave": "lab.nome",
+        "rotulo": "Lab",
+        "tipo": "texto"
+       },
+       {
+        "chave": "lab.nome",
+        "rotulo": "Lab",
+        "tipo": "texto"
+       },
+       {
+        "chave": "lab.nome",
+        "rotulo": "Lab",
+        "tipo": "texto"
+       },
+       {
+        "chave": "lab.nome",
+        "rotulo": "Lab",
+        "tipo": "texto"
+       },
+       {
+        "chave": "lab.nome",
+        "rotulo": "Lab",
+        "tipo": "texto"
+       },
+       {
+        "chave": "lab.nome",
+        "rotulo": "Lab",
+        "tipo": "texto"
+       },
+       {
+        "chave": "lab.nome",
+        "rotulo": "Lab",
+        "tipo": "texto"
+       },
+       {
+        "chave": "lab.nome",
+        "rotulo": "Lab",
+        "tipo": "texto"
+       },
+       {
+        "chave": "lab.nome",
+        "rotulo": "Lab",
+        "tipo": "texto"
+       },
+       {
+        "chave": "lab.nome",
+        "rotulo": "Lab",
+        "tipo": "texto"
+       },
+       {
+        "chave": "lab.nome",
+        "rotulo": "Lab",
+        "tipo": "texto"
+       },
+       {
+        "chave": "lab.nome",
+        "rotulo": "Lab",
+        "tipo": "texto"
+       },
+       {
+        "chave": "lab.nome",
+        "rotulo": "Lab",
+        "tipo": "texto"
+       },
+       {
+        "chave": "lab.nome",
+        "rotulo": "Lab",
+        "tipo": "texto"
+       },
+       {
+        "chave": "lab.nome",
+        "rotulo": "Lab",
+        "tipo": "texto"
+       },
        {
         "chave": "lab.nome",
         "rotulo": "Lab",

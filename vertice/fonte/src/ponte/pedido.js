@@ -15,15 +15,17 @@ export function paginasDoPedido(item, arquivo, revAtual) {
   if (r.erro) return r;
   const { campos } = camposDoLivro(c);
   let paginas = [];
+  const folhas = []; /* v0.6.80: o conteúdo preenchido de cada folha (para abrir e escrever à mão nas células liberadas) */
   for (const dados of r.folhas) {
     const { conteudo } = preencher(c, campos, dados);
     const abaId = conteudo.ordem.find((id) => !conteudo.abas[id].oculta) || conteudo.ordem[0];
     const g = gerarImpressao(conteudo, new Motor(conteudo), { imp: normalizarImp(conteudo.abas[abaId].imp), alvo: 'todas', abaId, nomeArquivo: arquivo.ficha.nome });
     if (!g.paginas.length) return { erro: 'nao-cabe', detalhe: g.aviso || 'Não há nada para imprimir neste documento.' };
+    folhas.push({ conteudo, abaId, de: paginas.length, ate: paginas.length + g.paginas.length, titulo: [dados['grupo.material'], dados['grupo.analise']].filter(Boolean).join(' · ') });
     paginas = paginas.concat(g.paginas);
     if (paginas.length > PAGINAS_MAX) return { erro: 'nao-cabe', detalhe: `Passaria de ${PAGINAS_MAX} páginas: peça menos folhas ou diminua a área de impressão.` };
   }
-  return { paginas, folhas: r.folhas.length, campos: campos.length };
+  return { paginas, folhas: r.folhas.length, conteudos: folhas, campos: campos.length };
 }
 
 /** "Preencher e imprimir" a partir do resumo do envio: vale só o que o documento tem marcado (o resto fica no painel). */

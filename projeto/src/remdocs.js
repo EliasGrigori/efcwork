@@ -94,7 +94,9 @@ async function drPedido(k, x, dd, tent, pidVelho) {
     let pidA = '';
     if (tent && !vt) pidA = await EFDPonte.por({ de: PT_APP, para: 'docs', tipo: 'abrir', original: await ipArquivo(d, 'orig'), nomeArquivo: d.orig.nomeArquivo || ipNomeArq(d, 'xlsx'), docId: d.id });
     /* rev: o Vértice confere com a versão compartilhada daqui e recusa outra (controle de documentos) */
-    const pid = await EFDPonte.por(Object.assign({ de: PT_APP, para: 'docs', tipo: 'pedido', docId: d.id, copias: copias, dados: dados }, vt ? { soMarcados: true } : { rev: d.rev }));
+    /* v0.6.45: do Vértice, uma folha por material + análise (as folhas trocam o grupo e a lista de amostras) */
+    const fl = vt && dd.modo !== 'unificada' && dados._folhas && dados._folhas.length > 1 ? dados._folhas.slice(0, 50) : null; /* ITEM 285: "Tudo numa ficha só" manda uma folha com o resumo dos grupos */
+    const pid = await EFDPonte.por(Object.assign({ de: PT_APP, para: 'docs', tipo: 'pedido', docId: d.id, copias: copias, dados: dados }, fl ? { folhas: fl } : {}, vt ? { soMarcados: true } : { rev: d.rev }));
     drPendMuda(p => { p[pid] = { k: k, item: x.id, nome: x.nome, docId: d.id, rev: d.rev, copias: copias, dd: dd, dados: dados, tent: tent || 0, vt: vt ? 1 : 0, em: nowISO() }; });
     jnAbrir('docs', pidA ? '#/abrir/' + pidA : '#/pedido/' + pid, false, pidVelho && typeof jnAbaDaRota === 'function' ? jnAbaDaRota('#/pedido/' + pidVelho) : ''); /* v0.6.35: o mesmo documento pedido de novo volta para a aba dele */
     return pid;

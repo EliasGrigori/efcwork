@@ -18,7 +18,7 @@ export function rotuloDoCampo(ch) {
 }
 /** O dicionário na ordem de mostrar: [{ chave, rotulo, tipo, grupo }] (31 simples e as colunas das 2 listas). */
 export function dicionario() {
-  const grupo = (ch) => ({ empresa: 'Empresa e unidade', unidade: 'Empresa e unidade', lab: 'Laboratório', envio: 'Envio', coleta: 'Coleta', usuario: 'Quem e quando', hoje: 'Quem e quando', doc: 'Documento' }[ch.split('.')[0]] || 'Outros');
+  const grupo = (ch) => ({ empresa: 'Empresa e unidade', unidade: 'Empresa e unidade', lab: 'Laboratório', envio: 'Envio', coleta: 'Coleta', usuario: 'Quem e quando', hoje: 'Quem e quando', doc: 'Documento', grupo: 'Análise da folha (uma folha por análise)' }[ch.split('.')[0]] || 'Outros');
   const out = [];
   for (const ch of Object.keys(EFD.CAMPOS)) {
     if (EFD.CAMPOS[ch] !== 'lista') out.push({ chave: ch, rotulo: rotuloDoCampo(ch), tipo: tipoDoCampo(ch), grupo: grupo(ch) });
@@ -39,9 +39,9 @@ export function faixaDoNome(c, ref) {
 
 /**
  * Os campos marcados no livro. Devolve { campos, fora, excesso }:
- * campos: [{ chave, nome, rotulo, tipo, abaId, l1, c1, l2, c2, lista?, col? }] na ordem do dicionário, no máximo 32;
+ * campos: [{ chave, nome, rotulo, tipo, abaId, l1, c1, l2, c2, lista?, col? }] na ordem do dicionário, no máximo EFD.CAMPOS_MAX;
  * fora: nomes que começam com efc_ mas não são do dicionário (ou apontam para lugar inválido): não viram campo;
- * excesso: quantos passaram do limite de 32.
+ * excesso: quantos passaram do limite (EFD.CAMPOS_MAX).
  */
 export function camposDoLivro(c) {
   const achados = new Map(), fora = [];

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { criarArquivo } from '../nucleo/modelo.js';
 import { guardarOriginal } from '../nucleo/originais.js';
 import { irPara } from '../ui/comum.jsx';
-import { montarEnvio, PODE_COMPARTILHAR } from './ponte.js';
+import { EFD, montarEnvio, PODE_COMPARTILHAR } from './ponte.js';
 import { camposDoLivro, camposParaPub } from './campos.js';
 import { pedidoDoResumo } from './pedido.js';
 import { temCaixa, lerEstado, marcarEstado, porNaCaixa, conferirRecebidos, esperandoAqui, pegar, apagar, ouvir } from './caixa.js';
@@ -109,7 +109,7 @@ export function usarPonte({ banco, fichas, recarregar, avisar, aberto, autor, mu
       const envio = await montarEnvio({ ficha, ...g, rev, campos: camposParaPub(cp.campos) });
       if (cp.campos.length) envio.avisos.unshift(`Vai com ${cp.campos.length} ${cp.campos.length === 1 ? 'campo' : 'campos'} para o Cwork preencher.`);
       if (cp.fora.length) envio.avisos.push(`${cp.fora.length === 1 ? 'O nome' : 'Os nomes'} ${cp.fora.join(', ')} ${cp.fora.length === 1 ? 'começa' : 'começam'} com efc_ mas não ${cp.fora.length === 1 ? 'é campo' : 'são campos'} do Cwork: ${cp.fora.length === 1 ? 'ficou' : 'ficaram'} de fora.`);
-      if (cp.excesso) envio.avisos.push(`O Cwork aceita até 32 campos por documento: ${cp.excesso} ${cp.excesso === 1 ? 'ficou' : 'ficaram'} de fora.`);
+      if (cp.excesso) envio.avisos.push(`O Cwork aceita até ${EFD.CAMPOS_MAX} campos por documento: ${cp.excesso} ${cp.excesso === 1 ? 'ficou' : 'ficaram'} de fora.`);
       const pid = await porNaCaixa(envio);
       setEstado(marcarEstado(ficha.id, { rev, pid, em: envio.ficha.alteradoEm, estado: 'caixa' }));
       avisar(`"${ficha.nome}" (versão ${rev}) está na caixa do Cwork. Abra o EFCwork neste aparelho para ele receber.${envio.avisos.length ? ' ' + envio.avisos.join(' ') : ''}`, { ic: 'check', longo: true });

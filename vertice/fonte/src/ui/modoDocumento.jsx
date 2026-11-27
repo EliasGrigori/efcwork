@@ -12,6 +12,8 @@ import { gerarImpressao, imprimirPaginas } from '../planilha/imprimirLivro.js';
 import { svgDaPagina } from '../planilha/paginaDesenho.js';
 import { pdfDasPaginas, imagensDasPaginas, baixarBytes } from '../planilha/impressaoPdf.js';
 import { chave } from '../planilha/ref.js';
+import { pegarFolha } from '../ponte/rascunhoPedido.js';
+import { normalizarPlanilha } from '../planilha/modelo.js';
 import './modoDocumento.css';
 
 /** O documento que a rota pede. Quem só entra pelo documento ligado (ITEM 195) também vê "#/arq/<id>" assim. */
@@ -100,8 +102,11 @@ export function ModoDocumento({ id, abaPedida, banco, fichas, lendo, login, avis
     if (!r || r.ficha.status === 'lixeira') { setDoc(null); setFalta('nao'); return; }
     const d = abrirParaDocumento(r, abaPedida);
     if (!d) { setDoc({ ficha: r.ficha, abaId: null, versao: 0 }); setFalta('tipo'); return; }
+    /* v0.6.80: veio do pedido do Cwork já preenchido ("Escrever nesta folha"): parte da folha preenchida, só na memória */
+    const pf = pegarFolha(id);
+    if (pf && pf.conteudo) { d.conteudo = normalizarPlanilha(structuredClone(pf.conteudo)); if (pf.abaId && d.conteudo.abas[pf.abaId]) d.abaId = pf.abaId; }
     atual.current = d.conteudo;
-    setConteudo(d.conteudo); setEscreveu(false); setMudouAqui(false); setFalta('');
+    setConteudo(d.conteudo); setEscreveu(!!pf); setMudouAqui(false); setFalta('');
     setDoc({ ficha: r.ficha, abaId: d.abaId, versao: (r.ficha.nuvem && r.ficha.nuvem.versao) || 0 });
   }, [banco, id, abaPedida]);
 

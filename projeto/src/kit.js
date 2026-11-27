@@ -71,7 +71,7 @@ function ktTabLabs() {
 DD_AO.kt = (k, v) => {
   if (k === 'vista') { S.coEnvVista = v; render(); return; }
   const f = S.fm; if (!f) return; f.sujo = true; f.msg = '';
-  if (k === 'doc') f.docId = v; else if (k === 'papel') f.papel = v; else if (k === 'quando') f.quando = v; else if (k === 'analise') f.analise = v; else if (k === 'copias') f.copias = v; else if (k === 'rem') { ktPapCarrega(f, v); f.sujo = false; } else if (k === 'unid') f.unid = v;
+  if (k === 'doc') f.docId = v; else if (k === 'papel') f.papel = v; else if (k === 'quando') f.quando = v; else if (k === 'analise') f.analise = v; else if (k === 'copias') f.copias = v; else if (k === 'rem') { ktPapCarrega(f, v); f.sujo = false; } else if (k === 'unid') f.unid = v; else if (k === 'modo') f.modo = v;
   gvDesenha(true);
 };
 /* gaveta do laboratório: endereço e kit */
@@ -193,6 +193,9 @@ LC_FORM.ktPap = f => {
   if (f.ks.length > 1) c += lcBl('Remessa', ddHTML('kt:rem', k, f.ks.map(x => [x, ktRemNome(x)])), f.ks.length + ' laboratórios neste envio');
   c += '<div class="fm-pk"><div class="fm-pkl co-pkl">' + it.map(box).join('') + '</div></div>';
   if (!it.some(x => x.papel === 'doc')) c += '<p class="ag-dc">Este laboratório não tem custódia nem ficha no kit.</p>';
+  /* v0.6.45 (ITEM 285, 27/11 18:14): com 2 ou mais análises na remessa, pergunta se preenche uma ficha por análise ou tudo numa só */
+  const ng = typeof ptGrupos === 'function' ? ptGrupos(coLote(k)).length : 1;
+  if (ng > 1 && it.some(x => f.sel[x.id] && x.d && x.d.fonte === 'vertice')) c += lcBl('Como preencher', ddHTML('kt:modo', f.modo === 'unificada' ? 'unificada' : 'separadas', [['separadas', 'Uma ficha por análise (' + ng + ' fichas)'], ['unificada', 'Tudo numa ficha só']]), ng + ' análises nesta remessa');
   if (sup && ktDocsDoLab(lab).length < KT_DOCS_MAX) c += '<button type="button" class="bt lk kt-anx" data-act="kt-anexar-aqui">' + ic('mais') + 'Anexar papel deste laboratório</button>';
   c += '<p class="gv-h">Dados que vão para o papel <small>opcional</small></p>' +
     '<div class="fm-g">' + lcBl('Amostras', lcIn('amostras', f.amostras, ' inputmode="numeric" maxlength="4"')) + lcBl('Caixas', lcIn('caixas', f.caixas, ' inputmode="numeric" maxlength="2"')) + '</div>' +
@@ -224,7 +227,7 @@ function ktImprimeHTML(html, titulo) {
 }
 /* volta à janela dos papéis depois de anexar ou cadastrar o endereço (sem abrir camada nova) */
 function ktVoltaPap(fp) { S.fm = fp; fp._trava = 0; S.gvForm = true; gvAbrir(lcGaveta, true); }
-function ktDadosForm(f) { return { amostras: String(f.amostras || '').trim(), caixas: String(Number(String(f.caixas || '').trim() || 1)), analise: String(f.analise || '').trim(), pontos: String(f.pontos || '').trim(), obs: String(f.obs || '').trim(), unid: f.unid }; }
+function ktDadosForm(f) { return { amostras: String(f.amostras || '').trim(), caixas: String(Number(String(f.caixas || '').trim() || 1)), analise: String(f.analise || '').trim(), pontos: String(f.pontos || '').trim(), obs: String(f.obs || '').trim(), unid: f.unid, modo: f.modo === 'unificada' ? 'unificada' : 'separadas' }; }
 async function ktImprimir() {
   const f = S.fm; if (!f || f.k !== 'ktPap') return; const k = f.kRem, lab = k.split('|').slice(1).join('|'), todos = ktPapItens(k);
   /* "Abrir o próximo no Vértice": um papel do Vértice por vez (a janela de dentro mostra um só) */

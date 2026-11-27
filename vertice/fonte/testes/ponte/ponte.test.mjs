@@ -62,6 +62,6 @@ test('Ponte 1: sub-abas pedidas e a situação de cada documento', () => {
 test('Ponte 1: os arquivos do contrato são os do EFCwork (sem edição local)', () => {
   const ponte = readFileSync(new URL('contrato/efd-ponte.js', raiz), 'utf8'), efd = readFileSync(new URL('contrato/efd-v1.js', raiz), 'utf8');
   assert.match(ponte, /PONTE EFD v1/); assert.match(efd, /CONTRATO EFD v1/);
-  assert.equal(createHash('sha256').update(efd).digest('hex'), '6543f0ba65f20a182e32e830f4c20aef824b2d61e635ba577b9ceab9bab5a6dc');
+  assert.equal(createHash('sha256').update(efd).digest('hex'), '4144d0b853f7b77b42155dc3dd92208d7f68c03f7751b36c08db2238a0750b1f' /* dicionário 2, autorizado pelo Elias em 27/11 17:22 */);
   assert.equal(createHash('sha256').update(ponte).digest('hex'), '7c0eab90cf2a6f0c25c3027e8999dd58e22a3067a97eef7fc32670f512f1b72d');
 });
