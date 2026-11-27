@@ -1,7 +1,7 @@
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.6.37';
+const VERSAO = '0.6.38';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -63,6 +63,32 @@ const Store = (function () {
     soNaAba() { const l = Object.keys(mem); if (ses) { try { for (let i = 0; i < sessionStorage.length; i++) { const k = sessionStorage.key(i); if (k && k.indexOf(SES) === 0) l.push(k.slice(SES.length)); } } catch {} } return l; }
   };
 })();
+/* v0.6.38 (SDK novo): o banco do aparelho do Firestore muda de formato (16 → 18). Enquanto uma aba ou janela da versão anterior
+   estiver aberta, o navegador segura a mudança ("blocked") e esta aba espera em "Abrindo o EFCwork…". Avisa o que fazer; ao fechar
+   ou atualizar a outra, esta segue sozinha, sem perder nada. Só observa o pedido do Firestore deste app (não muda nada nele). */
+(function () {
+  try {
+    const abre = IDBFactory.prototype.open; if (!abre || abre._efc) return;
+    const nova = function (nome) {
+      const r = abre.apply(this, arguments);
+      if (typeof nome === 'string' && nome.indexOf('firestore/efcwork/') === 0) {
+        let t = 0; const diz = () => { try { aviso('Outra aba ou janela do EFCwork ainda está na versão anterior. Para terminar de abrir, toque em Atualizar nela ou feche-a.', 'erro'); } catch (e) {} };
+        r.addEventListener('blocked', () => { S._bancoPreso = true; diz(); try { if (!S.pronto) render(); } catch (e) {} });
+        const fim = () => { clearInterval(t); if (S._bancoPreso) { S._bancoPreso = false; try { if (!S.pronto) render(); aviso('Pronto: a versão nova terminou de abrir.'); } catch (e) {} } };
+        r.addEventListener('success', fim); r.addEventListener('error', fim);
+      }
+      return r;
+    };
+    nova._efc = true; IDBFactory.prototype.open = nova;
+  } catch (e) {}
+})();
+/* v0.6.38: o que a regra de segurança (CSP) barrar fica no console e anotado neste aparelho (os últimos 20, em 'cw-csp'),
+   para achar a causa se algo parar de carregar. Não mostra nada na tela. */
+document.addEventListener('securitypolicyviolation', e => {
+  const r = { em: new Date().toISOString(), regra: e.effectiveDirective || e.violatedDirective || '', bloqueado: String(e.blockedURI || '').slice(0, 160), linha: e.lineNumber || 0 };
+  try { console.warn('CSP barrou:', r.regra, r.bloqueado); } catch (x) {}
+  try { const l = JSON.parse(Store.get('cw-csp') || '[]'); l.push(r); Store.set('cw-csp', JSON.stringify(l.slice(-20))); } catch (x) {}
+});
 
 let DEMO = /[?&]demo=1/.test(location.search) || /(^|#|&)demo(=1)?($|&)/.test(location.hash) || Store.get('sv2-demo') === '1';
 /* nomes dos perfis na tela (pedido do Elias 05/11: trocar "Secundário"). O valor gravado no Firebase não muda (principal, principal_temp,

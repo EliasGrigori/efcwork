@@ -9,11 +9,17 @@ const FONTE = HOJE || path.join(RAIZ, 'dist');
 const BASE_V = fs.readFileSync(path.join(FONTE, 'index.html'), 'utf8').match(/const VERSAO = '([0-9.]+)'/)[1];
 const prox = n => { const p = BASE_V.split('.').map(Number); p[2] += n; return p.join('.'); };
 const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'efc-vn-'));
+/* v0.6.38: o index.html tem a regra de segurança (CSP) com o hash do script; mudou o script, recalcula o hash */
+function rehash(html) {
+  const bl = (html.match(/<script>([\s\S]*?)<\/script>/) || [])[1]; if (bl === undefined) return html;
+  const h = 'sha256-' + require('crypto').createHash('sha256').update(bl, 'utf8').digest('base64');
+  return html.replace(/'sha256-[A-Za-z0-9+/=]+'/, "'" + h + "'");
+}
 function faz(v) {
   const d = path.join(TMP, v); fs.cpSync(FONTE, d, { recursive: true });
   for (const f of ['index.html', 'sw.js']) {
     const s = fs.readFileSync(path.join(d, f), 'utf8').split("VERSAO = '" + BASE_V + "'").join("VERSAO = '" + v + "'").split("'efcwork-" + BASE_V + "'").join("'efcwork-" + v + "'");
-    fs.writeFileSync(path.join(d, f), s);
+    fs.writeFileSync(path.join(d, f), f === 'index.html' ? rehash(s) : s);
   }
   return d;
 }

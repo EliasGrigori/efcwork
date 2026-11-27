@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-FEVxOp1m5RmC+0dZ14AV2JOYT9w+0AujawX6BTs2sQ4=' https://www.gstatic.com/firebasejs/13.4.0/ https://www.google.com/recaptcha/enterprise.js https://www.gstatic.com/recaptcha/releases/; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' data: blob: https://*.googleapis.com https://www.google.com/recaptcha/; frame-src 'self' https://eliasgrigori.github.io blob: https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/ https://docseliasflorencio.firebaseapp.com; worker-src 'self' blob:; manifest-src 'self'; media-src 'self' data: blob:; object-src 'self' blob:; base-uri 'none'; form-action 'self'">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>EFCwork</title>
 <meta name="description" content="EFCwork · Cwork Quality · controle de qualidade agrícola da família EFClaudian.">
@@ -11,10 +12,10 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-check-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/13.4.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/13.4.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/13.4.0/firebase-app-check-compat.js"></script>
 <style>
 /* ===== movimento.css ===== */
 /* EFC · movimento — escala única de movimento da família EFClaudian (EFCwork, Sabiá, EFClaudian, Vértice Docs).
@@ -258,6 +259,9 @@ img.img-x{font-size:0;color:transparent;background:var(--bg2);object-position:-9
 /* EFCwork · casca.css — menu lateral, barra de cima, cabeçalho de página, abas, barra de baixo do celular. Prefixo: cs- */
 .cs-carregando{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--tx2)}
 .cs-carregando .ic{width:34px;height:34px;color:var(--a)}
+/* v0.6.38: texto antes do script rodar; e o banco preso por aba da versão anterior */
+.cs-pre{max-width:28em;margin:20vh auto 0;padding:0 16px;text-align:center;font-size:16px;line-height:1.5;color:var(--tx2)}
+.cs-preso{max-width:28em;padding:0 16px;text-align:center;font-size:14px;line-height:1.45}
 .cs-app{display:grid;grid-template-columns:240px minmax(0,1fr);min-height:100vh}
 .cs-lado{position:sticky;top:0;height:100vh;background:var(--sb);color:var(--sbTx);border-right:1px solid var(--sbBd);display:flex;flex-direction:column;padding:14px 10px;gap:2px;overflow-y:auto;z-index:20}
 .cs-marca{display:flex;align-items:center;gap:10px;padding:2px 8px 14px}
@@ -2774,7 +2778,7 @@ body.jn-fora-on .vn{display:none}
 </style>
 </head>
 <body>
-<div id="app" aria-live="polite"></div>
+<div id="app" aria-live="polite"><p class="cs-pre">Abrindo o EFCwork… Se não sair desta tela, recarregue a página; se continuar, avise o administrador.</p></div>
 <div id="avisos" class="av-pilha" role="status" aria-live="polite"></div>
 <script>
 'use strict';
@@ -2827,7 +2831,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = Mov;
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.6.37';
+const VERSAO = '0.6.38';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -2889,6 +2893,32 @@ const Store = (function () {
     soNaAba() { const l = Object.keys(mem); if (ses) { try { for (let i = 0; i < sessionStorage.length; i++) { const k = sessionStorage.key(i); if (k && k.indexOf(SES) === 0) l.push(k.slice(SES.length)); } } catch {} } return l; }
   };
 })();
+/* v0.6.38 (SDK novo): o banco do aparelho do Firestore muda de formato (16 → 18). Enquanto uma aba ou janela da versão anterior
+   estiver aberta, o navegador segura a mudança ("blocked") e esta aba espera em "Abrindo o EFCwork…". Avisa o que fazer; ao fechar
+   ou atualizar a outra, esta segue sozinha, sem perder nada. Só observa o pedido do Firestore deste app (não muda nada nele). */
+(function () {
+  try {
+    const abre = IDBFactory.prototype.open; if (!abre || abre._efc) return;
+    const nova = function (nome) {
+      const r = abre.apply(this, arguments);
+      if (typeof nome === 'string' && nome.indexOf('firestore/efcwork/') === 0) {
+        let t = 0; const diz = () => { try { aviso('Outra aba ou janela do EFCwork ainda está na versão anterior. Para terminar de abrir, toque em Atualizar nela ou feche-a.', 'erro'); } catch (e) {} };
+        r.addEventListener('blocked', () => { S._bancoPreso = true; diz(); try { if (!S.pronto) render(); } catch (e) {} });
+        const fim = () => { clearInterval(t); if (S._bancoPreso) { S._bancoPreso = false; try { if (!S.pronto) render(); aviso('Pronto: a versão nova terminou de abrir.'); } catch (e) {} } };
+        r.addEventListener('success', fim); r.addEventListener('error', fim);
+      }
+      return r;
+    };
+    nova._efc = true; IDBFactory.prototype.open = nova;
+  } catch (e) {}
+})();
+/* v0.6.38: o que a regra de segurança (CSP) barrar fica no console e anotado neste aparelho (os últimos 20, em 'cw-csp'),
+   para achar a causa se algo parar de carregar. Não mostra nada na tela. */
+document.addEventListener('securitypolicyviolation', e => {
+  const r = { em: new Date().toISOString(), regra: e.effectiveDirective || e.violatedDirective || '', bloqueado: String(e.blockedURI || '').slice(0, 160), linha: e.lineNumber || 0 };
+  try { console.warn('CSP barrou:', r.regra, r.bloqueado); } catch (x) {}
+  try { const l = JSON.parse(Store.get('cw-csp') || '[]'); l.push(r); Store.set('cw-csp', JSON.stringify(l.slice(-20))); } catch (x) {}
+});
 
 let DEMO = /[?&]demo=1/.test(location.search) || /(^|#|&)demo(=1)?($|&)/.test(location.hash) || Store.get('sv2-demo') === '1';
 /* nomes dos perfis na tela (pedido do Elias 05/11: trocar "Secundário"). O valor gravado no Firebase não muda (principal, principal_temp,
@@ -3474,7 +3504,7 @@ function csBaixo() {
 /* ---------- desenhar ---------- */
 function render() {
   const app = $('#app'); if (!app) return;
-  if (!S.pronto) { app.innerHTML = '<div class="cs-carregando">' + ic('broto') + '<span>Abrindo o ' + APP_NOME + '…</span></div>'; return; }
+  if (!S.pronto) { app.innerHTML = '<div class="cs-carregando">' + ic('broto') + '<span>Abrindo o ' + APP_NOME + '…</span>' + (S._bancoPreso ? '<small class="cs-preso">Outra aba ou janela do ' + esc(APP_NOME) + ' ainda está na versão anterior. Para terminar de abrir, toque em Atualizar nela ou feche-a.</small>' : '') + '</div>'; return; } /* v0.6.38 */
   if (!S.user || enTrocaPendente()) { app.innerHTML = enTela(); /* v0.6.29: a pessoa nova cria a senha antes de ver o app */ try { enDepois(); } catch (e) { console.error(e); } return; }
   const ar = csArea(S.rota.area), f = TELAS[ar.id];
   let corpo = '';
@@ -3540,7 +3570,10 @@ async function csCarregaUsuario(uidAtual) {
   CS_CARGAS.forEach(f => { try { f(); } catch (e) { console.error(e); } });
   S.rota = csLeRota(); csAcertaHash(); csUso(); render();
 }
+/* v0.6.38 (revisor): dentro de um quadro de OUTRO endereço, o app não abre (proteção contra clique enganado; o GitHub Pages não deixa mandar o cabeçalho que faria isso) */
+function csForaDeOutroSite() { try { return window.top !== window && window.top.location.origin !== location.origin; } catch (e) { return true; } }
 async function csIniciar() {
+  if (csForaDeOutroSite()) { const a = $('#app'); if (a) a.innerHTML = '<p class="cs-pre">Por segurança, o ' + esc(APP_NOME) + ' só abre pelo endereço próprio. <a href="' + esc(location.href) + '" target="_top" rel="noopener">Abrir o ' + esc(APP_NOME) + '</a></p>'; return; }
   S.rota = csLeRota();
   try { await Data.init(); } catch (e) { console.error(e); S.pronto = true; S._erroEntrar = 'Não foi possível carregar o Firebase. Confira a internet e abra de novo.'; render(); return; }
   /* v0.5.1 (Grok v0.4.11 B1): se a leitura falhar (App Check, permissão, sem internet), mostra o Entrar. O "Primeiro acesso"
@@ -15322,8 +15355,14 @@ document.addEventListener('submit', e => {
   const avisos = [0, 1, 2].map(i => [$('#adm-av' + i + 't').value.trim(), $('#adm-av' + i + 'd').value.trim()]).filter(x => x[0]);
   admGravaEntrar({ palavra: pal, faixa: faixa, avisos: avisos });
 });
+/* v0.6.38: para conferir no site publicado que a regra (CSP) está ligada e se barrou algo neste aparelho */
+function admCsp() {
+  const lig = !!document.querySelector('meta[http-equiv="Content-Security-Policy"]'); let n = 0; try { n = JSON.parse(Store.get('cw-csp') || '[]').length; } catch (e) {}
+  let u = null; try { u = JSON.parse(Store.get('cw-csp') || '[]').slice(-1)[0]; } catch (e) {}
+  return !lig ? 'desligada' : n ? 'ligada · barrou ' + n + ' coisa' + (n > 1 ? 's' : '') + ' neste aparelho (a última: ' + (u.regra || '?') + ' ' + (u.bloqueado || '') + ')' : 'ligada · nada barrado';
+}
 function admSobre() {
-  const l = [['App', APP_NOME + ' · ' + APP_APELIDO], ['Família', APP_FAMILIA], ['Versão', 'v' + VERSAO], ['Dados', DEMO ? 'Demonstração (só neste navegador)' : 'Firebase do EFClaudian (mesmas coleções)'], ['Empresa', (S.empresa && S.empresa.nome) || 'não configurada']];
+  const l = [['App', APP_NOME + ' · ' + APP_APELIDO], ['Família', APP_FAMILIA], ['Versão', 'v' + VERSAO], ['Firebase (SDK)', typeof firebase !== 'undefined' && firebase.SDK_VERSION ? firebase.SDK_VERSION : '-'], ['Regra de segurança', admCsp()], ['Dados', DEMO ? 'Demonstração (só neste navegador)' : 'Firebase do EFClaudian (mesmas coleções)'], ['Empresa', (S.empresa && S.empresa.nome) || 'não configurada']];
   return '<section class="pn adm-uma"><div class="hd"><h3>Sobre</h3></div><dl class="adm-dl">' + l.map(x => '<dt>' + esc(x[0]) + '</dt><dd>' + esc(x[1]) + '</dd>').join('') + '</dl></section>';
 }
 TELAS.adm = function (aba) {

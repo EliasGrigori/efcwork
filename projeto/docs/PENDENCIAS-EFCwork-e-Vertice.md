@@ -2,7 +2,7 @@
 
 Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conversa ou para o fim, para nada ficar para trás. Atualizado a cada mudança e enviado junto. Marque [x] quando estiver feito.
 
-Última atualização: 26/11/2026 21h15 · v0.6.37 (aviso de versão nova) publicada. Próxima: CSP e SDK.
+Última atualização: 26/11/2026 · v0.6.38 (CSP e SDK). Próxima: limpeza visual.
 
 ## A. Para a conversa do Vértice (o Elias leva)
 - [ ] **O código do Vértice mora agora em `efcwork/vertice/fonte/`** (depois de publicada a P5): a conversa do Vértice clona o efcwork e publica na pasta `vertice/`. Está na memória do Vértice (registro de 26/11, 16:57).
@@ -30,7 +30,8 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 - [x] **P5 · Vértice dentro do efcwork**: publicada em 26/11 (efcwork 84e1ddc, EFCdocs 12f2466).
 - [ ] **ITEM 185 · ícone do Vértice no menu:** o Elias vai mandar o print do ícone que quer.
 - [x] **Aviso de versão nova (v0.6.37):** aprovado (226 = janela no meio; "Depois" leva ao pé do menu) e publicado em 26/11.
-- [ ] CSP e SDK · limpeza visual · `features.csv` · Cadastros de Coletas (por último).
+- [x] **CSP e SDK (v0.6.38):** regra de segurança ligada e SDK 13.4.0.
+- [ ] Limpeza visual · `features.csv` · Cadastros de Coletas (por último).
 - [ ] Estudo de rapidez (`ESTUDO-rapidez-EFCwork-v0.6.33.md`): só depois da integração.
 - [x] Janela por cima: virou a tela inteira com abas (v0.6.35); a área ao lado do menu saiu.
 
@@ -45,7 +46,9 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 ## D. O Elias confere (Firebase e uso real)
 - [ ] **Depois da P5 no ar:** o menu Vértice Docs abre o endereço novo; um arquivo antigo do Vértice continua lá; no celular, desinstalar o ícone antigo do Vértice (o novo abre pelo Cwork).
 - [ ] **Regras v0.6.36 (publicadas):** se ainda não rodou os 17 testes do GUIA-SIMULADOR-v0.6.36.md, rodar e dizer o resultado.
-- [ ] **Na v0.6.38 (primeira com aviso):** no PC e no celular instalado, a janela aparece sozinha; "Depois" leva ao pé do menu; "Atualizar" volta na mesma tela.
+- [ ] **v0.6.38 no ar (primeira com aviso):** no PC e no celular instalado, a janela "Versão nova do app" aparece sozinha; "Depois" leva ao pé do menu; "Atualizar" volta na mesma tela.
+- [ ] **v0.6.38 · regra e SDK:** entrar com a conta, abrir telas com dados, abrir o Vértice e um PDF; Administração › Sobre: "Firebase (SDK) 13.4.0" e "Regra de segurança: ligada · nada barrado". Se aparecer "barrou", me diga.
+- [ ] **v0.6.38 · abas antigas:** quem tiver duas abas do EFCwork abertas no PC verá a nova esperar com o aviso "Outra aba ou janela do EFCwork ainda está na versão anterior…" até atualizar ou fechar a outra.
 - [ ] Almoxarifado › Entrada com um Colaborador no EFClaudian (regras da v0.6.33 coladas em 26/11).
 - [ ] Via assinada (foto) numa remessa e abrir a mesma remessa em outro aparelho.
 - [ ] Site publicado mostra v0.6.36; o menu Vértice Docs abre em tela inteira com a conta, sem pedir senha; dois arquivos em duas abas; no celular, o voltar sai do Vértice.
@@ -54,6 +57,8 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 - [ ] "Esqueci a senha" e primeiro acesso no Firebase real.
 
 ## E. Defeitos abertos
+- [ ] **Regra de segurança (CSP) nos apps irmãos (revisor da v0.6.38):** Vértice, Sabiá e EFClaudian estão no mesmo endereço (eliasgrigori.github.io) e sem regra; um script posto num deles alcança o Cwork e o login guardado no aparelho. Pôr regra igual neles (cada um na sua conversa) e, a longo prazo, um endereço próprio para o Cwork.
+- [ ] **Não voltar o SDK do Firebase para o 10.12.0:** depois da v0.6.38 o banco do aparelho está no formato 18; uma versão com SDK antigo abre sem cache e o que foi gravado sem internet fica parado. Se a regra quebrar algo no site, corrigir com versão nova.
 - [ ] **Voltar do celular com várias abas do Vértice (revisor, v0.6.35):** se o Vértice criar passos no histórico, o voltar anda primeiro o quadro mais recente, que pode estar escondido. Testar no celular de verdade.
 - [ ] `t_v067` "as datas do mês aparecem marcadas": falha também na v0.6.33 em 26/11 (ligado à data). Anterior à v0.6.34.
 - [ ] **Almoxarifado: ajuste e saída com vários lotes gravam um por um (só lido, revisor da v0.6.37):** sem internet, recarregar ou fechar o app no meio deixa parte sem gravar. Corrigir gravando em lote (`Data.lote`).

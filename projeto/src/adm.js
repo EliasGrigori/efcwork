@@ -71,8 +71,14 @@ document.addEventListener('submit', e => {
   const avisos = [0, 1, 2].map(i => [$('#adm-av' + i + 't').value.trim(), $('#adm-av' + i + 'd').value.trim()]).filter(x => x[0]);
   admGravaEntrar({ palavra: pal, faixa: faixa, avisos: avisos });
 });
+/* v0.6.38: para conferir no site publicado que a regra (CSP) está ligada e se barrou algo neste aparelho */
+function admCsp() {
+  const lig = !!document.querySelector('meta[http-equiv="Content-Security-Policy"]'); let n = 0; try { n = JSON.parse(Store.get('cw-csp') || '[]').length; } catch (e) {}
+  let u = null; try { u = JSON.parse(Store.get('cw-csp') || '[]').slice(-1)[0]; } catch (e) {}
+  return !lig ? 'desligada' : n ? 'ligada · barrou ' + n + ' coisa' + (n > 1 ? 's' : '') + ' neste aparelho (a última: ' + (u.regra || '?') + ' ' + (u.bloqueado || '') + ')' : 'ligada · nada barrado';
+}
 function admSobre() {
-  const l = [['App', APP_NOME + ' · ' + APP_APELIDO], ['Família', APP_FAMILIA], ['Versão', 'v' + VERSAO], ['Dados', DEMO ? 'Demonstração (só neste navegador)' : 'Firebase do EFClaudian (mesmas coleções)'], ['Empresa', (S.empresa && S.empresa.nome) || 'não configurada']];
+  const l = [['App', APP_NOME + ' · ' + APP_APELIDO], ['Família', APP_FAMILIA], ['Versão', 'v' + VERSAO], ['Firebase (SDK)', typeof firebase !== 'undefined' && firebase.SDK_VERSION ? firebase.SDK_VERSION : '-'], ['Regra de segurança', admCsp()], ['Dados', DEMO ? 'Demonstração (só neste navegador)' : 'Firebase do EFClaudian (mesmas coleções)'], ['Empresa', (S.empresa && S.empresa.nome) || 'não configurada']];
   return '<section class="pn adm-uma"><div class="hd"><h3>Sobre</h3></div><dl class="adm-dl">' + l.map(x => '<dt>' + esc(x[0]) + '</dt><dd>' + esc(x[1]) + '</dd>').join('') + '</dl></section>';
 }
 TELAS.adm = function (aba) {

@@ -7,9 +7,15 @@ const [,, HOJE, NOVO, OUT] = process.argv.map(a => path.resolve(a));
 fs.mkdirSync(OUT, { recursive: true });
 const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'efc-cap-'));
 const ver = d => fs.readFileSync(path.join(d, 'index.html'), 'utf8').match(/const VERSAO = '([0-9.]+)'/)[1];
+/* v0.6.38: o index.html tem a regra de segurança (CSP) com o hash do script; mudou o script, recalcula o hash */
+function rehash(html) {
+  const bl = (html.match(/<script>([\s\S]*?)<\/script>/) || [])[1]; if (bl === undefined) return html;
+  const h = 'sha256-' + require('crypto').createHash('sha256').update(bl, 'utf8').digest('base64');
+  return html.replace(/'sha256-[A-Za-z0-9+/=]+'/, "'" + h + "'");
+}
 function proxima(fonte) {
   const a = ver(fonte), p = a.split('.').map(Number); p[2]++; const n = p.join('.'), d = path.join(TMP, a + '-' + n); fs.cpSync(fonte, d, { recursive: true });
-  for (const f of ['index.html', 'sw.js']) fs.writeFileSync(path.join(d, f), fs.readFileSync(path.join(d, f), 'utf8').split("VERSAO = '" + a + "'").join("VERSAO = '" + n + "'").split("'efcwork-" + a + "'").join("'efcwork-" + n + "'"));
+  for (const f of ['index.html', 'sw.js']) { const t = fs.readFileSync(path.join(d, f), 'utf8').split("VERSAO = '" + a + "'").join("VERSAO = '" + n + "'").split("'efcwork-" + a + "'").join("'efcwork-" + n + "'"); fs.writeFileSync(path.join(d, f), f === 'index.html' ? rehash(t) : t); }
   return d;
 }
 let dir = NOVO;

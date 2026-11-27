@@ -230,7 +230,7 @@ function csBaixo() {
 /* ---------- desenhar ---------- */
 function render() {
   const app = $('#app'); if (!app) return;
-  if (!S.pronto) { app.innerHTML = '<div class="cs-carregando">' + ic('broto') + '<span>Abrindo o ' + APP_NOME + '…</span></div>'; return; }
+  if (!S.pronto) { app.innerHTML = '<div class="cs-carregando">' + ic('broto') + '<span>Abrindo o ' + APP_NOME + '…</span>' + (S._bancoPreso ? '<small class="cs-preso">Outra aba ou janela do ' + esc(APP_NOME) + ' ainda está na versão anterior. Para terminar de abrir, toque em Atualizar nela ou feche-a.</small>' : '') + '</div>'; return; } /* v0.6.38 */
   if (!S.user || enTrocaPendente()) { app.innerHTML = enTela(); /* v0.6.29: a pessoa nova cria a senha antes de ver o app */ try { enDepois(); } catch (e) { console.error(e); } return; }
   const ar = csArea(S.rota.area), f = TELAS[ar.id];
   let corpo = '';
@@ -296,7 +296,10 @@ async function csCarregaUsuario(uidAtual) {
   CS_CARGAS.forEach(f => { try { f(); } catch (e) { console.error(e); } });
   S.rota = csLeRota(); csAcertaHash(); csUso(); render();
 }
+/* v0.6.38 (revisor): dentro de um quadro de OUTRO endereço, o app não abre (proteção contra clique enganado; o GitHub Pages não deixa mandar o cabeçalho que faria isso) */
+function csForaDeOutroSite() { try { return window.top !== window && window.top.location.origin !== location.origin; } catch (e) { return true; } }
 async function csIniciar() {
+  if (csForaDeOutroSite()) { const a = $('#app'); if (a) a.innerHTML = '<p class="cs-pre">Por segurança, o ' + esc(APP_NOME) + ' só abre pelo endereço próprio. <a href="' + esc(location.href) + '" target="_top" rel="noopener">Abrir o ' + esc(APP_NOME) + '</a></p>'; return; }
   S.rota = csLeRota();
   try { await Data.init(); } catch (e) { console.error(e); S.pronto = true; S._erroEntrar = 'Não foi possível carregar o Firebase. Confira a internet e abra de novo.'; render(); return; }
   /* v0.5.1 (Grok v0.4.11 B1): se a leitura falhar (App Check, permissão, sem internet), mostra o Entrar. O "Primeiro acesso"
