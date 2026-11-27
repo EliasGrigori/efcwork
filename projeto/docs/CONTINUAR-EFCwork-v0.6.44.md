@@ -14,19 +14,15 @@ Substitui o CONTINUAR-EFCwork-v0.6.43.md. Quem ler só este arquivo sabe o que f
 > EFCwork, continuando. Anexei o pacote único (EFCwork-PACOTE-NOVA-CONVERSA-v0.6.44.zip): CONTINUAR, dossiê, pendências, o app no ar e o fonte. Leia o CONTINUAR inteiro. Responda em 3 linhas: onde parou e qual é a próxima tarefa. Depois sugira o modelo e o esforço em **negrito** e espere meu "pode iniciar". Siga o "Padrão de trabalho" sem eu repetir. Repositório: EliasGrigori/efcwork (add_repo com envio; se negar, me diga e use o fonte do pacote). Esta conversa pode mexer no Vértice (vertice/fonte). Nunca invente documento; modelo de teste com marca d'água. Não abra o OneDrive. Nada no EFClaudian. GitHub só com "pode publicar". Fique em primeiro plano. Toda entrega: o pacote único atualizado.
 
 ## 2. Próxima tarefa
-**A escolher com o Elias (perguntar com o modelo e o esforço em negrito).** Sobras da integração: (a) o pedido do Cwork imprime todas as abas do modelo (deveria ser só a do documento?); (b) o que chega do Cwork fica em "Recebidos do Cwork", fora das 5 pastas, e não sobe para a nuvem; (c) tema do Vértice seguir o do Cwork; (d) Documentos › Impressos continua guardando PDF (o Vértice ainda não guarda PDF). Fora da integração (CONTINUAR §6): Relatórios › Coletas em aberto · Conversas · Só ver por área.
-
-## 2a. O que a etapa 2 faz (Vértice v0.6.76)
-- `#/abrir/<pid>` (o Cwork põe o arquivo na caixa) vira `#/documento/<id>[/<aba>]` com `location.replace`. Tela `ui/modoDocumento.jsx` (`TelaSemMenus`, `ModoDocumento`), lógica sem tela `planilha/modoDocumento.js` (campos = `celulaLivre` sem conta; escrever numa cópia; páginas pelo motor de impressão, que devolve o lugar de cada campo quando recebe `editavel`).
-- Nada grava. "Atualizar documento" = `#/arq/<id>` (só quem salva; `login.semSalvar`). Quem tem `acesso: 'documento'` (`login.soDocumento`) nunca vê o editor. Pedido do Cwork e "Preencher e imprimir" do resumo sem menus.
-- Versão nova: pela nuvem (`ficha.nuvem.versao`) ou pela mensagem `salvou` do canal `efcdocs-abas` de outra aba.
-- `abrirDaCaixa` confere se o documento já existe pelo banco (`banco.backend.um`), não pela lista da tela.
-
-## 2b. O que a v0.6.38 faz (CSP e SDK)
-- `tools/montar.py`: `SDK = '13.4.0'` (um lugar só: index.html, sw.js e regra) e a regra CSP no alto do index.html, com o sha256 do único `<script>` inline. **Qualquer mudança no index.html depois da montagem quebra o app** (o script fica barrado): teste que cria versão de mentira tem de recalcular o hash (ver `rehash` em `t_v0637.js`).
-- Script de fora (ataque) não roda. Estilos `style=` continuam (unsafe-inline só no CSS).
-- Banco do aparelho do Firestore muda do formato 16 para 18 no primeiro uso; com aba antiga aberta, a nova espera e avisa. Voltar ao SDK 10.12.0 depois disso faria o app antigo não abrir o banco novo (ele tenta consertar o cache e recarrega; o que estiver só no aparelho se perde): **não voltar o SDK sem pensar nisso**.
-- Novo endereço externo (script, quadro, conexão) precisa entrar na função `csp()` do montar.py e no t_v0638.
+**Fichas e cadeias preenchidas com todos os dados das amostras (Opus 5.5 · alto; esperar "pode iniciar").** Decisões do Elias de 27/11 17:11 a 17:22 (dossiê):
+- O Cwork manda TODOS os dados; ele escolhe no Vértice (Campos do Cwork) a célula de cada um. Dados: do envio (os de hoje), do grupo (material, tipo de análise, quantidade; o "X" do material numa célula por material, como na ficha do IBRA C16) e de cada amostra, uma linha por amostra (data, hora, identificação/ponto, material, análise, profundidade, estádio, coletor, O.S, observação).
+- Uma folha do mesmo modelo por análise (cada uma só com as amostras dela). Uma remessa nunca mistura laboratórios.
+- A folha abre preenchida no modo documento para ele escrever à mão nas células liberadas (código do frasco, matriz, nº de frascos, preservação e medidas de campo são à mão).
+- O kit e os papéis do envio também nas coletas de água (sv2_aguacol).
+- Autorizado o contrato EFD v2 (dicionário novo) nos dois lados no mesmo commit (Cwork `tools/contrato` e `vertice/fonte/contrato`).
+- Cadeias em Word (BIOAGRI, H2O): EM ESPERA; ele vai refazer em planilha mais à frente. Nenhum documento inventado; teste só com marca d'água.
+- Os registros de 27/11 17:22 ainda não estão no GitHub (enviar junto da próxima publicação).
+Depois: as 3 sobras (pedido imprime todas as abas; "Recebidos do Cwork" fora das 5 pastas; tema do Vértice).
 
 ## 2d. O que a etapa 4 faz (Cwork v0.6.44 + Vértice v0.6.79)
 - Cwork `kit.js` (`ktVtDoc`, `ktLerVt`, `KT_DOCS_MAX = 2`, `ktDocsDoLab`), `remdocs.js` (`drPreenche` e `drPedido` com o papel do Vértice). Vértice `ponte/campos.js` (`soMarcados`). Testes: `t_v0644`, `t_v0610` ajustado, `v0678.test.mjs`. Fotos HOJE `tools/visual/v0644/hoje.js`; página `tools/visual/v0644/pagina.py`.

@@ -17,7 +17,7 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 - [ ] **Alça dourada (`menu-alca`, App.jsx/estilo-base.css):** fica em cima dos números das linhas da planilha e se estica quando o Elias mexe nas linhas. Sugestão: dentro do Cwork (classe `em-cwork`), a alça só aparece numa faixa de 6 px na borda ao passar o mouse, ou some e o menu abre pelo botão do alto.
 - [ ] **Vários Vértices abertos ao mesmo tempo (feito no Cwork na v0.6.35, até 10 abas):** [feito na etapa 2: o documento e o pedido mandam o nome] o Vértice deve mandar a mensagem 'arquivo' também quando abre um documento pelo Cwork (#/abrir), para o Cwork saber que a aba já tem arquivo. dois Vértices no mesmo aparelho não podem gravar o mesmo arquivo ao mesmo tempo (aviso "aberto em outra aba" ou só leitura na segunda), e cada um avisa o nome do arquivo dele.
 - [ ] **pastas() (P3b, v0.6.35):** a porta devolve, por pasta, { nome, ler, editar, salvar }; o Vértice mostra só as pastas com ler, e só salva onde salvar = true; avisa quando recebe `cwork:usuario`.
-- [ ] **ITEM 184 (v0.6.33) · PDF preenchido de volta:** `NOTA-DO-EFCWORK-para-o-Vertice-pdf-preenchido.md`. Precisa do contrato EFD v2 nos dois repositórios no mesmo dia, junto com a P4, com ordem do Elias.
+- [ ] **ITEM 184 (v0.6.33) · PDF preenchido de volta:** `NOTA-DO-EFCWORK-para-o-Vertice-pdf-preenchido.md`. Contrato EFD v2 autorizado em 27/11 17:22 (vai junto da próxima tarefa).
 - [x] **P4 · documentos na nuvem:** etapa 1, publicada em 27/11 (1e6a059). O que faltava da frase abaixo (Cwork apontando para o Vértice) é a etapa 3. gravar e abrir arquivos (`vtd_arquivos`, `vtd_partes`); tudo o que for arquivado no Cwork aparece no Vértice (PDF; Word e planilha abrem no Vértice para editar e imprimir); o que o Elias edita, posta ou remove no Vértice atualiza sozinho no Cwork.
 - [ ] **Ligações futuras (item 1.8 do pedido):** preencher formulário, abrir procedimento, programações no Kanban do Vértice com relatórios no fichário do Cwork.
 
@@ -49,6 +49,9 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 - [ ] Matriz: conferir as 169 linhas "Janela …" e 4 outras "should" marcadas como não.
 - [ ] Estudo de rapidez (`ESTUDO-rapidez-EFCwork-v0.6.33.md`): só depois da integração.
 - [x] Janela por cima: virou a tela inteira com abas (v0.6.35); a área ao lado do menu saiu.
+
+- [ ] **PRÓXIMA · fichas e cadeias com todos os dados das amostras** (decisões de 27/11 17:22, CONTINUAR seção 2): contrato EFD v2 autorizado; uma folha por análise; kit também na água.
+- [ ] **Cadeias em Word (BIOAGRI, H2O):** em espera; o Elias vai refazer em planilha no Vértice.
 
 ## C. Pedidos pequenos e perguntas ao Elias
 - [ ] **Tema do Vértice:** hoje o Vértice tem o próprio Claro/Escuro, separado do Cwork (no documento aberto pelo Cwork não há botão para trocar). Quer que siga o tema do Cwork?
