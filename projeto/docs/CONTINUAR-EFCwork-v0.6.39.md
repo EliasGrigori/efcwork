@@ -8,13 +8,15 @@ Substitui o CONTINUAR-EFCwork-v0.6.38.md. Quem ler só este arquivo sabe o que f
 - Vértice v0.6.74 em `efcwork/vertice/` (não tocado).
 - **Conferir no site de verdade:** entrar com a conta; abrir uma tela com dados; Administração › Sobre: "Firebase (SDK) 13.4.0" e "Regra de segurança: ligada · nada barrado". Se disser "barrou", ver `cw-csp` (localStorage) e o console. Quem estava na v0.6.38 vê a janela "Versão nova do app".
 
+**Decisão de 27/11 04:54:** o EFCwork é o foco; o EFClaudian vai ser descontinuado ou adaptado ao Cwork. Não prender telas e desenho do Cwork a ele (trechos antigos que falam em compatibilidade ficam abaixo desta decisão). Não mexer no código dele. Dados e regras do Firebase são os mesmos: mudar formato ou regra ainda pede cuidado e aviso. Falta saber se alguém ainda usa o EFClaudian no dia a dia.
+
 ## 1. TEXTO PARA COLAR NA CONVERSA NOVA
 
 > EFCwork, continuando. Anexei o pacote único (EFCwork-PACOTE-NOVA-CONVERSA-v0.6.39.zip): CONTINUAR, dossiê, pendências, o app no ar e o fonte. Leia o CONTINUAR inteiro. Responda em 3 linhas: onde parou e qual é a próxima tarefa. Depois sugira o modelo e o esforço em **negrito** e espere meu "pode iniciar". Siga o "Padrão de trabalho" sem eu repetir. Repositório: EliasGrigori/efcwork (add_repo com envio; se negar, me diga e use o fonte do pacote). O Vértice está na pasta vertice/ do efcwork (o código é da conversa do Vértice; aqui só leitura). Não abra o OneDrive. Nada no EFClaudian. GitHub só com "pode publicar". Fique em primeiro plano. Toda entrega: o pacote único atualizado.
 
 ## 2. Próxima tarefa
-`features.csv`; Cadastros de Coletas por último.
-**Pendente de envio:** `tools/testes/t_v050.js` corrigido em 27/11 e os registros estão só no pacote (`fonte/`), não no GitHub. Ao clonar, copiar `fonte/tools/testes/t_v050.js` e `fonte/docs` por cima; enviar só com "pode publicar".
+Cadastros de Coletas (talhões, análises, laboratórios, tipos e fazendas: criar, editar, desativar). Desenhar pelo Cwork (decisão de 27/11); grava dados reais e muda a tela: levantar primeiro, depois página de aprovação.
+**Pendente de envio:** `docs/features.csv`, `docs/FALTA-DO-EFCLAUDIAN.md` e os registros de 27/11 estão só no pacote (`fonte/docs`), não no GitHub. Ao clonar, copiar `fonte/docs` por cima; enviar só com "pode publicar".
 
 ## 2b. O que a v0.6.38 faz (CSP e SDK)
 - `tools/montar.py`: `SDK = '13.4.0'` (um lugar só: index.html, sw.js e regra) e a regra CSP no alto do index.html, com o sha256 do único `<script>` inline. **Qualquer mudança no index.html depois da montagem quebra o app** (o script fica barrado): teste que cria versão de mentira tem de recalcular o hash (ver `rehash` em `t_v0637.js`).
@@ -54,7 +56,7 @@ Substitui o CONTINUAR-EFCwork-v0.6.38.md. Quem ler só este arquivo sabe o que f
 
 ## 6. Depois (cada uma só com "pode iniciar")
 1. ~~Teste `t_v050`~~ (feito).
-2. `features.csv`; Cadastros de Coletas (por último).
+2. ~~`features.csv`~~ (feito); Cadastros de Coletas (por último).
 3. Ligação com o Vértice (P4, documentos na nuvem): depende da conversa do Vértice. Lista em PENDENCIAS.
 
 ## 7. Decisões em aberto (perguntar uma por vez, na hora certa)

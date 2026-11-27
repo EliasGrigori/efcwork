@@ -1,13 +1,13 @@
 funcao,area,prioridade,original,efcwork,destino,notas
 Aba Coletas › Programação,Coletas,must,sim,sim,Coletas › Programação,conferido 15/11: a aba existe e funciona
 Aba Coletas › Solo,Coletas,must,sim,sim,Coletas › Amostras (filtro Tipo),conferido 15/11: a aba existe e funciona
-Aba Coletas › Nematoide,Coletas,must,sim,nao,Coletas › Nematoide,
+Aba Coletas › Nematoide,Coletas,must,sim,sim,Coletas › Amostras (filtro Tipo),conferido no código 27/11: tipo no filtro
 Aba Coletas › Folha,Coletas,must,sim,sim,Coletas › Amostras (filtro Tipo),conferido 15/11: a aba existe e funciona
 Aba Coletas › Fruta,Coletas,must,sim,sim,Coletas › Amostras (filtro Tipo),conferido 15/11: a aba existe e funciona
 Aba Coletas › Composto,Coletas,must,sim,sim,Coletas › Amostras (filtro Tipo),conferido 15/11: a aba existe e funciona
 Aba Coletas › Água,Coletas,must,sim,sim,Coletas › Água,v0.6.5 (ação corretiva e relatório v0.6.6; projetos v0.6.7)
 Aba Coletas › Lotes de envio,Coletas,must,sim,sim,Coletas › Envio,conferido 15/11: a aba existe e funciona
-Aba Coletas › Etiquetas,Coletas,must,sim,nao,Coletas › Etiquetas,
+Aba Coletas › Etiquetas,Coletas,must,sim,parcial,Coletas › Etiquetas,conferido no código 27/11: só o rótulo da remessa (kit.js); etiquetas de campo e revisão seguem no EFClaudian
 Aba Coletas › Cadastros,Coletas,must,sim,sim,Coletas › Cadastros,conferido 15/11: a aba existe e funciona
 Aba Rateios › Campo,Rateios,must,sim,sim,Rateios › Rateio (filtro Tipo),"v0.6.17 (15/11, publicada; ITENS 61 a 69 aprovados) rateio.js"
 Aba Rateios › Água,Rateios,must,sim,sim,Rateios › Rateio (filtro Tipo),"v0.6.17 (15/11, publicada; ITENS 61 a 69 aprovados) rateio.js"
@@ -17,7 +17,7 @@ Aba Inspeções › Cloro,Inspeções,must,sim,sim,Inspeções › Cloro,conferi
 Aba Inspeções › Apontamentos,Inspeções,must,sim,sim,Inspeções › Apontamentos,conferido 15/11: a aba existe e funciona
 Aba Inspeções › Relatório de apontamentos,Inspeções,must,sim,sim,Relatórios › Apontamentos,v0.6.25 (proposta; ITENS 136 a 146 esperando resposta): resumo · por setor · Pareto · mês a mês · reincidências · NCs · reunião por setor com fotos · imprimir
 Aba Inspeções › Auditoria interna,Inspeções,must,sim,sim,Inspeções › Auditoria interna,conferido 15/11: a aba existe e funciona
-Aba Documentos › Relatório,Documentos,must,sim,nao,Relatórios › Documentos,
+Aba Documentos › Relatório,Documentos,must,sim,sim,Relatórios › Documentos,conferido no código 27/11: reldocs.js (v0.6.23)
 Aba Documentos › Catálogo,Documentos,must,sim,sim,Documentos › Documentos,conferido 15/11: a aba existe e funciona
 Aba Documentos › Caixas d’água,Documentos,must,sim,sim,Documentos › Caixas d’água,conferido 15/11: a aba existe e funciona
 Aba Documentos › Lançamentos,Documentos,must,sim,sim,Documentos › Histórico,conferido 15/11: a aba existe e funciona
@@ -25,16 +25,16 @@ Aba Documentos › Correções,Documentos,must,sim,sim,Documentos › Histórico
 Aba Gestão da Qualidade › Meu dia,Qualidade,must,sim,sim,Início,conferido 15/11: a aba existe e funciona
 Aba Gestão da Qualidade › Atividade,Qualidade,must,sim,sim,Qualidade › Atividade,conferido 15/11: a aba existe e funciona
 Aba Gestão da Qualidade › Notificações,Qualidade,must,sim,sim,Sino,v0.3.0: sino do topo (gaveta Avisos)
-Aba Gestão da Qualidade › Conversas,Qualidade,must,sim,nao,Dentro de cada registro + sino,
-Aba Gestão da Qualidade › Equipe,Qualidade,must,sim,nao,Administração › Pessoas,
+Aba Gestão da Qualidade › Conversas,Qualidade,must,sim,nao,Dentro de cada registro + sino,conferido no código 27/11: não existe
+Aba Gestão da Qualidade › Equipe,Qualidade,must,sim,sim,Administração › Pessoas,conferido no código 27/11: pessoas.js (v0.6.26)
 Aba Gestão da Qualidade › Aprovações,Qualidade,must,sim,sim,Início › Esperando você,"v0.3.0: pedidos para decidir no sino; os do Almoxarifado decidem aqui, os outros no EFClaudian; conferido 15/11: a aba existe e funciona"
 Aba Gestão da Qualidade › Semana,Qualidade,must,sim,sim,Relatórios › Semana,v0.6.19
 Aba Gestão da Qualidade › Não conformidades,Qualidade,must,sim,sim,Qualidade › Não conformidades,"v0.6.16 (15/11, publicada; ITENS 54 a 60 aprovados) nc.js"
 Aba Gestão da Qualidade › Análise de problemas,Qualidade,must,sim,sim,Qualidade › Análise de problemas,conferido 15/11: a aba existe e funciona
 Aba Gestão da Qualidade › Bugs e sugestões,Qualidade,must,sim,sim,Qualidade › Bugs e sugestões,"v0.6.16 (15/11, publicada; ITENS 54 a 60 aprovados) bugs.js"
-Aba Gestão da Qualidade › Relatórios,Qualidade,must,sim,nao,Relatórios,
+Aba Gestão da Qualidade › Relatórios,Qualidade,must,sim,parcial,Relatórios,"conferido no código 27/11: Rateio, Semana, Almoxarifado, Documentos e Apontamentos; falta Coletas em aberto"
 Aba Almoxarifado › Painel,Almoxarifado,must,sim,sim,Almoxarifado › Painel,v0.3.0: consulta + lançar (Saída/Entrada no cabeçalho) + saídas de produto crítico para confirmar
-Aba Almoxarifado › Apresentação,Almoxarifado,must,sim,parcial,Relatórios › Almoxarifado do mês,v0.2.0: consulta; lançamentos na v0.3
+Aba Almoxarifado › Apresentação,Almoxarifado,must,sim,sim,Relatórios › Almoxarifado do mês,conferido no código 27/11: almmes.js (v0.6.21)
 Aba Almoxarifado › Materiais,Almoxarifado,must,sim,sim,Almoxarifado › Materiais,"v0.3.0: Saída, Entrada, Abrir frasco, Acabou e Ajustar na gaveta do material"
 Aba Almoxarifado › Movimentações,Almoxarifado,must,sim,sim,Almoxarifado › Movimentações,"v0.3.0: Corrigir, Anular (lixeira), confirmar produto crítico"
 Aba Almoxarifado › Solicitações,Almoxarifado,must,sim,sim,Almoxarifado › Solicitações,"v0.3.0: Nova, Atender (vira entrada), Cancelar (lixeira)"
@@ -250,7 +250,7 @@ Janela Novo usuário (openNewUser),Geral,should,sim,nao,,rascunho automático; p
 Login por usuário ou e-mail (sv2_login),Acesso,must,sim,sim,,v0.1.0
 Primeiro acesso (cria o Principal),Acesso,must,sim,sim,,v0.1.0
 Modo demonstração ?demo=1,Acesso,must,sim,sim,,v0.1.0
-Funciona sem internet (cache do Firestore + sw.js),Geral,must,sim,parcial,,
+Funciona sem internet (cache do Firestore + sw.js),Geral,must,sim,sim,Geral,conferido no código 27/11: cache do Firestore e sw.js; não testado em aparelho nesta conferência
 Temas Claro e Escuro (Dourado original),Visual,must,sim,sim,,v0.1.0
 Menu lateral por trabalho,Visual,must,sim,sim,,v0.1.0
 Cabeçalho de página padrão,Visual,must,sim,sim,,v0.1.0
@@ -260,21 +260,21 @@ Busca geral (tecla /),Geral,should,sim,sim,,v0.2.0
 Últimas telas e mais usadas,Início,should,sim,sim,,v0.1.0
 "Tabela padrão (filtro único, colunas, planilha, impressora, total)",Visual,must,sim,sim,,v0.2.0
 Gaveta de detalhe lateral,Visual,must,sim,sim,,v0.2.0
-Perfis Só ver / Ver e alterar por área,Administração,must,sim,nao,,
-Sino de avisos,Geral,must,sim,nao,,
-Impressão A4 / PDF,Geral,must,sim,nao,,
-Backup e exportação,Administração,must,sim,nao,,
-Registro de atividade (auditoria),Administração,must,sim,nao,,
+Perfis Só ver / Ver e alterar por área,Administração,must,sim,parcial,Administração › Pessoas,conferido no código 27/11: área liga/desliga e perfil Consulta (só vê) geral; falta só ver por área
+Sino de avisos,Geral,must,sim,sim,Sino,conferido no código 27/11: sino.js
+Impressão A4 / PDF,Geral,must,sim,sim,Telas e relatórios,conferido no código 27/11: window.print nas telas e relatórios
+Backup e exportação,Administração,must,sim,sim,Administração › Backup,conferido no código 27/11: backup.js (v0.6.30)
+Registro de atividade (auditoria),Administração,must,sim,sim,Administração › Atividade,conferido no código 27/11: atividade.js
 Saúde dos dados,Administração,should,sim,nao,,
-Ciclo da amostra na gaveta (programação→laudo/compra),Coletas,must,sim,nao,,
-"NF, cupom dos Correios e rastreio no envio",Coletas,should,sim,nao,,
+Ciclo da amostra na gaveta (programação→laudo/compra),Coletas,must,sim,sim,Coletas › Amostras,conferido no código 27/11: coletas.js
+"NF, cupom dos Correios e rastreio no envio",Coletas,should,sim,sim,Coletas › Envio,conferido no código 27/11: coletas.js
 "EFCdocs: planilhas compatíveis, só pelo Cwork/Sabiá",Integração,could,sim,nao,,
 Fichas/etiquetas/cadeia de custódia preenchidas no EFCdocs,Integração,could,sim,nao,,
 Tela de entrar animada (bichos),Visual,skip,sim,nao,,
 Conquistas (medalhas e níveis),Geral,skip,sim,nao,,
 16 temas + 5 fundos de campo,Visual,skip,sim,nao,,
 Gaveta deslizando da lateral (abrir/fechar),Visual,should,sim,sim,v0.3.4,
-Fluido na linha do tempo da calibração (sobe da última etapa vista; 0,4 s entre etapas),Visual,should,nao,sim,v0.3.4,
+"Fluido na linha do tempo da calibração (sobe da última etapa vista; 0,4 s entre etapas)",Visual,should,nao,sim,v0.3.4,
 Inventário de equipamentos (achei/não achei) na contagem às cegas,Almoxarifado,must,sim,sim,v0.3.4,
 Inventário de vidrarias por lugar na contagem às cegas,Almoxarifado,must,sim,sim,v0.3.4,
 Equipamento marcado 'não encontrado' pela contagem,Almoxarifado,should,sim,sim,v0.3.4,
@@ -335,11 +335,11 @@ Limpar filtro no lugar do botão Filtro,Tabelas,should,sim,sim,Todas as tabelas,
 Desprogramar área no plano e na Programação,Coletas,must,sim,sim,Coletas › Programação,v0.4.9
 Reprogramar área (novo dia/coletor sem desprogramar),Coletas,must,sim,sim,Coletas › Programação,v0.4.9
 Novo plano de coleta (novo rodízio),Coletas,must,sim,sim,Coletas › Programação,v0.4.9
-Ordenar em botão único (padrão, A-Z, Z-A),Tabelas,should,sim,sim,Todas as tabelas,v0.4.9
+"Ordenar em botão único (padrão, A-Z, Z-A)",Tabelas,should,sim,sim,Todas as tabelas,v0.4.9
 Total em linha própria quando a coluna fica sob os ícones,Tabelas,should,nao,sim,Todas as tabelas com total,v0.4.13
 Tela de Atividade (quem fez o quê): linha do tempo por dia,Administração,should,nao,sim,Administração › Atividade (só Principal),v0.4.14
 Gráfico de colunas dos últimos 30 dias de atividade,Administração,could,nao,sim,Administração › Atividade,v0.4.14
-Filtro único (período, pessoa, área, app) na atividade,Administração,should,nao,sim,Administração › Atividade,v0.4.14
+"Filtro único (período, pessoa, área, app) na atividade",Administração,should,nao,sim,Administração › Atividade,v0.4.14
 Detalhe do registro com antes e depois na própria linha,Administração,should,nao,sim,Administração › Atividade,v0.4.14
 Atividade filtrada em planilha e impressão,Administração,could,nao,sim,Administração › Atividade,v0.4.14
 Documentos com grupos Formulários e Regulatórios em ordem alfabética,Documentos,must,nao,sim,Documentos › Documentos,v0.5.0
@@ -359,10 +359,10 @@ Menu lateral retrátil: aberto / só ícones / recolhido (botão que alterna),Ge
 Puxador animado com menu por cima (camada),Geral,should,sim,sim,Menu,v0.5.3
 Total da tabela na mesma linha dos botões,Geral,must,sim,sim,Tabelas,v0.5.3
 Inspeções › Cloro: velocímetros por local (média da semana),Inspeções,must,sim,sim,Cloro,v0.6.0
-Escolher até 5 locais nos velocímetros (mais de 5 locais),Inspeções,should,não,sim,Cloro,v0.6.0 (pedido do Elias)
-Nova verificação em passos (ponto, resultado, foto, aplicação, registro),Inspeções,must,sim,sim,Cloro,v0.6.0
-Faixa e régua ao digitar o resultado,Inspeções,should,não,sim,Cloro,v0.6.0
-Dosagem e Cloro depois alinhados no formulário,Inspeções,must,não,sim,Cloro,v0.6.0 (pedido do Elias; repetir na Auditoria)
+Escolher até 5 locais nos velocímetros (mais de 5 locais),Inspeções,should,nao,sim,Cloro,v0.6.0 (pedido do Elias)
+"Nova verificação em passos (ponto, resultado, foto, aplicação, registro)",Inspeções,must,sim,sim,Cloro,v0.6.0
+Faixa e régua ao digitar o resultado,Inspeções,should,nao,sim,Cloro,v0.6.0
+Dosagem e Cloro depois alinhados no formulário,Inspeções,must,nao,sim,Cloro,v0.6.0 (pedido do Elias; repetir na Auditoria)
 Medir de novo e Só a aplicação,Inspeções,must,sim,sim,Cloro,v0.6.0
 Regra das 24 h: lembrete 4 h antes e bloqueio com aviso ao superior,Inspeções,must,sim,sim,Cloro,v0.6.0
 Encerrar verificação bloqueada com motivo (superior),Inspeções,must,sim,sim,Cloro,v0.6.0
@@ -371,90 +371,89 @@ Dias úteis sem verificação: lançar depois ou justificar (com aprovação),In
 Bebedouro novo digitado na hora (pendente de liberação),Inspeções,must,sim,sim,Cloro,v0.6.0
 Liberar/recusar bebedouro pendente,Inspeções,must,sim,sim,Cloro,v0.6.0
 Pedir correção de verificação (Principal corrige direto),Inspeções,must,sim,sim,Cloro,v0.6.0
-Detalhe com linha do tempo da gota,Inspeções,should,não,sim,Cloro,v0.6.0 (pedido do Elias)
+Detalhe com linha do tempo da gota,Inspeções,should,nao,sim,Cloro,v0.6.0 (pedido do Elias)
 Busca geral acha bebedouros,Inspeções,should,sim,sim,Cloro,v0.6.0
 Apontamentos: cartões com foto e selos,Inspeções,must,sim,sim,Apontamentos,v0.6.1
-Novo apontamento em passos com gravidade em botões,Inspeções,must,não,sim,Apontamentos,v0.6.1 (pedido do Elias)
+Novo apontamento em passos com gravidade em botões,Inspeções,must,nao,sim,Apontamentos,v0.6.1 (pedido do Elias)
 Até 5 fotos por apontamento (câmera e galeria),Inspeções,must,sim,sim,Apontamentos,v0.6.1
 Aviso ao superior: grave no sino e urgente crítico,Inspeções,must,sim,sim,Apontamentos,v0.6.1
-Detalhe com linha do tempo da gota e rodapé alinhado,Inspeções,must,não,sim,Apontamentos,v0.6.1 (pedido do Elias)
+Detalhe com linha do tempo da gota e rodapé alinhado,Inspeções,must,nao,sim,Apontamentos,v0.6.1 (pedido do Elias)
 Mudar a gravidade com motivo (a original fica riscada),Inspeções,must,sim,sim,Apontamentos,v0.6.1
 Resolver com o que foi feito e foto do depois,Inspeções,must,sim,sim,Apontamentos,v0.6.1
 Não procede e reabrir com motivo,Inspeções,must,sim,sim,Apontamentos,v0.6.1
-Abrir e fechar NC (responsável, prazo, ação, verificação),Inspeções,must,sim,sim,Apontamentos,v0.6.1
+"Abrir e fechar NC (responsável, prazo, ação, verificação)",Inspeções,must,sim,sim,Apontamentos,v0.6.1
 Reincidência: mesmo setor e categoria em 30 dias,Inspeções,should,sim,sim,Apontamentos,v0.6.1
 Pareto dos apontamentos com poucos vitais,Inspeções,should,sim,sim,Apontamentos,v0.6.1
 Setores configuráveis (sv2_cfg/apont),Inspeções,should,sim,sim,Apontamentos,v0.6.1
 Fotos apagadas 30 dias depois de resolvido (LGPD),Inspeções,must,sim,sim,Apontamentos,v0.6.1
-Trava de tela afastada (zoom-out) no celular na suíte,Geral,must,não,sim,Suíte,v0.6.1
-Velocímetro do Cloro com tamanho travado (114 px),Inspeções,must,não,sim,Cloro,v0.6.1.1
-Passos da Nova verificação numerados sem pular,Inspeções,should,não,sim,Cloro,v0.6.1.1
-Aviso de resolvido ao lançar verificação dentro da faixa,Inspeções,should,não,sim,Cloro,v0.6.1.1
+Trava de tela afastada (zoom-out) no celular na suíte,Geral,must,nao,sim,Suíte,v0.6.1
+Velocímetro do Cloro com tamanho travado (114 px),Inspeções,must,nao,sim,Cloro,v0.6.1.1
+Passos da Nova verificação numerados sem pular,Inspeções,should,nao,sim,Cloro,v0.6.1.1
+Aviso de resolvido ao lançar verificação dentro da faixa,Inspeções,should,nao,sim,Cloro,v0.6.1.1
 Auditoria interna: tela tudo à mostra (responsável > local > NC),Inspeções,must,sim,sim,Auditoria interna,v0.6.2
-Agrupar (responsável/setor/local/achado) e ordenar dentro (local/prioridade/número),Inspeções,must,não,sim,Auditoria interna,v0.6.2
-+ NC aqui com local e responsável do local,Inspeções,must,não,sim,Auditoria interna,v0.6.2
+Agrupar (responsável/setor/local/achado) e ordenar dentro (local/prioridade/número),Inspeções,must,nao,sim,Auditoria interna,v0.6.2
++ NC aqui com local e responsável do local,Inspeções,must,nao,sim,Auditoria interna,v0.6.2
 Registrar NC em 5 passos com fotos (até 8) e até 5 leis,Inspeções,must,sim,sim,Auditoria interna,v0.6.2
 GUT no padrão do EFClaudian (sv2_rnc_gut),Inspeções,must,sim,sim,Auditoria interna,v0.6.2
-Nome curto do achado (titulo) e descrição do encarregado (encTxt),Inspeções,should,não,sim,Auditoria interna,v0.6.2
+Nome curto do achado (titulo) e descrição do encarregado (encTxt),Inspeções,should,nao,sim,Auditoria interna,v0.6.2
 Apresentação Nº 45: qualquer etapa / por pessoa / corrigir com histórico / 2ª GUT,Inspeções,must,parcial,sim,Auditoria interna,v0.6.2
 Enviar RNC com aviso no sino,Inspeções,must,sim,sim,Auditoria interna,v0.6.2
 Conferir o retorno uma a uma e fechar a RNC,Inspeções,must,sim,sim,Auditoria interna,v0.6.2
 Prorrogar prazo e cancelar auditoria com motivo,Inspeções,should,sim,sim,Auditoria interna,v0.6.2
 Relatório: completo / só o visual / folhas de um responsável,Inspeções,must,parcial,sim,Auditoria interna,v0.6.2
-Análise da NC (5 Porquês / Ishikawa / 5W2H),Inspeções,must,sim,não,Auditoria interna,v0.6.3
-Prazo da NC dos apontamentos conferido do jeito certo (dataOk),Inspeções,must,não,sim,Apontamentos,v0.6.2
+Análise da NC (5 Porquês / Ishikawa / 5W2H),Inspeções,must,sim,sim,Auditoria interna,"v0.6.3; conferido no código 27/11: analise.js (5 porquês, Ishikawa, 5W2H)"
+Prazo da NC dos apontamentos conferido do jeito certo (dataOk),Inspeções,must,nao,sim,Apontamentos,v0.6.2
 Análise da NC em 7 passos (sv2_rnc_plano),Inspeções,must,sim,sim,Auditoria interna,v0.6.3
 Ishikawa desenhado (espinha de peixe) com causa principal,Inspeções,must,sim,sim,Auditoria interna,v0.6.3
 Plano de ação 5W2H em cartões (concluir/cancelar com motivo),Inspeções,must,sim,sim,Auditoria interna,v0.6.3
 Regras por risco / tratativa direta x com análise / troca de responsável e tratamento,Inspeções,must,sim,sim,Auditoria interna,v0.6.3
-Eficácia da NC (efic) com reabertura quando não eficaz,Inspeções,should,não,sim,Auditoria interna,v0.6.3
+Eficácia da NC (efic) com reabertura quando não eficaz,Inspeções,should,nao,sim,Auditoria interna,v0.6.3
 Conferência exige análise completa (liberação do líder com motivo),Inspeções,must,sim,sim,Auditoria interna,v0.6.3
 Folha da análise no relatório da RNC,Inspeções,should,sim,sim,Auditoria interna,v0.6.3
 Texto da análise guardado no aparelho + aviso de conflito,Inspeções,should,sim,sim,Auditoria interna,v0.6.3
 Análise de problemas (sv2_analise) de reclamação ou apontamento,Qualidade,must,sim,sim,Análise de problemas,v0.6.3
-Gaveta deslizando não afasta a tela no celular,Geral,must,não,sim,Casca,v0.6.3
-Fluxograma do processo na análise,Inspeções,could,sim,não,Auditoria interna,v0.6.4
+Gaveta deslizando não afasta a tela no celular,Geral,must,nao,sim,Casca,v0.6.3
+Fluxograma do processo na análise,Inspeções,could,sim,nao,Auditoria interna,v0.6.4
 Editor de foto: círculo/seta/texto/borrar/numerar/cores/grossura/desfazer/tirar marca (Nº 42),Geral,must,sim,sim,Fotos,v0.6.4
 Original guardada + marcadoPor/marcadoEm em cada foto marcada,Geral,must,parcial,sim,Fotos,v0.6.4
 Foto grande com as marcas ou a original + baixar,Geral,must,sim,sim,Fotos,v0.6.4
-Original de foto borrada só para Líder/Administrador (LGPD),Geral,should,não,sim,Fotos,v0.6.4
+Original de foto borrada só para Líder/Administrador (LGPD),Geral,should,nao,sim,Fotos,v0.6.4
 Marcar foto gravada da RNC até fechar (registro novo; anterior guardado),Inspeções,must,sim,sim,Auditoria interna,v0.6.4
 Varredura v0.6.8: dia local dos carimbos e pedido de autorização protegido,Geral,must,sim,sim,Geral,v0.6.8 base.js diaLocal; servicos.js Aprov.pedir
-Documentos › Impressos: tabela por pasta com formato, quem editou, data e versão,Documentos,must,não,sim,Documentos › Impressos,v0.6.9 impressos.js
-Importar PDF / foto (vira PDF) / Excel / Word / link,Documentos,must,não,sim,Documentos › Impressos,v0.6.9
-Imprimir sem internet (cópia guardada no aparelho) e prévia do PDF,Documentos,must,não,sim,Documentos › Impressos,v0.6.9
-Baixar PDF e original; Reserva em ZIP com LISTA.csv,Documentos,must,não,sim,Documentos › Impressos,v0.6.9
-Nova versão; obsoleto não imprime; lixeira libera espaço; teto de 150 MB com medidor,Documentos,must,não,sim,Documentos › Impressos,v0.6.9
+"Documentos › Impressos: tabela por pasta com formato, quem editou, data e versão",Documentos,must,nao,sim,Documentos › Impressos,v0.6.9 impressos.js
+Importar PDF / foto (vira PDF) / Excel / Word / link,Documentos,must,nao,sim,Documentos › Impressos,v0.6.9
+Imprimir sem internet (cópia guardada no aparelho) e prévia do PDF,Documentos,must,nao,sim,Documentos › Impressos,v0.6.9
+Baixar PDF e original; Reserva em ZIP com LISTA.csv,Documentos,must,nao,sim,Documentos › Impressos,v0.6.9
+Nova versão; obsoleto não imprime; lixeira libera espaço; teto de 150 MB com medidor,Documentos,must,nao,sim,Documentos › Impressos,v0.6.9
 Apps da família no menu (Vértice Docs e Sabiá) para Administrador e Líder,Geral,should,sim,sim,Menu lateral,v0.6.9 casca.js csAppsFamilia
-Contrato EFD v1 compilado no app (mesmo arquivo do Vértice) valida cada ficha,Geral,must,não,sim,Geral,v0.6.9 tools/contrato/efd-v1.js
+Contrato EFD v1 compilado no app (mesmo arquivo do Vértice) valida cada ficha,Geral,must,nao,sim,Geral,v0.6.9 tools/contrato/efd-v1.js
 Envio › Laboratórios: endereço no cadastro e kit de impressão por laboratório,Coletas,must,sim,sim,Coletas › Envio,v0.6.10 kit.js
 Rótulo destinatário e remetente (A4 em pé; uma folha por caixa),Coletas,must,sim,sim,Coletas › Envio,v0.6.10 ktRotuloHTML (port do fxEtiqueta)
-"Papéis deste envio: Sempre/Perguntar/Só se eu pedir e ""Quer acrescentar algo na ficha?""",Coletas,must,não,sim,Coletas › Envio,v0.6.10
-Papel por análise e para todos os laboratórios,Coletas,should,não,sim,Coletas › Envio,v0.6.10 (sugestão 5)
-Reimprimir os papéis da remessa e resumo do envio na gaveta,Coletas,should,não,sim,Coletas › Envio,v0.6.10 (sugestão 3) sv2_envio_imp
-Sino avisa versão nova de papel usado no kit,Documentos,should,não,sim,Documentos › Impressos,v0.6.10 (sugestão 1)
-Treinamentos: programar, registrar realização, presença e eficácia,Qualidade,must,não,sim,Qualidade › Treinamentos,v0.6.12 sv2_treinos (Contrato EFD v1 treino)
-Lista de presença pronta com os nomes (A4),Qualidade,should,não,sim,Qualidade › Treinamentos,v0.6.12 (sugestão 4)
-Importar resumo do Sabiá (.json do contrato; teste e ensaio não entram),Qualidade,should,não,sim,Qualidade › Treinamentos,v0.6.12 (ponte automática na v0.6.11)
-POP e material ligados ao treinamento (Impressos),Qualidade,should,não,sim,Qualidade › Treinamentos,v0.6.12
-Aviso no sino ao instrutor programado,Qualidade,could,não,sim,Qualidade › Treinamentos,v0.6.12
-Escala única de movimento (arquivo comum da família),Sistema,must,não,sim,Todas as telas,v0.6.14 tools/visual/efc-movimento.*
-Tela de entrar com pólen dourado e linha do app,Sistema,should,não,sim,Entrar,v0.6.14 (Modelo 4 · Pólen)
-Troca de tela fluida e traço da aba que desliza,Sistema,should,não,sim,Todas as abas,v0.6.14
-Título que entra (Blur Text),Sistema,could,não,sim,Cabeçalho das áreas,v0.6.14
-Avisos um por vez com visto e faíscas ao salvar,Sistema,should,não,sim,Avisos,v0.6.14
-Lista do sino em sequência e desfoque no fim das listas,Sistema,could,não,sim,Sino e gavetas,v0.6.14
-Medidor da auditoria visual,Projeto,should,não,sim,tools/auditoria,v0.6.14
-Traço colorido só em Grave e Urgente,Inspeções,should,não,sim,Apontamentos,v0.6.14.1
-Busca abre o detalhe de qualquer tela,Sistema,should,não,sim,Busca,v0.6.14.1
-Foto grande com marcas logo após enviar,Inspeções,should,não,sim,Apontamentos e Cloro,v0.6.14.1
-Bebedouro novo entra no rodízio da água,Coletas,should,não,sim,Água,v0.6.14.1
-Menu da coluna: uma rolagem, Limpar no alto,Sistema,should,não,sim,Tabelas,v0.6.14.2
-Solicitações: itens só na janela,Almoxarifado,should,não,sim,Solicitações,v0.6.14.2
-Frase da tela de entrar fora da foto (celular),Sistema,could,não,sim,Entrar,v0.6.14.2
-Lista retrátil encolhe ao fechar,Sistema,could,não,sim,Movimento,v0.6.14.2
-Pólen para sozinho,Sistema,could,não,sim,Entrar,v0.6.14.2
-,,,,,,
+"Papéis deste envio: Sempre/Perguntar/Só se eu pedir e ""Quer acrescentar algo na ficha?""",Coletas,must,nao,sim,Coletas › Envio,v0.6.10
+Papel por análise e para todos os laboratórios,Coletas,should,nao,sim,Coletas › Envio,v0.6.10 (sugestão 5)
+Reimprimir os papéis da remessa e resumo do envio na gaveta,Coletas,should,nao,sim,Coletas › Envio,v0.6.10 (sugestão 3) sv2_envio_imp
+Sino avisa versão nova de papel usado no kit,Documentos,should,nao,sim,Documentos › Impressos,v0.6.10 (sugestão 1)
+"Treinamentos: programar, registrar realização, presença e eficácia",Qualidade,must,nao,sim,Qualidade › Treinamentos,v0.6.12 sv2_treinos (Contrato EFD v1 treino)
+Lista de presença pronta com os nomes (A4),Qualidade,should,nao,sim,Qualidade › Treinamentos,v0.6.12 (sugestão 4)
+Importar resumo do Sabiá (.json do contrato; teste e ensaio não entram),Qualidade,should,nao,sim,Qualidade › Treinamentos,v0.6.12 (ponte automática na v0.6.11)
+POP e material ligados ao treinamento (Impressos),Qualidade,should,nao,sim,Qualidade › Treinamentos,v0.6.12
+Aviso no sino ao instrutor programado,Qualidade,could,nao,sim,Qualidade › Treinamentos,v0.6.12
+Escala única de movimento (arquivo comum da família),Sistema,must,nao,sim,Todas as telas,v0.6.14 tools/visual/efc-movimento.*
+Tela de entrar com pólen dourado e linha do app,Sistema,should,nao,sim,Entrar,v0.6.14 (Modelo 4 · Pólen)
+Troca de tela fluida e traço da aba que desliza,Sistema,should,nao,sim,Todas as abas,v0.6.14
+Título que entra (Blur Text),Sistema,could,nao,sim,Cabeçalho das áreas,v0.6.14
+Avisos um por vez com visto e faíscas ao salvar,Sistema,should,nao,sim,Avisos,v0.6.14
+Lista do sino em sequência e desfoque no fim das listas,Sistema,could,nao,sim,Sino e gavetas,v0.6.14
+Medidor da auditoria visual,Projeto,should,nao,sim,tools/auditoria,v0.6.14
+Traço colorido só em Grave e Urgente,Inspeções,should,nao,sim,Apontamentos,v0.6.14.1
+Busca abre o detalhe de qualquer tela,Sistema,should,nao,sim,Busca,v0.6.14.1
+Foto grande com marcas logo após enviar,Inspeções,should,nao,sim,Apontamentos e Cloro,v0.6.14.1
+Bebedouro novo entra no rodízio da água,Coletas,should,nao,sim,Água,v0.6.14.1
+"Menu da coluna: uma rolagem, Limpar no alto",Sistema,should,nao,sim,Tabelas,v0.6.14.2
+Solicitações: itens só na janela,Almoxarifado,should,nao,sim,Solicitações,v0.6.14.2
+Frase da tela de entrar fora da foto (celular),Sistema,could,nao,sim,Entrar,v0.6.14.2
+Lista retrátil encolhe ao fechar,Sistema,could,nao,sim,Movimento,v0.6.14.2
+Pólen para sozinho,Sistema,could,nao,sim,Entrar,v0.6.14.2
 Folha por pessoa das NCs (com ciente),Qualidade,should,sim,sim,Qualidade › Não conformidades,v0.6.16 nc.js (ITEM 56)
 "Relatório de Bugs e sugestões (descrição, andamento e imagem)",Qualidade,should,sim,sim,Qualidade › Bugs e sugestões,v0.6.16 bugs.js (ITEM 60)
 Rateio % segue o filtro da tabela; total no selo,Rateios,should,sim,sim,Rateios,"v0.6.17 (15/11, publicada; ITENS 61 a 69 aprovados) rateio.js"

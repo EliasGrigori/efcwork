@@ -1,5 +1,7 @@
 # O que ainda falta trazer do EFClaudian para o EFCwork (conferido em 15/11/2026; atualizado às 16h: v0.6.17 Rateios publicada; v0.6.18 Relatórios › Rateio publicada)
 
+> **27/11/2026:** a matriz `features.csv` foi reconferida nas funções "must" e "could". De "must" falta: Conversas; e em parte Etiquetas, Relatórios (Coletas em aberto) e Só ver por área. O texto abaixo é o de 15/11 e está desatualizado nesses pontos.
+
 Processo de refazer o EFClaudian no EFCwork: cada função do original está na matriz `features.csv` (must = precisa ter, should = deveria ter, could = pode ter). Conferi abrindo cada área do app (v0.6.15 em andamento) e procurando cada função no código. 20 linhas da matriz estavam como "não feito" mas já existem; atualizei a matriz.
 
 ## A. Telas inteiras que ainda não existem no EFCwork (conferido abrindo o app)
