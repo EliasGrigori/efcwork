@@ -305,7 +305,7 @@ export const MAPA = {
   'exibir.topoCompleto': 'topoCompleto', 'exibir.topoCompacto': 'topoCompacto', 'exibir.faixaTudo': 'faixaTudo', 'exibir.faixaAbas': 'faixaAbas', 'exibir.faixaOculta': 'faixaOculta',
   'exibir.menuCompleto': 'menuCompleto', 'exibir.menuIcones': 'menuIcones', 'exibir.menuOculto': 'menuOculto',
   'exibir.painel': 'painel', 'exibir.layoutA': 'layoutA', 'exibir.layoutB': 'layoutB',
-  'exibir.tema': 'tema', 'exibir.relevo': 'relevo', 'exibir.mesa': 'mesa', 'exibir.telaCheia': 'telaCheia',
+  'exibir.tema': 'tema', 'exibir.relevo': 'relevo', 'exibir.mesa': 'mesa', 'exibir.areaEscura': 'tema', 'exibir.telaCheia': 'telaCheia',
   'arquivo.exportarWord': 'word', 'arquivo.exportarImagem': 'imagemArq',
   'formatar.lista': 'lista', 'formatar.numerada': 'numerada', 'formatar.titulo': 'titulo', 'inserir.campo': 'campo', 'inserir.checklist': 'checklist',
   'pagina.orientacao': 'orientacao', 'pagina.margens': 'margens', 'pagina.quebra': 'quebraPag', 'pagina.cabecalho': 'cabRod', 'pagina.sumario': 'sumario',

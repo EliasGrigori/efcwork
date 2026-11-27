@@ -13,6 +13,7 @@ import { svgDaPagina } from '../planilha/paginaDesenho.js';
 import { pdfDasPaginas, imagensDasPaginas, baixarBytes } from '../planilha/impressaoPdf.js';
 import { chave } from '../planilha/ref.js';
 import { pegarFolha } from '../ponte/rascunhoPedido.js';
+import { responder, apagar } from '../ponte/caixa.js';
 import { normalizarPlanilha } from '../planilha/modelo.js';
 import './modoDocumento.css';
 
@@ -94,6 +95,7 @@ export function ModoDocumento({ id, abaPedida, banco, fichas, lendo, login, avis
   const [escreveu, setEscreveu] = useState(false);
   const [mudouAqui, setMudouAqui] = useState(false); /* o Vértice inteiro gravou este documento em outra aba deste aparelho */
   const atual = useRef(null);
+  const pedidoRef = useRef(null); /* v0.6.81: o pedido do Cwork de onde veio a folha aberta (ou null) */
   const naLista = fichas.find((f) => f.id === id) || null;
   const versaoNova = naLista && naLista.nuvem ? naLista.nuvem.versao : 0;
 
@@ -105,6 +107,7 @@ export function ModoDocumento({ id, abaPedida, banco, fichas, lendo, login, avis
     /* v0.6.80: veio do pedido do Cwork já preenchido ("Escrever nesta folha"): parte da folha preenchida, só na memória */
     const pf = pegarFolha(id);
     if (pf && pf.conteudo) { d.conteudo = normalizarPlanilha(structuredClone(pf.conteudo)); if (pf.abaId && d.conteudo.abas[pf.abaId]) d.abaId = pf.abaId; }
+    pedidoRef.current = pf && pf.pedido ? { item: pf.pedido, umaFolha: !!pf.umaFolha } : null; /* v0.6.81: a folha veio do pedido do Cwork: imprimir aqui também avisa "preenchido" */
     atual.current = d.conteudo;
     setConteudo(d.conteudo); setEscreveu(!!pf); setMudouAqui(false); setFalta('');
     setDoc({ ficha: r.ficha, abaId: d.abaId, versao: (r.ficha.nuvem && r.ficha.nuvem.versao) || 0 });
@@ -146,15 +149,19 @@ export function ModoDocumento({ id, abaPedida, banco, fichas, lendo, login, avis
     if (!p.paginas.length) throw new Error(p.aviso || 'Não há nada para imprimir.');
     return p.paginas;
   }, [doc]);
+  /* v0.6.81 (ITEM 286): imprimir ou baixar o PDF da folha que veio do pedido marca o papel da remessa como "Preenchido no Vértice" no Cwork.
+     Com uma folha só, o pedido sai da caixa; com várias, continua (as outras folhas ainda podem ser abertas); o Cwork ignora uma segunda resposta. */
+  const avisarPreenchido = useCallback(async (n) => { const r = pedidoRef.current; if (!r) return; pedidoRef.current = null; try { await responder(r.item, { ok: true, paginas: n }); if (r.umaFolha) await apagar(r.item.pid); /* uma folha só: o pedido terminou */ } catch { /* sem a caixa: segue */ } }, []);
   const imprimir = useCallback(async () => {
-    try { await imprimirPaginas(await paginasAgora(), doc.ficha.nome); } catch (e) { avisar('Não deu para imprimir: ' + (e.message || e), { ic: 'aviso', longo: true }); }
-  }, [paginasAgora, doc, avisar]);
+    try { const pags = await paginasAgora(); await imprimirPaginas(pags, doc.ficha.nome); await avisarPreenchido(pags.length); } catch (e) { avisar('Não deu para imprimir: ' + (e.message || e), { ic: 'aviso', longo: true }); }
+  }, [paginasAgora, doc, avisar, avisarPreenchido]);
   const baixarPdf = useCallback(async () => {
     try {
       const pags = await paginasAgora();
       baixarBytes(pdfDasPaginas(pags, { titulo: doc.ficha.nome, imagens: await imagensDasPaginas(pags) }), `${String(doc.ficha.nome || 'documento').replace(/[\\/:*?"<>|]/g, '_')}.pdf`);
+      await avisarPreenchido(pags.length);
     } catch (e) { avisar('Não deu para gerar o PDF: ' + (e.message || e), { ic: 'aviso', longo: true }); }
-  }, [paginasAgora, doc, avisar]);
+  }, [paginasAgora, doc, avisar, avisarPreenchido]);
 
   useEffect(() => {
     if (!montado) return undefined;

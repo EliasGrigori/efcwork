@@ -135,7 +135,7 @@ export function TelaPedido({ pid, local, banco, avisar, aoSair }) {
           <p className="pd-sub">{fase === 'lendo' ? 'Montando a cópia preenchida…' : t.nome || 'Documento'}{fase === 'pronto' || fase === 'feito' ? ` · ${n(t.folhas, 'folha', 'folhas')} · ${n(t.paginas.length, 'página', 'páginas')}` : ''}</p>
         </div>
         <div className="pd-acoes">
-          {fase === 'pronto' && (t.conteudos || []).length === 1 && <button type="button" className="btn sm" data-pedido-escrever="0" onClick={() => { guardarFolha(t.item.docId, t.conteudos[0]); irPara('documento/' + t.item.docId); }}><Icone n="renomear" />Escrever</button>}
+          {fase === 'pronto' && (t.conteudos || []).length === 1 && <button type="button" className="btn sm" data-pedido-escrever="0" onClick={() => { guardarFolha(t.item.docId, { ...t.conteudos[0], pedido: local ? null : t.item, umaFolha: true }); irPara('documento/' + t.item.docId); }}><Icone n="renomear" />Escrever</button>}
           {fase === 'pronto' && <button type="button" className="btn sm" data-pedido-pdf onClick={() => concluir('pdf')}><Icone n="pdf" />Baixar PDF</button>}
           {fase === 'pronto' && <button type="button" className="btn sm primary" data-pedido-imprimir onClick={() => concluir('imprimir')}><Icone n="imprimir" />Imprimir</button>}
           <button type="button" className="btn sm" data-pedido-sair onClick={() => aoSair(t.item && t.item.docId)}>{fase === 'pronto' ? 'Agora não' : 'Voltar'}</button>
@@ -150,7 +150,7 @@ export function TelaPedido({ pid, local, banco, avisar, aoSair }) {
           {t.conteudos.map((f, k) => (
             <section key={k} className="pd-folha">
               <div className="pd-fcab"><b>Folha {k + 1}</b><span>{f.titulo || ''}</span>
-                <button type="button" className="btn sm" data-pedido-escrever={k} onClick={() => { guardarFolha(t.item.docId, f); irPara('documento/' + t.item.docId); }}><Icone n="renomear" />Escrever nesta folha</button></div>
+                <button type="button" className="btn sm" data-pedido-escrever={k} onClick={() => { guardarFolha(t.item.docId, { ...f, pedido: local ? null : t.item, umaFolha: (t.conteudos || []).length <= 1 }); irPara('documento/' + t.item.docId); }}><Icone n="renomear" />Escrever nesta folha</button></div>
               <div className="pd-paginas">{t.paginas.slice(f.de, Math.min(f.ate, f.de + 4)).map((p, i) => <div key={i} className="pd-pg" style={{ aspectRatio: `${p.W} / ${p.H}` }} dangerouslySetInnerHTML={{ __html: svgDaPagina(p, { id: 'pd' + k + '_' + i + '_' }) }} />)}</div>
             </section>
           ))}

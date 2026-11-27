@@ -533,3 +533,7 @@ body[data-theme=dark] .qd-quebra-folha span, body[data-theme=dark] .qd-quebra-ar
 .qi-fase.feito { background: #e6f4ea; color: #14653a; border-color: rgba(20, 101, 58, .30); }
 .qi-fase svg { width: 11px; height: 11px; flex: none; }
 .qi-fase.com-nota { right: 22px; }
+
+/* v0.6.81 (decisão do Elias, 27/11): no tema escuro, a área do quadro fica clara como uma folha; Aparência › "Área de trabalho escura" deixa escura */
+body[data-theme=dark]:not(.area-escura) .qd-area { --surface: #ffffff; --surface-2: #f4f4f2; --surface-3: #ebebe7; --border: #d8d6cf; --border-light: #c9c6bd; --text: #1f1f1f; --text-muted: #555b66; --text-dim: #77736a; --qd-traco: #c9c6bd; background-color: #ffffff; color: #1f1f1f; }
+body[data-theme=dark]:not(.area-escura) .qd-area.com-cor { background-color: color-mix(in srgb, var(--qd-cor) 10%, #ffffff); }

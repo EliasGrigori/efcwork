@@ -1,9 +1,11 @@
-# EFCwork · CONTINUAR (27/11/2026 19:0x) · NO AR: Cwork v0.6.46 + Vértice v0.6.80 (kit nas coletas de água, ITENS 287 a 293 aprovados em 27/11 18:59)
+# EFCwork · CONTINUAR (27/11/2026 20:3x) · NO AR: Cwork v0.6.46 + Vértice v0.6.81 (efcwork, commit em 0.) · NADA EM APROVAÇÃO
 
-Substitui o CONTINUAR-EFCwork-v0.6.45.md. Quem ler só este arquivo sabe o que fazer.
+Substitui o CONTINUAR-EFCwork-v0.6.46.md de 19:0x (mesmo nome: o Cwork não mudou de versão). Quem ler só este arquivo sabe o que fazer.
 
 ## 0. Estado
-- **PUBLICADA em 27/11 19:0x: Cwork v0.6.46 (o Vértice não mudou; segue v0.6.80). ITENS 287 a 293 todos Aprovados.** (O texto a seguir sobre o patch vale só se a publicação não tiver chegado ao GitHub.) Página: `docs/aprovacao-efcwork-v0.6.46-agua-kit.html` (artefato https://claude.ai/artifact/JFAXwo4NYcL7oybSqMLj8S), ITENS 287 a 293. O código está em `MUDANCAS-NAO-PUBLICADAS-v0.6.46.patch` (no pacote): clone o efcwork, confira que a `main` está em 964c801 (ou depois, sem conflito), `git apply` o patch, monte (`python3 tools/montar.py`; o Vértice publicado em `vertice/` já é o certo) e rode `t_v0646` (precisa do Vértice montado: `cd vertice/fonte && npm ci && npm run build`, depois `VERTICE_DIR=../vertice/fonte/dist`). Último ITEM usado: **293**.
+- **PUBLICADA em 27/11 20:3x: Vértice v0.6.81 (o Cwork não mudou; segue v0.6.46). ITENS 294 a 299 todos Aprovados** (299: "não entendi nada mas tá aprovado, não precisa mais explicar, confio em você"). Commit: COMMIT_AQUI. Último ITEM usado: **299**.
+- **O que a v0.6.81 faz:** pedido do Cwork imprime só a aba com campos; Recebidos do Cwork com aviso e Mover (e Nuvem "Só neste aparelho"); o Vértice segue o tema do Cwork; no Escuro, planilha e quadro brancos como no Excel, com a chave "Área de trabalho escura no tema escuro" em Opções; imprimir pela folha aberta registra "Preenchido no Vértice" no Cwork.
+- **PUBLICADA em 27/11 19:0x: Cwork v0.6.46** (efcwork accc354; ITENS 287 a 293, kit nas coletas de água; página `docs/aprovacao-efcwork-v0.6.46-agua-kit.html`).
 - **O que a v0.6.46 faz:** remessa de água = coletas de água (sv2_aguacol) do mesmo envio e laboratório (chave `agua:<envio>|<lab>`, nada novo gravado). "Ver a remessa (N coletas)" no detalhe; gaveta com o ícone dos papéis (o MESMO kit do laboratório), Documentos da remessa e as coletas; "Papéis" no aviso depois de informar o envio (decisão minha, ITEM 292); dados de cada coleta para o Vértice (data, hora, ponto, análise, coletor, O.S, observação, material Água, X em grupo.xagua), uma folha por análise; o resto à mão. Correção junto: a situação não é cortada na lista da remessa (ITEM 293). Pergunta sem código no fim da página: remessas de água também em Envio › Remessas?
 - **PUBLICADA em 27/11 18:2x: Cwork v0.6.45 + Vértice v0.6.80** (efcwork 964c801; fichas com todos os dados, ITENS 284 a 286).
 - **Etapas anteriores publicadas:** etapa 4 (v0.6.44 + Vértice v0.6.79, kit com papéis do Vértice), etapa 3 (v0.6.43 + v0.6.78, etiquetas), etapas 1 e 2 (nuvem e modo documento).
@@ -13,12 +15,14 @@ Substitui o CONTINUAR-EFCwork-v0.6.45.md. Quem ler só este arquivo sabe o que f
 
 ## 1. TEXTO PARA COLAR NA CONVERSA NOVA
 
-> EFCwork, continuando. Anexei o pacote único (EFCwork-PACOTE-NOVA-CONVERSA-v0.6.46.zip): CONTINUAR, dossiê, pendências, o app no ar e o fonte. Leia o CONTINUAR inteiro. Responda em 3 linhas: onde parou e qual é a próxima tarefa. Depois sugira o modelo e o esforço em **negrito** e espere meu "pode iniciar". Siga o "Padrão de trabalho" sem eu repetir. Repositório: EliasGrigori/efcwork (add_repo com envio; se negar, me diga e use o fonte do pacote). Esta conversa pode mexer no Vértice (vertice/fonte). Nunca invente documento; modelo de teste com marca d'água. Não abra o OneDrive. Nada no EFClaudian. GitHub só com "pode publicar". Fique em primeiro plano. Toda entrega: o pacote único atualizado.
+> EFCwork, continuando. Anexei o pacote único (EFCwork-PACOTE-NOVA-CONVERSA-v0.6.46-vertice-v0.6.81-publicada.zip): CONTINUAR, dossiê, pendências, o app no ar e o fonte. Leia o CONTINUAR inteiro. Responda em 3 linhas: onde parou e qual é a próxima tarefa. Depois sugira o modelo e o esforço em **negrito** e espere meu "pode iniciar". Siga o "Padrão de trabalho" sem eu repetir. Repositório: EliasGrigori/efcwork (add_repo com envio; se negar, me diga e use o fonte do pacote). Esta conversa pode mexer no Vértice (vertice/fonte). Nunca invente documento; modelo de teste com marca d'água. Não abra o OneDrive. Nada no EFClaudian. GitHub só com "pode publicar". Fique em primeiro plano. Toda entrega: o pacote único atualizado.
 
 ## 2. Próxima tarefa
-1. **As sobras da integração** (pedido imprime todas as abas; "Recebidos do Cwork" fora das 5 pastas; tema do Vértice) e o aviso de "preenchido" ao imprimir pela folha aberta (ITEM 286). Começadas em 27/11 19:0x.
-2. Cadeias em Word (BIOAGRI, H2O): em espera (ele refaz em planilha).
-3. Depois: as 3 sobras (pedido imprime todas as abas; "Recebidos do Cwork" fora das 5 pastas; tema do Vértice) e a observação do ITEM 286 (imprimir pela folha aberta não avisa o Cwork de "preenchido"). Sugestão: **Opus 5.5 · alto**.
+O Elias escolhe uma (cada uma só com "pode iniciar", modelo e esforço em **negrito** antes):
+1. **Todos os documentos só no Vértice** (decisão de 27/11 06:59; PENDENCIAS A e B "Etapa 3 · Cwork apontando para o Vértice"): o Vértice passa a guardar PDF (Externos); Documentos › Impressos do Cwork vira só a ligação para o arquivo do Vértice; o que está em `efd_docs` muda de lugar uma vez, pelo Elias. Sugestão: **Opus 5.5 · alto**.
+2. **PDF preenchido de volta** (ITEM 184, contrato EFD v2 autorizado em 27/11 17:22): o Vértice devolve o PDF da ficha preenchida e o Cwork guarda na remessa. Sugestão: **Opus 5.5 · alto**.
+3. **Só ver por área** ("must" parcial da matriz) ou **Conversas** ("must" não feita). Sugestão: **Opus 5.5 · médio**.
+4. Cadeias em Word (BIOAGRI, H2O): em espera (ele refaz em planilha).
 
 ## 2f. O que a v0.6.46 faz (Cwork)
 - `src/aguarem.js` (novo, prefixo ar; módulo depois de `agua`): `remAgua`, `remEnvio`, `arLoteK`, `arColetas`, `arAmostra`, `remLote`, `remNomeAm`, `arAbreLote`, `arBotaoRemessa`. Ganchos: `kit.js` (`ktImpId`, `ktRemNome`, `ktPapCarrega`, `ktPapAbre`, `ktImprimir`, `ktSaiUm`), `remdocs.js` (`drDadosEnvio`), `ponte.js` (`ptResumoEnvio`), `agua.js` (botão no detalhe, botão "Papéis" no aviso), `coletas.css` (pílula inteira). Teste `t_v0646` (28 ok; `EFC_DIST=<pasta>` tira as fotos HOJE); modelo de TESTE `tools/visual/v0646/amostras/teste-agua.xlsx`; página `tools/visual/v0646/pagina.py`.

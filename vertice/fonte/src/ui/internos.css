@@ -83,3 +83,9 @@
 .pd-fcab { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .pd-fcab b { font-weight: 600; font-size: 15px; }
 .pd-fcab span { flex: 1; min-width: 0; font-size: 13px; color: var(--text-muted); }
+
+/* v0.6.81: Recebidos do Cwork · aviso e Mover */
+.int-receb { margin: 0 0 10px; font-size: 14px; color: var(--text-muted); }
+.int-mover { min-height: 32px; }
+.internos.int-rec .tb-arq .c-acoes { width: 112px; }
+.app.cel .int-mover { min-height: 44px; }

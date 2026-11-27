@@ -62,7 +62,7 @@ export const MENUS_FAIXA = {
     itens: [{ cab: 'Barra de cima' }, 'exibir.topoCompleto', 'exibir.topoCompacto', '-', { cab: 'Faixa' }, 'exibir.faixaTudo', 'exibir.faixaAbas', 'exibir.faixaOculta'] },
   vtMenu: { nome: 'Menu lateral', ic: 'n:menuCompleto', marcaLigado: true, dica: 'Menu lateral|Completo, só com os ícones ou escondido.', itens: ['exibir.menuCompleto', 'exibir.menuIcones', 'exibir.menuOculto'] },
   vtLayout: { nome: 'Layout', ic: 'n:layoutA', marcaLigado: true, dica: 'Layout|O painel do lado e os dois jeitos de arrumar a tela.', itens: ['exibir.painel', '-', 'exibir.layoutA', 'exibir.layoutB'] },
-  vtAparencia: { nome: 'Aparência', ic: 'n:tema', marcaLigado: true, dica: 'Aparência|Tema claro ou escuro, relevo e mesa.', itens: ['exibir.tema', 'exibir.relevo', 'exibir.mesa'] },
+  vtAparencia: { nome: 'Aparência', ic: 'n:tema', marcaLigado: true, dica: 'Aparência|Tema claro ou escuro, área de trabalho, relevo e mesa.', itens: ['exibir.tema', 'exibir.areaEscura', 'exibir.relevo', 'exibir.mesa'] },
   limpar: { nome: 'Limpar', ic: 'n:limparFormato', dica: 'Limpar|Apaga só o que está escrito ou só a aparência da célula.', itens: ['planilha.limparConteudo', 'formatar.limpar'] },
 };
 

@@ -11,6 +11,7 @@ import { Situacao, dadosDoArquivo } from './gaveta.jsx';
 import './internos.css';
 import { SUBABAS, PODE_COMPARTILHAR, estadoDoc, linhasDoResumo, textoDoResumo, noDocumento } from '../ponte/ponte.js';
 import { camposDoLivro, divergencias } from '../ponte/campos.js';
+import { SUBABA_RECEBIDOS } from '../ponte/usarPonte.js';
 
 const copiar = async (texto, avisar, oQue) => {
   try { await navigator.clipboard.writeText(texto); avisar(`${oQue} copiado.`, { ic: 'check' }); } catch { avisar('Não deu para copiar aqui. Selecione o texto e use Ctrl+C.', { ic: 'aviso' }); }
@@ -28,6 +29,7 @@ export function situacaoNuvem(nuvem, x) {
   const e = nuvem && nuvem.erro ? nuvem.erro(x.id) : null; /* v0.6.77: o que não subiu diz por quê */
   if (e) return (x.nuvem && x.nuvem.versao ? `Versão ${x.nuvem.versao} na nuvem; a nova não subiu: ` : 'Não subiu: ') + e.texto;
   if (x.nuvem && x.nuvem.versao) return 'Na nuvem · versão ' + x.nuvem.versao;
+  if (x.pastaNome && !SUBABAS.includes(x.pastaNome)) return 'Só neste aparelho'; /* v0.6.81: fora das 5 pastas não sobe (Recebidos do Cwork) */
   if (nuvem && nuvem.ligada && nuvem.pode) return 'Subindo para a nuvem';
   return 'Só neste aparelho';
 }
@@ -63,8 +65,10 @@ export function DocsInternos({ fichas, estado, cx, acrescentar, editar, lendo, n
   /* sem a aba "Todas" (pedido do Elias em 13/11): abre na primeira sub-aba que tem documento */
   const sub = escolhida && abas.includes(escolhida) ? escolhida : abas.find(qt) || abas[0];
   const lista = internos.filter((x) => x.pastaNome === sub);
+  /* v0.6.81 (decisão do Elias, 27/11): o que chegou do Cwork fica fora das 5 pastas e não sobe para a nuvem; aviso e "Mover" (quem salva) */
+  const recebidos = sub === SUBABA_RECEBIDOS, move = recebidos && (!nuvem || nuvem.pode);
   return (
-    <div className="pagina pg-lista internos">
+    <div className={'pagina pg-lista internos' + (move ? ' int-rec' : '')}>
       <CabPagina titulo="Documentos internos" meta={<SeloTotal n={internos.length} total={todos.length} unidade={['documento', 'documentos']} lendo={lendo} />}>
         <button type="button" className="btn pg-novo" data-int-acrescentar onClick={acrescentar}><Icone n="plus" />Pôr um arquivo aqui</button>
       </CabPagina>
@@ -80,6 +84,7 @@ export function DocsInternos({ fichas, estado, cx, acrescentar, editar, lendo, n
           {temAlgoParaLimpar(st) && <LimparFiltros tabela="internos" />}
         </div>
       </div>
+      {recebidos && lista.length > 0 && <p className="int-receb" data-int-receb>Estes modelos chegaram do Cwork e ficam só neste aparelho. Mova cada um para uma das 5 pastas para ele subir à nuvem e aparecer nos outros aparelhos.</p>}
       <TabelaArquivos nome="internos" rotulo={'Documentos internos: ' + sub} colunas={colunas} itens={lista} base={base.filter((x) => x.pastaNome === sub)} unidade={['documento', 'documentos']} lendo={lendo} reinicia={sub + '|' + f.q + '|' + f.ordem + '|' + f.tipo}
         vazio={todos.length ? (internos.length ? `Nada em ${sub}.` : 'Nenhum documento com esse filtro.') : 'Ponha aqui as etiquetas, fichas, formulários, fluxogramas e POPs que vão para o Cwork: "Pôr um arquivo aqui" ou, com o arquivo aberto, Arquivo › Documento interno.'}
         detalhe={(x) => {
@@ -88,7 +93,7 @@ export function DocsInternos({ fichas, estado, cx, acrescentar, editar, lendo, n
           return dadosDoArquivo(x, cx, { situacoes: [e, { tom: erroN ? 'warn' : x.nuvem && x.nuvem.versao ? 'ok' : '', texto: situacaoNuvem(nuvem, x) }], acoes: [
             ...(erroN && nuvem.pode ? [{ id: 'tentar', rotulo: 'Tentar subir de novo', ic: 'refazer', fazer: () => nuvem.tentar(x.id) }] : []),
             { id: 'abrir', rotulo: 'Abrir', ic: x.tipo, tipo: 'ouro', fazer: () => cx.abrir(x.id) },
-            { id: 'subaba', rotulo: 'Sub-aba e código', ic: 'renomear', fazer: () => editar(x) },
+            move ? { id: 'mover', rotulo: 'Mover para uma pasta', ic: 'pasta', tipo: 'ouro', fazer: () => editar(x) } : { id: 'subaba', rotulo: 'Sub-aba e código', ic: 'renomear', fazer: () => editar(x) },
           ] });
         }}
         linha={(x, extra) => {
@@ -108,7 +113,8 @@ export function DocsInternos({ fichas, estado, cx, acrescentar, editar, lendo, n
               <td className="c-nuvem"><CelNuvem nuvem={nuvem} x={x} /></td>
               <td className="c-acoes"><span className="acoes">
                 <BotaoDetalhes nome={x.nome} extra={extra} />
-                <button type="button" className="iconbtn" aria-label={'Sub-aba e código: ' + x.nome} title="Sub-aba e código" onClick={() => editar(x)}><Icone n="renomear" /></button>
+                {move ? <button type="button" className="btn sm int-mover" data-int-mover={x.id} title="Mover para uma das 5 pastas" onClick={() => editar(x)}>Mover</button>
+                  : <button type="button" className="iconbtn" aria-label={'Sub-aba e código: ' + x.nome} title="Sub-aba e código" onClick={() => editar(x)}><Icone n="renomear" /></button>}
               </span></td>
             </Tr>
           );
@@ -122,7 +128,7 @@ export function JanelaInterno({ ficha, fichas, aoSalvar, aoFechar, depois }) {
   const opcoes = useMemo(() => (ficha ? [ficha] : ativos(fichas || []).filter((f) => !f.pastaNome)), [ficha, fichas]);
   const [id, setId] = useState(ficha ? ficha.id : (opcoes[0] && opcoes[0].id) || '');
   const atual = opcoes.find((f) => f.id === id);
-  const [sub, setSub] = useState((ficha && ficha.pastaNome) || SUBABAS[1]);
+  const [sub, setSub] = useState((ficha && SUBABAS.includes(ficha.pastaNome) && ficha.pastaNome) || SUBABAS[1]); /* v0.6.81: vindo de Recebidos do Cwork, começa numa das 5 pastas */
   const [codigo, setCodigo] = useState((ficha && ficha.codigo) || '');
   const ok = atual && sub && codigo.length <= 20;
   return (

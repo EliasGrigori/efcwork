@@ -208,7 +208,7 @@ export const ROTULO_CURTO = {
   'editar.comentar': 'Comentário', 'revisao.comentarios': 'Comentários', 'organizar.temporizador': 'Temporizador', 'revisao.comparar': 'Comparar',
   'revisao.concluir': 'Concluir revisão', 'pagina.cabecalho': 'Cabeçalho do POP', 'pagina.orientacao': 'Orientação',
   'exibir.congelar': 'Congelar', 'exibir.grade': 'Linhas de grade', 'exibir.leitura': 'Modo leitura',
-  'exibir.relevo': 'Relevo', 'exibir.mesa': 'Mesa', 'exibir.telaCheia': 'Tela cheia', 'formatar.titulo': 'Título', 'inserir.campo': 'Campo',
+  'exibir.relevo': 'Relevo', 'exibir.mesa': 'Mesa', 'exibir.areaEscura': 'Área escura', 'exibir.telaCheia': 'Tela cheia', 'formatar.titulo': 'Título', 'inserir.campo': 'Campo',
   'editar.colar': 'Colar', 'inserir.processo': 'Atividade', 'inserir.decisao': 'Decisão', 'inserir.inicio': 'Início/Fim',
   'inserir.dados': 'Entrada/Saída', 'inserir.pagina': 'Página', 'inserir.legenda': 'Legenda', 'inserir.modelo': 'Modelos', 'organizar.ordenarGut': 'Ordenar GUT', 'exibir.ferramentas': 'Barra de ferramentas', 'exibir.assistente': 'Assistente', 'organizar.quadro': 'Quadro livre', 'organizar.frente': 'Para a frente',
   'organizar.tras': 'Para trás', 'exibir.ajustar': 'Ajustar à tela', 'exibir.codigos': 'Códigos Q', 'exibir.fundo': 'Fundo', 'exibir.caixas': 'Caixinhas', 'exibir.quebras': 'Quebras de página', 'formatar.tituloPostit': 'Título',

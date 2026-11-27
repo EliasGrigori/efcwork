@@ -4,6 +4,7 @@ import { buscarComandos, chegaNa, PorId, textoChega } from '../nucleo/comandos.j
 import { TEMAS, AMOSTRAS, ROTULOS } from '../nucleo/prefs.js';
 import { PERFIS } from '../nucleo/perfis.js';
 import { TIPOS } from '../nucleo/modelo.js';
+import { temaDoCwork } from '../nucleo/temaCwork.js';
 import { Icone, Janela } from './comum.jsx';
 import { CabGaveta, Situacao, Historico, situacaoArquivo, subDoArquivo, etapasDoArquivo } from './gaveta.jsx';
 import { ROTULO_CURTO } from './faixa.jsx';
@@ -82,22 +83,27 @@ export function Opcoes({ prefs, setPref, cx, aoFechar, demo, versao, espaco, abr
       ))}
     </div>
   );
-  const nomeTema = (TEMAS.find(([id]) => id === prefs.tema) || [null, prefs.tema])[1];
+  /* v0.6.81: aberto pelo Cwork, vale o tema do Cwork (os botões mostram qual e ficam parados) */
+  const temaCw = temaDoCwork(), temaEf = temaCw || prefs.tema;
+  const nomeTema = (TEMAS.find(([id]) => id === temaEf) || [null, temaEf])[1] + (temaCw ? ' (do Cwork)' : '');
   const amostra = (id) => ({ background: `linear-gradient(135deg, ${AMOSTRAS[id][0]} 50%, ${AMOSTRAS[id][1]} 50%)` });
   return (
     <Janela titulo="Opções" icone="gear" aoFechar={aoFechar} classe="opcoes">
       <div className="janela-c">
         <Secao id="tema" titulo="Tema" abertas={abertas} alternar={alternar}
-          resumo={<><i className="amostra" style={AMOSTRAS[prefs.tema] ? amostra(prefs.tema) : undefined} />{nomeTema}{prefs.relevo ? ' · relevo' : ''}{prefs.mesa ? ' · mesa' : ''}</>}>
+          resumo={<><i className="amostra" style={AMOSTRAS[temaEf] ? amostra(temaEf) : undefined} />{nomeTema}{prefs.relevo ? ' · relevo' : ''}{prefs.mesa ? ' · mesa' : ''}</>}>
           {/* v0.6.15 (R17): só dois temas, os do Cwork: Claro (marfim e ouro) e Escuro (o Dourado) */}
           <div className="temas temas-dois">
             {TEMAS.map(([id, nome]) => (
-              <button key={id} type="button" className={'tema-b' + (prefs.tema === id ? ' on' : '')} aria-pressed={prefs.tema === id} data-tema={id} title={nome} onClick={() => setPref('tema', id)}>
+              <button key={id} type="button" className={'tema-b' + (temaEf === id ? ' on' : '')} aria-pressed={temaEf === id} data-tema={id} disabled={!!temaCw} title={temaCw ? 'Aberto pelo Cwork: o tema é o do Cwork (troque lá)' : nome} onClick={() => setPref('tema', id)}>
                 <i className="mini" style={{ '--tb': AMOSTRAS[id][0], '--ta': AMOSTRAS[id][1] }} aria-hidden="true" /><span>{nome}</span>
               </button>
             ))}
           </div>
-          <small className="op-dica">Claro: marfim com detalhes em ouro. Escuro: fundo azul-noite com o mesmo ouro. Os dois também ficam no menu da faixa (botão da seta, no fim das abas).</small>
+          <small className="op-dica">Claro: marfim com detalhes em ouro. Escuro: fundo azul-noite com o mesmo ouro. Os dois também ficam no menu da faixa (botão da seta, no fim das abas). Aberto pelo Cwork, o Vértice segue o tema do Cwork.</small>
+          {/* v0.6.81 (decisão do Elias, 27/11): no tema escuro, a área de preencher fica branca como no Excel; aqui ele escolhe escura */}
+          <label className="chave"><input type="checkbox" data-op-area-escura checked={!!prefs.areaEscura} onChange={(ev) => setPref('areaEscura', ev.target.checked)} />Área de trabalho escura no tema escuro</label>
+          <small className="op-dica">Desligado, a planilha e o quadro ficam brancos como no Excel, mesmo no tema escuro.</small>
           <label className="chave"><input type="checkbox" checked={prefs.relevo} onChange={(ev) => setPref('relevo', ev.target.checked)} />Relevo nas barras</label>
           <small className="op-dica">Um brilho leve nas barras e nos botões, para parecerem peças de verdade.</small>
           <label className="chave"><input type="checkbox" checked={!!prefs.mesa} onChange={(ev) => setPref('mesa', ev.target.checked)} />Papel sobre a mesa (sombra nas barras e contorno nas laterais)</label>

@@ -39,6 +39,7 @@ import { atalhoDe, fazerAtalho } from './atalhos.js';
 import { tratarFaixaExtra, estadoFaixaExtra, pedirTamanho, ajustarTamanho, quaisDe } from './faixaExtra.js'; import { abrirTextoColunas } from './textoColunasUi.jsx'; /* v0.6.36 */ import * as K from './contorno.js'; import { executarContorno } from './contornoUi.jsx'; /* v0.6.37 */ import { abrirSubtotal } from './subtotalUi.jsx'; /* v0.6.38 */ import { SetasDeFiltro, gravarFiltroComAviso, alternarFiltroDaCelula } from './filtrosUi.jsx'; import { alvoDoFiltro } from './filtrosTabela.js'; /* v0.6.40 (T2) */ import { Segmentacoes, abrirInserirSegmentacao } from './segmentacaoUi.jsx'; /* v0.6.41 (S1); v0.6.42 (S2) */
 import { lerImagem } from './imagem.js';
 import { TEMA_CLARO, TEMA_ESCURO } from './desenhoGrafico.js';
+import { areaClara } from '../nucleo/temaCwork.js';
 import { JanelaGrafico, GraficoView, BarraGrafico } from './graficosUi.jsx';
 import { ehPainel, painelVazio, novaPeca, arrumar, textoDoNumero, textoDaMeta, NOME_PECA, PAINEL, alturaDoPainel } from './painel.js';
 import { PainelView, JanelaPeca, JanelaGraficoPainel } from './painelUi.jsx';
@@ -233,7 +234,7 @@ export function Planilha({ arquivo, cx }) {
   /* cores do tema (a grade acompanha o tema; "Folha clara" deixa branca) */
   useEffect(() => {
     /* v0.6.12: cores iguais devolvem o mesmo objeto (senão a grade era redesenhada a cada começo e fim de edição) */
-    const ler1 = () => { if (raiz.current) setCores((a) => mesmasCores(a, prefs.folhaClara ? CORES_FOLHA_CLARA : lerCores(raiz.current))); };
+    const ler1 = () => { if (raiz.current) setCores((a) => mesmasCores(a, prefs.folhaClara || areaClara() ? CORES_FOLHA_CLARA : lerCores(raiz.current))); }; /* v0.6.81: no escuro, branca como no Excel (Aparência › Área de trabalho escura) */
     ler1();
     const ob = new MutationObserver(ler1);
     ob.observe(document.body, { attributes: true, attributeFilter: ['data-theme', 'class'] });
@@ -2275,7 +2276,7 @@ export function Planilha({ arquivo, cx }) {
       case 'formula.nomes': setJanela({ tipo: 'nomes' }); return true;
       case 'exibir.congelar': setJanela({ tipo: 'congelar' }); return true;
       case 'exibir.grade': mudar({ [`conteudo.abas.${abaId}.semGrade`]: aba.semGrade ? undefined : 1 }, aba.semGrade ? 'Mostrar linhas de grade' : 'Esconder linhas de grade'); return true;
-      case 'exibir.folhaClara': setPrefs((p) => ({ ...p, folhaClara: !p.folhaClara })); cx.avisar(prefs.folhaClara ? 'A grade volta a seguir o tema.' : 'Folha clara: a grade fica branca neste aparelho.', { ic: 'tema' }); return true;
+      case 'exibir.folhaClara': if (areaClara() && !prefs.folhaClara) { cx.setPref('areaEscura', true); cx.avisar('A grade volta a seguir o tema escuro.', { ic: 'tema' }); return true; } setPrefs((p) => ({ ...p, folhaClara: !p.folhaClara })); cx.avisar(prefs.folhaClara ? 'A grade volta a seguir o tema.' : 'Folha clara: a grade fica branca neste aparelho.', { ic: 'tema' }); return true;
       case 'exibir.zoom': setJanela({ tipo: 'zoom' }); return true;
       case 'exibir.barraFormula': alternarFx(); return true;
       case 'inserir.tabela': return ed(abrirTabela);
@@ -2344,7 +2345,7 @@ export function Planilha({ arquivo, cx }) {
       case 'formatar.moeda': return (estiloAtivo.nf || '').includes('R$');
       case 'formatar.porcentagem': return (estiloAtivo.nf || '').includes('%');
       case 'exibir.grade': return !aba.semGrade;
-      case 'exibir.folhaClara': return !!prefs.folhaClara;
+      case 'exibir.folhaClara': return !!prefs.folhaClara || areaClara();
       case 'exibir.barraFormula': return fxAltura > FX_MIN + 2;
       case 'dados.filtrar': return !!alvoDoFiltro(c, abaId, sel.ativa.l, sel.ativa.c).fil;
       case 'grafico.semaforo': { const og = objs.find((x) => x.id === objSel && x.tipo === 'grafico'); return !!(og && og.g && (og.g.t === 'excel' ? og.g.plano && og.g.plano.semaforo : og.g.fx && og.g.fx.semaforo)); }
@@ -3033,7 +3034,7 @@ export function Planilha({ arquivo, cx }) {
   const temSelMulti = faixa.l1 !== faixa.l2 || faixa.c1 !== faixa.c2;
 
   return (
-    <div className={'sup sup-planilha pl' + (somenteLeitura ? ' leitura' : '') + (prefs.folhaClara ? ' clara' : '') + (cel ? ' pl-cel' : '') + (painelAtivo ? ' pl-com-painel' : '')} ref={raiz}>
+    <div className={'sup sup-planilha pl' + (somenteLeitura ? ' leitura' : '') + (prefs.folhaClara || areaClara() ? ' clara' : '') + (cel ? ' pl-cel' : '') + (painelAtivo ? ' pl-com-painel' : '')} ref={raiz}>
       {/* barra de fórmula */}
       <div className={'pl-fx' + (fxAberta ? ' aberta' : '') + (fxArr != null ? ' arrastando' : '')} role="group" aria-label="Barra de fórmula" style={fxAberta ? { height: fxAltura } : undefined} data-fx-alt={fxAltura}>
         <input className="pl-nome" aria-label="Caixa de nome: endereço ou nome (digite para ir até lá ou para dar nome)" spellCheck={false}

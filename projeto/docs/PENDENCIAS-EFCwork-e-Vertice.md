@@ -2,7 +2,7 @@
 
 Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conversa ou para o fim, para nada ficar para trás. Atualizado a cada mudança e enviado junto. Marque [x] quando estiver feito.
 
-Última atualização: 27/11/2026 19:0x · no ar: Cwork v0.6.46 + Vértice v0.6.80. Publicada também: Cwork v0.6.46 (kit nas coletas de água, ITENS 287 a 293).
+Última atualização: 27/11/2026 20:3x · no ar: Cwork v0.6.46 + Vértice v0.6.81 (sobras da integração, ITENS 294 a 299 aprovados e publicados). Nada em aprovação.
 
 ## A. Para a conversa do Vértice (o Elias leva)
 - [ ] **NOVO (27/11 06:59) · Todos os documentos só no Vértice:** nota `NOTA-DO-CWORK-para-o-Vertice-documentos-so-no-Vertice.md`. Hospedar tudo lá (internos e externos); o Cwork guarda só a ligação; versão nova vale sozinha; PDF baixa e imprime direto; planilha e Word abrem em modo documento, só aquela aba ou folha, só os campos desbloqueados. Junta a P4 com os ITENS 195 e 196.
@@ -10,7 +10,7 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 - [ ] **Nota `NOTA-DO-CWORK-para-o-Vertice-P3c-regras.md`** (P3c): o formato que as regras aceitam na P4 (ficha, `versaoPartes`, pedaços um por gravação, ler por id para conta comum, testar consulta em lista).
 - [ ] **Nota `NOTA-DO-CWORK-para-o-Vertice-P3-respostas.md`**: porta sem `contaTeste`; `recursos` novo; 3 perguntas (limpa o estado na troca de conta? a navegação cria passos no voltar do celular? nomes dos caches do sw).
 - [ ] **Modo de teste sem login** (decisão de 26/11 10:12): nada vai para o Firebase, tudo fica só no aparelho.
-- [x] **ITEM 195 · acesso "documento"** (26/11 11:41): feito na etapa 2 (Vértice v0.6.76, em aprovação, ITEM 266). a porta agora manda `acesso` ('completo' ou 'documento') e `salvar` (true só para Principal e Líder ★). Com `acesso: 'documento'`, a pessoa só entra pelo documento ligado (o que o Cwork abriu), edita e imprime, mas **não salva** e não navega pelo resto do Vértice.
+- [x] **ITEM 195 · acesso "documento"** (26/11 11:41): feito na etapa 2 (Vértice v0.6.76, publicada, ITEM 266). a porta agora manda `acesso` ('completo' ou 'documento') e `salvar` (true só para Principal e Líder ★). Com `acesso: 'documento'`, a pessoa só entra pelo documento ligado (o que o Cwork abriu), edita e imprime, mas **não salva** e não navega pelo resto do Vértice.
 - [ ] **ITEM 195 · pedir para editar e salvar:** uma opção que a pessoa aciona e que leva ao processo de edição e mudança de versão (quem aprova: Principal ou Líder ★). Desenhar com o Elias; o Cwork pode receber esse pedido (aviso/aprovação) numa versão futura.
 - [x] **ITEM 196 · ninguém abaixo de ★ salva:** feito na etapa 2 (quem não salva não tem "Atualizar documento" e não chega ao editor). Secundário e Visitante editam, mas não salvam (`salvar: false`).
 - [x] **ITEM 196 · planilhas protegidas:** no documento aberto pelo Cwork só as células liberadas aceitam escrita (etapa 2). Antes: com células travadas, quem não é ★ só mexe nas células desbloqueadas; só Líder ★ e Principal usam "Desproteger".
@@ -24,7 +24,7 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 ## B. Para esta conversa (Cwork), na ordem aprovada
 - [x] **Etapa 1 · Vértice na nuvem (P4):** aprovada (ITENS 255 a 258) e publicada em 27/11 09:32 (efcwork 1e6a059). Falta o roteiro curto no site (seção D).
 - [x] **Etapa 2 · modo documento:** aprovada (ITENS 259 a 269) e publicada em 27/11 (Vértice v0.6.76).
-- [ ] **Etapa 3 · observações da etapa 2:** o pedido do Cwork imprime todas as abas do modelo (deveria ser só a do documento?); o que chega do Cwork fica em "Recebidos do Cwork", fora das 5 pastas, e não sobe para a nuvem até a migração.
+- [x] **Etapa 3 · observações da etapa 2 (Vértice v0.6.81, publicada em 27/11 20:3x):** pedido só com a aba dos campos; Recebidos do Cwork com aviso e Mover.
 - [x] **Etapa 3 · etiquetas automáticas:** aprovada (ITENS 272 a 279) e publicada em 27/11 (Cwork v0.6.43 + Vértice v0.6.78). Cabeçalho escrito no modelo; nada a preencher na impressão.
 - [x] **Etapa 4 · kit do laboratório com papéis do Vértice:** aprovada (ITENS 280 a 283) e publicada em 27/11 (Cwork v0.6.44 + Vértice v0.6.79); até 2 papéis de custódia ou ficha por laboratório.
 - [ ] **Etapa 3 · Cwork apontando para o Vértice:** Impressos, kit e etiquetas; o que já está guardado no Cwork (`efd_docs`) muda de lugar uma vez.
@@ -53,11 +53,11 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 - [x] **Fichas e cadeias com todos os dados (parte 1):** aprovada (ITENS 284 a 286) e publicada em 27/11 (964c801).
 - [x] **Parte 2: kit e papéis do envio nas coletas de água (v0.6.46):** aprovada (ITENS 287 a 293) e publicada em 27/11.
 - [ ] **Pergunta (no fim da página da v0.6.46, sem código):** remessas de água também na tabela Coletas › Envio › Remessas?
-- [ ] **Imprimir pela folha aberta ("Escrever nesta folha") não avisa o Cwork de "preenchido"** (observação do ITEM 286).
+- [x] **Imprimir pela folha aberta avisa "preenchido":** feito na v0.6.81 (ITEM 299, aprovado e publicado).
 - [ ] **Cadeias em Word (BIOAGRI, H2O):** em espera; o Elias vai refazer em planilha no Vértice.
 
 ## C. Pedidos pequenos e perguntas ao Elias
-- [ ] **Tema do Vértice:** hoje o Vértice tem o próprio Claro/Escuro, separado do Cwork (no documento aberto pelo Cwork não há botão para trocar). Quer que siga o tema do Cwork?
+- [x] **Tema do Vértice:** respondido em 27/11: segue o Cwork; no Escuro a área de preencher fica branca, com a chave para escurecer (v0.6.81, publicada).
 - [ ] **Tarefas no Cwork:** o Cwork não liga "Conferir quando terminar" ao passar tarefa (o EFClaudian liga sozinho). Quer a caixinha no formulário do Cwork, desligada por padrão?
 - [ ] **Abas do Vértice:** o teto ficou em 10 abas ao mesmo tempo (memória do aparelho). Serve, ou quer outro número?
 - [ ] **Trocar o nome do usuário:** cada pessoa troca o próprio em Meu perfil, ou só o Principal (como hoje)?
@@ -87,14 +87,14 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 
 - [ ] **Etiquetas de verdade (v0.6.43):** no Vértice, criar a sua planilha da etiqueta (igual à do EFClaudian, com o cabeçalho escrito, uma por laboratório se quiser) na pasta Etiquetas; marcar os campos em Arquivo › Campos do Cwork; ligar em Coletas › Cadastros › Modelos de etiqueta; imprimir pelo ícone em Amostras. Dizer se a letra (Helvetica no Vértice, Cambria no EFClaudian) incomoda.
 
-- [ ] **Kit na água (v0.6.46, depois de publicada):** numa coleta de água enviada, "Ver a remessa" › ícone dos papéis › imprimir; conferir a cadeia preenchida com os pontos, a hora e o coletor.
+- [ ] **Kit na água (v0.6.46, no ar):** numa coleta de água enviada, "Ver a remessa" › ícone dos papéis › imprimir; conferir a cadeia preenchida com os pontos, a hora e o coletor.
 
 - [ ] **Kit (v0.6.44):** em Coletas › Envio › Laboratórios, trocar cada papel antigo pelo do Vértice (lixeira e Anexar papel); imprimir os papéis de uma remessa e conferir que a ficha sai preenchida.
 
 ## E. Defeitos abertos
 - [x] **Imagem do Excel saía como linha de assinatura com "Picture" na impressão do Vértice:** corrigido na v0.6.78 (ITEM 278).
 - [x] **Quadro preso em "Subindo para a nuvem" (27/11 12:00):** correção Cwork v0.6.42 + Vértice v0.6.77 aprovada (ITENS 270 e 271) e publicada. Falta: o Elias abre Documentos internos no aparelho do print escuro e manda o motivo que aparecer.
-- [x] **Abrir de novo pelo Cwork podia trocar o modelo do Vértice pelo arquivo antigo do Cwork** (vinha da v0.6.16; achado na revisão da etapa 2): corrigido na v0.6.76 (em aprovação).
+- [x] **Abrir de novo pelo Cwork podia trocar o modelo do Vértice pelo arquivo antigo do Cwork** (vinha da v0.6.16; achado na revisão da etapa 2): corrigido na v0.6.76 (publicada).
 - [ ] **`t_v0633` oscila** às vezes no passo "o pedido ficou anotado neste aparelho" (passa ao repetir).
 - [x] **Teste do calendário (`t_v050`):** corrigido em 27/11 (só o teste).
 - [x] `t_v050` corrigido enviado ao GitHub (8b8af0b).
@@ -104,3 +104,4 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 - [ ] **Voltar do celular com várias abas do Vértice (revisor, v0.6.35):** se o Vértice criar passos no histórico, o voltar anda primeiro o quadro mais recente, que pode estar escondido. Testar no celular de verdade.
 - [ ] `t_v067` "as datas do mês aparecem marcadas": falha também na v0.6.33 em 26/11 (ligado à data). Anterior à v0.6.34.
 - [ ] **Almoxarifado: ajuste e saída com vários lotes gravam um por um (só lido, revisor da v0.6.37):** sem internet, recarregar ou fechar o app no meio deixa parte sem gravar. Corrigir gravando em lote (`Data.lote`).
+- [ ] **Vértice v0.6.81 no ar:** no Cwork, trocar o tema para Escuro: o Vértice troca junto e a planilha fica branca; Opções › "Área de trabalho escura no tema escuro" escurece; um arquivo em "Recebidos do Cwork" mostra o aviso e o Mover; imprimir pela folha aberta mostra "Preenchido no Vértice" na remessa.

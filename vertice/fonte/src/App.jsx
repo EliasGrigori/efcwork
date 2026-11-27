@@ -18,7 +18,7 @@ import { lerLogin, ponteDoCwork, aoMudarLogin, situacaoDoAcesso } from './nucleo
 import { usarNuvem } from './ponte/usarNuvem.js'; /* v0.6.75 (P4): nuvem do Cwork */
 import { TelaAcesso } from './ui/acessoCwork.jsx';
 import { TelaSemMenus, docDaRota } from './ui/modoDocumento.jsx';
-import { molduraDoCwork } from './nucleo/emCwork.js';
+import { molduraDoCwork } from './nucleo/emCwork.js'; import { usarTemaCwork } from './nucleo/temaCwork.js'; /* v0.6.81: tema do Cwork */
 import { avisarCwork } from './nucleo/emCwork.js'; /* v0.6.72 (P1): a aba do Cwork mostra o arquivo aberto */
 import { normalizarPrefs } from './nucleo/prefs.js';
 import { normalizarQuadro } from './quadro/modelo.js';
@@ -105,7 +105,7 @@ export function App() {
   const contaRef = useRef(login ? login.uid : null);
   const perfilRef = useRef(perfilEf); perfilRef.current = perfilEf;
   const eu = useCallback(() => quemSou({ perfil: perfilRef.current }), []); /* v0.6.72 (P1): na ficha, o nome digitado neste aparelho ou "neste aparelho" (o perfil de teste não vira nome de pessoa); na P2 entra o login do Cwork */
-  const setPref = useCallback((k, v) => setPrefs((p) => ({ ...p, [k]: v })), []);
+  const setPref = useCallback((k, v) => setPrefs((p) => ({ ...p, [k]: v })), []); const temaCwork = usarTemaCwork();
   const cel = useMedia('(max-width: 899px), (orientation: landscape) and (max-height: 500px) and (pointer: coarse)'); /* v0.6.35 (S1): celular grande deitado também é celular */
   const media = useMedia('(min-width: 900px) and (max-width: 1499px)') && !cel; /* v0.6.22 (D3): tela média */
   const [menuNaPlanilha, setMenuNaPlanilha] = useState(false); /* a pessoa abriu o menu com a planilha aberta */
@@ -152,7 +152,7 @@ export function App() {
   /* tema, relevo e cor da barra do celular */
   useEffect(() => {
     const b = document.body;
-    b.dataset.theme = prefs.tema;
+    b.dataset.theme = temaCwork || prefs.tema; b.classList.toggle('area-escura', !!prefs.areaEscura); /* v0.6.81: dentro do Cwork, o tema dele; área de preencher escura só se ele escolher */
     b.classList.toggle('relevo', prefs.relevo);
     b.classList.toggle('mesa', !!prefs.mesa);
     const st = getComputedStyle(b);
@@ -162,7 +162,7 @@ export function App() {
     const sup = st.getPropertyValue('--surface').trim();
     if (meta && sup) meta.setAttribute('content', sup);
     gravar('prefs', prefs, { demo });
-  }, [prefs, demo]);
+  }, [prefs, demo, temaCwork]);
 
   const avisar = useCallback((texto, extra = {}) => {
     const id = Date.now() + Math.random();
@@ -552,7 +552,7 @@ export function App() {
       'exibir.faixaTudo': prefs.faixa === 'tudo', 'exibir.faixaAbas': prefs.faixa === 'abas', 'exibir.faixaOculta': prefs.faixa === 'oculta',
       'exibir.topoCompleto': prefs.topo !== 'compacto', 'exibir.topoCompacto': prefs.topo === 'compacto',
       'exibir.menuCompleto': prefs.menu === 'completo', 'exibir.menuIcones': prefs.menu === 'icones', 'exibir.menuOculto': prefs.menu === 'oculto',
-      'exibir.layoutA': prefs.layout === 'A', 'exibir.layoutB': prefs.layout === 'B', 'exibir.painel': prefs.painel, 'exibir.relevo': prefs.relevo, 'exibir.mesa': !!prefs.mesa,
+      'exibir.layoutA': prefs.layout === 'A', 'exibir.layoutB': prefs.layout === 'B', 'exibir.painel': prefs.painel, 'exibir.relevo': prefs.relevo, 'exibir.mesa': !!prefs.mesa, 'exibir.areaEscura': !!prefs.areaEscura,
     };
     if (id in geral) return geral[id];
     const ed = editorRef.current;
@@ -609,7 +609,7 @@ export function App() {
       case 'exibir.painel': setPref('painel', !prefs.painel); return;
       case 'exibir.layoutA': setPref('layout', 'A'); return;
       case 'exibir.layoutB': setPref('layout', 'B'); return;
-      case 'exibir.mesa': setPref('mesa', !prefs.mesa); avisar(prefs.mesa ? 'Papel sobre a mesa desligado.' : 'Papel sobre a mesa ligado: sombra nas barras e contorno nas laterais.', { ic: 'relevo' }); return;
+      case 'exibir.areaEscura': setPref('areaEscura', !prefs.areaEscura); avisar(prefs.areaEscura ? 'Área de trabalho clara no tema escuro (como no Excel).' : 'Área de trabalho escura no tema escuro.', { ic: 'tema' }); return; case 'exibir.mesa': setPref('mesa', !prefs.mesa); avisar(prefs.mesa ? 'Papel sobre a mesa desligado.' : 'Papel sobre a mesa ligado: sombra nas barras e contorno nas laterais.', { ic: 'relevo' }); return;
       case 'exibir.relevo': setPref('relevo', !prefs.relevo); avisar(prefs.relevo ? 'Relevo desligado.' : 'Relevo ligado.', { ic: 'relevo' }); return;
       case 'exibir.telaCheia': {
         const el = document.documentElement;
