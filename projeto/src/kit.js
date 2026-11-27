@@ -42,7 +42,7 @@ async function ktLerVt() {
   finally { S._ktVtLendo = false; if (S.gv) gvDesenha(true); }
 }
 const ktOndeTxt = d => d.fonte === 'vertice' ? 'Vértice' + (d.pasta ? ' · ' + d.pasta : '') : 'Impressos · ' + ipFmtTxt(d);
-const ktImpId = k => k.split('|')[0] + '_' + slugLogin(k.split('|').slice(1).join('|') || 'sem-lab').replace(/\./g, '-').slice(0, 60);
+const ktImpId = k => remEnvio(k) + '_' + slugLogin(k.split('|').slice(1).join('|') || 'sem-lab').replace(/\./g, '-').slice(0, 60) + (remAgua(k) ? '_agua' : ''); /* v0.6.46: a remessa de água tem registro próprio */
 const ktUltimo = k => S.ktImp.filter(x => x.k === k).sort((a, b) => String(b.em).localeCompare(String(a.em)))[0] || null;
 const ktAnalises = () => Array.from(new Set(S.coletas.map(c => c.analiseNome || c.sigla).filter(Boolean).concat((S.analises || []).map(a => a.nome).filter(Boolean)))).sort(cmpTxt);
 function ktUnidade(l) {
@@ -158,7 +158,7 @@ async function ktAnexarOk() {
 }
 
 /* ---------- Papéis deste envio ---------- */
-function ktRemNome(k) { const p = k.split('|'); return fmtD(p[0]) + ' · ' + (p.slice(1).join('|') || 'sem laboratório'); }
+function ktRemNome(k) { const p = k.split('|'); return (remAgua(k) ? 'Água · ' : '') + fmtD(remEnvio(k)) + ' · ' + (p.slice(1).join('|') || 'sem laboratório'); }
 /* os papéis da remessa: o rótulo (modelo do Vértice ou o do sistema) e a custódia ou ficha */
 function ktPapItens(k) {
   const lab = k.split('|').slice(1).join('|'), it = [], kit = ktKitDe(lab).filter(x => { const d = ktDoc(x.docId); return d && d.status !== 'lixeira'; });
@@ -169,14 +169,14 @@ function ktPapItens(k) {
   return it;
 }
 function ktPapCarrega(f, k) {
-  const l = coLote(k), u = ktUltimo(k), ans = Array.from(new Set(l.map(c => c.analiseNome || c.sigla).filter(Boolean)));
-  const pts = Array.from(new Set(l.map(c => coNome(c)).filter(x => x && x !== '—')));
+  const l = remLote(k), u = ktUltimo(k), ans = Array.from(new Set(l.map(c => c.analiseNome || c.sigla).filter(Boolean)));
+  const pts = Array.from(new Set(l.map(c => remNomeAm(c)).filter(x => x && x !== '—')));
   const d = u && u.dados ? u.dados : { amostras: String(l.length), caixas: '1', analise: ans.join(', '), pontos: pts.join(', '), obs: '', unid: ktUnidade(l) };
   Object.assign(f, { kRem: k, amostras: d.amostras, caixas: d.caixas, analise: d.analise, pontos: d.pontos, obs: d.obs || '', unid: d.unid || ktUnidade(l), sel: {}, fila: [], msg: '' });
   ktPapItens(k).forEach(x => { f.sel[x.id] = !(x.id === KT_ROTULO && !ktTemEnd(ktInfo(k.split('|').slice(1).join('|')))); });
 }
 function ktPapAbre(ks, volta) {
-  ks = (ks || []).filter(k => coLote(k).length); if (!ks.length) return;
+  ks = (ks || []).filter(k => remLote(k).length); if (!ks.length) return;
   lcAbrir({ k: 'ktPap', ks: ks, kRem: ks[0], sel: {}, fila: [], unid: 'matriz' }, volta || null);
   ktPapCarrega(S.fm, ks[0]); S.fm.sujo = false; gvDesenha(true);
 }
@@ -194,7 +194,7 @@ LC_FORM.ktPap = f => {
   c += '<div class="fm-pk"><div class="fm-pkl co-pkl">' + it.map(box).join('') + '</div></div>';
   if (!it.some(x => x.papel === 'doc')) c += '<p class="ag-dc">Este laboratório não tem custódia nem ficha no kit.</p>';
   /* v0.6.45 (ITEM 285, 27/11 18:14): com 2 ou mais análises na remessa, pergunta se preenche uma ficha por análise ou tudo numa só */
-  const ng = typeof ptGrupos === 'function' ? ptGrupos(coLote(k)).length : 1;
+  const ng = typeof ptGrupos === 'function' ? ptGrupos(remLote(k)).length : 1;
   if (ng > 1 && it.some(x => f.sel[x.id] && x.d && x.d.fonte === 'vertice')) c += lcBl('Como preencher', ddHTML('kt:modo', f.modo === 'unificada' ? 'unificada' : 'separadas', [['separadas', 'Uma ficha por análise (' + ng + ' fichas)'], ['unificada', 'Tudo numa ficha só']]), ng + ' análises nesta remessa');
   if (sup && ktDocsDoLab(lab).length < KT_DOCS_MAX) c += '<button type="button" class="bt lk kt-anx" data-act="kt-anexar-aqui">' + ic('mais') + 'Anexar papel deste laboratório</button>';
   c += '<p class="gv-h">Dados que vão para o papel <small>opcional</small></p>' +
@@ -242,7 +242,7 @@ async function ktImprimir() {
   const obs = it.filter(x => x.d && x.d.status === 'obsoleto'); if (obs.length) return lcErro('Obsoleto não sai: ' + obs[0].nome + '. Anexe a versão vigente ao kit.');
   if (!lcTravar()) return;
   const dados = ktDadosForm(f);
-  const reg = { k: k, envio: k.split('|')[0], lab: lab, itens: it.map(x => ({ id: x.id, docId: x.docId || '', nome: x.nome, rev: x.d ? x.d.rev : null })), dados: dados, porId: S.user.id, porNome: S.user.nome, em: nowISO() };
+  const reg = { k: k, envio: remEnvio(k), lab: lab, itens: it.map(x => ({ id: x.id, docId: x.docId || '', nome: x.nome, rev: x.d ? x.d.rev : null })), dados: dados, porId: S.user.id, porNome: S.user.nome, em: nowISO() };
   try { await Promise.race([Data.col('sv2_envio_imp').set(ktImpId(k), reg), new Promise(r => setTimeout(r, 4000))]); } catch (e) { console.warn(e); }
   Audit.log({ acao: 'imprimir_envio', entidade: 'remessa', entidadeId: k, resumo: 'Papéis do envio ' + ktRemNome(k) + ': ' + it.map(x => x.nome + (x.d ? ' v' + x.d.rev : '')).join(', ') });
   const aqui = it.filter(x => !ktNoVertice(x)), vert = it.filter(ktNoVertice);
@@ -255,7 +255,7 @@ async function ktImprimir() {
 /* um papel: rótulo do sistema, PDF, Word ou planilha no Vértice (preenchida, ou com os dados ao lado) */
 async function ktSaiUm(k, x, dados) {
   const lab = k.split('|').slice(1).join('|'), caixas = Math.max(1, Number(dados.caixas) || 1);
-  if (x.id === KT_ROTULO) { await ktImprimeHTML(ktRotuloHTML(lab, dados.unid, caixas, dados.amostras), 'Rótulo ' + lab + ' ' + k.split('|')[0]); if (typeof drGrava === 'function') drGrava({ k: k, item: x.id, nome: x.nome, tipo: 'impresso' }); return; }
+  if (x.id === KT_ROTULO) { await ktImprimeHTML(ktRotuloHTML(lab, dados.unid, caixas, dados.amostras), 'Rótulo ' + lab + ' ' + remEnvio(k)); if (typeof drGrava === 'function') drGrava({ k: k, item: x.id, nome: x.nome, tipo: 'impresso' }); return; }
   const d = x.d; if (!d) return;
   if (ktNoVertice(x)) { if (typeof drPreenche === 'function' && drPreenche(d)) await drPedido(k, x, dados); else await ipNoVertice(d.id, typeof ptResumoEnvio === 'function' ? ptResumoEnvio(k, dados, d) : null); return; }
   if (d.orig && d.orig.formato === 'docx') { await ipNoVertice(d.id, null); return; }

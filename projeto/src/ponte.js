@@ -98,19 +98,19 @@ function ptFolhaDoGrupo(gr, todas) {
   return o;
 }
 function ptResumoEnvio(k, dd, d) {
-  const l = typeof coLote === 'function' ? coLote(k) : [], lab = k.split('|').slice(1).join('|'), i = (typeof ktInfo === 'function' && ktInfo(lab)) || {}, rem = typeof ktRemetente === 'function' ? ktRemetente(dd.unid) : {}, o = {};
+  const l = typeof remLote === 'function' ? remLote(k) : typeof coLote === 'function' ? coLote(k) : [], lab = k.split('|').slice(1).join('|'), i = (typeof ktInfo === 'function' && ktInfo(lab)) || {}, rem = typeof ktRemetente === 'function' ? ktRemetente(dd.unid) : {}, o = {};
   const tx = (c, v) => { v = String(v == null ? '' : v).trim(); if (v) o[c] = v.slice(0, 300); };
   const so = a => Array.from(new Set(a.map(x => String(x || '').trim()).filter(Boolean)));
   tx('empresa.nome', rem.razao); tx('unidade.nome', rem.nome); tx('unidade.endereco', rem.end); tx('unidade.cidade', [rem.mun, rem.uf].filter(Boolean).join('/'));
   tx('lab.nome', i.nome || lab); tx('lab.endereco', i.end); tx('lab.cidade', [i.cidade, i.uf].filter(Boolean).join('/')); tx('lab.cep', i.cep); tx('lab.contato', i.contato); tx('lab.telefone', i.tel || i.telefone);
-  const env = k.split('|')[0]; if (/^\d{4}-\d{2}-\d{2}$/.test(env)) o['envio.data'] = env;
+  const env = typeof remEnvio === 'function' ? remEnvio(k) : k.split('|')[0]; if (/^\d{4}-\d{2}-\d{2}$/.test(env)) o['envio.data'] = env;
   const cx = Number(dd.caixas), am = Number(dd.amostras); if (cx > 0) o['envio.caixas'] = cx; if (am > 0) o['envio.amostras'] = am;
   tx('coleta.analise', dd.analise); tx('coleta.ponto', dd.pontos); tx('coleta.os', so(l.map(c => c.os)).join(', ')); tx('coleta.coletor', so(l.map(c => c.coletor)).join(', '));
   const dias = so(l.map(c => /^\d{4}-\d{2}-\d{2}/.test(c.data || '') ? String(c.data).slice(0, 10) : '')); if (dias.length === 1) o['coleta.data'] = dias[0];
   tx('usuario.nome', S.user && S.user.nome); o['hoje.data'] = hojeISO(); o['hoje.hora'] = new Date().toTimeString().slice(0, 5);
   if (d) { tx('doc.codigo', d.codigo); if (d.rev) o['doc.rev'] = d.rev; }
   if (l.length) o['amostras[]'] = l.slice(0, 200).map((c, n) => { const r = { n: n + 1 }, p = (k2, v) => { v = String(v == null ? '' : v).trim(); if (v) r[k2] = v.slice(0, 120); };
-    r._id = c.id; p('identificacao', c.identificacao || c.identif || coNome(c)); if (/^\d{4}-\d{2}-\d{2}/.test(c.data || '')) r.data = String(c.data).slice(0, 10); p('analise', c.analiseNome || c.sigla); p('ponto', coNome(c)); p('talhao', c.talhao); p('produto', c.cultura);
+    r._id = c.id; p('identificacao', c.identificacao || c.identif || remNomeAm(c)); if (/^\d{4}-\d{2}-\d{2}/.test(c.data || '')) r.data = String(c.data).slice(0, 10); p('analise', c.analiseNome || c.sigla); p('ponto', remNomeAm(c)); p('talhao', c.talhao); p('produto', c.cultura);
     /* v0.6.45 (dicionário 2): mais dados de cada amostra, para ele escolher a coluna no Vértice */
     if (/^\d{2}:\d{2}$/.test(c.hora || '')) r.hora = c.hora; p('material', ptMaterial(c.tipo)); if (c.prof && c.prof !== 'N/A') p('profundidade', c.prof); p('estadio', c.estadio); p('coletor', c.coletor); p('os', c.os); p('obs', c.obs); return r; });
   /* v0.6.45: com grupos, guarda as folhas (uma por material + análise) para o pedido; o _id só serve para separar as amostras */

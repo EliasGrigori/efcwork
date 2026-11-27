@@ -59,7 +59,7 @@ const drBtAnx = (k, x) => '<label class="bt ic-so" title="Anexar a via assinada 
 /* ---------- sair um papel pela seção (o mesmo caminho da janela Papéis deste envio) ---------- */
 function drDadosEnvio(k) {
   const u = ktUltimo(k); if (u && u.dados) return u.dados;
-  const l = coLote(k), ans = Array.from(new Set(l.map(c => c.analiseNome || c.sigla).filter(Boolean))), pts = Array.from(new Set(l.map(c => coNome(c)).filter(x => x && x !== '—')));
+  const l = remLote(k), ans = Array.from(new Set(l.map(c => c.analiseNome || c.sigla).filter(Boolean))), pts = Array.from(new Set(l.map(c => remNomeAm(c)).filter(x => x && x !== '—')));
   return { amostras: String(l.length), caixas: '1', analise: ans.join(', '), pontos: pts.join(', '), obs: '', unid: ktUnidade(l) };
 }
 /* só o que o documento tem marcado: o Vértice recusa dado sem campo (campo-desconhecido) */

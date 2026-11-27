@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-RWYoPN+TseyN93WgcWJ96/Jhmi+S4VM1L3c6msg25bw=' https://www.gstatic.com/firebasejs/13.4.0/ https://www.google.com/recaptcha/enterprise.js https://www.gstatic.com/recaptcha/releases/; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' data: blob: https://*.googleapis.com https://www.google.com/recaptcha/; frame-src 'self' https://eliasgrigori.github.io blob: https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/ https://docseliasflorencio.firebaseapp.com; worker-src 'self' blob:; manifest-src 'self'; media-src 'self' data: blob:; object-src 'self' blob:; base-uri 'none'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-HqXg8h8Geeq9ID9txkXQq/4ViFgpVcLQeFUL/aGb6ig=' https://www.gstatic.com/firebasejs/13.4.0/ https://www.google.com/recaptcha/enterprise.js https://www.gstatic.com/recaptcha/releases/; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' data: blob: https://*.googleapis.com https://www.google.com/recaptcha/; frame-src 'self' https://eliasgrigori.github.io blob: https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/ https://docseliasflorencio.firebaseapp.com; worker-src 'self' blob:; manifest-src 'self'; media-src 'self' data: blob:; object-src 'self' blob:; base-uri 'none'; form-action 'self'">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>EFCwork</title>
 <meta name="description" content="EFCwork · Cwork Quality · controle de qualidade agrícola da família EFClaudian.">
@@ -1119,6 +1119,7 @@ div.cb-hc{cursor:default}
 .co-am{width:100%;font:inherit;color:inherit;text-align:left;cursor:pointer}
 .co-am:hover{border-color:var(--a)}
 .co-am span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.co-am .pill{flex:none;overflow:visible} /* v0.6.46: a situação não é cortada (o nome da amostra é que encolhe) */
 .co-selb{display:flex;gap:14px;margin:-4px 0 6px}
 .co-pkl{max-height:min(38vh,320px);overflow:auto}
 .co-pkl .cb-ck .pill{margin-left:auto}
@@ -2838,7 +2839,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = Mov;
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.6.45';
+const VERSAO = '0.6.46';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -7257,7 +7258,7 @@ function agAbre(id) {
     const cab = isSup(S.user) && !canc ? '<button type="button" class="bt ic-so" data-act="ag-canc" data-id="' + esc(c.id) + '" title="Cancelar a coleta" aria-label="Cancelar a coleta">' + ic('lixo') + '</button>' : '';
     const a = c.acao, acBl = a ? '<p class="gv-h">Ação corretiva</p><button type="button" class="ac-res" data-act="ac-abre" data-id="' + esc(c.id) + '"><span><b>' + esc(a.responsavelNome || '') + '</b><small>' + esc('prazo ' + fmtD(a.prazo) + ' · ' + (a.etapas || []).length + ' etapa(s)' + (a.orientacao ? ' · ' + a.orientacao : '')) + '</small></span>' + acPill(a) + '</button>' : nc && !canc && isSup(S.user) ? '<p class="gv-h">Ação corretiva</p><button type="button" class="bt pr ac-abrir" data-act="ac-nova" data-id="' + esc(c.id) + '">' + ic('lista') + 'Abrir ação corretiva</button>' : '';
     return { ico: 'frasco', cabAcoes: cab, sub: (c.analiseNome || '') + ' · ' + agTipoTxt(c), titulo: c.pontoNome || 'Coleta de água', pill: canc ? alPill('Cancelada') : agLaudoAtrasado(c) ? alPill('Laudo atrasado', 'cr') : alPill(c.resultado === 'PENDENTE' ? 'Pendente' : c.resultado === 'CONFORME' ? 'Conforme' : 'Não conforme', c.resultado === 'CONFORME' ? 'ok' : nc ? 'cr' : 'wa'),
-      corpo: (canc ? '' : tlFluido('ag-' + c.id, agEtapas(c))) + '<p class="gv-h">Coleta</p>' + gvCampos([['Semana', c.semana ? 'semana ' + c.semana : ''], ['Tipo', agTipoTxt(c) + (orig ? ' · recoleta de ' + fmtD(orig.data) + ' (' + String(orig.resultado || '').toLowerCase() + ')' : '')], ['Bebedouros', bebs.length > 1 ? bebs.join(', ') : ''], ['Quantidade', c.qtd ? String(c.qtd) : ''], ['Laboratório', c.lab], ['Valor', c.valor ? brl(c.valor) : ''],
+      corpo: (canc ? '' : tlFluido('ag-' + c.id, agEtapas(c)) + (typeof arBotaoRemessa === 'function' ? arBotaoRemessa(c) : '')) + '<p class="gv-h">Coleta</p>' + gvCampos([['Semana', c.semana ? 'semana ' + c.semana : ''], ['Tipo', agTipoTxt(c) + (orig ? ' · recoleta de ' + fmtD(orig.data) + ' (' + String(orig.resultado || '').toLowerCase() + ')' : '')], ['Bebedouros', bebs.length > 1 ? bebs.join(', ') : ''], ['Quantidade', c.qtd ? String(c.qtd) : ''], ['Laboratório', c.lab], ['Valor', c.valor ? brl(c.valor) : ''],
         ['Recoleta', filha ? 'lançada em ' + fmtD(filha.data) + ' · ' + String(filha.resultado || '').toLowerCase() : c.recoletaPedida ? 'pedida: ' + c.recoletaPedida.motivo + ' · ' + (c.recoletaPedida.porNome || '') + ', ' + fmtDT(c.recoletaPedida.ts) : ''],
         ['Ação corretiva', !a && nc && !canc && !isSup(S.user) ? 'ainda não aberta (o Líder ★ ou o Administrador abre)' : ''], ['Observação', c.obs], ['Cancelada', canc ? c.canceladaMotivo || 'sim' : '']]) + acBl,
       rodape: pe };
@@ -7357,7 +7358,7 @@ async function agEnvOk() {
   const antes = {}, depois = {}; Object.keys(o).forEach(k => { if (String(c[k] == null ? '' : c[k]) !== String(o[k])) { antes[k] = c[k]; depois[k] = o[k]; } });
   if (!Object.keys(depois).length) { lcFim(); return; }
   if (!lcTravar()) return;
-  try { await Data.col('sv2_aguacol').update(c.id, o); Audit.log({ acao: 'alterar_coleta_agua', entidade: 'coleta_agua', entidadeId: c.id, resumo: 'Atualizou o envio da coleta de água ' + c.pontoNome, antes: antes, depois: depois }); lcFim(); aviso('Envio salvo.'); }
+  try { await Data.col('sv2_aguacol').update(c.id, o); Audit.log({ acao: 'alterar_coleta_agua', entidade: 'coleta_agua', entidadeId: c.id, resumo: 'Atualizou o envio da coleta de água ' + c.pontoNome, antes: antes, depois: depois }); lcFim(); const kr = o.envio && typeof arLoteK === 'function' ? arLoteK(Object.assign({}, c, o)) : ''; aviso('Envio salvo.', undefined, kr && coPode() ? { rot: 'Papéis', fn: () => ktPapAbre([kr]) } : null); } /* v0.6.46: o kit também na água */
   catch (e) { lcErro(svErro(e)); }
 }
 LC_FORM.agRes = f => { const c = S.aguacol.find(x => x.id === f.id); if (!c) return null; const nc = f.res === 'NÃO CONFORME';
@@ -7454,6 +7455,56 @@ BG_FONTES.push(q => {
   if (!coVe()) return [];
   return S.aguacol.filter(c => bgCasa(q, [c.pontoNome, c.analiseNome, c.os, c.lab, 'água', agTipoTxt(c)].join(' '))).slice(0, 6)
     .map(c => ({ grupo: 'Água', nome: (c.pontoNome || 'Coleta de água') + ' · ' + fmtD(c.data), sub: [c.analiseNome, c.situacao === 'cancelada' ? 'Cancelada' : c.resultado === 'PENDENTE' ? 'Pendente' : c.resultado === 'CONFORME' ? 'Conforme' : 'Não conforme'].filter(Boolean).join(' · '), ico: 'frasco', abrir: () => { if (S.rota.aba !== 'agua' || S.rota.area !== 'coletas') { S._gvNav = true; ir('coletas', 'agua'); } agAbre(c.id); } }));
+});
+
+/* ===== aguarem.js ===== */
+/* EFCwork · aguarem.js — remessa de água (v0.6.46; parte 2 das decisões do Elias de 27/11 17:22: "o kit também nas coletas de
+   água, eles também são enviados"). Prefixo: ar.
+   - As coletas de água (sv2_aguacol) guardam envio e lab em cada coleta, sem remessa própria. Remessa de água = coletas de água
+     enviadas no mesmo dia para o mesmo laboratório (como a remessa do campo), com a chave 'agua:<envio>|<laboratório>'.
+     Nada novo é gravado na coleta: a remessa é só uma forma de juntar.
+   - A gaveta da remessa tem o ícone dos papéis (o MESMO kit do laboratório, kit.js) e os Documentos da remessa (remdocs.js).
+   - Dados de cada amostra para o Vértice: data, hora, ponto (identificação), análise, coletor, O.S, observação, material Água
+     (X em grupo.xagua). Código do frasco, matriz, nº de frascos, preservação e medidas de campo o Elias escreve à mão
+     ("Escrever nesta folha"). */
+const AR_PRE = 'agua:';
+const remAgua = k => String(k || '').indexOf(AR_PRE) === 0;
+const remEnvio = k => String(k || '').split('|')[0].replace(/^agua:/, '');
+const arLoteK = c => c && c.envio && c.situacao !== 'cancelada' ? AR_PRE + c.envio + '|' + (c.lab || '') : '';
+const arColetas = k => (typeof agAtivas === 'function' ? agAtivas() : []).filter(c => arLoteK(c) === k);
+/* a coleta de água no formato que o kit e a ponte leem (como uma amostra do campo) */
+const arAmostra = c => ({ id: c.id, _agua: true, tipo: 'AGUA', data: c.data, hora: c.hora, analiseNome: c.analiseNome, identificacao: c.pontoNome, pontoNome: c.pontoNome, coletor: c.coletor, os: c.os, obs: c.obs, qtd: c.qtd, lab: c.lab, envio: c.envio });
+/* o lote de uma remessa (campo ou água) e o nome de cada amostra */
+const remLote = k => remAgua(k) ? arColetas(k).map(arAmostra) : coLote(k);
+const remNomeAm = c => c && c._agua ? c.pontoNome || '' : coNome(c);
+
+/* a gaveta da remessa de água */
+function arAbreLote(k) {
+  S._agSel = ''; /* sem linha marcada na tabela: as setas de anterior/próximo (que andam pelas coletas) não aparecem na remessa */
+  gvAbrir(() => {
+    const l = arColetas(k); if (!l.length) return null;
+    const c0 = l[0], res = l.filter(c => c.resultado !== 'PENDENTE').length, at = l.filter(agLaudoAtrasado).length, pode = agPode();
+    const os = Array.from(new Set(l.map(c => c.os).filter(Boolean)));
+    return { ico: 'caixa', cabAcoes: pode ? ktPapBt(k) : '', sub: 'Remessa de água · ' + fmtD(c0.envio), titulo: c0.lab || 'Sem laboratório',
+      pill: alPill(res === l.length ? 'Resultados registrados' : at ? at + ' laudo(s) atrasado(s)' : 'Aguardando laudos', res === l.length ? 'ok' : at ? 'cr' : ''),
+      corpo: gvNums([[String(l.length), l.length === 1 ? 'coleta' : 'coletas'], [res + '/' + l.length, 'resultados'], [res === l.length ? '—' : fmtD(addDias(c0.envio, agCfg().laudoDias)), 'laudo previsto', at ? 'cr' : '']]) +
+        gvCampos([['O.S', os.join(', ') || 'ainda não informada']]) + (typeof drSecao === 'function' ? drSecao(k) : ktRemessaHTML(k)) +
+        '<p class="gv-h">Coletas</p><div class="gv-lotes">' + l.slice().sort((a, b) => cmpTxt(a.pontoNome, b.pontoNome) || cmpTxt(a.analiseNome, b.analiseNome)).map(c => {
+          const s = c.resultado === 'PENDENTE' ? (agLaudoAtrasado(c) ? ['Laudo atrasado', 'cr'] : ['Pendente', 'wa']) : c.resultado === 'CONFORME' ? ['Conforme', 'ok'] : ['Não conforme', 'cr'];
+          return '<button type="button" class="gv-lote co-am" data-act="ag-abre" data-id="' + esc(c.id) + '"><span><b>' + esc(c.pontoNome || '') + '</b> ' + esc([c.analiseNome, c.data ? fmtD(c.data).slice(0, 5) : '', c.hora].filter(Boolean).join(' · ')) + '</span>' + alPill(s[0], s[1]) + '</button>'; }).join('') + '</div>' };
+  });
+  render();
+}
+/* no detalhe da coleta: o botão que leva à remessa dela */
+function arBotaoRemessa(c) {
+  const k = arLoteK(c); if (!k) return ''; const n = arColetas(k).length;
+  return '<button type="button" class="bt lk co-vl" data-act="ar-lote" data-k="' + esc(k) + '">' + ic('caixa') + 'Ver a remessa (' + n + (n === 1 ? ' coleta)' : ' coletas)') + '</button>';
+}
+
+document.addEventListener('click', ev => {
+  const t = ev.target.closest && ev.target.closest('[data-act^="ar-"]'); if (!t) return;
+  const a = t.getAttribute('data-act');
+  if (a === 'ar-lote') arAbreLote(t.getAttribute('data-k'));
 });
 
 /* ===== aguaac.js ===== */
@@ -9241,19 +9292,19 @@ function ptFolhaDoGrupo(gr, todas) {
   return o;
 }
 function ptResumoEnvio(k, dd, d) {
-  const l = typeof coLote === 'function' ? coLote(k) : [], lab = k.split('|').slice(1).join('|'), i = (typeof ktInfo === 'function' && ktInfo(lab)) || {}, rem = typeof ktRemetente === 'function' ? ktRemetente(dd.unid) : {}, o = {};
+  const l = typeof remLote === 'function' ? remLote(k) : typeof coLote === 'function' ? coLote(k) : [], lab = k.split('|').slice(1).join('|'), i = (typeof ktInfo === 'function' && ktInfo(lab)) || {}, rem = typeof ktRemetente === 'function' ? ktRemetente(dd.unid) : {}, o = {};
   const tx = (c, v) => { v = String(v == null ? '' : v).trim(); if (v) o[c] = v.slice(0, 300); };
   const so = a => Array.from(new Set(a.map(x => String(x || '').trim()).filter(Boolean)));
   tx('empresa.nome', rem.razao); tx('unidade.nome', rem.nome); tx('unidade.endereco', rem.end); tx('unidade.cidade', [rem.mun, rem.uf].filter(Boolean).join('/'));
   tx('lab.nome', i.nome || lab); tx('lab.endereco', i.end); tx('lab.cidade', [i.cidade, i.uf].filter(Boolean).join('/')); tx('lab.cep', i.cep); tx('lab.contato', i.contato); tx('lab.telefone', i.tel || i.telefone);
-  const env = k.split('|')[0]; if (/^\d{4}-\d{2}-\d{2}$/.test(env)) o['envio.data'] = env;
+  const env = typeof remEnvio === 'function' ? remEnvio(k) : k.split('|')[0]; if (/^\d{4}-\d{2}-\d{2}$/.test(env)) o['envio.data'] = env;
   const cx = Number(dd.caixas), am = Number(dd.amostras); if (cx > 0) o['envio.caixas'] = cx; if (am > 0) o['envio.amostras'] = am;
   tx('coleta.analise', dd.analise); tx('coleta.ponto', dd.pontos); tx('coleta.os', so(l.map(c => c.os)).join(', ')); tx('coleta.coletor', so(l.map(c => c.coletor)).join(', '));
   const dias = so(l.map(c => /^\d{4}-\d{2}-\d{2}/.test(c.data || '') ? String(c.data).slice(0, 10) : '')); if (dias.length === 1) o['coleta.data'] = dias[0];
   tx('usuario.nome', S.user && S.user.nome); o['hoje.data'] = hojeISO(); o['hoje.hora'] = new Date().toTimeString().slice(0, 5);
   if (d) { tx('doc.codigo', d.codigo); if (d.rev) o['doc.rev'] = d.rev; }
   if (l.length) o['amostras[]'] = l.slice(0, 200).map((c, n) => { const r = { n: n + 1 }, p = (k2, v) => { v = String(v == null ? '' : v).trim(); if (v) r[k2] = v.slice(0, 120); };
-    r._id = c.id; p('identificacao', c.identificacao || c.identif || coNome(c)); if (/^\d{4}-\d{2}-\d{2}/.test(c.data || '')) r.data = String(c.data).slice(0, 10); p('analise', c.analiseNome || c.sigla); p('ponto', coNome(c)); p('talhao', c.talhao); p('produto', c.cultura);
+    r._id = c.id; p('identificacao', c.identificacao || c.identif || remNomeAm(c)); if (/^\d{4}-\d{2}-\d{2}/.test(c.data || '')) r.data = String(c.data).slice(0, 10); p('analise', c.analiseNome || c.sigla); p('ponto', remNomeAm(c)); p('talhao', c.talhao); p('produto', c.cultura);
     /* v0.6.45 (dicionário 2): mais dados de cada amostra, para ele escolher a coluna no Vértice */
     if (/^\d{2}:\d{2}$/.test(c.hora || '')) r.hora = c.hora; p('material', ptMaterial(c.tipo)); if (c.prof && c.prof !== 'N/A') p('profundidade', c.prof); p('estadio', c.estadio); p('coletor', c.coletor); p('os', c.os); p('obs', c.obs); return r; });
   /* v0.6.45: com grupos, guarda as folhas (uma por material + análise) para o pedido; o _id só serve para separar as amostras */
@@ -9818,7 +9869,7 @@ async function ktLerVt() {
   finally { S._ktVtLendo = false; if (S.gv) gvDesenha(true); }
 }
 const ktOndeTxt = d => d.fonte === 'vertice' ? 'Vértice' + (d.pasta ? ' · ' + d.pasta : '') : 'Impressos · ' + ipFmtTxt(d);
-const ktImpId = k => k.split('|')[0] + '_' + slugLogin(k.split('|').slice(1).join('|') || 'sem-lab').replace(/\./g, '-').slice(0, 60);
+const ktImpId = k => remEnvio(k) + '_' + slugLogin(k.split('|').slice(1).join('|') || 'sem-lab').replace(/\./g, '-').slice(0, 60) + (remAgua(k) ? '_agua' : ''); /* v0.6.46: a remessa de água tem registro próprio */
 const ktUltimo = k => S.ktImp.filter(x => x.k === k).sort((a, b) => String(b.em).localeCompare(String(a.em)))[0] || null;
 const ktAnalises = () => Array.from(new Set(S.coletas.map(c => c.analiseNome || c.sigla).filter(Boolean).concat((S.analises || []).map(a => a.nome).filter(Boolean)))).sort(cmpTxt);
 function ktUnidade(l) {
@@ -9934,7 +9985,7 @@ async function ktAnexarOk() {
 }
 
 /* ---------- Papéis deste envio ---------- */
-function ktRemNome(k) { const p = k.split('|'); return fmtD(p[0]) + ' · ' + (p.slice(1).join('|') || 'sem laboratório'); }
+function ktRemNome(k) { const p = k.split('|'); return (remAgua(k) ? 'Água · ' : '') + fmtD(remEnvio(k)) + ' · ' + (p.slice(1).join('|') || 'sem laboratório'); }
 /* os papéis da remessa: o rótulo (modelo do Vértice ou o do sistema) e a custódia ou ficha */
 function ktPapItens(k) {
   const lab = k.split('|').slice(1).join('|'), it = [], kit = ktKitDe(lab).filter(x => { const d = ktDoc(x.docId); return d && d.status !== 'lixeira'; });
@@ -9945,14 +9996,14 @@ function ktPapItens(k) {
   return it;
 }
 function ktPapCarrega(f, k) {
-  const l = coLote(k), u = ktUltimo(k), ans = Array.from(new Set(l.map(c => c.analiseNome || c.sigla).filter(Boolean)));
-  const pts = Array.from(new Set(l.map(c => coNome(c)).filter(x => x && x !== '—')));
+  const l = remLote(k), u = ktUltimo(k), ans = Array.from(new Set(l.map(c => c.analiseNome || c.sigla).filter(Boolean)));
+  const pts = Array.from(new Set(l.map(c => remNomeAm(c)).filter(x => x && x !== '—')));
   const d = u && u.dados ? u.dados : { amostras: String(l.length), caixas: '1', analise: ans.join(', '), pontos: pts.join(', '), obs: '', unid: ktUnidade(l) };
   Object.assign(f, { kRem: k, amostras: d.amostras, caixas: d.caixas, analise: d.analise, pontos: d.pontos, obs: d.obs || '', unid: d.unid || ktUnidade(l), sel: {}, fila: [], msg: '' });
   ktPapItens(k).forEach(x => { f.sel[x.id] = !(x.id === KT_ROTULO && !ktTemEnd(ktInfo(k.split('|').slice(1).join('|')))); });
 }
 function ktPapAbre(ks, volta) {
-  ks = (ks || []).filter(k => coLote(k).length); if (!ks.length) return;
+  ks = (ks || []).filter(k => remLote(k).length); if (!ks.length) return;
   lcAbrir({ k: 'ktPap', ks: ks, kRem: ks[0], sel: {}, fila: [], unid: 'matriz' }, volta || null);
   ktPapCarrega(S.fm, ks[0]); S.fm.sujo = false; gvDesenha(true);
 }
@@ -9970,7 +10021,7 @@ LC_FORM.ktPap = f => {
   c += '<div class="fm-pk"><div class="fm-pkl co-pkl">' + it.map(box).join('') + '</div></div>';
   if (!it.some(x => x.papel === 'doc')) c += '<p class="ag-dc">Este laboratório não tem custódia nem ficha no kit.</p>';
   /* v0.6.45 (ITEM 285, 27/11 18:14): com 2 ou mais análises na remessa, pergunta se preenche uma ficha por análise ou tudo numa só */
-  const ng = typeof ptGrupos === 'function' ? ptGrupos(coLote(k)).length : 1;
+  const ng = typeof ptGrupos === 'function' ? ptGrupos(remLote(k)).length : 1;
   if (ng > 1 && it.some(x => f.sel[x.id] && x.d && x.d.fonte === 'vertice')) c += lcBl('Como preencher', ddHTML('kt:modo', f.modo === 'unificada' ? 'unificada' : 'separadas', [['separadas', 'Uma ficha por análise (' + ng + ' fichas)'], ['unificada', 'Tudo numa ficha só']]), ng + ' análises nesta remessa');
   if (sup && ktDocsDoLab(lab).length < KT_DOCS_MAX) c += '<button type="button" class="bt lk kt-anx" data-act="kt-anexar-aqui">' + ic('mais') + 'Anexar papel deste laboratório</button>';
   c += '<p class="gv-h">Dados que vão para o papel <small>opcional</small></p>' +
@@ -10018,7 +10069,7 @@ async function ktImprimir() {
   const obs = it.filter(x => x.d && x.d.status === 'obsoleto'); if (obs.length) return lcErro('Obsoleto não sai: ' + obs[0].nome + '. Anexe a versão vigente ao kit.');
   if (!lcTravar()) return;
   const dados = ktDadosForm(f);
-  const reg = { k: k, envio: k.split('|')[0], lab: lab, itens: it.map(x => ({ id: x.id, docId: x.docId || '', nome: x.nome, rev: x.d ? x.d.rev : null })), dados: dados, porId: S.user.id, porNome: S.user.nome, em: nowISO() };
+  const reg = { k: k, envio: remEnvio(k), lab: lab, itens: it.map(x => ({ id: x.id, docId: x.docId || '', nome: x.nome, rev: x.d ? x.d.rev : null })), dados: dados, porId: S.user.id, porNome: S.user.nome, em: nowISO() };
   try { await Promise.race([Data.col('sv2_envio_imp').set(ktImpId(k), reg), new Promise(r => setTimeout(r, 4000))]); } catch (e) { console.warn(e); }
   Audit.log({ acao: 'imprimir_envio', entidade: 'remessa', entidadeId: k, resumo: 'Papéis do envio ' + ktRemNome(k) + ': ' + it.map(x => x.nome + (x.d ? ' v' + x.d.rev : '')).join(', ') });
   const aqui = it.filter(x => !ktNoVertice(x)), vert = it.filter(ktNoVertice);
@@ -10031,7 +10082,7 @@ async function ktImprimir() {
 /* um papel: rótulo do sistema, PDF, Word ou planilha no Vértice (preenchida, ou com os dados ao lado) */
 async function ktSaiUm(k, x, dados) {
   const lab = k.split('|').slice(1).join('|'), caixas = Math.max(1, Number(dados.caixas) || 1);
-  if (x.id === KT_ROTULO) { await ktImprimeHTML(ktRotuloHTML(lab, dados.unid, caixas, dados.amostras), 'Rótulo ' + lab + ' ' + k.split('|')[0]); if (typeof drGrava === 'function') drGrava({ k: k, item: x.id, nome: x.nome, tipo: 'impresso' }); return; }
+  if (x.id === KT_ROTULO) { await ktImprimeHTML(ktRotuloHTML(lab, dados.unid, caixas, dados.amostras), 'Rótulo ' + lab + ' ' + remEnvio(k)); if (typeof drGrava === 'function') drGrava({ k: k, item: x.id, nome: x.nome, tipo: 'impresso' }); return; }
   const d = x.d; if (!d) return;
   if (ktNoVertice(x)) { if (typeof drPreenche === 'function' && drPreenche(d)) await drPedido(k, x, dados); else await ipNoVertice(d.id, typeof ptResumoEnvio === 'function' ? ptResumoEnvio(k, dados, d) : null); return; }
   if (d.orig && d.orig.formato === 'docx') { await ipNoVertice(d.id, null); return; }
@@ -10137,7 +10188,7 @@ const drBtAnx = (k, x) => '<label class="bt ic-so" title="Anexar a via assinada 
 /* ---------- sair um papel pela seção (o mesmo caminho da janela Papéis deste envio) ---------- */
 function drDadosEnvio(k) {
   const u = ktUltimo(k); if (u && u.dados) return u.dados;
-  const l = coLote(k), ans = Array.from(new Set(l.map(c => c.analiseNome || c.sigla).filter(Boolean))), pts = Array.from(new Set(l.map(c => coNome(c)).filter(x => x && x !== '—')));
+  const l = remLote(k), ans = Array.from(new Set(l.map(c => c.analiseNome || c.sigla).filter(Boolean))), pts = Array.from(new Set(l.map(c => remNomeAm(c)).filter(x => x && x !== '—')));
   return { amostras: String(l.length), caixas: '1', analise: ans.join(', '), pontos: pts.join(', '), obs: '', unid: ktUnidade(l) };
 }
 /* só o que o documento tem marcado: o Vértice recusa dado sem campo (campo-desconhecido) */

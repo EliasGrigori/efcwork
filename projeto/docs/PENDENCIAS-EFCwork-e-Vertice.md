@@ -2,7 +2,7 @@
 
 Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conversa ou para o fim, para nada ficar para trás. Atualizado a cada mudança e enviado junto. Marque [x] quando estiver feito.
 
-Última atualização: 27/11/2026 18:3x · no ar: Cwork v0.6.44 + Vértice v0.6.79. Pronta e aprovada, NÃO publicada: v0.6.45 + Vértice v0.6.80 (fichas com todos os dados, ITENS 284 a 286; patch no pacote).
+Última atualização: 27/11/2026 19:0x · no ar: Cwork v0.6.46 + Vértice v0.6.80. Publicada também: Cwork v0.6.46 (kit nas coletas de água, ITENS 287 a 293).
 
 ## A. Para a conversa do Vértice (o Elias leva)
 - [ ] **NOVO (27/11 06:59) · Todos os documentos só no Vértice:** nota `NOTA-DO-CWORK-para-o-Vertice-documentos-so-no-Vertice.md`. Hospedar tudo lá (internos e externos); o Cwork guarda só a ligação; versão nova vale sozinha; PDF baixa e imprime direto; planilha e Word abrem em modo documento, só aquela aba ou folha, só os campos desbloqueados. Junta a P4 com os ITENS 195 e 196.
@@ -50,8 +50,9 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 - [ ] Estudo de rapidez (`ESTUDO-rapidez-EFCwork-v0.6.33.md`): só depois da integração.
 - [x] Janela por cima: virou a tela inteira com abas (v0.6.35); a área ao lado do menu saiu.
 
-- [x] **Fichas e cadeias com todos os dados (parte 1):** aprovada (ITENS 284 a 286) e pronta; falta o "pode publicar".
-- [ ] **PRÓXIMA · parte 2: kit e papéis do envio nas coletas de água** (CONTINUAR seção 2).
+- [x] **Fichas e cadeias com todos os dados (parte 1):** aprovada (ITENS 284 a 286) e publicada em 27/11 (964c801).
+- [x] **Parte 2: kit e papéis do envio nas coletas de água (v0.6.46):** aprovada (ITENS 287 a 293) e publicada em 27/11.
+- [ ] **Pergunta (no fim da página da v0.6.46, sem código):** remessas de água também na tabela Coletas › Envio › Remessas?
 - [ ] **Imprimir pela folha aberta ("Escrever nesta folha") não avisa o Cwork de "preenchido"** (observação do ITEM 286).
 - [ ] **Cadeias em Word (BIOAGRI, H2O):** em espera; o Elias vai refazer em planilha no Vértice.
 
@@ -85,6 +86,8 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 - [ ] **v0.6.40 no ar:** Coletas › Cadastros abre as 6 listas; cadastrar um laboratório com endereço e ver o rótulo em Envio › Laboratórios; editar uma fazenda; desativar e reativar um talhão de teste. Dizer se alguém ainda cadastra pelo EFClaudian.
 
 - [ ] **Etiquetas de verdade (v0.6.43):** no Vértice, criar a sua planilha da etiqueta (igual à do EFClaudian, com o cabeçalho escrito, uma por laboratório se quiser) na pasta Etiquetas; marcar os campos em Arquivo › Campos do Cwork; ligar em Coletas › Cadastros › Modelos de etiqueta; imprimir pelo ícone em Amostras. Dizer se a letra (Helvetica no Vértice, Cambria no EFClaudian) incomoda.
+
+- [ ] **Kit na água (v0.6.46, depois de publicada):** numa coleta de água enviada, "Ver a remessa" › ícone dos papéis › imprimir; conferir a cadeia preenchida com os pontos, a hora e o coletor.
 
 - [ ] **Kit (v0.6.44):** em Coletas › Envio › Laboratórios, trocar cada papel antigo pelo do Vértice (lixeira e Anexar papel); imprimir os papéis de uma remessa e conferir que a ficha sai preenchida.
 

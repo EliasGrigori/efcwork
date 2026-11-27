@@ -10,6 +10,7 @@
 .co-am{width:100%;font:inherit;color:inherit;text-align:left;cursor:pointer}
 .co-am:hover{border-color:var(--a)}
 .co-am span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.co-am .pill{flex:none;overflow:visible} /* v0.6.46: a situação não é cortada (o nome da amostra é que encolhe) */
 .co-selb{display:flex;gap:14px;margin:-4px 0 6px}
 .co-pkl{max-height:min(38vh,320px);overflow:auto}
 .co-pkl .cb-ck .pill{margin-left:auto}
