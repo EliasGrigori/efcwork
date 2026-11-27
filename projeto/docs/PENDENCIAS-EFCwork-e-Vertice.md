@@ -2,7 +2,7 @@
 
 Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conversa ou para o fim, para nada ficar para trás. Atualizado a cada mudança e enviado junto. Marque [x] quando estiver feito.
 
-Última atualização: 26/11/2026 18h · v0.6.36 publicada (Vértice v0.6.74 em efcwork/vertice/; EFCdocs leva ao endereço novo). Falta: regras no Firebase (Simulador antes).
+Última atualização: 26/11/2026 21h15 · v0.6.37 (aviso de versão nova) publicada. Próxima: CSP e SDK.
 
 ## A. Para a conversa do Vértice (o Elias leva)
 - [ ] **O código do Vértice mora agora em `efcwork/vertice/fonte/`** (depois de publicada a P5): a conversa do Vértice clona o efcwork e publica na pasta `vertice/`. Está na memória do Vértice (registro de 26/11, 16:57).
@@ -26,10 +26,11 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 - [x] **Tarefas · "Conferir quando terminar" (pedido 26/11 14:18):** corrigido no Cwork (Principal conclui direto; parada ganha Concluir/Conferido); aprovado (ITEM 212) e publicado. A correção no EFClaudian é da outra conversa.
 - [x] **Filtro da coluna (pedido 26/11 14:24):** janela parada ao marcar e escolha em várias buscas; aprovado (ITENS 213 e 214) e publicado.
 - [x] **"Não vejo ícone" (ITENS 198, 202, 203):** eram as imagens da página de aprovação que não carregavam (defeito do montador, corrigido); o app estava certo.
-- [x] **P3c · regras do Firestore**: aprovadas; app publicado (v0.6.36). Falta você: Simulador (17 testes) e publicar as regras no Firebase.
+- [x] **P3c · regras do Firestore**: aprovadas; app publicado (v0.6.36); regras publicadas por você (26/11 19:02).
 - [x] **P5 · Vértice dentro do efcwork**: publicada em 26/11 (efcwork 84e1ddc, EFCdocs 12f2466).
 - [ ] **ITEM 185 · ícone do Vértice no menu:** o Elias vai mandar o print do ícone que quer.
-- [ ] Aviso de versão nova · CSP e SDK · limpeza visual · `features.csv` · Cadastros de Coletas (por último).
+- [x] **Aviso de versão nova (v0.6.37):** aprovado (226 = janela no meio; "Depois" leva ao pé do menu) e publicado em 26/11.
+- [ ] CSP e SDK · limpeza visual · `features.csv` · Cadastros de Coletas (por último).
 - [ ] Estudo de rapidez (`ESTUDO-rapidez-EFCwork-v0.6.33.md`): só depois da integração.
 - [x] Janela por cima: virou a tela inteira com abas (v0.6.35); a área ao lado do menu saiu.
 
@@ -43,10 +44,11 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 
 ## D. O Elias confere (Firebase e uso real)
 - [ ] **Depois da P5 no ar:** o menu Vértice Docs abre o endereço novo; um arquivo antigo do Vértice continua lá; no celular, desinstalar o ícone antigo do Vértice (o novo abre pelo Cwork).
-- [ ] **Regras v0.6.36:** depois de publicar o app v0.6.36, abrir como Administrador, rodar os 17 testes do GUIA-SIMULADOR-v0.6.36.md e só então publicar as regras.
+- [ ] **Regras v0.6.36 (publicadas):** se ainda não rodou os 17 testes do GUIA-SIMULADOR-v0.6.36.md, rodar e dizer o resultado.
+- [ ] **Na v0.6.38 (primeira com aviso):** no PC e no celular instalado, a janela aparece sozinha; "Depois" leva ao pé do menu; "Atualizar" volta na mesma tela.
 - [ ] Almoxarifado › Entrada com um Colaborador no EFClaudian (regras da v0.6.33 coladas em 26/11).
 - [ ] Via assinada (foto) numa remessa e abrir a mesma remessa em outro aparelho.
-- [ ] Site publicado mostra v0.6.35; o menu Vértice Docs abre em tela inteira com a conta, sem pedir senha; dois arquivos em duas abas; no celular, o voltar sai do Vértice.
+- [ ] Site publicado mostra v0.6.36; o menu Vértice Docs abre em tela inteira com a conta, sem pedir senha; dois arquivos em duas abas; no celular, o voltar sai do Vértice.
 - [ ] Numa tabela (Almoxarifado), buscar e marcar itens de três buscas; a janela do filtro não treme.
 - [ ] Uma tarefa passada para você (Principal) conclui direto; uma parada em "Para conferir" tem Concluir.
 - [ ] "Esqueci a senha" e primeiro acesso no Firebase real.
@@ -54,3 +56,4 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 ## E. Defeitos abertos
 - [ ] **Voltar do celular com várias abas do Vértice (revisor, v0.6.35):** se o Vértice criar passos no histórico, o voltar anda primeiro o quadro mais recente, que pode estar escondido. Testar no celular de verdade.
 - [ ] `t_v067` "as datas do mês aparecem marcadas": falha também na v0.6.33 em 26/11 (ligado à data). Anterior à v0.6.34.
+- [ ] **Almoxarifado: ajuste e saída com vários lotes gravam um por um (só lido, revisor da v0.6.37):** sem internet, recarregar ou fechar o app no meio deixa parte sem gravar. Corrigir gravando em lote (`Data.lote`).

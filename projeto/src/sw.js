@@ -18,24 +18,33 @@ function completar(c) {
 }
 self.addEventListener('install', ev => {
   /* sem a tela guardada, esta versão não se instala e a anterior continua valendo */
-  ev.waitUntil(caches.open(VERSAO).then(c => c.addAll(ESSENCIAIS).then(() => completar(c))));
+  /* v0.6.37: 'reload' = vem do servidor. Sem isso o navegador podia entregar a tela da versão anterior (o GitHub deixa guardar 10 min) */
+  ev.waitUntil(caches.open(VERSAO).then(c => c.addAll(ESSENCIAIS.map(u => new Request(u, { cache: 'reload' }))).then(() => completar(c))));
 });
 self.addEventListener('activate', ev => {
   ev.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k.indexOf('efcwork-') === 0 && k !== VERSAO).map(k => caches.delete(k)))).then(() => self.clients.claim()));
 });
-self.addEventListener('message', ev => { if (ev.data === 'pular') self.skipWaiting(); });
+self.addEventListener('message', ev => {
+  if (ev.data === 'pular') self.skipWaiting();
+  /* v0.6.37: o app pergunta qual é a versão que está pronta, para avisar com o número certo */
+  else if (ev.data === 'versao' && ev.ports && ev.ports[0]) ev.ports[0].postMessage(VERSAO.replace('efcwork-', ''));
+});
 
 function guardada() { return caches.match('./index.html').then(x => x || caches.match('./')); }
 /* a tela: primeiro a internet (pega a versão nova), mas no máximo 3,5 s; sem internet ou lenta, a guardada */
 function navegar(r) {
-  const rede = fetch(r).then(resp => {
-    if (resp && resp.ok && resp.type === 'basic') { const cp = resp.clone(); caches.open(VERSAO).then(c => c.put('./index.html', cp).then(() => completar(c))); }
+  /* v0.6.37: 'no-cache' = confere com o servidor se a tela mudou (sem mudança, a resposta é curta) */
+  /* v0.6.37: só a tela do app é guardada (abrir outro arquivo pelo endereço não toma o lugar dela) e redirecionamento volta para o navegador */
+  const caminho = new URL(r.url).pathname, raiz = new URL('./', self.location).pathname, doApp = caminho === raiz || caminho === raiz + 'index.html';
+  const rede = fetch(r.url, { cache: 'no-cache', credentials: 'same-origin' }).then(resp => {
+    if (resp && resp.redirected) return Response.redirect(resp.url, 302);
+    if (doApp && resp && resp.ok && resp.type === 'basic') { const cp = resp.clone(); caches.open(VERSAO).then(c => c.put('./index.html', cp).then(() => completar(c))); }
     return resp;
   });
   return new Promise(res => {
     let feito = false; const fim = x => { if (!feito && x) { feito = true; res(x); } };
     const t = setTimeout(() => { guardada().then(fim); }, ESPERA_REDE_MS);
-    rede.then(resp => { clearTimeout(t); if (resp && resp.ok) fim(resp); else guardada().then(x => fim(x || resp)); })
+    rede.then(resp => { clearTimeout(t); if (resp && (resp.ok || resp.status === 302)) fim(resp); else guardada().then(x => fim(x || resp)); })
       .catch(() => { clearTimeout(t); guardada().then(x => fim(x || Response.error())); });
   });
 }

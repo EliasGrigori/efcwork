@@ -258,8 +258,8 @@ document.addEventListener('click', ev => {
   if (a === 'kt-end') { if (!ktPodeCad()) return; const i = ktInfo(S._ktLab) || {}; lcAbrir(Object.assign({ k: 'ktEnd', lab: S._ktLab }, { nome: i.nome || '', end: i.end || '', bairro: i.bairro || '', cidade: i.cidade || '', uf: i.uf || '', cep: i.cep || '', contato: i.contato || '', conteudo: i.conteudo || '' }), volta); }
   else if (a === 'kt-end-ok') ktEndOk();
   else if (a === 'kt-anexar') { if (!ktPodeCad()) return; lcAbrir({ k: 'ktAnexar', lab: S._ktLab, docId: '', papel: 'doc' }, volta); }
-  else if (a === 'kt-anexar-aqui' && f) { if (!ktPodeCad()) return; const fp = f, lab = fp.kRem.split('|').slice(1).join('|'); lcAbrir({ k: 'ktAnexar', lab: lab, docId: '', papel: 'doc' }, () => ktVoltaPap(fp)); }
-  else if (a === 'kt-end-aqui' && f) { if (!ktPodeCad()) return; const fp = f, lab = fp.kRem.split('|').slice(1).join('|'), i = ktInfo(lab) || {}; lcAbrir({ k: 'ktEnd', lab: lab, nome: i.nome || '', end: i.end || '', bairro: i.bairro || '', cidade: i.cidade || '', uf: i.uf || '', cep: i.cep || '', contato: i.contato || '', conteudo: i.conteudo || '' }, () => { fp.sel[KT_ROTULO] = ktTemEnd(ktInfo(lab)); ktVoltaPap(fp); }); }
+  else if (a === 'kt-anexar-aqui' && f) { if (!ktPodeCad()) return; const fp = f, lab = fp.kRem.split('|').slice(1).join('|'); lcAbrir({ k: 'ktAnexar', lab: lab, docId: '', papel: 'doc', paiSujo: !!fp.sujo }, () => ktVoltaPap(fp)); }
+  else if (a === 'kt-end-aqui' && f) { if (!ktPodeCad()) return; const fp = f, lab = fp.kRem.split('|').slice(1).join('|'), i = ktInfo(lab) || {}; lcAbrir({ k: 'ktEnd', lab: lab, nome: i.nome || '', end: i.end || '', bairro: i.bairro || '', cidade: i.cidade || '', uf: i.uf || '', cep: i.cep || '', contato: i.contato || '', conteudo: i.conteudo || '', paiSujo: !!fp.sujo }, () => { fp.sel[KT_ROTULO] = ktTemEnd(ktInfo(lab)); ktVoltaPap(fp); }); }
   else if (a === 'kt-tira') ktTira(t.getAttribute('data-id'));
   else if (a === 'kt-anexar-ok') ktAnexarOk();
   else if (a === 'kt-ck' && f) { const id = t.getAttribute('data-id'); f.sel[id] = !f.sel[id]; f.sujo = true; gvDesenha(true); }

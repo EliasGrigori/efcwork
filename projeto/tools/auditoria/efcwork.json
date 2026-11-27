@@ -59,6 +59,41 @@
    ]
   },
   {
+   "nome": "Aviso de versão nova",
+   "passos": [
+    {
+     "eval": "location.hash='#/coletas/amostras'"
+    },
+    {
+     "eval": "S.vn.nova='0.6.38'; S.vn.fechada=false; vnDesenha()",
+     "espera": 600
+    }
+   ]
+  },
+  {
+   "nome": "Aviso de versão nova fechado",
+   "passos": [
+    {
+     "eval": "location.hash='#/inicio'"
+    },
+    {
+     "eval": "S.vn.fechada=true; vnDesenha(); const a=document.querySelector('.cs-app'); if(a && innerWidth<900) a.classList.add('menu-aberto')",
+     "espera": 600
+    }
+   ]
+  },
+  {
+   "nome": "Depois do aviso",
+   "passos": [
+    {
+     "eval": "S.vn.nova=''; S.vn.fechada=false; vnDesenha(); const a=document.querySelector('.cs-app'); if(a) a.classList.remove('menu-aberto')"
+    },
+    {
+     "eval": "location.hash='#/inicio'"
+    }
+   ]
+  },
+  {
    "nome": "Coletas › Amostras",
    "passos": [
     {
