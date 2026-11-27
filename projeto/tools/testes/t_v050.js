@@ -1,6 +1,6 @@
 /* EFCwork · suíte da v0.5 — área Documentos (Documentos com grupos, Tabela | Calendário, gaveta, Lançar entrega/limpeza, cadastro,
    desativar, mover de grupo, Caixas d’água, Histórico com correção). Dados fictícios (o repositório é público).
-   Uso: node tools/testes/t_v050.js */
+   Uso: node tools/testes/t_v050.js   (EFC_HOJE=2026-10-31 prova como se fosse outro dia) */
 const { chromium } = require('playwright');
 const path = require('path');
 const RAIZ = path.resolve(__dirname, '..', '..'), URL = 'file://' + path.join(RAIZ, 'dist', 'index.html') + '?demo=1';
@@ -8,6 +8,7 @@ let ok = 0, falhas = 0;
 const conf = (c, msg) => { if (c) { ok++; console.log('  ok  ' + msg); } else { falhas++; console.log('  FALHA  ' + msg); } };
 async function abre(b, w, h) {
   const p = await (await b.newContext({ viewport: { width: w, height: h || 860 }, acceptDownloads: true, hasTouch: w < 600, isMobile: w < 600 })).newPage(); const er = []; p._er = er;
+  if (process.env.EFC_HOJE) await p.clock.install({ time: new Date(process.env.EFC_HOJE + 'T10:00:00') });   /* o relógio anda, só começa noutro dia */
   p.on('pageerror', e => er.push(String(e))); p.on('console', m => { if (m.type() === 'error' && !/Failed to load|net::|gstatic|fonts/.test(m.text())) er.push(m.text()); });
   await p.route(/gstatic|fonts\.g/, r => r.abort());
   await p.goto(URL); await p.waitForTimeout(400);
@@ -97,14 +98,18 @@ const fm = async (p, campo, v) => { await p.fill('#gv [data-fm="' + campo + '"]'
   await p.click('[data-act="dc-vista"][data-v="cal"]'); await p.waitForTimeout(250);
   conf(await p.evaluate(() => !!document.querySelector('.dc-dg') && !document.querySelector('[data-tb="dc-docs"]') && document.querySelector('.dc-vs button.on').textContent === 'Calendário'), 'Calendário no lugar da tabela');
   conf(await p.evaluate(() => document.querySelector('.dc-mh b').textContent === MESES[new Date().getMonth()] + ' de ' + new Date().getFullYear() && !!document.querySelector('.dc-d.hj')), 'abre no mês de hoje, com hoje marcado');
+  /* perto do fim do mês o dia procurado é do mês seguinte: pode não estar na grade, e tocar nele muda o mês mostrado */
+  const daqui4 = async () => { const k = await p.evaluate(() => addDias(hojeISO(), 4)), s = '.dc-d[data-d="' + k + '"]'; if (!(await p.$(s))) { await p.click('[data-act="dc-mes"][data-d="1"]'); await p.waitForTimeout(200); } return { k, s }; };
+  const dia = await daqui4();
   conf(await p.evaluate(() => { const k = addDias(hojeISO(), 4); const c = document.querySelector('.dc-d[data-d="' + k + '"]'); return !!c && /FOR 0084/.test(c.textContent); }), 'o dia do vencimento mostra o código');
-  await p.click('.dc-d[data-d="' + await p.evaluate(() => addDias(hojeISO(), 4)) + '"]'); await p.waitForTimeout(200);
+  await p.click(dia.s); await p.waitForTimeout(200);
   conf(await p.evaluate(() => /1 vence neste dia/.test(document.querySelector('.dc-lh').textContent) && /VERIFICAÇÃO DE LIMPEZA PACKING HOUSE/.test(document.querySelector('.dc-lst').textContent)), 'tocar no dia mostra o que vence nele');
   await p.click('[data-act="dc-mes"][data-d="1"]'); await p.waitForTimeout(200);
-  conf(await p.evaluate(() => { const x = new Date(); x.setDate(1); x.setMonth(x.getMonth() + 1); return document.querySelector('.dc-mh b').textContent === MESES[x.getMonth()] + ' de ' + x.getFullYear() && !!document.querySelector('[data-act="dc-mes"][data-d="0"]'); }), 'próximo mês, e aparece "Hoje" para voltar');
+  /* "próximo" é contado a partir do mês na tela, que é o do dia tocado */
+  conf(await p.evaluate(k => { const x = new Date(Number(k.slice(0, 4)), Number(k.slice(5, 7)), 1); return document.querySelector('.dc-mh b').textContent === MESES[x.getMonth()] + ' de ' + x.getFullYear() && !!document.querySelector('[data-act="dc-mes"][data-d="0"]'); }, dia.k), 'próximo mês, e aparece "Hoje" para voltar');
   await p.click('[data-act="dc-mes"][data-d="0"]'); await p.waitForTimeout(200);
   conf(await p.evaluate(() => !!document.querySelector('.dc-d.hj')), 'Hoje volta para o mês atual');
-  await p.click('.dc-d[data-d="' + await p.evaluate(() => addDias(hojeISO(), 4)) + '"]'); await p.waitForTimeout(200);
+  await p.click((await daqui4()).s); await p.waitForTimeout(200);
   await p.click('.dc-lst .dc-li'); await p.waitForTimeout(250);
   conf(await p.evaluate(() => !!document.getElementById('gv')), 'tocar no documento da lista abre a gaveta');
   await p.keyboard.press('Escape'); await p.waitForTimeout(150);

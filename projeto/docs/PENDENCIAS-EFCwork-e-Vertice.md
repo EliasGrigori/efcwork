@@ -2,7 +2,7 @@
 
 Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conversa ou para o fim, para nada ficar para trás. Atualizado a cada mudança e enviado junto. Marque [x] quando estiver feito.
 
-Última atualização: 27/11/2026 · v0.6.39 (limpeza visual) no ar. Próxima: corrigir o teste `t_v050`.
+Última atualização: 27/11/2026 · v0.6.39 no ar; teste `t_v050` corrigido, falta enviar ao GitHub.
 
 ## A. Para a conversa do Vértice (o Elias leva)
 - [ ] **O código do Vértice mora agora em `efcwork/vertice/fonte/`** (depois de publicada a P5): a conversa do Vértice clona o efcwork e publica na pasta `vertice/`. Está na memória do Vértice (registro de 26/11, 16:57).
@@ -60,7 +60,8 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 - [ ] **v0.6.39 no ar:** a janela "Versão nova do app" aparece; o botão dourado fica parado e o brilho passa uma vez quando o mouse chega (PC); letras um pouco maiores sem texto cortado no seu celular; no Escuro, título e linha da aba lisos e fundo sem roxo.
 
 ## E. Defeitos abertos
-- [ ] **Teste do calendário (`t_v050`) falha perto do fim do mês:** o teste toca num dia do mês seguinte; corrigir o teste (achado em 27/11; a tela está certa).
+- [x] **Teste do calendário (`t_v050`):** corrigido em 27/11 (só o teste).
+- [ ] **Enviar ao GitHub o `t_v050` corrigido** (com "pode publicar").
 - [ ] **Regra de segurança (CSP) nos apps irmãos (revisor da v0.6.38):** Vértice, Sabiá e EFClaudian estão no mesmo endereço (eliasgrigori.github.io) e sem regra; um script posto num deles alcança o Cwork e o login guardado no aparelho. Pôr regra igual neles (cada um na sua conversa) e, a longo prazo, um endereço próprio para o Cwork.
 - [ ] **Não voltar o SDK do Firebase para o 10.12.0:** depois da v0.6.38 o banco do aparelho está no formato 18; uma versão com SDK antigo abre sem cache e o que foi gravado sem internet fica parado. Se a regra quebrar algo no site, corrigir com versão nova.
 - [ ] **Voltar do celular com várias abas do Vértice (revisor, v0.6.35):** se o Vértice criar passos no histórico, o voltar anda primeiro o quadro mais recente, que pode estar escondido. Testar no celular de verdade.

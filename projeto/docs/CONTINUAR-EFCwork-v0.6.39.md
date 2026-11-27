@@ -13,7 +13,8 @@ Substitui o CONTINUAR-EFCwork-v0.6.38.md. Quem ler só este arquivo sabe o que f
 > EFCwork, continuando. Anexei o pacote único (EFCwork-PACOTE-NOVA-CONVERSA-v0.6.39.zip): CONTINUAR, dossiê, pendências, o app no ar e o fonte. Leia o CONTINUAR inteiro. Responda em 3 linhas: onde parou e qual é a próxima tarefa. Depois sugira o modelo e o esforço em **negrito** e espere meu "pode iniciar". Siga o "Padrão de trabalho" sem eu repetir. Repositório: EliasGrigori/efcwork (add_repo com envio; se negar, me diga e use o fonte do pacote). O Vértice está na pasta vertice/ do efcwork (o código é da conversa do Vértice; aqui só leitura). Não abra o OneDrive. Nada no EFClaudian. GitHub só com "pode publicar". Fique em primeiro plano. Toda entrega: o pacote único atualizado.
 
 ## 2. Próxima tarefa
-Corrigir o teste `t_v050` (toca num dia do mês seguinte e falha perto do fim do mês; a tela está certa). Depois: `features.csv`; Cadastros de Coletas por último.
+`features.csv`; Cadastros de Coletas por último.
+**Pendente de envio:** `tools/testes/t_v050.js` corrigido em 27/11 e os registros estão só no pacote (`fonte/`), não no GitHub. Ao clonar, copiar `fonte/tools/testes/t_v050.js` e `fonte/docs` por cima; enviar só com "pode publicar".
 
 ## 2b. O que a v0.6.38 faz (CSP e SDK)
 - `tools/montar.py`: `SDK = '13.4.0'` (um lugar só: index.html, sw.js e regra) e a regra CSP no alto do index.html, com o sha256 do único `<script>` inline. **Qualquer mudança no index.html depois da montagem quebra o app** (o script fica barrado): teste que cria versão de mentira tem de recalcular o hash (ver `rehash` em `t_v0637.js`).
@@ -52,7 +53,7 @@ Corrigir o teste `t_v050` (toca num dia do mês seguinte e falha perto do fim do
 **Proibições:** não abrir nem tentar o OneDrive sem ele pedir pelo nome; nada no EFClaudian; não falar dos prints antigos do repositório público; dado real, senha e chave nunca entram no projeto; regras do Firestore são compartilhadas com o EFClaudian (alto risco).
 
 ## 6. Depois (cada uma só com "pode iniciar")
-1. Teste `t_v050`.
+1. ~~Teste `t_v050`~~ (feito).
 2. `features.csv`; Cadastros de Coletas (por último).
 3. Ligação com o Vértice (P4, documentos na nuvem): depende da conversa do Vértice. Lista em PENDENCIAS.
 
@@ -69,6 +70,7 @@ Corrigir o teste `t_v050` (toca num dia do mês seguinte e falha perto do fim do
 Nada a configurar na v0.6.39.
 
 ## 10. Armadilhas
+- `projeto/dist` rastreado no git está velho (0.6.34): **montar antes de testar**, inclusive depois de um `git checkout -- dist`.
 - `t_v067` falha por datas (antigo, ABERTO). `t_v0636v` precisa do clone antigo do EFCdocs (variável do teste). `t_v034` e `t_v0635f` podem falhar em paralelo e passam sozinhos.
 - O registro do sw só acontece em https; em teste local, registrar à mão (ver `t_v0637.js`).
 - Texto de botão cortado no celular: rótulo curto. Linha larga na tabela: esconder colunas por padrão.
