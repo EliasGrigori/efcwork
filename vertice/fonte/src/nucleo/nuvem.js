@@ -36,13 +36,18 @@ async function idCopiaLivre(local, id, agora) {
  * aoMarcar(id, nuvem): avisa o banco da versão nova da nuvem (banco.lembrarNuvem), para o próximo salvar não apagar.
  */
 export async function enviarPendentes({ local, remoto, fila, quem = 'neste aparelho', agora = new Date().toISOString(), aoMarcar = () => {} }) {
-  const out = { enviados: [], conflitos: [], parou: null };
+  const out = { enviados: [], conflitos: [], falhas: [], parou: null };
   for (const id of fila.lista()) {
     const rec = await local.um(id);
     if (!rec) { fila.tirar(id); continue; }
     const esperada = (rec.ficha.nuvem && rec.ficha.nuvem.versao) || 0;
     let r;
-    try { r = await remoto.gravar({ ficha: semNuvem(rec.ficha), pacote: rec.pacote }, esperada); } catch (e) { out.parou = String((e && e.message) || e || 'sem internet'); break; }
+    try { r = await remoto.gravar({ ficha: semNuvem(rec.ficha), pacote: rec.pacote }, esperada); } catch (e) {
+      const msg = String((e && e.message) || e || 'sem internet');
+      /* v0.6.77: sem internet ou nuvem calada, para tudo (tenta depois); outro motivo (permissão, tamanho) é só deste arquivo: segue com os outros */
+      if (ehDeRede(msg)) { out.parou = msg; break; }
+      out.falhas.push({ id, erro: msg }); continue;
+    }
     if (r && r.ok) {
       const agoraRec = (await local.um(id)) || rec; /* relê: pode ter sido salvo no meio */
       const nuvem = { versao: r.versao, em: agora };
@@ -73,6 +78,17 @@ export async function enviarPendentes({ local, remoto, fila, quem = 'neste apare
     out.parou = 'resposta estranha da nuvem'; break;
   }
   return out;
+}
+
+/** v0.6.77: o erro é de rede (tentar de novo depois) ou do arquivo (não adianta repetir igual)? */
+export const ehDeRede = (msg) => /internet|n[ãa]o respondeu|unavailable|offline|network|failed to fetch|deadline|timeout/i.test(String(msg || ''));
+/** v0.6.77: o motivo em palavras de gente, para a coluna Nuvem. */
+export function motivoDaNuvem(msg) {
+  const m = String(msg || '');
+  if (/permission|insufficient|negad/i.test(m)) return 'sem permissão na nuvem';
+  if (/n[ãa]o respondeu|deadline|timeout/i.test(m)) return 'a nuvem não respondeu';
+  if (/internet|offline|network|failed to fetch|unavailable/i.test(m)) return 'sem internet';
+  return m.slice(0, 90) || 'erro desconhecido';
 }
 
 /** O que vai para a nuvem não leva a marca de versão da nuvem (quem manda nela é a nuvem). */

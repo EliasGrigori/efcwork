@@ -36,8 +36,11 @@ function vtUsuario() {
 const VT_PARTE = 900000, VT_PARTES_MAX = 200;
 const vtNegado = e => /permission|insufficient/i.test(String((e && (e.code || e.message)) || ''));
 const vtnPastaOk = p => IP_PASTAS.indexOf(p) >= 0;
-/* uma leitura só de uma consulta (a primeira resposta), com erro devolvido */
-const vtUmaVez = o => new Promise((ok, falha) => { let off = null, feito = false; off = Data.col('vtd_arquivos').watch(l => { if (feito) return; feito = true; ok(l); setTimeout(() => off && off(), 0); }, Object.assign({ onError: e => { if (!feito) { feito = true; falha(e); } } }, o || {})); });
+/* v0.6.42: tudo o que a porta pede à nuvem tem prazo: sem resposta em 1 minuto, falha (antes ficava esperando para sempre e o Vértice mostrava "Subindo" sem fim) */
+const VT_PRAZO = 60000;
+const vtPrazo = (p, ms) => new Promise((ok, falha) => { const r = setTimeout(() => falha(Object.assign(new Error('a nuvem não respondeu'), { code: 'sem-resposta' })), ms || VT_PRAZO); Promise.resolve(p).then(v => { clearTimeout(r); ok(v); }, e => { clearTimeout(r); falha(e); }); });
+/* a lista vem do servidor (v0.6.42: antes vinha a primeira resposta, que podia ser a da memória do aparelho, com versões velhas) */
+const vtUmaVez = o => vtPrazo(Data.col('vtd_arquivos').frescos(o || {}));
 const vtnResumo = d => ({ id: d.id, pasta: d.pasta, versao: Number(d.versao) || 0, em: d.em || '', porNome: d.porNome || '', nome: (d.ficha && d.ficha.nome) || '', tipo: (d.ficha && d.ficha.tipo) || '', status: (d.ficha && d.ficha.status) || '' });
 /* lista o que a pessoa pode ler: Principal e Líder ★ leem tudo; os outros, pasta por pasta (a pasta negada fica de fora) */
 async function vtNuvemListar() {
@@ -47,13 +50,13 @@ async function vtNuvemListar() {
   for (const p of vtPastasDe(S.user).filter(x => x.ler)) { try { (await vtUmaVez({ igual: ['pasta', p.nome] })).forEach(d => out.push(vtnResumo(d))); } catch (e) { if (!vtNegado(e)) throw e; } }
   return out;
 }
-async function vtFicha(id, doServidor) { try { return await (doServidor && !DEMO && navigator.onLine !== false ? Data.col('vtd_arquivos').fresco(id) : Data.col('vtd_arquivos').get(id)); } catch (e) { if (vtNegado(e)) return null; throw e; } }
+async function vtFicha(id, doServidor) { try { return await vtPrazo(doServidor && !DEMO && navigator.onLine !== false ? Data.col('vtd_arquivos').fresco(id) : Data.col('vtd_arquivos').get(id)); } catch (e) { if (vtNegado(e)) return null; throw e; } }
 /* lê um arquivo inteiro: { ficha, pacote, versao, pasta } ou null */
 async function vtNuvemLer(id) {
   if (!vtUsuario()) return null; id = String(id || ''); if (!id) return null;
   const d = await vtFicha(id, true); if (!d) return null;
   const n = Number(d.partes) || 0, vp = Number(d.versaoPartes) || 0; let s = '';
-  for (let i = 0; i < n; i++) { const p = await Data.col('vtd_partes').get(id + '_' + vp + '_' + d.partesDe + '_' + i); if (!p || typeof p.b64 !== 'string') throw new Error('Pedaço ' + (i + 1) + ' de ' + n + ' não chegou.'); s += p.b64; }
+  for (let i = 0; i < n; i++) { const p = await vtPrazo(Data.col('vtd_partes').get(id + '_' + vp + '_' + d.partesDe + '_' + i)); if (!p || typeof p.b64 !== 'string') throw new Error('Pedaço ' + (i + 1) + ' de ' + n + ' não chegou.'); s += p.b64; }
   return { ficha: d.ficha, pacote: s ? JSON.parse(s) : null, versao: Number(d.versao) || 0, pasta: d.pasta };
 }
 /* grava a versão seguinte. esperada = a versão da nuvem que o Vértice conhece. { ok, versao } | { conflito: true } */
@@ -72,10 +75,10 @@ async function vtNuvemGravar(dados, esperada) {
   const em = nowISO(), limpa = JSON.parse(JSON.stringify(ficha)); delete limpa.nuvem;
   for (let n = 0; n < partes.length; n++) {
     const pid = id + '_' + v + '_' + u.uid + '_' + n;
-    try { await Data.col('vtd_partes').set(pid, { arq: id, versao: v, n: n, b64: partes[n], porId: u.uid, em: em }); }
-    catch (e) { if (!vtNegado(e)) throw e; const ja = await Data.col('vtd_partes').get(pid).catch(() => null); if (!ja) throw e; } /* pedaço já gravado numa tentativa anterior: segue */
+    try { await vtPrazo(Data.col('vtd_partes').set(pid, { arq: id, versao: v, n: n, b64: partes[n], porId: u.uid, em: em })); }
+    catch (e) { if (!vtNegado(e)) throw e; const ja = await vtPrazo(Data.col('vtd_partes').get(pid)).catch(() => null); if (!ja) throw e; } /* pedaço já gravado numa tentativa anterior: segue */
   }
-  try { await Data.col('vtd_arquivos').set(id, { v: 1, id: id, ficha: limpa, versao: v, versaoPartes: v, pasta: pasta, partes: partes.length, partesDe: u.uid, bytes: s.length, porId: u.uid, porNome: u.nome, em: em }); }
+  try { await vtPrazo(Data.col('vtd_arquivos').set(id, { v: 1, id: id, ficha: limpa, versao: v, versaoPartes: v, pasta: pasta, partes: partes.length, partesDe: u.uid, bytes: s.length, porId: u.uid, porNome: u.nome, em: em })); }
   catch (e) { if (vtNegado(e)) { const de = await vtFicha(id, true); if (de && (Number(de.versao) || 0) !== cur) return { conflito: true }; } throw e; }
   try { Audit.log({ acao: 'vertice_nuvem', entidade: 'vtd_arquivo', entidadeId: id, resumo: 'Vértice: ' + (limpa.nome || id) + ' na nuvem (versão ' + v + ', ' + pasta + ')' }); } catch {}
   return { ok: true, versao: v };

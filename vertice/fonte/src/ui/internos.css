@@ -70,3 +70,10 @@
 .app.cel .pc-linha .iconbtn { width: 44px; height: 44px; }
 .app.cel .pc-linha .btn.sm, .app.cel .pc-linha { min-height: 44px; }
 .resumo-envio .re-cab { position: sticky; top: 0; z-index: 1; background: var(--surface); }
+/* v0.6.77: coluna Nuvem com o motivo de não ter subido e "Tentar de novo" */
+.int-nuvem { display: inline-flex; flex-direction: column; align-items: flex-start; gap: 2px; min-width: 0; max-width: 100%; }
+.int-nuvem .efl-pilula { max-width: 100%; white-space: normal; }
+.int-tentar { all: unset; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--gold-ink, var(--primary)); padding: 2px 0; }
+.int-tentar:hover { text-decoration: underline; }
+.int-tentar:focus-visible { box-shadow: var(--anel); border-radius: var(--r-chip); }
+.app.cel .int-tentar { min-height: 44px; display: inline-flex; align-items: center; }

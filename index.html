@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-Kl6vw3c48rN//rNAWHSBISXmJ0aQFHp64GxdmFE+RwQ=' https://www.gstatic.com/firebasejs/13.4.0/ https://www.google.com/recaptcha/enterprise.js https://www.gstatic.com/recaptcha/releases/; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' data: blob: https://*.googleapis.com https://www.google.com/recaptcha/; frame-src 'self' https://eliasgrigori.github.io blob: https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/ https://docseliasflorencio.firebaseapp.com; worker-src 'self' blob:; manifest-src 'self'; media-src 'self' data: blob:; object-src 'self' blob:; base-uri 'none'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-+1yo56R7MYAaEtIATcb5DSpaaTr0y1MuMYAxwPDvTM4=' https://www.gstatic.com/firebasejs/13.4.0/ https://www.google.com/recaptcha/enterprise.js https://www.gstatic.com/recaptcha/releases/; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' data: blob: https://*.googleapis.com https://www.google.com/recaptcha/; frame-src 'self' https://eliasgrigori.github.io blob: https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/ https://docseliasflorencio.firebaseapp.com; worker-src 'self' blob:; manifest-src 'self'; media-src 'self' data: blob:; object-src 'self' blob:; base-uri 'none'; form-action 'self'">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>EFCwork</title>
 <meta name="description" content="EFCwork · Cwork Quality · controle de qualidade agrícola da família EFClaudian.">
@@ -2838,7 +2838,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = Mov;
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.6.41';
+const VERSAO = '0.6.42';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -3076,6 +3076,7 @@ const Data = (function () {
         push(id, campo, item, extra) { const a = dLoad(name); const it = a.find(x => x.id === id); if (!it) return Promise.reject(new Error('nf')); it[campo] = (Array.isArray(it[campo]) ? it[campo] : []).concat([clean({ v: item }).v]); Object.keys(extra || {}).forEach(k => setPath(it, k, clean({ v: extra[k] }).v)); dSave(name, a); dNotify(name); return Promise.resolve(); },
         get(id) { return Promise.resolve(dLoad(name).find(x => x.id === id) || null); },
         fresco(id) { return Promise.resolve(dLoad(name).find(x => x.id === id) || null); }, /* v2.89.1 */
+        frescos(o) { return Promise.resolve(dView(name, o || {})); }, /* v0.6.42 */
         seq(id, min) { const a = dLoad(name); let it = a.find(x => x.id === id); if (!it) { it = { id: id, ultimo: 0 }; a.push(it); } it.ultimo = Math.max(Number(it.ultimo) || 0, Number(min) || 0) + 1; dSave(name, a); return Promise.resolve(it.ultimo); },
         all() { return Promise.resolve(dLoad(name)); }
       };
@@ -3100,6 +3101,7 @@ const Data = (function () {
       push(id, campo, item, extra) { const p = Object.assign({}, extra || {}); p[campo] = firebase.firestore.FieldValue.arrayUnion(clean({ v: item }).v); return fdb.collection(name).doc(id).update(p); },
       get(id) { return fbGet(fdb.collection(name).doc(id)); },
       fresco(id) { return fdb.collection(name).doc(id).get({ source: 'server' }).then(fbDoc); }, /* v2.89.1: direto do servidor */
+      frescos(o) { return fbQuery(name, o || {}).get({ source: 'server' }).then(q => q.docs.map(d => Object.assign({ id: d.id }, d.data()))); }, /* v0.6.42: a lista direto do servidor (não a da memória do aparelho) */
       /* v0.6.20: contador (o próximo número), numa transação: dois envios ao mesmo tempo não pegam o mesmo número */
       seq(id, min) { const ref = fdb.collection(name).doc(id); return fdb.runTransaction(t => t.get(ref).then(d => { const n = Math.max(Number(d.exists && d.data().ultimo) || 0, Number(min) || 0) + 1; t.set(ref, { ultimo: n, ts: nowISO(), porId: (S.user && S.user.id) || '' }); return n; })); },
       all() { return fdb.collection(name).get().then(q => q.docs.map(d => Object.assign({ id: d.id }, d.data()))); }
@@ -9467,8 +9469,11 @@ function vtUsuario() {
 const VT_PARTE = 900000, VT_PARTES_MAX = 200;
 const vtNegado = e => /permission|insufficient/i.test(String((e && (e.code || e.message)) || ''));
 const vtnPastaOk = p => IP_PASTAS.indexOf(p) >= 0;
-/* uma leitura só de uma consulta (a primeira resposta), com erro devolvido */
-const vtUmaVez = o => new Promise((ok, falha) => { let off = null, feito = false; off = Data.col('vtd_arquivos').watch(l => { if (feito) return; feito = true; ok(l); setTimeout(() => off && off(), 0); }, Object.assign({ onError: e => { if (!feito) { feito = true; falha(e); } } }, o || {})); });
+/* v0.6.42: tudo o que a porta pede à nuvem tem prazo: sem resposta em 1 minuto, falha (antes ficava esperando para sempre e o Vértice mostrava "Subindo" sem fim) */
+const VT_PRAZO = 60000;
+const vtPrazo = (p, ms) => new Promise((ok, falha) => { const r = setTimeout(() => falha(Object.assign(new Error('a nuvem não respondeu'), { code: 'sem-resposta' })), ms || VT_PRAZO); Promise.resolve(p).then(v => { clearTimeout(r); ok(v); }, e => { clearTimeout(r); falha(e); }); });
+/* a lista vem do servidor (v0.6.42: antes vinha a primeira resposta, que podia ser a da memória do aparelho, com versões velhas) */
+const vtUmaVez = o => vtPrazo(Data.col('vtd_arquivos').frescos(o || {}));
 const vtnResumo = d => ({ id: d.id, pasta: d.pasta, versao: Number(d.versao) || 0, em: d.em || '', porNome: d.porNome || '', nome: (d.ficha && d.ficha.nome) || '', tipo: (d.ficha && d.ficha.tipo) || '', status: (d.ficha && d.ficha.status) || '' });
 /* lista o que a pessoa pode ler: Principal e Líder ★ leem tudo; os outros, pasta por pasta (a pasta negada fica de fora) */
 async function vtNuvemListar() {
@@ -9478,13 +9483,13 @@ async function vtNuvemListar() {
   for (const p of vtPastasDe(S.user).filter(x => x.ler)) { try { (await vtUmaVez({ igual: ['pasta', p.nome] })).forEach(d => out.push(vtnResumo(d))); } catch (e) { if (!vtNegado(e)) throw e; } }
   return out;
 }
-async function vtFicha(id, doServidor) { try { return await (doServidor && !DEMO && navigator.onLine !== false ? Data.col('vtd_arquivos').fresco(id) : Data.col('vtd_arquivos').get(id)); } catch (e) { if (vtNegado(e)) return null; throw e; } }
+async function vtFicha(id, doServidor) { try { return await vtPrazo(doServidor && !DEMO && navigator.onLine !== false ? Data.col('vtd_arquivos').fresco(id) : Data.col('vtd_arquivos').get(id)); } catch (e) { if (vtNegado(e)) return null; throw e; } }
 /* lê um arquivo inteiro: { ficha, pacote, versao, pasta } ou null */
 async function vtNuvemLer(id) {
   if (!vtUsuario()) return null; id = String(id || ''); if (!id) return null;
   const d = await vtFicha(id, true); if (!d) return null;
   const n = Number(d.partes) || 0, vp = Number(d.versaoPartes) || 0; let s = '';
-  for (let i = 0; i < n; i++) { const p = await Data.col('vtd_partes').get(id + '_' + vp + '_' + d.partesDe + '_' + i); if (!p || typeof p.b64 !== 'string') throw new Error('Pedaço ' + (i + 1) + ' de ' + n + ' não chegou.'); s += p.b64; }
+  for (let i = 0; i < n; i++) { const p = await vtPrazo(Data.col('vtd_partes').get(id + '_' + vp + '_' + d.partesDe + '_' + i)); if (!p || typeof p.b64 !== 'string') throw new Error('Pedaço ' + (i + 1) + ' de ' + n + ' não chegou.'); s += p.b64; }
   return { ficha: d.ficha, pacote: s ? JSON.parse(s) : null, versao: Number(d.versao) || 0, pasta: d.pasta };
 }
 /* grava a versão seguinte. esperada = a versão da nuvem que o Vértice conhece. { ok, versao } | { conflito: true } */
@@ -9503,10 +9508,10 @@ async function vtNuvemGravar(dados, esperada) {
   const em = nowISO(), limpa = JSON.parse(JSON.stringify(ficha)); delete limpa.nuvem;
   for (let n = 0; n < partes.length; n++) {
     const pid = id + '_' + v + '_' + u.uid + '_' + n;
-    try { await Data.col('vtd_partes').set(pid, { arq: id, versao: v, n: n, b64: partes[n], porId: u.uid, em: em }); }
-    catch (e) { if (!vtNegado(e)) throw e; const ja = await Data.col('vtd_partes').get(pid).catch(() => null); if (!ja) throw e; } /* pedaço já gravado numa tentativa anterior: segue */
+    try { await vtPrazo(Data.col('vtd_partes').set(pid, { arq: id, versao: v, n: n, b64: partes[n], porId: u.uid, em: em })); }
+    catch (e) { if (!vtNegado(e)) throw e; const ja = await vtPrazo(Data.col('vtd_partes').get(pid)).catch(() => null); if (!ja) throw e; } /* pedaço já gravado numa tentativa anterior: segue */
   }
-  try { await Data.col('vtd_arquivos').set(id, { v: 1, id: id, ficha: limpa, versao: v, versaoPartes: v, pasta: pasta, partes: partes.length, partesDe: u.uid, bytes: s.length, porId: u.uid, porNome: u.nome, em: em }); }
+  try { await vtPrazo(Data.col('vtd_arquivos').set(id, { v: 1, id: id, ficha: limpa, versao: v, versaoPartes: v, pasta: pasta, partes: partes.length, partesDe: u.uid, bytes: s.length, porId: u.uid, porNome: u.nome, em: em })); }
   catch (e) { if (vtNegado(e)) { const de = await vtFicha(id, true); if (de && (Number(de.versao) || 0) !== cur) return { conflito: true }; } throw e; }
   try { Audit.log({ acao: 'vertice_nuvem', entidade: 'vtd_arquivo', entidadeId: id, resumo: 'Vértice: ' + (limpa.nome || id) + ' na nuvem (versão ' + v + ', ' + pasta + ')' }); } catch {}
   return { ok: true, versao: v };

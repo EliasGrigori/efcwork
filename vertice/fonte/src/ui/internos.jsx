@@ -25,9 +25,21 @@ function situacaoInterno(estado, x) {
 /** Página "Documentos internos": uma aba por tipo de papel; cada linha diz se já foi para o Cwork. */
 /* v0.6.75 (P4): onde o documento está. nuvem = { ligada, pode } (ligada: dentro do Cwork, com a porta da nuvem; pode: salva) */
 export function situacaoNuvem(nuvem, x) {
+  const e = nuvem && nuvem.erro ? nuvem.erro(x.id) : null; /* v0.6.77: o que não subiu diz por quê */
+  if (e) return (x.nuvem && x.nuvem.versao ? `Versão ${x.nuvem.versao} na nuvem; a nova não subiu: ` : 'Não subiu: ') + e.texto;
   if (x.nuvem && x.nuvem.versao) return 'Na nuvem · versão ' + x.nuvem.versao;
   if (nuvem && nuvem.ligada && nuvem.pode) return 'Subindo para a nuvem';
   return 'Só neste aparelho';
+}
+/* v0.6.77: a célula da coluna Nuvem; com erro, o motivo e "Tentar de novo" */
+function CelNuvem({ nuvem, x }) {
+  const e = nuvem && nuvem.erro ? nuvem.erro(x.id) : null, t = situacaoNuvem(nuvem, x);
+  return (
+    <span className="int-nuvem">
+      <Situacao tom={e ? 'warn' : x.nuvem && x.nuvem.versao ? 'ok' : ''} data-int-nuvem={x.id} title={e ? t + ' (' + new Date(e.em).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) + ')' : undefined}>{t}</Situacao>
+      {e && nuvem.pode && <button type="button" className="int-tentar" data-int-tentar={x.id} onClick={() => nuvem.tentar(x.id)}>Tentar de novo</button>}
+    </span>
+  );
 }
 const colunasInternos = (estado, nuvem) => [
   { id: 'codigo', rot: 'Código', cls: 'c-codigo', v: (x) => x.codigo || '' }, COL_NOME, COL_TIPO, COL_QUANDO,
@@ -72,7 +84,9 @@ export function DocsInternos({ fichas, estado, cx, acrescentar, editar, lendo, n
         vazio={todos.length ? (internos.length ? `Nada em ${sub}.` : 'Nenhum documento com esse filtro.') : 'Ponha aqui as etiquetas, fichas, formulários, fluxogramas e POPs que vão para o Cwork: "Pôr um arquivo aqui" ou, com o arquivo aberto, Arquivo › Documento interno.'}
         detalhe={(x) => {
           const e = situacaoInterno(estado, x);
-          return dadosDoArquivo(x, cx, { situacoes: [e, { tom: x.nuvem && x.nuvem.versao ? 'ok' : '', texto: situacaoNuvem(nuvem, x) }], acoes: [
+          const erroN = nuvem && nuvem.erro ? nuvem.erro(x.id) : null;
+          return dadosDoArquivo(x, cx, { situacoes: [e, { tom: erroN ? 'warn' : x.nuvem && x.nuvem.versao ? 'ok' : '', texto: situacaoNuvem(nuvem, x) }], acoes: [
+            ...(erroN && nuvem.pode ? [{ id: 'tentar', rotulo: 'Tentar subir de novo', ic: 'refazer', fazer: () => nuvem.tentar(x.id) }] : []),
             { id: 'abrir', rotulo: 'Abrir', ic: x.tipo, tipo: 'ouro', fazer: () => cx.abrir(x.id) },
             { id: 'subaba', rotulo: 'Sub-aba e código', ic: 'renomear', fazer: () => editar(x) },
           ] });
@@ -91,7 +105,7 @@ export function DocsInternos({ fichas, estado, cx, acrescentar, editar, lendo, n
               <td className="c-tipo">{TIPOS[x.tipo].nome}</td>
               <td className="c-quando">{dataHora(x.alteradoEm)}</td>
               <td className="c-situacao"><Situacao tom={e.tom} data-int-estado={x.id}>{e.texto}</Situacao></td>
-              <td className="c-nuvem"><Situacao tom={x.nuvem && x.nuvem.versao ? 'ok' : ''} data-int-nuvem={x.id}>{situacaoNuvem(nuvem, x)}</Situacao></td>
+              <td className="c-nuvem"><CelNuvem nuvem={nuvem} x={x} /></td>
               <td className="c-acoes"><span className="acoes">
                 <BotaoDetalhes nome={x.nome} extra={extra} />
                 <button type="button" className="iconbtn" aria-label={'Sub-aba e código: ' + x.nome} title="Sub-aba e código" onClick={() => editar(x)}><Icone n="renomear" /></button>

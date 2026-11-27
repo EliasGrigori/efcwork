@@ -1,8 +1,9 @@
-# EFCwork · CONTINUAR (27/11/2026 11:05) · NO AR: Cwork v0.6.41 + Vértice v0.6.75 (etapa 1) + Vértice v0.6.76 (etapa 2) · AGORA: etapa 3
+# EFCwork · CONTINUAR (27/11/2026 11:05) · NO AR: Cwork v0.6.42 + Vértice v0.6.77 (etapas 1 e 2 + correção da nuvem) · AGORA: etapa 3
 
 Substitui o CONTINUAR-EFCwork-v0.6.40.md. Quem ler só este arquivo sabe o que fazer.
 
 ## 0. Estado
+- **Correção da nuvem PUBLICADA em 27/11 12:5x (Cwork v0.6.42 + Vértice v0.6.77, ITENS 270 e 271):** a coluna Nuvem diz por que não subiu e tem "Tentar de novo"; um arquivo com problema não segura a fila; prazo de 1 minuto na porta; lista direto do servidor. **Falta o Elias:** abrir Documentos internos no aparelho que tinha o FLUX 0002 preso e mandar o motivo que aparecer. Último ITEM usado: 271.
 - **Etapa 1 PUBLICADA em 27/11 09:32** (efcwork `1e6a059`): Cwork v0.6.41 (porta `nuvem` em `src/vertice.js`) + Vértice v0.6.75 (sincronia com a nuvem). ITENS 255 a 258 aprovados. Build e deploy do GitHub com sucesso; a versão servida pelo site não foi conferida daqui.
 - **Etapa 2 APROVADA (ITENS 259 a 269, todos) e PUBLICADA em 27/11:** Vértice v0.6.76, modo documento. Feita no Sonnet 5.5 · alto e revisada inteira no Opus 5.5 · alto. Página: `docs/aprovacao-vertice-v0.6.76-modo-documento.html` (artefato https://claude.ai/artifact/Xx6fNcY6MxZdWZA2PtBU6p). O Cwork não mudou (só testes). Último ITEM usado: 269.
 - **Autorização (27/11 07:22):** esta conversa mexe no código do Vértice (`efcwork/vertice/fonte`) para as 3 etapas: (1) nuvem, (2) modo documento, (3) Cwork apontando para o Vértice.
@@ -15,7 +16,7 @@ Substitui o CONTINUAR-EFCwork-v0.6.40.md. Quem ler só este arquivo sabe o que f
 > EFCwork, continuando. Anexei o pacote único (EFCwork-PACOTE-NOVA-CONVERSA-v0.6.41.zip): CONTINUAR, dossiê, pendências, o app no ar e o fonte. Leia o CONTINUAR inteiro. Responda em 3 linhas: onde parou e qual é a próxima tarefa. Depois sugira o modelo e o esforço em **negrito** e espere meu "pode iniciar". Siga o "Padrão de trabalho" sem eu repetir. Repositório: EliasGrigori/efcwork (add_repo com envio; se negar, me diga e use o fonte do pacote). Esta conversa pode mexer no Vértice (vertice/fonte) para as 3 etapas. Não abra o OneDrive. Nada no EFClaudian. GitHub só com "pode publicar". Fique em primeiro plano. Toda entrega: o pacote único atualizado.
 
 ## 2. Próxima tarefa
-**Etapa 3 (Opus 5.5 · alto, autorizada 27/11 11:3x):** Cwork apontando para o Vértice. Começar por uma proposta com página de aprovação para o pedido do Elias: **etiquetas das amostras automáticas como no EFClaudian** ("senão eu perderia muito tempo editando cada campo"), com vários tipos de etiqueta, feitas no Vértice. Depois: Impressos e kit abrem o documento do Vértice; `efd_docs` muda uma vez para as 5 pastas. Observações da etapa 2: o pedido imprime todas as abas; o que chega do Cwork fica em "Recebidos do Cwork" e não sobe.
+**Etapa 3 (Opus 5.5 · alto, autorizada 27/11 11:3x):** Cwork apontando para o Vértice. Protótipo do motor (`etapa3-etiquetas-prototipo/` no pacote: `etiquetas.js` para `vertice/fonte/src/ponte/` e `area.patch` para `paginaDesenho.js`; modelo de teste autorizado: copiar o desenho da etiqueta do EFClaudian, marcado "(exemplo)"). Começar por uma proposta com página de aprovação para o pedido do Elias: **etiquetas das amostras automáticas como no EFClaudian** ("senão eu perderia muito tempo editando cada campo"), com vários tipos de etiqueta, feitas no Vértice. Depois: Impressos e kit abrem o documento do Vértice; `efd_docs` muda uma vez para as 5 pastas. Observações da etapa 2: o pedido imprime todas as abas; o que chega do Cwork fica em "Recebidos do Cwork" e não sobe.
 - **ORDEM (27/11 11:28): não inventar documento nenhum (ficha, modelo, formulário) sem a autorização dele antes.** Planilha de teste só perguntando antes, e marcada "(exemplo)".
 
 ## 2a. O que a etapa 2 faz (Vértice v0.6.76)

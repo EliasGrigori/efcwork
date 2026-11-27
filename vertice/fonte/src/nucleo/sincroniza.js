@@ -6,7 +6,7 @@
    O Vértice não carrega o Firebase: lê e grava pela porta do Cwork, recurso 'nuvem' ({ listar, ler, gravar }).
    Envio e conflito: enviarPendentes do nuvem.js (versão esperada; alguém gravou no meio → cópia em conflito).
    Parte sem tela (testada no node com a nuvem falsa). */
-import { criarFila, enviarPendentes } from './nuvem.js';
+import { criarFila, enviarPendentes, motivoDaNuvem } from './nuvem.js';
 
 export const PASTAS_NUVEM = ['Etiquetas', 'Fichas e custódias', 'Formulários', 'Fluxogramas', 'POPs e procedimentos']; /* = SUBABAS (ponte.js) e IP_PASTAS do Cwork */
 
@@ -70,6 +70,8 @@ export function criarSincronia({ banco, remoto, fila, podeSalvar, quem = 'neste 
   const aoMarcar = (id, nuvem) => banco.lembrarNuvem(id, nuvem);
   let rodando = null, de_novo = false, relogio = null, vivo = true;
   const enviando = new Set();
+  const erros = new Map(); /* v0.6.77: id → { texto, em } do último envio que não deu certo (antes, ninguém ficava sabendo) */
+  let erroReceber = null;
   async function enviar() {
     if (!podeSalvar || !vivo) return null;
     if (rodando) { de_novo = true; return rodando; }
@@ -77,14 +79,20 @@ export function criarSincronia({ banco, remoto, fila, podeSalvar, quem = 'neste 
       fila.lista().forEach((id) => enviando.add(id));
       const r = await enviarPendentes({ local, remoto, fila, quem, aoMarcar });
       enviando.clear();
-      if (r.enviados.length || r.conflitos.length) aoMudar(r);
+      const em = new Date().toISOString();
+      r.enviados.forEach((id) => erros.delete(id)); r.conflitos.forEach((x) => erros.delete(x.id));
+      r.falhas.forEach((x) => erros.set(x.id, { texto: motivoDaNuvem(x.erro), em }));
+      if (r.parou) fila.lista().forEach((id) => { if (!erros.has(id) || erros.get(id).rede) erros.set(id, { texto: motivoDaNuvem(r.parou), em, rede: true }); });
+      if (r.enviados.length || r.conflitos.length || r.falhas.length || r.parou) aoMudar(r);
       return r;
     })().finally(() => { rodando = null; if (de_novo && vivo) { de_novo = false; enviar(); } });
     return rodando;
   }
   async function trazer() {
     const r = await puxar({ local, remoto, fila, podeSalvar, aoMarcar });
-    if (r.baixados.length) aoMudar(r);
+    const antes = erroReceber;
+    erroReceber = r.parou ? { texto: motivoDaNuvem(r.parou), em: new Date().toISOString() } : null;
+    if (r.baixados.length || !!antes !== !!erroReceber) aoMudar(r);
     return r;
   }
   /* primeira vez de quem salva: o que já estava nas 5 pastas e nunca subiu entra na fila */
@@ -102,6 +110,12 @@ export function criarSincronia({ banco, remoto, fila, podeSalvar, quem = 'neste 
     puxar: trazer,
     enviar,
     parar() { vivo = false; clearTimeout(relogio); parar(); },
+    /** v0.6.77: o último erro de envio deste arquivo ({ texto, em }) ou null; e o de receber (vale para todos). */
+    erro: (id) => erros.get(id) || null,
+    erroReceber: () => erroReceber,
+    /** v0.6.77: "Tentar de novo" da coluna Nuvem. */
+    tentar(id) { erros.delete(id); if (podeSalvar) fila.por(id); return enviar(); },
+    pendentes: () => fila.lista().length,
     /** 'enviando' · 'na-fila' · 'nuvem' · 'aparelho' (para a tela mostrar) */
     situacao(ficha) {
       if (!ficha || !vaiParaNuvem(ficha)) return 'aparelho';

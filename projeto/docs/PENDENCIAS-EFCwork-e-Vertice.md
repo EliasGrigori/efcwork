@@ -79,6 +79,7 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 - [ ] **v0.6.40 no ar:** Coletas › Cadastros abre as 6 listas; cadastrar um laboratório com endereço e ver o rótulo em Envio › Laboratórios; editar uma fazenda; desativar e reativar um talhão de teste. Dizer se alguém ainda cadastra pelo EFClaudian.
 
 ## E. Defeitos abertos
+- [x] **Quadro preso em "Subindo para a nuvem" (27/11 12:00):** correção Cwork v0.6.42 + Vértice v0.6.77 aprovada (ITENS 270 e 271) e publicada. Falta: o Elias abre Documentos internos no aparelho do print escuro e manda o motivo que aparecer.
 - [x] **Abrir de novo pelo Cwork podia trocar o modelo do Vértice pelo arquivo antigo do Cwork** (vinha da v0.6.16; achado na revisão da etapa 2): corrigido na v0.6.76 (em aprovação).
 - [ ] **`t_v0633` oscila** às vezes no passo "o pedido ficou anotado neste aparelho" (passa ao repetir).
 - [x] **Teste do calendário (`t_v050`):** corrigido em 27/11 (só o teste).
