@@ -126,6 +126,38 @@
    ]
   },
   {
+   "nome": "Coletas › Cadastros (talhões)",
+   "passos": [
+    {
+     "eval": "S.ccVista='talhoes';location.hash='#/coletas/cadastros'"
+    }
+   ]
+  },
+  {
+   "nome": "Coletas › Cadastros (análises)",
+   "passos": [
+    {
+     "eval": "S.ccVista='analises';render()"
+    }
+   ]
+  },
+  {
+   "nome": "Coletas › Cadastros › Novo tipo de coleta",
+   "passos": [
+    {
+     "eval": "S.ccVista='tipos';render();ccNovo()"
+    }
+   ]
+  },
+  {
+   "nome": "Depois dos cadastros (fecha)",
+   "passos": [
+    {
+     "eval": "if(S.fm)lcFimSo();S.ccVista='talhoes';location.hash='#/inicio'"
+    }
+   ]
+  },
+  {
    "nome": "Sino aberto",
    "passos": [
     {

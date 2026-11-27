@@ -51,8 +51,9 @@ async function semente(p) {
   await p.evaluate(() => ktAbreLab('Laboratório A')); await esp(p, 500);
   conf(/Falta o endereço/.test(await p.textContent('#gv')) && /Rótulo destinatário e remetente/.test(await p.textContent('#gv')), 'gaveta do laboratório: aviso do endereço e o rótulo no kit');
   await p.click('#gv [data-act="kt-end"]'); await esp(p, 300);
-  await p.fill('[data-fm="nome"]', 'Laboratório A Análises Ltda'); await p.fill('[data-fm="end"]', 'Rua das Acácias, 100'); await p.fill('[data-fm="bairro"]', 'Centro'); await p.fill('[data-fm="cidade"]', 'Cidade Exemplo'); await p.fill('[data-fm="uf"]', 'ux'); await p.fill('[data-fm="cep"]', '12345678');
-  await p.click('[data-act="kt-end-ok"]'); await esp(p, 600);
+  /* v0.6.40: o lápis do Envio abre o cadastro do laboratório (cadcol.js); a razão social é o "nome" do rótulo */
+  await p.fill('[data-fm="razao"]', 'Laboratório A Análises Ltda'); await p.fill('[data-fm="end"]', 'Rua das Acácias, 100'); await p.fill('[data-fm="bairro"]', 'Centro'); await p.fill('[data-fm="cidade"]', 'Cidade Exemplo'); await p.fill('[data-fm="uf"]', 'ux'); await p.fill('[data-fm="cep"]', '12345678');
+  await p.click('[data-act="cc-ok"]'); await esp(p, 600);
   const info = await p.evaluate(() => Data.col('sv2_cfg').get('coletas').then(c => c.labInfo['Laboratório A']));
   conf(info && info.nome === 'Laboratório A Análises Ltda' && info.uf === 'UX' && info.cep === '12345-678' && info.rotulo === undefined, 'endereço salvo no cadastro (sv2_cfg/coletas.labInfo), UF maiúscula e CEP com traço');
   conf(await p.evaluate(() => Data.col('sv2_cfg').get('coletas').then(c => c.labs.length === 2)), 'a lista de laboratórios do EFClaudian continua igual');

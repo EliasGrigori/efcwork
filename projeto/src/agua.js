@@ -290,7 +290,7 @@ LC_FORM.agNova = f => {
     '<p class="gv-h">2 · Onde</p>' + onde +
     '<p class="gv-h">3 · Coleta</p><div class="fm-g">' + agBl('Data', lcData('data', f.data)) + agBl('Hora', lcIn('hora', f.hora, ' type="time"')) + '</div>' +
     (f.tipo === 'projeto' && pjAnIds(pjDe(f.pid)).length > 1 ? agBl('Análises', '<div class="fm-pk"><div class="fm-pkl co-pkl">' + pjAnIds(pjDe(f.pid)).map(id => ans.find(a => a.id === id)).filter(Boolean).map(a => agCk('pan', a.id, !!f.pan[a.id], a.nome, a.lab ? 'laboratório ' + a.lab : '')).join('') + '</div></div>') + '<div class="fm-g">' + agBl('Laboratório', ddHTML('ag:lab', f.lab || '', [['', 'O de cada análise']].concat(coLabs().map(x => [x, x])))) + '</div>' :
-    '<div class="fm-g">' + agBl('Análise', ddHTML('ag:an', f.an || '', ans.length ? ans.map(a => [a.id, a.nome]) : [['', 'Cadastre uma análise de Água no EFClaudian']])) + agBl('Laboratório', ddHTML('ag:lab', f.lab || '', [['', 'O da análise']].concat(coLabs().map(x => [x, x])))) + '</div>') +
+    '<div class="fm-g">' + agBl('Análise', ddHTML('ag:an', f.an || '', ans.length ? ans.map(a => [a.id, a.nome]) : [['', 'Cadastre uma análise de Água em Coletas › Cadastros']])) + agBl('Laboratório', ddHTML('ag:lab', f.lab || '', [['', 'O da análise']].concat(coLabs().map(x => [x, x])))) + '</div>') +
     '<div class="fm-g">' + agBl('Amostras por ponto', lcIn('qtd', f.qtd, ' inputmode="numeric"')) + agBl('Coletor', lcIn('coletor', f.coletor)) + '</div>' +
     (f.oc ? lcAv('Conta como a coleta ' + (f.tipo === 'projeto' ? 'do projeto' : 'do rodízio') + ' de ' + esc(fmtD(f.oc).slice(0, 5)) + '.') : ''),
     rodape: lcPe('ag-nova-ok', 'Lançar') };
@@ -302,7 +302,7 @@ async function agNovaOk() {
   const pj = f.tipo === 'projeto' ? pjDe(f.pid) : null, multi = pj && pjAnIds(pj).length > 1;
   const ansSel = multi ? pjAnIds(pj).filter(id => f.pan[id]).map(id => (S.analises || []).find(a => a.id === id)).filter(Boolean) : [(S.analises || []).find(a => a.id === f.an)].filter(Boolean);
   if (multi && !ansSel.length) return lcErro('Marque pelo menos uma análise.');
-  const an = ansSel[0]; if (!an) return lcErro('Escolha a análise (cadastre uma de Água no EFClaudian).');
+  const an = ansSel[0]; if (!an) return lcErro('Escolha a análise (cadastre uma de Água em Coletas › Cadastros).');
   const qtd = parseInt(f.qtd, 10); if (!(qtd >= 1 && qtd <= 100)) return lcErro('Quantidade inválida.');
   const tipo = f.tipo, rodada = tipo === 'rodizio' || tipo === 'mesclada' || tipo === 'projeto' ? 'R' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5) : '';
   const base = { data: f.data, hora: f.hora, semana: pgSemana(f.data), analiseId: an.id, analiseNome: an.nome, qtd: qtd, coletor: String(f.coletor || '').trim(), lab: f.lab || an.lab || '', envio: '', os: '', numSolicitacao: '', resultado: 'PENDENTE', obs: '', situacao: 'ativa', canceladaMotivo: '', valor: Number(an.valor) || 0, precoRev: Number(an.rev) || 0, nf: '', compra: 'pendente', pedidoSankhya: '', dataSolicitacao: '', solicitadoPor: '', solicitadoPorNome: '', tipoColeta: tipo, agente: [], gravidade: '', laudoEm: '', criadoEm: nowISO(), criadoPor: S.user.id, criadoPorNome: S.user.nome };

@@ -114,7 +114,7 @@ async function ppLancOk() {
   const d = { data: f.data, coletor: pgLivreVal(f, 'col'), prof: pgLivreVal(f, 'prof'), estadio: pgLivreVal(f, 'est'), obs: String(f.obs || '').trim() };
   const er = pgValidaData(d.data); if (er) return lcErro(er);
   if (d.data < x.p.ini) return lcErro('A data é antes do começo do período do plano (' + fmtD(x.p.ini) + ').');
-  const semAn = ps.filter(p => !pgCdAnalises(p).ids.length); if (semAn.length) return lcErro('Sem análise cadastrada para ' + x.r.tipo + '. Cadastre a análise no EFClaudian (Coletas › Cadastros). Nada foi gravado.');
+  const semAn = ps.filter(p => !pgCdAnalises(p).ids.length); if (semAn.length) return lcErro('Sem análise cadastrada para ' + x.r.tipo + '. Cadastre a análise em Coletas › Cadastros. Nada foi gravado.');
   if (pgPedeProf(x.r.tipo) && !d.prof && ps.some(p => !p.prof)) return lcErro('Informe a profundidade (solo e raiz).');
   { const bl = []; ps.forEach(p => pgGera(p.tipo).forEach(g => { const m = rzBarrar(g, p.talhao, d.data); if (m && bl.indexOf(m) < 0) bl.push(m); })); if (bl.length) return lcErro(bl.slice(0, 3).join(' ')); }
   if (!lcTravar()) return;

@@ -120,7 +120,7 @@ async function novoAp(p, o) {
   conf(salvo === 'BR 01,BR 06', 'se o líder salva o projeto sem o BR 20, ele sai (a escolha do líder vale): ' + salvo);
 
   console.log('Observações:');
-  conf(await p.evaluate(() => !/lançar coleta nova/.test(csArea('coletas').parcial) && /fichas, etiquetas/.test(csArea('coletas').parcial)), 'Áreas › Coletas não diz mais que "lançar coleta nova" fica no EFClaudian');
+  conf(await p.evaluate(() => !/lançar coleta nova/.test(csArea('coletas').parcial) && /fichas e etiquetas/.test(csArea('coletas').parcial)), 'Áreas › Coletas não diz mais que "lançar coleta nova" fica no EFClaudian (v0.6.40: os cadastros saíram da frase)');
   const kv = await p.evaluate(() => { const c = { analiseNome: 'Potabilidade', lab: '' }; return [c.analiseNome, c.lab].filter(Boolean).join(' · ') || '—'; });
   conf(kv === 'Potabilidade', 'PDF da ação: análise sem laboratório não mostra "· —" (' + kv + ')');
   const src = await p.evaluate(() => acPdf.toString());

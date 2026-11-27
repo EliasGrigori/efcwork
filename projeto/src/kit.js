@@ -47,7 +47,7 @@ function ktLinhas() {
 }
 const KT_ST = { ok: ['Kit pronto', 'ok'], rot: ['Só o rótulo', ''], end: ['Falta o endereço', 'wa'] };
 function ktTabLabs() {
-  return tbHTML({ id: 'kt-labs', titulo: 'Laboratórios', unidade: 'laboratórios', linhas: ktLinhas(), aoClicar: n => ktAbreLab(n), busca: r => [r.nome, r.cid].join(' '), vazio: 'Nenhum laboratório cadastrado (os laboratórios vêm do cadastro das Coletas no EFClaudian).',
+  return tbHTML({ id: 'kt-labs', titulo: 'Laboratórios', unidade: 'laboratórios', linhas: ktLinhas(), aoClicar: n => ktAbreLab(n), busca: r => [r.nome, r.cid].join(' '), vazio: 'Nenhum laboratório cadastrado (cadastre em Coletas › Cadastros › Laboratórios).',
     cols: [{ k: 'nome', rot: 'Laboratório', v: r => r.nome, cls: 'forte' }, { k: 'cid', rot: 'Cidade', v: r => r.cid }, { k: 'kit', rot: 'Papéis do kit', tipo: 'num', v: r => r.kit },
       { k: 'ult', rot: 'Último envio', tipo: 'data', v: r => r.ult }, { k: 'st', rot: 'Situação', v: r => KT_ST[r.st][0], html: r => alPill(KT_ST[r.st][0], KT_ST[r.st][1]) }] });
 }
@@ -255,6 +255,7 @@ function ktAvisaVersao(d, rev) {
 document.addEventListener('click', ev => {
   const t = ev.target.closest && ev.target.closest('[data-act^="kt-"]'); if (!t) return;
   const a = t.getAttribute('data-act'), f = S.fm, vol = S.gv && !S.gvForm ? S.gv : null, volta = vol ? () => gvAbrir(vol) : null;
+  if (a === 'kt-end' && typeof ccEditar === 'function') { ccEditar('labs|' + S._ktLab, true); return; } /* v0.6.40: o endereço é editado num lugar só, o cadastro do laboratório (cadcol.js) */
   if (a === 'kt-end') { if (!ktPodeCad()) return; const i = ktInfo(S._ktLab) || {}; lcAbrir(Object.assign({ k: 'ktEnd', lab: S._ktLab }, { nome: i.nome || '', end: i.end || '', bairro: i.bairro || '', cidade: i.cidade || '', uf: i.uf || '', cep: i.cep || '', contato: i.contato || '', conteudo: i.conteudo || '' }), volta); }
   else if (a === 'kt-end-ok') ktEndOk();
   else if (a === 'kt-anexar') { if (!ktPodeCad()) return; lcAbrir({ k: 'ktAnexar', lab: S._ktLab, docId: '', papel: 'doc' }, volta); }

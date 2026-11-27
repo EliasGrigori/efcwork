@@ -2,7 +2,7 @@
 
 Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conversa ou para o fim, para nada ficar para trás. Atualizado a cada mudança e enviado junto. Marque [x] quando estiver feito.
 
-Última atualização: 27/11/2026 · v0.6.39 no ar; `features.csv` atualizado, falta enviar ao GitHub.
+Última atualização: 27/11/2026 · v0.6.39 no ar; v0.6.40 (Cadastros) 2ª rodada em aprovação, ITENS 249 a 254.
 
 ## A. Para a conversa do Vértice (o Elias leva)
 - [ ] **O código do Vértice mora agora em `efcwork/vertice/fonte/`** (depois de publicada a P5): a conversa do Vértice clona o efcwork e publica na pasta `vertice/`. Está na memória do Vértice (registro de 26/11, 16:57).
@@ -33,7 +33,7 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 - [x] **CSP e SDK (v0.6.38):** regra de segurança ligada e SDK 13.4.0.
 - [x] **Limpeza visual (v0.6.39):** publicada em 27/11 (efcwork 756527b).
 - [x] `features.csv` atualizado (27/11).
-- [ ] Cadastros de Coletas (por último).
+- [ ] **Cadastros de Coletas (v0.6.40):** 2ª rodada pronta e testada; responder a página (ITENS 249 a 254): https://claude.ai/artifact/Pp7q5Mg6UxJhVzndDt5n2K
 - [ ] Da matriz, funções "must" que faltam: Conversas; Etiquetas de campo e revisão; Relatórios › Coletas em aberto; Só ver por área.
 - [ ] Matriz: conferir as 169 linhas "Janela …" e 4 outras "should" marcadas como não.
 - [ ] Estudo de rapidez (`ESTUDO-rapidez-EFCwork-v0.6.33.md`): só depois da integração.
@@ -67,7 +67,7 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 ## E. Defeitos abertos
 - [x] **Teste do calendário (`t_v050`):** corrigido em 27/11 (só o teste).
 - [x] `t_v050` corrigido enviado ao GitHub (8b8af0b).
-- [ ] **Enviar ao GitHub o `features.csv` e os registros** (com "pode publicar").
+- [x] `features.csv` e registros enviados (4e4d11f).
 - [ ] **Regra de segurança (CSP) nos apps irmãos (revisor da v0.6.38):** Vértice, Sabiá e EFClaudian estão no mesmo endereço (eliasgrigori.github.io) e sem regra; um script posto num deles alcança o Cwork e o login guardado no aparelho. Pôr regra igual neles (cada um na sua conversa) e, a longo prazo, um endereço próprio para o Cwork.
 - [ ] **Não voltar o SDK do Firebase para o 10.12.0:** depois da v0.6.38 o banco do aparelho está no formato 18; uma versão com SDK antigo abre sem cache e o que foi gravado sem internet fica parado. Se a regra quebrar algo no site, corrigir com versão nova.
 - [ ] **Voltar do celular com várias abas do Vértice (revisor, v0.6.35):** se o Vértice criar passos no histórico, o voltar anda primeiro o quadro mais recente, que pode estar escondido. Testar no celular de verdade.

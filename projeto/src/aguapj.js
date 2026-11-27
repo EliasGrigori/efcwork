@@ -213,13 +213,13 @@ function pjAviso() {
 CS_CARGAS.push(() => { if (!coVe()) return; setTimeout(() => { try { if (S.agCarregado) pjAviso(); } catch (e) { console.error(e); } }, 3000); });
 
 /* ======================= Coletas › Cadastros › Pontos de água ======================= */
-function paTela(t) {
+function paTela(t, vista) { /* v0.6.40: a lista retrátil dos cadastros (cadcol.js) vem em vista */
   const pode = isSup(S.user), l = (S.aguapontos || []).slice().sort((a, b) => (a.ativo === false) - (b.ativo === false) || agCmp(a.nome, b.nome));
   const nb = (S.bebs || []).filter(b => b.situacao === 'ativo').length, nc = (S.caixas || []).filter(c => !c.desativado).length;
-  const h = cabecalho({ titulo: t.nome, abaNome: t.nome, meta: ['<span>' + l.filter(p => p.ativo !== false).length + ' pontos de água ativos</span>'], acoes: (pode ? '<button type="button" class="bt pr" data-act="pa-ed" data-id="">' + ic('mais') + 'Novo ponto de água</button>' : '') });
+  const h = cabecalho({ titulo: t.nome, abaNome: t.nome, meta: ['<span>' + l.filter(p => p.ativo !== false).length + ' pontos de água ativos</span>'], acoes: (vista || '') + (pode ? '<button type="button" class="bt pr" data-act="pa-ed" data-id="">' + ic('mais') + 'Novo ponto de água</button>' : '') });
   return h + '<section class="pn"><div class="pn-h"><b>Pontos de água</b><small>Bebedouros (' + nb + ') vêm de Inspeções › Cloro e caixas d’água (' + nc + ') de Documentos. Aqui ficam os outros pontos: tratamento, açudes, bacias, poços, canais.</small></div>' +
     (l.length ? l.map(p => '<button type="button" class="anp-li pa-li" data-act="' + (pode ? 'pa-ed' : 'pa-nada') + '" data-id="' + esc(p.id) + '"><span class="tx"><b>' + esc(p.nome) + '</b><small>' + esc([PJ_TIPO1[p.tipo] || 'Outro', p.local].filter(Boolean).join(' · ')) + '</small></span>' + (p.ativo === false ? alPill('Inativo') : '') + '</button>').join('') : '<div class="vazio">' + ic('lista') + '<b>Nenhum outro ponto cadastrado.</b><span>Cadastre canais, poços, açudes e o tratamento para usar nos projetos e na coleta avulsa.</span></div>') +
-    '</section><p class="ag-dc">Talhões, análises, laboratórios e prazos continuam no EFClaudian por enquanto.</p>';
+    '</section>';
 }
 LC_FORM.paEd = f => { const p = f.id ? (S.aguapontos || []).find(x => x.id === f.id) : null;
   return { ico: 'frasco', sub: 'Entra nos projetos e na coleta avulsa', titulo: p ? 'Ponto de água' : 'Novo ponto de água', cabAcoes: '', corpo: lcMsg() +

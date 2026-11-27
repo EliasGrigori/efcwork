@@ -146,7 +146,7 @@ const fechaTudo = async p => { for (let i = 0; i < 4; i++) { if (await p.$('[dat
   await fechaTudo(p);
 
   console.log('Cadastros › Pontos de água:');
-  await p.evaluate(() => { location.hash = '#/coletas/cadastros'; }); await esp(p, 500);
+  await p.evaluate(() => { S.ccVista = 'pontos'; location.hash = '#/coletas/cadastros'; }); await esp(p, 500); /* v0.6.40: os pontos ficam na lista retrátil dos Cadastros (cadcol.js) */
   conf(/Pontos de água/.test(await p.textContent('main, .cs-main, body')) && /Canal 01/.test(await p.textContent('body')), 'a aba Cadastros lista os pontos de água');
   await p.screenshot({ path: path.join(TELAS, 'v067-pc-pontos.png') });
   await p.click('[data-act="pa-ed"][data-id=""]'); await esp(p, 400);
@@ -156,8 +156,8 @@ const fechaTudo = async p => { for (let i = 0; i < 4; i++) { if (await p.$('[dat
   await p.click('#gv [data-act="pa-ok"]'); await esp(p, 700);
   const ac = await p.evaluate(async () => (await Data.col('sv2_aguaponto').all()).find(x => x.nome === 'Açude 01'));
   conf(ac && ac.tipo === 'reservatorio' && ac.ativo === true && ac.local === 'Fazenda Jardim', 'cadastrou o açude');
-  await p.click('.pa-li[data-id="' + ac.id + '"]'); await esp(p, 400); await p.click('#gv [data-act="pa-ativo"]'); await esp(p, 700);
-  conf((await p.evaluate(async id => (await Data.col('sv2_aguaponto').get(id)).ativo, ac.id)) === false && /Inativo/.test(await p.textContent('.pa-li[data-id="' + ac.id + '"]')), 'desativou o ponto (aparece Inativo)');
+  await p.click('[data-tb="cc-pontos"] tbody tr:has-text("Açude 01")'); await esp(p, 400); await p.click('#gv [data-act="pa-ativo"]'); await esp(p, 700);
+  conf((await p.evaluate(async id => (await Data.col('sv2_aguaponto').get(id)).ativo, ac.id)) === false && /Desativado/.test(await p.textContent('[data-tb="cc-pontos"] tbody tr:has-text("Açude 01")')), 'desativou o ponto (aparece Desativado)');
   conf(await p.evaluate(() => pjPontos().some(x => x.nome.indexOf('Canal 01') === 0) && !pjPontos().some(x => x.nome.indexOf('Açude 01') === 0)), 'ponto inativo sai das listas de projeto e da avulsa');
   conf(p._er.length === 0, 'sem erros no console (PC)' + (p._er.length ? ': ' + p._er.slice(0, 2).join(' | ') : ''));
   await p.context().close();

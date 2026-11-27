@@ -1,0 +1,7 @@
+/* EFCwork · cadcol.css — Coletas › Cadastros (v0.6.40) */
+.cc-fm3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.cc-rj{display:flex;font-size:14px;flex-direction:column;gap:2px;max-height:280px;overflow:auto;margin:8px 0;border:1px solid var(--bd);border-radius:var(--rs);padding:4px 10px}
+.cc-rj>div{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:34px;border-bottom:1px solid var(--bd)}
+.cc-rj>div:last-child{border-bottom:0}
+.cc-rj small{color:var(--tx2);margin-left:6px}
+.cc-rj b{white-space:nowrap;font-variant-numeric:tabular-nums}

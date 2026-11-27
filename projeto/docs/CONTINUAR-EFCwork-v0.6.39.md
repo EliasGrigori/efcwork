@@ -1,4 +1,4 @@
-# EFCwork · CONTINUAR (27/11/2026) · NO AR: v0.6.39 (limpeza visual)
+# EFCwork · CONTINUAR (27/11/2026) · NO AR: v0.6.39 · EM APROVAÇÃO: v0.6.40 (Cadastros de Coletas)
 
 Substitui o CONTINUAR-EFCwork-v0.6.38.md. Quem ler só este arquivo sabe o que fazer.
 
@@ -15,8 +15,7 @@ Substitui o CONTINUAR-EFCwork-v0.6.38.md. Quem ler só este arquivo sabe o que f
 > EFCwork, continuando. Anexei o pacote único (EFCwork-PACOTE-NOVA-CONVERSA-v0.6.39.zip): CONTINUAR, dossiê, pendências, o app no ar e o fonte. Leia o CONTINUAR inteiro. Responda em 3 linhas: onde parou e qual é a próxima tarefa. Depois sugira o modelo e o esforço em **negrito** e espere meu "pode iniciar". Siga o "Padrão de trabalho" sem eu repetir. Repositório: EliasGrigori/efcwork (add_repo com envio; se negar, me diga e use o fonte do pacote). O Vértice está na pasta vertice/ do efcwork (o código é da conversa do Vértice; aqui só leitura). Não abra o OneDrive. Nada no EFClaudian. GitHub só com "pode publicar". Fique em primeiro plano. Toda entrega: o pacote único atualizado.
 
 ## 2. Próxima tarefa
-Cadastros de Coletas (talhões, análises, laboratórios, tipos e fazendas: criar, editar, desativar). Desenhar pelo Cwork (decisão de 27/11); grava dados reais e muda a tela: levantar primeiro, depois página de aprovação.
-**Pendente de envio:** `docs/features.csv`, `docs/FALTA-DO-EFCLAUDIAN.md` e os registros de 27/11 estão só no pacote (`fonte/docs`), não no GitHub. Ao clonar, copiar `fonte/docs` por cima; enviar só com "pode publicar".
+**v0.6.40 · Cadastros de Coletas, 2ª rodada: esperando as respostas** (ITENS 249 a 254; artefato https://claude.ai/artifact/Pp7q5Mg6UxJhVzndDt5n2K; arquivo `docs/aprovacao-efcwork-v0.6.40b-cadastros-2a-rodada.html`). Já aprovados: 239, 243, 244, 246, 247, 248. Tudo feito e testado no protótipo (fonte do pacote; NÃO no GitHub, NÃO publicado): ao clonar, copiar `fonte/` do pacote por cima. Com as respostas: aplicar só o aprovado, `VERSAO` 0.6.40, bateria, medidor e esperar "pode publicar". Regra nova: rodar a skill auditoria-visual-efc (e a `alinha` do `t_v0640`) antes de toda página. Último ITEM usado: 254.
 
 ## 2b. O que a v0.6.38 faz (CSP e SDK)
 - `tools/montar.py`: `SDK = '13.4.0'` (um lugar só: index.html, sw.js e regra) e a regra CSP no alto do index.html, com o sha256 do único `<script>` inline. **Qualquer mudança no index.html depois da montagem quebra o app** (o script fica barrado): teste que cria versão de mentira tem de recalcular o hash (ver `rehash` em `t_v0637.js`).

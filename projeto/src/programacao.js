@@ -209,7 +209,7 @@ function pgTela() {
   const l = pgLinhas().sort((a, b) => String(b.data || '').localeCompare(String(a.data || '')) || cmpTxt(a.talhao, b.talhao) || cmpTxt(a.tipo, b.tipo));
   const st = tbEstado('pg'); if (!st._pgIni) { st._pgIni = 1; if (Store.get('cw-pg-v045') !== '2') { st.ocultas = ['local']; try { Store.set('cw-pg-v045', '2'); Store.set('cw-tbcol-pg', JSON.stringify(st.ocultas)); } catch {} } }
   const semCad = !pgTalhoes().length || !pgAnalises().length;
-  return pgPlanosHTML() + (semCad ? '<section class="pn pg-aviso">' + lcAv('Os talhões e as análises ainda não foram cadastrados (Coletas › Cadastros no EFClaudian). Sem eles não dá para lançar coleta aqui.', 'wa') + '</section>' : '') +
+  return pgPlanosHTML() + (semCad ? '<section class="pn pg-aviso">' + lcAv('Os talhões e as análises ainda não foram cadastrados (Coletas › Cadastros). Sem eles não dá para lançar coleta aqui.', 'wa') + '</section>' : '') +
     tbHTML({ id: 'pg', titulo: 'Programação', unidade: 'linhas', linhas: l, aoClicar: pgAbre, selecionado: S._pgSel, buscaDica: 'Buscar área, tipo ou quem coleta',
       busca: r => [r.talhao, r.local, r.tipo, r.coletor, r.estadio, r.orig].join(' '), vazio: 'Nada programado com dia definido.',
       filtros: [
@@ -344,7 +344,7 @@ async function pgCdOk() {
   const d = { data: f.data, coletor: pgLivreVal(f, 'col'), prof: pgLivreVal(f, 'prof'), estadio: pgLivreVal(f, 'est'), obs: String(f.obs || '').trim() };
   const er = pgValidaData(d.data); if (er) return lcErro(er);
   if (!ps.some(p => pgCdNovas(p).ids.length) && ps.some(p => pgCdNovas(p).existem.length)) return lcErro('As amostras dessas áreas já foram lançadas. Nada novo para gravar.');
-  const semAn = ps.filter(p => !pgCdAnalises(p).ids.length); if (semAn.length) return lcErro('Sem análise cadastrada para: ' + semAn.map(p => p.tipo + ' ' + p.talhao).join(', ') + '. Cadastre a análise no EFClaudian (Coletas › Cadastros) e lance de novo. Nada foi gravado.');
+  const semAn = ps.filter(p => !pgCdAnalises(p).ids.length); if (semAn.length) return lcErro('Sem análise cadastrada para: ' + semAn.map(p => p.tipo + ' ' + p.talhao).join(', ') + '. Cadastre a análise em Coletas › Cadastros e lance de novo. Nada foi gravado.');
   if (ps.some(p => pgPedeProf(p.tipo) && !p.prof) && !d.prof) return lcErro('Informe a profundidade (solo e raiz).');
   { const bl = []; ps.forEach(p => pgGera(p.tipo).forEach(g => { const m = rzBarrar(g, p.talhao, d.data); if (m && bl.indexOf(m) < 0) bl.push(m); })); if (bl.length) return lcErro(bl.slice(0, 3).join(' ')); }
   if (!lcTravar()) return;

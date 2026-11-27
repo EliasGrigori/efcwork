@@ -87,7 +87,7 @@ TELAS.coletas = function (aba) {
   const pl = (n, um, mais) => n + ' ' + (n === 1 ? um : mais);
   const meta = [r.naoenv ? metaPl(pl(r.naoenv, 'não enviada', 'não enviadas'), 'wa') : '', r.aguarda ? '<span>' + r.aguarda + ' aguardando laudo</span>' : '', r.atras ? metaPl(pl(r.atras, 'laudo atrasado', 'laudos atrasados'), 'cr', 'alerta') : ''].filter(Boolean);
   const acoes = (t.id === 'envio' ? ddHTML('kt:vista', S.coEnvVista === 'lab' ? 'lab' : 'rem', [['rem', 'Remessas'], ['lab', 'Laboratórios']]) : '') + (coPode() && r.naoenv ? '<button type="button" class="bt pr" data-act="co-env">' + ic('sai') + 'Enviar</button>' : '') + ext;
-  if (t.id === 'cadastros') return paTela(t); /* v0.6.7 (aguapj.js): Pontos de água; o resto dos cadastros segue no EFClaudian */
+  if (t.id === 'cadastros') return ccTela(t); /* v0.6.40 (cadcol.js): todos os cadastros; Pontos de água continua em aguapj.js */
   if (t.id === 'agua') return agTela(t); /* v0.6.5 (agua.js) */
   if (t.id === 'plano') { /* v0.4.6 (plano.js) */
     if (!S.colCarregado && !DEMO) return cabecalho({ caminho: ['Coletas', 'Programação', 'Plano'], titulo: 'Plano de coleta' }) + '<section class="pn"><div class="vazio">' + ic('relogio') + '<b>Carregando o plano…</b></div></section>';
