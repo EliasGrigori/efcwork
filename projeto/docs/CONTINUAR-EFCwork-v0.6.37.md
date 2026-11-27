@@ -3,7 +3,7 @@
 Substitui o CONTINUAR-EFCwork-v0.6.36.md. Quem ler só este arquivo sabe o que fazer.
 
 ## 0. Estado
-- **No ar:** Cwork v0.6.37 no efcwork (commit no dossiê e no `git log`) e Vértice v0.6.74 em `efcwork/vertice/`; EFCdocs só leva ao endereço novo. Regras do Firestore v0.6.36 publicadas pelo Elias.
+- **No ar:** Cwork v0.6.37 no efcwork (commit 6bdb386; o site já responde com o sw `efcwork-0.6.37`) e Vértice v0.6.74 em `efcwork/vertice/`; EFCdocs só leva ao endereço novo. Regras do Firestore v0.6.36 publicadas pelo Elias.
 - **v0.6.37:** ITENS 226 a 232 aprovados em 26/11 20:58 (226 = janela no meio; com "Depois", fica no pé do menu). Publicada com "publica aí" (21:03).
 - Último ITEM usado: 232.
 - **Primeira publicação com aviso:** a v0.6.38. Conferir nela, no PC e no celular instalado, que a janela aparece, que "Depois" leva ao pé do menu e que "Atualizar" volta na mesma tela.
