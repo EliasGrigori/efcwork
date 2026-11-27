@@ -11,6 +11,7 @@ import { EFD } from './ponte.js';
 import { camposDoLivro, dicionario, capacidades } from './campos.js';
 import { paginasDoPedido } from './pedido.js';
 import { lerEstado, pegar, apagar, responder } from './caixa.js';
+import { avisarCwork } from '../nucleo/emCwork.js';
 
 const nomeDe = (ch) => EFD.nomeExcel(ch.replace('[].', '.'));
 
@@ -88,6 +89,7 @@ export function TelaPedido({ pid, local, banco, avisar, aoSair }) {
       setFase('feito');
     } catch (e) { avisar('Não deu para ' + (como === 'pdf' ? 'gerar o PDF: ' : 'imprimir: ') + (e.message || e), { ic: 'aviso', longo: true }); }
   };
+  useEffect(() => { if (t.nome) avisarCwork({ tipo: 'arquivo', nome: t.nome, tipoArquivo: 'planilha' }); }, [t.nome]); /* v0.6.76: a aba do Cwork mostra o nome */
   const n = (q, um, varios) => `${q} ${q === 1 ? um : varios}`;
   return (
     <div className="pagina pedido" data-pedido={fase}>
@@ -99,7 +101,7 @@ export function TelaPedido({ pid, local, banco, avisar, aoSair }) {
         <div className="pd-acoes">
           {fase === 'pronto' && <button type="button" className="btn sm" data-pedido-pdf onClick={() => concluir('pdf')}><Icone n="pdf" />Baixar PDF</button>}
           {fase === 'pronto' && <button type="button" className="btn sm primary" data-pedido-imprimir onClick={() => concluir('imprimir')}><Icone n="imprimir" />Imprimir</button>}
-          <button type="button" className="btn sm" data-pedido-sair onClick={aoSair}>{fase === 'pronto' ? 'Agora não' : 'Voltar'}</button>
+          <button type="button" className="btn sm" data-pedido-sair onClick={() => aoSair(t.item && t.item.docId)}>{fase === 'pronto' ? 'Agora não' : 'Voltar'}</button>
         </div>
       </div>
       {fase === 'erro' && <div className="pd-aviso crit" data-pedido-erro><b>Não deu para imprimir.</b> {t.detalhe}{t.erro && !local ? ' O Cwork foi avisado.' : ''}</div>}

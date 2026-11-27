@@ -100,7 +100,7 @@ export function areaUsada(c, motor, idA) {
 }
 
 /** As páginas da impressão. alvo: 'todas' (abas visíveis), 'aba' ou 'sel' (a faixa dada). Devolve { paginas, esc, aviso }. */
-export function gerarImpressao(c, motor, { imp, alvo, abaId, faixa, nomeArquivo }) {
+export function gerarImpressao(c, motor, { imp, alvo, abaId, faixa, nomeArquivo, editavel }) {
   const ids = alvo === 'todas' ? c.ordem.filter((x) => !c.abas[x].oculta) : [abaId];
   let todas = [], esc = 1, aviso = '';
   for (const idA of ids) {
@@ -112,6 +112,7 @@ export function gerarImpressao(c, motor, { imp, alvo, abaId, faixa, nomeArquivo 
     if (!area) continue;
     if ((area.l2 - area.l1 + 1) * (area.c2 - area.c1 + 1) > 3000000) { aviso = 'Área grande demais para imprimir de uma vez: escolha uma parte.'; continue; }
     const fonte = fonteImpressao(c, motor, idA, nomeArquivo);
+    if (editavel && idA === abaId) fonte.editavel = editavel; /* v0.6.76: modo documento */
     const pg = paginar(impA, area, fonte.tamCol, fonte.tamLin, { objetos: fonte.objetos || [] });
     if (pg.paginas.length > 500) { aviso = `Daria ${pg.paginas.length} páginas: escolha uma área menor ou use "Aba toda numa página" / "Todas as colunas numa página".`; continue; }
     if (idA === abaId) esc = pg.esc;

@@ -21,6 +21,7 @@ export function desenharPaginas(pg, fonte) {
   const total = pg.paginas.length;
   return pg.paginas.map((p, n) => {
     const ops = [];
+    const campos2 = []; /* v0.6.76: o lugar das células liberadas (modo documento) */
     const { W, H } = util;
     const tc = (c) => fonte.tamCol(c) * PX_PT * esc, tl = (l) => fonte.tamLin(l) * PX_PT * esc;
     const larg = p.cols.reduce((a, c) => a + tc(c), 0), alt = p.lins.reduce((a, l) => a + tl(l), 0);
@@ -64,6 +65,7 @@ export function desenharPaginas(pg, fonte) {
       if (imp.grade) ops.push({ k: 'rectL', x: cx, y: cy, w: cw, h: ch, cor: '#c9d1d9', w2: 0.4 });
       if (e.bd) bordas.push({ e, x: cx, y: cy, w: cw, h: ch });
       const cantoAqui = !m || (p.lins.includes(m.l1) && p.cols.includes(m.c1));
+      if (cantoAqui && fonte.editavel && fonte.editavel(L, C)) campos2.push({ l: L, c: C, x: cx, y: cy, w: cw, h: ch, tam: (e.tam || 11) * esc * FATOR_FONTE, al: cel.al || 'e', qb: !!e.qb, b: !!e.b });
       if (cantoAqui && cel.t !== '' && cel.t != null) textos.push({ cel, e, x: cx, y: cy, w: cw, h: ch, l, c, m });
     }
     /* texto: transborda para as vizinhas vazias (à esquerda/direita), como no Excel; com quebra, fica na célula */
@@ -131,7 +133,7 @@ export function desenharPaginas(pg, fonte) {
     };
     linhaCR(imp.cab, imp.marg.cab * CM + fsC);
     linhaCR(imp.rod, H - imp.marg.rod * CM);
-    return { W, H, ops, n: n + 1 };
+    return { W, H, ops, n: n + 1, ...(fonte.editavel ? { campos: campos2 } : {}) };
   });
 }
 

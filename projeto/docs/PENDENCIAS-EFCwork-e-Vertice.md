@@ -2,7 +2,7 @@
 
 Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conversa ou para o fim, para nada ficar para trás. Atualizado a cada mudança e enviado junto. Marque [x] quando estiver feito.
 
-Última atualização: 27/11/2026 11:2x · Cwork v0.6.41 + Vértice v0.6.75 no ar (etapa 1 aprovada e publicada, commit 1e6a059); etapa 2 (modo documento) começando.
+Última atualização: 27/11/2026 11:05 · no ar: Cwork v0.6.41 + Vértice v0.6.75 (etapa 1, efcwork 1e6a059); etapa 2 (Vértice v0.6.76, modo documento) aprovada (ITENS 259 a 269) e publicada em 27/11; etapa 3 começando.
 
 ## A. Para a conversa do Vértice (o Elias leva)
 - [ ] **NOVO (27/11 06:59) · Todos os documentos só no Vértice:** nota `NOTA-DO-CWORK-para-o-Vertice-documentos-so-no-Vertice.md`. Hospedar tudo lá (internos e externos); o Cwork guarda só a ligação; versão nova vale sozinha; PDF baixa e imprime direto; planilha e Word abrem em modo documento, só aquela aba ou folha, só os campos desbloqueados. Junta a P4 com os ITENS 195 e 196.
@@ -10,21 +10,22 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 - [ ] **Nota `NOTA-DO-CWORK-para-o-Vertice-P3c-regras.md`** (P3c): o formato que as regras aceitam na P4 (ficha, `versaoPartes`, pedaços um por gravação, ler por id para conta comum, testar consulta em lista).
 - [ ] **Nota `NOTA-DO-CWORK-para-o-Vertice-P3-respostas.md`**: porta sem `contaTeste`; `recursos` novo; 3 perguntas (limpa o estado na troca de conta? a navegação cria passos no voltar do celular? nomes dos caches do sw).
 - [ ] **Modo de teste sem login** (decisão de 26/11 10:12): nada vai para o Firebase, tudo fica só no aparelho.
-- [ ] **ITEM 195 · acesso "documento"** (26/11 11:41): a porta agora manda `acesso` ('completo' ou 'documento') e `salvar` (true só para Principal e Líder ★). Com `acesso: 'documento'`, a pessoa só entra pelo documento ligado (o que o Cwork abriu), edita e imprime, mas **não salva** e não navega pelo resto do Vértice.
+- [x] **ITEM 195 · acesso "documento"** (26/11 11:41): feito na etapa 2 (Vértice v0.6.76, em aprovação, ITEM 266). a porta agora manda `acesso` ('completo' ou 'documento') e `salvar` (true só para Principal e Líder ★). Com `acesso: 'documento'`, a pessoa só entra pelo documento ligado (o que o Cwork abriu), edita e imprime, mas **não salva** e não navega pelo resto do Vértice.
 - [ ] **ITEM 195 · pedir para editar e salvar:** uma opção que a pessoa aciona e que leva ao processo de edição e mudança de versão (quem aprova: Principal ou Líder ★). Desenhar com o Elias; o Cwork pode receber esse pedido (aviso/aprovação) numa versão futura.
-- [ ] **ITEM 196 · ninguém abaixo de ★ salva:** Secundário e Visitante editam, mas não salvam (`salvar: false`).
-- [ ] **ITEM 196 · planilhas protegidas:** com células travadas, quem não é ★ só mexe nas células desbloqueadas; só Líder ★ e Principal usam "Desproteger".
+- [x] **ITEM 196 · ninguém abaixo de ★ salva:** feito na etapa 2 (quem não salva não tem "Atualizar documento" e não chega ao editor). Secundário e Visitante editam, mas não salvam (`salvar: false`).
+- [x] **ITEM 196 · planilhas protegidas:** no documento aberto pelo Cwork só as células liberadas aceitam escrita (etapa 2). Antes: com células travadas, quem não é ★ só mexe nas células desbloqueadas; só Líder ★ e Principal usam "Desproteger".
 - [ ] **Alça dourada (`menu-alca`, App.jsx/estilo-base.css):** fica em cima dos números das linhas da planilha e se estica quando o Elias mexe nas linhas. Sugestão: dentro do Cwork (classe `em-cwork`), a alça só aparece numa faixa de 6 px na borda ao passar o mouse, ou some e o menu abre pelo botão do alto.
-- [ ] **Vários Vértices abertos ao mesmo tempo (feito no Cwork na v0.6.35, até 10 abas):** o Vértice deve mandar a mensagem 'arquivo' também quando abre um documento pelo Cwork (#/abrir), para o Cwork saber que a aba já tem arquivo. dois Vértices no mesmo aparelho não podem gravar o mesmo arquivo ao mesmo tempo (aviso "aberto em outra aba" ou só leitura na segunda), e cada um avisa o nome do arquivo dele.
+- [ ] **Vários Vértices abertos ao mesmo tempo (feito no Cwork na v0.6.35, até 10 abas):** [feito na etapa 2: o documento e o pedido mandam o nome] o Vértice deve mandar a mensagem 'arquivo' também quando abre um documento pelo Cwork (#/abrir), para o Cwork saber que a aba já tem arquivo. dois Vértices no mesmo aparelho não podem gravar o mesmo arquivo ao mesmo tempo (aviso "aberto em outra aba" ou só leitura na segunda), e cada um avisa o nome do arquivo dele.
 - [ ] **pastas() (P3b, v0.6.35):** a porta devolve, por pasta, { nome, ler, editar, salvar }; o Vértice mostra só as pastas com ler, e só salva onde salvar = true; avisa quando recebe `cwork:usuario`.
 - [ ] **ITEM 184 (v0.6.33) · PDF preenchido de volta:** `NOTA-DO-EFCWORK-para-o-Vertice-pdf-preenchido.md`. Precisa do contrato EFD v2 nos dois repositórios no mesmo dia, junto com a P4, com ordem do Elias.
-- [x] **P4 · documentos na nuvem (feito pela conversa do Cwork, v0.6.75):** gravar e abrir arquivos (`vtd_arquivos`, `vtd_partes`); tudo o que for arquivado no Cwork aparece no Vértice (PDF; Word e planilha abrem no Vértice para editar e imprimir); o que o Elias edita, posta ou remove no Vértice atualiza sozinho no Cwork.
+- [x] **P4 · documentos na nuvem:** etapa 1, publicada em 27/11 (1e6a059). O que faltava da frase abaixo (Cwork apontando para o Vértice) é a etapa 3. gravar e abrir arquivos (`vtd_arquivos`, `vtd_partes`); tudo o que for arquivado no Cwork aparece no Vértice (PDF; Word e planilha abrem no Vértice para editar e imprimir); o que o Elias edita, posta ou remove no Vértice atualiza sozinho no Cwork.
 - [ ] **Ligações futuras (item 1.8 do pedido):** preencher formulário, abrir procedimento, programações no Kanban do Vértice com relatórios no fichário do Cwork.
 
 ## B. Para esta conversa (Cwork), na ordem aprovada
-- [x] **Etapa 1 · Vértice na nuvem (P4):** aprovada (ITENS 255 a 258) e publicada em 27/11 (1e6a059).
-- [ ] **Elias: roteiro curto das regras no site** (4 passos, na página dos ITENS 255 a 258).
-- [ ] **Etapa 2 · modo documento:** aberto pelo Cwork, ninguém salva; só escrever; sem menus; orientação do modelo; três pontinhos com "Atualizar documento" (abre o Vértice inteiro).
+- [x] **Etapa 1 · Vértice na nuvem (P4):** aprovada (ITENS 255 a 258) e publicada em 27/11 09:32 (efcwork 1e6a059). Falta o roteiro curto no site (seção D).
+- [x] **Etapa 2 · modo documento:** aprovada (ITENS 259 a 269) e publicada em 27/11 (Vértice v0.6.76).
+- [ ] **Etapa 3 · observações da etapa 2:** o pedido do Cwork imprime todas as abas do modelo (deveria ser só a do documento?); o que chega do Cwork fica em "Recebidos do Cwork", fora das 5 pastas, e não sobe para a nuvem até a migração.
+- [ ] **Etapa 3 · etiquetas automáticas (pedido 27/11 11:3x):** como no EFClaudian, vários tipos, feitas no Vértice; proposta com página antes.
 - [ ] **Etapa 3 · Cwork apontando para o Vértice:** Impressos, kit e etiquetas; o que já está guardado no Cwork (`efd_docs`) muda de lugar uma vez.
 - [ ] Backup do Cwork: incluir `vtd_arquivos` e `vtd_partes`? (hoje não entram; perguntar ao Elias)
 - [x] **P3b · Administração › Pastas do Vértice**: feita e publicada na v0.6.35.
@@ -49,6 +50,7 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 - [x] Janela por cima: virou a tela inteira com abas (v0.6.35); a área ao lado do menu saiu.
 
 ## C. Pedidos pequenos e perguntas ao Elias
+- [ ] **Tema do Vértice:** hoje o Vértice tem o próprio Claro/Escuro, separado do Cwork (no documento aberto pelo Cwork não há botão para trocar). Quer que siga o tema do Cwork?
 - [ ] **Tarefas no Cwork:** o Cwork não liga "Conferir quando terminar" ao passar tarefa (o EFClaudian liga sozinho). Quer a caixinha no formulário do Cwork, desligada por padrão?
 - [ ] **Abas do Vértice:** o teto ficou em 10 abas ao mesmo tempo (memória do aparelho). Serve, ou quer outro número?
 - [ ] **Trocar o nome do usuário:** cada pessoa troca o próprio em Meu perfil, ou só o Principal (como hoje)?
@@ -57,6 +59,7 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 - [ ] Senha mínima: 8 (hoje) ou 15?
 
 ## D. O Elias confere (Firebase e uso real)
+- [ ] **Etapa 1 no ar (v0.6.41 + Vértice v0.6.75), roteiro curto das regras:** (1) no PC, com a sua conta: Vértice Docs › crie uma planilha › Arquivo › Documento interno › Etiquetas; em Documentos internos, a coluna Nuvem chega em "Na nuvem · versão 1"; (2) no celular ou em outro navegador, com a sua conta, o mesmo documento aparece em Documentos internos › Etiquetas; (3) com uma conta de Colaborador, abrir pelo Cwork: só as pastas liberadas em Administração › Pastas do Vértice; (4) se algo der "negado", dizer em que passo. Também: Administração › Sobre mostra 0.6.41.
 - [ ] **Depois da P5 no ar:** o menu Vértice Docs abre o endereço novo; um arquivo antigo do Vértice continua lá; no celular, desinstalar o ícone antigo do Vértice (o novo abre pelo Cwork).
 - [ ] **Regras v0.6.36 (publicadas):** se ainda não rodou os 17 testes do GUIA-SIMULADOR-v0.6.36.md, rodar e dizer o resultado.
 - [ ] **v0.6.38 no ar (primeira com aviso):** no PC e no celular instalado, a janela "Versão nova do app" aparece sozinha; "Depois" leva ao pé do menu; "Atualizar" volta na mesma tela.
@@ -76,6 +79,8 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 - [ ] **v0.6.40 no ar:** Coletas › Cadastros abre as 6 listas; cadastrar um laboratório com endereço e ver o rótulo em Envio › Laboratórios; editar uma fazenda; desativar e reativar um talhão de teste. Dizer se alguém ainda cadastra pelo EFClaudian.
 
 ## E. Defeitos abertos
+- [x] **Abrir de novo pelo Cwork podia trocar o modelo do Vértice pelo arquivo antigo do Cwork** (vinha da v0.6.16; achado na revisão da etapa 2): corrigido na v0.6.76 (em aprovação).
+- [ ] **`t_v0633` oscila** às vezes no passo "o pedido ficou anotado neste aparelho" (passa ao repetir).
 - [x] **Teste do calendário (`t_v050`):** corrigido em 27/11 (só o teste).
 - [x] `t_v050` corrigido enviado ao GitHub (8b8af0b).
 - [x] `features.csv` e registros enviados (4e4d11f).

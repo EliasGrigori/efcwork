@@ -17,6 +17,7 @@ import { quemSou, nomeGravado, ehDono, definirLogin } from './nucleo/quem.js'; /
 import { lerLogin, ponteDoCwork, aoMudarLogin, situacaoDoAcesso } from './nucleo/loginCwork.js'; /* v0.6.73 (P2): login do Cwork */
 import { usarNuvem } from './ponte/usarNuvem.js'; /* v0.6.75 (P4): nuvem do Cwork */
 import { TelaAcesso } from './ui/acessoCwork.jsx';
+import { TelaSemMenus, docDaRota } from './ui/modoDocumento.jsx';
 import { molduraDoCwork } from './nucleo/emCwork.js';
 import { avisarCwork } from './nucleo/emCwork.js'; /* v0.6.72 (P1): a aba do Cwork mostra o arquivo aberto */
 import { normalizarPrefs } from './nucleo/prefs.js';
@@ -272,7 +273,7 @@ export function App() {
   }, [postar, recarregarAberto, setTravado, avisar]);
 
   /* abrir arquivo pela rota #/arq/<id> */
-  const idRota = rota.startsWith('arq/') ? rota.slice(4) : null;
+  const docMd = docDaRota(rota, login), idRota = rota.startsWith('arq/') && !docMd ? rota.slice(4) : null; /* v0.6.76: modo documento */
   useEffect(() => {
     let vivo = true;
     setGaveta(false);
@@ -491,7 +492,7 @@ export function App() {
     recarregar();
   }, [banco, aplicarDiff, recarregar]);
   const autorPonte = useMemo(() => quemSou({ perfil: perfilEf }), [login && login.uid, login && login.nome]); // eslint-disable-line react-hooks/exhaustive-deps
-  const ponte = usarPonte({ banco, fichas, recarregar, avisar, aberto, autor: autorPonte, mudarFichaArquivo }); /* v0.6.73: o arquivo que vem de um pedido do Cwork leva a conta */
+  const ponte = usarPonte({ banco, fichas, recarregar, avisar, aberto, autor: autorPonte, mudarFichaArquivo, idDocumento: docMd && docMd.id }); /* v0.6.73: o arquivo que vem de um pedido do Cwork leva a conta */
   const ponteRef = useRef(ponte); ponteRef.current = ponte;
   const pidRota = rota.startsWith('abrir/') ? rota.slice(6) : null;
   useEffect(() => { if (pidRota) ponteRef.current.abrirDaCaixa(pidRota); }, [pidRota]);
@@ -698,7 +699,7 @@ export function App() {
         ? <Planilha key={aberto.arquivo.ficha.id} arquivo={aberto.arquivo} cx={cx} />
         : <EditorEmBreve tipo={t} />;
   } else if (idRota || pidRota) conteudo = <div className="pagina" aria-busy="true" />;
-  else if (pidPedido) conteudo = pidPedido === 'local' && !ponte.pedidoLocal ? <div className="pagina" aria-busy="true" /> : <TelaPedido key={pidPedido} pid={pidPedido} local={pidPedido === 'local' ? ponte.pedidoLocal : null} banco={banco} avisar={avisar} aoSair={() => irPara(pidPedido === 'local' ? 'arq/' + ponte.pedidoLocal.docId : '')} />;
+  else if (pidPedido) conteudo = pidPedido === 'local' && !ponte.pedidoLocal ? <div className="pagina" aria-busy="true" /> : <TelaPedido key={pidPedido} pid={pidPedido} local={pidPedido === 'local' ? ponte.pedidoLocal : null} banco={banco} avisar={avisar} aoSair={(doc) => irPara(pidPedido === 'local' ? (ponte.pedidoLocal.semMenus ? 'documento/' : 'arq/') + ponte.pedidoLocal.docId : doc ? 'documento/' + doc : '')} />;
   else if (rota === 'internos') conteudo = <DocsInternos fichas={fichas} lendo={lendo} nuvem={nuvem} estado={ponte.estado} cx={cx} acrescentar={() => ponte.setJanela({})} editar={(f) => ponte.setJanela({ ficha: f })} />;
   else if (TIPOS[rota]) conteudo = <ListaDoTipo tipo={rota} fichas={fichas} lendo={lendo} cx={cx} demo={demo} />;
   else if (rota === 'lixeira') conteudo = <Lixeira fichas={fichas} lendo={lendo} cx={cx} />;
@@ -711,6 +712,9 @@ export function App() {
   const st = statusEd || {};
 
   if (acesso === 'trava' || acesso === 'sair') return <TelaAcesso tipo={acesso} />; /* v0.6.73 (P2): só dentro do Cwork, e com alguém logado */
+  if (docMd || pidRota || (login && login.soDocumento) || (pidPedido && (pidPedido !== 'local' || (ponte.pedidoLocal && ponte.pedidoLocal.semMenus)))) { /* v0.6.76: modo documento (e o pedido do Cwork) */
+    return <TelaSemMenus doc={docMd} pidRota={pidRota} login={login} pergunta={pergunta} fecharPergunta={() => setPergunta(null)} avisos={avisos} tirarAviso={tirarAviso} pedido={pidPedido ? conteudo : null}
+      banco={banco} fichas={fichas} lendo={lendo} avisar={avisar} perguntar={setPergunta} canal={canal} resumo={ponte.resumo} fecharResumo={ponte.fecharResumo} preencherDoResumo={ponte.preencherDoResumo} />; }
   return (
     <div className={'app' + (cel ? ' cel' : '')} data-menu={menuEf} data-menu-auto={menuAuto ? '' : undefined} data-layout={prefs.layout} data-faixa={prefs.faixa}>
       {!cel && menuEf !== 'oculto' && <Menu rota={rota} modAtual={mod} cont={contagem} prefs={prefs} cx={cx} />}

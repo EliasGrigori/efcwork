@@ -39,7 +39,9 @@ export function lerLogin(win) {
   try {
     const u = p.usuario();
     if (!u || !u.uid) return null;
-    return { uid: String(u.uid).slice(0, 128), nome: String(u.nome || '').trim().slice(0, 80), perfil: perfilDoCwork(u), perfilCwork: String(u.perfil || ''), estrela: !!u.estrela, contaTeste: !!u.contaTeste };
+    return { uid: String(u.uid).slice(0, 128), nome: String(u.nome || '').trim().slice(0, 80), perfil: perfilDoCwork(u), perfilCwork: String(u.perfil || ''), estrela: !!u.estrela, contaTeste: !!u.contaTeste,
+      /* v0.6.76: soDocumento = só entra pelo documento ligado (ITEM 195); semSalvar = não atualiza o modelo (ITEM 196) */
+      ...(u.acesso === 'documento' ? { soDocumento: true } : {}), ...(u.salvar === false ? { semSalvar: true } : {}) };
   } catch { return null; }
 }
 

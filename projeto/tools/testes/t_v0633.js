@@ -113,7 +113,7 @@ const vertFr = p => p.frames().find(f => /\/(EFCdocs|efcwork\/vertice)\//.test(f
   await p.waitForFunction(() => Object.values(JSON.parse(localStorage.getItem('efcwork-dr-pedidos') || '{}')).some(x => x.tent === 1), null, { timeout: 25000 }).then(() => conf(true, 'sem o modelo no Vértice deste aparelho: o EFCwork levou o original e pediu de novo, sozinho'), () => conf(false, 'sem o modelo no Vértice deste aparelho: o EFCwork levou o original e pediu de novo, sozinho'));
   let vf = null; for (let i = 0; i < 40 && !(vf = vertFr(p)); i++) await esp(p, 250);
   conf(!!vf, 'o Vértice abriu na janela de dentro');
-  const temNoV = await p.waitForFunction(id => { const f = document.querySelector('#vt-fr iframe') || document.querySelector('.jn-fr iframe[data-j="docs"]'); try { return /#\/arq\//.test(f.contentWindow.location.hash) && f.contentWindow.location.hash.indexOf(id) > 0; } catch (e) { return false; } }, cusId, { timeout: 25000 }).then(() => true, () => false);
+  const temNoV = await p.waitForFunction(id => { const f = document.querySelector('#vt-fr iframe') || document.querySelector('.jn-fr iframe[data-j="docs"]'); try { return /#\/(arq|documento)\//.test(f.contentWindow.location.hash) && f.contentWindow.location.hash.indexOf(id) > 0; /* v0.6.76: aberto pelo Cwork = modo documento */ } catch (e) { return false; } }, cusId, { timeout: 25000 }).then(() => true, () => false);
   conf(temNoV, 'o Vértice guardou o modelo que veio do Cwork e abriu');
   const pid2 = await p.evaluate(() => Object.entries(JSON.parse(localStorage.getItem('efcwork-dr-pedidos') || '{}')).find(([, x]) => x.tent === 1)[0]);
   vf = vertFr(p); await vf.evaluate(pid => { location.hash = '#/pedido/' + pid; }, pid2); /* = tocar em "Ver e imprimir" no aviso do Vértice */

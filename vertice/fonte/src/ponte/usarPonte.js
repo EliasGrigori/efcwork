@@ -11,13 +11,13 @@ import { temCaixa, lerEstado, marcarEstado, porNaCaixa, conferirRecebidos, esper
 
 export const SUBABA_RECEBIDOS = 'Recebidos do Cwork';
 
-export function usarPonte({ banco, fichas, recarregar, avisar, aberto, autor, mudarFichaArquivo }) {
+export function usarPonte({ banco, fichas, recarregar, avisar, aberto, autor, mudarFichaArquivo, idDocumento }) {
   const [estado, setEstado] = useState(() => lerEstado());
   const [resumo, setResumo] = useState(null);
   const [janela, setJanela] = useState(null); // { ficha?, depois?: gerar }
   const [pedidoLocal, setPedidoLocal] = useState(null); // "Preencher e imprimir" a partir do resumo
   const fichasRef = useRef(fichas); fichasRef.current = fichas;
-  const idAberto = aberto ? aberto.arquivo.ficha.id : null;
+  const idAberto = aberto ? aberto.arquivo.ficha.id : idDocumento || null; /* v0.6.76: o resumo também vale no modo documento */
 
   const atualizarEstado = useCallback(async () => { if (temCaixa()) setEstado(await conferirRecebidos()); }, []);
 
@@ -35,9 +35,10 @@ export function usarPonte({ banco, fichas, recarregar, avisar, aberto, autor, mu
   /* ao abrir o app: avisa o que o Cwork deixou para abrir; enquanto aberto: avisa na hora */
   useEffect(() => {
     if (!temCaixa()) return undefined;
-    const avisarAbrir = (pid, nome) => avisar(`Chegou do Cwork para abrir: ${nome || 'um arquivo'}.`, { ic: 'abrir', acao: { rotulo: 'Abrir', fazer: () => irPara('abrir/' + pid) } });
+    /* v0.6.76: no modo documento não há "Abrir" por cima da folha: o Cwork mesmo leva o endereço */
+    const avisarAbrir = (pid, nome) => /^#\/(abrir|documento)\//.test(location.hash) || avisar(`Chegou do Cwork para abrir: ${nome || 'um arquivo'}.`, { ic: 'abrir', acao: { rotulo: 'Abrir', fazer: () => irPara('abrir/' + pid) } });
     /* v0.6.17 (Ponte 2): pedido de impressão com os dados do Cwork */
-    const avisarPedido = (i) => { const f = fichasRef.current.find((x) => x.id === i.docId); avisar(`O Cwork pediu para imprimir ${f ? '"' + f.nome + '"' : 'um documento'}.`, { ic: 'imprimir', longo: true, acao: { rotulo: 'Ver e imprimir', fazer: () => irPara('pedido/' + i.pid) } }); };
+    const avisarPedido = (i) => { if (/^#\/(abrir|documento|pedido)\//.test(location.hash)) return; const f = fichasRef.current.find((x) => x.id === i.docId); avisar(`O Cwork pediu para imprimir ${f ? '"' + f.nome + '"' : 'um documento'}.`, { ic: 'imprimir', longo: true, acao: { rotulo: 'Ver e imprimir', fazer: () => irPara('pedido/' + i.pid) } }); };
     esperandoAqui().then((l) => { const i = l.filter((x) => x.tipo === 'abrir').pop(); if (i) avisarAbrir(i.pid, i.nomeArquivo); const p = l.filter((x) => x.tipo === 'pedido').pop(); if (p) avisarPedido(p); }).catch(() => {});
     atualizarEstado();
     const parar = ouvir(async (m) => {
@@ -55,7 +56,8 @@ export function usarPonte({ banco, fichas, recarregar, avisar, aberto, autor, mu
     try {
       const i = await pegar(pid);
       if (!i || i.tipo !== 'abrir') { avisar('Este pedido do Cwork não está mais na caixa deste aparelho.', { ic: 'aviso', longo: true }); irPara(''); return; }
-      const ja = fichasRef.current.find((f) => f.id === i.docId && f.status !== 'lixeira');
+      /* v0.6.76: pergunta ao banco (a lista da tela pode ainda não ter chegado e o modelo daqui seria trocado pelo do Cwork) */
+      const r0 = await banco.backend.um(i.docId), ja = r0 && r0.ficha.status !== 'lixeira' ? r0.ficha : null;
       if (!ja) {
         if (!/\.(xlsx|xlsm)$/i.test(i.nomeArquivo || '')) { avisar(`"${i.nomeArquivo}" é um arquivo que o Vértice ainda não edita (o Documento chega na v0.7.0). Ele continua na caixa.`, { ic: 'aviso', longo: true }); irPara(''); return; }
         const { lerArquivoExcel } = await import('../planilha/xlsx/abrir.js');
@@ -69,8 +71,8 @@ export function usarPonte({ banco, fichas, recarregar, avisar, aberto, autor, mu
         await recarregar();
       }
       await apagar(pid); /* só depois de guardar */
-      irPara('arq/' + i.docId);
-      avisar(ja ? `"${ja.nome}" já estava aqui: abri o deste aparelho.` : `"${i.nomeArquivo}" veio do Cwork e ficou em Documentos internos › ${SUBABA_RECEBIDOS}.`, { ic: 'check', longo: true });
+      /* v0.6.76: aberto pelo Cwork = modo documento (só a folha, ninguém salva); troca o endereço sem criar passo no voltar */
+      location.replace('#/documento/' + i.docId);
     } catch (e) {
       avisar('Não deu para abrir o que veio do Cwork: ' + (e.message || e), { ic: 'aviso', longo: true });
       irPara('');
@@ -91,7 +93,7 @@ export function usarPonte({ banco, fichas, recarregar, avisar, aberto, autor, mu
   }, [resumo]);
 
   /** v0.6.17: "Preencher e imprimir" do resumo do envio (os mesmos passos do pedido, sem resposta ao Cwork). */
-  const preencherDoResumo = useCallback((conteudo) => { if (!resumo) return; setPedidoLocal(pedidoDoResumo(resumo, conteudo)); irPara('pedido/local'); }, [resumo]);
+  const preencherDoResumo = useCallback((conteudo) => { if (!resumo) return; setPedidoLocal({ ...pedidoDoResumo(resumo, conteudo), semMenus: !!idDocumento }); irPara('pedido/local'); }, [resumo, idDocumento]);
 
   /** Compartilhar com o Cwork. gerar() devolve { pdf, paginas, papel, orient, original? }. Sem sub-aba, pergunta antes. */
   const compartilhar = useCallback(async (ficha, gerar) => {

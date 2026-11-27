@@ -1,0 +1,39 @@
+/* Vértice Docs · modo documento (v0.6.76): só a folha, com a impressora e os três pontinhos. */
+.app.md-app { display: block; }
+.md { display: flex; flex-direction: column; height: 100%; height: var(--vvh, 100dvh); background: var(--bg); color: var(--text); }
+.md-barra { display: flex; align-items: center; gap: 4px; padding: 4px 8px 4px 16px; min-height: 44px; flex: none; }
+.md-nome { flex: 1; min-width: 0; font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.md-barra .md-bt { width: 40px; height: 40px; flex: none; }
+.md-pontos { display: inline-flex; transform: rotate(90deg); }
+.md-mais { position: relative; }
+.md-menu { position: absolute; right: 0; top: calc(100% + 4px); z-index: 30; min-width: 220px; padding: 4px; background: var(--surface); border: 1px solid var(--border-light); border-radius: var(--r-card, 10px); box-shadow: var(--sh-2); display: grid; }
+.md-menu button { display: flex; align-items: center; gap: 12px; min-height: 40px; padding: 0 12px; border: 0; border-radius: var(--r-ctl, 7px); background: none; color: inherit; font: inherit; font-size: 14px; text-align: left; white-space: nowrap; cursor: pointer; }
+.md-menu button:hover, .md-menu button:focus-visible { background: var(--surface-2); }
+.md-menu svg { width: 18px; height: 18px; flex: none; }
+.md-aviso { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 4px 16px 8px; font-size: 13px; }
+.md-nota { margin: 0; padding: 0 16px 8px; font-size: 13px; color: var(--text-muted); text-align: center; }
+.md-corpo { flex: 1; min-height: 0; display: flex; }
+.md-folhas { flex: 1; min-width: 0; overflow: auto; padding: 8px 12px 24px; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.md-folha { position: relative; flex: none; background: #fff; box-shadow: var(--sh-2); container-type: inline-size; color: #000; }
+.md-svg, .md-svg svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+/* a folha mostra o valor já formatado; a caixa por cima só aparece (com o texto) quando se está escrevendo nela */
+.md-campo { position: absolute; box-sizing: border-box; margin: 0; padding: 0 2px; border: 0; border-bottom: 1px solid rgba(154, 113, 40, .65); border-radius: 0;
+  background: rgba(217, 180, 106, .16); color: transparent; caret-color: #000; font-family: Helvetica, Arial, sans-serif; font-size: var(--tam); line-height: 1.2; outline: 0; resize: none; overflow: hidden; }
+select.md-campo { appearance: none; cursor: pointer; }
+.md-campo option { color: #000; }
+.md-campo:hover { background: rgba(217, 180, 106, .28); }
+.md-campo:focus { color: #000; background: #fff; border: 1px solid #9a7128; box-shadow: 0 0 0 3px rgba(154, 113, 40, .22); z-index: 5; }
+select.md-campo:focus { color: #000; }
+@media (pointer: coarse) {
+  /* no dedo, a caixa em uso cresce para dar para ler (e o aparelho não dar zoom sozinho) */
+  input.md-campo:focus, textarea.md-campo:focus, select.md-campo:focus { font-size: max(16px, var(--tam)); min-height: 36px; min-width: min(180px, 100%); }
+  .md-barra .md-bt { width: 44px; height: 44px; }
+  .md-menu button { min-height: 44px; }
+}
+.md-vazio { margin: 0; padding: 48px 16px; text-align: center; color: var(--text-muted); font-size: 14px; }
+.md-pedido { height: 100dvh; overflow: auto; padding: 16px; }
+/* o resumo do envio: ao lado no computador, embaixo no telefone */
+@media (max-width: 760px) {
+  .md-corpo { flex-direction: column; }
+  .md-corpo .resumo-envio { width: auto; max-height: 42vh; border-left: 0; border-top: 1px solid var(--border); }
+}
