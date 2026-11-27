@@ -2,9 +2,10 @@
 
 Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conversa ou para o fim, para nada ficar para trás. Atualizado a cada mudança e enviado junto. Marque [x] quando estiver feito.
 
-Última atualização: 27/11/2026 · v0.6.40 (Cadastros de Coletas) no ar.
+Última atualização: 27/11/2026 · v0.6.40 no ar; etapa 1 (Vértice na nuvem: Cwork v0.6.41 + Vértice v0.6.75) em aprovação, ITENS 255 a 258.
 
 ## A. Para a conversa do Vértice (o Elias leva)
+- [ ] **NOVO (27/11 06:59) · Todos os documentos só no Vértice:** nota `NOTA-DO-CWORK-para-o-Vertice-documentos-so-no-Vertice.md`. Hospedar tudo lá (internos e externos); o Cwork guarda só a ligação; versão nova vale sozinha; PDF baixa e imprime direto; planilha e Word abrem em modo documento, só aquela aba ou folha, só os campos desbloqueados. Junta a P4 com os ITENS 195 e 196.
 - [ ] **O código do Vértice mora agora em `efcwork/vertice/fonte/`** (depois de publicada a P5): a conversa do Vértice clona o efcwork e publica na pasta `vertice/`. Está na memória do Vértice (registro de 26/11, 16:57).
 - [ ] **Nota `NOTA-DO-CWORK-para-o-Vertice-P3c-regras.md`** (P3c): o formato que as regras aceitam na P4 (ficha, `versaoPartes`, pedaços um por gravação, ler por id para conta comum, testar consulta em lista).
 - [ ] **Nota `NOTA-DO-CWORK-para-o-Vertice-P3-respostas.md`**: porta sem `contaTeste`; `recursos` novo; 3 perguntas (limpa o estado na troca de conta? a navegação cria passos no voltar do celular? nomes dos caches do sw).
@@ -21,6 +22,10 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 - [ ] **Ligações futuras (item 1.8 do pedido):** preencher formulário, abrir procedimento, programações no Kanban do Vértice com relatórios no fichário do Cwork.
 
 ## B. Para esta conversa (Cwork), na ordem aprovada
+- [ ] **Etapa 1 · Vértice na nuvem (P4):** pronta; responder a página (ITENS 255 a 258). Depois de publicar: o roteiro curto no site (está na página).
+- [ ] **Etapa 2 · modo documento:** aberto pelo Cwork, ninguém salva; só escrever; sem menus; orientação do modelo; três pontinhos com "Atualizar documento" (abre o Vértice inteiro).
+- [ ] **Etapa 3 · Cwork apontando para o Vértice:** Impressos, kit e etiquetas; o que já está guardado no Cwork (`efd_docs`) muda de lugar uma vez.
+- [ ] Backup do Cwork: incluir `vtd_arquivos` e `vtd_partes`? (hoje não entram; perguntar ao Elias)
 - [x] **P3b · Administração › Pastas do Vértice**: feita e publicada na v0.6.35.
 - [x] **v0.6.35 · tela inteira com abas (OPÇÃO 2, ITEM 201):** feita e testada; aprovada (ITENS 207 a 211) e publicada.
 - [x] **Tarefas · "Conferir quando terminar" (pedido 26/11 14:18):** corrigido no Cwork (Principal conclui direto; parada ganha Concluir/Conferido); aprovado (ITEM 212) e publicado. A correção no EFClaudian é da outra conversa.
@@ -34,7 +39,9 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 - [x] **Limpeza visual (v0.6.39):** publicada em 27/11 (efcwork 756527b).
 - [x] `features.csv` atualizado (27/11).
 - [x] **Cadastros de Coletas (v0.6.40):** publicada em 27/11 (efcwork fc4afcc).
-- [ ] Da matriz, funções "must" que faltam: Conversas; Etiquetas de campo e revisão; Relatórios › Coletas em aberto; Só ver por área.
+- [ ] **Etiquetas das amostras:** viram documentos do Vértice (decisão de 27/11 06:59). No Cwork, depois da P4: escolher onde abrir a etiqueta (aba, remessa, depois de "Coletado", amostras filtradas; o protótipo está em `fonte/rascunhos/`). Folha de campo das avulsas: perguntar se também vira documento do Vértice.
+- [ ] **Impressos e kit apontando para o Vértice** (depois da P4): e o que já está guardado no Cwork (`efd_docs`) muda de lugar uma vez.
+- [ ] Da matriz, funções "must" que faltam: Conversas; Relatórios › Coletas em aberto; Só ver por área.
 - [ ] **Ideia (não pedida):** pôr a conferência de rótulos lado a lado no `medir.js` da família, para valer em todos os apps.
 - [ ] Matriz: conferir as 169 linhas "Janela …" e 4 outras "should" marcadas como não.
 - [ ] Estudo de rapidez (`ESTUDO-rapidez-EFCwork-v0.6.33.md`): só depois da integração.

@@ -15,6 +15,7 @@ import { PorId, chegaNa, textoChega } from './nucleo/comandos.js';
 import { pode, SEM_PERMISSAO, PERFIS } from './nucleo/perfis.js';
 import { quemSou, nomeGravado, ehDono, definirLogin } from './nucleo/quem.js'; /* v0.6.72 (P1): um lugar só para "quem sou" */
 import { lerLogin, ponteDoCwork, aoMudarLogin, situacaoDoAcesso } from './nucleo/loginCwork.js'; /* v0.6.73 (P2): login do Cwork */
+import { usarNuvem } from './ponte/usarNuvem.js'; /* v0.6.75 (P4): nuvem do Cwork */
 import { TelaAcesso } from './ui/acessoCwork.jsx';
 import { molduraDoCwork } from './nucleo/emCwork.js';
 import { avisarCwork } from './nucleo/emCwork.js'; /* v0.6.72 (P1): a aba do Cwork mostra o arquivo aberto */
@@ -188,6 +189,7 @@ export function App() {
   }, [banco, avisar]);
   useEffect(() => { recarregar(); }, [recarregar]);
 
+
   /* ---------- o mesmo arquivo em duas abas do navegador (nada pode se perder em silêncio) ----------
      Cada gravação leva uma "marca"; a aba só grava se a marca guardada é a que ela conhece.
      Além disso as abas conversam: a segunda que abre o arquivo fica só para ver, com "Editar aqui". */
@@ -214,6 +216,7 @@ export function App() {
     return r;
   }, [banco, setAberto]);
 
+  const nuvem = usarNuvem({ banco, login, demo, recarregar, abertoRef, recarregarAberto, avisarRef }); /* v0.6.75 (P4): a nuvem do Cwork (ponte/usarNuvem.js) */
   const postar = useCallback((m) => { try { if (canal) canal.postMessage({ ...m, de: abaApp }); } catch { /* sem canal */ } }, [canal, abaApp]);
 
   useEffect(() => {
@@ -696,7 +699,7 @@ export function App() {
         : <EditorEmBreve tipo={t} />;
   } else if (idRota || pidRota) conteudo = <div className="pagina" aria-busy="true" />;
   else if (pidPedido) conteudo = pidPedido === 'local' && !ponte.pedidoLocal ? <div className="pagina" aria-busy="true" /> : <TelaPedido key={pidPedido} pid={pidPedido} local={pidPedido === 'local' ? ponte.pedidoLocal : null} banco={banco} avisar={avisar} aoSair={() => irPara(pidPedido === 'local' ? 'arq/' + ponte.pedidoLocal.docId : '')} />;
-  else if (rota === 'internos') conteudo = <DocsInternos fichas={fichas} lendo={lendo} estado={ponte.estado} cx={cx} acrescentar={() => ponte.setJanela({})} editar={(f) => ponte.setJanela({ ficha: f })} />;
+  else if (rota === 'internos') conteudo = <DocsInternos fichas={fichas} lendo={lendo} nuvem={nuvem} estado={ponte.estado} cx={cx} acrescentar={() => ponte.setJanela({})} editar={(f) => ponte.setJanela({ ficha: f })} />;
   else if (TIPOS[rota]) conteudo = <ListaDoTipo tipo={rota} fichas={fichas} lendo={lendo} cx={cx} demo={demo} />;
   else if (rota === 'lixeira') conteudo = <Lixeira fichas={fichas} lendo={lendo} cx={cx} />;
   else if (rota === 'pastas' || rota === 'externos') conteudo = <EmBreve qual={rota} />;

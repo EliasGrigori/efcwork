@@ -1,11 +1,11 @@
 /* EFCwork · v0.6.36 · P5: o Vértice mora em efcwork/vertice/ e o endereço antigo /EFCdocs/ leva ao novo.
-   1) o site do Vértice em vertice/ (v0.6.74) instala o sw.js dele no endereço novo; o do Cwork não guarda nada de lá;
+   1) o site do Vértice em vertice/ (a versão da pasta) instala o sw.js dele no endereço novo; o do Cwork não guarda nada de lá;
    2) com o Vértice ANTIGO (v0.6.73, clone de leitura) instalado em /EFCdocs/ e um banco no aparelho, o endereço antigo passa a ter a
       página e o sw.js de tools/p5/EFCdocs-raiz: quem abre /EFCdocs/?em=cwork#/x vai para /efcwork/vertice/?em=cwork#/x, o sw antigo
       sai e os arquivos do aparelho continuam. Uso: NODE_PATH=$(npm root -g) node tools/testes/t_v0636v.js */
 const http = require('http'), fs = require('fs'), path = require('path');
 const { chromium } = require('playwright');
-const RAIZ = path.resolve(__dirname, '..', '..'), REPO = path.resolve(RAIZ, '..'), NOVO = path.join(REPO, 'vertice'), VELHO = process.env.VERTICE_ANTIGO || '/home/claude/eliasgrigori/efcdocs', P5 = path.join(RAIZ, 'tools/p5/EFCdocs-raiz');
+const V_ATUAL = require('../../../vertice/fonte/package.json').version, RAIZ = path.resolve(__dirname, '..', '..'), REPO = path.resolve(RAIZ, '..'), NOVO = path.join(REPO, 'vertice'), VELHO = process.env.VERTICE_ANTIGO || '/home/claude/eliasgrigori/efcdocs', P5 = path.join(RAIZ, 'tools/p5/EFCdocs-raiz');
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css', '.json': 'application/json', '.png': 'image/png', '.webmanifest': 'application/manifest+json', '.woff2': 'font/woff2', '.svg': 'image/svg+xml' };
 let fase = 1;
 const srv = http.createServer((q, r) => {
@@ -23,7 +23,7 @@ const esp = (p, ms) => p.waitForTimeout(ms);
 (async () => {
   console.log('— O site do Vértice em vertice/');
   const sw = fs.readFileSync(path.join(NOVO, 'sw.js'), 'utf8'), lista = JSON.parse(sw.match(/const ARQUIVOS = (\[[\s\S]*?\]);/)[1]);
-  conf(/const VERSAO = 'vertice-v0\.6\.74'/.test(sw) && /const PREFIXO = 'vertice-'/.test(sw), 'sw.js do Vértice na versão v0.6.74, com prefixo próprio (vertice-; o antigo usa efcdocs-, um não apaga o do outro)');
+  conf(sw.includes("const VERSAO = 'vertice-v" + require(path.join(NOVO, 'fonte', 'package.json')).version + "'") && /const PREFIXO = 'vertice-'/.test(sw), 'sw.js do Vértice na versão do package.json, com prefixo próprio (vertice-; o antigo usa efcdocs-, um não apaga o do outro)');
   const falta = lista.filter(a => !fs.existsSync(path.join(NOVO, a === './' ? 'index.html' : a)));
   conf(!falta.length, 'todos os arquivos que o sw.js guarda existem em vertice/' + (falta.length ? ': ' + falta.join(', ') : ' (' + lista.length + ')'));
   conf(fs.existsSync(path.join(NOVO, 'fonte/package.json')) && fs.existsSync(path.join(NOVO, 'fonte/src/App.jsx')), 'o código do Vértice está em vertice/fonte/ (como no repositório EFCdocs)');
@@ -35,7 +35,7 @@ const esp = (p, ms) => p.waitForTimeout(ms);
   let reg = await p.evaluate(async () => { const rs = await navigator.serviceWorker.getRegistrations(); return rs.map(r => new URL(r.scope).pathname + (r.active ? ':ativo' : ':' + (r.installing ? 'instalando' : 'esperando'))); });
   conf(reg.some(x => /^\/efcwork\/vertice\/:ativo/.test(x)), 'abrindo o endereço novo, o sw.js do Vértice se instala lá (' + reg.join(', ') + ')');
   const cx = await p.evaluate(async () => (await caches.keys()).join(','));
-  conf(/vertice-v0\.6\.74/.test(cx) && !/efcwork-/.test(cx), 'a tela do Vértice fica guardada no cache dele (' + cx + ')');
+  conf(cx.includes('vertice-v' + V_ATUAL) && !/efcwork-/.test(cx), 'a tela do Vértice fica guardada no cache dele (' + cx + ')');
   await ctx.close();
   console.log('— O endereço antigo leva ao novo');
   ctx = await b.newContext({ viewport: { width: 1280, height: 800 } }); p = await ctx.newPage(); p.on('pageerror', e => er.push(String(e)));
@@ -53,7 +53,7 @@ const esp = (p, ms) => p.waitForTimeout(ms);
   const ainda = await p.evaluate(() => new Promise(ok => { const q = indexedDB.open('teste-p5', 1); q.onsuccess = () => { const g = q.result.transaction('a').objectStore('a').get('x'); g.onsuccess = () => ok(g.result); }; q.onerror = () => ok(null); }));
   conf(ainda === 'meu arquivo', 'os arquivos do aparelho continuam (o banco é do site, não da pasta)');
   const cxs = await p.evaluate(async () => (await caches.keys()).join(','));
-  conf(/efcdocs-v0\.6\.73/.test(cxs) && /vertice-v0\.6\.74/.test(cxs), 'o cache antigo e o novo convivem (nenhum apaga o outro) (' + cxs + ')');
+  conf(/efcdocs-v0\.6\.73/.test(cxs) && cxs.includes('vertice-v' + V_ATUAL), 'o cache antigo e o novo convivem (nenhum apaga o outro) (' + cxs + ')');
   navs.length = 0; await p.goto(base + '/EFCdocs/#/arq/abc'); await esp(p, 2500);
   conf(navs.indexOf('/efcwork/#/vertice') >= 0, 'ícone ou favorito antigo, fora do Cwork: vai para o Cwork, que abre o Vértice em tela inteira (revisor) (' + navs.join(' → ') + ')');
   await ctx.close();

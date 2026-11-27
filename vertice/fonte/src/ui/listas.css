@@ -107,3 +107,8 @@
 .app.cel .pg-lixeira .tb-arq td { height: auto; border-bottom: 0; }
 .app.cel .pg-lixeira .tb-arq td.c-acoes { padding: 0 12px 10px; text-align: left; border-bottom: 1px solid var(--border); }
 .app.cel .pg-lixeira .tb-arq .acoes .btn.sm { height: 44px; min-height: 44px; }
+/* v0.6.75 (P4): coluna Nuvem em Documentos internos (no celular sai da linha; aparece nos detalhes) */
+.tb-arq .c-nuvem { width: 168px; white-space: nowrap; }
+.app:not(.cel) .internos .tb-arq .c-situacao { width: 170px; } /* com a coluna Nuvem, a Situação encolhe para o Nome não sumir */
+@media (max-width: 1240px) { .app:not(.cel) .internos .tb-arq .c-quando { display: none; } }
+.app.cel .tb-arq .c-nuvem { display: none; }

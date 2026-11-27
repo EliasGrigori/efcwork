@@ -27,9 +27,63 @@ function vtUsuario() {
      imprime, não salva); a parte do Vértice é feita na conversa dele. ITEM 196: só Principal e Líder ★ salvam. */
   return { uid: String(u.id), nome: String(u.nome || ''), perfil: String(u.perfil || ''), estrela: !!u.estrela, acesso: vtLiga() ? 'completo' : 'documento', salvar: vtLiga() };
 }
+/* ---------- v0.6.41 (P4, autorizada pelo Elias em 27/11 07:22): a nuvem do Vértice, gravada e lida pelo Cwork ----------
+   O Vértice não carrega o Firebase (decisão da v0.6.73): ele pede ao Cwork pela porta, recurso 'nuvem'.
+   Formato que as regras [R7a]/[R7b] da v0.6.36 aceitam (NOTA-DO-CWORK-para-o-Vertice-P3c-regras.md):
+   - vtd_arquivos/{id} = { v: 1, id, ficha (sem nuvem), versao, versaoPartes, pasta, partes, partesDe, bytes, porId, porNome, em }
+   - vtd_partes/{id}_{versao}_{uid}_{n} = { arq, versao, n, b64, porId, em } (900 mil letras cada; só criados, nunca mudam)
+   Sobe só arquivo numa das 5 pastas (decisão de 27/11 07:3x); só quem salva (Principal e Líder ★) grava. */
+const VT_PARTE = 900000, VT_PARTES_MAX = 200;
+const vtNegado = e => /permission|insufficient/i.test(String((e && (e.code || e.message)) || ''));
+const vtnPastaOk = p => IP_PASTAS.indexOf(p) >= 0;
+/* uma leitura só de uma consulta (a primeira resposta), com erro devolvido */
+const vtUmaVez = o => new Promise((ok, falha) => { let off = null, feito = false; off = Data.col('vtd_arquivos').watch(l => { if (feito) return; feito = true; ok(l); setTimeout(() => off && off(), 0); }, Object.assign({ onError: e => { if (!feito) { feito = true; falha(e); } } }, o || {})); });
+const vtnResumo = d => ({ id: d.id, pasta: d.pasta, versao: Number(d.versao) || 0, em: d.em || '', porNome: d.porNome || '', nome: (d.ficha && d.ficha.nome) || '', tipo: (d.ficha && d.ficha.tipo) || '', status: (d.ficha && d.ficha.status) || '' });
+/* lista o que a pessoa pode ler: Principal e Líder ★ leem tudo; os outros, pasta por pasta (a pasta negada fica de fora) */
+async function vtNuvemListar() {
+  const u = vtUsuario(); if (!u) return [];
+  if (u.salvar) return (await vtUmaVez({ limit: 2000 })).map(vtnResumo);
+  const out = [];
+  for (const p of vtPastasDe(S.user).filter(x => x.ler)) { try { (await vtUmaVez({ igual: ['pasta', p.nome] })).forEach(d => out.push(vtnResumo(d))); } catch (e) { if (!vtNegado(e)) throw e; } }
+  return out;
+}
+async function vtFicha(id, doServidor) { try { return await (doServidor && !DEMO && navigator.onLine !== false ? Data.col('vtd_arquivos').fresco(id) : Data.col('vtd_arquivos').get(id)); } catch (e) { if (vtNegado(e)) return null; throw e; } }
+/* lê um arquivo inteiro: { ficha, pacote, versao, pasta } ou null */
+async function vtNuvemLer(id) {
+  if (!vtUsuario()) return null; id = String(id || ''); if (!id) return null;
+  const d = await vtFicha(id, true); if (!d) return null;
+  const n = Number(d.partes) || 0, vp = Number(d.versaoPartes) || 0; let s = '';
+  for (let i = 0; i < n; i++) { const p = await Data.col('vtd_partes').get(id + '_' + vp + '_' + d.partesDe + '_' + i); if (!p || typeof p.b64 !== 'string') throw new Error('Pedaço ' + (i + 1) + ' de ' + n + ' não chegou.'); s += p.b64; }
+  return { ficha: d.ficha, pacote: s ? JSON.parse(s) : null, versao: Number(d.versao) || 0, pasta: d.pasta };
+}
+/* grava a versão seguinte. esperada = a versão da nuvem que o Vértice conhece. { ok, versao } | { conflito: true } */
+async function vtNuvemGravar(dados, esperada) {
+  const u = vtUsuario(); if (!u || !u.salvar) throw new Error('Só o Administrador e o Líder ★ salvam na nuvem.');
+  if (!DEMO && navigator.onLine === false) throw new Error('sem internet'); /* sem internet a gravação do Firestore fica pendurada: o Vértice guarda na fila e tenta quando voltar */
+  const ficha = dados && dados.ficha, id = String((ficha && ficha.id) || ''), pasta = ficha && ficha.pastaNome;
+  if (!id || /[\/_]/.test(id) || id.length > 120) throw new Error('Arquivo sem id válido.');
+  if (!vtnPastaOk(pasta)) throw new Error('Só sobe arquivo numa das 5 pastas.');
+  const atual = await vtFicha(id, true), cur = atual ? Number(atual.versao) || 0 : 0;
+  if (cur !== (Number(esperada) || 0)) return { conflito: true };
+  const v = cur + 1, s = JSON.stringify(dados.pacote == null ? null : dados.pacote), partes = [];
+  for (let i = 0; i < s.length; i += VT_PARTE) partes.push(s.slice(i, i + VT_PARTE));
+  if (!partes.length) partes.push('');
+  if (partes.length > VT_PARTES_MAX) throw new Error('Arquivo grande demais para a nuvem (' + Math.round(s.length / 1048576) + ' MB).');
+  const em = nowISO(), limpa = JSON.parse(JSON.stringify(ficha)); delete limpa.nuvem;
+  for (let n = 0; n < partes.length; n++) {
+    const pid = id + '_' + v + '_' + u.uid + '_' + n;
+    try { await Data.col('vtd_partes').set(pid, { arq: id, versao: v, n: n, b64: partes[n], porId: u.uid, em: em }); }
+    catch (e) { if (!vtNegado(e)) throw e; const ja = await Data.col('vtd_partes').get(pid).catch(() => null); if (!ja) throw e; } /* pedaço já gravado numa tentativa anterior: segue */
+  }
+  try { await Data.col('vtd_arquivos').set(id, { v: 1, id: id, ficha: limpa, versao: v, versaoPartes: v, pasta: pasta, partes: partes.length, partesDe: u.uid, bytes: s.length, porId: u.uid, porNome: u.nome, em: em }); }
+  catch (e) { if (vtNegado(e)) { const de = await vtFicha(id, true); if (de && (Number(de.versao) || 0) !== cur) return { conflito: true }; } throw e; }
+  try { Audit.log({ acao: 'vertice_nuvem', entidade: 'vtd_arquivo', entidadeId: id, resumo: 'Vértice: ' + (limpa.nome || id) + ' na nuvem (versão ' + v + ', ' + pasta + ')' }); } catch {}
+  return { ok: true, versao: v };
+}
 try {
   Object.defineProperty(window, 'CworkPonteVertice', {
-    value: Object.freeze({ versao: 1, recursos: Object.freeze(['usuario', 'evento', 'acesso', 'pastas']), usuario: () => vtUsuario(), pastas: () => vtPastasDe(S.user) }),
+    value: Object.freeze({ versao: 1, recursos: Object.freeze(['usuario', 'evento', 'acesso', 'pastas', 'nuvem']), usuario: () => vtUsuario(), pastas: () => vtPastasDe(S.user),
+      nuvem: Object.freeze({ listar: () => vtNuvemListar(), ler: id => vtNuvemLer(id), gravar: (dados, esperada) => vtNuvemGravar(dados, esperada) }) }),
     writable: false, configurable: false, enumerable: false
   });
 } catch (e) { console.warn('porta do Vértice:', e); }

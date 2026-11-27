@@ -23,16 +23,23 @@ function situacaoInterno(estado, x) {
 }
 
 /** Página "Documentos internos": uma aba por tipo de papel; cada linha diz se já foi para o Cwork. */
-const colunasInternos = (estado) => [
+/* v0.6.75 (P4): onde o documento está. nuvem = { ligada, pode } (ligada: dentro do Cwork, com a porta da nuvem; pode: salva) */
+export function situacaoNuvem(nuvem, x) {
+  if (x.nuvem && x.nuvem.versao) return 'Na nuvem · versão ' + x.nuvem.versao;
+  if (nuvem && nuvem.ligada && nuvem.pode) return 'Subindo para a nuvem';
+  return 'Só neste aparelho';
+}
+const colunasInternos = (estado, nuvem) => [
   { id: 'codigo', rot: 'Código', cls: 'c-codigo', v: (x) => x.codigo || '' }, COL_NOME, COL_TIPO, COL_QUANDO,
-  { id: 'situacao', rot: 'Situação', cls: 'c-situacao', v: (x) => situacaoInterno(estado, x).texto || '' }, COL_ACOES,
+  { id: 'situacao', rot: 'Situação', cls: 'c-situacao', v: (x) => situacaoInterno(estado, x).texto || '' },
+  { id: 'nuvem', rot: 'Nuvem', cls: 'c-nuvem', v: (x) => situacaoNuvem(nuvem, x) }, COL_ACOES,
 ];
 
-export function DocsInternos({ fichas, estado, cx, acrescentar, editar, lendo }) {
+export function DocsInternos({ fichas, estado, cx, acrescentar, editar, lendo, nuvem }) {
   const todos = useMemo(() => ativos(fichas).filter((f) => f.pastaNome), [fichas]);
   const [f, mudar] = useFiltro('internos');
   /* o filtro (nome e ordem) vale para todas as sub-abas; os contadores das abas seguem o filtro */
-  const colunas = colunasInternos(estado);
+  const colunas = colunasInternos(estado, nuvem);
   const st = usarTabela('internos');
   /* v0.6.24 · os filtros das colunas valem como o da tela: para todas as sub-abas e nos contadores delas */
   const base = aplicarFiltro([...todos].sort((a, b) => (b.alteradoEm || '').localeCompare(a.alteradoEm || '')), FILTRO_PADRAO);
@@ -65,7 +72,7 @@ export function DocsInternos({ fichas, estado, cx, acrescentar, editar, lendo })
         vazio={todos.length ? (internos.length ? `Nada em ${sub}.` : 'Nenhum documento com esse filtro.') : 'Ponha aqui as etiquetas, fichas, formulários, fluxogramas e POPs que vão para o Cwork: "Pôr um arquivo aqui" ou, com o arquivo aberto, Arquivo › Documento interno.'}
         detalhe={(x) => {
           const e = situacaoInterno(estado, x);
-          return dadosDoArquivo(x, cx, { situacoes: [e], acoes: [
+          return dadosDoArquivo(x, cx, { situacoes: [e, { tom: x.nuvem && x.nuvem.versao ? 'ok' : '', texto: situacaoNuvem(nuvem, x) }], acoes: [
             { id: 'abrir', rotulo: 'Abrir', ic: x.tipo, tipo: 'ouro', fazer: () => cx.abrir(x.id) },
             { id: 'subaba', rotulo: 'Sub-aba e código', ic: 'renomear', fazer: () => editar(x) },
           ] });
@@ -84,6 +91,7 @@ export function DocsInternos({ fichas, estado, cx, acrescentar, editar, lendo })
               <td className="c-tipo">{TIPOS[x.tipo].nome}</td>
               <td className="c-quando">{dataHora(x.alteradoEm)}</td>
               <td className="c-situacao"><Situacao tom={e.tom} data-int-estado={x.id}>{e.texto}</Situacao></td>
+              <td className="c-nuvem"><Situacao tom={x.nuvem && x.nuvem.versao ? 'ok' : ''} data-int-nuvem={x.id}>{situacaoNuvem(nuvem, x)}</Situacao></td>
               <td className="c-acoes"><span className="acoes">
                 <BotaoDetalhes nome={x.nome} extra={extra} />
                 <button type="button" className="iconbtn" aria-label={'Sub-aba e código: ' + x.nome} title="Sub-aba e código" onClick={() => editar(x)}><Icone n="renomear" /></button>

@@ -98,6 +98,9 @@ export function criarBanco({ demo = false, backend = bancoPadrao(demo), agora = 
     gravacoes.set(ficha.id, Math.max(gravacoes.get(ficha.id) || 0, ficha.gravacao || 0));
     if (ficha.nuvem) nuvens.set(ficha.id, ficha.nuvem);
   };
+  /* v0.6.75 (P4): quem quer saber de cada gravação (a sincronia com a nuvem). Erro de quem ouve não atrapalha o salvar. */
+  const ouvintes = new Set();
+  const avisarOuvintes = (ficha) => { for (const fn of ouvintes) { try { fn(ficha); } catch { /* fica para a próxima */ } } };
   const proximaGravacao = async (ficha) => {
     if (!gravacoes.has(ficha.id)) lembrar((await backend.um(ficha.id) || {}).ficha); /* só a primeira vez na sessão, se não abriu antes */
     const n = Math.max(gravacoes.get(ficha.id) || 0, ficha.gravacao || 0) + 1; /* o maior entre o que esta aba sabe e a ficha que chegou (outra aba pode ter gravado) */
@@ -141,6 +144,7 @@ export function criarBanco({ demo = false, backend = bancoPadrao(demo), agora = 
         if (!ok) { gravacoes.delete(ficha.id); return { conflito: true }; }
       } else await backend.por(r);
       if (acao) await anotar(acao, ficha);
+      avisarOuvintes(ficha);
       return { bytesOriginal: pacote.bytesOriginal, bytesFinal: pacote.bytesFinal, fmt: pacote.fmt, marca, gravacao };
     },
     async abrir(id) {
@@ -161,6 +165,7 @@ export function criarBanco({ demo = false, backend = bancoPadrao(demo), agora = 
       const ficha = { ...r.ficha, ...mudancas, gravacao: await proximaGravacao(r.ficha) }; /* v0.6.72: mudar a ficha também conta */
       await backend.por({ ...r, ficha, marca: Date.now().toString(36) + Math.random().toString(36).slice(2, 8) });
       if (acao) await anotar(acao, ficha, extra);
+      avisarOuvintes(ficha);
       return ficha;
     },
     mandarParaLixeira(id) {
@@ -180,5 +185,7 @@ export function criarBanco({ demo = false, backend = bancoPadrao(demo), agora = 
     eventos: () => backend.eventos(),
     /** v0.6.72: quem envia para a nuvem (P4) avisa a versão nova aqui, para o próximo salvar não apagar. */
     lembrarNuvem(id, nuvem) { if (nuvem) nuvens.set(id, nuvem); else nuvens.delete(id); },
+    /** v0.6.75 (P4): fn(ficha) a cada salvar ou mudança de ficha. Devolve a função que para de ouvir. */
+    ouvir(fn) { ouvintes.add(fn); return () => ouvintes.delete(fn); },
   };
 }
