@@ -13,7 +13,7 @@
    sem profundidade no tipo; laboratório e fazenda com cadastro completo; prefixo da fazenda escondido.
    Quem altera: Líder ★ e Administrador (como as regras do Firestore já exigem). Nada se apaga: sai com "desativar" e motivo, e volta com Reativar. */
 Object.assign(S, { ccVista: 'talhoes' });
-const CC_VISTAS = [['talhoes', 'Talhões'], ['analises', 'Análises'], ['labs', 'Laboratórios'], ['tipos', 'Tipos de coleta'], ['fazendas', 'Fazendas'], ['pontos', 'Pontos de água']];
+const CC_VISTAS = [['talhoes', 'Talhões'], ['analises', 'Análises'], ['labs', 'Laboratórios'], ['tipos', 'Tipos de coleta'], ['fazendas', 'Fazendas'], ['pontos', 'Pontos de água'], ['etiquetas', 'Modelos de etiqueta']]; /* v0.6.43: modelos de etiqueta do Vértice (etiquetas.js) */
 const CC_UM = { talhoes: ['Novo talhão', 'talhão', 'talhões'], analises: ['Nova análise', 'análise', 'análises', 'a'], labs: ['Novo laboratório', 'laboratório', 'laboratórios'], tipos: ['Novo tipo de coleta', 'tipo', 'tipos'], fazendas: ['Nova fazenda', 'fazenda', 'fazendas', 'a'], pontos: ['Novo ponto de água', 'ponto', 'pontos'] };
 const CC_MATS = CO_MAT.concat([['AGUA', 'Água']]);
 const CC_MAT_TXT = m => (CC_MATS.find(x => x[0] === m) || [m, m || ''])[1];
@@ -45,6 +45,7 @@ const ccPts = (t, k) => Number(t[k]) > 0 ? numBR(t[k]) : '';
 function ccTela(t) {
   const v = CC_VISTAS.some(x => x[0] === S.ccVista) ? S.ccVista : 'talhoes';
   if (v === 'pontos') return ccPontos(t);
+  if (v === 'etiquetas') return etCadTela(t, ddHTML('cc:vista', v, CC_VISTAS));
   const um = CC_UM[v], l = { talhoes: ccTalhoes, analises: ccAnalises, labs: ccLabs, tipos: ccTipos, fazendas: ccFazendas }[v](), at = l.filter(ccAtivo).length;
   const acoes = ddHTML('cc:vista', v, CC_VISTAS) + (ccPode() ? '<button type="button" class="bt pr" data-act="cc-novo">' + ic('mais') + esc(um[0]) + '</button>' : '');
   const h = cabecalho({ titulo: t.nome, abaNome: t.nome, meta: ['<span>' + at + ' ' + (at === 1 ? um[1] + ' ativ' + (um[3] || 'o') : um[2] + ' ativ' + (um[3] || 'o') + 's') + '</span>'], acoes: acoes });

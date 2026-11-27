@@ -150,6 +150,22 @@
    ]
   },
   {
+   "nome": "Coletas › Cadastros (modelos de etiqueta)",
+   "passos": [
+    {
+     "eval": "if(S.fm)lcFimSo();Data.col('sv2_cfg').set('coletas',{labs:['LAB (exemplo)'],etqVertice:[{id:'et1',tipo:'SOLO',lab:'',docId:'dx1',nome:'Etiqueta Solo (exemplo)'}]});S.etDocs=[{id:'dx1',nome:'Etiqueta Solo (exemplo)',tipo:'planilha'}];S.ccVista='etiquetas';location.hash='#/coletas/cadastros'"
+    }
+   ]
+  },
+  {
+   "nome": "Coletas › Cadastros › Ligar modelo de etiqueta",
+   "passos": [
+    {
+     "eval": "S.etDocs=[{id:'dx1',nome:'Etiqueta Solo (exemplo)',tipo:'planilha'}];etLigAbrir('')"
+    }
+   ]
+  },
+  {
    "nome": "Depois dos cadastros (fecha)",
    "passos": [
     {

@@ -1,7 +1,7 @@
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.6.42';
+const VERSAO = '0.6.43';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -130,8 +130,10 @@ function iniciais(nome) { const p = String(nome || '?').trim().split(/\s+/); ret
 function aviso(txt, tipo, desfazer) {
   const h = $('#avisos'); if (!h) return;
   const d = document.createElement('div'); d.className = 'av ' + (tipo || 'ok');
-  d.innerHTML = '<span>' + esc(txt) + '</span>' + (desfazer ? '<button type="button" class="av-df">Desfazer</button>' : '');
-  if (desfazer) d.querySelector('.av-df').addEventListener('click', () => { try { desfazer(); } catch {} d.remove(); });
+  /* desfazer: função (botão "Desfazer") ou { rot, fn } (v0.6.41: botão com outro nome, ex.: "Etiquetas") */
+  const acao = desfazer && typeof desfazer === 'object' ? desfazer : desfazer ? { rot: 'Desfazer', fn: desfazer } : null;
+  d.innerHTML = '<span>' + esc(txt) + '</span>' + (acao ? '<button type="button" class="av-df">' + esc(acao.rot) + '</button>' : '');
+  if (acao) d.querySelector('.av-df').addEventListener('click', () => { try { acao.fn(); } catch {} d.remove(); });
   h.appendChild(d); setTimeout(() => { d.classList.add('sai'); setTimeout(() => d.remove(), 300); }, desfazer ? 6000 : 3800);
 }
 

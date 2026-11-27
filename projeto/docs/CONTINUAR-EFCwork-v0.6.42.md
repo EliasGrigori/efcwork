@@ -59,7 +59,7 @@ Substitui o CONTINUAR-EFCwork-v0.6.41.md. Quem ler só este arquivo sabe o que f
 
 **Regras visuais:** sem "cara de IA" e sem emoji; limpo e compacto; botões e campos lado a lado alinhados; um único filtro recolhível; menus de coluna estilo Sankhya; opção em janela retrátil; excluir é lixeira no canto; imprimir é só o ícone; Esc e voltar do celular uma camada por vez; tela sem permissão some; avisos sobem de baixo; movimento só pela escala 40, 80, 150, 250, 350, 400, 500 ms.
 
-**Proibições:** não abrir nem tentar o OneDrive sem ele pedir pelo nome; nada no EFClaudian; não falar dos prints antigos do repositório público; dado real, senha e chave nunca entram no projeto; regras do Firestore são compartilhadas com o EFClaudian (alto risco).
+**Proibições:** **NUNCA inventar documento, nem como exemplo de teste (regra do Elias de 27/11 13:50, "última vez que falo"): não mudar campos, ordem, cabeçalho ou desenho; a etiqueta das amostras é IGUAL à do EFClaudian; todo modelo de teste leva marca d'água visível "MODELO NÃO OFICIAL · SÓ PARA TESTE" (27/11 14:00)**; não abrir nem tentar o OneDrive sem ele pedir pelo nome; nada no EFClaudian; não falar dos prints antigos do repositório público; dado real, senha e chave nunca entram no projeto; regras do Firestore são compartilhadas com o EFClaudian (alto risco).
 
 ## 6. Depois (cada uma só com "pode iniciar")
 1. Relatórios › Coletas em aberto · Conversas · Etiquetas de campo · Só ver por área (a ordem é do Elias).

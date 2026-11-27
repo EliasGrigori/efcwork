@@ -67,6 +67,11 @@ export function fonteImpressao(c, motor, idA, nomeArquivo) {
       const texto = (o.partes || []).map((pp) => (pp.texto && pp.texto.ligado ? ll(pp.texto.ligado) || '' : pp.texto && pp.texto.pars ? pp.texto.pars.map((q) => (q.runs || []).map((r) => r.t || '').join('')).join(' ') : '')).filter(Boolean).join(' ').replace(/\s+/g, ' ').trim();
       return { ...o, svg: svgDaForma(o, Math.max(1, o.w), Math.max(1, o.h), { lerLigado: ll, uid: 'imp' + o.id }), ...(texto ? { textoOculto: texto.slice(0, 500) } : {}) };
     }
+    /* v0.6.78: a imagem do Excel (logotipo, marca d'água) sai como imagem; antes caía no desenho da assinatura (linha + "Picture") */
+    if (o.tipo === 'imagem') {
+      const src = /^data:image\/(png|jpeg|gif|webp);base64,[A-Za-z0-9+/=]+$/.test(String(o.src || '')) ? o.src : '';
+      return { ...o, svg: `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ${o.w} ${o.h}" width="${o.w}" height="${o.h}">${src ? `<image href="${src}" xlink:href="${src}" x="0" y="0" width="${o.w}" height="${o.h}" preserveAspectRatio="none"/>` : ''}</svg>` };
+    }
     const nome = String(o.nome || '').replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
     const lin = Math.round(o.h * 0.72);
     return { ...o, svg: `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ${o.w} ${o.h}" width="${o.w}" height="${o.h}">${o.rub ? `<image href="${o.rub}" xlink:href="${o.rub}" x="6" y="2" width="${o.w - 12}" height="${lin - 4}" preserveAspectRatio="xMidYMax meet"/>` : ''}<line x1="6" y1="${lin}" x2="${o.w - 6}" y2="${lin}" stroke="#222" stroke-width="1"/><text x="${o.w / 2}" y="${lin + 14}" text-anchor="middle" font-size="12" font-family="Helvetica, Arial" fill="#222">${nome}</text></svg>` };

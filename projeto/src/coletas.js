@@ -105,7 +105,7 @@ TELAS.coletas = function (aba) {
 function coTabAmostras() {
   const l = S.coletas.filter(c => CO_TXT[c.tipo] && c.tipo !== 'AGUA').sort((a, b) => String(b.data || '').localeCompare(String(a.data || '')) || cmpTxt(coNome(a), coNome(b)));
   const SITS = [['naoenv', 'Não enviadas'], ['aguarda', 'Aguardando laudo'], ['atrasado', 'Laudo atrasado'], ['laudo', 'Laudo baixado'], ['encerrada', 'Encerradas'], ['cancelada', 'Canceladas'], ['abertas', 'Em aberto (não encerradas)']];
-  return tbHTML({ id: 'co-am', titulo: 'Amostras', unidade: 'amostras', linhas: l, teto: coTeto() ? { n: CO_LIM, act: 'co-tudo' } : null, aoClicar: coAbre, selecionado: S._coSel, buscaDica: 'Buscar talhão, análise, laboratório, O.S ou NF',
+  return tbHTML({ id: 'co-am', antesIcones: typeof etIcAmostras === 'function' ? etIcAmostras() : '', titulo: 'Amostras', unidade: 'amostras', linhas: l, teto: coTeto() ? { n: CO_LIM, act: 'co-tudo' } : null, aoClicar: coAbre, selecionado: S._coSel, buscaDica: 'Buscar talhão, análise, laboratório, O.S ou NF',
     busca: c => [coNome(c), c.analiseNome, c.sigla, c.lab, c.os, c.nfEnvio, c.rastreio, c.pedidoSankhya, c.coletor].join(' '),
     filtros: [
       { k: 'mat', rot: 'Material', opcoes: CO_MAT, teste: (c, v) => c.tipo === v },
@@ -174,7 +174,7 @@ function coAbre(id) {
 function coAbreLote(k) {
   S._coSel = k; gvAbrir(() => {
     const l = coLote(k); if (!l.length) return null; const c0 = l[0], lau = l.filter(c => c.laudo).length, at = l.filter(c => coLaudoSit(c) === 'Atrasado').length, pode = coPode(), aberta = l.some(c => !coEncerrada(c));
-    return { ico: 'caixa', cabAcoes: pode ? ktPapBt(k) + coAnxBt(k) : '', sub: 'Remessa · ' + fmtD(c0.envio), titulo: c0.lab || 'Sem laboratório', pill: alPill(lau === l.length ? 'Laudos baixados' : at ? at + ' laudo(s) atrasado(s)' : 'Aguardando laudos', lau === l.length ? 'ok' : at ? 'cr' : ''),
+    return { ico: 'caixa', cabAcoes: (typeof etIcRemessa === 'function' ? etIcRemessa(k) : '') + (pode ? ktPapBt(k) + coAnxBt(k) : ''), sub: 'Remessa · ' + fmtD(c0.envio), titulo: c0.lab || 'Sem laboratório', pill: alPill(lau === l.length ? 'Laudos baixados' : at ? at + ' laudo(s) atrasado(s)' : 'Aguardando laudos', lau === l.length ? 'ok' : at ? 'cr' : ''),
       corpo: gvNums([[String(l.length), 'amostras'], [lau + '/' + l.length, 'laudos'], [lau === l.length ? '—' : fmtD(coPrevisto(c0)), 'laudo previsto', at ? 'cr' : '']]) +
         gvCampos([['O.S', Array.from(new Set(l.map(c => c.os).filter(Boolean))).join(', ') || 'ainda não informada']]) + coAnexosHTML(l, k) + (typeof drSecao === 'function' ? drSecao(k) : ktRemessaHTML(k)) +
         '<p class="gv-h">Amostras</p><div class="gv-lotes">' + l.sort((a, b) => cmpTxt(a.tipo, b.tipo) || cmpTxt(coNome(a), coNome(b))).map(c => { const s = coSit(c); return '<button type="button" class="gv-lote co-am" data-act="co-abre" data-id="' + esc(c.id) + '"><span><b>' + esc(coNome(c)) + '</b> ' + esc((CO_TXT[c.tipo] || '') + ' · ' + (c.sigla || c.analiseNome || '')) + '</span>' + alPill(s.txt, s.cor) + '</button>'; }).join('') + '</div>',

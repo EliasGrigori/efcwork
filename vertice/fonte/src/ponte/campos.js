@@ -46,7 +46,7 @@ export function faixaDoNome(c, ref) {
 export function camposDoLivro(c) {
   const achados = new Map(), fora = [];
   for (const n of Object.values((c && c.nomes) || {})) {
-    if (!n || !/^efc_/i.test(n.n || '')) continue;
+    if (!n || !/^efc_/i.test(n.n || '') || /^efc_et_/i.test(n.n)) continue; /* v0.6.78: efc_et_ são os campos da etiqueta da amostra (ponte/etiquetas.js) */
     const ch = EFD.chaveDe(n.n), f = ch ? faixaDoNome(c, n.ref) : null;
     if (!ch || !f) { fora.push(n.n); continue; }
     const m = RX_COLUNA.exec(ch);

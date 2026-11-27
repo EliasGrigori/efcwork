@@ -13,8 +13,9 @@ aviso = function (txt, tipo, desfazer) {
   const h = $('#avisos'); if (!h) return;
   [...h.querySelectorAll('.av')].forEach(fzAvFecha);
   const ok = !tipo || tipo === 'ok', d = document.createElement('div'); d.className = 'av t-toast ' + (tipo || 'ok'); d.setAttribute('role', tipo === 'erro' ? 'alert' : 'status');
-  d.innerHTML = (ok ? FZ_VISTO : '') + '<span>' + esc(txt) + '</span>' + (desfazer ? '<button type="button" class="av-df">Desfazer</button>' : '');
-  if (desfazer) d.querySelector('.av-df').addEventListener('click', () => { try { desfazer(); } catch {} fzAvFecha(d); });
+  const acao = desfazer && typeof desfazer === 'object' ? desfazer : desfazer ? { rot: 'Desfazer', fn: desfazer } : null; /* v0.6.41: botão com outro nome (ex.: "Etiquetas") */
+  d.innerHTML = (ok ? FZ_VISTO : '') + '<span>' + esc(txt) + '</span>' + (acao ? '<button type="button" class="av-df">' + esc(acao.rot) + '</button>' : '');
+  if (acao) d.querySelector('.av-df').addEventListener('click', () => { try { acao.fn(); } catch {} fzAvFecha(d); });
   h.appendChild(d); Mov.abre(d);
   if (ok) { setTimeout(() => Mov.visto(d.querySelector('.t-success-check')), 90); fzFaiscaSeSalvou(); }
   d._t = setTimeout(() => fzAvFecha(d), desfazer ? 6000 : 3800);

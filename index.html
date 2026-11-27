@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-+1yo56R7MYAaEtIATcb5DSpaaTr0y1MuMYAxwPDvTM4=' https://www.gstatic.com/firebasejs/13.4.0/ https://www.google.com/recaptcha/enterprise.js https://www.gstatic.com/recaptcha/releases/; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' data: blob: https://*.googleapis.com https://www.google.com/recaptcha/; frame-src 'self' https://eliasgrigori.github.io blob: https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/ https://docseliasflorencio.firebaseapp.com; worker-src 'self' blob:; manifest-src 'self'; media-src 'self' data: blob:; object-src 'self' blob:; base-uri 'none'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-6MuvKVVCWkPBAsaTcIoFA4iM9gphs2W76558vp6NKig=' https://www.gstatic.com/firebasejs/13.4.0/ https://www.google.com/recaptcha/enterprise.js https://www.gstatic.com/recaptcha/releases/; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' data: blob: https://*.googleapis.com https://www.google.com/recaptcha/; frame-src 'self' https://eliasgrigori.github.io blob: https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/ https://docseliasflorencio.firebaseapp.com; worker-src 'self' blob:; manifest-src 'self'; media-src 'self' data: blob:; object-src 'self' blob:; base-uri 'none'; form-action 'self'">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>EFCwork</title>
 <meta name="description" content="EFCwork · Cwork Quality · controle de qualidade agrícola da família EFClaudian.">
@@ -2838,7 +2838,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = Mov;
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.6.42';
+const VERSAO = '0.6.43';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -2967,8 +2967,10 @@ function iniciais(nome) { const p = String(nome || '?').trim().split(/\s+/); ret
 function aviso(txt, tipo, desfazer) {
   const h = $('#avisos'); if (!h) return;
   const d = document.createElement('div'); d.className = 'av ' + (tipo || 'ok');
-  d.innerHTML = '<span>' + esc(txt) + '</span>' + (desfazer ? '<button type="button" class="av-df">Desfazer</button>' : '');
-  if (desfazer) d.querySelector('.av-df').addEventListener('click', () => { try { desfazer(); } catch {} d.remove(); });
+  /* desfazer: função (botão "Desfazer") ou { rot, fn } (v0.6.41: botão com outro nome, ex.: "Etiquetas") */
+  const acao = desfazer && typeof desfazer === 'object' ? desfazer : desfazer ? { rot: 'Desfazer', fn: desfazer } : null;
+  d.innerHTML = '<span>' + esc(txt) + '</span>' + (acao ? '<button type="button" class="av-df">' + esc(acao.rot) + '</button>' : '');
+  if (acao) d.querySelector('.av-df').addEventListener('click', () => { try { acao.fn(); } catch {} d.remove(); });
   h.appendChild(d); setTimeout(() => { d.classList.add('sai'); setTimeout(() => d.remove(), 300); }, desfazer ? 6000 : 3800);
 }
 
@@ -6703,7 +6705,7 @@ TELAS.coletas = function (aba) {
 function coTabAmostras() {
   const l = S.coletas.filter(c => CO_TXT[c.tipo] && c.tipo !== 'AGUA').sort((a, b) => String(b.data || '').localeCompare(String(a.data || '')) || cmpTxt(coNome(a), coNome(b)));
   const SITS = [['naoenv', 'Não enviadas'], ['aguarda', 'Aguardando laudo'], ['atrasado', 'Laudo atrasado'], ['laudo', 'Laudo baixado'], ['encerrada', 'Encerradas'], ['cancelada', 'Canceladas'], ['abertas', 'Em aberto (não encerradas)']];
-  return tbHTML({ id: 'co-am', titulo: 'Amostras', unidade: 'amostras', linhas: l, teto: coTeto() ? { n: CO_LIM, act: 'co-tudo' } : null, aoClicar: coAbre, selecionado: S._coSel, buscaDica: 'Buscar talhão, análise, laboratório, O.S ou NF',
+  return tbHTML({ id: 'co-am', antesIcones: typeof etIcAmostras === 'function' ? etIcAmostras() : '', titulo: 'Amostras', unidade: 'amostras', linhas: l, teto: coTeto() ? { n: CO_LIM, act: 'co-tudo' } : null, aoClicar: coAbre, selecionado: S._coSel, buscaDica: 'Buscar talhão, análise, laboratório, O.S ou NF',
     busca: c => [coNome(c), c.analiseNome, c.sigla, c.lab, c.os, c.nfEnvio, c.rastreio, c.pedidoSankhya, c.coletor].join(' '),
     filtros: [
       { k: 'mat', rot: 'Material', opcoes: CO_MAT, teste: (c, v) => c.tipo === v },
@@ -6772,7 +6774,7 @@ function coAbre(id) {
 function coAbreLote(k) {
   S._coSel = k; gvAbrir(() => {
     const l = coLote(k); if (!l.length) return null; const c0 = l[0], lau = l.filter(c => c.laudo).length, at = l.filter(c => coLaudoSit(c) === 'Atrasado').length, pode = coPode(), aberta = l.some(c => !coEncerrada(c));
-    return { ico: 'caixa', cabAcoes: pode ? ktPapBt(k) + coAnxBt(k) : '', sub: 'Remessa · ' + fmtD(c0.envio), titulo: c0.lab || 'Sem laboratório', pill: alPill(lau === l.length ? 'Laudos baixados' : at ? at + ' laudo(s) atrasado(s)' : 'Aguardando laudos', lau === l.length ? 'ok' : at ? 'cr' : ''),
+    return { ico: 'caixa', cabAcoes: (typeof etIcRemessa === 'function' ? etIcRemessa(k) : '') + (pode ? ktPapBt(k) + coAnxBt(k) : ''), sub: 'Remessa · ' + fmtD(c0.envio), titulo: c0.lab || 'Sem laboratório', pill: alPill(lau === l.length ? 'Laudos baixados' : at ? at + ' laudo(s) atrasado(s)' : 'Aguardando laudos', lau === l.length ? 'ok' : at ? 'cr' : ''),
       corpo: gvNums([[String(l.length), 'amostras'], [lau + '/' + l.length, 'laudos'], [lau === l.length ? '—' : fmtD(coPrevisto(c0)), 'laudo previsto', at ? 'cr' : '']]) +
         gvCampos([['O.S', Array.from(new Set(l.map(c => c.os).filter(Boolean))).join(', ') || 'ainda não informada']]) + coAnexosHTML(l, k) + (typeof drSecao === 'function' ? drSecao(k) : ktRemessaHTML(k)) +
         '<p class="gv-h">Amostras</p><div class="gv-lotes">' + l.sort((a, b) => cmpTxt(a.tipo, b.tipo) || cmpTxt(coNome(a), coNome(b))).map(c => { const s = coSit(c); return '<button type="button" class="gv-lote co-am" data-act="co-abre" data-id="' + esc(c.id) + '"><span><b>' + esc(coNome(c)) + '</b> ' + esc((CO_TXT[c.tipo] || '') + ' · ' + (c.sigla || c.analiseNome || '')) + '</span>' + alPill(s.txt, s.cor) + '</button>'; }).join('') + '</div>',
@@ -7951,7 +7953,7 @@ document.addEventListener('change', e => { const t = e.target; if (t && t.getAtt
    sem profundidade no tipo; laboratório e fazenda com cadastro completo; prefixo da fazenda escondido.
    Quem altera: Líder ★ e Administrador (como as regras do Firestore já exigem). Nada se apaga: sai com "desativar" e motivo, e volta com Reativar. */
 Object.assign(S, { ccVista: 'talhoes' });
-const CC_VISTAS = [['talhoes', 'Talhões'], ['analises', 'Análises'], ['labs', 'Laboratórios'], ['tipos', 'Tipos de coleta'], ['fazendas', 'Fazendas'], ['pontos', 'Pontos de água']];
+const CC_VISTAS = [['talhoes', 'Talhões'], ['analises', 'Análises'], ['labs', 'Laboratórios'], ['tipos', 'Tipos de coleta'], ['fazendas', 'Fazendas'], ['pontos', 'Pontos de água'], ['etiquetas', 'Modelos de etiqueta']]; /* v0.6.43: modelos de etiqueta do Vértice (etiquetas.js) */
 const CC_UM = { talhoes: ['Novo talhão', 'talhão', 'talhões'], analises: ['Nova análise', 'análise', 'análises', 'a'], labs: ['Novo laboratório', 'laboratório', 'laboratórios'], tipos: ['Novo tipo de coleta', 'tipo', 'tipos'], fazendas: ['Nova fazenda', 'fazenda', 'fazendas', 'a'], pontos: ['Novo ponto de água', 'ponto', 'pontos'] };
 const CC_MATS = CO_MAT.concat([['AGUA', 'Água']]);
 const CC_MAT_TXT = m => (CC_MATS.find(x => x[0] === m) || [m, m || ''])[1];
@@ -7983,6 +7985,7 @@ const ccPts = (t, k) => Number(t[k]) > 0 ? numBR(t[k]) : '';
 function ccTela(t) {
   const v = CC_VISTAS.some(x => x[0] === S.ccVista) ? S.ccVista : 'talhoes';
   if (v === 'pontos') return ccPontos(t);
+  if (v === 'etiquetas') return etCadTela(t, ddHTML('cc:vista', v, CC_VISTAS));
   const um = CC_UM[v], l = { talhoes: ccTalhoes, analises: ccAnalises, labs: ccLabs, tipos: ccTipos, fazendas: ccFazendas }[v](), at = l.filter(ccAtivo).length;
   const acoes = ddHTML('cc:vista', v, CC_VISTAS) + (ccPode() ? '<button type="button" class="bt pr" data-act="cc-novo">' + ic('mais') + esc(um[0]) + '</button>' : '');
   const h = cabecalho({ titulo: t.nome, abaNome: t.nome, meta: ['<span>' + at + ' ' + (at === 1 ? um[1] + ' ativ' + (um[3] || 'o') : um[2] + ' ativ' + (um[3] || 'o') + 's') + '</span>'], acoes: acoes });
@@ -9518,8 +9521,9 @@ async function vtNuvemGravar(dados, esperada) {
 }
 try {
   Object.defineProperty(window, 'CworkPonteVertice', {
-    value: Object.freeze({ versao: 1, recursos: Object.freeze(['usuario', 'evento', 'acesso', 'pastas', 'nuvem']), usuario: () => vtUsuario(), pastas: () => vtPastasDe(S.user),
-      nuvem: Object.freeze({ listar: () => vtNuvemListar(), ler: id => vtNuvemLer(id), gravar: (dados, esperada) => vtNuvemGravar(dados, esperada) }) }),
+    value: Object.freeze({ versao: 1, recursos: Object.freeze(['usuario', 'evento', 'acesso', 'pastas', 'nuvem', 'etiquetas']), usuario: () => vtUsuario(), pastas: () => vtPastasDe(S.user),
+      nuvem: Object.freeze({ listar: () => vtNuvemListar(), ler: id => vtNuvemLer(id), gravar: (dados, esperada) => vtNuvemGravar(dados, esperada) }),
+      etiquetas: Object.freeze({ ler: pid => (typeof etPortaLer === 'function' ? etPortaLer(pid) : null) }) }), /* v0.6.43 (etapa 3): o pedido de etiquetas (etiquetas.js) */
     writable: false, configurable: false, enumerable: false
   });
 } catch (e) { console.warn('porta do Vértice:', e); }
@@ -9604,6 +9608,140 @@ csAppsFamilia = function (n) {
   const tudo = CS_APPS.slice(); CS_APPS.splice(0, CS_APPS.length, ...tudo.filter(a => a.id !== 'docs'));
   try { return vtAppsOrig.apply(this, arguments); } finally { CS_APPS.splice(0, CS_APPS.length, ...tudo); }
 };
+
+/* ===== etiquetas.js ===== */
+/* EFCwork · etiquetas.js — Etiquetas das amostras feitas no Vértice (v0.6.43, etapa 3, EM APROVAÇÃO). Prefixo: et.
+   Pedido do Elias (27/11 11:3x): "automáticas igual ao do Claudian, senão eu perderia muito tempo editando cada campo", com
+   vários tipos de etiqueta, feitas no Vértice. Decisão de 27/11 06:59: o documento mora só no Vértice; o Cwork guarda só a ligação.
+   - O modelo é uma planilha do Vértice na pasta Etiquetas: UMA etiqueta desenhada, com as células marcadas (Campos do Cwork ›
+     Etiqueta da amostra). O Vértice repete a etiqueta na folha do modelo (vertice/fonte/src/ponte/etiquetas.js).
+   - Coletas › Cadastros › Modelos de etiqueta: qual modelo serve para cada material (e, se quiser, para um laboratório).
+     Grava em sv2_cfg/coletas.etqVertice = [{ id, tipo, lab ('' = qualquer), docId, nome }] (o mesmo documento dos outros
+     cadastros; as regras já deixam Líder ★ e Administrador gravar).
+   - Escolha por amostra (a mesma regra do EFClaudian): material + laboratório; sem ele, o do material para qualquer laboratório.
+   - Imprimir: o Cwork monta o pedido (os dados de cada amostra), guarda só na memória desta tela e abre o Vértice em
+     #/pedido/et<pid>; o Vértice pede os dados pela porta (recurso 'etiquetas'). Nada vai para a nuvem; nada é gravado.
+   Quem imprime: quem vê Coletas. Onde: ícone em Amostras (as da lista filtrada), na gaveta da remessa e no aviso depois de "Coletado". */
+Object.assign(ICS, { etiqueta: '<path d="M3 12V4a1 1 0 0 1 1-1h8l9 9-9 9-9-9z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="7.5" cy="7.5" r="1.5" fill="currentColor"/>' });
+Object.assign(S, { etPedidos: {}, etDocs: null, etDocsLendo: false });
+const ET_MATS = ['SOLO', 'NEMATOIDE', 'FOLHA', 'FRUTA', 'COMPOSTO'];
+const ET_MAX = 600;
+
+/* ---------- os dados de cada amostra: as MESMAS regras do etValor do EFClaudian (valor que falta sai "-") ---------- */
+function etDados(c) {
+  const t = typeof pgTalhao === 'function' ? pgTalhao(c.talhao) : null, cult = t ? t.cultura : (c.cultura || '-'), vari = t ? t.variedade : (c.variedade || '-');
+  const cp = c.tipo === 'COMPOSTO', tr = v => (v == null || v === '' ? '-' : String(v));
+  /* o cabeçalho fica escrito no próprio modelo do Vértice (ITEM 277); a observação vem da amostra, no Cwork (ITEM 279) */
+  return {
+    material: c.tipo === 'NEMATOIDE' ? 'SOLO + RAIZ' : c.tipo, analise: tr(c.analiseNome), cultura: tr(cult), variedade: tr(vari), talhao: tr(c.talhao || c.loteComp),
+    profundidade: tr(c.prof), data: c.data || '-', responsavel: tr(c.coletor), estadio: tr(c.estadio), obs: tr(cp ? (c.dadosCompl || c.obs) : c.obs), semana: tr(c.semana),
+    laboratorio: tr(c.lab), identificacao: cp ? (c.identif || 'COMPOSTO') : (c.identificacao || (String(cult || '') + ' ' + (c.maturacao || '')).trim() || '-'),
+    fertilizante: tr(c.fertilizante), fabricacao: c.dataFabr || '-', rastreabilidade: tr(c.rastreabilidade), hora: tr(c.hora), os: tr(c.os)
+  };
+}
+
+/* ---------- as ligações (material + laboratório → modelo do Vértice) ---------- */
+const etLig = () => ((S.cfgCol || {}).etqVertice || []).filter(x => x && x.docId);
+function etModelo(c) {
+  const l = etLig().filter(x => x.tipo === c.tipo);
+  return l.find(x => x.lab && x.lab === c.lab) || l.find(x => !x.lab) || null;
+}
+const etMatTxt = m => (CO_MAT.find(x => x[0] === m) || [m, m])[1];
+
+/* ---------- imprimir ---------- */
+function etImprimir(ids, origem) {
+  const cs = (ids || []).map(id => (S.coletas || []).find(c => c.id === id)).filter(c => c && ET_MATS.indexOf(c.tipo) >= 0 && c.situacao !== 'cancelada');
+  if (!cs.length) return aviso('Nenhuma amostra para etiqueta (água não tem etiqueta).', 'erro');
+  if (cs.length > ET_MAX) return aviso('São ' + cs.length + ' amostras. Filtre a data (até ' + ET_MAX + ' por vez).', 'erro');
+  const sem = Array.from(new Set(cs.filter(c => !etModelo(c)).map(c => etMatTxt(c.tipo))));
+  const com = cs.filter(c => etModelo(c));
+  if (!com.length) return aviso('Falta ligar um modelo de etiqueta para ' + sem.join(', ') + ' em Coletas › Cadastros › Modelos de etiqueta.', 'erro');
+  com.sort((a, b) => cmpTxt(etModelo(a).nome || '', etModelo(b).nome || '') || cmpTxt(a.data + coNome(a), b.data + coNome(b)));
+  const pid = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  S.etPedidos[pid] = { titulo: 'Etiquetas · ' + origem, em: nowISO(), amostras: com.map(c => { const m = etModelo(c); return { id: c.id, docId: m.docId, modelo: m.nome || '', rotulo: [coNome(c), c.analiseNome, c.prof && c.prof !== 'N/A' ? c.prof : '', c.data ? fmtD(c.data).slice(0, 5) : ''].filter(Boolean).join(' · '), dados: etDados(c) }; }) };
+  if (sem.length) aviso('Sem modelo de etiqueta para ' + sem.join(', ') + ': essas ficaram de fora. Ligue em Coletas › Cadastros › Modelos de etiqueta.', 'erro');
+  jnAbrir('docs', '#/pedido/et' + pid, true);
+}
+function etDasFiltradas() {
+  const cfg = TB['co-am']; if (!cfg) return;
+  etImprimir(tbFiltrar(cfg).map(c => c.id), 'amostras filtradas');
+}
+const etIcAmostras = () => coVe() ? '<button type="button" class="bt ic-so" data-act="et-am" title="Etiquetas das amostras da lista" aria-label="Etiquetas das amostras da lista">' + ic('etiqueta') + '</button>' : '';
+const etIcRemessa = k => coVe() ? '<button type="button" class="bt ic-so" data-act="et-rem" data-id="' + esc(k) + '" title="Etiquetas desta remessa" aria-label="Etiquetas desta remessa">' + ic('etiqueta') + '</button>' : '';
+function etDepoisColetado(ids, txt) { aviso(txt, 'ok', ids && ids.length && coVe() ? { rot: 'Etiquetas', fn: () => etImprimir(ids, 'acabou de coletar') } : null); }
+
+/* a porta: o Vértice pede os dados do pedido (só os desta tela, enquanto ela estiver aberta) */
+function etPortaLer(pid) {
+  if (!S.user || !coVe()) return null;
+  const p = S.etPedidos[String(pid || '').replace(/^et/, '')]; if (!p) return null;
+  return JSON.parse(JSON.stringify(p));
+}
+
+/* ---------- Coletas › Cadastros › Modelos de etiqueta ---------- */
+async function etLerDocs() {
+  if (S.etDocsLendo || typeof vtUmaVez !== 'function') return; S.etDocsLendo = true;
+  try { S.etDocs = (await vtUmaVez({ igual: ['pasta', 'Etiquetas'] })).map(vtnResumo).filter(d => d.tipo === 'planilha' && d.status !== 'lixeira').sort((a, b) => cmpTxt(a.nome, b.nome)); }
+  catch (e) { console.warn('etiquetas', e); S.etDocs = S.etDocs || []; }
+  finally { S.etDocsLendo = false; if (S.rota.area === 'coletas') { render(); if (S.fm && S.fm.k === 'etLig') gvDesenha(true); } }
+}
+const etDocNome = id => { const d = (S.etDocs || []).find(x => x.id === id); return d ? d.nome : ''; };
+function etCadTela(t, acoesBase) {
+  if (S.etDocs === null && !S.etDocsLendo) setTimeout(etLerDocs, 0);
+  const l = etLig().map(x => Object.assign({}, x, { nm: etDocNome(x.docId) || x.nome || '' })), pode = ccPode();
+  const h = cabecalho({ titulo: t.nome, abaNome: t.nome, meta: ['<span>' + l.length + (l.length === 1 ? ' modelo ligado' : ' modelos ligados') + '</span>'], acoes: acoesBase + (pode ? '<button type="button" class="bt pr" data-act="et-lig-novo">' + ic('mais') + 'Ligar modelo</button>' : '') });
+  return h + tbHTML({ id: 'cc-etq', titulo: 'Modelos de etiqueta', unidade: 'modelos', unidade1: 'modelo', linhas: l, aoClicar: id => gvAbrir(() => etLigGaveta(id)), vazio: 'Nenhum modelo ligado. As planilhas da pasta Etiquetas do Vértice aparecem aqui para ligar.',
+    busca: x => [etMatTxt(x.tipo), x.lab, x.nm].join(' '),
+    cols: [{ k: 'mat', rot: 'Material', v: x => etMatTxt(x.tipo), cls: 'forte' }, { k: 'lab', rot: 'Laboratório', v: x => x.lab || 'Qualquer' }, { k: 'md', rot: 'Modelo no Vértice', v: x => x.nm || 'Não encontrado na pasta Etiquetas' }] });
+}
+function etLigGaveta(id) {
+  const x = etLig().find(y => y.id === id); if (!x) return null; const nm = etDocNome(x.docId) || x.nome || '';
+  const cab = ccPode() ? ccIcBt('et-lig-ed', 'lapis', 'Trocar o modelo', id) : '';
+  return { ico: 'etiqueta', sub: 'Coletas › Cadastros › Modelos de etiqueta', titulo: etMatTxt(x.tipo) + (x.lab ? ' · ' + x.lab : ''), cabAcoes: cab, lixeira: ccPode() ? { act: 'et-lig-tira', id: id, titulo: 'Tirar a ligação' } : null,
+    corpo: gvCampos([['Material', etMatTxt(x.tipo)], ['Laboratório', x.lab || 'Qualquer laboratório'], ['Modelo no Vértice', nm || 'Não encontrado na pasta Etiquetas'], ['Amostras carregadas', String((S.coletas || []).filter(c => etModelo(c) === x).length) + ' usam este modelo']]) };
+}
+function etLigAbrir(id) {
+  if (!ccPode()) return; const x = id ? etLig().find(y => y.id === id) : null;
+  if (S.etDocs === null) etLerDocs();
+  lcAbrir({ k: 'etLig', id: id || '', tipo: x ? x.tipo : 'SOLO', lab: x ? x.lab || '' : '', docId: x ? x.docId : '' }, id ? () => gvAbrir(() => etLigGaveta(id)) : null);
+}
+LC_FORM.etLig = f => {
+  const labs = ccLabs().filter(l => l.ativo || l.nome === f.lab).map(l => [l.nome, l.nome]), docs = (S.etDocs || []).map(d => [d.id, d.nome]);
+  const dois = h => '<div class="fm-g cl-fm2">' + h + '</div>';
+  const c = lcMsg() + dois(lcBl('Material', ddHTML('et:tipo', f.tipo, CO_MAT)) + lcBl('Laboratório', ddHTML('et:lab', f.lab, [['', 'Qualquer']].concat(labs)))) +
+    lcBl('Modelo no Vértice', S.etDocs === null ? '<p class="ag-dc">Lendo a pasta Etiquetas…</p>' : docs.length ? ddHTML('et:doc', f.docId, [['', 'Escolha']].concat(docs)) : '<p class="ag-dc">Nenhuma planilha na pasta Etiquetas do Vértice.</p>');
+  return { ico: 'etiqueta', sub: 'Coletas › Cadastros › Modelos de etiqueta', titulo: f.id ? 'Trocar o modelo' : 'Ligar modelo de etiqueta', corpo: c, rodape: lcPe('et-lig-ok', 'Salvar') };
+};
+function etLigOk() {
+  const f = S.fm; if (!f || !ccPode()) return;
+  if (!f.docId) return lcErro('Escolha o modelo no Vértice.');
+  const cf = S.cfgCol || {}, l = etLig().slice(), dup = l.find(x => x.id !== f.id && x.tipo === f.tipo && (x.lab || '') === (f.lab || ''));
+  if (dup) return lcErro(etMatTxt(f.tipo) + (f.lab ? ' · ' + f.lab : ' · qualquer laboratório') + ' já tem modelo ligado. Abra a ligação para trocar.');
+  if (!lcTravar()) return;
+  const id = f.id || 'et' + Date.now().toString(36), o = { id: id, tipo: f.tipo, lab: f.lab || '', docId: f.docId, nome: etDocNome(f.docId).slice(0, 120) }, i = l.findIndex(x => x.id === id);
+  if (i >= 0) l[i] = o; else l.push(o);
+  Audit.log({ acao: 'ligar_etiqueta', entidade: 'etqvertice', entidadeId: id, resumo: 'Etiqueta de ' + etMatTxt(o.tipo) + (o.lab ? ' · ' + o.lab : '') + ': ' + o.nome });
+  f.volta = null; lcGrava([ccCfgGrava({ etqVertice: l }, cf)], f.id ? 'Modelo trocado.' : 'Modelo ligado.', () => { S.cfgCol = Object.assign({ id: 'coletas' }, cf, { etqVertice: l }); gvAbrir(() => etLigGaveta(id)); });
+}
+function etLigTira(id) {
+  const x = etLig().find(y => y.id === id); if (!x || !ccPode()) return;
+  csConfirma({ titulo: 'Tirar a ligação?', texto: 'As amostras de ' + etMatTxt(x.tipo) + (x.lab ? ' do ' + x.lab : '') + ' ficam sem etiqueta até ligar outro modelo. O documento continua no Vértice.', sim: 'Tirar', nao: 'Voltar' }, async () => {
+    const cf = S.cfgCol || {}, l = etLig().filter(y => y.id !== id);
+    try { await ccCfgGrava({ etqVertice: l }, cf); S.cfgCol = Object.assign({ id: 'coletas' }, cf, { etqVertice: l }); Audit.log({ acao: 'tirar_etiqueta', entidade: 'etqvertice', entidadeId: id, resumo: 'Tirou a etiqueta de ' + etMatTxt(x.tipo) + (x.lab ? ' · ' + x.lab : '') }); gvFechar(); aviso('Ligação tirada.'); render(); }
+    catch (e) { aviso(svErro(e), 'erro'); }
+  });
+}
+
+DD_AO.et = (k, v) => { const f = S.fm; if (!f || f.k !== 'etLig') return; f.sujo = true; f.msg = ''; if (k === 'tipo') f.tipo = v; else if (k === 'lab') f.lab = v; else if (k === 'doc') f.docId = v; gvDesenha(true); };
+document.addEventListener('click', e => {
+  const t = e.target.closest && e.target.closest('[data-act^="et-"]'); if (!t) return;
+  const a = t.getAttribute('data-act'), id = t.getAttribute('data-id');
+  if (a === 'et-am') etDasFiltradas();
+  else if (a === 'et-rem') etImprimir(coLote(id).map(c => c.id), 'remessa');
+  else if (a === 'et-lig-novo') etLigAbrir('');
+  else if (a === 'et-lig-ed') etLigAbrir(id);
+  else if (a === 'et-lig-ok') etLigOk();
+  else if (a === 'et-lig-tira') etLigTira(id);
+});
 
 /* ===== kit.js ===== */
 /* EFCwork · kit.js — Kit do laboratório e papéis do envio (v0.6.10). Prefixo: kt.
@@ -13422,7 +13560,8 @@ async function pgCdOk() {
     }
     await coIdsSeguros(ops); for (let i = 0; i < ops.length; i += 450) await Data.lote(ops.slice(i, i + 450));
     logs.forEach(x => { try { x(); } catch (e) {} });
-    lcFim(); aviso(ps.length + ' área(s) coletada(s) · ' + n + ' amostra(s) em Amostras.');
+    lcFim(); const novos = ops.filter(o => o.col === 'sv2_coletas' && o.tipo === 'set').map(o => o.id), txt = ps.length + ' área(s) coletada(s) · ' + n + ' amostra(s) em Amostras.';
+    if (typeof etDepoisColetado === 'function') etDepoisColetado(novos, txt); else aviso(txt); /* v0.6.43: o aviso oferece as etiquetas (etiquetas.js) */
   } catch (e) { lcErro(svErro(e)); }
 }
 
@@ -13476,7 +13615,8 @@ async function pgAvOk() {
     ids.forEach(aid => ops.push({ col: 'sv2_coletas', tipo: 'set', id: pgColIdLivre(pgColId({ talhao: tal || up(f.lote) }, aid, f.data), ops), dados: pgNovaColeta(m, Object.assign({}, comum, { analiseId: aid })) }));
     await coIdsSeguros(ops); await Data.lote(ops);
     ops.forEach(o => Audit.log({ acao: 'criar_coleta', entidade: 'coleta', entidadeId: o.id, resumo: 'Coleta ' + (lote ? 'em lote ' : 'avulsa ') + (CO_TXT[m] || m) + ' ' + (tal || o.dados.loteComp) + ' em ' + fmtD(f.data) + ' · ' + o.dados.analiseNome, depois: { data: f.data, talhao: tal, analise: o.dados.analiseNome, valor: o.dados.valor } }));
-    lcFim(); aviso(ids.length > 1 ? 'Lançadas ' + ids.length + ' amostras.' : 'Coleta lançada.');
+    lcFim(); const txt = ids.length > 1 ? 'Lançadas ' + ids.length + ' amostras.' : 'Coleta lançada.';
+    if (typeof etDepoisColetado === 'function') etDepoisColetado(ops.map(o => o.id), txt); else aviso(txt); /* v0.6.43: o aviso oferece as etiquetas (etiquetas.js) */
   } catch (e) { lcErro(svErro(e)); }
 }
 
@@ -16172,8 +16312,9 @@ aviso = function (txt, tipo, desfazer) {
   const h = $('#avisos'); if (!h) return;
   [...h.querySelectorAll('.av')].forEach(fzAvFecha);
   const ok = !tipo || tipo === 'ok', d = document.createElement('div'); d.className = 'av t-toast ' + (tipo || 'ok'); d.setAttribute('role', tipo === 'erro' ? 'alert' : 'status');
-  d.innerHTML = (ok ? FZ_VISTO : '') + '<span>' + esc(txt) + '</span>' + (desfazer ? '<button type="button" class="av-df">Desfazer</button>' : '');
-  if (desfazer) d.querySelector('.av-df').addEventListener('click', () => { try { desfazer(); } catch {} fzAvFecha(d); });
+  const acao = desfazer && typeof desfazer === 'object' ? desfazer : desfazer ? { rot: 'Desfazer', fn: desfazer } : null; /* v0.6.41: botão com outro nome (ex.: "Etiquetas") */
+  d.innerHTML = (ok ? FZ_VISTO : '') + '<span>' + esc(txt) + '</span>' + (acao ? '<button type="button" class="av-df">' + esc(acao.rot) + '</button>' : '');
+  if (acao) d.querySelector('.av-df').addEventListener('click', () => { try { acao.fn(); } catch {} fzAvFecha(d); });
   h.appendChild(d); Mov.abre(d);
   if (ok) { setTimeout(() => Mov.visto(d.querySelector('.t-success-check')), 90); fzFaiscaSeSalvou(); }
   d._t = setTimeout(() => fzAvFecha(d), desfazer ? 6000 : 3800);

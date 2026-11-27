@@ -366,7 +366,8 @@ async function pgCdOk() {
     }
     await coIdsSeguros(ops); for (let i = 0; i < ops.length; i += 450) await Data.lote(ops.slice(i, i + 450));
     logs.forEach(x => { try { x(); } catch (e) {} });
-    lcFim(); aviso(ps.length + ' área(s) coletada(s) · ' + n + ' amostra(s) em Amostras.');
+    lcFim(); const novos = ops.filter(o => o.col === 'sv2_coletas' && o.tipo === 'set').map(o => o.id), txt = ps.length + ' área(s) coletada(s) · ' + n + ' amostra(s) em Amostras.';
+    if (typeof etDepoisColetado === 'function') etDepoisColetado(novos, txt); else aviso(txt); /* v0.6.43: o aviso oferece as etiquetas (etiquetas.js) */
   } catch (e) { lcErro(svErro(e)); }
 }
 
@@ -420,7 +421,8 @@ async function pgAvOk() {
     ids.forEach(aid => ops.push({ col: 'sv2_coletas', tipo: 'set', id: pgColIdLivre(pgColId({ talhao: tal || up(f.lote) }, aid, f.data), ops), dados: pgNovaColeta(m, Object.assign({}, comum, { analiseId: aid })) }));
     await coIdsSeguros(ops); await Data.lote(ops);
     ops.forEach(o => Audit.log({ acao: 'criar_coleta', entidade: 'coleta', entidadeId: o.id, resumo: 'Coleta ' + (lote ? 'em lote ' : 'avulsa ') + (CO_TXT[m] || m) + ' ' + (tal || o.dados.loteComp) + ' em ' + fmtD(f.data) + ' · ' + o.dados.analiseNome, depois: { data: f.data, talhao: tal, analise: o.dados.analiseNome, valor: o.dados.valor } }));
-    lcFim(); aviso(ids.length > 1 ? 'Lançadas ' + ids.length + ' amostras.' : 'Coleta lançada.');
+    lcFim(); const txt = ids.length > 1 ? 'Lançadas ' + ids.length + ' amostras.' : 'Coleta lançada.';
+    if (typeof etDepoisColetado === 'function') etDepoisColetado(ops.map(o => o.id), txt); else aviso(txt); /* v0.6.43: o aviso oferece as etiquetas (etiquetas.js) */
   } catch (e) { lcErro(svErro(e)); }
 }
 

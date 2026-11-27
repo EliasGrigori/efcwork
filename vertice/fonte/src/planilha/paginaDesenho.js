@@ -133,7 +133,7 @@ export function desenharPaginas(pg, fonte) {
     };
     linhaCR(imp.cab, imp.marg.cab * CM + fsC);
     linhaCR(imp.rod, H - imp.marg.rod * CM);
-    return { W, H, ops, n: n + 1, ...(fonte.editavel ? { campos: campos2 } : {}) };
+    return { W, H, ops, n: n + 1, area: { x: x0, y: y0, w: larg, h: alt }, ...(fonte.editavel ? { campos: campos2 } : {}) }; /* area: v0.6.77 (etiquetas) */
   });
 }
 

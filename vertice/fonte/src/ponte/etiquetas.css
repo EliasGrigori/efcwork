@@ -1,0 +1,16 @@
+/* Vértice Docs · etiquetas das amostras (v0.6.78): as folhas e, ao lado, os campos para preencher e a lista. */
+.md-pedido:has(.md-et) { padding: 0; overflow: hidden; }
+.et-painel { width: 300px; }
+.et-grupo { border-bottom: 1px solid var(--border); padding: 8px 0 12px; }
+.et-gcab { display: grid; gap: 2px; padding: 4px 16px 8px; }
+.et-gcab b { font-weight: 600; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.et-gcab span { font-size: 12px; color: var(--text-muted); }
+.et-erro { margin: 0 16px 8px; padding: 8px 10px; border-radius: var(--r-ctl); background: var(--crit-soft); color: var(--crit); font-size: 13px; }
+.et-lista { list-style: none; margin: 0; padding: 0 8px; display: grid; }
+.et-am { display: flex; align-items: center; gap: 10px; min-height: 36px; padding: 0 8px; border-radius: var(--r-ctl); font-size: 13px; cursor: pointer; }
+.et-am:hover { background: var(--surface-2); }
+.et-am input { width: 16px; height: 16px; flex: none; margin: 0; accent-color: var(--accent, #9a7128); }
+.et-am span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.et-am.fora span { color: var(--text-muted); text-decoration: line-through; }
+@media (pointer: coarse) { .et-am { min-height: 44px; } }
+@media (max-width: 760px) { .et-painel { width: auto; } }

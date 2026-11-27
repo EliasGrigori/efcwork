@@ -37,7 +37,7 @@ import { JanelaAbrirExcel } from './ui/excel.jsx';
 import { SoltarArquivo } from './ui/soltar.jsx';
 import { usarPonte } from './ponte/usarPonte.js';
 import { DocsInternos, JanelaInterno, ResumoEnvio } from './ui/internos.jsx';
-import { PainelCampos, TelaPedido } from './ponte/camposUi.jsx';
+import { PainelCampos, TelaPedido, TelaEtiquetas } from './ponte/camposUi.jsx';
 
 /* v0.6.20 (R5): nas telas de lista o título grande fica na página; a barra de cima mostra o caminho */
 const TRILHA = { '': '', planilha: 'Meus arquivos', docx: 'Meus arquivos', postits: 'Meus arquivos', internos: 'Organizar', pastas: 'Organizar', externos: 'Organizar', lixeira: '' };
@@ -699,6 +699,7 @@ export function App() {
         ? <Planilha key={aberto.arquivo.ficha.id} arquivo={aberto.arquivo} cx={cx} />
         : <EditorEmBreve tipo={t} />;
   } else if (idRota || pidRota) conteudo = <div className="pagina" aria-busy="true" />;
+  else if (pidPedido && /^et/.test(pidPedido)) conteudo = <TelaEtiquetas key={pidPedido} pid={pidPedido.slice(2)} banco={banco} fichas={fichas} avisar={avisar} />; /* v0.6.78 (etapa 3): etiquetas das amostras */
   else if (pidPedido) conteudo = pidPedido === 'local' && !ponte.pedidoLocal ? <div className="pagina" aria-busy="true" /> : <TelaPedido key={pidPedido} pid={pidPedido} local={pidPedido === 'local' ? ponte.pedidoLocal : null} banco={banco} avisar={avisar} aoSair={(doc) => irPara(pidPedido === 'local' ? (ponte.pedidoLocal.semMenus ? 'documento/' : 'arq/') + ponte.pedidoLocal.docId : doc ? 'documento/' + doc : '')} />;
   else if (rota === 'internos') conteudo = <DocsInternos fichas={fichas} lendo={lendo} nuvem={nuvem} estado={ponte.estado} cx={cx} acrescentar={() => ponte.setJanela({})} editar={(f) => ponte.setJanela({ ficha: f })} />;
   else if (TIPOS[rota]) conteudo = <ListaDoTipo tipo={rota} fichas={fichas} lendo={lendo} cx={cx} demo={demo} />;
@@ -748,7 +749,7 @@ export function App() {
               extra={ficha.tipo === 'postits' || ficha.tipo === 'planilha' ? <div className="painel-extra" ref={setAlvoPainel} /> : null} />
           )}
           {aberto && ponte.resumo && ponte.resumo.docId === ficha.id && <ResumoEnvio resumo={ponte.resumo} conteudo={aberto.arquivo.conteudo} avisar={avisar} aoFechar={ponte.fecharResumo} aoPreencher={() => ponte.preencherDoResumo(aberto.arquivo.conteudo)} />}
-          {aberto && camposAbertos && ficha.tipo === 'planilha' && <PainelCampos conteudo={aberto.arquivo.conteudo} sel={st.planilha ? { abaId: st.planilha.abaId, faixa: st.planilha.faixa } : null} travado={!!travado || !!(st.planilha && st.planilha.somenteLeitura)}
+          {aberto && camposAbertos && ficha.tipo === 'planilha' && <PainelCampos etiqueta={ficha.pastaNome === 'Etiquetas'} conteudo={aberto.arquivo.conteudo} sel={st.planilha ? { abaId: st.planilha.abaId, faixa: st.planilha.faixa } : null} travado={!!travado || !!(st.planilha && st.planilha.somenteLeitura)}
             aoMudar={(mud, rotulo) => aplicarDiff(criarDiff(aberto.arquivo, mud, rotulo), 'campo do Cwork')} aoFechar={() => setCamposAbertos(false)} />}
         </div>
         {cel && !aberto ? (

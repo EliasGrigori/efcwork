@@ -11,12 +11,15 @@ import { EFD } from './ponte.js';
 import { camposDoLivro, dicionario, capacidades } from './campos.js';
 import { paginasDoPedido } from './pedido.js';
 import { lerEstado, pegar, apagar, responder } from './caixa.js';
+import { CAMPOS_ETIQUETA, camposDaEtiqueta, nomeEtiqueta } from './etiquetas.js';
 import { avisarCwork } from '../nucleo/emCwork.js';
+
+export { TelaEtiquetas } from './etiquetasUi.jsx'; /* v0.6.78 (etapa 3) */
 
 const nomeDe = (ch) => EFD.nomeExcel(ch.replace('[].', '.'));
 
 /** Painel ao lado da planilha: escolhe a célula na grade e toca em Marcar no dado certo. Cada marca é um nome definido (efc_...). */
-export function PainelCampos({ conteudo, sel, travado, aoMudar, aoFechar }) {
+export function PainelCampos({ conteudo, sel, travado, aoMudar, aoFechar, etiqueta }) {
   const { campos, fora, excesso } = useMemo(() => camposDoLivro(conteudo), [conteudo]);
   const cap = useMemo(() => capacidades(conteudo, campos), [conteudo, campos]);
   const dic = useMemo(() => dicionario(), []);
@@ -28,17 +31,13 @@ export function PainelCampos({ conteudo, sel, travado, aoMudar, aoFechar }) {
     aoMudar({ ['conteudo.nomes.' + n]: { n, ref: refAbsoluta(conteudo, sel.abaId, sel.faixa) } }, `Marcar campo: ${d.rotulo}`);
   };
   const tirar = (x) => { const nomes = { ...conteudo.nomes }; delete nomes[x.nome.toLowerCase()]; aoMudar({ 'conteudo.nomes': nomes }, `Tirar campo: ${x.rotulo}`); };
+  /* v0.6.78 (etapa 3): a etiqueta da amostra (uma etiqueta desenhada; o Vértice repete na folha, uma por amostra) */
+  const et = useMemo(() => new Map(camposDaEtiqueta(conteudo).map((x) => [x.campo, x])), [conteudo]);
+  const marcarEt = (k, rot) => { const n = nomeEtiqueta(k); aoMudar({ ['conteudo.nomes.' + n]: { n, ref: refAbsoluta(conteudo, sel.abaId, sel.faixa) } }, `Marcar campo da etiqueta: ${rot}`); };
+  const tirarEt = (k, rot) => { const nomes = { ...conteudo.nomes }; delete nomes[nomeEtiqueta(k)]; aoMudar({ 'conteudo.nomes': nomes }, `Tirar campo da etiqueta: ${rot}`); };
   let grupo = '';
-  return (
-    <aside className="resumo-envio painel-campos" aria-label="Campos do Cwork" data-campos>
-      <div className="re-cab">
-        <div><b>Campos do Cwork</b><span data-campos-conta>{campos.length} de {EFD.CAMPOS_MAX} marcados</span></div>
-        <button type="button" className="iconbtn" aria-label="Fechar os campos" title="Fechar" onClick={aoFechar}><Icone n="x" /></button>
-      </div>
-      <p className="pc-dica">Clique na célula da planilha (na lista, selecione a coluna inteira das linhas) e toque em <b>Marcar</b> no dado que o Cwork deve pôr ali.{onde ? <> Seleção: <b data-campos-sel>{onde}</b>.</> : null}</p>
-      {fora.length > 0 && <p className="pc-aviso" data-campos-fora>{fora.length === 1 ? 'Este nome começa' : 'Estes nomes começam'} com efc_ mas não {fora.length === 1 ? 'é campo' : 'são campos'} do Cwork: {fora.join(', ')}.</p>}
-      {excesso > 0 && <p className="pc-aviso">O Cwork aceita até {EFD.CAMPOS_MAX} campos por documento: {excesso} {excesso === 1 ? 'ficou' : 'ficaram'} de fora.</p>}
-      <div className="re-linhas">
+  const blocoDic = (
+    <>
         {dic.map((d) => {
           const x = marcado.get(d.chave), cab = d.grupo !== grupo ? (grupo = d.grupo) : null;
           return (
@@ -58,6 +57,41 @@ export function PainelCampos({ conteudo, sel, travado, aoMudar, aoFechar }) {
             </div>
           );
         })}
+    </>
+  );
+  const blocoEt = (
+    <>
+        <div className="pc-grupo" data-campos-etiqueta>Etiqueta da amostra · uma por amostra, repetida na folha</div>
+        {CAMPOS_ETIQUETA.map(([k, rot]) => {
+          const x = et.get(k);
+          return (
+            <div key={'et_' + k} className={'pc-linha' + (x ? ' on' : '')} data-campo-et={k}>
+              <span className="pc-rot">{rot}</span>
+              {x ? (
+                <>
+                  <span className="pc-onde">{textoFaixa({ l1: x.l, c1: x.c, l2: x.l, c2: x.c })}</span>
+                  <button type="button" className="iconbtn" disabled={travado} aria-label={`Tirar o campo ${rot} da etiqueta`} title="Tirar" onClick={() => tirarEt(k, rot)}><Icone n="lixeira" /></button>
+                </>
+              ) : (
+                <button type="button" className="btn sm" disabled={travado || !onde} data-campo-et-marcar={k} onClick={() => marcarEt(k, rot)}>Marcar</button>
+              )}
+            </div>
+          );
+        })}
+    </>
+  );
+  return (
+    <aside className="resumo-envio painel-campos" aria-label="Campos do Cwork" data-campos>
+      <div className="re-cab">
+        <div><b>Campos do Cwork</b><span data-campos-conta>{etiqueta ? `${et.size} ${et.size === 1 ? 'campo' : 'campos'} da etiqueta marcados` : `${campos.length} de ${EFD.CAMPOS_MAX} marcados`}</span></div>
+        <button type="button" className="iconbtn" aria-label="Fechar os campos" title="Fechar" onClick={aoFechar}><Icone n="x" /></button>
+      </div>
+      <p className="pc-dica">Clique na célula da planilha (na lista, selecione a coluna inteira das linhas) e toque em <b>Marcar</b> no dado que o Cwork deve pôr ali.{onde ? <> Seleção: <b data-campos-sel>{onde}</b>.</> : null}</p>
+      {fora.length > 0 && <p className="pc-aviso" data-campos-fora>{fora.length === 1 ? 'Este nome começa' : 'Estes nomes começam'} com efc_ mas não {fora.length === 1 ? 'é campo' : 'são campos'} do Cwork: {fora.join(', ')}.</p>}
+      {excesso > 0 && <p className="pc-aviso">O Cwork aceita até {EFD.CAMPOS_MAX} campos por documento: {excesso} {excesso === 1 ? 'ficou' : 'ficaram'} de fora.</p>}
+      <div className="re-linhas">
+        {/* v0.6.78: num modelo da pasta Etiquetas, a etiqueta da amostra vem primeiro */}
+        {etiqueta ? <>{blocoEt}{blocoDic}</> : <>{blocoDic}{blocoEt}</>}
       </div>
     </aside>
   );
