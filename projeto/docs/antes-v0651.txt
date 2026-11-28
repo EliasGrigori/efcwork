@@ -1,0 +1,11 @@
+— A conversa no fim do detalhe do apontamento
+  FALHA  o detalhe do apontamento tem a seção Conversa
+  FALHA  vazia, e diz quem recebe o aviso (a responsável): ""
+page.click: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for locator('#cv-tx')[22m
+
+    at /home/claude/w/repo/projeto/tools/testes/t_v0651.js:47:11 {
+  log: [ "  - waiting for locator('#cv-tx')" ],
+  name: 'TimeoutError'
+}

@@ -43,7 +43,7 @@ const conf = (c, msg) => { if (c) { ok++; console.log('  ok  ' + msg); } else { 
     const nAbas = (await p.$$('.cs-abas a')).length;
     conf(nAbas === (r.abas.length > 1 ? r.abas.length : 0), r.id + ': ' + nAbas + ' abas (esperado ' + (r.abas.length > 1 ? r.abas.length : 0) + ')');
   }
-  conf(await p.evaluate(() => [5, 1, 3, 4, 5, 4].join() === ['coletas', 'rateios', 'inspecoes', 'documentos', 'almox', 'qualidade'].map(i => Math.max(1, csArea(i).abas.filter(x => !x.oculta).length)).join()), 'estrutura aprovada: Coletas 5, Rateios 1, Inspeções 3, Documentos 4 (Impressos, v0.6.9), Almoxarifado 5, Qualidade 4 (Treinamentos, v0.6.12) ');
+  conf(await p.evaluate(() => [5, 1, 3, 4, 5, 5].join() === ['coletas', 'rateios', 'inspecoes', 'documentos', 'almox', 'qualidade'].map(i => Math.max(1, csArea(i).abas.filter(x => !x.oculta).length)).join()), 'estrutura aprovada: Coletas 5, Rateios 1, Inspeções 3, Documentos 4 (Impressos, v0.6.9), Almoxarifado 5, Qualidade 5 (Treinamentos, v0.6.12; Conversas, v0.6.51) ');
   await p.evaluate(() => { location.hash = '#/coletas/envio'; }); await p.waitForTimeout(150);
   conf(await p.isVisible('.cs-it.on[href="#/coletas"]') && await p.isVisible('.cs-abas a.on[href="#/coletas/envio"]'), 'área e aba atuais marcadas no menu e nas abas');
   await p.evaluate(() => { AREAS.push({ id: 'zz', nome: 'Área de teste', ic: 'graf', versao: 'v9', abas: [] }); location.hash = '#/zz'; }); await p.waitForTimeout(150); /* v0.6.18: não sobrou área por refazer; uma área de mentira prova a tela */

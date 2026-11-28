@@ -97,9 +97,10 @@ async function vtNuvemGravar(dados, esperada) {
 }
 try {
   Object.defineProperty(window, 'CworkPonteVertice', {
-    value: Object.freeze({ versao: 1, recursos: Object.freeze(['usuario', 'evento', 'acesso', 'pastas', 'nuvem', 'etiquetas']), usuario: () => vtUsuario(), pastas: () => vtPastasDe(S.user),
+    value: Object.freeze({ versao: 1, recursos: Object.freeze(['usuario', 'evento', 'acesso', 'pastas', 'nuvem', 'etiquetas', 'conversas']), usuario: () => vtUsuario(), pastas: () => vtPastasDe(S.user),
       nuvem: Object.freeze({ listar: () => vtNuvemListar(), ler: id => vtNuvemLer(id), gravar: (dados, esperada) => vtNuvemGravar(dados, esperada) }),
-      etiquetas: Object.freeze({ ler: pid => (typeof etPortaLer === 'function' ? etPortaLer(pid) : null) }) }), /* v0.6.43 (etapa 3): o pedido de etiquetas (etiquetas.js) */
+      etiquetas: Object.freeze({ ler: pid => (typeof etPortaLer === 'function' ? etPortaLer(pid) : null) }), /* v0.6.43 (etapa 3) */
+      conversas: Object.freeze({ avisar: d => (typeof cvVtAvisar === 'function' ? cvVtAvisar(d) : Promise.resolve({ ok: false })) }) }), /* v0.6.43 (etapa 3): o pedido de etiquetas (etiquetas.js); v0.6.51: comentário do Kanban/post-it vira conversa e aviso no sino (conversa.js) */
     writable: false, configurable: false, enumerable: false
   });
 } catch (e) { console.warn('porta do Vértice:', e); }

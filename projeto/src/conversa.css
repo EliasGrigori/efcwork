@@ -1,0 +1,15 @@
+/* v0.6.51 · Conversas (conversa.js): a conversa no fim da gaveta do registro, no mesmo desenho dos comentários dos Bugs */
+.cv{margin-top:6px}
+.cv-l{list-style:none;margin:8px 0 10px;padding:0;display:flex;flex-direction:column;gap:8px}
+.cv-m{border:1px solid var(--bd);border-radius:8px;padding:8px 10px;background:var(--bg1)}
+.cv-m.eu{background:var(--bg2)}
+.cv-q{display:flex;align-items:baseline;gap:8px;font-size:14px}
+.cv-q small{margin-left:auto;color:var(--tx3);font-size:12px;white-space:nowrap}
+.cv-org{font-size:12px;color:var(--tx3)}
+.cv-m p{margin:4px 0 0;font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere}
+.cv-vz{margin:6px 0 10px}
+.cv-in{display:flex;flex-direction:column;gap:8px}
+.cv-in textarea{width:100%;min-height:64px;resize:vertical;font:inherit;font-size:14px}
+.cv-in .bt{align-self:flex-end;min-width:112px}
+.cv-av{display:block;margin:6px 0 4px;font-size:12px;color:var(--tx3)}
+@media(max-width:899px){.cv-in .bt{min-height:44px;align-self:stretch}}

@@ -16,6 +16,7 @@ import { resumoTarefa, hojeISO, mudancasOrdenarGut, mudancasTarefa, valorGut } f
 import { problemas } from './assistente.js';
 import { aplicarModelo, ModeloPorId } from './modelos.js';
 import { manterCentro, usarItemVisivel, rolarNaBorda } from './celular.js';
+import { definirArquivoDaConversa, avisarConversa, cartaoDaRota, tirarCartaoDaRota } from '../ponte/conversa.js'; /* v0.6.85: conversa do cartão pelo Cwork */
 import { JanelaAssinatura } from '../ui/assinatura.jsx'; import { estiloDoFundo, JanelaFundo, fundoValido } from './fundo.jsx'; /* v0.6.50 */ import { JanelaTitulo } from './postitUi.jsx'; import { JanelaImprimirQuadro } from './imprimirUi.jsx'; import { CartaoComentario, pedirComentarioDo, respostaNova } from './comentarioQuadro.jsx'; import { trataLayoutQuadro, valorLayoutQuadro } from './layoutQuadro.js'; import { CamadaQuebras } from './quebrasUi.jsx'; import { proximaSelecaoTudo } from './selecao.js'; import { trataEstiloQuadro, valorEstiloQuadro } from './estiloQuadro.js'; import { lembrarEtiquetas, raiasPorEtiqueta } from './etiquetas.js'; /* v0.6.66 (N1) */ import { lembrarFluxo, quemAgora } from './fluxoKanban.js'; import { registrarTudo } from './historico.js'; import { fazerIrmao, setaDoPai } from './mapaMental.js'; /* v0.6.68 e v0.6.69 (R44); v0.6.71 (Q1) */ import { trataArrumar, valorArrumar, AVISO_TRAVADO } from './arrumar.js'; import { ehImpQPadrao } from './impressaoQuadro.js'; import { mudancasTitulo, mudancasFeito, mostraCaixas, estaFeito, tituloDe } from './postit.js'; /* v0.6.51 */
 
 const Z_MIN = 0.2, Z_MAX = 3;
@@ -54,7 +55,7 @@ function lerImagem(arquivo, max = 1200) {
 }
 
 export function Quadro({ arquivo, cx }) {
-  const ficha = arquivo.ficha;
+  const ficha = arquivo.ficha; definirArquivoDaConversa(ficha); /* v0.6.85: a conversa do cartão sabe o arquivo (ponte/conversa.js) */
   const c = arquivo.conteudo; lembrarEtiquetas(c); lembrarFluxo(c); /* v0.6.66 (N1): a faixa e o post-it leem a lista daqui; v0.6.68 (R44): e o selo da atividade */
   const somenteLeitura = !!cx.bloqueado('inserir.postit');
 
@@ -68,6 +69,11 @@ export function Quadro({ arquivo, cx }) {
   const [arrasto, setArrasto] = useState(null);
   const [editando, setEditando] = useState(null);
   const [modo, setModo] = useState(null); const [comVer, setComVer] = useState(null); const comTimer = useRef(0); const abrirCom = (id, ret, fixo) => { clearTimeout(comTimer.current); setComVer((v) => (v && v.fixo && !fixo && v.id === id ? v : { id, ret, fixo })); }; const sairCom = () => { clearTimeout(comTimer.current); comTimer.current = setTimeout(() => setComVer((v) => (v && !v.fixo ? null : v)), 300); }; /* v0.6.55: cartão do comentário (comentarioQuadro.jsx) */
+  /* v0.6.85: o aviso de conversa do Cwork abre o cartão (#/arq/<id>/c/<cartão>): no quadro livre, o cartão do comentário fica aberto no item; no Kanban, a gaveta (Kanban.jsx) */
+  const cartaoVisto = useRef('');
+  useEffect(() => { const f = () => { const id = cartaoDaRota(); if (!id) { cartaoVisto.current = ''; return; } if (id === cartaoVisto.current || !c.itens[id] || vista === 'kanban') return; cartaoVisto.current = id;
+    requestAnimationFrame(() => { const el = document.querySelector('[data-com-marcador="' + CSS.escape(id) + '"]'); if (el && c.itens[id].nota) { el.scrollIntoView({ block: 'nearest', inline: 'nearest' }); abrirCom(id, el.getBoundingClientRect(), true); } tirarCartaoDaRota(); cartaoVisto.current = ''; }); };
+    f(); addEventListener('hashchange', f); return () => removeEventListener('hashchange', f); }, [c, vista]); // eslint-disable-line react-hooks/exhaustive-deps
   const [qp, setQp] = useState(() => {
     const salvo = ler('quadro-prefs', {});
     /* v0.4.4.1: a barra da esquerda começa escondida (a faixa Inserir tem tudo); quem já tinha escolha antiga volta ao novo padrão uma vez */
@@ -318,8 +324,8 @@ export function Quadro({ arquivo, cx }) {
     aplicarQ(mud, { n: 'Negrito', i: 'Itálico', s: 'Sublinhado' }[chave], 'formatou');
   };
   const mudarCampo = (campos, rotulo, ids = selValida.itens) => {
-    if (!ids.length) { avisoSelecione(); return; }
-    aplicarQ(Q.mudancasCampo(c, ids, campos), rotulo, 'formatou');
+    if (!ids.length) { avisoSelecione(); return false; }
+    return aplicarQ(Q.mudancasCampo(c, ids, campos), rotulo, 'formatou'); /* v0.6.85: quem chama sabe se entrou (o comentário só avisa o Cwork se entrou) */
   };
   const mudarTarefa = (id, campos) => mudancasTarefa(c, id, campos);
   const mudarLegenda = (id, tipo, campo, valor) => mudancasLegenda(c, id, tipo, campo, valor);
@@ -1110,7 +1116,7 @@ export function Quadro({ arquivo, cx }) {
             return `${r.total} ${r.total === 1 ? 'troca feita' : 'trocas feitas'}. Dá para desfazer com Ctrl+Z.`;
           }} />
       )}
-      {comVer && c.itens[comVer.id] && c.itens[comVer.id].nota && <CartaoComentario key={comVer.id} it={c.itens[comVer.id]} ret={comVer.ret} fixo={comVer.fixo} somenteLeitura={somenteLeitura} aoEntrar={() => clearTimeout(comTimer.current)} aoSair={sairCom} aoFechar={() => setComVer(null)} aoResponder={(t, a) => { const m = respostaNova(c.itens[comVer.id], t, a); if (m) aplicarQ(Q.mudancasCampo(c, [comVer.id], m), 'Responder comentário', 'formatou'); }} aoEditar={() => { const it = c.itens[comVer.id]; setComVer(null); pedirComentarioDo(cx, it, NOME_TIPO(it), (campos, rot) => aplicarQ(Q.mudancasCampo(c, [it.id], campos), rot, 'formatou')); }} aoExcluir={() => { aplicarQ(Q.mudancasCampo(c, [comVer.id], { nota: undefined, notaA: undefined, notaR: undefined }), 'Excluir comentário', 'formatou'); setComVer(null); }} />}{janela === 'imprimir' && <JanelaImprimirQuadro c={c} nome={ficha.nome} escolhidos={selValida.itens} codigos={qp.codigos} somenteLeitura={somenteLeitura} aoFechar={() => setJanela(null)} aoSalvar={(imp) => aplicarQ({ impressao: ehImpQPadrao(imp) ? null : imp }, 'Configurar página')} aoPdf={async (imp) => { cx.avisar('Gerando o PDF…', { ic: 'pdf' }); await exportarPdf(c, ficha.nome, { vista, codigos: qp.codigos, demo: cx.demo, imp, escolhidos: selValida.itens }); cx.avisar(`PDF pronto: ${ficha.nome}.pdf`, { ic: 'pdf' }); }} aoImprimir={(imp) => imprimir(c, ficha.nome, { vista, codigos: qp.codigos, demo: cx.demo, imp, escolhidos: selValida.itens })} />}{janela === 'titulo' && umItem && umItem.tipo === 'postit' && <JanelaTitulo it={umItem} aoFechar={() => setJanela(null)} aoAplicar={(t) => aplicarQ(mudancasTitulo(c, [umItem.id], t), t ? 'Título' : 'Tirar título')} />}{janela === 'fundo' && <JanelaFundo fundo={c.fundo} somenteLeitura={somenteLeitura} aoFechar={() => setJanela(null)} aoAplicar={(f) => aplicarQ({ fundo: f }, 'Fundo do quadro')} />}{janela === 'zoom' && (
+      {comVer && c.itens[comVer.id] && c.itens[comVer.id].nota && <CartaoComentario key={comVer.id} it={c.itens[comVer.id]} ret={comVer.ret} fixo={comVer.fixo} somenteLeitura={somenteLeitura} aoEntrar={() => clearTimeout(comTimer.current)} aoSair={sairCom} aoFechar={() => setComVer(null)} aoResponder={(t, a) => { const m = respostaNova(c.itens[comVer.id], t, a); if (m && aplicarQ(Q.mudancasCampo(c, [comVer.id], m), 'Responder comentário', 'formatou')) avisarConversa({ ...c.itens[comVer.id], ...m }, t); }} aoEditar={() => { const it = c.itens[comVer.id]; setComVer(null); pedirComentarioDo(cx, it, NOME_TIPO(it), (campos, rot) => aplicarQ(Q.mudancasCampo(c, [it.id], campos), rot, 'formatou')); }} aoExcluir={() => { aplicarQ(Q.mudancasCampo(c, [comVer.id], { nota: undefined, notaA: undefined, notaAi: undefined, notaR: undefined }), 'Excluir comentário', 'formatou'); setComVer(null); }} />}{janela === 'imprimir' && <JanelaImprimirQuadro c={c} nome={ficha.nome} escolhidos={selValida.itens} codigos={qp.codigos} somenteLeitura={somenteLeitura} aoFechar={() => setJanela(null)} aoSalvar={(imp) => aplicarQ({ impressao: ehImpQPadrao(imp) ? null : imp }, 'Configurar página')} aoPdf={async (imp) => { cx.avisar('Gerando o PDF…', { ic: 'pdf' }); await exportarPdf(c, ficha.nome, { vista, codigos: qp.codigos, demo: cx.demo, imp, escolhidos: selValida.itens }); cx.avisar(`PDF pronto: ${ficha.nome}.pdf`, { ic: 'pdf' }); }} aoImprimir={(imp) => imprimir(c, ficha.nome, { vista, codigos: qp.codigos, demo: cx.demo, imp, escolhidos: selValida.itens })} />}{janela === 'titulo' && umItem && umItem.tipo === 'postit' && <JanelaTitulo it={umItem} aoFechar={() => setJanela(null)} aoAplicar={(t) => aplicarQ(mudancasTitulo(c, [umItem.id], t), t ? 'Título' : 'Tirar título')} />}{janela === 'fundo' && <JanelaFundo fundo={c.fundo} somenteLeitura={somenteLeitura} aoFechar={() => setJanela(null)} aoAplicar={(f) => aplicarQ({ fundo: f }, 'Fundo do quadro')} />}{janela === 'zoom' && (
         <Janela titulo="Zoom" icone="maiszoom" aoFechar={() => setJanela(null)}>
           <div className="janela-c">
             <div className="chips">

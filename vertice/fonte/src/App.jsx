@@ -273,7 +273,7 @@ export function App() {
   }, [postar, recarregarAberto, setTravado, avisar]);
 
   /* abrir arquivo pela rota #/arq/<id> */
-  const docMd = docDaRota(rota, login), idRota = rota.startsWith('arq/') && !docMd ? rota.slice(4) : null; /* v0.6.76: modo documento */
+  const docMd = docDaRota(rota, login), idRota = rota.startsWith('arq/') && !docMd ? rota.slice(4) : null; /* v0.6.76: modo documento */ const [faltou, setFaltou] = useState({ id: '', n: 0 }); /* v0.6.85: aberto pelo aviso do Cwork, o arquivo pode ainda estar vindo da nuvem */
   useEffect(() => {
     let vivo = true;
     setGaveta(false);
@@ -284,7 +284,7 @@ export function App() {
     setTravado(null);
     banco.abrir(idRota).then((r) => {
       if (!vivo) return;
-      if (r && r.ficha.tipo === 'pdf' && r.ficha.status !== 'lixeira') { verPdfDepois(r.ficha.id); irPara('externos'); return; } /* v0.6.82: o PDF abre na página Documentos externos */ if (!r || r.ficha.status === 'lixeira') {
+      if (r && r.ficha.tipo === 'pdf' && r.ficha.status !== 'lixeira') { verPdfDepois(r.ficha.id); irPara('externos'); return; } /* v0.6.82: o PDF abre na página Documentos externos */ if (!r || r.ficha.status === 'lixeira') { const n = faltou.id === idRota ? faltou.n : 0; if (!r && login && n < 5) { setTimeout(() => { if (vivo) setFaltou({ id: idRota, n: n + 1 }); }, 2000); return; } /* v0.6.85: espera a nuvem (até 10 s) */
         avisar('Esse arquivo não está mais neste aparelho.', { ic: 'aviso' });
         irPara('');
         return;
@@ -302,7 +302,7 @@ export function App() {
       postar({ t: 'abri', arq: r.ficha.id });
     });
     return () => { vivo = false; };
-  }, [idRota, banco, avisar, setAberto, postar, setTravado]);
+  }, [idRota, banco, avisar, setAberto, postar, setTravado, faltou]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const recuperarRef = useRef(() => {});
   /* gravação: só depois da tela já mostrar a mudança; uma de cada vez, sempre a mais nova */

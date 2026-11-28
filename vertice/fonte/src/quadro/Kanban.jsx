@@ -16,6 +16,7 @@ import { texturaDo, estiloTextura, pecasTextura } from './texturas.js'; /* v0.6.
 import { familiaDo, escalaDo, garantirFonte } from './fontesQ.js'; /* v0.6.65 (V3): a letra do Quadro no cartão */
 import { validarNome } from '../nucleo/modelo.js';
 import { GavetaComentarios, totalComentarios } from './comentariosKanban.jsx'; /* v0.6.67 (N2) */
+import { cartaoDaRota, tirarCartaoDaRota } from '../ponte/conversa.js'; /* v0.6.85 */
 import { etiquetasDe, etiquetaDo, contagemEtiquetas, passaNoFiltro, resumoFiltro, indiceNaColuna, SEM } from './etiquetas.js'; /* v0.6.66 (N1) */
 import { fluxoLigado, atividadesDoFluxo, mudancasLigarFluxo, linhasAndamento } from './fluxoKanban.js'; /* v0.6.68 (R44) */
 
@@ -113,6 +114,11 @@ export function KanbanVista({ c, aplicarQ, somenteLeitura, sel, setSel, cx, codi
   const [gaveta, setGaveta] = useState(null); /* v0.6.67 (N2): post-it com a gaveta de comentários aberta */
   const [pedido, setPedido] = useState(0); /* v0.6.69: o balão do cartão abre a gaveta em Comentários */
   const abrirGaveta = (id) => { setGaveta(id); setPedido((n) => n + 1); };
+  /* v0.6.85: o aviso de conversa do Cwork abre a gaveta do cartão (#/arq/<id>/c/<cartão>) */
+  const cartaoVisto = useRef('');
+  useEffect(() => { const f = () => { const id = cartaoDaRota(); if (!id) { cartaoVisto.current = ''; return; } if (id === cartaoVisto.current || !c.itens[id]) return; cartaoVisto.current = id; abrirGaveta(id); tirarCartaoDaRota(); cartaoVisto.current = ''; /* o endereço volta a #/arq/<id>: o próximo toque abre de novo */
+    requestAnimationFrame(() => { const el = document.querySelector('.kb-card[data-item="' + CSS.escape(id) + '"]'); if (el) el.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }); };
+    f(); addEventListener('hashchange', f); return () => removeEventListener('hashchange', f); }, [c]); // eslint-disable-line react-hooks/exhaustive-deps
   /* v0.6.64: o arrasto mexe só no DOM (kanbanArrasto.js); o React fica sabendo no fim, com a coluna e o lugar */
   const arrastando = useRef(false), aoSoltarRef = useRef(null), arr = useRef(null);
   /* ao mover, criar ou tirar, cada cartão desliza do lugar antigo até o novo (só transform; 250 ms da escala) */

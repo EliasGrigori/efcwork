@@ -5,7 +5,6 @@ const AR_PLANO = {
   rateios: ['Uma tela só, com o tipo (Campo, Água, Calibração) no filtro', 'Emitir a solicitação de compra direto do rateio', 'Painel do rateio em Relatórios'],
   inspecoes: ['Cloro', 'Apontamentos, com o relatório como botão', 'Auditoria interna (RNC)'],
   documentos: ['Documentos com o resumo no topo', 'Caixas d’água', 'Histórico (lançamentos e correções, com filtro)'],
-  qualidade: ['Conversas dentro de cada registro'],
   relatorios: ['Coletas em aberto']
 };
 function arEmBreve(ar) {

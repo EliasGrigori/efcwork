@@ -30,7 +30,7 @@ export function useMedia(consulta) {
 }
 
 export function useRota() {
-  const ler = () => location.hash.replace(/^#\/?/, '') || '';
+  const ler = () => location.hash.replace(/^#\/?/, '').replace(/\/c\/[^/?#]*$/, '') || ''; /* v0.6.85: o cartão (#/arq/<id>/c/<cartão>) não muda a rota; quem abre é o Quadro (ponte/conversa.js) */
   const [rota, setRota] = useState(ler);
   useEffect(() => {
     const f = () => setRota(ler());

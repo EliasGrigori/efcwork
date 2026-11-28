@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Icone, usarEsc } from '../ui/comum.jsx';
 
 import { autorGuardado, guardarAutor, respostasDe, dataCurta } from './comentario.js';
+import { avisarConversa, contaDeQuemEscreve } from '../ponte/conversa.js'; /* v0.6.85 */
 export { respostaNova, respostasDe, autorGuardado } from './comentario.js';
 
 /** Marcador do comentário (fica dentro do ItemView, no canto de cima por fora). */
@@ -74,5 +75,6 @@ export function CartaoComentario({ it, ret, fixo, somenteLeitura, aoResponder, a
 /** Janela para escrever ou mudar o comentário do item (a mesma de antes), guardando quem escreveu. */
 export function pedirComentarioDo(cx, it, nomeTipo, aoSalvar) {
   cx.perguntar({ titulo: 'Comentário · ' + (it.cod || nomeTipo), campo: 'Comentário (aparece no balãozinho do item e no painel)', varias: true, valor: it.nota || '', confirmar: 'Salvar comentário', max: 1000,
-    aoConfirmar: (v) => { const t = v.trim(); aoSalvar(t ? { nota: t, notaA: it.notaA || autorGuardado() || undefined } : { nota: undefined, notaA: undefined, notaR: undefined }, t ? 'Comentário' : 'Tirar comentário'); } });
+    aoConfirmar: (v) => { const t = v.trim(), ok = aoSalvar(t ? { nota: t, notaA: it.notaA || autorGuardado() || undefined, notaAi: it.notaAi || contaDeQuemEscreve() || undefined } : { nota: undefined, notaA: undefined, notaAi: undefined, notaR: undefined }, t ? 'Comentário' : 'Tirar comentário');
+      if (t && !it.nota && ok !== false) avisarConversa({ ...it, nota: t, notaAi: contaDeQuemEscreve() || undefined }, t); } }); /* v0.6.85: comentário novo avisa o Cwork (mudar o texto não é mensagem nova) */
 }

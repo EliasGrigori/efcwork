@@ -10,6 +10,7 @@ import { autorGuardado, guardarAutor, respostasDe, dataCurta, respostaNova } fro
 import { mudancasCampo } from './modelo.js';
 import { linhasHistorico } from './historico.js'; /* v0.6.69 (R44 parte 2) */
 import { loginDoCwork } from '../nucleo/quem.js'; /* v0.6.73 (P2) */
+import { avisarConversa, contaDeQuemEscreve } from '../ponte/conversa.js'; /* v0.6.85 */
 
 export const totalComentarios = (it) => (it && it.nota ? 1 : 0) + respostasDe(it).length;
 
@@ -34,8 +35,9 @@ export function GavetaComentarios({ c, id, ids, abrir, fechar, aplicarQ, somente
     if (ev) ev.preventDefault();
     const t = txt.trim(); if (!t) return;
     const a = loginDoCwork() ? loginDoCwork().nome : autor.trim(); guardarAutor(a); /* v0.6.73: logado, sempre o nome do cadastro de agora */
-    if (!it.nota) aplicarQ(mudancasCampo(c, [id], { nota: t.slice(0, 1000), notaA: a || undefined }), 'Comentário', 'formatou');
-    else { const m = respostaNova(it, t, a); if (m) aplicarQ(mudancasCampo(c, [id], m), 'Responder comentário', 'formatou'); }
+    const conta = contaDeQuemEscreve() || undefined; /* v0.6.85: + a conta do Cwork; o Cwork avisa no sino quem está na conversa */
+    if (!it.nota) { if (aplicarQ(mudancasCampo(c, [id], { nota: t.slice(0, 1000), notaA: a || undefined, notaAi: conta }), 'Comentário', 'formatou')) avisarConversa({ ...it, notaAi: conta }, t); } /* só avisa se entrou no arquivo (travado não entra) */
+    else { const m = respostaNova(it, t, a); if (m && aplicarQ(mudancasCampo(c, [id], m), 'Responder comentário', 'formatou')) avisarConversa({ ...it, ...m }, t); }
     setTxt('');
   };
   return (

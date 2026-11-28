@@ -68,7 +68,7 @@ function olhaBarras() {
 let telaAnt = null;
 function olhaTela() {
   const main = document.querySelector('.wk-main'); if (!main) return;
-  const el = main.firstElementChild, chave = location.hash + '|' + (el ? el.className.split(' ')[0] : '');
+  const el = main.firstElementChild, chave = location.hash.replace(/\/c\/[^/?#]*$/, '') + '|' + /* v0.6.85: abrir o cartão (#/arq/<id>/c/<cartão>) não é troca de tela */ (el ? el.className.split(' ')[0] : '');
   if (telaAnt !== null && telaAnt !== chave) entra(el, 1);
   telaAnt = chave;
 }

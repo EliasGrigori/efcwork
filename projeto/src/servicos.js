@@ -75,6 +75,7 @@ const Notif = {
   send(n) {
     const o = { ts: nowISO(), nivel: n.nivel || 'info', titulo: n.titulo, texto: n.texto || '', para: n.para || 'todos', dest: notifDest(n.para || 'todos'),
       origem: S.user ? S.user.nome : 'Sistema', refTipo: n.refTipo || '', refId: n.refId || '', lidaPor: {}, confirmadaPor: {} };
+    if (S.user && S.user.contaTeste) o.testeConta = true; /* v0.6.51 (revisor): a regra testeNovo() recusava o aviso da conta de teste */
     return Data.col('sv2_notifs').add(o);
   },
   visible(n) {
