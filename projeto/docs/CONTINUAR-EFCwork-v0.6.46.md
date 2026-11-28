@@ -1,9 +1,9 @@
-# EFCwork · CONTINUAR (28/11/2026 00:1x) · NO AR: Cwork v0.6.46.2 + Vértice v0.6.81 (efcwork 0c7d2e8) · EM APROVAÇÃO: Cwork v0.6.47 + Vértice v0.6.82 (documentos só no Vértice, 1ª parte, ITENS 300 a 307)
+# EFCwork · CONTINUAR (28/11/2026 06:0x) · NO AR: Cwork v0.6.47 + Vértice v0.6.82 (efcwork 76354c2) · EM CONSTRUÇÃO: documentos só no Vértice, 2ª parte
 
 Substitui o CONTINUAR-EFCwork-v0.6.46.md de 19:0x (mesmo nome: o Cwork não mudou de versão). Quem ler só este arquivo sabe o que fazer.
 
 ## 0. Estado
-- **EM APROVAÇÃO, NÃO PUBLICADA: Cwork v0.6.47 + Vértice v0.6.82 (documentos só no Vértice, 1ª parte).** Página `docs/aprovacao-efcwork-v0.6.47-documentos-no-vertice.html` (artefato https://claude.ai/artifact/6UHYbKQft3nyKmv8QaefUp), ITENS 300 a 307. Código em `MUDANCAS-NAO-PUBLICADAS-v0.6.47.patch` (no pacote): clone o efcwork, confira a `main` em 0c7d2e8, `git apply`, `cd vertice/fonte && npm ci && npm test && npm run build`, `cd ../../projeto && python3 tools/montar.py`, rode `t_v0647` (`VERTICE_DIR=../vertice/fonte/dist`). Publicar: copiar `vertice/fonte/dist` para `vertice/` (trocar `assets/`) e `projeto/dist` para a raiz. Falta antes de publicar: **revisor novo**. Último ITEM usado: **307**.
+- **PUBLICADA em 28/11 06:0x: Cwork v0.6.47 + Vértice v0.6.82 (efcwork 76354c2; ITENS 300 a 307 todos Aprovados; revisor novo e correções no dossiê).** Último ITEM usado: **307**. Firebase: nada muda.
 - **PUBLICADAS em 27/11 (noite):** Cwork v0.6.46.1 (bef3c2d: trava do pedido do papel vindo do Vértice — "O Cwork pediu a versão 10…") e v0.6.46.2 (0c7d2e8: etiqueta sem modelo liga ali mesmo e imprime; a lista traz as etiquetas dos Impressos vindas do Vértice).
 - **PUBLICADA em 27/11 20:3x: Vértice v0.6.81 (o Cwork não mudou; segue v0.6.46). ITENS 294 a 299 todos Aprovados** (299: "não entendi nada mas tá aprovado, não precisa mais explicar, confio em você"). Commit: b921957. Último ITEM usado: **299**.
 - **O que a v0.6.81 faz:** pedido do Cwork imprime só a aba com campos; Recebidos do Cwork com aviso e Mover (e Nuvem "Só neste aparelho"); o Vértice segue o tema do Cwork; no Escuro, planilha e quadro brancos como no Excel, com a chave "Área de trabalho escura no tema escuro" em Opções; imprimir pela folha aberta registra "Preenchido no Vértice" no Cwork.
@@ -20,9 +20,8 @@ Substitui o CONTINUAR-EFCwork-v0.6.46.md de 19:0x (mesmo nome: o Cwork não mudo
 > EFCwork, continuando. Anexei o pacote único (EFCwork-PACOTE-NOVA-CONVERSA-v0.6.47-vertice-v0.6.82.zip): CONTINUAR, dossiê, pendências, o app no ar e o fonte. Leia o CONTINUAR inteiro. Responda em 3 linhas: onde parou e qual é a próxima tarefa. Depois sugira o modelo e o esforço em **negrito** e espere meu "pode iniciar". Siga o "Padrão de trabalho" sem eu repetir. Repositório: EliasGrigori/efcwork (add_repo com envio; se negar, me diga e use o fonte do pacote). Esta conversa pode mexer no Vértice (vertice/fonte). Nunca invente documento; modelo de teste com marca d'água. Não abra o OneDrive. Nada no EFClaudian. GitHub só com "pode publicar". Fique em primeiro plano. Toda entrega: o pacote único atualizado.
 
 ## 2. Próxima tarefa
-1. **Respostas dos ITENS 300 a 307**; aplicar só o aprovado; **revisor novo**; publicar só com "pode publicar".
-2. Depois (com "pode iniciar"): **2ª parte dos documentos só no Vértice**: botão "Levar para o Vértice" em cada impresso antigo (o Elias move um por um), kit e Treinamentos com o PDF do Vértice, Reserva com os do Vértice. Sugestão: **Opus 5.5 · alto**.
-3. Na fila: PDF preenchido de volta (ITEM 184) · Só ver por área · Conversas.
+1. **Documentos só no Vértice, 2ª parte** ("pode publicar e iniciar a próxima etapa", 28/11 05:29; **Opus 5.5 · alto**): botão "Levar para o Vértice" em cada impresso antigo (o Elias move um por um), kit e Treinamentos com o PDF do Vértice, Reserva e backup com os do Vértice, medidor de espaço com a nuvem do Vértice, cópia em conflito de PDF fora da lista (achados 4, 5, 7 e 9 do revisor da v0.6.47).
+2. Na fila: PDF preenchido de volta (ITEM 184) · Só ver por área · Conversas.
 
 ## 2g. O que a v0.6.47 faz (Cwork) + Vértice v0.6.82
 - Vértice: tipo `pdf` (`nucleo/pdf.js`, `ui/externos.jsx`): Documentos externos com as 5 pastas, Importar PDF (ou foto), ver, baixar, imprimir, trocar. O formato do conteúdo é o mesmo que o Cwork grava.
