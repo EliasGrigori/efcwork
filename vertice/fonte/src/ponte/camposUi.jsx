@@ -1,6 +1,6 @@
 /* Vértice Docs — Ponte 2 (v0.6.17): o painel "Campos do Cwork" (marcar, em cada célula, o dado que o EFCwork preenche)
    e a tela do pedido de impressão (prévia da cópia preenchida, Imprimir, Baixar PDF e a resposta ao EFCwork). */
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Icone } from '../ui/comum.jsx';
 import { textoFaixa } from '../planilha/ref.js';
 import { refAbsoluta } from '../planilha/operacoes.js';
@@ -10,7 +10,7 @@ import { pdfDasPaginas, imagensDasPaginas, baixarBytes } from '../planilha/impre
 import { EFD } from './ponte.js';
 import { camposDoLivro, dicionario, capacidades } from './campos.js';
 import { paginasDoPedido } from './pedido.js';
-import { lerEstado, pegar, apagar, responder } from './caixa.js';
+import { lerEstado, pegar, apagar, responder, pdfDaResposta } from './caixa.js';
 import { guardarFolha } from './rascunhoPedido.js';
 import { irPara } from '../ui/comum.jsx';
 import { CAMPOS_ETIQUETA, camposDaEtiqueta, nomeEtiqueta } from './etiquetas.js';
@@ -117,13 +117,18 @@ export function TelaPedido({ pid, local, banco, avisar, aoSair }) {
     })();
     return () => { vivo = false; };
   }, [pid, local, banco]);
+  const ocupado = useRef(false); /* v0.6.84 (revisor): o PDF da resposta demora um pouco; um segundo toque não imprime de novo */
   const concluir = async (como) => {
+    if (ocupado.current) return; ocupado.current = true;
     try {
-      if (como === 'pdf') baixarBytes(pdfDasPaginas(t.paginas, { titulo: t.nome, imagens: await imagensDasPaginas(t.paginas) }), `${String(t.nome || 'ficha').replace(/[\\/:*?"<>|]/g, '_')} - preenchido.pdf`);
+      let bytes = null;
+      if (como === 'pdf') { bytes = pdfDasPaginas(t.paginas, { titulo: t.nome, imagens: await imagensDasPaginas(t.paginas) }); baixarBytes(bytes, `${String(t.nome || 'ficha').replace(/[\\/:*?"<>|]/g, '_')} - preenchido.pdf`); }
       else await imprimirPaginas(t.paginas, t.nome);
-      if (!local) { await responder(t.item, { ok: true, paginas: t.paginas.length }); await apagar(t.item.pid); }
+      /* v0.6.84 (ITEM 184): a resposta leva como saiu e o PDF preenchido, para o Cwork guardar na remessa */
+      if (!local) { await responder(t.item, { ok: true, paginas: t.paginas.length, como, pdf: await pdfDaResposta(t.paginas, t.nome, bytes) }); await apagar(t.item.pid); }
       setFase('feito');
     } catch (e) { avisar('Não deu para ' + (como === 'pdf' ? 'gerar o PDF: ' : 'imprimir: ') + (e.message || e), { ic: 'aviso', longo: true }); }
+    finally { ocupado.current = false; }
   };
   useEffect(() => { if (t.nome) avisarCwork({ tipo: 'arquivo', nome: t.nome, tipoArquivo: 'planilha' }); }, [t.nome]); /* v0.6.76: a aba do Cwork mostra o nome */
   const n = (q, um, varios) => `${q} ${q === 1 ? um : varios}`;

@@ -13,7 +13,7 @@ import { svgDaPagina } from '../planilha/paginaDesenho.js';
 import { pdfDasPaginas, imagensDasPaginas, baixarBytes } from '../planilha/impressaoPdf.js';
 import { chave } from '../planilha/ref.js';
 import { pegarFolha } from '../ponte/rascunhoPedido.js';
-import { responder, apagar } from '../ponte/caixa.js';
+import { responder, apagar, pdfDaResposta } from '../ponte/caixa.js';
 import { normalizarPlanilha } from '../planilha/modelo.js';
 import './modoDocumento.css';
 
@@ -151,15 +151,17 @@ export function ModoDocumento({ id, abaPedida, banco, fichas, lendo, login, avis
   }, [doc]);
   /* v0.6.81 (ITEM 286): imprimir ou baixar o PDF da folha que veio do pedido marca o papel da remessa como "Preenchido no Vértice" no Cwork.
      Com uma folha só, o pedido sai da caixa; com várias, continua (as outras folhas ainda podem ser abertas); o Cwork ignora uma segunda resposta. */
-  const avisarPreenchido = useCallback(async (n) => { const r = pedidoRef.current; if (!r) return; pedidoRef.current = null; try { await responder(r.item, { ok: true, paginas: n }); if (r.umaFolha) await apagar(r.item.pid); /* uma folha só: o pedido terminou */ } catch { /* sem a caixa: segue */ } }, []);
+  /* v0.6.84 (ITEM 184): leva também como saiu ('imprimir' ou 'pdf') e o PDF preenchido, para o Cwork guardar na remessa */
+  const avisarPreenchido = useCallback(async (pags, como, bytes) => { const r = pedidoRef.current; if (!r) return; pedidoRef.current = null; try { await responder(r.item, { ok: true, paginas: pags.length, como, pdf: await pdfDaResposta(pags, doc && doc.ficha.nome, bytes) }); if (r.umaFolha) await apagar(r.item.pid); /* uma folha só: o pedido terminou */ } catch { /* sem a caixa: segue */ } }, [doc]);
   const imprimir = useCallback(async () => {
-    try { const pags = await paginasAgora(); await imprimirPaginas(pags, doc.ficha.nome); await avisarPreenchido(pags.length); } catch (e) { avisar('Não deu para imprimir: ' + (e.message || e), { ic: 'aviso', longo: true }); }
+    try { const pags = await paginasAgora(); await imprimirPaginas(pags, doc.ficha.nome); await avisarPreenchido(pags, 'imprimir'); } catch (e) { avisar('Não deu para imprimir: ' + (e.message || e), { ic: 'aviso', longo: true }); }
   }, [paginasAgora, doc, avisar, avisarPreenchido]);
   const baixarPdf = useCallback(async () => {
     try {
       const pags = await paginasAgora();
-      baixarBytes(pdfDasPaginas(pags, { titulo: doc.ficha.nome, imagens: await imagensDasPaginas(pags) }), `${String(doc.ficha.nome || 'documento').replace(/[\\/:*?"<>|]/g, '_')}.pdf`);
-      await avisarPreenchido(pags.length);
+      const bytes = pdfDasPaginas(pags, { titulo: doc.ficha.nome, imagens: await imagensDasPaginas(pags) });
+      baixarBytes(bytes, `${String(doc.ficha.nome || 'documento').replace(/[\\/:*?"<>|]/g, '_')}.pdf`);
+      await avisarPreenchido(pags, 'pdf', bytes);
     } catch (e) { avisar('Não deu para gerar o PDF: ' + (e.message || e), { ic: 'aviso', longo: true }); }
   }, [paginasAgora, doc, avisar, avisarPreenchido]);
 

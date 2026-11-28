@@ -63,5 +63,5 @@ test('Ponte 1: os arquivos do contrato são os do EFCwork (sem edição local)',
   const ponte = readFileSync(new URL('contrato/efd-ponte.js', raiz), 'utf8'), efd = readFileSync(new URL('contrato/efd-v1.js', raiz), 'utf8');
   assert.match(ponte, /PONTE EFD v1/); assert.match(efd, /CONTRATO EFD v1/);
   assert.equal(createHash('sha256').update(efd).digest('hex'), '4144d0b853f7b77b42155dc3dd92208d7f68c03f7751b36c08db2238a0750b1f' /* dicionário 2, autorizado pelo Elias em 27/11 17:22 */);
-  assert.equal(createHash('sha256').update(ponte).digest('hex'), '7c0eab90cf2a6f0c25c3027e8999dd58e22a3067a97eef7fc32670f512f1b72d');
+  assert.equal(createHash('sha256').update(ponte).digest('hex'), '0e5a5d8dc410bacdd7a5fb3d2d6d86ae82c021a13d0ce65468c222529b22b937' /* resposta com como e o PDF preenchido (ITEM 184), autorizado pelo Elias em 27/11 17:22 */);
 });

@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-Mi8hppxe+PSCZpN3KIvyKveDNN8TwbB1EqxGwyPIwxs=' https://www.gstatic.com/firebasejs/13.4.0/ https://www.google.com/recaptcha/enterprise.js https://www.gstatic.com/recaptcha/releases/; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' data: blob: https://*.googleapis.com https://www.google.com/recaptcha/; frame-src 'self' https://eliasgrigori.github.io blob: https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/ https://docseliasflorencio.firebaseapp.com; worker-src 'self' blob:; manifest-src 'self'; media-src 'self' data: blob:; object-src 'self' blob:; base-uri 'none'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-5LSvIeFpKQVyEqFQyGggGarYccsv6N2d5b6s58K6KdY=' https://www.gstatic.com/firebasejs/13.4.0/ https://www.google.com/recaptcha/enterprise.js https://www.gstatic.com/recaptcha/releases/; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' data: blob: https://*.googleapis.com https://www.google.com/recaptcha/; frame-src 'self' https://eliasgrigori.github.io blob: https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/ https://docseliasflorencio.firebaseapp.com; worker-src 'self' blob:; manifest-src 'self'; media-src 'self' data: blob:; object-src 'self' blob:; base-uri 'none'; form-action 'self'">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>EFCwork</title>
 <meta name="description" content="EFCwork · Cwork Quality · controle de qualidade agrícola da família EFClaudian.">
@@ -2839,7 +2839,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = Mov;
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.6.48';
+const VERSAO = '0.6.49';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -8763,6 +8763,8 @@ BG_FONTES.push(q => {
     ['pdf', 'original'].forEach(k => { if (i[k] != null && !(i[k] instanceof ArrayBuffer)) e.push(k + ' deve ser ArrayBuffer'); });
     if (i.tipo === 'documento' && !(i.ficha && i.pdf)) e.push('documento precisa de ficha e pdf');
     if (i.tipo === 'abrir' && !(i.original && i.nomeArquivo)) e.push('abrir precisa do arquivo original e do nome');
+    /* 28/11/2026 (ITEM 184, acordo autorizado pelo Elias em 27/11 17:22; só acrescenta): a resposta pode dizer como saiu e levar o PDF preenchido (até 650 KB) */
+    if (i.tipo === 'resposta') { if (i.como != null && i.como !== 'imprimir' && i.como !== 'pdf') e.push('como: imprimir ou pdf'); if (i.pdf && !i.ok) e.push('pdf só com ok'); if (i.pdf && i.pdf.byteLength > 650000) e.push('pdf da resposta até 650 KB'); if (i.pdfFora != null && typeof i.pdfFora !== 'boolean') e.push('pdfFora'); }
     return e;
   }
   let canal = null; const fala = m => { try { canal = canal || new BroadcastChannel(CANAL); canal.postMessage(m); } catch (e) {} };
@@ -10507,8 +10509,9 @@ const drItens = k => ktPapItens(k).map(x => Object.assign({}, x, { exige: true }
 function drSit(k, x) {
   const r = drReg(k, x.id), ax = r.filter(y => y.tipo === 'foto' || y.tipo === 'pdf'), pr = r.find(y => y.tipo === 'preenchido'), im = r.find(y => y.tipo === 'impresso' || y.tipo === 'aberto');
   const u = ktUltimo(k), noKit = u && (u.itens || []).some(y => y.id === x.id);
-  if (ax.length) return { t: x.papel === 'rotulo' ? 'Foto anexada' : 'Via assinada anexada', c: 'ok', n: 3, em: ax[0].em, por: ax[0].porNome, ax: ax };
-  if (pr) return { t: 'Preenchido no Vértice', c: 'ok', n: 2, em: pr.em, por: pr.porNome, ax: [], pr: pr };
+  const pf = r.find(y => y.tipo === 'preenchido' && y.arqId); /* v0.6.49: o PDF preenchido guardado (o mais novo) */
+  if (ax.length) return { t: x.papel === 'rotulo' ? 'Foto anexada' : 'Via assinada anexada', c: 'ok', n: 3, em: ax[0].em, por: ax[0].porNome, ax: ax, pf: pf };
+  if (pr) return { t: pr.copias === 0 ? 'PDF preenchido no Vértice' : 'Preenchido no Vértice', c: 'ok', n: 2, em: pr.em, por: pr.porNome, ax: [], pr: pr, soPdf: pr.copias === 0, pf: pf };
   if (im || noKit) return { t: im && im.tipo === 'aberto' ? 'Aberto no Vértice' : 'Impresso', c: '', n: 1, em: im ? im.em : u.em, por: im ? im.porNome : u.porNome, ax: [] };
   return { t: 'Falta', c: 'wa', n: 0, ax: [] };
 }
@@ -10524,8 +10527,9 @@ function drSecao(k) {
   const tit = '<p class="gv-h dr-h">Documentos da remessa' + (conta ? ' <small>' + esc(conta) + ' prontos</small>' : '') + '</p>';
   if (!l.length) return tit + '<p class="co-nada">Este laboratório não pede papéis.</p></div>';
   const acoes = x => pode ? '<span class="dr-ac">' + drBtImp(k, x) + drBtAnx(k, x) + '</span>' : '';
-  const anexos = x => x.s.ax.length ? '<span class="dr-ax">' + x.s.ax.map(a => '<button type="button" class="dr-axb" data-act="dr-ver" data-id="' + esc(a.id) + '" title="Ver ' + esc(a.nome || '') + '">' + ic(a.tipo === 'pdf' ? 'doc' : 'imagem') + '<span>' + esc(fmtDT(a.em).slice(0, 5)) + '</span></button>').join('') + '</span>' : '';
-  c += tit + '<div class="dr-l">' + l.map(x => { const p = !ktNoVertice(x) ? ['Imprimir', 'Via anexada'] : ['Abrir no Vértice', 'Imprimir', 'Via assinada'], at = x.s.n === 3 ? p.length : x.s.t === 'Aberto no Vértice' ? 1 : x.s.n >= 1 ? p.length - 1 : 0;
+  /* v0.6.49 (ITEM 184): o PDF preenchido que o Vértice devolveu aparece junto dos anexos */
+  const anexos = x => { const l = x.s.ax.concat(x.s.pf ? [x.s.pf] : []); /* a via assinada primeiro */ return l.length ? '<span class="dr-ax">' + l.map(a => '<button type="button" class="dr-axb" data-act="dr-ver" data-id="' + esc(a.id) + '" title="' + esc(a.tipo === 'preenchido' ? 'Ver o PDF preenchido no Vértice' : 'Ver ' + (a.nome || '')) + '">' + ic(a.tipo === 'foto' ? 'imagem' : 'doc') + '<span>' + esc(fmtDT(a.em).slice(0, 5)) + '</span></button>').join('') + '</span>' : ''; };
+  c += tit + '<div class="dr-l">' + l.map(x => { const p = !ktNoVertice(x) ? ['Imprimir', 'Via anexada'] : ['Abrir no Vértice', 'Imprimir', 'Via assinada'], at = x.s.n === 3 ? p.length : x.s.t === 'Aberto no Vértice' || x.s.soPdf ? 1 : x.s.n >= 1 ? p.length - 1 : 0;
     return '<div class="dr-i" data-sit="' + esc(x.s.t) + '" title="' + esc(x.s.t + (x.s.em ? ' · ' + drQuando(x.s) : '')) + '"><span class="dr-t"><b>' + esc(x.nome) + '</b><span class="dr-et">' + p.map((e, n) => '<i class="' + (n < at ? 'on' : '') + '">' + esc(e) + '</i>').join('') + '</span>' + anexos(x) + '</span>' + acoes(x) + '</div>'; }).join('') + '</div>';
   return c + '</div>';
 }
@@ -10595,9 +10599,12 @@ function drRespostas() {
       if (!q) { await EFDPonte.apagar(i.pid); continue; }
       if (i.ok) {
         const id = 'pre_' + i.pedido, dj = JSON.stringify(q.dados || {});
-        const ok = S.drDocs.some(x => x.id === id) || await drGrava({ k: q.k, item: q.item, nome: q.nome, tipo: 'preenchido', docId: q.docId, rev: q.rev, paginas: Number(i.paginas) || 0, copias: q.copias, dadosJson: dj.length <= 200000 ? dj : '' }, id);
+        /* v0.6.49 (ITEM 184): o Vértice diz como saiu (copias 0 = só baixou o PDF, nada na impressora) e manda o PDF preenchido, guardado na remessa */
+        const o = { k: q.k, item: q.item, nome: q.nome, tipo: 'preenchido', docId: q.docId, rev: q.rev, paginas: Number(i.paginas) || 0, copias: i.como === 'pdf' ? 0 : q.copias, dadosJson: dj.length <= 200000 ? dj : '' };
+        const pdf = i.pdf instanceof ArrayBuffer && i.pdf.byteLength && i.pdf.byteLength <= DR_PDF_MAX ? i.pdf : null;
+        const ok = S.drDocs.some(x => x.id === id) || (pdf ? await drGravaComPdf(o, id, pdf) : await drGrava(o, id));
         if (!ok) continue;
-        aviso('Preenchido no Vértice: ' + q.nome + '.');
+        aviso('Preenchido no Vértice: ' + q.nome + (i.como === 'pdf' ? ' (PDF baixado, não impresso)' : '') + (i.pdfFora ? '. O PDF passou de 650 KB e ficou só no Vértice' : '') + '.');
       } else if (i.erro === 'sem-documento' && q.vt) aviso('O Vértice deste aparelho ainda não tem ' + q.nome + ': abra o Vértice com internet para ele trazer da nuvem e peça de novo.', 'erro');
       else if (i.erro === 'sem-documento' && !q.tent) {
         const x = drItens(q.k).find(y => y.id === q.item);
@@ -10611,10 +10618,24 @@ function drRespostas() {
 /* ---------- registro na nuvem ---------- */
 /* sem internet a gravação fica na fila do aparelho e vai quando a rede voltar: não prende a tela */
 const drEspera = pr => Promise.race([pr.then(() => true), new Promise(r => setTimeout(() => r(true), 5000))]);
+function drAudit(r) {
+  const como = r.tipo === 'preenchido' ? (r.copias === 0 ? 'Preencheu no Vértice e baixou o PDF de ' : 'Preencheu no Vértice ') : ({ impresso: 'Imprimiu ', aberto: 'Abriu no Vértice ', foto: 'Anexou a foto de ', pdf: 'Anexou o PDF de ' }[r.tipo] || '');
+  Audit.log({ acao: 'remessa_doc', entidade: 'remessa', entidadeId: r.k, resumo: como + r.nome + (r.arqId && r.tipo === 'preenchido' ? ' (PDF guardado na remessa)' : '') + ' · ' + ktRemNome(r.k) });
+}
 async function drGrava(o, id) {
   const r = Object.assign({ v: 1, removido: false, porId: S.user.id, porNome: S.user.nome, em: nowISO() }, o);
-  try { await drEspera(Data.col('sv2_rem_docs').set(id || uid(), r)); Audit.log({ acao: 'remessa_doc', entidade: 'remessa', entidadeId: r.k, resumo: ({ impresso: 'Imprimiu ', aberto: 'Abriu no Vértice ', preenchido: 'Preencheu no Vértice ', foto: 'Anexou a foto de ', pdf: 'Anexou o PDF de ' }[r.tipo] || '') + r.nome + ' · ' + ktRemNome(r.k) }); return true; }
+  try { await drEspera(Data.col('sv2_rem_docs').set(id || uid(), r)); drAudit(r); return true; }
   catch (e) { aviso('Não deu para guardar na nuvem: ' + svErro(e), 'erro'); return false; }
+}
+/* v0.6.49 (ITEM 184): o PDF preenchido e o registro vão juntos (lote), como a via assinada; as regras [R6] já aceitam arqId no "preenchido" */
+async function drGravaComPdf(o, id, pdf) {
+  const b64 = 'data:application/pdf;base64,' + ipB64(pdf), aid = Data.novoId('sv2_rem_arq'), ts = nowISO();
+  if (b64.length > DR_ARQ_MAX) return drGrava(o, id);
+  const r = Object.assign({ v: 1, removido: false, porId: S.user.id, porNome: S.user.nome, em: ts }, o, { arqId: aid, bytes: b64.length });
+  try {
+    await drEspera(Data.lote([{ tipo: 'set', col: 'sv2_rem_arq', id: aid, dados: { b64: b64, porId: S.user.id, em: ts } }, { tipo: 'set', col: 'sv2_rem_docs', id: id, dados: r }]));
+    DR_ARQ[aid] = b64; drAudit(r); return true;
+  } catch (e) { console.warn('pdf preenchido', e); aviso('O PDF preenchido não foi guardado (' + svErro(e) + '); o registro segue sem ele.', 'erro'); return drGrava(o, id); } /* revisor: recusa do lote não prende a resposta para sempre */
 }
 /* via assinada: foto reduzida (como o cupom, mais nítida) ou PDF pequeno */
 function drReduz(arq) {
@@ -10650,7 +10671,7 @@ async function drVer(id) {
   let b; try { b = await drArq(r.arqId); } catch (e) { return aviso(svErro(e), 'erro'); }
   if (!b) return aviso('O arquivo não está na nuvem (ou ainda está subindo).', 'erro');
   const tira = r.porId === S.user.id || isSup(S.user) || isPrincipal(S.user);
-  if (r.tipo === 'pdf') { try { const bin = atob(b.split(',')[1] || ''), u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i); return ipAbrirFora(URL.createObjectURL(new Blob([u8], { type: 'application/pdf' })), r.nome + '.pdf'); } catch (e) { return aviso('O PDF guardado está com defeito.', 'erro'); } }
+  if (r.tipo === 'pdf' || r.tipo === 'preenchido') { try { const bin = atob(b.split(',')[1] || ''), u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i); return ipAbrirFora(URL.createObjectURL(new Blob([u8], { type: 'application/pdf' })), String(r.nome || 'documento').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[\\/:*?"<>|]/g, '_') + (r.tipo === 'preenchido' ? ' - preenchido' : '') + '.pdf'); } /* nome sem acento: o Chromium troca por "download" */ catch (e) { return aviso('O PDF guardado está com defeito.', 'erro'); } }
   if (!imgSrc(b)) return aviso('Não foi possível abrir a foto.', 'erro');
   const d = document.createElement('div'); d.id = 'co-fv'; d.className = 'co-fv dr-fv';
   d.innerHTML = '<img src="' + imgSrc(b) + '" alt="' + esc(r.nome) + '"><span class="dr-fvt">' + esc(r.nome + ' · ' + fmtDT(r.em) + ' · ' + (r.porNome || '')) + '</span><span class="dr-fva">' + (tira ? '<button type="button" class="bt ic-so" data-act="dr-tira" data-id="' + esc(r.id) + '" title="Tirar da remessa" aria-label="Tirar da remessa">' + ic('lixo') + '</button>' : '') + '<button type="button" class="bt ic-so" data-act="co-fv-x" aria-label="Fechar">' + ic('x') + '</button></span>';

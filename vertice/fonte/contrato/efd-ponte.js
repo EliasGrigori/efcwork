@@ -22,6 +22,8 @@
     ['pdf', 'original'].forEach(k => { if (i[k] != null && !(i[k] instanceof ArrayBuffer)) e.push(k + ' deve ser ArrayBuffer'); });
     if (i.tipo === 'documento' && !(i.ficha && i.pdf)) e.push('documento precisa de ficha e pdf');
     if (i.tipo === 'abrir' && !(i.original && i.nomeArquivo)) e.push('abrir precisa do arquivo original e do nome');
+    /* 28/11/2026 (ITEM 184, acordo autorizado pelo Elias em 27/11 17:22; só acrescenta): a resposta pode dizer como saiu e levar o PDF preenchido (até 650 KB) */
+    if (i.tipo === 'resposta') { if (i.como != null && i.como !== 'imprimir' && i.como !== 'pdf') e.push('como: imprimir ou pdf'); if (i.pdf && !i.ok) e.push('pdf só com ok'); if (i.pdf && i.pdf.byteLength > 650000) e.push('pdf da resposta até 650 KB'); if (i.pdfFora != null && typeof i.pdfFora !== 'boolean') e.push('pdfFora'); }
     return e;
   }
   let canal = null; const fala = m => { try { canal = canal || new BroadcastChannel(CANAL); canal.postMessage(m); } catch (e) {} };
