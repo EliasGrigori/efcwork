@@ -137,7 +137,9 @@ const quadro = fr => fr.evaluate(() => ({ folhas: document.querySelectorAll('.md
   conf(await p.evaluate(() => !!document.querySelector('[data-act="et-am"]')), 'Amostras tem o ícone de etiqueta na barra da tabela');
   await foto(p, 'pc-amostras-icone');
   let antes = vertFrs(p);
-  await p.click('[data-act="et-am"]'); let fr = await abaEtiquetas(p, antes);
+  await p.click('[data-act="et-am"]'); await esp(p, 500);
+  if (await p.evaluate(() => S.fm && S.fm.k === 'etLig')) { await p.click('#gv [data-act="et-pular"]'); } /* v0.6.46.2: material sem modelo pergunta antes; aqui segue só com as que têm */
+  let fr = await abaEtiquetas(p, antes);
   conf(!!fr, 'abre uma aba do Vértice em #/pedido/et…');
   if (!fr) { console.log(p.frames().map(f => f.url())); await b.close(); srv.close(); process.exit(1); }
   const av = await p.evaluate(() => [...document.querySelectorAll('.av, #av *')].map(x => x.textContent).join(' '));
@@ -193,7 +195,9 @@ const quadro = fr => fr.evaluate(() => ({ folhas: document.querySelectorAll('.md
   console.log('— Tema escuro');
   await p.evaluate(() => { jnIr('efcwork'); csTrocaTema('escuro'); for (const k of ['efcdocs:prefs', 'efcdocs-demo:prefs', 'efcdocs:demo:prefs']) localStorage.setItem(k, JSON.stringify({ tema: 'dark' })); }); await esp(p, 600);
   await p.evaluate(() => { location.hash = '#/coletas/amostras'; }); await esp(p, 900);
-  antes = vertFrs(p); await p.evaluate(() => etDasFiltradas()); fr = await abaEtiquetas(p, antes);
+  antes = vertFrs(p); await p.evaluate(() => etDasFiltradas()); await esp(p, 500);
+  if (await p.evaluate(() => S.fm && S.fm.k === 'etLig')) await p.click('#gv [data-act="et-pular"]'); /* v0.6.46.2 */
+  fr = await abaEtiquetas(p, antes);
   conf(!!fr, 'no escuro também abre');
   if (fr) { const me = await medeVt(fr, false), bg = await fr.evaluate(() => getComputedStyle(document.querySelector('.md')).backgroundColor);
     conf(!me.baixos.length && me.tams.length <= 7 && /rgb\((\d{1,2}), (\d{1,2}), (\d{1,2})\)/.test(bg), 'auditoria PC escuro: fundo escuro (' + bg + '), botões e letras dentro das metas'); }

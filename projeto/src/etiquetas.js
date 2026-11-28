@@ -37,12 +37,14 @@ function etModelo(c) {
 const etMatTxt = m => (CO_MAT.find(x => x[0] === m) || [m, m])[1];
 
 /* ---------- imprimir ---------- */
-function etImprimir(ids, origem) {
+function etImprimir(ids, origem, semLigar) {
   const cs = (ids || []).map(id => (S.coletas || []).find(c => c.id === id)).filter(c => c && ET_MATS.indexOf(c.tipo) >= 0 && c.situacao !== 'cancelada');
   if (!cs.length) return aviso('Nenhuma amostra para etiqueta (água não tem etiqueta).', 'erro');
   if (cs.length > ET_MAX) return aviso('São ' + cs.length + ' amostras. Filtre a data (até ' + ET_MAX + ' por vez).', 'erro');
   const sem = Array.from(new Set(cs.filter(c => !etModelo(c)).map(c => etMatTxt(c.tipo))));
   const com = cs.filter(c => etModelo(c));
+  /* v0.6.46.2 (pedido do Elias, 27/11 23:06): sem modelo ligado, quem cuida dos cadastros liga ali mesmo e a impressão continua */
+  if (sem.length && ccPode() && !semLigar) return etFaltaLigar(ids, origem, cs.filter(c => !etModelo(c)), com.length);
   if (!com.length) return aviso('Falta ligar um modelo de etiqueta para ' + sem.join(', ') + ' em Coletas › Cadastros › Modelos de etiqueta.', 'erro');
   com.sort((a, b) => cmpTxt(etModelo(a).nome || '', etModelo(b).nome || '') || cmpTxt(a.data + coNome(a), b.data + coNome(b)));
   const pid = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
@@ -66,13 +68,27 @@ function etPortaLer(pid) {
 }
 
 /* ---------- Coletas › Cadastros › Modelos de etiqueta ---------- */
+function etFaltaLigar(ids, origem, semModelo, temCom) {
+  const c = semModelo[0], labs = Array.from(new Set(semModelo.filter(x => x.tipo === c.tipo).map(x => x.lab || '')));
+  if (S.etDocs === null) etLerDocs();
+  lcAbrir({ k: 'etLig', id: '', tipo: c.tipo, lab: labs.length === 1 && labs[0] && ccLabs().some(l => l.nome === labs[0]) ? labs[0] : '', docId: '',
+    depois: { ids: ids, origem: origem, falta: Array.from(new Set(semModelo.map(x => etMatTxt(x.tipo)))), temCom: temCom } }, null);
+}
 async function etLerDocs() {
   if (S.etDocsLendo || typeof vtUmaVez !== 'function') return; S.etDocsLendo = true;
   try { S.etDocs = (await vtUmaVez({ igual: ['pasta', 'Etiquetas'] })).map(vtnResumo).filter(d => d.tipo === 'planilha' && d.status !== 'lixeira').sort((a, b) => cmpTxt(a.nome, b.nome)); }
   catch (e) { console.warn('etiquetas', e); S.etDocs = S.etDocs || []; }
-  finally { S.etDocsLendo = false; if (S.rota.area === 'coletas') { render(); if (S.fm && S.fm.k === 'etLig') gvDesenha(true); } }
+  finally { S.etDocsLendo = false; if (S.rota.area === 'coletas' && !S.gv) render(); if (S.gv && S.fm && S.fm.k === 'etLig') gvDesenha(true); } /* só com a gaveta aberta (depois de "Imprimir só as outras" ela reabria por cima do Vértice) */
 }
-const etDocNome = id => { const d = (S.etDocs || []).find(x => x.id === id); return d ? d.nome : ''; };
+/* v0.6.46.2 (Elias, 27/11 23:1x: "preciso ter uma etiqueta já linkada ao Cwork e escolher qual é a desse laboratório"): além da nuvem
+   do Vértice, entram as etiquetas que já estão em Documentos › Impressos, pasta Etiquetas, vindas do Vértice (mesmo id do arquivo de lá) */
+function etDocsTodos() {
+  const l = (S.etDocs || []).slice(), ja = new Set(l.map(d => d.id));
+  (S.ipDocs || []).filter(d => d && d.origem === 'docs' && d.tipo === 'planilha' && d.status !== 'lixeira' && d.status !== 'obsoleto' && String(d.pastaNome || '').trim() === 'Etiquetas' && !ja.has(d.id))
+    .forEach(d => l.push({ id: d.id, nome: (d.codigo ? d.codigo + ' · ' : '') + d.nome }));
+  return l.sort((a, b) => cmpTxt(a.nome, b.nome));
+}
+const etDocNome = id => { const d = etDocsTodos().find(x => x.id === id); return d ? d.nome : ''; };
 function etCadTela(t, acoesBase) {
   if (S.etDocs === null && !S.etDocsLendo) setTimeout(etLerDocs, 0);
   const l = etLig().map(x => Object.assign({}, x, { nm: etDocNome(x.docId) || x.nome || '' })), pode = ccPode();
@@ -93,11 +109,13 @@ function etLigAbrir(id) {
   lcAbrir({ k: 'etLig', id: id || '', tipo: x ? x.tipo : 'SOLO', lab: x ? x.lab || '' : '', docId: x ? x.docId : '' }, id ? () => gvAbrir(() => etLigGaveta(id)) : null);
 }
 LC_FORM.etLig = f => {
-  const labs = ccLabs().filter(l => l.ativo || l.nome === f.lab).map(l => [l.nome, l.nome]), docs = (S.etDocs || []).map(d => [d.id, d.nome]);
+  const labs = ccLabs().filter(l => l.ativo || l.nome === f.lab).map(l => [l.nome, l.nome]), docs = etDocsTodos().map(d => [d.id, d.nome]);
   const dois = h => '<div class="fm-g cl-fm2">' + h + '</div>';
-  const c = lcMsg() + dois(lcBl('Material', ddHTML('et:tipo', f.tipo, CO_MAT)) + lcBl('Laboratório', ddHTML('et:lab', f.lab, [['', 'Qualquer']].concat(labs)))) +
-    lcBl('Modelo no Vértice', S.etDocs === null ? '<p class="ag-dc">Lendo a pasta Etiquetas…</p>' : docs.length ? ddHTML('et:doc', f.docId, [['', 'Escolha']].concat(docs)) : '<p class="ag-dc">Nenhuma planilha na pasta Etiquetas do Vértice.</p>');
-  return { ico: 'etiqueta', sub: 'Coletas › Cadastros › Modelos de etiqueta', titulo: f.id ? 'Trocar o modelo' : 'Ligar modelo de etiqueta', corpo: c, rodape: lcPe('et-lig-ok', 'Salvar') };
+  const dp = f.depois, aviso0 = dp ? lcAv('Sem modelo de etiqueta para <b>' + esc(dp.falta.join(', ')) + '</b>. Ligue um agora: ao salvar, a impressão continua.') : '';
+  const c = lcMsg() + aviso0 + dois(lcBl('Material', ddHTML('et:tipo', f.tipo, CO_MAT)) + lcBl('Laboratório', ddHTML('et:lab', f.lab, [['', 'Qualquer']].concat(labs)))) +
+    lcBl('Modelo no Vértice', S.etDocs === null && !docs.length ? '<p class="ag-dc">Lendo a pasta Etiquetas…</p>' : docs.length ? ddHTML('et:doc', f.docId, [['', 'Escolha']].concat(docs)) : '<p class="ag-dc">Nenhuma planilha na pasta Etiquetas do Vértice.</p><button type="button" class="bt" data-act="et-vertice">' + ic('externo') + 'Abrir o Vértice</button>');
+  const pular = dp && dp.temCom ? '<button type="button" class="bt" data-act="et-pular">Imprimir só as outras</button>' : '';
+  return { ico: 'etiqueta', sub: 'Coletas › Cadastros › Modelos de etiqueta', titulo: f.id ? 'Trocar o modelo' : 'Ligar modelo de etiqueta', corpo: c, rodape: lcPe('et-lig-ok', dp ? 'Salvar e imprimir' : 'Salvar', pular) };
 };
 function etLigOk() {
   const f = S.fm; if (!f || !ccPode()) return;
@@ -108,7 +126,8 @@ function etLigOk() {
   const id = f.id || 'et' + Date.now().toString(36), o = { id: id, tipo: f.tipo, lab: f.lab || '', docId: f.docId, nome: etDocNome(f.docId).slice(0, 120) }, i = l.findIndex(x => x.id === id);
   if (i >= 0) l[i] = o; else l.push(o);
   Audit.log({ acao: 'ligar_etiqueta', entidade: 'etqvertice', entidadeId: id, resumo: 'Etiqueta de ' + etMatTxt(o.tipo) + (o.lab ? ' · ' + o.lab : '') + ': ' + o.nome });
-  f.volta = null; lcGrava([ccCfgGrava({ etqVertice: l }, cf)], f.id ? 'Modelo trocado.' : 'Modelo ligado.', () => { S.cfgCol = Object.assign({ id: 'coletas' }, cf, { etqVertice: l }); gvAbrir(() => etLigGaveta(id)); });
+  const dp = f.depois; f.volta = null;
+  lcGrava([ccCfgGrava({ etqVertice: l }, cf)], f.id ? 'Modelo trocado.' : 'Modelo ligado.', () => { S.cfgCol = Object.assign({ id: 'coletas' }, cf, { etqVertice: l }); if (dp) etImprimir(dp.ids, dp.origem); else gvAbrir(() => etLigGaveta(id)); }); /* lcFim já fechou a gaveta e voltou a camada */
 }
 function etLigTira(id) {
   const x = etLig().find(y => y.id === id); if (!x || !ccPode()) return;
@@ -129,4 +148,6 @@ document.addEventListener('click', e => {
   else if (a === 'et-lig-ed') etLigAbrir(id);
   else if (a === 'et-lig-ok') etLigOk();
   else if (a === 'et-lig-tira') etLigTira(id);
+  else if (a === 'et-vertice') { if (!S.fm) return; S.fm.sujo = false; lcFim(() => jnAbrir('docs', '#/internos')); } /* abre depois de a camada do formulário voltar */
+  else if (a === 'et-pular') { const dp = S.fm && S.fm.depois; if (!dp) return; S.fm.sujo = false; lcFim(() => etImprimir(dp.ids, dp.origem, true)); }
 });
