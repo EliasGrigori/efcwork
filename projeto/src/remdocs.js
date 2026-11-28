@@ -86,7 +86,10 @@ function drPendMuda(fn) { const p = drPendLe(), r = fn(p); Object.keys(p).forEac
 const drTrava = f => navigator.locks && navigator.locks.request ? navigator.locks.request('efcwork-dr', f) : f();
 async function drPedido(k, x, dd, tent, pidVelho) {
   if (!ptTem()) return aviso('Este navegador não tem a caixa de troca com o Vértice: use Abrir no Vértice e preencha lá.', 'erro');
-  const d = x.d, vt = d.fonte === 'vertice', dados = vt ? ptResumoEnvio(k, dd, d) : drSoCampos(ptResumoEnvio(k, dd, d), d.pub.campos); /* v0.6.44: do Vértice vai tudo; ele usa só o que o documento tem marcado */
+  /* v0.6.47 (trava pedida pelo Elias em 27/11 22:46): o papel que veio do Vértice ("Compartilhar com o Cwork", origem 'docs') é pedido como o
+     papel ligado direto ao Vértice: sem conferir a versão compartilhada por ESTE aparelho (dava "O Cwork pediu a versão 10, mas a versão
+     compartilhada daqui é a 9" quando a 10 foi compartilhada de outro aparelho). O Vértice usa a versão atual dele e só os campos marcados. */
+  const d = x.d, vt = d.fonte === 'vertice', doVt = vt || d.origem === 'docs', dados = doVt ? ptResumoEnvio(k, dd, d) : drSoCampos(ptResumoEnvio(k, dd, d), d.pub.campos); /* v0.6.44: do Vértice vai tudo; ele usa só o que o documento tem marcado */
   const copias = Math.max(1, Math.min(20, x.copias === 'porCaixa' ? Number(dd.caixas) || 1 : Number(x.copias) || 1));
   const e = EFD.pedido({ v: 1, pid: 'p00000001', docId: d.id, de: 'efcwork', copias: copias, criadoEm: nowISO(), dados: dados });
   if (e.length) { console.error('pedido', e); return aviso('Não deu para montar o pedido ao Vértice: ' + e[0] + '.', 'erro'); }
@@ -95,8 +98,8 @@ async function drPedido(k, x, dd, tent, pidVelho) {
     if (tent && !vt) pidA = await EFDPonte.por({ de: PT_APP, para: 'docs', tipo: 'abrir', original: await ipArquivo(d, 'orig'), nomeArquivo: d.orig.nomeArquivo || ipNomeArq(d, 'xlsx'), docId: d.id });
     /* rev: o Vértice confere com a versão compartilhada daqui e recusa outra (controle de documentos) */
     /* v0.6.45: do Vértice, uma folha por material + análise (as folhas trocam o grupo e a lista de amostras) */
-    const fl = vt && dd.modo !== 'unificada' && dados._folhas && dados._folhas.length > 1 ? dados._folhas.slice(0, 50) : null; /* ITEM 285: "Tudo numa ficha só" manda uma folha com o resumo dos grupos */
-    const pid = await EFDPonte.por(Object.assign({ de: PT_APP, para: 'docs', tipo: 'pedido', docId: d.id, copias: copias, dados: dados }, fl ? { folhas: fl } : {}, vt ? { soMarcados: true } : { rev: d.rev }));
+    const fl = doVt && dd.modo !== 'unificada' && dados._folhas && dados._folhas.length > 1 ? dados._folhas.slice(0, 50) : null; /* ITEM 285: "Tudo numa ficha só" manda uma folha com o resumo dos grupos */
+    const pid = await EFDPonte.por(Object.assign({ de: PT_APP, para: 'docs', tipo: 'pedido', docId: d.id, copias: copias, dados: dados }, fl ? { folhas: fl } : {}, doVt ? { soMarcados: true } : { rev: d.rev }));
     drPendMuda(p => { p[pid] = { k: k, item: x.id, nome: x.nome, docId: d.id, rev: d.rev, copias: copias, dd: dd, dados: dados, tent: tent || 0, vt: vt ? 1 : 0, em: nowISO() }; });
     jnAbrir('docs', pidA ? '#/abrir/' + pidA : '#/pedido/' + pid, false, pidVelho && typeof jnAbaDaRota === 'function' ? jnAbaDaRota('#/pedido/' + pidVelho) : ''); /* v0.6.35: o mesmo documento pedido de novo volta para a aba dele */
     return pid;

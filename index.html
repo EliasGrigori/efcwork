@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-HqXg8h8Geeq9ID9txkXQq/4ViFgpVcLQeFUL/aGb6ig=' https://www.gstatic.com/firebasejs/13.4.0/ https://www.google.com/recaptcha/enterprise.js https://www.gstatic.com/recaptcha/releases/; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' data: blob: https://*.googleapis.com https://www.google.com/recaptcha/; frame-src 'self' https://eliasgrigori.github.io blob: https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/ https://docseliasflorencio.firebaseapp.com; worker-src 'self' blob:; manifest-src 'self'; media-src 'self' data: blob:; object-src 'self' blob:; base-uri 'none'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-o+euU1m02wLoXStDH1XlV5iyCjjn09shHt3UDP1D4DE=' https://www.gstatic.com/firebasejs/13.4.0/ https://www.google.com/recaptcha/enterprise.js https://www.gstatic.com/recaptcha/releases/; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' data: blob: https://*.googleapis.com https://www.google.com/recaptcha/; frame-src 'self' https://eliasgrigori.github.io blob: https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/ https://docseliasflorencio.firebaseapp.com; worker-src 'self' blob:; manifest-src 'self'; media-src 'self' data: blob:; object-src 'self' blob:; base-uri 'none'; form-action 'self'">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>EFCwork</title>
 <meta name="description" content="EFCwork · Cwork Quality · controle de qualidade agrícola da família EFClaudian.">
@@ -2839,7 +2839,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = Mov;
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.6.46';
+const VERSAO = '0.6.46.1';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -10215,7 +10215,10 @@ function drPendMuda(fn) { const p = drPendLe(), r = fn(p); Object.keys(p).forEac
 const drTrava = f => navigator.locks && navigator.locks.request ? navigator.locks.request('efcwork-dr', f) : f();
 async function drPedido(k, x, dd, tent, pidVelho) {
   if (!ptTem()) return aviso('Este navegador não tem a caixa de troca com o Vértice: use Abrir no Vértice e preencha lá.', 'erro');
-  const d = x.d, vt = d.fonte === 'vertice', dados = vt ? ptResumoEnvio(k, dd, d) : drSoCampos(ptResumoEnvio(k, dd, d), d.pub.campos); /* v0.6.44: do Vértice vai tudo; ele usa só o que o documento tem marcado */
+  /* v0.6.47 (trava pedida pelo Elias em 27/11 22:46): o papel que veio do Vértice ("Compartilhar com o Cwork", origem 'docs') é pedido como o
+     papel ligado direto ao Vértice: sem conferir a versão compartilhada por ESTE aparelho (dava "O Cwork pediu a versão 10, mas a versão
+     compartilhada daqui é a 9" quando a 10 foi compartilhada de outro aparelho). O Vértice usa a versão atual dele e só os campos marcados. */
+  const d = x.d, vt = d.fonte === 'vertice', doVt = vt || d.origem === 'docs', dados = doVt ? ptResumoEnvio(k, dd, d) : drSoCampos(ptResumoEnvio(k, dd, d), d.pub.campos); /* v0.6.44: do Vértice vai tudo; ele usa só o que o documento tem marcado */
   const copias = Math.max(1, Math.min(20, x.copias === 'porCaixa' ? Number(dd.caixas) || 1 : Number(x.copias) || 1));
   const e = EFD.pedido({ v: 1, pid: 'p00000001', docId: d.id, de: 'efcwork', copias: copias, criadoEm: nowISO(), dados: dados });
   if (e.length) { console.error('pedido', e); return aviso('Não deu para montar o pedido ao Vértice: ' + e[0] + '.', 'erro'); }
@@ -10224,8 +10227,8 @@ async function drPedido(k, x, dd, tent, pidVelho) {
     if (tent && !vt) pidA = await EFDPonte.por({ de: PT_APP, para: 'docs', tipo: 'abrir', original: await ipArquivo(d, 'orig'), nomeArquivo: d.orig.nomeArquivo || ipNomeArq(d, 'xlsx'), docId: d.id });
     /* rev: o Vértice confere com a versão compartilhada daqui e recusa outra (controle de documentos) */
     /* v0.6.45: do Vértice, uma folha por material + análise (as folhas trocam o grupo e a lista de amostras) */
-    const fl = vt && dd.modo !== 'unificada' && dados._folhas && dados._folhas.length > 1 ? dados._folhas.slice(0, 50) : null; /* ITEM 285: "Tudo numa ficha só" manda uma folha com o resumo dos grupos */
-    const pid = await EFDPonte.por(Object.assign({ de: PT_APP, para: 'docs', tipo: 'pedido', docId: d.id, copias: copias, dados: dados }, fl ? { folhas: fl } : {}, vt ? { soMarcados: true } : { rev: d.rev }));
+    const fl = doVt && dd.modo !== 'unificada' && dados._folhas && dados._folhas.length > 1 ? dados._folhas.slice(0, 50) : null; /* ITEM 285: "Tudo numa ficha só" manda uma folha com o resumo dos grupos */
+    const pid = await EFDPonte.por(Object.assign({ de: PT_APP, para: 'docs', tipo: 'pedido', docId: d.id, copias: copias, dados: dados }, fl ? { folhas: fl } : {}, doVt ? { soMarcados: true } : { rev: d.rev }));
     drPendMuda(p => { p[pid] = { k: k, item: x.id, nome: x.nome, docId: d.id, rev: d.rev, copias: copias, dd: dd, dados: dados, tent: tent || 0, vt: vt ? 1 : 0, em: nowISO() }; });
     jnAbrir('docs', pidA ? '#/abrir/' + pidA : '#/pedido/' + pid, false, pidVelho && typeof jnAbaDaRota === 'function' ? jnAbaDaRota('#/pedido/' + pidVelho) : ''); /* v0.6.35: o mesmo documento pedido de novo volta para a aba dele */
     return pid;
