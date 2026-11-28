@@ -62,7 +62,7 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 - [x] **Imprimir pela folha aberta avisa "preenchido":** feito na v0.6.81 (ITEM 299, aprovado e publicado).
 - [ ] **Cadeias em Word (BIOAGRI, H2O):** em espera; o Elias vai refazer em planilha no Vértice.
 
-- [x] **Conversas (v0.6.51 + Vértice v0.6.85):** ITENS 318 a 328 todos Aprovados (28/11 12:32); publicada em 28/11 (efcwork: commit da v0.6.51).
+- [x] **Conversas (v0.6.51 + Vértice v0.6.85):** ITENS 318 a 328 todos Aprovados (28/11 12:32); publicada em 28/11 (efcwork: efcwork 865a51b).
 
 ## C. Pedidos pequenos e perguntas ao Elias
 - [ ] **Conversas · @nome** como no EFClaudian (chamar alguém que não está na conversa)? Pergunta da página da v0.6.51.
