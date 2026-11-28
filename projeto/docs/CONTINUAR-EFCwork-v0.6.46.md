@@ -1,9 +1,9 @@
-# EFCwork · CONTINUAR (28/11/2026 07:4x) · NO AR: Cwork v0.6.48 + Vértice v0.6.83 (documentos só no Vértice, 2ª parte)
+# EFCwork · CONTINUAR (28/11/2026 07:4x) · NO AR: Cwork v0.6.48 + Vértice v0.6.83 (efcwork d59e4cf; documentos só no Vértice, 2ª parte)
 
 Substitui o CONTINUAR-EFCwork-v0.6.46.md de 19:0x (mesmo nome: o Cwork não mudou de versão). Quem ler só este arquivo sabe o que fazer.
 
 ## 0. Estado
-- **PUBLICADA em 28/11 07:4x: Cwork v0.6.48 + Vértice v0.6.83 · documentos só no Vértice, 2ª parte (ITENS 308 a 314 todos Aprovados; revisor novo e 9 correções no dossiê).** Último ITEM usado: **314**. Firebase: nada muda.
+- **PUBLICADA em 28/11 07:4x: Cwork v0.6.48 + Vértice v0.6.83 · documentos só no Vértice, 2ª parte (efcwork d59e4cf; ITENS 308 a 314 todos Aprovados; revisor novo e 9 correções no dossiê).** Último ITEM usado: **314**. Firebase: nada muda.
 - **O que a v0.6.48 faz:** "Levar para o Vértice" na gaveta de cada impresso antigo (só quem salva no Vértice): PDF, foto e Word sobem como PDF; Excel abre no Vértice como planilha na pasta escolhida; o antigo sai da lista e fica guardado (`levadoPara`). Kit e Treinamentos seguem o levado e listam os do Vértice; backup com `vtd_arquivos` e `vtd_partes`; Reserva e espaço com os do Vértice; cópia em conflito fora do Cwork.
 - **PUBLICADA em 28/11 06:0x: Cwork v0.6.47 + Vértice v0.6.82 (efcwork 76354c2; ITENS 300 a 307 todos Aprovados; revisor novo e correções no dossiê).** Último ITEM usado: **307**. Firebase: nada muda.
 - **PUBLICADAS em 27/11 (noite):** Cwork v0.6.46.1 (bef3c2d: trava do pedido do papel vindo do Vértice — "O Cwork pediu a versão 10…") e v0.6.46.2 (0c7d2e8: etiqueta sem modelo liga ali mesmo e imprime; a lista traz as etiquetas dos Impressos vindas do Vértice).
@@ -19,7 +19,7 @@ Substitui o CONTINUAR-EFCwork-v0.6.46.md de 19:0x (mesmo nome: o Cwork não mudo
 
 ## 1. TEXTO PARA COLAR NA CONVERSA NOVA
 
-> EFCwork, continuando. Anexei o pacote único (EFCwork-PACOTE-NOVA-CONVERSA-v0.6.48-vertice-v0.6.83.zip): CONTINUAR, dossiê, pendências, o app no ar e o fonte. Leia o CONTINUAR inteiro. Responda em 3 linhas: onde parou e qual é a próxima tarefa. Depois sugira o modelo e o esforço em **negrito** e espere meu "pode iniciar". Siga o "Padrão de trabalho" sem eu repetir. Repositório: EliasGrigori/efcwork (add_repo com envio; se negar, me diga e use o fonte do pacote). Esta conversa pode mexer no Vértice (vertice/fonte). Nunca invente documento; modelo de teste com marca d'água. Não abra o OneDrive. Nada no EFClaudian. GitHub só com "pode publicar". Fique em primeiro plano. Toda entrega: o pacote único atualizado.
+> EFCwork, continuando. Anexei o pacote único (EFCwork-PACOTE-NOVA-CONVERSA-v0.6.48-vertice-v0.6.83-publicada.zip): CONTINUAR, dossiê, pendências, o app no ar e o fonte. Leia o CONTINUAR inteiro. Responda em 3 linhas: onde parou e qual é a próxima tarefa. Depois sugira o modelo e o esforço em **negrito** e espere meu "pode iniciar". Siga o "Padrão de trabalho" sem eu repetir. Repositório: EliasGrigori/efcwork (add_repo com envio; se negar, me diga e use o fonte do pacote). Esta conversa pode mexer no Vértice (vertice/fonte). Nunca invente documento; modelo de teste com marca d'água. Não abra o OneDrive. Nada no EFClaudian. GitHub só com "pode publicar". Fique em primeiro plano. Toda entrega: o pacote único atualizado.
 
 ## 2. Próxima tarefa
 1. **PDF preenchido de volta (ITEM 184)** — "pode publicar e iniciar a próxima etapa" (28/11 06:58). Antes: levantar o ITEM 184 no dossiê, mapear e sugerir modelo e esforço em **negrito**.
