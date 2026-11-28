@@ -1,8 +1,10 @@
-# EFCwork · CONTINUAR (28/11/2026 06:0x) · NO AR: Cwork v0.6.47 + Vértice v0.6.82 (efcwork 76354c2) · EM CONSTRUÇÃO: documentos só no Vértice, 2ª parte
+# EFCwork · CONTINUAR (28/11/2026 07:4x) · NO AR: Cwork v0.6.48 + Vértice v0.6.83 (documentos só no Vértice, 2ª parte)
 
 Substitui o CONTINUAR-EFCwork-v0.6.46.md de 19:0x (mesmo nome: o Cwork não mudou de versão). Quem ler só este arquivo sabe o que fazer.
 
 ## 0. Estado
+- **PUBLICADA em 28/11 07:4x: Cwork v0.6.48 + Vértice v0.6.83 · documentos só no Vértice, 2ª parte (ITENS 308 a 314 todos Aprovados; revisor novo e 9 correções no dossiê).** Último ITEM usado: **314**. Firebase: nada muda.
+- **O que a v0.6.48 faz:** "Levar para o Vértice" na gaveta de cada impresso antigo (só quem salva no Vértice): PDF, foto e Word sobem como PDF; Excel abre no Vértice como planilha na pasta escolhida; o antigo sai da lista e fica guardado (`levadoPara`). Kit e Treinamentos seguem o levado e listam os do Vértice; backup com `vtd_arquivos` e `vtd_partes`; Reserva e espaço com os do Vértice; cópia em conflito fora do Cwork.
 - **PUBLICADA em 28/11 06:0x: Cwork v0.6.47 + Vértice v0.6.82 (efcwork 76354c2; ITENS 300 a 307 todos Aprovados; revisor novo e correções no dossiê).** Último ITEM usado: **307**. Firebase: nada muda.
 - **PUBLICADAS em 27/11 (noite):** Cwork v0.6.46.1 (bef3c2d: trava do pedido do papel vindo do Vértice — "O Cwork pediu a versão 10…") e v0.6.46.2 (0c7d2e8: etiqueta sem modelo liga ali mesmo e imprime; a lista traz as etiquetas dos Impressos vindas do Vértice).
 - **PUBLICADA em 27/11 20:3x: Vértice v0.6.81 (o Cwork não mudou; segue v0.6.46). ITENS 294 a 299 todos Aprovados** (299: "não entendi nada mas tá aprovado, não precisa mais explicar, confio em você"). Commit: b921957. Último ITEM usado: **299**.
@@ -17,11 +19,12 @@ Substitui o CONTINUAR-EFCwork-v0.6.46.md de 19:0x (mesmo nome: o Cwork não mudo
 
 ## 1. TEXTO PARA COLAR NA CONVERSA NOVA
 
-> EFCwork, continuando. Anexei o pacote único (EFCwork-PACOTE-NOVA-CONVERSA-v0.6.47-vertice-v0.6.82.zip): CONTINUAR, dossiê, pendências, o app no ar e o fonte. Leia o CONTINUAR inteiro. Responda em 3 linhas: onde parou e qual é a próxima tarefa. Depois sugira o modelo e o esforço em **negrito** e espere meu "pode iniciar". Siga o "Padrão de trabalho" sem eu repetir. Repositório: EliasGrigori/efcwork (add_repo com envio; se negar, me diga e use o fonte do pacote). Esta conversa pode mexer no Vértice (vertice/fonte). Nunca invente documento; modelo de teste com marca d'água. Não abra o OneDrive. Nada no EFClaudian. GitHub só com "pode publicar". Fique em primeiro plano. Toda entrega: o pacote único atualizado.
+> EFCwork, continuando. Anexei o pacote único (EFCwork-PACOTE-NOVA-CONVERSA-v0.6.48-vertice-v0.6.83.zip): CONTINUAR, dossiê, pendências, o app no ar e o fonte. Leia o CONTINUAR inteiro. Responda em 3 linhas: onde parou e qual é a próxima tarefa. Depois sugira o modelo e o esforço em **negrito** e espere meu "pode iniciar". Siga o "Padrão de trabalho" sem eu repetir. Repositório: EliasGrigori/efcwork (add_repo com envio; se negar, me diga e use o fonte do pacote). Esta conversa pode mexer no Vértice (vertice/fonte). Nunca invente documento; modelo de teste com marca d'água. Não abra o OneDrive. Nada no EFClaudian. GitHub só com "pode publicar". Fique em primeiro plano. Toda entrega: o pacote único atualizado.
 
 ## 2. Próxima tarefa
-1. **Documentos só no Vértice, 2ª parte** ("pode publicar e iniciar a próxima etapa", 28/11 05:29; **Opus 5.5 · alto**): botão "Levar para o Vértice" em cada impresso antigo (o Elias move um por um), kit e Treinamentos com o PDF do Vértice, Reserva e backup com os do Vértice, medidor de espaço com a nuvem do Vértice, cópia em conflito de PDF fora da lista (achados 4, 5, 7 e 9 do revisor da v0.6.47).
-2. Na fila: PDF preenchido de volta (ITEM 184) · Só ver por área · Conversas.
+1. **PDF preenchido de volta (ITEM 184)** — "pode publicar e iniciar a próxima etapa" (28/11 06:58). Antes: levantar o ITEM 184 no dossiê, mapear e sugerir modelo e esforço em **negrito**.
+   - O Elias leva os impressos antigos para o Vértice, um por um, quando quiser.
+2. Na fila: Só ver por área · Conversas · sobras da 2ª parte (PENDENCIAS, seção do Vértice).
 
 ## 2g. O que a v0.6.47 faz (Cwork) + Vértice v0.6.82
 - Vértice: tipo `pdf` (`nucleo/pdf.js`, `ui/externos.jsx`): Documentos externos com as 5 pastas, Importar PDF (ou foto), ver, baixar, imprimir, trocar. O formato do conteúdo é o mesmo que o Cwork grava.

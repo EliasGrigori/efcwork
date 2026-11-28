@@ -84,7 +84,7 @@ async function etLerDocs() {
    do Vértice, entram as etiquetas que já estão em Documentos › Impressos, pasta Etiquetas, vindas do Vértice (mesmo id do arquivo de lá) */
 function etDocsTodos() {
   const l = (S.etDocs || []).slice(), ja = new Set(l.map(d => d.id));
-  (S.ipDocs || []).filter(d => d && d.origem === 'docs' && d.tipo === 'planilha' && d.status !== 'lixeira' && d.status !== 'obsoleto' && String(d.pastaNome || '').trim() === 'Etiquetas' && !ja.has(d.id))
+  (S.ipDocs || []).filter(d => d && d.origem === 'docs' && d.tipo === 'planilha' && d.status !== 'lixeira' && d.status !== 'obsoleto' && !d.levadoPara && String(d.pastaNome || '').trim() === 'Etiquetas' && !ja.has(d.id))
     .forEach(d => l.push({ id: d.id, nome: (d.codigo ? d.codigo + ' · ' : '') + d.nome }));
   return l.sort((a, b) => cmpTxt(a.nome, b.nome));
 }

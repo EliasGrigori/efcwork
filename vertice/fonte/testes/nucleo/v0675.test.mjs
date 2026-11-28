@@ -109,6 +109,7 @@ test('dois que salvam mexem no mesmo arquivo: o segundo vira cópia em conflito,
   const copia = await b2.abrir(r2.conflitos[0].copia);
   assert.equal(copia.conteudo.abas[0].celulas.A1, 'Bia', 'o que a Bia fez ficou na cópia');
   assert.match(copia.ficha.nome, /cópia em conflito de Bia/);
+  assert.equal(copia.ficha.conflitoDe, 'k', 'v0.6.83: a cópia diz de qual arquivo é (o Cwork não a mostra como vigente)');
   s1.parar(); s2.parar();
 });
 

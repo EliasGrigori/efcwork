@@ -41,7 +41,8 @@ const VT_PRAZO = 60000;
 const vtPrazo = (p, ms) => new Promise((ok, falha) => { const r = setTimeout(() => falha(Object.assign(new Error('a nuvem não respondeu'), { code: 'sem-resposta' })), ms || VT_PRAZO); Promise.resolve(p).then(v => { clearTimeout(r); ok(v); }, e => { clearTimeout(r); falha(e); }); });
 /* a lista vem do servidor (v0.6.42: antes vinha a primeira resposta, que podia ser a da memória do aparelho, com versões velhas) */
 const vtUmaVez = o => vtPrazo(Data.col('vtd_arquivos').frescos(o || {}));
-const vtnResumo = d => ({ id: d.id, pasta: d.pasta, versao: Number(d.versao) || 0, em: d.em || '', porNome: d.porNome || '', nome: (d.ficha && d.ficha.nome) || '', tipo: (d.ficha && d.ficha.tipo) || '', status: (d.ficha && d.ficha.status) || '', codigo: (d.ficha && d.ficha.codigo) || '', alteradoPor: (d.ficha && d.ficha.alteradoPor) || d.porNome || '' }); /* v0.6.47: código e quem mudou, para os Impressos */
+const vtnResumo = d => ({ id: d.id, pasta: d.pasta, versao: Number(d.versao) || 0, em: d.em || '', porNome: d.porNome || '', nome: (d.ficha && d.ficha.nome) || '', tipo: (d.ficha && d.ficha.tipo) || '', status: (d.ficha && d.ficha.status) || '', codigo: (d.ficha && d.ficha.codigo) || '', alteradoPor: (d.ficha && d.ficha.alteradoPor) || d.porNome || '', bytes: Number(d.bytes) || 0,
+  conflito: !!(d.ficha && (d.ficha.conflitoDe || / \(cópia em conflito de /.test(d.ficha.nome || ''))) }); /* v0.6.47: código e quem mudou, para os Impressos; v0.6.48: tamanho e cópia em conflito */
 /* lista o que a pessoa pode ler: Principal e Líder ★ leem tudo; os outros, pasta por pasta (a pasta negada fica de fora) */
 async function vtNuvemListar() {
   const u = vtUsuario(); if (!u) return [];

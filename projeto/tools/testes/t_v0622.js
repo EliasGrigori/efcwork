@@ -104,9 +104,9 @@ const vertPronto = (p, ms) => p.waitForFunction(() => { const f = document.query
     const g = JSON.parse(JSON.stringify(f)); g.tipo = 'planilha'; g.rev = 3; g.pub.rev = 3; g.pastaNome = 'Fichas e custódias'; return EFDPonte.por({ de: 'docs', para: 'efcwork', tipo: 'documento', ficha: g, pdf: b(EFD.juntar(f.pub, partes)), original: b(xlsx), nomeArquivo: 'ficha-teste.xlsx' }); }, [f1, partes, xlsx]);
   await p.waitForFunction(id => (S.ipDocs.find(d => d.id === id) || {}).rev >= 3, f1.id, { timeout: 8000 }).catch(() => {});
   await ir(p, 'documentos/impressos', 700); await p.evaluate(id => ipAbre(id), f1.id); await p.waitForTimeout(700);
-  conf(!!(await p.$('#gv [data-act="ip-no-vertice"]')), 'a gaveta do impresso mostra "Abrir no Vértice"');
+  conf(!!(await p.$('#gv [data-act="iv-levar"]')), 'a gaveta do impresso mostra "Levar para o Vértice" (v0.6.48: no lugar de "Abrir no Vértice" para quem salva; a ponte "abrir" continua, usada pelo kit)');
   await p.evaluate(() => { window._pts = []; const o = EFDPonte.por; EFDPonte.por = async i => { const pid = await o(i); window._pts.push({ t: i.tipo, pid: pid, doc: i.docId, n: i.nomeArquivo, b: i.original ? i.original.byteLength : 0, dados: i.dados }); return pid; }; });
-  await p.click('#gv [data-act="ip-no-vertice"]'); await p.waitForTimeout(900);
+  await p.evaluate(id => ipNoVertice(id), f1.id); await p.waitForTimeout(900); /* v0.6.48: o mesmo caminho, sem o botão */
   const ab = await p.evaluate(async () => { const f = document.querySelector('.jn-fr iframe[data-j="docs"]'); let h = ''; try { h = f.contentWindow.location.hash; } catch (e) {} return { ativa: S.jnAtiva, hash: h, itens: window._pts }; });
   const it = ab.itens.find(i => i.t === 'abrir');
   conf(ab.ativa === 'docs' && it && (ab.hash === '#/abrir/' + it.pid || !/abrir/.test(ab.hash)), 'o Vértice vai para a frente pelo endereço #/abrir/<pid> (' + ab.hash + ')');

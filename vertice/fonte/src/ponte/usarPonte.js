@@ -4,12 +4,16 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { criarArquivo } from '../nucleo/modelo.js';
 import { guardarOriginal } from '../nucleo/originais.js';
 import { irPara } from '../ui/comum.jsx';
-import { EFD, montarEnvio, PODE_COMPARTILHAR } from './ponte.js';
+import { ponteDoCwork } from '../nucleo/loginCwork.js';
+import { EFD, montarEnvio, PODE_COMPARTILHAR, SUBABAS } from './ponte.js';
 import { camposDoLivro, camposParaPub } from './campos.js';
 import { pedidoDoResumo } from './pedido.js';
 import { temCaixa, lerEstado, marcarEstado, porNaCaixa, conferirRecebidos, esperandoAqui, pegar, apagar, ouvir } from './caixa.js';
 
 export const SUBABA_RECEBIDOS = 'Recebidos do Cwork';
+
+/* quem leva para o Vértice precisa salvar no Cwork (o mesmo que a nuvem usa) */
+function podeSalvarNoCwork() { try { const p = ponteDoCwork(), u = p && p.usuario ? p.usuario() : null; return !!(u && u.salvar); } catch { return false; } }
 
 export function usarPonte({ banco, fichas, recarregar, avisar, aberto, autor, mudarFichaArquivo, idDocumento }) {
   const [estado, setEstado] = useState(() => lerEstado());
@@ -58,17 +62,28 @@ export function usarPonte({ banco, fichas, recarregar, avisar, aberto, autor, mu
       if (!i || i.tipo !== 'abrir') { avisar('Este pedido do Cwork não está mais na caixa deste aparelho.', { ic: 'aviso', longo: true }); irPara(''); return; }
       /* v0.6.76: pergunta ao banco (a lista da tela pode ainda não ter chegado e o modelo daqui seria trocado pelo do Cwork) */
       const r0 = await banco.backend.um(i.docId), ja = r0 && r0.ficha.status !== 'lixeira' ? r0.ficha : null;
+      /* v0.6.82 (2ª parte): "Levar para o Vértice" do Cwork: a planilha entra (ou muda) direto numa das 5 pastas, sobe para a nuvem
+         e abre inteira (quem leva é o Administrador ou o Líder ★), para marcar os campos do Cwork */
+      const lv = i.levar && SUBABAS.includes(i.levar.pasta) && podeSalvarNoCwork() ? i.levar : null;
+      if (lv && ja) {
+        await mudarFichaArquivo(ja, { pastaNome: lv.pasta, codigo: ja.codigo || String(lv.codigo || '').slice(0, 20) }); /* o código daqui vale; sem ele, o do Cwork */
+        await recarregar(); await apagar(pid);
+        avisar(`"${ja.nome}" está em ${lv.pasta}. Marque os campos em Arquivo › Campos do Cwork.`, { ic: 'check', longo: true });
+        location.replace('#/arq/' + ja.id); return;
+      }
       if (!ja) {
         if (!/\.(xlsx|xlsm)$/i.test(i.nomeArquivo || '')) { avisar(`"${i.nomeArquivo}" é um arquivo que o Vértice ainda não edita (o Documento chega na v0.7.0). Ele continua na caixa.`, { ic: 'aviso', longo: true }); irPara(''); return; }
         const { lerArquivoExcel } = await import('../planilha/xlsx/abrir.js');
         const arq = new File([i.original], i.nomeArquivo, { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
         const r = await lerArquivoExcel(arq);
         const a = criarArquivo({ tipo: 'planilha', nome: i.nomeArquivo.replace(/\.[^.]+$/, '').replace(/[\\/:*?"<>|]/g, '_').slice(0, 120), autor, id: i.docId });
-        a.ficha.pastaNome = SUBABA_RECEBIDOS;
+        a.ficha.pastaNome = lv ? lv.pasta : SUBABA_RECEBIDOS;
+        if (lv) { a.ficha.nome = String(lv.nome || a.ficha.nome).replace(/[\\/:*?"<>|]/g, '_').slice(0, 120); if (lv.codigo) a.ficha.codigo = String(lv.codigo).slice(0, 20); }
         a.conteudo = r.conteudo;
         await banco.criar(a);
         await guardarOriginal(a.ficha.id, { nome: arq.name, tipo: arq.type, blob: arq });
         await recarregar();
+        if (lv) { await apagar(pid); avisar(`"${a.ficha.nome}" entrou em ${lv.pasta}. Marque os campos em Arquivo › Campos do Cwork.`, { ic: 'check', longo: true }); location.replace('#/arq/' + a.ficha.id); return; }
       }
       await apagar(pid); /* só depois de guardar */
       /* v0.6.76: aberto pelo Cwork = modo documento (só a folha, ninguém salva); troca o endereço sem criar passo no voltar */

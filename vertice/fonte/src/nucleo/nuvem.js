@@ -67,7 +67,7 @@ export async function enviarPendentes({ local, remoto, fila, quem = 'neste apare
         continue;
       }
       const copia = await idCopiaLivre(local, id, agora);
-      await local.por({ ...meu, id: copia, marca: novaMarca(), ficha: { ...semNuvem(meu.ficha), id: copia, nome: nomeCopiaEmConflito(meu.ficha.nome, quem), gravacao: 1 } });
+      await local.por({ ...meu, id: copia, marca: novaMarca(), ficha: { ...semNuvem(meu.ficha), id: copia, nome: nomeCopiaEmConflito(meu.ficha.nome, quem), gravacao: 1, conflitoDe: id } }); /* v0.6.82: o Cwork não mostra a cópia em conflito como vigente */
       const nuvem = { versao: daNuvem.versao, em: agora };
       await local.por({ ...meu, marca: novaMarca(), ficha: { ...daNuvem.ficha, id, nuvem }, pacote: daNuvem.pacote }); /* marca nova: a aba que tem o arquivo aberto percebe */
       aoMarcar(id, nuvem);

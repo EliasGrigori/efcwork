@@ -28,16 +28,26 @@ const ktPodeCad = () => isSup(S.user);
 const ktInfo = lab => ((S.cfgCol || {}).labInfo || {})[lab] || null;
 const ktTemEnd = i => !!(i && i.nome && i.end);
 const ktKitDe = lab => S.ktKit.filter(x => x.ativo !== false && x.ponto === 'coletas.envio' && (x.lab === lab || !x.lab)).sort((a, b) => (a.ordem || 0) - (b.ordem || 0) || cmpTxt(a.nome, b.nome));
-const ktDoc = id => S.ipDocs.find(d => d.id === id) || ktVtDoc(id);
+/* v0.6.48: o impresso levado para o Vértice segue a ligação (levadoPara); com o mesmo id lá e aqui, vale o do Vértice */
+/* revisor: se a lista do Vértice não chegou (ou a pessoa não lê aquela pasta lá), vale o antigo guardado aqui, que todos leem e imprime como antes */
+function ktDoc(id) {
+  const ip = S.ipDocs.find(d => d.id === id);
+  if (ip && ip.levadoPara) return ivDe(ip.levadoPara) ? ktVtDoc(ip.levadoPara, ip.nome) : ip;
+  if (ip && ivDe(id)) return ktVtDoc(id);
+  return ip || ktVtDoc(id);
+}
 /* o papel do Vértice como o kit enxerga (a lista vem da nuvem do Vértice; sem ela, o nome guardado na ligação) */
-function ktVtDoc(id) {
-  const v = (S.ktVt || []).find(x => x.id === id), e = S.ktKit.find(x => x.docId === id && x.fonte === 'vertice');
-  if (!v && !e) return null;
-  return { id: id, nome: (v && v.nome) || e.nome, rev: (v && v.versao) || 1, status: v && v.status === 'lixeira' ? 'lixeira' : 'vigente', tipo: 'planilha', codigo: '', orig: { formato: 'xlsx' }, fonte: 'vertice', pasta: v ? v.pasta : '' };
+function ktVtDoc(id, nomeGuardado) {
+  const v = ivDe(id), e = S.ktKit.find(x => x.docId === id && x.fonte === 'vertice');
+  if (!v && !e && !nomeGuardado) return null;
+  const base = { id: id, nome: (v && v.nome) || (e && e.nome) || nomeGuardado, rev: (v && v.versao) || 1, status: v && v.status === 'lixeira' ? 'lixeira' : 'vigente', codigo: (v && v.codigo) || '', fonte: 'vertice', pasta: v ? v.pasta : '' };
+  /* v0.6.48: PDF do Vértice imprime aqui (lido da nuvem do Vértice e guardado no aparelho); planilha abre no Vértice */
+  if ((v && v.tipo === 'pdf') || (e && e.tipoVt === 'pdf')) return Object.assign(base, { tipo: 'pdf', vtPdf: true, orig: null });
+  return Object.assign(base, { tipo: 'planilha', orig: { formato: 'xlsx' } });
 }
 async function ktLerVt() {
   if (S._ktVtLendo || typeof vtUmaVez !== 'function' || !ktPodeCad()) return; S._ktVtLendo = true;
-  try { S.ktVt = (await vtUmaVez({ limit: 2000 })).map(vtnResumo).filter(d => d.tipo === 'planilha' && d.status !== 'lixeira' && IP_PASTAS.indexOf(d.pasta) >= 0).sort((a, b) => cmpTxt(a.pasta, b.pasta) || cmpTxt(a.nome, b.nome)); }
+  try { S.ktVt = (await vtUmaVez({ limit: 2000 })).map(vtnResumo).filter(d => (d.tipo === 'planilha' || d.tipo === 'pdf') && d.status !== 'lixeira' && !d.conflito && IP_PASTAS.indexOf(d.pasta) >= 0) /* v0.6.48: e o PDF do Vértice; cópia em conflito fora */.sort((a, b) => cmpTxt(a.pasta, b.pasta) || cmpTxt(a.nome, b.nome)); }
   catch (e) { console.warn('kit', e); S.ktVt = S.ktVt || []; }
   finally { S._ktVtLendo = false; if (S.gv) gvDesenha(true); }
 }
@@ -131,7 +141,7 @@ const ktDocsDoLab = lab => ktKitDe(lab).filter(x => x.lab === lab && ktPapel(x) 
 LC_FORM.ktAnexar = f => {
   if (S.ktVt === null) ktLerVt();
   const ja = ktKitDe(f.lab).map(x => x.docId);
-  const vt = (S.ktVt || []).filter(d => ja.indexOf(d.id) < 0).map(d => [d.id, 'Vértice · ' + d.pasta + ' · ' + d.nome]);
+  const vt = (S.ktVt || []).filter(d => ja.indexOf(d.id) < 0).map(d => [d.id, 'Vértice · ' + (d.codigo ? d.codigo + ' · ' : d.pasta + ' · ') + d.nome + (d.tipo === 'pdf' ? ' (PDF)' : '')]); /* v0.6.48: com código, o código no lugar da pasta (nome comprido passava da gaveta) */
   const ip = ipVivos().filter(d => d.tipo !== 'link' && d.status !== 'obsoleto' && ja.indexOf(d.id) < 0 && !(S.ktVt || []).some(v => v.id === d.id)).sort((a, b) => cmpTxt(a.nome, b.nome))
     .map(d => [d.id, 'Impressos · ' + (d.codigo ? d.codigo + ' · ' : '') + d.nome + ' (' + ipFmtTxt(d) + ')']);
   const ops = vt.concat(ip), velho = f.papel === 'rotulo' ? ktKitDe(f.lab).find(x => x.lab && ktPapel(x) === 'rotulo') : null, docs = ktDocsDoLab(f.lab);
@@ -149,7 +159,7 @@ async function ktAnexarOk() {
   if (f.papel !== 'rotulo' && ktDocsDoLab(f.lab).length >= KT_DOCS_MAX) return lcErro('Este laboratório já tem ' + KT_DOCS_MAX + ' papéis de custódia ou ficha. Tire um (lixeira) antes de anexar outro.');
   if (!lcTravar()) return;
   const o = { v: 1, ponto: 'coletas.envio', nome: String(d.nome).slice(0, 80), docId: d.id, lab: f.lab, papel: f.papel === 'rotulo' ? 'rotulo' : 'doc', copias: f.papel === 'rotulo' ? 'porCaixa' : 'uma', ordem: f.papel === 'rotulo' ? 1 : 2, ativo: true, quando: 'sempre', analise: '', criadoEm: nowISO(), criadoPorId: S.user.id, criadoPor: S.user.nome };
-  if (vtEste) o.fonte = 'vertice';
+  if (vtEste) { o.fonte = 'vertice'; if ((S.ktVt.find(v => v.id === d.id) || {}).tipo === 'pdf') o.tipoVt = 'pdf'; } /* v0.6.48: PDF do Vértice */
   const e = EFD.impresso(o); if (e.length) { console.error('Contrato EFD', e); S.fm._trava = 0; return lcErro('Não deu para anexar: ' + e[0] + '.'); }
   try {
     if (o.papel === 'rotulo') for (const v of ktKitDe(f.lab).filter(x => x.lab === f.lab && ktPapel(x) === 'rotulo')) await Data.col('sv2_impressos').update(v.id, { ativo: false, alteradoEm: nowISO(), alteradoPor: S.user.nome });
@@ -179,9 +189,11 @@ function ktPapAbre(ks, volta) {
   ks = (ks || []).filter(k => remLote(k).length); if (!ks.length) return;
   lcAbrir({ k: 'ktPap', ks: ks, kRem: ks[0], sel: {}, fila: [], unid: 'matriz' }, volta || null);
   ktPapCarrega(S.fm, ks[0]); S.fm.sujo = false; gvDesenha(true);
+  /* v0.6.48 (revisor): a lista do Vértice também para quem lança coletas; quando chega, o papel levado passa a sair do Vértice */
+  if (typeof ivLer === 'function') ivLer().then(() => { if (S.fm && S.fm.k === 'ktPap' && !S.fm._trava) gvDesenha(true); });
 }
 /* como cada papel sai: rótulo do sistema e PDF fixo imprimem aqui; planilha e Word abrem no Vértice com os dados da remessa */
-const ktComo = x => !x.d ? 'imprime aqui · uma folha por caixa' : x.d.fonte === 'vertice' ? 'abre no Vértice já preenchido' : x.d.status === 'obsoleto' ? 'obsoleto: não sai' : x.d.orig && x.d.orig.formato === 'xlsx' ? (typeof drPreenche === 'function' && drPreenche(x.d) ? 'abre no Vértice já preenchido' : 'abre no Vértice com os dados ao lado') : x.d.orig && x.d.orig.formato === 'docx' ? 'Word: baixa com os dados para copiar' : 'PDF: imprime aqui';
+const ktComo = x => !x.d ? 'imprime aqui · uma folha por caixa' : x.d.vtPdf ? 'PDF do Vértice · imprime aqui' : x.d.fonte === 'vertice' ? 'abre no Vértice já preenchido' : x.d.status === 'obsoleto' ? 'obsoleto: não sai' : x.d.orig && x.d.orig.formato === 'xlsx' ? (typeof drPreenche === 'function' && drPreenche(x.d) ? 'abre no Vértice já preenchido' : 'abre no Vértice com os dados ao lado') : x.d.orig && x.d.orig.formato === 'docx' ? 'Word: baixa com os dados para copiar' : 'PDF: imprime aqui';
 const ktNoVertice = x => !!(x.d && x.d.orig && x.d.orig.formato === 'xlsx' && x.d.status !== 'obsoleto');
 LC_FORM.ktPap = f => {
   const k = f.kRem, lab = k.split('|').slice(1).join('|'), it = ktPapItens(k), i = ktInfo(lab), sup = ktPodeCad();
@@ -257,6 +269,12 @@ async function ktSaiUm(k, x, dados) {
   const lab = k.split('|').slice(1).join('|'), caixas = Math.max(1, Number(dados.caixas) || 1);
   if (x.id === KT_ROTULO) { await ktImprimeHTML(ktRotuloHTML(lab, dados.unid, caixas, dados.amostras), 'Rótulo ' + lab + ' ' + remEnvio(k)); if (typeof drGrava === 'function') drGrava({ k: k, item: x.id, nome: x.nome, tipo: 'impresso' }); return; }
   const d = x.d; if (!d) return;
+  if (d.vtPdf) { /* v0.6.48: PDF do Vértice imprime aqui */
+    const n = x.copias === 'porCaixa' ? caixas : Number(x.copias) || 1;
+    for (let c = 0; c < n; c++) { if (!(await ivImprimir(d.id))) return; await new Promise(r => setTimeout(r, 400)); } /* revisor: só anota "impresso" se imprimiu */
+    if (typeof drGrava === 'function') drGrava({ k: k, item: x.id, nome: x.nome, tipo: 'impresso', docId: d.id, rev: d.rev });
+    return;
+  }
   if (ktNoVertice(x)) { if (typeof drPreenche === 'function' && drPreenche(d)) await drPedido(k, x, dados); else await ipNoVertice(d.id, typeof ptResumoEnvio === 'function' ? ptResumoEnvio(k, dados, d) : null); return; }
   if (d.orig && d.orig.formato === 'docx') { await ipNoVertice(d.id, null); return; }
   if (!d.pub) return aviso('Sem cópia em PDF: ' + d.nome + '.', 'erro');

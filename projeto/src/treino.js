@@ -48,7 +48,7 @@ const trQualOrig = TELAS.qualidade;
 TELAS.qualidade = aba => aba === 'treinos' ? trTela() : trQualOrig(aba);
 
 /* ---------- detalhe ---------- */
-function trAbre(id) { S._trGv = id; gvAbrir(() => trGaveta(id)); }
+function trAbre(id) { S._trGv = id; S._trIvPedido = null; gvAbrir(() => trGaveta(id)); }
 function trGaveta(id) {
   const x = trDe(id); if (!x) { S._trGv = null; return null; }
   const pres = trPresentes(x), ef = trEfic(x), q = x.quiz, ps = trPart(x), real = x.situacao === 'realizado';
@@ -65,9 +65,11 @@ function trGaveta(id) {
   if (!ps.length) c += '<p class="tr-vz">Sem lista ainda. A lista de presença sai em branco para assinar à mão.</p>';
   else c += '<ul class="tr-ps">' + ps.map(p => '<li><button type="button" class="tr-pn tr-pb" data-act="tr-pessoa" data-nome="' + esc(p.nome) + '" title="Ver os treinamentos de ' + esc(p.nome) + '">' + esc(p.nome) + '</button><span class="tr-pp">' +
     (real ? (p.presente ? '<span class="pill ok">Presente</span>' : '<span class="pill cr">Faltou</span>') + (p.presente && p.eficaz === true ? '<span class="pill ok">Eficaz</span>' : p.presente && p.eficaz === false ? '<span class="pill wa">Não eficaz</span>' : '') + (p.pct != null ? '<span class="pill">' + esc(String(p.pct)) + '%</span>' : '') : '') + '</span></li>').join('') + '</ul>';
-  const dl = (x.docs || []).map(d => ({ d: d, ip: S.ipDocs.find(y => y.id === d.docId) }));
+  const dl = (x.docs || []).map(d => ({ d: d, ip: trDocDe(d.docId) }));
+  /* v0.6.48 (revisor): sem a lista do Vértice (não passou pelos Impressos), lê uma vez e redesenha quando chegar */
+  if (dl.some(o => !o.ip) && typeof ivLer === 'function' && S._trIvPedido !== id) { S._trIvPedido = id; ivLer(true).then(() => { if (S.gv && S._trGv === id && !S.gvForm && dl.some(o => !o.ip && trDocDe(o.d.docId))) gvDesenha(); }); }
   if (dl.length) c += '<p class="gv-h">Documentos</p><ul class="tr-ds">' + dl.map(o => '<li><span class="tr-dn"><b>' + esc(o.ip ? o.ip.nome : 'Documento não encontrado') + '</b><small>' + esc(TR_PAPEL[o.d.papel] || o.d.papel) + (o.ip && o.ip.status === 'obsoleto' ? ' · obsoleto' : '') + '</small></span>' +
-    (o.ip ? '<button type="button" class="bt ic-so" data-act="tr-doc" data-id="' + esc(o.d.docId) + '" title="Abrir em Documentos › Impressos" aria-label="Abrir">' + ic('externo') + '</button>' : '') + '</li>').join('') + '</ul>';
+    (o.ip ? '<button type="button" class="bt ic-so" data-act="tr-doc" data-id="' + esc(o.ip._vtId || o.d.docId) + '" title="Abrir em Documentos › Impressos" aria-label="Abrir">' + ic('externo') + '</button>' : '') + '</li>').join('') + '</ul>';
   const cab = (trPode() ? '<button type="button" class="bt ic-so" data-act="tr-rep" data-id="' + esc(x.id) + '" title="Repetir: novo treinamento com os mesmos dados" aria-label="Repetir o treinamento">' + ic('copia') + '</button>' : '') +
     (trPode() && x.situacao !== 'cancelado' ? '<button type="button" class="bt ic-so" data-act="tr-editar" data-id="' + esc(x.id) + '" title="Editar" aria-label="Editar">' + ic('lapis') + '</button>' : '');
   const pe = '<button type="button" class="bt ic-so" data-act="tr-lista" data-id="' + esc(x.id) + '" title="Imprimir a lista de presença" aria-label="Imprimir a lista de presença">' + ic('impressora') + '</button>' +
@@ -79,17 +81,30 @@ function trGaveta(id) {
 
 /* ---------- novo e editar ---------- */
 const trNomes = t => { const v = [], vis = {}; String(t || '').split(/[\n;]+/).forEach(s => { const n = s.replace(/\s+/g, ' ').trim(); if (n && !vis[tbNorm(n)]) { vis[tbNorm(n)] = 1; v.push(n); } }); return v; };
-const trDocsOpc = papel => [['', 'Nenhum']].concat(ipVivos().filter(d => d.status !== 'obsoleto').sort((a, b) => cmpTxt(a.nome, b.nome)).map(d => [d.id, (d.codigo ? d.codigo + ' · ' : '') + d.nome]));
+/* v0.6.48: o documento do treinamento pode estar no Vértice (ou ter sido levado para lá: segue a ligação) */
+function trDocDe(id) {
+  const ip = S.ipDocs.find(y => y.id === id), vid = ip && ip.levadoPara ? ip.levadoPara : (!ip ? id : null);
+  const v = vid && typeof ivDe === 'function' ? ivDe(vid) : null;
+  if (v) return { nome: v.nome, codigo: v.codigo || '', _vtId: v.id };
+  return ip || null;
+}
+const trDocsOpc = papel => { /* v0.6.48: com os documentos do Vértice */
+  if (typeof ivLer === 'function') ivLer();
+  const ja = new Set(ipVivos().map(d => d.id));
+  const ip = ipVivos().filter(d => d.status !== 'obsoleto').map(d => [d.id, (d.codigo ? d.codigo + ' · ' : '') + d.nome]);
+  const vt = (S.ivDocs || []).filter(x => !ja.has(x.id)).map(x => [x.id, 'Vértice · ' + (x.codigo ? x.codigo + ' · ' : '') + x.nome]);
+  return [['', 'Nenhum']].concat(ip.concat(vt).sort((a, b) => cmpTxt(a[1].replace(/^Vértice · /, ''), b[1].replace(/^Vértice · /, ''))));
+};
 function trNovo() { if (!trPode()) return; lcAbrir({ k: 'trEd', id: '', titulo: '', data: hojeISO(), horas: '', instrutor: S.user.nome, local: '', sit: 'programado', parts: '', pop: '', mat: '', obs: '' }); }
 /* repetir: o mesmo treinamento para outra turma ou outro dia. Abre "Novo treinamento" já preenchido (título, horas, instrutor, local, documentos e participantes); a data vem de hoje e fica Programado */
 function trRepetir(id) {
   const x = trDe(id); if (!x || !trPode()) return;
-  const doc = p => ((x.docs || []).find(d => d.papel === p) || {}).docId || '';
+  const doc = p => { const id = ((x.docs || []).find(d => d.papel === p) || {}).docId || '', ip = S.ipDocs.find(y => y.id === id); return ip && ip.levadoPara ? ip.levadoPara : id; }; /* v0.6.48: segue o levado */
   lcAbrir({ k: 'trEd', id: '', titulo: x.titulo, data: hojeISO(), horas: x.horas == null ? '' : String(x.horas).replace('.', ','), instrutor: x.instrutorNome || S.user.nome, local: x.local || '', sit: 'programado', parts: trPart(x).map(p => p.nome).join('\n'), pop: doc('pop'), mat: doc('material'), obs: '' }, () => trAbre(x.id));
 }
 function trEditar(id) {
   const x = trDe(id); if (!x || !trPode()) return;
-  const doc = p => ((x.docs || []).find(d => d.papel === p) || {}).docId || '';
+  const doc = p => { const id = ((x.docs || []).find(d => d.papel === p) || {}).docId || '', ip = S.ipDocs.find(y => y.id === id); return ip && ip.levadoPara ? ip.levadoPara : id; }; /* v0.6.48: segue o levado */
   lcAbrir({ k: 'trEd', id: x.id, titulo: x.titulo, data: x.data, horas: x.horas == null ? '' : String(x.horas).replace('.', ','), instrutor: x.instrutorNome || '', local: x.local || '', sit: x.situacao, parts: trPart(x).map(p => p.nome).join('\n'), pop: doc('pop'), mat: doc('material'), obs: x.obs || '' }, () => trAbre(x.id));
 }
 LC_FORM.trEd = f => {
@@ -265,7 +280,7 @@ document.addEventListener('click', e => {
   else if (a === 'tr-canc') lcAbrir({ k: 'trCanc', id: id, motivo: '' }, () => trAbre(id));
   else if (a === 'tr-canc-ok') trCancOk();
   else if (a === 'tr-lista') trLista(id);
-  else if (a === 'tr-doc') { if (S.gv) gvFecharSo(); ir('documentos', 'impressos'); setTimeout(() => { try { ipAbre(id); } catch (er) { console.error(er); } }, 120); }
+  else if (a === 'tr-doc') { if (S.gv) gvFecharSo(); ir('documentos', 'impressos'); setTimeout(() => { try { if (typeof ivDe === 'function' && ivDe(id) && !S.ipDocs.some(y => y.id === id && !y.levadoPara)) ivAbre(id); else ipAbre(id); } catch (er) { console.error(er); } }, 120); } /* v0.6.48: documento do Vértice abre a gaveta dele */
 });
 BG_FONTES.push(q => S.trn.filter(x => bgCasa(q, [x.titulo, x.instrutorNome, x.local, trPart(x).map(p => p.nome).join(' ')].join(' '))).slice(0, 6).map(x => ({ grupo: 'Treinamentos', nome: x.titulo, sub: fmtD(x.data) + ' · ' + (TR_SIT[x.situacao] || TR_SIT.programado)[0] + (x.instrutorNome ? ' · ' + x.instrutorNome : ''), ico: 'pessoas',
   abrir: () => { if (S.rota.area !== 'qualidade' || S.rota.aba !== 'treinos') { S._gvNav = true; ir('qualidade', 'treinos'); } trAbre(x.id); } })));

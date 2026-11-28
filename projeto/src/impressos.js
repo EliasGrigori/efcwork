@@ -23,7 +23,7 @@ CS_CARGAS.push(() => {
 
 /* ---------- quem pode, formato, situação ---------- */
 const ipPode = () => isSup(S.user);
-const ipVivos = () => S.ipDocs.filter(d => d.status !== 'lixeira');
+const ipVivos = () => S.ipDocs.filter(d => d.status !== 'lixeira' && !d.levadoPara); /* v0.6.48: o que foi levado para o Vértice sai da lista (fica guardado, escondido) */
 const ipFmt = d => d.tipo === 'link' ? 'link' : d.tipo === 'planilha' ? 'xlsx' : d.tipo === 'docx' ? 'docx' : d.fonteFoto ? 'imagem' : 'pdf';
 const ipFmtTxt = d => d.origem === 'docs' && d.tipo === 'postits' ? 'Quadro' : IP_FMT[ipFmt(d)] || 'PDF';
 const ipPasta = d => String(d.pastaNome || '').trim() || 'Sem pasta';
@@ -40,6 +40,8 @@ const ipMB = c => (Math.ceil(c / 104857.6) / 10).toFixed(1).replace('.', ',') + 
 const ipChars = b => Math.ceil((Number(b) || 0) / 3) * 4;
 const ipOcupa = d => d.status === 'lixeira' ? 0 : (d.pub ? ipChars(d.pub.bytes) : 0) + (d.orig ? ipChars(d.orig.bytes) : 0);
 const ipEspaco = () => S.ipDocs.reduce((s, d) => s + ipOcupa(d), 0);
+/* v0.6.48: o número da tela soma a nuvem do Vértice; o teto que barra (trocar aqui, receber do Vértice) continua só com o que mora no Cwork (revisor) */
+const ipEspacoTela = () => ipEspaco() + (typeof ivEspaco === 'function' ? ivEspaco() : 0);
 const ipNovoId = () => 'd' + Date.now().toString(36) + Math.floor(Math.random() * 1679616).toString(36).padStart(4, '0');
 const ipNomeArq = (d, ext) => ((d.codigo ? d.codigo + ' ' : '') + d.nome + (d.rev ? ' v' + d.rev : '')).replace(/[\\/:*?"<>|]+/g, '-').trim() + '.' + ext;
 const ipEhToque = () => { try { return matchMedia('(pointer: coarse)').matches; } catch { return false; } };
@@ -130,11 +132,11 @@ function ipTela() {
   if (typeof ivLer === 'function') setTimeout(() => ivLer(), 0); /* v0.6.47: os documentos do Vértice (uma vez por minuto) */
   const vt = typeof ivLinhas === 'function' ? ivLinhas() : [], noVt = new Set(vt.map(x => x._vt.id));
   /* o que veio do Vértice pela ponte tem o mesmo id lá e aqui: mostra só a linha do Vértice (revisor) */
-  const l = ipVivos().filter(d => !noVt.has(d.id)).concat(vt).sort((a, b) => cmpTxt(a.nome, b.nome) || cmpTxt(a.codigo, b.codigo)), esp = ipEspaco(), pct = esp / IP_TETO;
+  const l = ipVivos().filter(d => !noVt.has(d.id)).concat(vt).sort((a, b) => cmpTxt(a.nome, b.nome) || cmpTxt(a.codigo, b.codigo)), esp = ipEspacoTela(), pct = esp / IP_TETO;
   const meta = ['<span>' + l.length + (l.length === 1 ? ' impresso' : ' impressos') + '</span>',
     pct >= 0.8 ? metaPl(ipMB(esp) + ' de 150 MB', pct >= 1 ? 'cr' : 'wa', 'alerta') : '<span title="Espaço que os impressos ocupam na nuvem (o banco grátis tem 1 GB para tudo)">' + ipMB(esp) + ' de 150 MB</span>'];
   if (S._ivErro) meta.push(metaPl(S.ivDocs.length ? 'Vértice: mostrando a última lista guardada' : 'Vértice: lista não chegou', 'wa', 'alerta')); /* v0.6.47 (revisor): quando a lista do Vértice não chega, o cabeçalho avisa */
-  const acoes = '<div class="ip-acs">' + (ipVivos().length ? '<button type="button" class="bt" data-act="ip-reserva" title="Baixar todos num arquivo ZIP">' + ic('caixa') + 'Reserva</button>' : '') +
+  const acoes = '<div class="ip-acs">' + (ipVivos().length || (S.ivDocs || []).some(x => x.tipo === 'pdf') ? '<button type="button" class="bt" data-act="ip-reserva" title="Baixar todos num arquivo ZIP">' + ic('caixa') + 'Reserva</button>' : '') +
     (ipPode() ? '<button type="button" class="bt" data-act="ip-importar">' + ic('mais') + 'Importar</button><a class="bt pr ip-vt" href="' + IP_VERTICE + '" target="_blank" rel="noopener" data-app="docs" data-act="ip-vertice">' + ic('externo') + 'Novo no Vértice</a>' : '') + '</div>';
   let h = cabecalho({ titulo: 'Impressos', abaNome: 'Impressos', meta: meta, acoes: acoes });
   if (!l.length) return h + '<section class="pn"><div class="vazio">' + ic('impressora') + '<b>Nenhum impresso ainda.</b><span>' + (ipPode() ? 'Importe um PDF, a foto de um papel ou um link. O PDF vai para o Vértice Docs; as fichas, custódias e formulários feitos no Vértice também aparecem aqui.' : 'Quando o Administrador ou o Líder cadastrar fichas, custódias e formulários, eles aparecem aqui para imprimir.') + '</span></div></section>';
@@ -174,7 +176,8 @@ function ipGaveta(id) {
   if (p || o) c += '<div class="ip-bx">' + (p ? '<button type="button" class="bt" data-act="ip-baixar" data-id="' + esc(d.id) + '" data-q="copia">' + ic('baixar') + 'Baixar o PDF</button>' : '') +
     (o ? '<button type="button" class="bt" data-act="ip-baixar" data-id="' + esc(d.id) + '" data-q="orig">' + ic('baixar') + 'Baixar o ' + IP_FMT[o.formato] + '</button>' : '') + '</div>';
   const cab = (ipPode() ? '<button type="button" class="bt ic-so" data-act="ip-editar" data-id="' + esc(d.id) + '" title="Editar ou trocar o arquivo" aria-label="Editar">' + ic('lapis') + '</button>' : '');
-  const vert = (d.tipo === 'planilha' || d.tipo === 'docx') && o ? '<button type="button" class="bt" data-act="ip-no-vertice" data-id="' + esc(d.id) + '">' + ic('externo') + 'Abrir no Vértice</button>' : '';
+  const vert = typeof ivPodeLevar === 'function' && ivPodeLevar(d) ? '<button type="button" class="bt" data-act="iv-levar" data-id="' + esc(d.id) + '">' + ic('externo') + 'Levar para o Vértice</button>' /* v0.6.48 */
+    : (d.tipo === 'planilha' || d.tipo === 'docx') && o ? '<button type="button" class="bt" data-act="ip-no-vertice" data-id="' + esc(d.id) + '">' + ic('externo') + 'Abrir no Vértice</button>' : '';
   const pe = link ? (lk ? '<span class="au-pesp"></span><a class="bt pr" href="' + lk + '" target="_blank" rel="noopener">' + ic('externo') + 'Abrir o link</a>' : '')
     : vert + '<span class="au-pesp"></span><button type="button" class="bt pr" data-act="ip-imprimir" data-id="' + esc(d.id) + '"' + (ipImprime(d) ? '' : ' disabled') + '>' + ic('impressora') + 'Imprimir</button>';
   return { ico: link ? 'externo' : f === 'xlsx' ? 'planilha' : 'doc', sub: [d.codigo, ipFmtTxt(d), link ? '' : 'versão ' + d.rev].filter(Boolean).join(' · '), titulo: d.nome, pill: ipPill(d), cabAcoes: cab,
@@ -254,9 +257,9 @@ function ipZip(arqs) {
   return new Blob(loc.concat(cen, [new Uint8Array(fim.buffer)]), { type: 'application/zip' });
 }
 async function ipReserva() {
-  if (S._ipReserva) return; const l = ipVivos(); if (!l.length) return;
-  const total = l.reduce((s, d) => s + (d.pub ? d.pub.bytes : 0) + (d.orig ? d.orig.bytes : 0), 0);
-  csConfirma({ titulo: 'Baixar a reserva de todos os impressos?', texto: l.length + ' impressos, cerca de ' + ipTam(total || 1) + '. O que este aparelho ainda não tem é lido da nuvem. Guarde o arquivo no computador ou no OneDrive.', sim: 'Baixar a reserva', nao: 'Agora não' }, async () => {
+  if (S._ipReserva) return; const l = ipVivos(), vtp = (S.ivDocs || []).filter(x => x.tipo === 'pdf'); if (!l.length && !vtp.length) return; /* v0.6.48: com os PDFs do Vértice */
+  const total = l.reduce((s, d) => s + (d.pub ? d.pub.bytes : 0) + (d.orig ? d.orig.bytes : 0), 0) + vtp.reduce((s, x) => s + Math.round((Number(x.bytes) || 0) * 0.75), 0);
+  csConfirma({ titulo: 'Baixar a reserva de todos os impressos?', texto: (l.length + vtp.length) + ' impressos, cerca de ' + ipTam(total || 1) + '. O que este aparelho ainda não tem é lido da nuvem. Guarde o arquivo no computador ou no OneDrive.', sim: 'Baixar a reserva', nao: 'Agora não' }, async () => {
     S._ipReserva = true; aviso('Preparando a reserva…');
     const arqs = [], falhas = [], linhas = [['Pasta', 'Código', 'Nome', 'Formato', 'Situação', 'Versão', 'Editado por', 'Data', 'Arquivos'].join(';')], dir = s => String(s).replace(/[\\/:*?"<>|]+/g, '-');
     try {
@@ -268,6 +271,10 @@ async function ipReserva() {
           catch (e) { falhas.push(d.nome); }
         }
         linhas.push([pasta, d.codigo || '', d.nome, ipFmtTxt(d), ipSit(d)[0], d.tipo === 'link' ? '' : d.rev, d.alteradoPor || '', fmtD(diaLocal(d.alteradoEm)), d.tipo === 'link' ? d.link : fs.join(' | ')].map(x => '"' + String(x == null ? '' : x).replace(/"/g, '""') + '"').join(';'));
+      }
+      for (const x of vtp) { /* v0.6.48: os PDFs do Vértice, numa pasta Vértice/<pasta> */
+        try { const buf = await ivPdf(x), nome = 'Vértice/' + dir(x.pasta) + '/' + dir(ivNomeArq(x)); arqs.push({ nome: nome, dados: buf }); linhas.push(['Vértice · ' + x.pasta, x.codigo || '', x.nome, 'PDF', 'Vigente', x.versao, x.alteradoPor || x.porNome || '', fmtD(diaLocal(x.em)), nome].map(y => '"' + String(y == null ? '' : y).replace(/"/g, '""') + '"').join(';')); }
+        catch (e) { falhas.push(x.nome); }
       }
       arqs.unshift({ nome: 'LISTA.csv', dados: new TextEncoder().encode('﻿' + linhas.join('\r\n')).buffer });
       ipSalvar(URL.createObjectURL(ipZip(arqs)), 'efcwork-impressos-reserva-' + hojeISO() + '.zip');

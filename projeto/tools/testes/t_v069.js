@@ -96,7 +96,7 @@ const zipLista = f => execFileSync('python3', ['-c', 'import zipfile,sys,json;z=
   conf(cus && EFD.ficha(cus).length === 0, 'a ficha do Excel segue o contrato');
   await abreDoc(p, 'Cadeia de custódia · Laboratório A');
   conf(await p.$eval('[data-act="ip-imprimir"]', e => e.disabled) && /Ainda sem cópia em PDF/.test(await p.textContent('#gv')), 'sem cópia em PDF: Imprimir desligado e o aviso de como resolver');
-  conf(!!(await p.$('#gv [data-act="ip-no-vertice"]')) && !!(await p.$('#gv [data-act="ip-baixar"][data-q="orig"]')), 'tem Abrir no Vértice e Baixar o Excel');
+  conf(!!(await p.$('#gv [data-act="iv-levar"]')) && !!(await p.$('#gv [data-act="ip-baixar"][data-q="orig"]')), 'tem Levar para o Vértice (v0.6.48: no lugar de Abrir no Vértice, para quem salva) e Baixar o Excel');
   await p.click('[data-act="ip-editar"]'); await esp(p, 400);
   await p.setInputFiles('[data-ip-arq="pdf"]', F.xlsxPdf); await esp(p, 400); await p.click('[data-act="ip-ok"]'); await esp(p, 900);
   cus = (await docs(p)).find(x => x.codigo === 'CUS-01');

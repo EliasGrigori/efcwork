@@ -2,7 +2,7 @@
 
 Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conversa ou para o fim, para nada ficar para trás. Atualizado a cada mudança e enviado junto. Marque [x] quando estiver feito.
 
-Última atualização: 28/11/2026 06:0x · no ar: Cwork v0.6.47 + Vértice v0.6.82 (76354c2). Em construção: documentos só no Vértice, 2ª parte.
+Última atualização: 28/11/2026 07:4x · no ar: Cwork v0.6.48 + Vértice v0.6.83 (documentos só no Vértice, 2ª parte).
 
 ## A. Para a conversa do Vértice (o Elias leva)
 - [ ] **NOVO (27/11 06:59) · Todos os documentos só no Vértice:** nota `NOTA-DO-CWORK-para-o-Vertice-documentos-so-no-Vertice.md`. Hospedar tudo lá (internos e externos); o Cwork guarda só a ligação; versão nova vale sozinha; PDF baixa e imprime direto; planilha e Word abrem em modo documento, só aquela aba ou folha, só os campos desbloqueados. Junta a P4 com os ITENS 195 e 196.
@@ -27,7 +27,7 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 - [x] **Etapa 3 · observações da etapa 2 (Vértice v0.6.81, publicada em 27/11 20:3x):** pedido só com a aba dos campos; Recebidos do Cwork com aviso e Mover.
 - [x] **Etapa 3 · etiquetas automáticas:** aprovada (ITENS 272 a 279) e publicada em 27/11 (Cwork v0.6.43 + Vértice v0.6.78). Cabeçalho escrito no modelo; nada a preencher na impressão.
 - [x] **Etapa 4 · kit do laboratório com papéis do Vértice:** aprovada (ITENS 280 a 283) e publicada em 27/11 (Cwork v0.6.44 + Vértice v0.6.79); até 2 papéis de custódia ou ficha por laboratório.
-- [ ] **Etapa 3 · Cwork apontando para o Vértice:** 1ª parte (v0.6.47 + Vértice v0.6.82, ITENS 300 a 307) publicada em 28/11. 2ª parte: botão "Levar para o Vértice" em cada antigo (o Elias move um por um), kit e Treinamentos com o PDF do Vértice, Reserva.
+- [x] **Etapa 3 · Cwork apontando para o Vértice:** 1ª parte (v0.6.47 + Vértice v0.6.82, ITENS 300 a 307) publicada em 28/11. 2ª parte publicada em 28/11 (v0.6.48 + Vértice v0.6.83, ITENS 308 a 314): "Levar para o Vértice" em cada antigo, kit e Treinamentos com os do Vértice, backup, Reserva e espaço com o Vértice, cópia em conflito fora. **Depois de publicada, o Elias leva os antigos um por um.**
 - [ ] Backup do Cwork: incluir `vtd_arquivos` e `vtd_partes`? (hoje não entram; perguntar ao Elias)
 - [x] **P3b · Administração › Pastas do Vértice**: feita e publicada na v0.6.35.
 - [x] **v0.6.35 · tela inteira com abas (OPÇÃO 2, ITEM 201):** feita e testada; aprovada (ITENS 207 a 211) e publicada.
@@ -109,3 +109,6 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 - [ ] **v0.6.46.1 no ar:** imprimir a FICHA DE ENVIO IBRA - SOLO pelo kit; não deve mais aparecer "O Cwork pediu a versão 10…". Melhor ainda: trocar no kit o papel antigo pelo "Vértice · Fichas e custódias · …".
 - [ ] **v0.6.46.2 no ar:** em Amostras, imprimir etiqueta de uma amostra sem modelo: abre "Ligar modelo de etiqueta"; escolher a "ETI 001 · Etiquetas SOLO + RAIZ" e o laboratório; "Salvar e imprimir".
 - [ ] **v0.6.47 + Vértice v0.6.82 no ar:** em Documentos › Impressos, Importar um PDF (vai para o Vértice, coluna Guardado: Vértice); abrir, imprimir e baixar; no Vértice, Documentos externos mostra o mesmo PDF; no celular, "Abrir o PDF". Com um Colaborador, só as pastas liberadas.
+- [ ] **Espaço da nuvem do Vértice (v0.6.48):** o "de 150 MB" conta só a versão atual de cada documento; as versões antigas (pedaços em `vtd_partes`, que nunca mudam) ficam para sempre. Se encher, pensar numa limpeza de versões antigas (mexe nas regras do Firestore: alto risco).
+- [ ] **Sobras do revisor da v0.6.48 (pequenas):** (a) Excel "levando" sem etiqueta na lista e com o botão "Levar" ainda visível (repete o pedido); (b) `conflitoDe` fica na ficha quando a cópia em conflito é renomeada no Vértice (continua escondida no Cwork); (c) dois PDFs do Vértice com o mesmo código, nome e versão viram o mesmo caminho dentro do ZIP da Reserva; (d) PDF do Vértice na lixeira, com a lista do Vértice fora do ar, ainda aparece no kit.
+- [ ] **Roteiro da v0.6.48 (Elias, no site):** (1) Documentos › Impressos, abra um PDF antigo ("Guardado: Cwork") › Levar para o Vértice › escolha a pasta › Levar: abre a gaveta do Vértice e o antigo sai da lista; (2) um Excel antigo › Levar: o Vértice abre a planilha na pasta; salve; volte aos Impressos (até 1 min) e ele aparece como "Guardado: Vértice"; (3) o kit do laboratório que usava esse papel imprime o do Vértice; (4) com uma conta de Colaborador, o kit continua imprimindo; (5) Administração › Backup: o arquivo traz vtd_arquivos e vtd_partes. Se algo der "negado", dizer em que passo.

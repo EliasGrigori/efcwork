@@ -23,7 +23,7 @@ CS_CARGAS.push(() => {
 /* ---------- os papéis da remessa e em que pé estão ---------- */
 const drLab = k => k.split('|').slice(1).join('|');
 const drReg = (k, id) => S.drDocs.filter(x => x.k === k && x.item === id && !x.removido).sort((a, b) => String(b.em).localeCompare(String(a.em)));
-const drPreenche = d => !!(d && (d.fonte === 'vertice' || (d.pub && d.pub.preenche === 'docs' && (d.pub.campos || []).length && d.orig && d.orig.formato === 'xlsx'))); /* v0.6.44: papel do Vértice sempre vai pelo pedido */
+const drPreenche = d => !!(d && !d.vtPdf && (d.fonte === 'vertice' || (d.pub && d.pub.preenche === 'docs' && (d.pub.campos || []).length && d.orig && d.orig.formato === 'xlsx'))); /* v0.6.44: papel do Vértice sempre vai pelo pedido */
 const drItens = k => ktPapItens(k).map(x => Object.assign({}, x, { exige: true }));
 function drSit(k, x) {
   const r = drReg(k, x.id), ax = r.filter(y => y.tipo === 'foto' || y.tipo === 'pdf'), pr = r.find(y => y.tipo === 'preenchido'), im = r.find(y => y.tipo === 'impresso' || y.tipo === 'aberto');

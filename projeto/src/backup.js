@@ -4,11 +4,12 @@
    O formato "cols" é o mesmo que o ambiente de teste (Data.importarDemo) já lê. Só o Administrador faz o backup (ele leva a equipe toda).
    Caminho fixo: no Chrome e no Edge do computador o app guarda a pasta escolhida (File System Access, no IndexedDB) e o botão "Salvar"
    grava direto nela, sem janela. No celular o navegador não deixa isso: o arquivo vai para Downloads, que também é um lugar fixo.
+   v0.6.48 (resposta do Elias, 28/11): leva também os documentos do Vértice (vtd_arquivos e vtd_partes).
    Fora de sv2_login e sv2_recup (sem leitura da lista pelas regras). Fotos entram só se a pessoa marcar. Nenhuma coleção nova. */
 const BK_COLS = ['sv2_meta', 'sv2_users', 'sv2_notifs', 'sv2_audit', 'sv2_aprov', 'sv2_resumos', 'sv2_chat', 'sv2_cfg', 'sv2_docs', 'sv2_caixas', 'sv2_lanc', 'sv2_bebs', 'sv2_cloro', 'sv2_cloro_falta',
   'sv2_talhoes', 'sv2_analises', 'sv2_etqmodelos', 'sv2_prog', 'sv2_coletas', 'sv2_aguacol', 'sv2_rodizio', 'sv2_aguaproj', 'sv2_aguaponto', 'sv2_proc', 'sv2_proc_pag', 'sv2_apont', 'sv2_rnc', 'sv2_rnc_plano',
   'sv2_rnc_gut', 'sv2_analise', 'sv2_alm_itens', 'sv2_alm_mov', 'sv2_alm_sol', 'sv2_alm_pref', 'sv2_conquistas', 'sv2_alm_equip', 'sv2_alm_cal', 'sv2_alm_inv', 'sv2_alm_transf', 'sv2_normas', 'sv2_normas_ed',
-  'sv2_bugs', 'sv2_bugs_seq', 'sv2_tarefas', 'efd_docs', 'efd_partes', 'sv2_impressos', 'sv2_envio_imp', 'sv2_treinos', 'sv2_rem_docs'];
+  'sv2_bugs', 'sv2_bugs_seq', 'sv2_tarefas', 'efd_docs', 'efd_partes', 'vtd_arquivos', 'sv2_impressos', 'sv2_envio_imp', 'sv2_treinos', 'sv2_rem_docs'];
 const BK_FOTOS = ['sv2_avatar', 'sv2_cloro_foto', 'sv2_agua_foto', 'sv2_fotos', 'sv2_rnc_foto', 'sv2_alm_equip_foto', 'sv2_alm_foto', 'sv2_bugs_foto', 'sv2_rem_arq'];
 const bkPode = () => !!S.user && isPrincipal(S.user);
 const bkTemPasta = () => typeof window.showDirectoryPicker === 'function';
@@ -37,7 +38,17 @@ async function bkLer(comFotos, prog) {
   const lim = (p, ms) => Promise.race([p, new Promise((_, no) => setTimeout(() => no(new Error('tempo')), ms))]);
   const um = async n => { try { cols[n] = await lim(Data.col(n).all(), 30000); } catch (e) { falhas[n] = (e && (e.code || e.message)) || 'erro'; } feitos++; if (prog) prog(feitos, nomes.length); };
   for (let i = 0; i < nomes.length; i += 6) await Promise.all(nomes.slice(i, i + 6).map(um)); /* 6 de cada vez: não sufoca o celular */
+  await bkPartesVt(cols, falhas, lim);
   return { cols: cols, falhas: falhas };
+}
+/* v0.6.48 (revisor): do Vértice vão só os pedaços da versão atual de cada documento (as versões antigas ficam para sempre na nuvem; ler a
+   coleção inteira cresceria sem fim e estouraria o prazo ou a memória do celular). Id do pedaço: <arquivo>_<versaoPartes>_<partesDe>_<n>. */
+async function bkPartesVt(cols, falhas, lim) {
+  const arqs = cols.vtd_arquivos; if (!arqs) return;
+  const ids = []; arqs.forEach(a => { const n = Number(a.partes) || 0, vp = Number(a.versaoPartes) || 0; for (let i = 0; i < n; i++) ids.push(a.id + '_' + vp + '_' + a.partesDe + '_' + i); });
+  const l = [];
+  try { for (let i = 0; i < ids.length; i += 6) (await lim(Promise.all(ids.slice(i, i + 6).map(id => Data.col('vtd_partes').get(id))), 30000)).forEach((p, j) => { if (p) l.push(Object.assign({ id: ids[i + j] }, p)); }); cols.vtd_partes = l; }
+  catch (e) { falhas.vtd_partes = (e && (e.code || e.message)) || 'erro'; }
 }
 function bkArquivo(r, comFotos) {
   const agora = new Date(), resumo = {}; Object.keys(r.cols).forEach(n => { resumo[n] = r.cols[n].length; });
