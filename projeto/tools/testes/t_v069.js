@@ -42,6 +42,7 @@ const docs = p => p.evaluate(() => Data.col('efd_docs').all());
 const partes = p => p.evaluate(() => Data.col('efd_partes').all());
 async function importa(p, arq, o) {
   await p.click('[data-act="ip-importar"]'); await esp(p, 300);
+  await p.evaluate(() => { if (S.fm) { S.fm.antigo = true; gvDesenha(true); } }); await esp(p, 150); /* v0.6.47: o PDF novo vai para o Vértice; este teste cuida dos impressos antigos, guardados no Cwork */
   if (o && o.link) { await p.click('[data-dd="ip:modo"] .dd-b'); await p.click('[data-dd="ip:modo"] [data-v="link"]'); await esp(p, 200); await p.fill('[data-fm="link"]', o.link); }
   else await p.setInputFiles('[data-ip-arq="arq"]', arq);
   await esp(p, 500);
@@ -109,6 +110,7 @@ const zipLista = f => execFileSync('python3', ['-c', 'import zipfile,sys,json;z=
   conf(fic2 && fic2.status === 'vigente' && fic2.pub && fic2.orig && fic2.pastaNome === 'Laudos-modelo', 'Excel + PDF de uma vez, numa pasta nova');
   console.log('Recusas:');
   await p.click('[data-act="ip-importar"]'); await esp(p, 300);
+  await p.evaluate(() => { if (S.fm) S.fm.antigo = true; }); /* v0.6.47: limites dos impressos antigos (o PDF novo vai para o Vértice, até 15 MB: t_v0647) */
   await p.setInputFiles('[data-ip-arq="arq"]', F.grande); await esp(p, 500);
   conf(/limite é 3,2 MB/.test(await msg(p)), 'PDF acima de 3,2 MB é recusado com o motivo (' + (await msg(p)) + ')');
   await p.setInputFiles('[data-ip-arq="arq"]', F.velho); await esp(p, 300);
@@ -175,7 +177,7 @@ const zipLista = f => execFileSync('python3', ['-c', 'import zipfile,sys,json;z=
   conf(/0,\d MB de 150 MB/.test(mt), 'o medidor mostra o espaço usado (' + (mt.match(/[\d,]+ MB de 150 MB/) || [''])[0] + ')');
   const cheio = await p.evaluate(() => { const r = S.ipDocs; S.ipDocs = r.concat([{ v: 1, id: 'dcheio0001', status: 'vigente', tipo: 'externo', nome: 'x', pub: { bytes: 118 * 1024 * 1024 } }]); render(); const t = document.body.textContent; S.ipDocs = r; render(); return /MB de 150 MB/.test(t) && !!document; });
   conf(cheio, 'acima de 80% o medidor fica em destaque');
-  const negado = await p.evaluate(async () => { const r = S.ipDocs; S.ipDocs = r.concat([{ v: 1, id: 'dcheio0002', status: 'vigente', tipo: 'externo', nome: 'x', pub: { bytes: 113 * 1024 * 1024 } }]); lcAbrir({ k: 'ipEd', id: '', modo: 'arq', nome: 'Teste', codigo: '', pasta: 'Etiquetas', arq: { buf: new ArrayBuffer(10), nome: 't.pdf', bytes: 2000000, fmt: 'pdf', paginas: 1, orient: 'retrato' }, pdf: null }); await ipOk(); const m = document.querySelector('#gv .fm-msg'); S.ipDocs = r; S.fm.sujo = false; return m ? m.textContent : ''; });
+  const negado = await p.evaluate(async () => { const r = S.ipDocs; S.ipDocs = r.concat([{ v: 1, id: 'dcheio0002', status: 'vigente', tipo: 'externo', nome: 'x', pub: { bytes: 113 * 1024 * 1024 } }]); lcAbrir({ k: 'ipEd', antigo: true, id: '', modo: 'arq', nome: 'Teste', codigo: '', pasta: 'Etiquetas', arq: { buf: new ArrayBuffer(10), nome: 't.pdf', bytes: 2000000, fmt: 'pdf', paginas: 1, orient: 'retrato' }, pdf: null }); await ipOk(); const m = document.querySelector('#gv .fm-msg'); S.ipDocs = r; S.fm.sujo = false; return m ? m.textContent : ''; });
   conf(/passariam de 150 MB/.test(negado), 'não deixa passar do teto de 150 MB');
   await fecha(p);
   const [z] = await Promise.all([p.waitForEvent('download'), (async () => { await p.click('[data-act="ip-reserva"]'); await esp(p, 300); await p.click('[data-act="cf-sim"]'); })()]);
@@ -202,7 +204,7 @@ const zipLista = f => execFileSync('python3', ['-c', 'import zipfile,sys,json;z=
   await p.context().close();
   console.log('Celular (390):');
   const m = await abre(b, 390, 800);
-  await m.evaluate(async () => { const pdf = '%PDF-1.4\n1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] >>\nendobj\ntrailer\n<< /Root 1 0 R >>\n%%EOF\n'; const buf = new TextEncoder().encode(pdf).buffer; lcAbrir({ k: 'ipEd', id: '', modo: 'arq', nome: 'Controle de cloro', codigo: 'FOR-12', pasta: 'Formulários', arq: { buf: buf, nome: 'cloro.pdf', bytes: buf.byteLength, fmt: 'pdf', paginas: 1, orient: 'retrato' }, pdf: null }); await ipOk(); });
+  await m.evaluate(async () => { const pdf = '%PDF-1.4\n1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] >>\nendobj\ntrailer\n<< /Root 1 0 R >>\n%%EOF\n'; const buf = new TextEncoder().encode(pdf).buffer; lcAbrir({ k: 'ipEd', antigo: true, id: '', modo: 'arq', nome: 'Controle de cloro', codigo: 'FOR-12', pasta: 'Formulários', arq: { buf: buf, nome: 'cloro.pdf', bytes: buf.byteLength, fmt: 'pdf', paginas: 1, orient: 'retrato' }, pdf: null }); await ipOk(); });
   await vai(m, '#/documentos/impressos'); await esp(m, 500);
   const mc = await m.evaluate(() => ({ lado: document.documentElement.scrollWidth > innerWidth, bts: [...document.querySelectorAll('.cs-cab .bt, .cs-acts .bt')].filter(e => e.offsetWidth).map(e => Math.round(e.getBoundingClientRect().height)) }));
   conf(!mc.lado && mc.bts.length && mc.bts.every(h => h >= 44), 'Impressos sem rolagem lateral e botões com 44 px (' + mc.bts.join(', ') + ')');

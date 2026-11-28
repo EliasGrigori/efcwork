@@ -2,7 +2,7 @@
 
 Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conversa ou para o fim, para nada ficar para trás. Atualizado a cada mudança e enviado junto. Marque [x] quando estiver feito.
 
-Última atualização: 27/11/2026 20:3x · no ar: Cwork v0.6.46 + Vértice v0.6.81 (sobras da integração, ITENS 294 a 299 aprovados e publicados). Nada em aprovação.
+Última atualização: 27/11/2026 23:4x · no ar: Cwork v0.6.46.2 + Vértice v0.6.81. Em construção: Cwork v0.6.47 + Vértice v0.6.82 (documentos só no Vértice, 1ª parte).
 
 ## A. Para a conversa do Vértice (o Elias leva)
 - [ ] **NOVO (27/11 06:59) · Todos os documentos só no Vértice:** nota `NOTA-DO-CWORK-para-o-Vertice-documentos-so-no-Vertice.md`. Hospedar tudo lá (internos e externos); o Cwork guarda só a ligação; versão nova vale sozinha; PDF baixa e imprime direto; planilha e Word abrem em modo documento, só aquela aba ou folha, só os campos desbloqueados. Junta a P4 com os ITENS 195 e 196.
@@ -27,7 +27,7 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 - [x] **Etapa 3 · observações da etapa 2 (Vértice v0.6.81, publicada em 27/11 20:3x):** pedido só com a aba dos campos; Recebidos do Cwork com aviso e Mover.
 - [x] **Etapa 3 · etiquetas automáticas:** aprovada (ITENS 272 a 279) e publicada em 27/11 (Cwork v0.6.43 + Vértice v0.6.78). Cabeçalho escrito no modelo; nada a preencher na impressão.
 - [x] **Etapa 4 · kit do laboratório com papéis do Vértice:** aprovada (ITENS 280 a 283) e publicada em 27/11 (Cwork v0.6.44 + Vértice v0.6.79); até 2 papéis de custódia ou ficha por laboratório.
-- [ ] **Etapa 3 · Cwork apontando para o Vértice:** Impressos, kit e etiquetas; o que já está guardado no Cwork (`efd_docs`) muda de lugar uma vez.
+- [ ] **Etapa 3 · Cwork apontando para o Vértice:** 1ª parte (v0.6.47 + Vértice v0.6.82, ITENS 300 a 307) em aprovação. 2ª parte: botão "Levar para o Vértice" em cada antigo (o Elias move um por um), kit e Treinamentos com o PDF do Vértice, Reserva.
 - [ ] Backup do Cwork: incluir `vtd_arquivos` e `vtd_partes`? (hoje não entram; perguntar ao Elias)
 - [x] **P3b · Administração › Pastas do Vértice**: feita e publicada na v0.6.35.
 - [x] **v0.6.35 · tela inteira com abas (OPÇÃO 2, ITEM 201):** feita e testada; aprovada (ITENS 207 a 211) e publicada.
@@ -92,6 +92,7 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 - [ ] **Kit (v0.6.44):** em Coletas › Envio › Laboratórios, trocar cada papel antigo pelo do Vértice (lixeira e Anexar papel); imprimir os papéis de uma remessa e conferir que a ficha sai preenchida.
 
 ## E. Defeitos abertos
+- [x] **"O Cwork pediu a versão 10, mas a versão compartilhada daqui é a 9" (27/11 22:46):** trava na v0.6.46.1 (bef3c2d).
 - [x] **Imagem do Excel saía como linha de assinatura com "Picture" na impressão do Vértice:** corrigido na v0.6.78 (ITEM 278).
 - [x] **Quadro preso em "Subindo para a nuvem" (27/11 12:00):** correção Cwork v0.6.42 + Vértice v0.6.77 aprovada (ITENS 270 e 271) e publicada. Falta: o Elias abre Documentos internos no aparelho do print escuro e manda o motivo que aparecer.
 - [x] **Abrir de novo pelo Cwork podia trocar o modelo do Vértice pelo arquivo antigo do Cwork** (vinha da v0.6.16; achado na revisão da etapa 2): corrigido na v0.6.76 (publicada).
@@ -105,3 +106,5 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 - [ ] `t_v067` "as datas do mês aparecem marcadas": falha também na v0.6.33 em 26/11 (ligado à data). Anterior à v0.6.34.
 - [ ] **Almoxarifado: ajuste e saída com vários lotes gravam um por um (só lido, revisor da v0.6.37):** sem internet, recarregar ou fechar o app no meio deixa parte sem gravar. Corrigir gravando em lote (`Data.lote`).
 - [ ] **Vértice v0.6.81 no ar:** no Cwork, trocar o tema para Escuro: o Vértice troca junto e a planilha fica branca; Opções › "Área de trabalho escura no tema escuro" escurece; um arquivo em "Recebidos do Cwork" mostra o aviso e o Mover; imprimir pela folha aberta mostra "Preenchido no Vértice" na remessa.
+- [ ] **v0.6.46.1 no ar:** imprimir a FICHA DE ENVIO IBRA - SOLO pelo kit; não deve mais aparecer "O Cwork pediu a versão 10…". Melhor ainda: trocar no kit o papel antigo pelo "Vértice · Fichas e custódias · …".
+- [ ] **v0.6.46.2 no ar:** em Amostras, imprimir etiqueta de uma amostra sem modelo: abre "Ligar modelo de etiqueta"; escolher a "ETI 001 · Etiquetas SOLO + RAIZ" e o laboratório; "Salvar e imprimir".

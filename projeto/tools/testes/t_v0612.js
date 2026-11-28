@@ -101,7 +101,7 @@ const novoTr = async (p, o) => {
   conf(/Coleta de amostras de solo e raiz/.test(await gv(p)), 'depois de salvar volta para a gaveta do treinamento');
   await fecha(p);
   console.log('Documentos ligados (Impressos):');
-  await p.evaluate(async () => { lcAbrir({ k: 'ipEd', id: '', modo: 'link', nome: 'POP de coleta de solo', codigo: 'POP-07', pasta: 'POPs e procedimentos', pastaNova: '', link: 'https://exemplo.invalid/pop', arq: null, pdf: null }); await ipOk(); });
+  await p.evaluate(async () => { lcAbrir({ k: 'ipEd', antigo: true, id: '', modo: 'link', nome: 'POP de coleta de solo', codigo: 'POP-07', pasta: 'POPs e procedimentos', pastaNova: '', link: 'https://exemplo.invalid/pop', arq: null, pdf: null }); await ipOk(); });
   await esp(p, 400);
   await novoTr(p, { titulo: 'Uso de EPI', data: '2099-03-05', horas: '1', instrutor: 'Joana Silva', parts: 'Rita Dias' });
   await p.click('[data-dd="tr:pop"] .dd-b'); const docId = await p.evaluate(() => S.ipDocs[0].id); const temOpc = await p.$('[data-dd="tr:pop"] [data-v="' + docId + '"]'); conf(!!temOpc, 'a lista de POP traz os impressos vigentes');

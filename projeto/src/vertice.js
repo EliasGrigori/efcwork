@@ -41,7 +41,7 @@ const VT_PRAZO = 60000;
 const vtPrazo = (p, ms) => new Promise((ok, falha) => { const r = setTimeout(() => falha(Object.assign(new Error('a nuvem não respondeu'), { code: 'sem-resposta' })), ms || VT_PRAZO); Promise.resolve(p).then(v => { clearTimeout(r); ok(v); }, e => { clearTimeout(r); falha(e); }); });
 /* a lista vem do servidor (v0.6.42: antes vinha a primeira resposta, que podia ser a da memória do aparelho, com versões velhas) */
 const vtUmaVez = o => vtPrazo(Data.col('vtd_arquivos').frescos(o || {}));
-const vtnResumo = d => ({ id: d.id, pasta: d.pasta, versao: Number(d.versao) || 0, em: d.em || '', porNome: d.porNome || '', nome: (d.ficha && d.ficha.nome) || '', tipo: (d.ficha && d.ficha.tipo) || '', status: (d.ficha && d.ficha.status) || '' });
+const vtnResumo = d => ({ id: d.id, pasta: d.pasta, versao: Number(d.versao) || 0, em: d.em || '', porNome: d.porNome || '', nome: (d.ficha && d.ficha.nome) || '', tipo: (d.ficha && d.ficha.tipo) || '', status: (d.ficha && d.ficha.status) || '', codigo: (d.ficha && d.ficha.codigo) || '', alteradoPor: (d.ficha && d.ficha.alteradoPor) || d.porNome || '' }); /* v0.6.47: código e quem mudou, para os Impressos */
 /* lista o que a pessoa pode ler: Principal e Líder ★ leem tudo; os outros, pasta por pasta (a pasta negada fica de fora) */
 async function vtNuvemListar() {
   const u = vtUsuario(); if (!u) return [];
@@ -76,7 +76,18 @@ async function vtNuvemGravar(dados, esperada) {
   for (let n = 0; n < partes.length; n++) {
     const pid = id + '_' + v + '_' + u.uid + '_' + n;
     try { await vtPrazo(Data.col('vtd_partes').set(pid, { arq: id, versao: v, n: n, b64: partes[n], porId: u.uid, em: em })); }
-    catch (e) { if (!vtNegado(e)) throw e; const ja = await vtPrazo(Data.col('vtd_partes').get(pid)).catch(() => null); if (!ja) throw e; } /* pedaço já gravado numa tentativa anterior: segue */
+    catch (e) {
+      if (!vtNegado(e)) throw e; const ja = await vtPrazo(Data.col('vtd_partes').get(pid)).catch(() => null); if (!ja) throw e;
+      if (ja.b64 !== partes[n]) { /* v0.6.47 (revisor): o pedaço é de uma tentativa anterior com OUTRO conteúdo (pedaço nunca muda, regra [R7b]) */
+        if (cur < 1 || dados._pulou) throw new Error('Uma gravação anterior deste arquivo ficou pela metade com outro conteúdo. Feche, abra de novo e tente outra vez; se repetir, avise o Administrador.');
+        /* pula esta versão sem conteúdo novo (como renomear: mesmos pedaços de antes) e grava na seguinte, com pedaços limpos */
+        const d0 = await vtFicha(id, true); if (!d0 || (Number(d0.versao) || 0) !== cur) return { conflito: true };
+        const pula = {}; ['v', 'id', 'ficha', 'versaoPartes', 'pasta', 'partes', 'partesDe', 'bytes'].forEach(k => { if (d0[k] !== undefined) pula[k] = d0[k]; });
+        Object.assign(pula, { versao: cur + 1, porId: u.uid, porNome: u.nome, em: nowISO() });
+        await vtPrazo(Data.col('vtd_arquivos').set(id, pula));
+        return vtNuvemGravar(Object.assign({}, dados, { _pulou: true }), cur + 1);
+      }
+    } /* pedaço igual, já gravado numa tentativa anterior: segue */
   }
   try { await vtPrazo(Data.col('vtd_arquivos').set(id, { v: 1, id: id, ficha: limpa, versao: v, versaoPartes: v, pasta: pasta, partes: partes.length, partesDe: u.uid, bytes: s.length, porId: u.uid, porNome: u.nome, em: em })); }
   catch (e) { if (vtNegado(e)) { const de = await vtFicha(id, true); if (de && (Number(de.versao) || 0) !== cur) return { conflito: true }; } throw e; }

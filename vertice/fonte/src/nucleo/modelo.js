@@ -4,7 +4,7 @@
 import { conteudoQuadroVazio } from '../quadro/modelo.js';
 import { planilhaVazia } from '../planilha/modelo.js'; import { autorDaFicha } from './quem.js'; /* v0.6.72 (P1) */
 
-export const VERSAO = 'v0.6.81';
+export const VERSAO = 'v0.6.82';
 /** v0.6.10.1: nome do app (antes EFCdocs). O repositório, o endereço e as chaves de dados continuam com efcdocs, para nada se perder. */
 export const NOME_APP = 'Vértice Docs';
 
@@ -12,6 +12,8 @@ export const TIPOS = {
   planilha: { nome: 'Planilha', novo: 'Nova planilha', padrao: 'Planilha sem título', chega: null },
   docx: { nome: 'Documento', novo: 'Novo documento', padrao: 'Documento sem título', chega: 'v0.7.0' },
   postits: { nome: 'Quadro', novo: 'Novo quadro', padrao: 'Quadro sem título', chega: null },
+  /* v0.6.82: PDF importado (Documentos externos); não se cria em branco, só se importa (nucleo/pdf.js) */
+  pdf: { nome: 'PDF', novo: 'Importar PDF', padrao: 'PDF sem título', chega: null, soImporta: true },
 };
 
 let contadorId = 0;
@@ -24,6 +26,7 @@ export function novoId(agora = Date.now(), aleatorio = Math.random) {
 export function conteudoVazio(tipo) {
   if (tipo === 'planilha') return planilhaVazia();
   if (tipo === 'docx') return { blocos: [] };
+  if (tipo === 'pdf') return { pdf: '', bytes: 0, sha256: '', paginas: 0, orient: 'retrato', origem: 'pdf', arquivo: '' };
   return conteudoQuadroVazio();
 }
 

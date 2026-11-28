@@ -50,7 +50,7 @@ const colunasInternos = (estado, nuvem) => [
 ];
 
 export function DocsInternos({ fichas, estado, cx, acrescentar, editar, lendo, nuvem }) {
-  const todos = useMemo(() => ativos(fichas).filter((f) => f.pastaNome), [fichas]);
+  const todos = useMemo(() => ativos(fichas).filter((f) => f.pastaNome && f.tipo !== 'pdf'), [fichas]); /* v0.6.82: o PDF fica em Documentos externos */
   const [f, mudar] = useFiltro('internos');
   /* o filtro (nome e ordem) vale para todas as sub-abas; os contadores das abas seguem o filtro */
   const colunas = colunasInternos(estado, nuvem);

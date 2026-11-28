@@ -1,0 +1,17 @@
+/* Vértice Docs v0.6.82 · Documentos externos (PDF guardado no Vértice) */
+.externos .c-nuvem { width: 190px; }
+.ext-par { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 200px); gap: 12px; align-items: end; }
+.ext-par .campo { margin: 0; }
+.ext-erro { color: var(--crit); }
+.janela.ext-ver { width: min(760px, 100%); display: flex; flex-direction: column; }
+.janela.ext-ver.deitado { width: min(1040px, 100%); }
+.ext-folha { flex: 1; min-height: 0; padding: 0 16px; }
+.ext-folha iframe { display: block; width: 100%; height: min(70vh, 900px); height: min(70dvh, 900px); border: 1px solid var(--border); border-radius: var(--r-miudo); background: var(--surface); }
+.ext-folha .ext-erro, .ext-folha .op-dica { margin: 24px 0; }
+.ext-folha .ext-abrir { width: 100%; min-height: 44px; margin: 16px 0; justify-content: center; }
+.ext-pe { display: block; padding: 8px 16px 0; color: var(--text-muted); }
+.ext-ver .janela-r .btn { margin-right: auto; }
+@media (max-width: 899px) {
+  .ext-par { grid-template-columns: minmax(0, 1fr); }
+  .ext-folha iframe { height: calc(100dvh - 220px); }
+}

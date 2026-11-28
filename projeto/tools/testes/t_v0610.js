@@ -34,7 +34,7 @@ async function semente(p) {
   });
   for (const [nome, cod, fmt, pasta] of [['Ficha de cotação · Laboratório A', 'FIC-01', 'pdf', 'Fichas e custódias'], ['Cadeia de custódia · Laboratório A', 'CUS-01', 'xlsx', 'Fichas e custódias'], ['Formulário da coleta foliar', 'FOR-20', 'pdf', 'Formulários'], ['Pedido de cotação extra', 'FOR-21', 'pdf', 'Formulários']]) {
     await p.evaluate(async ([nome, cod, fmt, pasta, txt]) => { const b = new TextEncoder().encode(txt).buffer; const arq = fmt === 'xlsx' ? { buf: new Uint8Array(20000).buffer, nome: 'cus.xlsx', bytes: 20000, fmt: 'xlsx' } : { buf: b, nome: cod + '.pdf', bytes: b.byteLength, fmt: 'pdf', paginas: 1, orient: 'retrato' };
-      lcAbrir({ k: 'ipEd', id: '', modo: 'arq', nome: nome, codigo: cod, pasta: pasta, arq: arq, pdf: null }); await ipOk(); }, [nome, cod, fmt, pasta, PDF(cod)]);
+      lcAbrir({ k: 'ipEd', id: '', modo: 'arq', nome: nome, codigo: cod, pasta: pasta, arq: arq, pdf: null, antigo: true }); await ipOk(); /* v0.6.47: impresso antigo (guardado no Cwork) */ }, [nome, cod, fmt, pasta, PDF(cod)]);
     await esp(p, 300);
   }
 }

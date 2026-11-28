@@ -51,7 +51,7 @@ export async function puxar({ local, remoto, fila, podeSalvar, agora = new Date(
     if (!rec && it.status === 'lixeira') continue; /* excluído de vez aqui: não volta */
     if (rec && podeSalvar && naFila.has(it.id)) { out.pulados.push(it.id); continue; }
     let d;
-    try { d = await remoto.ler(it.id); } catch (e) { out.parou = String((e && e.message) || e || 'sem internet'); break; }
+    try { d = await remoto.ler(it.id); } catch (e) { if (e instanceof SyntaxError) { out.pulados.push(it.id); continue; } out.parou = String((e && e.message) || e || 'sem internet'); break; } /* v0.6.82: conteúdo que não abre (pedaços misturados) pula só aquele arquivo */
     if (!d || !d.ficha || !d.pacote) continue;
     const nuvem = { versao: d.versao, em: agora };
     await local.por({ id: it.id, ficha: { ...d.ficha, id: it.id, nuvem }, pacote: d.pacote, marca: novaMarca() });

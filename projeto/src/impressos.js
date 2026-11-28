@@ -28,6 +28,7 @@ const ipFmt = d => d.tipo === 'link' ? 'link' : d.tipo === 'planilha' ? 'xlsx' :
 const ipFmtTxt = d => d.origem === 'docs' && d.tipo === 'postits' ? 'Quadro' : IP_FMT[ipFmt(d)] || 'PDF';
 const ipPasta = d => String(d.pastaNome || '').trim() || 'Sem pasta';
 function ipSit(d) {
+  if (d._vt) return ['Vigente', 'ok']; /* v0.6.47: documento do Vértice (a versão atual é a que vale) */
   if (d.status === 'obsoleto') return ['Obsoleto', ''];
   if (d.tipo !== 'link' && !d.pub) return ['Sem cópia em PDF', 'wa'];
   return ['Vigente', 'ok'];
@@ -126,17 +127,23 @@ function ipGrupos(l) {
   return ord.map(p => [p, p]).concat([['\u0001obs', 'Obsoletos']]);
 }
 function ipTela() {
-  const l = ipVivos().slice().sort((a, b) => cmpTxt(a.nome, b.nome) || cmpTxt(a.codigo, b.codigo)), esp = ipEspaco(), pct = esp / IP_TETO;
+  if (typeof ivLer === 'function') setTimeout(() => ivLer(), 0); /* v0.6.47: os documentos do Vértice (uma vez por minuto) */
+  const vt = typeof ivLinhas === 'function' ? ivLinhas() : [], noVt = new Set(vt.map(x => x._vt.id));
+  /* o que veio do Vértice pela ponte tem o mesmo id lá e aqui: mostra só a linha do Vértice (revisor) */
+  const l = ipVivos().filter(d => !noVt.has(d.id)).concat(vt).sort((a, b) => cmpTxt(a.nome, b.nome) || cmpTxt(a.codigo, b.codigo)), esp = ipEspaco(), pct = esp / IP_TETO;
   const meta = ['<span>' + l.length + (l.length === 1 ? ' impresso' : ' impressos') + '</span>',
     pct >= 0.8 ? metaPl(ipMB(esp) + ' de 150 MB', pct >= 1 ? 'cr' : 'wa', 'alerta') : '<span title="Espaço que os impressos ocupam na nuvem (o banco grátis tem 1 GB para tudo)">' + ipMB(esp) + ' de 150 MB</span>'];
-  const acoes = '<div class="ip-acs">' + (l.length ? '<button type="button" class="bt" data-act="ip-reserva" title="Baixar todos num arquivo ZIP">' + ic('caixa') + 'Reserva</button>' : '') +
+  if (S._ivErro) meta.push(metaPl(S.ivDocs.length ? 'Vértice: mostrando a última lista guardada' : 'Vértice: lista não chegou', 'wa', 'alerta')); /* v0.6.47 (revisor): quando a lista do Vértice não chega, o cabeçalho avisa */
+  const acoes = '<div class="ip-acs">' + (ipVivos().length ? '<button type="button" class="bt" data-act="ip-reserva" title="Baixar todos num arquivo ZIP">' + ic('caixa') + 'Reserva</button>' : '') +
     (ipPode() ? '<button type="button" class="bt" data-act="ip-importar">' + ic('mais') + 'Importar</button><a class="bt pr ip-vt" href="' + IP_VERTICE + '" target="_blank" rel="noopener" data-app="docs" data-act="ip-vertice">' + ic('externo') + 'Novo no Vértice</a>' : '') + '</div>';
   let h = cabecalho({ titulo: 'Impressos', abaNome: 'Impressos', meta: meta, acoes: acoes });
-  if (!l.length) return h + '<section class="pn"><div class="vazio">' + ic('impressora') + '<b>Nenhum impresso ainda.</b><span>' + (ipPode() ? 'Importe um PDF, uma foto, um arquivo do Excel ou do Word, ou um link. Fichas, custódias e formulários feitos no Vértice Docs também vão aparecer aqui.' : 'Quando o Administrador ou o Líder cadastrar fichas, custódias e formulários, eles aparecem aqui para imprimir.') + '</span></div></section>';
+  if (!l.length) return h + '<section class="pn"><div class="vazio">' + ic('impressora') + '<b>Nenhum impresso ainda.</b><span>' + (ipPode() ? 'Importe um PDF, a foto de um papel ou um link. O PDF vai para o Vértice Docs; as fichas, custódias e formulários feitos no Vértice também aparecem aqui.' : 'Quando o Administrador ou o Líder cadastrar fichas, custódias e formulários, eles aparecem aqui para imprimir.') + '</span></div></section>';
   setTimeout(ipPreBaixar, 600);
-  return h + tbHTML({ id: 'ip-docs', titulo: 'Impressos', unidade: 'impressos', linhas: l, aoClicar: id => ipAbre(id),
-    grupos: { v: d => d.status === 'obsoleto' ? '\u0001obs' : ipPasta(d), ordem: ipGrupos(l) }, busca: d => [d.codigo, d.nome, ipPasta(d), ipFmtTxt(d), d.alteradoPor].join(' '), vazio: 'Nenhum impresso com este filtro.',
-    cols: [{ k: 'cod', rot: 'Código', v: d => d.codigo || '' }, { k: 'nome', rot: 'Nome', v: d => d.nome, cls: 'forte' }, { k: 'fmt', rot: 'Formato', v: ipFmtTxt },
+  const fmt = d => d._vt ? ivFmt(d._vt) : ipFmtTxt(d);
+  return h + tbHTML({ id: 'ip-docs', titulo: 'Impressos', unidade: 'impressos', linhas: l, aoClicar: id => String(id).indexOf('vt:') === 0 ? ivAbre(String(id).slice(3)) : ipAbre(id),
+    grupos: { v: d => d.status === 'obsoleto' ? '\u0001obs' : ipPasta(d), ordem: ipGrupos(l) }, busca: d => [d.codigo, d.nome, ipPasta(d), fmt(d), d.alteradoPor].join(' '), vazio: 'Nenhum impresso com este filtro.',
+    cols: [{ k: 'cod', rot: 'Código', v: d => d.codigo || '' }, { k: 'nome', rot: 'Nome', v: d => d.nome, cls: 'forte' }, { k: 'fmt', rot: 'Formato', v: fmt },
+      { k: 'onde', rot: 'Guardado', v: d => d._vt ? 'Vértice' : 'Cwork' }, /* v0.6.47: os antigos ficam no Cwork até o Elias levar cada um */
       { k: 'por', rot: 'Editado por', v: d => d.alteradoPor || '' }, { k: 'em', rot: 'Data', tipo: 'data', v: d => diaLocal(d.alteradoEm) }, { k: 'rev', rot: 'Versão', tipo: 'num', v: d => d.tipo === 'link' ? null : d.rev || null },
       { k: 'st', rot: 'Situação', v: d => ipSit(d)[0], html: ipPill }] });
 }
@@ -281,17 +288,19 @@ LC_FORM.ipEd = f => {
   const d = f.id ? S.ipDocs.find(x => x.id === f.id) : null, link = d ? d.tipo === 'link' : f.modo === 'link', a = f.arq, planilha = a ? (a.fmt === 'xlsx' || a.fmt === 'docx') : d && !f.trocar && (d.tipo === 'planilha' || d.tipo === 'docx');
   const pastas = ipPastas();
   let c = lcMsg();
-  if (!d) c += lcBl('O que vai importar', ddHTML('ip:modo', link ? 'link' : 'arq', [['arq', 'Arquivo: PDF, foto, Excel ou Word'], ['link', 'Link (só o endereço, sem arquivo)']]));
+  if (!d) c += lcBl('O que vai importar', ddHTML('ip:modo', link ? 'link' : 'arq', [['arq', 'PDF ou foto de um papel'], ['link', 'Link (só o endereço, sem arquivo)']]));
   if (link) c += lcBl('Endereço', lcIn('link', f.link, ' type="url" inputmode="url" placeholder="https://"'), 'abre numa aba nova; não ocupa espaço');
   else if (!d || f.trocar) {
-    c += ipArqBl(f, 'arq', d ? 'Novo arquivo (vira a versão ' + ((d.rev || 0) + 1) + ')' : 'Arquivo', 'PDF, JPG, PNG, Excel (.xlsx) ou Word (.docx)', '.pdf,.jpg,.jpeg,.png,.webp,.xlsx,.docx,application/pdf,image/jpeg,image/png');
+    c += d || f.antigo ? ipArqBl(f, 'arq', d ? 'Novo arquivo (vira a versão ' + ((d.rev || 0) + 1) + ')' : 'Arquivo', 'PDF, JPG, PNG, Excel (.xlsx) ou Word (.docx)', '.pdf,.jpg,.jpeg,.png,.webp,.xlsx,.docx,application/pdf,image/jpeg,image/png')
+      : ipArqBl(f, 'arq', 'Arquivo', 'PDF ou a foto de um papel · vai para o Vértice Docs', '.pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png'); /* v0.6.47: Excel e Word entram pelo Vértice */
     if (planilha) c += ipArqBl(f, 'pdf', 'Cópia em PDF', 'opcional · salve em PDF no ' + (a && a.fmt === 'docx' ? 'Word' : 'Excel') + ' para já imprimir', '.pdf,application/pdf');
   } else if (d.tipo !== 'link') {
     c += '<div class="ip-atual"><span><b>Versão ' + d.rev + '</b><small>' + esc([ipFmtTxt(d), d.pub ? ipTam(d.pub.bytes) + ' em PDF' : 'sem cópia em PDF', d.orig ? ipTam(d.orig.bytes) + ' de reserva' : ''].filter(Boolean).join(' · ')) + '</small></span><button type="button" class="bt" data-act="ip-trocar">' + ic('mais') + 'Nova versão</button></div>';
     if (planilha && !d.pub) c += ipArqBl(f, 'pdf', 'Cópia em PDF', 'salve em PDF no ' + (d.tipo === 'docx' ? 'Word' : 'Excel') + ' para imprimir', '.pdf,application/pdf');
   }
   c += '<div class="fm-g">' + lcBl('Nome', lcIn('nome', f.nome, ' maxlength="120" placeholder="Ex.: Ficha de cotação · Laboratório A"')) + lcBl('Código', lcIn('codigo', f.codigo, ' maxlength="20" placeholder="opcional"')) + '</div>';
-  c += '<div class="fm-g">' + lcBl('Pasta', ddHTML('ip:pasta', f.pasta, pastas.map(p => [p, p]).concat([['__outra', 'Outra pasta…']]))) +
+  const soCinco = !d && !link && !f.antigo; /* v0.6.47: no Vértice só valem as 5 pastas */
+  c += '<div class="fm-g">' + lcBl('Pasta', ddHTML('ip:pasta', f.pasta, soCinco ? IP_PASTAS.map(p => [p, p]) : pastas.map(p => [p, p]).concat([['__outra', 'Outra pasta…']]))) +
     (d ? lcBl('Situação', ddHTML('ip:sit', f.sit, [['vigente', 'Vigente'], ['obsoleto', 'Obsoleto (não imprime)']])) : '<div></div>') + '</div>';
   if (f.pasta === '__outra') c += lcBl('Nome da pasta nova', lcIn('pastaNova', f.pastaNova, ' maxlength="40" placeholder="Ex.: Laudos-modelo"'));
   const esp = ipEspaco(); if (esp / IP_TETO >= 0.8) c += lcAv('Os impressos já ocupam ' + ipTam(esp) + ' dos 150 MB.', esp >= IP_TETO ? 'cr' : 'wa');
@@ -299,7 +308,7 @@ LC_FORM.ipEd = f => {
 };
 DD_AO.ip = (k, v) => { const f = S.fm; if (!f) return; f.sujo = true; f.msg = ''; if (k === 'modo') f.modo = v; else if (k === 'pasta') f.pasta = v; else if (k === 'sit') f.sit = v; gvDesenha(true); };
 document.addEventListener('change', async e => {
-  const t = e.target; if (!t || !t.hasAttribute || !t.hasAttribute('data-ip-arq') || !S.fm || S.fm.k !== 'ipEd' || !t.files || !t.files[0]) return;
+  const t = e.target; if (!t || !t.hasAttribute || !t.hasAttribute('data-ip-arq') || !S.fm || (S.fm.k !== 'ipEd' && S.fm.k !== 'ivTroca') || !t.files || !t.files[0]) return;
   const campo = t.getAttribute('data-ip-arq'), arq = t.files[0], f = S.fm; t.value = '';
   let fmt = ipTipoArq(arq);
   if (fmt === 'velho') return lcErro('Este formato antigo não entra. No Excel ou no Word, use Salvar como .xlsx ou .docx (ou salve em PDF).');
@@ -308,7 +317,7 @@ document.addEventListener('change', async e => {
     let buf, orient = 'retrato', info = null, foto = null;
     if (fmt === 'imagem') { const r = await ipFotoPdf(arq); buf = r.buf; orient = r.orient; foto = arq; }
     else buf = await ipLerArq(arq);
-    if (fmt === 'pdf' || fmt === 'imagem') { info = ipPdfInfo(buf); if (!info) return lcErro('Este arquivo não parece um PDF válido.'); if (fmt === 'pdf') orient = info.orient; if (buf.byteLength > IP_COPIA_MAX) return lcErro('O PDF tem ' + ipTam(buf.byteLength) + ' e o limite é ' + ipTam(IP_COPIA_MAX) + '. Reduza (salve em tamanho mínimo) ou guarde como link.'); }
+    if (fmt === 'pdf' || fmt === 'imagem') { info = ipPdfInfo(buf); if (!info) return lcErro('Este arquivo não parece um PDF válido.'); if (fmt === 'pdf') orient = info.orient; const lim = f.k === 'ivTroca' || (!f.id && !f.antigo) ? IV_PDF_MAX : IP_COPIA_MAX; /* v0.6.47: no Vértice cabe até 15 MB */ if (buf.byteLength > lim) return lcErro('O PDF tem ' + ipTam(buf.byteLength) + ' e o limite é ' + ipTam(lim) + '. Reduza (salve em tamanho mínimo) ou guarde como link.'); }
     else if (buf.byteLength > IP_ORIG_MAX) return lcErro('O arquivo tem ' + ipTam(buf.byteLength) + ' e o limite do arquivo de reserva é ' + ipTam(IP_ORIG_MAX) + '. Salve em PDF e importe o PDF.');
     if (S.fm !== f) return;
     f[campo] = { buf: buf, nome: arq.name, bytes: buf.byteLength, fmt: fmt, orient: orient, paginas: info ? info.paginas : 0, foto: !!foto };
@@ -335,6 +344,16 @@ async function ipOk() {
   if (link && !/^https:\/\/\S{4,}$/.test(String(f.link || '').trim())) return lcErro('O endereço precisa começar com https://');
   const novo = !d || f.trocar, a = f.arq, pdfAnexo = f.pdf;
   if (!link && novo && !a) return lcErro('Escolha o arquivo.');
+  /* v0.6.47 (decisão de 27/11 06:59 e respostas de 21:2x): o PDF novo (ou a foto, que vira PDF) é guardado no Vértice, não aqui */
+  if (!d && !link && !f.antigo) { /* f.antigo: grava como antes, no Cwork (só os testes que precisam de um impresso antigo usam) */
+    if (a.fmt !== 'pdf' && a.fmt !== 'imagem') return lcErro('Excel e Word entram pelo Vértice Docs (lá, Abrir do Excel). Aqui vai PDF ou foto.');
+    if (!ivPode()) return lcErro('Só o Administrador e o Líder ★ guardam documentos no Vértice.');
+    if (!lcTravar()) return;
+    if (a.bytes > 400000) aviso('Enviando o PDF para o Vértice…');
+    try { await ivNovo(a, nome, codigo, pasta); lcFim(); aviso('PDF guardado no Vértice, em ' + pasta + '.'); }
+    catch (e) { console.error(e); if (S.fm) S.fm._trava = 0; lcErro(e.message || svErro(e)); }
+    return;
+  }
   const sit = d ? f.sit : 'vigente';
   /* espaço: o que entra menos o que sai */
   const entra = (a ? ipChars(a.bytes) : 0) + (pdfAnexo ? ipChars(pdfAnexo.bytes) : 0), sai = d && novo ? ipOcupa(d) : 0;

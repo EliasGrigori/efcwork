@@ -36,7 +36,7 @@ import { LinhaDoTempo } from './ui/historico.jsx';
 import { JanelaAbrirExcel } from './ui/excel.jsx';
 import { SoltarArquivo } from './ui/soltar.jsx';
 import { usarPonte } from './ponte/usarPonte.js';
-import { DocsInternos, JanelaInterno, ResumoEnvio } from './ui/internos.jsx';
+import { DocsInternos, JanelaInterno, ResumoEnvio } from './ui/internos.jsx'; import { DocsExternos, verPdfDepois } from './ui/externos.jsx'; /* v0.6.82: PDF no Vértice */
 import { PainelCampos, TelaPedido, TelaEtiquetas } from './ponte/camposUi.jsx';
 
 /* v0.6.20 (R5): nas telas de lista o título grande fica na página; a barra de cima mostra o caminho */
@@ -284,7 +284,7 @@ export function App() {
     setTravado(null);
     banco.abrir(idRota).then((r) => {
       if (!vivo) return;
-      if (!r || r.ficha.status === 'lixeira') {
+      if (r && r.ficha.tipo === 'pdf' && r.ficha.status !== 'lixeira') { verPdfDepois(r.ficha.id); irPara('externos'); return; } /* v0.6.82: o PDF abre na página Documentos externos */ if (!r || r.ficha.status === 'lixeira') {
         avisar('Esse arquivo não está mais neste aparelho.', { ic: 'aviso' });
         irPara('');
         return;
@@ -664,7 +664,7 @@ export function App() {
   }, [opcoes]);
 
   const cx = {
-    mod, executar, bloqueado, ligado, valorDe, demo, setPref,
+    mod, executar, bloqueado, ligado, valorDe, demo, setPref, banco, recarregar, eu, /* v0.6.82: Documentos externos importa e troca o PDF */
     abrir: (id) => irPara('arq/' + id),
     perguntarNome, lixeira: mandarLixeira, restaurar, excluirDeVez, criarCom,
     renomear: (nome) => { const a = abertoRef.current; if (a && nome !== a.arquivo.ficha.nome) renomearArquivo(a.arquivo.ficha, nome); },
@@ -686,7 +686,7 @@ export function App() {
     const a = ativos(fichas);
     const c = { lixeira: fichas.length - a.length };
     for (const t of Object.keys(TIPOS)) c[t] = a.filter((f) => f.tipo === t).length;
-    c.internos = a.filter((f) => f.pastaNome).length;
+    c.internos = a.filter((f) => f.pastaNome && f.tipo !== 'pdf').length; c.externos = a.filter((f) => f.tipo === 'pdf').length;
     return c;
   }, [fichas]);
 
@@ -704,7 +704,7 @@ export function App() {
   else if (rota === 'internos') conteudo = <DocsInternos fichas={fichas} lendo={lendo} nuvem={nuvem} estado={ponte.estado} cx={cx} acrescentar={() => ponte.setJanela({})} editar={(f) => ponte.setJanela({ ficha: f })} />;
   else if (TIPOS[rota]) conteudo = <ListaDoTipo tipo={rota} fichas={fichas} lendo={lendo} cx={cx} demo={demo} />;
   else if (rota === 'lixeira') conteudo = <Lixeira fichas={fichas} lendo={lendo} cx={cx} />;
-  else if (rota === 'pastas' || rota === 'externos') conteudo = <EmBreve qual={rota} />;
+  else if (rota === 'externos') conteudo = <DocsExternos fichas={fichas} lendo={lendo} nuvem={nuvem} cx={cx} editar={(f) => ponte.setJanela({ ficha: f })} />; else if (rota === 'pastas') conteudo = <EmBreve qual={rota} />;
   else conteudo = <Inicio fichas={fichas} lendo={lendo} cx={cx} demo={demo} />;
 
   const salvo = aberto ? { sujo: aberto.sujo, texto: aberto.sujo ? 'Salvando…' : 'Salvo ' + hora(aberto.salvoEm) } : null;

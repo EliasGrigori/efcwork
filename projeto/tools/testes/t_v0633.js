@@ -44,15 +44,15 @@ async function semente(p) {
   });
   await p.evaluate(async ([xl, pdfT, pdfF]) => {
     const enc = t => new TextEncoder().encode(t).buffer, x = new Uint8Array(xl).buffer;
-    lcAbrir({ k: 'ipEd', id: '', modo: 'arq', nome: 'Cadeia de custódia · Laboratório A', codigo: 'CUS-01', pasta: 'Fichas e custódias', arq: { buf: x, nome: 'custodia.xlsx', bytes: x.byteLength, fmt: 'xlsx' }, pdf: { buf: enc(pdfT), nome: 'c.pdf', bytes: enc(pdfT).byteLength, paginas: 1, orient: 'retrato' } }); await ipOk();
+    lcAbrir({ k: 'ipEd', antigo: true, id: '', modo: 'arq', nome: 'Cadeia de custódia · Laboratório A', codigo: 'CUS-01', pasta: 'Fichas e custódias', arq: { buf: x, nome: 'custodia.xlsx', bytes: x.byteLength, fmt: 'xlsx' }, pdf: { buf: enc(pdfT), nome: 'c.pdf', bytes: enc(pdfT).byteLength, paginas: 1, orient: 'retrato' } }); await ipOk();
   }, [xl, PDF('CUS'), PDF('FIC')]);
   await esp(p, 400);
   await p.evaluate(async ([xl, pdfT, pdfF]) => {
     const enc = t => new TextEncoder().encode(t).buffer;
-    lcAbrir({ k: 'ipEd', id: '', modo: 'arq', nome: 'Rótulo · Laboratório B', codigo: 'ROT-B', pasta: 'Fichas e custódias', arq: { buf: enc(pdfF), nome: 'FIC-01.pdf', bytes: enc(pdfF).byteLength, fmt: 'pdf', paginas: 1, orient: 'retrato' }, pdf: null }); await ipOk();
+    lcAbrir({ k: 'ipEd', antigo: true, id: '', modo: 'arq', nome: 'Rótulo · Laboratório B', codigo: 'ROT-B', pasta: 'Fichas e custódias', arq: { buf: enc(pdfF), nome: 'FIC-01.pdf', bytes: enc(pdfF).byteLength, fmt: 'pdf', paginas: 1, orient: 'retrato' }, pdf: null }); await ipOk();
   }, [xl, PDF('CUS'), PDF('FIC')]);
   await esp(p, 400);
-  await p.evaluate(async xl => { const x = new Uint8Array(xl).buffer; lcAbrir({ k: 'ipEd', id: '', modo: 'arq', nome: 'Rótulo · Laboratório A', codigo: 'ROT-A', pasta: 'Etiquetas', arq: { buf: x, nome: 'rotulo-a.xlsx', bytes: x.byteLength, fmt: 'xlsx' }, pdf: null }); await ipOk(); }, xl);
+  await p.evaluate(async xl => { const x = new Uint8Array(xl).buffer; lcAbrir({ k: 'ipEd', antigo: true, id: '', modo: 'arq', nome: 'Rótulo · Laboratório A', codigo: 'ROT-A', pasta: 'Etiquetas', arq: { buf: x, nome: 'rotulo-a.xlsx', bytes: x.byteLength, fmt: 'xlsx' }, pdf: null }); await ipOk(); }, xl);
   await esp(p, 500);
   await p.evaluate(async campos => {
     const cus = S.ipDocs.find(d => d.codigo === 'CUS-01'), fic = S.ipDocs.find(d => d.codigo === 'ROT-B');
