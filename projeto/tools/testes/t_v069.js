@@ -193,7 +193,7 @@ const zipLista = f => execFileSync('python3', ['-c', 'import zipfile,sys,json;z=
   conf(todos.length === 4 && !errs.length, 'as 4 fichas seguem o Contrato EFD v1 (' + todos.length + ' ' + JSON.stringify(errs) + ')');
   conf(p._er.length === 0, 'sem erros no console (PC)' + (p._er.length ? ': ' + p._er.slice(0, 2).join(' | ') : ''));
   console.log('Colaborador:');
-  await p.evaluate(async () => { const a = await Data.auth.createAccount('ana.lima', 'senha1234'); await Data.col('sv2_users').set(a, { nome: 'Ana Lima', login: 'ana.lima', perfil: 'secundario', superiores: [S.user.id], atrib: {} }); });
+  await p.evaluate(async () => { const a = await Data.auth.createAccount('ana.lima', 'senha1234'); await Data.col('sv2_users').set(a, { nome: 'Ana Lima', login: 'ana.lima', perfil: 'secundario', superiores: [S.user.id], atrib: { docs: true } }); /* v0.6.50: atrib vazio = Não vê; o Colaborador vê Documentos */ });
   await p.click('[data-act="cs-sair"]'); await esp(p, 300); await p.fill('#en-login', 'ana.lima'); await p.fill('#en-senha', 'senha1234'); await p.click('[data-form="en-entrar"] button[type=submit]'); await esp(p, 800);
   conf((await p.$$('.cs-app-l')).length === 0, 'Colaborador não vê os Apps da família');
   await vai(p, '#/documentos/impressos');

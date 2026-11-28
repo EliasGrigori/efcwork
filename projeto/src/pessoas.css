@@ -2,3 +2,6 @@
 @media(max-width:700px){.pes-cks{grid-template-columns:minmax(0,1fr)}}
 .pes-sen{display:flex;gap:6px;align-items:center}.pes-sen .fm-i{flex:1 1 auto}.pes-sen .bt{flex:none;height:var(--campo);width:var(--campo)} /* v0.6.29 */
 .pes-esit{margin:0 0 4px;color:var(--tx2);font-size:14px}.pes-esit b{color:var(--tx);font-weight:600}
+.pes-ars{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 16px} /* v0.6.50: Não vê · Só ver · Ver e alterar */
+.pes-ar{display:grid;grid-template-columns:minmax(0,1fr) 150px;align-items:center;gap:8px;min-width:0}.pes-ar>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pes-ar .dd,.pes-ar .dd-b{width:100%}.pes-ar .dd-b{height:var(--campo)}
+@media(max-width:700px){.pes-ars{grid-template-columns:minmax(0,1fr)}.pes-ar{grid-template-columns:minmax(0,1fr) 160px}}

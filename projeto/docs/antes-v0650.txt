@@ -1,0 +1,11 @@
+— Pessoas: cada área com Não vê · Só ver · Ver e alterar
+  FALHA  as 7 áreas com a janela retrátil de 3 escolhas, começando em "Não vê": 
+  ok  sem nenhuma área não cadastra
+page.click: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for locator('[data-dd="pes:at.coletas"] .dd-b')[22m
+
+    at /home/claude/efcwork/projeto/tools/testes/t_v0650.js:42:11 {
+  log: [ `  - waiting for locator('[data-dd="pes:at.coletas"] .dd-b')` ],
+  name: 'TimeoutError'
+}

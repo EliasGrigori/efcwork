@@ -36,7 +36,7 @@ const anPedeNc = fx => fx === 'alto' ? ['causa', 'porques', 'ishi', 'outra'] : f
 function anInfo(ctx) {
   const u = S.user;
   if (ctx.t === 'anp') { const x = anpDe(ctx.id); if (!x) return null; const aberto = x.situacao === 'aberta', resp = { id: x.respId, nome: x.respNome || nomeDe(x.respId) };
-    return { t: 'anp', x: x, doc: x, aberto: aberto, resp: resp, direta: false, pede: ['causa', 'porques', 'ishi'], podeEd: !!u && aberto && resp.id === u.id && u.perfil !== 'visitante', podeLider: !!u && isSup(u) && aberto, podeEfic: !!u && isSup(u) && aberto,
+    return { t: 'anp', x: x, doc: x, aberto: aberto, resp: resp, direta: false, pede: ['causa', 'porques', 'ishi'], podeEd: !!u && aberto && resp.id === u.id && podeLancar(u), podeLider: !!u && isSup(u) && aberto, podeEfic: !!u && isSup(u) && aberto,
       titulo: x.numero, sub: x.titulo, cabeca: x.titulo, ref: x.numero }; }
   const r = auDe(ctx.rid), nc = auNc(r, ctx.ncId); if (!r || !nc || nc.cancelada) return null;
   const doc = anPlano(nc.id), sit = auSit(r), naoEf = !!(doc && doc.efic && doc.efic.res === 'nao');
@@ -44,7 +44,7 @@ function anInfo(ctx) {
   const resp = doc && doc.respId ? { id: doc.respId, nome: doc.respNome || nomeDe(doc.respId) } : nc.respId ? { id: nc.respId, nome: nc.respNome } : { id: nc.porId || r.porId || '', nome: nc.porNome || r.porNome || '' };
   const direta = anTrat(nc) === 'direta';
   return { t: 'nc', r: r, nc: nc, doc: doc, sit: sit, aberto: aberto, resp: resp, direta: direta, fx: anFaixa(nc), pede: direta ? ['feito'] : anPedeNc(anFaixa(nc)),
-    podeEd: !!u && aberto && resp.id === u.id && u.perfil !== 'visitante', podeLider: !!u && isSup(u) && aberto, podeEfic: auPode(r) && sit !== 'registro',
+    podeEd: !!u && aberto && resp.id === u.id && podeLancar(u), podeLider: !!u && isSup(u) && aberto, podeEfic: auPode(r) && sit !== 'registro',
     titulo: 'Análise · ' + auNum(nc.n), sub: r.numero + ' · ' + auAreaNome(nc.area) + ' › ' + nc.local, cabeca: (nc.titulo ? nc.titulo + ': ' : '') + nc.nc + ' (' + auNum(nc.n) + ')', ref: r.numero + ' · ' + auNum(nc.n) };
 }
 function anFalta(I, d) {

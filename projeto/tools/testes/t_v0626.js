@@ -19,8 +19,8 @@ const msg = p => p.evaluate(() => (document.querySelector('#gv .fm-msg') || {}).
   await p.click('[data-act="pes-ed-ok"]'); await p.waitForTimeout(200);
   conf(/no mínimo 8/.test(await msg(p)), 'senha curta não cadastra'); /* v0.6.29: a regra passou de 6 para 8 (varredura S3) */
   await fm(p, 'senha', 'segredo1'); await p.click('[data-act="pes-ed-ok"]'); await p.waitForTimeout(200);
-  conf(/pelo menos uma área/.test(await msg(p)), 'sem área marcada não cadastra');
-  await fm(p, 'at.coletas', true); await fm(p, 'at.cloro', true);
+  conf(/pelo menos uma área/.test(await msg(p)), 'sem área escolhida não cadastra');
+  await p.evaluate(() => DD_AO.pes('at.coletas', 'alt')); await p.evaluate(() => DD_AO.pes('at.cloro', 'alt'));
   const sup = await p.evaluate(() => { const i = document.querySelector('#gv [data-fm^="sup."]'); return i ? i.getAttribute('data-fm') : ''; });
   if (sup) await fm(p, sup, true);
   await p.click('[data-act="pes-ed-ok"]'); await p.waitForTimeout(900);
@@ -30,7 +30,7 @@ const msg = p => p.evaluate(() => (document.querySelector('#gv .fm-msg') || {}).
   conf(await p.evaluate(() => { const a = JSON.parse(localStorage.getItem('sv2demo_auth') || '{}'); return !!a['maria.souza'] && a['maria.souza'].pass === 'segredo1'; }), 'conta de acesso criada com o login e a senha');
   conf(await p.evaluate(() => S.user.login !== 'maria.souza'), 'quem cadastrou continua logado');
   await p.click('[data-act="pes-novo"]'); await p.waitForTimeout(400);
-  await fm(p, 'nome', 'Outra Maria'); await fm(p, 'login', 'maria.souza'); await fm(p, 'senha', 'segredo1'); await fm(p, 'at.coletas', true); await p.click('[data-act="pes-ed-ok"]'); await p.waitForTimeout(200);
+  await fm(p, 'nome', 'Outra Maria'); await fm(p, 'login', 'maria.souza'); await fm(p, 'senha', 'segredo1'); await p.evaluate(() => DD_AO.pes('at.coletas', 'alt')); await p.click('[data-act="pes-ed-ok"]'); await p.waitForTimeout(200);
   conf(/Já existe/.test(await msg(p)), 'login repetido não cadastra');
   await p.keyboard.press('Escape'); await p.waitForTimeout(300); await p.keyboard.press('Escape'); await p.waitForTimeout(300);
   const lin = await p.evaluate(() => [...document.querySelectorAll('tbody tr')].some(r => /Maria Souza/.test(r.textContent)));
@@ -40,7 +40,7 @@ const msg = p => p.evaluate(() => (document.querySelector('#gv .fm-msg') || {}).
   await p.evaluate(i => pesAbre(i), id); await p.waitForTimeout(500);
   conf(await p.evaluate(() => /Maria Souza/.test(document.querySelector('#gv').textContent) && /Coletas, Cloro/.test(document.querySelector('#gv').textContent)), 'detalhe com perfil e áreas');
   await p.click('[data-act="pes-editar"]'); await p.waitForTimeout(400);
-  await p.evaluate(() => DD_AO.pes('perfil', 'lider')); await p.waitForTimeout(200); await fm(p, 'at.almox', true);
+  await p.evaluate(() => DD_AO.pes('perfil', 'lider')); await p.waitForTimeout(200); await p.evaluate(() => DD_AO.pes('at.almox', 'alt'));
   await p.click('[data-act="pes-ed-ok"]'); await p.waitForTimeout(700);
   const e = await p.evaluate(i => { const u = userById(i); return { perfil: u.perfil, estrela: u.estrela, almox: u.atrib.almox, rot: perfilLabel(u) }; }, id);
   conf(e.perfil === 'secundario' && e.estrela === true && e.almox && e.rot === 'Líder', 'Líder ★ = secundário com estrela (' + JSON.stringify(e) + ')');
@@ -55,7 +55,7 @@ const msg = p => p.evaluate(() => (document.querySelector('#gv .fm-msg') || {}).
   console.log('— Proteções');
   conf(await p.evaluate(() => { const me = S.user.id; pesAbre(me); return !document.querySelector('#gv [data-act="pes-bloq"]'); }), 'o Administrador não vê "Bloquear" no próprio cadastro');
   await p.keyboard.press('Escape'); await p.waitForTimeout(300);
-  await p.evaluate(() => pesEditar(S.user.id)); await p.waitForTimeout(400); await p.evaluate(() => DD_AO.pes('perfil', 'secundario')); await p.waitForTimeout(200); await fm(p, 'at.coletas', true);
+  await p.evaluate(() => pesEditar(S.user.id)); await p.waitForTimeout(400); await p.evaluate(() => DD_AO.pes('perfil', 'secundario')); await p.waitForTimeout(200); await p.evaluate(() => DD_AO.pes('at.coletas', 'alt'));
   await p.click('[data-act="pes-ed-ok"]'); await p.waitForTimeout(200);
   conf(/único Administrador|próprio perfil/.test(await msg(p)), 'não dá para tirar o próprio perfil de Administrador');
   await p.keyboard.press('Escape'); await p.waitForTimeout(300); await p.keyboard.press('Escape'); await p.waitForTimeout(300);

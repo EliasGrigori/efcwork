@@ -15,7 +15,7 @@ const txt = p => p.evaluate(() => document.body.innerText);
   conf(await p.evaluate(() => !!document.querySelector('#gv [data-act="pes-ver"]')), 'botão de olho para mostrar a senha inicial');
   const cria = async (login, senha) => { if (!(await p.$('#gv [data-fm="senha"]'))) { await p.evaluate(() => pesNovo()); await p.waitForTimeout(400); }
     await fm(p, 'nome', 'Marta Rocha'); await fm(p, 'login', login); await fm(p, 'senha', senha);
-    await p.evaluate(() => { const c = document.querySelector('#gv input[type=checkbox][data-fm^="at."]'); if (c && !c.checked) c.click(); });
+    await p.evaluate(() => DD_AO.pes('at.coletas', 'alt')); /* v0.6.50: Não vê · Só ver · Ver e alterar */
     await cl(p, 'pes-ed-ok'); await p.waitForTimeout(400); };
   await cria('marta.curta', 'abc123');
   conf(!(await p.evaluate(() => S.users.some(u => u.login === 'marta.curta'))), 'senha inicial de 6 não cria: ' + await msg(p));

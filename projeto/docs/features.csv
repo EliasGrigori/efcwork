@@ -260,7 +260,7 @@ Busca geral (tecla /),Geral,should,sim,sim,,v0.2.0
 Últimas telas e mais usadas,Início,should,sim,sim,,v0.1.0
 "Tabela padrão (filtro único, colunas, planilha, impressora, total)",Visual,must,sim,sim,,v0.2.0
 Gaveta de detalhe lateral,Visual,must,sim,sim,,v0.2.0
-Perfis Só ver / Ver e alterar por área,Administração,must,sim,parcial,Administração › Pessoas,conferido no código 27/11: área liga/desliga e perfil Consulta (só vê) geral; falta só ver por área
+Perfis Só ver / Ver e alterar por área,Administração,must,sim,sim,Administração › Pessoas,v0.6.50 (28/11): Não vê · Só ver · Ver e alterar por área; regras [R8]
 Sino de avisos,Geral,must,sim,sim,Sino,conferido no código 27/11: sino.js
 Impressão A4 / PDF,Geral,must,sim,sim,Telas e relatórios,conferido no código 27/11: window.print nas telas e relatórios
 Backup e exportação,Administração,must,sim,sim,Administração › Backup,conferido no código 27/11: backup.js (v0.6.30)

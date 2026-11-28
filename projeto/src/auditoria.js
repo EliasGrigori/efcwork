@@ -58,7 +58,7 @@ function auSit(r) {
   if (r.situacao !== 'enviada') return 'registro';
   const l = auNcs(r); return l.length && l.every(n => n.ret) ? 'pronta' : 'retorno';
 }
-const auPode = r => { const u = S.user; return !!u && u.perfil !== 'visitante' && !u.bloqueado && (isSup(u) || (!!r && r.auditorId === u.id)); };
+const auPode = r => { const u = S.user; return !!u && podeLancar(u) && !u.bloqueado && (isSup(u) || (!!r && r.auditorId === u.id)); };
 function auAtual() { const l = auLista(); return l.find(r => r.id === S.auRid) || l.find(r => auSit(r) !== 'fechada') || l[0] || null; }
 /* prioridade para ordenar: a GUT; sem GUT, a gravidade */
 const auPri = n => { const g = auGut(n.id); return g ? g.gut : ({ maior: 30, media: 12, baixa: 2 })[n.grav] || 0; };

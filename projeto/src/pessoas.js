@@ -17,7 +17,10 @@ const pesPerfilK = u => u.perfil === 'secundario' && u.estrela ? 'lider' : u.per
 const pesSit = u => u.bloqueado || u.ativo === false ? 'bloqueado' : u.status === 'ausente' ? 'ausente' : 'ativo';
 const PES_SIT = { ativo: ['Ativo', 'ok'], ausente: ['Ausente', 'wa'], bloqueado: ['Bloqueado', ''] };
 const pesSitPill = u => { const s = PES_SIT[pesSit(u)]; return '<span class="pill ' + esc(s[1]) + '">' + esc(s[0]) + '</span>'; };
-const pesAtribTxt = u => atribLegado(u) || isPrincipal(u) ? 'Todas' : PES_ATRIB.filter(a => u.atrib[a[0]] === true).map(a => a[1]).join(', ') || 'Nenhuma';
+/* v0.6.50: Não vê · Só ver · Ver e alterar por área (sover.js) */
+const PES_NIVEL = [['nao', 'Não vê'], ['ver', 'Só ver'], ['alt', 'Ver e alterar']];
+const pesNivel = (u, id) => !atribLegado(u) && u.atrib[id] !== true ? 'nao' : soVer(u, id) ? 'ver' : 'alt';
+const pesAtribTxt = u => isPrincipal(u) ? 'Todas' : (atribLegado(u) && !(u.soVer && Object.keys(u.soVer).length) ? 'Todas' : PES_ATRIB.filter(a => pesNivel(u, a[0]) !== 'nao').map(a => a[1] + (pesNivel(u, a[0]) === 'ver' ? ' (só ver)' : '')).join(', ') || 'Nenhuma');
 const pesSupTxt = u => (Array.isArray(u.superiores) ? u.superiores : []).map(nomeDe).join(', ');
 const pesAdmsAtivos = () => S.users.filter(u => isPrincipal(u) && pesSit(u) !== 'bloqueado');
 
@@ -44,7 +47,7 @@ function pesGaveta(id) {
     ['Superiores', pesSupTxt(u) || (isPrincipal(u) ? '' : 'os Administradores (ninguém marcado)')], ['Atribuições', pesAtribTxt(u)], ['Liderados', liderados.join(', ')], ['Cadastrado', u.criadoEm ? fmtD(diaLocal(u.criadoEm)) + (u.criadoPorNome ? ' · ' + u.criadoPorNome : '') : '']];
   let c = gvCampos(rows.filter(r => r[1]));
   if (u.perfil === 'visitante') c += lcAv('Perfil Consulta: vê as áreas marcadas, mas não lança nem altera nada.');
-  if (atribLegado(u) && !isPrincipal(u)) c += lcAv('Sem atribuições marcadas: vê todas as áreas (como no EFClaudian). Para limitar, edite e marque só as áreas dele.');
+  if (atribLegado(u) && !isPrincipal(u)) c += lcAv('Sem áreas escolhidas: vê e altera todas. Para limitar, edite e escolha área por área.');
   const cab = pesPode() ? '<button type="button" class="bt ic-so" data-act="pes-editar" data-id="' + esc(u.id) + '" title="Editar" aria-label="Editar">' + ic('lapis') + '</button>' : '';
   const pe = pesPode() && !eu ? (u.bloqueado ? '<span class="au-pesp"></span><button type="button" class="bt pr" data-act="pes-liberar" data-id="' + esc(u.id) + '">' + ic('ok') + 'Liberar o acesso</button>'
     : '<span class="au-pesp"></span><button type="button" class="bt" data-act="pes-bloq" data-id="' + esc(u.id) + '">' + ic('cadeado') + 'Bloquear o acesso</button>') : '';
@@ -52,10 +55,10 @@ function pesGaveta(id) {
 }
 
 /* ---------- nova pessoa e editar ---------- */
-function pesNovo() { if (!pesPode()) return; lcAbrir({ k: 'pesEd', id: '', nome: '', login: '', senha: '', perfil: 'secundario', cargo: '', at: {}, sup: {} }); }
+function pesNovo() { if (!pesPode()) return; const at = {}; PES_ATRIB.forEach(a => { at[a[0]] = 'nao'; }); lcAbrir({ k: 'pesEd', id: '', nome: '', login: '', senha: '', perfil: 'secundario', cargo: '', at: at, sup: {} }); }
 function pesEditar(id) {
   const u = userById(id); if (!u || !pesPode()) return;
-  const at = {}; PES_ATRIB.forEach(a => { at[a[0]] = atribLegado(u) || u.atrib[a[0]] === true ? '1' : '0'; });
+  const at = {}; PES_ATRIB.forEach(a => { at[a[0]] = pesNivel(u, a[0]); });
   const sup = {}; (u.superiores || []).forEach(s => { sup[s] = '1'; });
   lcAbrir({ k: 'pesEd', id: u.id, nome: u.nome || '', login: u.login || '', perfil: pesPerfilK(u), cargo: u.cargo || '', at: at, sup: sup }, () => pesAbre(u.id));
 }
@@ -67,7 +70,7 @@ LC_FORM.pesEd = f => {
     (novo ? lcBl('Senha inicial', '<span class="pes-sen">' + lcIn('senha', f.senha, ' type="password" maxlength="40" autocomplete="new-password" placeholder="mínimo ' + esc(SENHA_MIN) + ' caracteres"') + '<button type="button" class="bt ic-so" data-act="pes-ver" aria-label="Mostrar a senha">' + ic('olho') + '</button></span>', 'vale só para o primeiro acesso') : '') +
     apPasso(2, 'O que pode fazer') + lcBl('Perfil', ddHTML('pes:perfil', f.perfil, PES_PERFIL)) +
     lcAv(adm ? 'Administrador vê e altera tudo, cadastra pessoas e decide qualquer pedido.' : f.perfil === 'lider' ? 'Líder ★ lança, decide os pedidos dos liderados e vê os relatórios.' : f.perfil === 'visitante' ? 'Consulta vê as áreas marcadas, mas não lança nem altera nada.' : 'Colaborador lança; o que precisa de aprovação vai para os superiores.') +
-    (adm ? '' : lcBl('Áreas que vê', '<div class="pes-cks">' + PES_ATRIB.map(a => ck('at.' + a[0], f.at[a[0]] === '1', a[1])).join('') + '</div>')) +
+    (adm ? '' : lcBl('Áreas', '<div class="pes-ars">' + PES_ATRIB.map(a => { const v = f.perfil === 'visitante' && f.at[a[0]] === 'alt' ? 'ver' : (f.at[a[0]] || 'nao'); return '<div class="pes-ar"><span>' + esc(a[1]) + '</span>' + ddHTML('pes:at.' + a[0], v, f.perfil === 'visitante' ? PES_NIVEL.slice(0, 2) : PES_NIVEL) + '</div>'; }).join('') + '</div>', f.perfil === 'visitante' ? 'Consulta só vê' : 'só ver: olha e imprime, não lança nem altera')) +
     (adm ? '' : apPasso(3, 'A quem responde') + (sups.length ? lcBl('Superiores', '<div class="pes-cks">' + sups.map(u => ck('sup.' + u.id, f.sup[u.id] === '1', u.nome + ' (' + perfilLabel(u) + ')')).join('') + '</div>', 'recebem os pedidos de aprovação') : lcAv('Ainda não há Líder ★ nem Administrador para marcar. Sem superior, os pedidos vão para os Administradores.')));
   return { ico: 'pessoas', sub: 'Administração · Pessoas', titulo: novo ? 'Nova pessoa' : 'Editar ' + (f.nome || ''), corpo: c, rodape: lcPe('pes-ed-ok', novo ? 'Cadastrar' : 'Salvar') };
 };
@@ -80,14 +83,14 @@ async function pesEdOk() {
     if (S.users.some(u => slugLogin(u.login) === login)) return lcErro('Já existe uma pessoa com o login ' + login + '.');
     if (String(f.senha || '').length < SENHA_MIN) return lcErro('A senha inicial precisa de no mínimo ' + SENHA_MIN + ' caracteres.');
   }
-  const atrib = {}; PES_ATRIB.forEach(a => { atrib[a[0]] = (f.at || {})[a[0]] === '1'; });
-  if (!adm && !Object.values(atrib).some(Boolean)) return lcErro('Marque pelo menos uma área que a pessoa vê.');
+  const atrib = {}, soVerM = {}; PES_ATRIB.forEach(a => { const v = (f.at || {})[a[0]] || 'nao'; atrib[a[0]] = v !== 'nao'; if (v === 'ver' && f.perfil !== 'visitante') soVerM[a[0]] = true; });
+  if (!adm && !Object.values(atrib).some(Boolean)) return lcErro('Escolha pelo menos uma área que a pessoa vê.');
   const x = novo ? null : userById(f.id);
   if (x && isPrincipal(x) && !adm && pesAdmsAtivos().length <= 1) return lcErro('Este é o único Administrador. Cadastre outro antes de mudar o perfil dele.');
   if (x && x.id === S.user.id && !adm) return lcErro('Você não pode tirar o seu próprio perfil de Administrador.');
   const superiores = adm ? [] : Object.keys(f.sup || {}).filter(k => f.sup[k] === '1' && userById(k));
   const perfil = adm ? (x && x.perfil === 'principal_temp' ? 'principal_temp' : 'principal') : f.perfil === 'lider' ? 'secundario' : f.perfil;
-  const dados = { nome, cargo, perfil, estrela: f.perfil === 'lider', superiores, atrib: adm ? null : atrib };
+  const dados = { nome, cargo, perfil, estrela: f.perfil === 'lider', superiores, atrib: adm ? null : atrib, soVer: adm ? {} : soVerM }; /* nunca null: a regra [R8] lê soVer como mapa */
   if (!lcTravar()) return;
   if (novo) {
     let id;
@@ -97,7 +100,7 @@ async function pesEdOk() {
     Audit.log({ acao: 'criar_usuario', entidade: 'usuario', entidadeId: id, resumo: 'Cadastrou ' + nome + ' (' + login + ') como ' + perfilLabel(o) });
     lcGrava([Data.col('sv2_users').set(id, o)], nome + ' cadastrado. Passe o login e a senha inicial: no primeiro acesso a pessoa cria a dela.', () => { if (S.gv) gvFecharSo(); });
   } else {
-    Audit.log({ acao: 'editar_usuario', entidade: 'usuario', entidadeId: x.id, resumo: 'Alterou o cadastro de ' + nome + ' (' + perfilLabel(Object.assign({}, x, dados)) + ')', antes: { perfil: x.perfil, estrela: !!x.estrela, atrib: x.atrib || null, superiores: x.superiores || [] }, depois: { perfil: dados.perfil, estrela: dados.estrela, atrib: dados.atrib, superiores } });
+    Audit.log({ acao: 'editar_usuario', entidade: 'usuario', entidadeId: x.id, resumo: 'Alterou o cadastro de ' + nome + ' (' + perfilLabel(Object.assign({}, x, dados)) + ')', antes: { perfil: x.perfil, estrela: !!x.estrela, atrib: x.atrib || null, soVer: x.soVer || null, superiores: x.superiores || [] }, depois: { perfil: dados.perfil, estrela: dados.estrela, atrib: dados.atrib, soVer: dados.soVer, superiores } });
     f.volta = null; lcGrava([Data.col('sv2_users').update(x.id, dados)], 'Cadastro salvo.', () => pesAbre(x.id));
   }
 }
@@ -182,6 +185,7 @@ const pesAdmOrig = TELAS.adm;
 TELAS.adm = aba => aba === 'pessoas' ? (pesVe() ? pesTela() : '') : aba === 'perfil' ? cabecalho({ titulo: 'Meu perfil', abaNome: 'Meu perfil' }) + pesMeuPerfil() : pesAdmOrig(aba);
 DD_AO.pes = (k, v) => {
   if (k === 'perfil' && S.fm) { S.fm.perfil = v; S.fm.sujo = true; S.fm.msg = ''; gvDesenha(true); }
+  else if (k.indexOf('at.') === 0 && S.fm) { S.fm.at = Object.assign({}, S.fm.at, { [k.slice(3)]: v }); S.fm.sujo = true; S.fm.msg = ''; gvDesenha(true); }
   else if (k === 'status') Data.col('sv2_users').update(S.user.id, { status: v }).then(() => aviso(v === 'ausente' ? 'Marcado como ausente: os pedidos vão para os Administradores.' : 'Marcado como presente.')).catch(() => aviso('Não deu para salvar agora.', 'erro'));
 };
 document.addEventListener('click', e => {

@@ -44,7 +44,11 @@ Arquivo pedido pelo Elias em 26/11/2026 11:41: tudo o que fica para outra conver
 - [x] **Cadastros de Coletas (v0.6.40):** publicada em 27/11 (efcwork fc4afcc).
 - [x] **Etiquetas das amostras:** feitas na v0.6.43 (Amostras, remessa, depois de Coletado). Antes: viram documentos do Vértice (decisão de 27/11 06:59). No Cwork, depois da P4: escolher onde abrir a etiqueta (aba, remessa, depois de "Coletado", amostras filtradas; o protótipo está em `fonte/rascunhos/`). Folha de campo das avulsas: perguntar se também vira documento do Vértice.
 - [x] **Kit apontando para o Vértice:** feito na v0.6.44. O que já está guardado no Cwork (`efd_docs`) NÃO muda sozinho: o Elias troca no kit (resposta de 27/11 15:24); PDF continua em Impressos (o Vértice ainda não guarda PDF).
-- [ ] Da matriz, funções "must" que faltam: Conversas; Relatórios › Coletas em aberto; Só ver por área.
+- [ ] Da matriz, funções "must" que faltam: Conversas; Relatórios › Coletas em aberto.
+- [x] **Só ver por área:** publicado na v0.6.50 (28/11).
+- [ ] **Regras [R8] (v0.6.50):** rodar `GUIA-SIMULADOR-v0.6.50.md` e colar `REGRAS-FIRESTORE-EFCwork-v0.6.50-PROPOSTA.txt` (o Elias).
+- [ ] **Conferir Administração › Pessoas depois da v0.6.50:** quem tinha Cloro, Apontamentos, Documentos ou Qualidade desmarcados deixa de ver essas áreas.
+- [ ] **v0.6.50 sem revisor novo** (publicada por ordem do Elias): passar um revisor quando ele quiser.
 - [ ] **Conversas · requisito do Elias (28/11 08:54):** o diálogo também existe dentro do Kanban e do quadro de post-it do Vértice (comentários nos cartões e nas notas), e a central das notificações é o Cwork (o sino do Cwork avisa também o que acontece nessas conversas do Vértice). Como ligar: decidir com ele por questionário quando a tarefa começar.
 - [ ] **Ideia (não pedida):** pôr a conferência de rótulos lado a lado no `medir.js` da família, para valer em todos os apps.
 - [ ] Matriz: conferir as 169 linhas "Janela …" e 4 outras "should" marcadas como não.

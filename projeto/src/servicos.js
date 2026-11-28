@@ -4,8 +4,10 @@
 Object.assign(S, { users: [], notifs: [], aprov: [], cfgAlm: null, _notifPartes: {}, _notifUn: [], _notifChaves: '', _notifModo: '' });
 
 /* ---------- pessoas ---------- */
-const isSup = u => !!u && (isPrincipal(u) || (u.perfil === 'secundario' && u.estrela === true));
-const podeLancar = u => !!u && u.perfil !== 'visitante';
+const isSupGeral = u => !!u && (isPrincipal(u) || (u.perfil === 'secundario' && u.estrela === true));
+/* v0.6.50 (Só ver por área, sover.js): dentro de uma área "Só ver", quem está usando não lança nem decide nada dela */
+const isSup = u => isSupGeral(u) && !(typeof soVerAqui === 'function' && soVerAqui(u));
+const podeLancar = u => !!u && u.perfil !== 'visitante' && !(typeof soVerAqui === 'function' && soVerAqui(u));
 const userById = id => S.users.find(u => u.id === id) || null;
 const nomeDe = id => { const u = userById(id); return u ? u.nome : '(usuário removido)'; };
 const svStatus = u => !u ? 'ativo' : u.bloqueado ? 'inativo' : (u.status || 'ativo');
@@ -116,7 +118,7 @@ const Aprov = {
     Audit.log({ acao: 'pedir_autorizacao', entidade: 'aprovacao', entidadeId: id, resumo: 'Pediu autorização: ' + p.titulo + ' · para ' + para.map(nomeDe).join(', '), depois: { titulo: p.titulo, descricao: p.descricao || '', para: para.map(nomeDe).join(', ') } });
     return id;
   },
-  podeDecidir(a) { const u = S.user; return !!u && a.status === 'pendente' && ((isSup(u) && (a.paraIds || []).indexOf(u.id) >= 0) || isPrincipal(u)); },
+  podeDecidir(a) { const u = S.user; if (!u || a.status !== 'pendente' || (typeof SOV_APROV === 'object' && soVer(u, SOV_APROV[a.tipo]))) return false; return (isSupGeral(u) && (a.paraIds || []).indexOf(u.id) >= 0) || isPrincipal(u); },
   pendentesParaMim() {
     const u = S.user; if (!u) return [];
     return S.aprov.filter(a => a.status === 'pendente' && ((a.paraIds || []).indexOf(u.id) >= 0 || (isPrincipal(u) && !(a.paraIds || []).some(id => { const x = userById(id); return x && !x.bloqueado && x.id !== a.solicitanteId; }))));

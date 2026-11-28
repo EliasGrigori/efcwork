@@ -156,7 +156,7 @@ async function semear(p) {
   conf(await p.evaluate(() => S.user && S.user.login === 'ana.lima'), 'entra como Secundário sem a atribuição do Almoxarifado');
   conf((await p.$$('.kps .kp')).length === 0, 'Início sem os números do Almoxarifado para quem não tem acesso');
   await p.evaluate(() => { location.hash = '#/almox/materiais'; }); await p.waitForTimeout(200);
-  conf(/não tem acesso ao Almoxarifado/.test(await p.textContent('.cs-ct')) && (await p.$$('.tb-t')).length === 0, 'Almoxarifado: mensagem "Você não tem acesso", sem tabela');
+  conf(!(await p.$('.cs-nav a[href="#/almox"]')) && (await p.$$('.tb-t')).length === 0, 'Almoxarifado sem acesso: a área some do menu e não abre a tabela (v0.6.50, "a tela some")');
   await p.keyboard.press('/'); await p.fill('#bg-q', 'luva'); await p.waitForTimeout(150);
   conf(!/Luva/.test(await p.textContent('#bg-res')), 'busca geral não mostra materiais para quem não tem acesso');
   await p.keyboard.press('Escape');

@@ -1,7 +1,7 @@
 /* EFCwork · base.js — configuração, armazenamento do aparelho, ajudantes, ícones e dados (Firebase ou modo demonstração).
    Prefixo dos nomes deste módulo: nenhum (é a base). Os outros módulos usam prefixos próprios (cs, en, ini, ar, adm).
    Store e Data vieram do EFClaudian v2.102.59 (mesmo projeto Firebase, mesmas coleções sv2_*), quase sem mudança. */
-const VERSAO = '0.6.49';
+const VERSAO = '0.6.50';
 const APP_NOME = 'EFCwork';
 const APP_APELIDO = 'Cwork Quality';
 const APP_FAMILIA = 'EFClaudian';
@@ -107,6 +107,7 @@ const SENHA_MIN = 8; /* v0.6.29 (varredura S3): a mesma regra no primeiro acesso
 const emailReal = e => { const s = String(e || '').trim().toLowerCase(); return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(s) && !/@efclaudian\.app$/.test(s) ? s : ''; };
 /* modo demonstração: as mesmas listas das regras do Firestore (06/11) para quem não é líder ★/Administrador, para os testes pegarem permissão negada */
 const DEMO_REGRAS = { sv2_alm_inv: ['contagens', 'folhas'], sv2_alm_equip: ['situacao', 'local', 'posicao', 'guardadoEm', 'sitAntes', 'posAntes', 'restricaoCal', 'qtdLocal', 'qtdGuard', 'trfQtd', 'transito', 'hist', 'atualizadoEm'], sv2_alm_cal: [] };
+const demoSoVer = col => typeof sovNegaCol === 'function' && sovNegaCol(col) ? Promise.reject(Object.assign(new Error('Missing or insufficient permissions. (demonstração: só ver nesta área)'), { code: 'permission-denied' })) : null; /* v0.6.50 [R8] */
 function demoRegraNega(col, chaves) { const l = DEMO_REGRAS[col], u = S.user; if (!l || !u || typeof isSup !== 'function' || isSup(u)) return ''; return chaves.map(k => k.split('.')[0]).find(k => l.indexOf(k) < 0) || ''; }
 const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
 const pad = n => String(n).padStart(2, '0');
@@ -234,11 +235,11 @@ const Data = (function () {
           setTimeout(() => cb(dView(name, w.o)), 0);
           return () => { watchers[name] = (watchers[name] || []).filter(x => x !== w); };
         },
-        add(obj) { const a = dLoad(name); const id = uid(); a.push(Object.assign({ id: id }, clean(obj))); dSave(name, a); dNotify(name); return Promise.resolve(id); },
-        set(id, obj) { const a = dLoad(name).filter(x => x.id !== id); a.push(Object.assign({ id: id }, clean(obj))); dSave(name, a); dNotify(name); return Promise.resolve(id); },
-        update(id, patch) { const ruim = Object.keys(patch).find(k => /[~*\/\[\]]/.test(k)); if (ruim) return Promise.reject(new Error('Invalid field path (' + ruim + '): o Firestore não aceita ~ * / [ ]')); const nega = demoRegraNega(name, Object.keys(patch)); if (nega) return Promise.reject(Object.assign(new Error('Missing or insufficient permissions (' + nega + ')'), { code: 'permission-denied' })); const a = dLoad(name); const it = a.find(x => x.id === id); if (!it) return Promise.reject(new Error('nf')); Object.keys(patch).forEach(k => setPath(it, k, clean({ v: patch[k] }).v)); dSave(name, a); dNotify(name); return Promise.resolve(); },
+        add(obj) { const sv = demoSoVer(name); if (sv) return sv; const a = dLoad(name); const id = uid(); a.push(Object.assign({ id: id }, clean(obj))); dSave(name, a); dNotify(name); return Promise.resolve(id); },
+        set(id, obj) { const sv = demoSoVer(name); if (sv) return sv; const a = dLoad(name).filter(x => x.id !== id); a.push(Object.assign({ id: id }, clean(obj))); dSave(name, a); dNotify(name); return Promise.resolve(id); },
+        update(id, patch) { const sv = demoSoVer(name); if (sv) return sv; const ruim = Object.keys(patch).find(k => /[~*\/\[\]]/.test(k)); if (ruim) return Promise.reject(new Error('Invalid field path (' + ruim + '): o Firestore não aceita ~ * / [ ]')); const nega = demoRegraNega(name, Object.keys(patch)); if (nega) return Promise.reject(Object.assign(new Error('Missing or insufficient permissions (' + nega + ')'), { code: 'permission-denied' })); const a = dLoad(name); const it = a.find(x => x.id === id); if (!it) return Promise.reject(new Error('nf')); Object.keys(patch).forEach(k => setPath(it, k, clean({ v: patch[k] }).v)); dSave(name, a); dNotify(name); return Promise.resolve(); },
         /* v2.84.0: acrescenta um item numa lista do registro sem regravar a lista inteira (ninguém apaga o passo do outro) */
-        push(id, campo, item, extra) { const a = dLoad(name); const it = a.find(x => x.id === id); if (!it) return Promise.reject(new Error('nf')); it[campo] = (Array.isArray(it[campo]) ? it[campo] : []).concat([clean({ v: item }).v]); Object.keys(extra || {}).forEach(k => setPath(it, k, clean({ v: extra[k] }).v)); dSave(name, a); dNotify(name); return Promise.resolve(); },
+        push(id, campo, item, extra) { const sv = demoSoVer(name); if (sv) return sv; const a = dLoad(name); const it = a.find(x => x.id === id); if (!it) return Promise.reject(new Error('nf')); it[campo] = (Array.isArray(it[campo]) ? it[campo] : []).concat([clean({ v: item }).v]); Object.keys(extra || {}).forEach(k => setPath(it, k, clean({ v: extra[k] }).v)); dSave(name, a); dNotify(name); return Promise.resolve(); },
         get(id) { return Promise.resolve(dLoad(name).find(x => x.id === id) || null); },
         fresco(id) { return Promise.resolve(dLoad(name).find(x => x.id === id) || null); }, /* v2.89.1 */
         frescos(o) { return Promise.resolve(dView(name, o || {})); }, /* v0.6.42 */
@@ -427,6 +428,7 @@ const Data = (function () {
     novoId(name) { return DEMO || !fdb ? uid() : fdb.collection(name).doc().id; },
     lote(ops) {
       if (DEMO) {
+        for (const o of ops) { const sv = demoSoVer(o.col); if (sv) return sv; }
         for (const o of ops) if (o.tipo === 'update' && !dLoad(o.col).some(x => x.id === o.id)) return Promise.reject(new Error('nf'));
         ops.forEach(o => { const c = col(o.col); if (o.tipo === 'set') c.set(o.id, o.dados); else c.update(o.id, o.dados); });
         return Promise.resolve(ops.length);

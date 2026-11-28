@@ -11,7 +11,7 @@ Object.assign(S, { fm: null, almPref: null });
 /* ---------- quem pode o quê (igual ao EFClaudian) ---------- */
 const alPode = () => podeLancar(S.user) && alVe();
 const alSup = () => isSup(S.user);
-function alCtrl(u) { u = u || S.user; if (!u || u.perfil === 'visitante' || u.bloqueado) return false; if (isSup(u)) return true; return temAtrib(u, 'almox') && !!(u.atrib && u.atrib.almoxctrl === true); }
+function alCtrl(u) { u = u || S.user; if (!u || !podeLancar(u) || u.bloqueado) return false; if (isSup(u)) return true; return temAtrib(u, 'almox') && !!(u.atrib && u.atrib.almoxctrl === true); }
 const alConfirmadores = () => S.users.filter(u => alCtrl(u) && temAtrib(u, 'almox'));
 const alCorrigeDireto = m => alSup() || (m.por === S.user.id && (m.tipo === 'saida' || m.tipo === 'abrir'));
 const alPodeCorrigir = m => !m.anulada && alPode() && m.tipo !== 'fim';
